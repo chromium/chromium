@@ -679,6 +679,149 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
+    public void testNavBarColorAnimationsOverlayPanel() {
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+
+        // Nav bar color animations disabled on appearance.
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, true);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, true);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.MAXIMIZED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, true);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, true);
+
+        // Nav bar color animations enabled on disappearance.
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
+    public void testNavBarColorAnimationsBottomSheet() {
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentNullBackground);
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertState(null, false, false);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        // Nav bar color animations disabled on appearance.
+        mColorChangeObserver.assertState(BOTTOM_SHEET_CYAN, false, true);
+
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        // Nav bar color animations enabled on disappearance.
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
+    public void testNavBarColorAnimationsSnackbar() {
+        mColorChangeObserver.assertState(null, false, false);
+
+        // Set only the snackbar color.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+
+        // Show the snackbar. Nav bar color animations disabled on appearance.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
+        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, true);
+
+        // Hide the snackbar. Nav bar color animations enabled on disappearance.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    @DisableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
+    })
+    public void testNavBarColorAnimationsBrowserControls() {
+        mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+
+        // Show bottom controls.
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        // Nav bar color animations disabled on appearance.
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, true);
+
+        // Scroll off bottom controls partway.
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0, 0, false, BOTTOM_CONTROLS_HEIGHT / 2, 0, false, false, false);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, true);
+
+        // Scroll off bottom controls fully.
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0, 0, false, BOTTOM_CONTROLS_HEIGHT, 0, false, false, false);
+        // Nav bar color animations enabled when scrolling off.
+        mColorChangeObserver.assertState(null, false, false);
+
+        // Scroll bottom controls back.
+        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        // Nav bar color animations enabled when scrolling on.
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        // Hide bottom controls.
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
+        // Nav bar color animations enabled on disappearance.
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    public void testNavBarColorAnimationsBottomToolbar() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        doReturn(0.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
+
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+
+        // Nav bar color animations disabled when the bottom toolbar is visible.
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, true);
+    }
+
+    @Test
     public void testDestroy() {
         mBottomAttachedUiObserver.destroy();
         verify(mOmniboxSuggestionsVisualState)
