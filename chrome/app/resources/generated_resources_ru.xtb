@@ -593,6 +593,7 @@
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="140723521119632973">Активация мобильной сети</translation>
+<translation id="1407908250220330281">Этим профилем будет управлять организация</translation>
 <translation id="1407970155431887387">Нажмите, чтобы открыть диалоговое окно, в котором можно изменить параметры поисковой системы "<ph name="SEARCH_ENGINE_NAME" />"</translation>
 <translation id="1408504635543854729">Чтобы просмотреть контент, хранящийся на устройстве, перейдите в приложение "Файлы". Администратор запретил изменять этот контент.</translation>
 <translation id="1408980562518920698">Управление личной информацией</translation>
@@ -802,6 +803,7 @@
 <translation id="1549966883323105187">Получайте доступ к сохраненным паролям ещё быстрее.</translation>
 <translation id="1550656959113606473">Тема Chrome по умолчанию</translation>
 <translation id="1552301827267621511">Расширение "<ph name="EXTENSION_NAME" />" установило поисковую систему "<ph name="SEARCH_PROVIDER_DOMAIN" />" в качестве основной.</translation>
+<translation id="1552357433305859738">Продолжить синхронизацию с профилем и объединить данные</translation>
 <translation id="1552752544932680961">Управление расширениями</translation>
 <translation id="1553538517812678578">неограниченно</translation>
 <translation id="1553947773881524342">Подробнее <ph name="LINK_BEGIN" />о Microsoft 365 на вашем устройстве Chromebook<ph name="LINK_END" />…</translation>
@@ -1435,6 +1437,7 @@
 <translation id="1980168597243156">Космическая станция</translation>
 <translation id="1981434377190976112">Просмотр ваших данных на всех сайтах.</translation>
 <translation id="1982851102516626421">Вход не выполнен</translation>
+<translation id="1983612835086592681">Вы открывали за последнюю неделю</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1984683754853869253">Создать учебный профиль?</translation>
 <translation id="198507684520034826">Справка</translation>
@@ -2241,6 +2244,7 @@
 <translation id="2530166226437958497">Устранение неполадок</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">Подробнее</translation>
 <translation id="2532144599248877204">Продлевает срок службы батареи, удерживая заряд на уровне 80 %. Полностью устройство заряжается только к тому времени, когда вы обычно отключаете его от источника питания.</translation>
 <translation id="2532146950330687938">Подготовка устройства…</translation>
 <translation id="2532198298278778531">Управление безопасным DNS-сервером в настройках Chrome OS Flex</translation>
@@ -3140,6 +3144,7 @@
 <translation id="3183139917765991655">Импорт профилей</translation>
 <translation id="3183143381919926261">Мобильные сети</translation>
 <translation id="3183700187146209259">Не удалось установить ПО для сканера</translation>
+<translation id="3183750649832309748">Вашей организации (<ph name="ACCOUNT_MANAGER" />) будет видна некоторая информация, в том числе:</translation>
 <translation id="3183944777708523606">Расположение мониторов</translation>
 <translation id="3184536091884214176">Настройте принтеры CUPS. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">PIN-код понадобится при изменении параметров родительского контроля.
@@ -3167,6 +3172,7 @@
 <translation id="3202499879214571401">Приостановить трансляцию экрана на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3202578601642193415">Последние</translation>
 <translation id="3204648577100496185">Данные, связанные с этим приложением, могут быть удалены с устройства.</translation>
+<translation id="3204717934117444051">Данные, которые хранятся только на этом устройстве, останутся в существующем профиле. Они не будут синхронизированы с аккаунтом <ph name="EMAIL" />.</translation>
 <translation id="3207344462385471911">На основании ваших недавних действий мы показываем варианты поисковых запросов и скидки, которые могут вас заинтересовать.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4336,6 +4342,7 @@
 <translation id="3994878504415702912">&amp;Размер текста</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
 <translation id="3995963973192100066">Воспроизвести анимацию</translation>
+<translation id="3997537546406230684">Создать рабочий профиль и хранить существующие данные отдельно</translation>
 <translation id="399788104667917863">Закрепить на панели инструментов</translation>
 <translation id="3998780825367526465">Показывать предварительные изображения вкладок</translation>
 <translation id="3998976413398910035">Управление принтерами</translation>
@@ -5781,6 +5788,7 @@
 <translation id="5059526285558225588">Выберите часть экрана для демонстрации</translation>
 <translation id="5060332552815861872">Для сохранения доступен 1 принтер.</translation>
 <translation id="5060419232449737386">Настройки субтитров</translation>
+<translation id="5061270227873845372">В вашем профиле есть <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> и другие данные. Организация сможет просматривать их и управлять ими.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{В папке есть закладка. Все равно удалить ее?}one{В папке есть # закладка. Все равно удалить ее?}few{В папке есть # закладки. Все равно удалить ее?}many{В папке есть # закладок. Все равно удалить ее?}other{В папке есть # закладки. Все равно удалить ее?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Вход не выполнен. Подключитесь к Интернету и повторите попытку.</translation>
@@ -5964,6 +5972,7 @@
 <translation id="5186788525428341874">Этот ключ доступа можно использовать для быстрого входа в аккаунт на ваших устройствах. Он будет сохранен в Google Менеджере паролей для аккаунта <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Установить страницу как приложение…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">Кто поделился: <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Использование геолокации. Разрешите использовать геолокацию устройства сайтам, приложениям и сервисам (в ChromeOS и Android), у которых есть доступ к данным о местоположении. Функция "Точность геолокации" позволяет приложениям и сервисам получать более корректную информацию о местоположении. Для этого Google собирает общую базу местоположений беспроводных сигналов, используя периодически получаемые с устройств данные о датчиках и беспроводной связи. Эти анонимные сведения позволяют повышать точность геолокации и совершенствовать сервисы, использующие информацию о местоположении, а также улучшать, предоставлять и поддерживать наши сервисы в соответствии с законными интересами Google и третьих лиц для удовлетворения потребностей пользователей. <ph name="BEGIN_LINK1" />Подробнее об использовании данных о местоположении…<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">Чтобы отключить использование общего процесса, браузер перезапустится.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
@@ -8017,6 +8026,7 @@
 <translation id="668599234725812620">Открыть Google Play</translation>
 <translation id="6686490380836145850">Закрыть вкладки справа</translation>
 <translation id="6686665106869989887">Вкладка перемещена вправо</translation>
+<translation id="6686676261102452995">Вы открывали сегодня</translation>
 <translation id="6686817083349815241">Сохранить пароль</translation>
 <translation id="6687008241368170505">Изменить PIN-код Google Менеджера паролей</translation>
 <translation id="6687079240787935001">Скрыть <ph name="MODULE_TITLE" /></translation>
@@ -9398,6 +9408,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> на странице <ph name="PAGE_TITLE" />.</translation>
 <translation id="7672726198839739113">Заблокировано. Начало и окончание светового дня: <ph name="SUNRISE_TIME" /> и <ph name="SUNSET_TIME" /> соответственно. Изменить эти значения можно только вручную.</translation>
 <translation id="7673313156293624327">Журналы Shill (диспетчера подключений) для ChromeOS</translation>
+<translation id="767381852303199643">Что вы хотите сделать с данными существующего профиля?</translation>
 <translation id="7674416868315480713">Отключить все порты, перенаправленные в Linux</translation>
 <translation id="7674537509496907005">Приложений: <ph name="APP_COUNT" /></translation>
 <translation id="7674542105240814168">Запрещен доступ к геоданным</translation>
@@ -9629,6 +9640,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
 <translation id="7836577093182643605">Список заблокированных тем, которые не передаются сайтам</translation>
+<translation id="7836745198769390202">В вашем профиле есть <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> и другие данные. Организация сможет просматривать их и управлять ими.</translation>
 <translation id="7836850009646241041">Прикоснитесь к сканеру отпечатков пальцев на электронном ключе ещё раз.</translation>
 <translation id="7838838951812478896">Не удалось сохранить сеть "<ph name="NETWORK_NAME" />" с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}one{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}few{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}many{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}other{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}}</translation>
@@ -10130,6 +10142,7 @@
 <translation id="8176529144855282213">Чтобы предоставить доступ к микрофону, используйте специальный физический переключатель на устройстве</translation>
 <translation id="8177196903785554304">Сведения о сети</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Открыть вкладку в новом окне}one{Открыть вкладки в новом окне}few{Открыть вкладки в новом окне}many{Открыть вкладки в новом окне}other{Открыть вкладки в новом окне}}</translation>
+<translation id="8178657161962192959">Вы открывали вчера</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> (<ph name="PRINTER_STATUS" />). Принтер <ph name="ITEM_POSITION" /> из <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Режим энергосбережения включен</translation>
@@ -11393,6 +11406,7 @@
 <translation id="9052404922357793350">Продолжать блокировать</translation>
 <translation id="90528604757378587">Может быть ограничена работа фоновых процессов и некоторых визуальных эффектов, например плавной прокрутки.</translation>
 <translation id="9053563360605707198">Печать на обеих сторонах</translation>
+<translation id="9055810458113674066">В вашем профиле есть <ph name="NUMBERED_ITEM" /> и другие данные Организация сможет просматривать их и управлять ими.</translation>
 <translation id="9056788090206401048">Чтобы использовать ключ доступа, хранящийся на другом устройстве, требуется подключение по Bluetooth. Значение этого параметра можно задавать в настройках.</translation>
 <translation id="9056810968620647706">Ничего не найдено.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> хочет получить доступ к следующему контенту:</translation>

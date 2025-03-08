@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">અત્યારે આ ભાષાને સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="2787435249130282949">વધુ બ્રાઇટ કીબોર્ડ</translation>
 <translation id="2805756323405976993">ઍપ</translation>
+<translation id="2822702442014805146">સારાંશ અને નામની રચનાના મૉડલના ડાઉનલોડની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="28232023175184696">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. ફરી પ્રયાસ કરવા માટે ક્લિક કરો.</translation>
 <translation id="2855718259207180827">ઊન</translation>
 <translation id="2859243502336719778">અતિશય મહત્ત્વની અપડેટ</translation>
@@ -827,6 +828,7 @@
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4897058166682006107">ડિવાઇસના ડાબા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="4905998861748258752">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ઍમ્બિઅન્ટ મોડની સુવિધા ચાલુ કરો</translation>
+<translation id="4910853326379896417">સારાંશ અને નામની રચનાના મૉડલનું ડાઉનલોડ પૂર્ણ થયું</translation>
 <translation id="4910858703033903787">APNના પ્રકાર</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
@@ -864,6 +866,7 @@
 <translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="5078711626843651677">જ્યાં સુધી સ્પીકરને લેબલ આપવાની પ્રક્રિયા પૂર્ણ ન થાય, ત્યાં સુધી વૉઇસ મૉડલને હંગામી રીતે ડિવાઇસ પર સ્ટોર કરવામાં આવે છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="5078983345702708852">ફ્યૂચુરિસ્ટિક</translation>
+<translation id="5085224064082122501">સારાંશ અને નામની રચના માટેનું મૉડલ ડાઉનલોડ કરી શકતા નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="5087864757604726239">પાછા ફરો</translation>
 <translation id="5088172560898466307">સર્વર હોસ્ટનું નામ</translation>
 <translation id="5089810972385038852">રાજ્ય</translation>
@@ -1431,6 +1434,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ટચસ્ક્રીન</translation>
 <translation id="757747079855995705">પથ્થર</translation>
+<translation id="7584853321964440104">ડાઉનલોડ કરી શકાતા નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="7590883480672980941">ઇનપુટ સેટિંગ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7600430297804876776">આ <ph name="DEVICE_TYPE" />નો ઉપયોગ ક્યારે કરી શકાય છે, એ <ph name="MANAGER" />ના ઍડમિનિસ્ટ્રેટર દ્વારા સેટ કરવામાં આવ્યું છે.</translation>

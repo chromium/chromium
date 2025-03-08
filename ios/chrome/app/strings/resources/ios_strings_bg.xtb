@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Продължавайки, приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062138828266376352">ПИН кодът ви не бе променен. Проверете връзката си с интернет и опитайте отново</translation>
+<translation id="1072476005125066234">Отзиви въз основа на интересите ви</translation>
 <translation id="1074827084851510304">Напът сте да изтриете {password_count} пароли и списъка със сайтове и приложения, за които сте избрали данните за вход никога да не се запазват. Профилите, които сте създали за сайтове или приложения, няма да бъдат изтрити.</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> профила използват същата парола</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="2060114494785549741">Изтриване след 1 месец</translation>
+<translation id="2060638295449304809">Този адрес ще се запази само на това устройство. За да го използвате на другите си устройства, запазете го в профила си в Google <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Инструмент за избор на тип мерна единица</translation>
 <translation id="2067852168641682340">Запазване в този профил всеки път</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 раздел}other{{count} раздела}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">Обем</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и още 1}other{{domain} и още {count}}}</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
+<translation id="4828431027673677473">Продукти въз основа на интересите ви</translation>
 <translation id="4833786495304741580">Автоматично изпраща до Google статистически данни за употребата и сигнали за сривове.</translation>
 <translation id="483689884442613745">Запазване…</translation>
 <translation id="4840495572919996524">Вашите отметки, история, пароли и други неща повече няма да се синхронизират с профила ви в Google.</translation>
@@ -1735,6 +1738,7 @@
 <translation id="828291969289324795">{count,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
 <translation id="8283172974887967105">Задаване…</translation>
 <translation id="8289930144142009940">Известията за „<ph name="FEATURE_NAME" />“ са изключени</translation>
+<translation id="8290077367744012649">Проследяване на цените от разделите ви</translation>
 <translation id="8299417921174340354">За да използвате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="8299613349954694191">Отворете раздел в режим „инкогнито“, за да сърфирате частно в мрежата.</translation>
 <translation id="8307481894409578819">Този файл не бе качен</translation>

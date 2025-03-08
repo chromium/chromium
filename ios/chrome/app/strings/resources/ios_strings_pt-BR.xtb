@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Ao continuar, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nunca salvas</translation>
 <translation id="1062138828266376352">O PIN não foi alterado. Confira sua conexão de Internet e tente de novo.</translation>
+<translation id="1072476005125066234">Avaliações com base nos seus interesses</translation>
 <translation id="1074827084851510304">Você está prestes a excluir {password_count} senhas e a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="1076421457278169141">Código lido</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} guia}one{{count} guia}other{{count} guias}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> contas usando a mesma senha</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2060114494785549741">Excluir em 1 mês</translation>
+<translation id="2060638295449304809">O endereço está salvo apenas neste dispositivo. Salve na sua Conta do Google, <ph name="USER_EMAIL" />, para usar em outros dispositivos</translation>
 <translation id="20638360198452347">Seletor de tipo de unidade de medida</translation>
 <translation id="2067852168641682340">Salvar sempre nesta conta</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 guia}one{{count} guia}other{{count} guias}}</translation>
@@ -895,6 +897,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}one{{domain} e mais {count} outra}other{{domain} e mais {count} outras}}</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
+<translation id="4828431027673677473">Produtos com base nos seus interesses</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de uso e relatórios de erros para o Google.</translation>
 <translation id="483689884442613745">Salvar…</translation>
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
@@ -1734,6 +1737,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="828291969289324795">{count,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8289930144142009940">Notificações de <ph name="FEATURE_NAME" /> desativadas</translation>
+<translation id="8290077367744012649">Monitorar preços nas suas guias</translation>
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="8299613349954694191">Abra uma guia anônima para navegar com privacidade.</translation>
 <translation id="8307481894409578819">Não foi possível fazer upload deste arquivo</translation>

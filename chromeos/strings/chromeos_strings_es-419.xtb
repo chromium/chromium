@@ -406,6 +406,7 @@
 <translation id="2787237339470862294">Por el momento, no se admite este idioma</translation>
 <translation id="2787435249130282949">teclado más claro</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
+<translation id="2822702442014805146">Descarga del modelo de creación de nombres y resúmenes en curso</translation>
 <translation id="28232023175184696">No me puedo conectar a Internet. Haz clic para volver a intentarlo.</translation>
 <translation id="2855718259207180827">lana</translation>
 <translation id="2859243502336719778">Actualización crítica</translation>
@@ -827,6 +828,7 @@
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4897058166682006107">Nivel de batería del auricular izquierdo <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Activa la función para seleccionar opciones de protector de pantalla</translation>
+<translation id="4910853326379896417">Se completó la descarga del modelo de creación de nombres y resúmenes</translation>
 <translation id="4910858703033903787">Tipos de APN</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
@@ -864,6 +866,7 @@
 <translation id="5056587122125565772">Crear imagen</translation>
 <translation id="5078711626843651677">Los modelos de voz se almacenan temporalmente en el dispositivo hasta que se complete el etiquetado de interlocutores. Puedes desactivar esta opción en cualquier momento en Configuración.</translation>
 <translation id="5078983345702708852">futurista</translation>
+<translation id="5085224064082122501">No se puede descargar el modelo para la creación de nombres y resúmenes. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="5087864757604726239">atrás</translation>
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
@@ -1431,6 +1434,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil con conexión USB</translation>
 <translation id="757747079855995705">piedra</translation>
+<translation id="7584853321964440104">No se pudo completar la descarga. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="7590883480672980941">Configuración de entradas</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">El administrador de <ph name="MANAGER" /> estableció cuándo se puede usar tu <ph name="DEVICE_TYPE" />.</translation>

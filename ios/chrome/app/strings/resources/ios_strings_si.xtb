@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK" />සේවා නියම<ph name="END_LINK" /> සමග එකඟ වේ.</translation>
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
 <translation id="1062138828266376352">ඔබේ PIN අංකය වෙනස් කර නැත. ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සහ කරන්න</translation>
+<translation id="1072476005125066234">ඔබේ රුචිකත්වයන් මත පදනම් වූ සමාලෝචන</translation>
 <translation id="1074827084851510304">ඔබ මුරපද {password_count} සහ ඔබ කිසිදා පුරනය වීම සුරැකීමට තෝරා නොගත් අඩවි සහ යෙදුම් ලැයිස්තුව මැකීමට සූදානම් වේ. ඔබ අඩවි සහ යෙදුම් සඳහා නිර්මාණය කළ ඕනෑම ගිණුමක් මකා නොදමනු ඇත.</translation>
 <translation id="1076421457278169141">කේතය ස්කෑන් කරන ලදී</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} පටිත්තක්}one{පටිති {count}ක්}other{පටිති {count}ක්}}</translation>
@@ -267,6 +268,7 @@
 <translation id="2049727122989709386">එකම මුරපදය භාවිතා කරන ගිණුම් <ph name="COUNT" />ක්</translation>
 <translation id="2059166748188874810">නගර සභාව</translation>
 <translation id="2060114494785549741">මාස 1කින් මකන්න</translation>
+<translation id="2060638295449304809">මෙම ලිපිනය සුරැකෙන්නේ මෙම උපාංගයට පමණි. එය ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, එය ඔබේ Google ගිණුමේ, <ph name="USER_EMAIL" /> සුරකින්න</translation>
 <translation id="20638360198452347">ඒකක වර්ගය තෝරකය</translation>
 <translation id="2067852168641682340">සෑම අවස්ථාවකම මෙම ගිණුමට සුරකින්න</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 පටිත්තක්}one{පටිති {count}ක්}other{පටිති {count}ක්}}</translation>
@@ -895,6 +897,7 @@
 <translation id="4824480232751123840">හඬ පරිමාව</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} සහ තවත් 1}one{{domain} සහ තවත් {count}}other{{domain} සහ තවත් {count}}}</translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
+<translation id="4828431027673677473">ඔබේ රුචිකත්වයන් මත පදනම් වූ නිෂ්පාදන</translation>
 <translation id="4833786495304741580">භාවිත සංඛ්‍යාල්ඛන සහ බිඳ වැටීම් වාර්තා ස්වයංක්‍රියව Google වෙත යවයි.</translation>
 <translation id="483689884442613745">සුරකින්න…</translation>
 <translation id="4840495572919996524">ඔබේ පිටුසන්, ඉතිහාසය, මුරපද සහ තවත් දේ ඔබේ Google ගිණුමට තවදුරටත් සමමුහුර්ත නොවනු ඇත.</translation>
@@ -1734,6 +1737,7 @@
 <translation id="828291969289324795">{count,plural, =1{නව සමූහයට පටිත්ත එක් කරන්න}one{නව සමූහයට පටිති එක් කරන්න}other{නව සමූහයට පටිති එක් කරන්න}}</translation>
 <translation id="8283172974887967105">සකසන්න…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> දැනුම්දීම් ක්‍රියාවිරහිත කර ඇත</translation>
+<translation id="8290077367744012649">ඔබේ පටිති වලින් මිල ගණන් නිරීක්ෂණය කරන්න</translation>
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="8299613349954694191">වෙබය පෞද්ගලිකව බ්‍රවුස් කිරීමට අප්‍රකට ටැබයක් විවෘත කරන්න.</translation>
 <translation id="8307481894409578819">මෙම ගොනුව උඩුගත කළ නොහැකි විය</translation>
