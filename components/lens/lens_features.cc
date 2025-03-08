@@ -259,11 +259,8 @@ constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-html-as-context", true};
 
-constexpr base::FeatureParam<bool> kIncludeInnerTextWithInnerHtml{
-    &kLensOverlayContextualSearchbox, "use-inner-text-with-inner-html", false};
-
-constexpr base::FeatureParam<bool> kIncludeApcWithInnerHtml{
-    &kLensOverlayContextualSearchbox, "use-apc-with-inner-html", false};
+constexpr base::FeatureParam<bool> kUseApcAsContext{
+    &kLensOverlayContextualSearchbox, "use-apc-as-context", false};
 
 constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
@@ -639,12 +636,8 @@ bool UseInnerHtmlAsContext() {
   return kUseInnerHtmlAsContext.Get();
 }
 
-bool IncludeInnerTextWithInnerHtml() {
-  return kIncludeInnerTextWithInnerHtml.Get();
-}
-
-bool IncludeApcWithInnerHtml() {
-  return kIncludeApcWithInnerHtml.Get();
+bool UseApcAsContext() {
+  return kUseApcAsContext.Get();
 }
 
 bool SendPageUrlForContextualization() {

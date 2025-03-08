@@ -8935,26 +8935,6 @@
             ]
         }
     ],
-    "ElementGetInnerHTML": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ElementGetInnerHTML"
-                    ]
-                }
-            ]
-        }
-    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [

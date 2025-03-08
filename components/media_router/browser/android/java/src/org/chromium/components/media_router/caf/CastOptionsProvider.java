@@ -22,6 +22,7 @@ public class CastOptionsProvider implements OptionsProvider {
     @Override
     public CastOptions getCastOptions(Context context) {
         return new CastOptions.Builder()
+                .setCastMediaOptions(null)
                 .setEnableReconnectionService(false)
                 .setLaunchOptions(new LaunchOptions.Builder().setRelaunchIfRunning(true).build())
                 .setResumeSavedSession(false)

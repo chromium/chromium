@@ -1288,6 +1288,10 @@ nobr {
   outline: solid 3px -webkit-focus-ring-color;
 }
 
+button[interesttarget] {
+  user-select: none;
+}
+
 html:focus-visible, body:focus-visible {
     outline: none
 }

@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_html_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"

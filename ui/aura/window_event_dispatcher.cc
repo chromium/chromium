@@ -267,6 +267,16 @@ void WindowEventDispatcher::OnCursorMovedToRootLocation(
   PostSynthesizeMouseMove(window());
 }
 
+void WindowEventDispatcher::OnHostCursorExit() {
+  auto details =
+      DispatchMouseExitAtPoint(window(), GetLastMouseLocationInRoot());
+  if (details.dispatcher_destroyed) {
+    return;
+  }
+  mouse_pressed_handler_ = nullptr;
+  mouse_moved_handler_ = nullptr;
+}
+
 void WindowEventDispatcher::OnPostNotifiedWindowDestroying(Window* window) {
   OnWindowHidden(window, WINDOW_DESTROYED);
 }

@@ -221,7 +221,6 @@ void HTMLDialogElement::close(const String& return_value,
 
 void HTMLDialogElement::requestClose(const String& return_value,
                                      ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   if (!IsOpen()) {
     return;
   }
@@ -233,7 +232,6 @@ void HTMLDialogElement::requestClose(const String& return_value,
 }
 
 ClosedByState HTMLDialogElement::ClosedBy() const {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   auto attribute_value =
       FastGetAttribute(html_names::kClosedbyAttr).LowerASCII();
   if (attribute_value == keywords::kAny) {
@@ -251,7 +249,6 @@ ClosedByState HTMLDialogElement::ClosedBy() const {
 }
 
 String HTMLDialogElement::closedBy() const {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   switch (ClosedBy()) {
     case ClosedByState::kAny:
       return keywords::kAny;
@@ -263,7 +260,6 @@ String HTMLDialogElement::closedBy() const {
 }
 
 void HTMLDialogElement::setClosedBy(const String& new_value) {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   setAttribute(html_names::kClosedbyAttr, AtomicString(new_value));
 }
 
@@ -301,9 +297,6 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
 void HTMLDialogElement::HandleDialogLightDismiss(
     const PointerEvent& pointer_event,
     const Node& target_node) {
-  if (!RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    return;
-  }
   CHECK(pointer_event.isTrusted());
   // PointerEventManager will call this function before actually dispatching
   // the event.
@@ -494,7 +487,6 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
 };
 
 void HTMLDialogElement::SetCloseWatcherEnabledState() {
-  CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   if (!IsOpen()) {
     return;
   }
@@ -513,9 +505,7 @@ void HTMLDialogElement::CreateCloseWatcher() {
   CHECK(window->GetFrame());
   close_watcher_ = CloseWatcher::Create(*window);
   CHECK(close_watcher_);
-  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    SetCloseWatcherEnabledState();
-  }
+  SetCloseWatcherEnabledState();
   auto* event_listener =
       MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
   close_watcher_->addEventListener(event_type_names::kClose, event_listener);
@@ -570,14 +560,9 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   InertSubtreesChanged(document, old_modal_dialog);
   document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  // If HTMLDialogLightDismiss is enabled, then setting the open attribute
-  // already created the close watcher.
-  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-    DCHECK(close_watcher_);
-    SetCloseWatcherEnabledState();
-  } else {
-    CreateCloseWatcher();
-  }
+  // Setting the open attribute already created the close watcher.
+  DCHECK(close_watcher_);
+  SetCloseWatcherEnabledState();
 
   // Top layer elements like dialogs and fullscreen elements can be nested
   // inside popovers.
@@ -603,9 +588,7 @@ Node::InsertionNotificationRequest HTMLDialogElement::InsertedInto(
       !GetDocument().StatePreservingAtomicMoveInProgress()) {
     DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
     GetDocument().AllOpenDialogs().insert(this);
-    if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-      CreateCloseWatcher();
-    }
+    CreateCloseWatcher();
   }
   return kInsertionDone;
 }
@@ -740,8 +723,7 @@ void HTMLDialogElement::Trace(Visitor* visitor) const {
 void HTMLDialogElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
-  if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled() &&
-      params.name == html_names::kClosedbyAttr && IsOpen() && isConnected() &&
+  if (params.name == html_names::kClosedbyAttr && IsOpen() && isConnected() &&
       params.old_value != params.new_value) {
     SetCloseWatcherEnabledState();
   }
@@ -780,9 +762,7 @@ void HTMLDialogElement::ParseAttribute(
       // these updates will be performed when it gets inserted.
       DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
       GetDocument().AllOpenDialogs().insert(this);
-      if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
-        CreateCloseWatcher();
-      }
+      CreateCloseWatcher();
     }
   }
 

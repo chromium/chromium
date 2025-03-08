@@ -2606,6 +2606,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/401430860 external/wpt/html/rendering/widgets/field-sizing-textarea-relayout.html [ Failure ]
 [ Mac14 ] external/wpt/urlpattern/urlpattern.https.any.serviceworker.html [ Crash Failure ]
 external/wpt/webvtt/rendering/cues-with-video/processing-model/portrait.tentative.html [ Failure ]
 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/fontsize_smaller_than_container.tentative.html [ Failure ]
@@ -9039,9 +9040,9 @@ crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-intera
 crbug.com/400818436 virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Pass Timeout ]
 crbug.com/400818436 virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Pass Timeout ]
 crbug.com/398165466 [ Mac12 ] http/tests/inspector-protocol/tracing/screenshots.js [ Pass Timeout ]
-crbug.com/397311089 [ Linux Debug ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
-crbug.com/401565283 [ Linux Debug ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
-crbug.com/401565283 [ Linux Debug ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py [ Failure ]
-crbug.com/401565283 [ Linux Debug ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure ]
-crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Pass Failure ]
+crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
+crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
+crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py [ Failure ]
+crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure ]
+crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Failure Pass ]
 crbug.com/401515601 [ Linux ] external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Failure ]

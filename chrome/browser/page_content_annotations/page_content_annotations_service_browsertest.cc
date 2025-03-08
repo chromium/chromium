@@ -41,6 +41,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -1216,6 +1217,36 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
   EXPECT_TRUE(ukm_recorder.GetEntryMetric(
       entry, ukm::builders::OptimizationGuide_AnnotatedPageContent::
                  kExtractionLatencyName));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       Subframe) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("/optimization_guide/iframe.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 1);
+
+  // Navigate the iframe and wait for it to load. The extraction should be
+  // triggered immediately and it currently waits for the next frame if the
+  // lifecycle isn't clean. So wait for a couple of frames and ensure no
+  // extraction was triggered.
+  content::TestNavigationObserver nav_obsever(web_contents);
+  ASSERT_TRUE(
+      ExecJs(web_contents->GetPrimaryMainFrame(),
+             "document.getElementsByTagName('iframe')[0].src='hello.html'"));
+  nav_obsever.Wait();
+
+  for (int i = 0; i < 2; i++) {
+    base::test::TestFuture<void> done;
+    NotifyCopyableViewInWebContents(web_contents, done.GetCallback());
+    ASSERT_TRUE(done.Wait());
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.AIPageContent.TotalLatency", 1);
 }
 
 class PageContentAnnotationsServiceContentExtractionPdfTest

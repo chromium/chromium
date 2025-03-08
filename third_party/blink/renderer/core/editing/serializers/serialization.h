@@ -62,12 +62,6 @@ struct ShadowRootInclusion final {
     // Include any shadow root (open or closed) marked `serializable`. Also
     // include any shadow root in the include_shadow_roots list.
     kIncludeAnySerializableShadowRoots,
-    // TODO(crbug.com/1519972): This value is only used for the deprecated
-    // version of getInnerHTML() and can be removed once that is removed.
-    // This includes any *open* shadow root, regardless of whether it is
-    // serializable. Also include any shadow root in the
-    // include_shadow_roots list.
-    kIncludeAllOpenShadowRoots,
   };
 
   ShadowRootInclusion() = default;

@@ -9753,6 +9753,13 @@
        {}
       ]
      ],
+     "effectively-infinite-timing-parameters.html": [
+      "2b02147f04e40a81b1d110eb927a1344ca7748d2",
+      [
+       null,
+       {}
+      ]
+     ],
      "get-computed-timing-crash.html": [
       "b666eea91f67d1f26cbc88f1f26d4008ceb76af6",
       [
@@ -14631,168 +14638,245 @@
        {}
       ]
      ],
-     "cursor-001.html": [
+     "cgitor-image-png-016-manual.html": [
+      "3d7ad76b25957528bf6ef0f8b7e331674bcfe599",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-017-manual.html": [
+      "03b6d6f4144b5e208cfa503228054d8db6594d1a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-019-manual.html": [
+      "86a33f7e1d135a9f8919cf862958002b26e3efa9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-023-manual.html": [
+      "397244e45e06b27432b07aed8119f27fede2696e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-024-manual.html": [
+      "986cd8c455bf5e8d1ba64d7f67a478e37b87d987",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-025-manual.html": [
+      "b584da62e1c7f3b77df63cf2fece7a3933c202d5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-027-manual.html": [
+      "febbad5316557db00c57ac68cd6773a42975517c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-028-manual.html": [
+      "e572419dd3f00fb08ac7f1aac71725e0d211002c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-036-manual.html": [
+      "4dabbe3c33fef457ea25367d7d0f3c06e73f787b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-040-manual.html": [
+      "49473b31057bbe037c9e381a1cab990ff88024a6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cgrsor-image-png-042-manual.html": [
+      "e88ed4e23cdc48e12d3edf90a924ebcaa37789dc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-001-manual.html": [
       "6f46a6bb2a8aae66a5d8f60f75ab90e206cb013c",
       [
        null,
        {}
       ]
      ],
-     "cursor-002.html": [
+     "cursor-002-manual.html": [
       "029a5de9c24ac531ec8b03bb54edd41fcc9e2d8b",
       [
        null,
        {}
       ]
      ],
-     "cursor-003.html": [
+     "cursor-003-manual.html": [
       "f7dbbb94b623a2655a9bd2250254fb3ef50573f3",
       [
        null,
        {}
       ]
      ],
-     "cursor-004.html": [
+     "cursor-004-manual.html": [
       "44c175c2e8b2ad238069069126b6a3ce08c94e57",
       [
        null,
        {}
       ]
      ],
-     "cursor-005.html": [
+     "cursor-005-manual.html": [
       "fc0d9e74c29f729c0ffe56ef569d4ef9c0b9d6f6",
       [
        null,
        {}
       ]
      ],
-     "cursor-006.html": [
+     "cursor-006-manual.html": [
       "acfba8d330ee3c41ca64b7768524cc8d73f80a62",
       [
        null,
        {}
       ]
      ],
-     "cursor-007.html": [
+     "cursor-007-manual.html": [
       "c93d7655b74513dd887f24e7095ca24499a3185d",
       [
        null,
        {}
       ]
      ],
-     "cursor-008.html": [
+     "cursor-008-manual.html": [
       "290f10809cb68144ba77311ef7832fe7d14ae882",
       [
        null,
        {}
       ]
      ],
-     "cursor-009.html": [
+     "cursor-009-manual.html": [
       "0c2baf8f23ae930c24fec1d16651672589e0dd79",
       [
        null,
        {}
       ]
      ],
-     "cursor-010.html": [
+     "cursor-010-manual.html": [
       "0449c8999d6ce83504ec0a52ef2ca22150ddc28e",
       [
        null,
        {}
       ]
      ],
-     "cursor-011.html": [
+     "cursor-011-manual.html": [
       "bc0e73582a40b4a4159cd14a90f7798b3e4742e3",
       [
        null,
        {}
       ]
      ],
-     "cursor-012.html": [
+     "cursor-012-manual.html": [
       "015863017c3ed8b55de4c14382f4d36210a0ab0b",
       [
        null,
        {}
       ]
      ],
-     "cursor-013.html": [
+     "cursor-013-manual.html": [
       "72947f000b3e80ae7559718d1550b508e3676a65",
       [
        null,
        {}
       ]
      ],
-     "cursor-014.html": [
+     "cursor-014-manual.html": [
       "a7fa465df82d65981702c4ef6110207f3008d3bf",
       [
        null,
        {}
       ]
      ],
-     "cursor-015.html": [
+     "cursor-015-manual.html": [
       "88e0a5cbfc21d557ec4c8b1683c4da99e40b275b",
       [
        null,
        {}
       ]
      ],
-     "cursor-016.html": [
+     "cursor-016-manual.html": [
       "e4aa0465ddc0182db2ab22d51b6c4788ab6f5f39",
       [
        null,
        {}
       ]
      ],
-     "cursor-017.html": [
+     "cursor-017-manual.html": [
       "99528fede3afb210d1bd68cf1c59059744140075",
       [
        null,
        {}
       ]
      ],
-     "cursor-018.html": [
+     "cursor-018-manual.html": [
       "daaa7f69e85f506d6b526c42e97d004cfb3115da",
       [
        null,
        {}
       ]
      ],
-     "cursor-019.html": [
+     "cursor-019-manual.html": [
       "5be9de10b8978d6fc42cd6bcc9f9a433528c9ba9",
       [
        null,
        {}
       ]
      ],
-     "cursor-020.html": [
+     "cursor-020-manual.html": [
       "f079d0a56c486c818cb91a2f8b0d88d02ab26bd9",
       [
        null,
        {}
       ]
      ],
-     "cursor-auto-001.html": [
-      "2b2ee60cbcba97e4ef9f4a433d80245385318cce",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-auto-002.html": [
-      "dd0d5a1c05193f8b153d23ef5748c1be7e446c23",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-auto-003.html": [
+     "cursor-autg-003-manual.html": [
       "a3782dbef5a24d2cdbfa608829e428bfb4080862",
       [
        null,
        {}
       ]
      ],
-     "cursor-auto-004.html": [
+     "cursor-auto-001-manual.html": [
+      "2b2ee60cbcba97e4ef9f4a433d80245385318cce",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-auto-002-manual.html": [
+      "dd0d5a1c05193f8b153d23ef5748c1be7e446c23",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-auto-004-manual.html": [
       "820a93303ceb7671ec821d679cbc926d8a4592f2",
       [
        null,
@@ -14806,7 +14890,7 @@
        {}
       ]
      ],
-     "cursor-auto-006.html": [
+     "cursor-auto-006-manual.html": [
       "7385beec8e64019e243073f3ce1ec5996a054ee9",
       [
        null,
@@ -14848,21 +14932,28 @@
        {}
       ]
      ],
-     "cursor-box-007.html": [
+     "cursor-box-007-manual.html": [
       "5fe0013b60c1aa09411f8d80bac1c10f10b30430",
       [
        null,
        {}
       ]
      ],
-     "cursor-content-area.html": [
+     "cursor-content-area-manual.html": [
       "f0f0d4dc673b4780f6b956c5bbf3b809c2820bfa",
       [
        null,
        {}
       ]
      ],
-     "cursor-hover-001.html": [
+     "cursor-gover-003-manual.html": [
+      "4611be5279a36933ca503b36d3b969e8be41dc8f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-hover-001-manual.html": [
       "8e6bdc96c10e25e46d74815350c9ec9fe0ad80bd",
       [
        null,
@@ -14871,13 +14962,6 @@
      ],
      "cursor-hover-002.html": [
       "4926d0cf50a9caeb07dd4de3b91e37901feb575d",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-hover-003.html": [
-      "4611be5279a36933ca503b36d3b969e8be41dc8f",
       [
        null,
        {}
@@ -14897,77 +14981,70 @@
        {}
       ]
      ],
-     "cursor-image-003.html": [
+     "cursor-image-003-manual.html": [
       "4391fe3eabeadb0e267b22c29960364d9dea3999",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-004.html": [
+     "cursor-image-004-manual.html": [
       "3242e3cc6aa3e0fa0f049a277e627522f57a75f8",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-005-nfs.html": [
-      "e7396d212d5e15b2987a1d9272edc7c9198e5033",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-005.html": [
+     "cursor-image-005-manual.html": [
       "32ac968342ddd8757e7cecc5b2803d793ffdd56c",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-006.html": [
+     "cursor-image-005-nfs-manual.html": [
+      "e7396d212d5e15b2987a1d9272edc7c9198e5033",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-006-manual.html": [
       "c123a65f2a0d319e1ab170303bfef9dee76fc948",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-007.html": [
-      "6433142e3cedeb896e429b8a109689db24f29117",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-008.html": [
+     "cursor-image-008-manual.html": [
       "e5bb5c97bd4a81394c023894681f567cb7cb701b",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-009.html": [
+     "cursor-image-009-manual.html": [
       "2336bd0744ca3f60addd1fed80da2f68c10cad74",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-010.html": [
+     "cursor-image-010-manual.html": [
       "3627db180982e6f4e492ac8e0395d033ccb7c142",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-011.html": [
+     "cursor-image-011-manual.html": [
       "85defa67580a0a4e8515a0eae13d12d8114f1970",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-012.html": [
+     "cursor-image-012-manual.html": [
       "122b62cf86179bef78a0b2691d32c0cd50b330ae",
       [
        null,
@@ -14981,56 +15058,56 @@
        {}
       ]
      ],
-     "cursor-image-014.html": [
+     "cursor-image-014-manual.html": [
       "58b5311f60a03f91dd88b1f77c46ee2145b1bb8d",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-015.html": [
+     "cursor-image-015-manual.html": [
       "108bb2a137bc296d3139ac9742c50fe28b16cac0",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-016.html": [
+     "cursor-image-016-manual.html": [
       "a4ab6630f0cbcb7f1097173d8e9eb076b3624df6",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-017.html": [
+     "cursor-image-017-manual.html": [
       "f60aec02d675d5d73d65289fcb8a7b59e17c1502",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-018.html": [
+     "cursor-image-018-manual.html": [
       "31caf408e0d59e2b0f6a49a75f873ef46232b32b",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-001.html": [
+     "cursor-image-png-001-manual.html": [
       "0a99ad2c3b0c6397b254be53459b672755da7d4a",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-002.html": [
+     "cursor-image-png-002-manual.html": [
       "bb48743f9c07080671ae3a73a609726df3c6f155",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-003.html": [
+     "cursor-image-png-003-manual.html": [
       "fbe96fc06354b799318c603d166d1119e6db2427",
       [
        null,
@@ -15044,92 +15121,71 @@
        {}
       ]
      ],
-     "cursor-image-png-005.html": [
+     "cursor-image-png-005-manual.html": [
       "26842871c2c1032e1abe0105fef12d4afc768bd0",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-006.html": [
+     "cursor-image-png-006-manual.html": [
       "bc6453d6c3347beb6d596e34c98fd4eedb983805",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-007.html": [
+     "cursor-image-png-007-manual.html": [
       "93d0ba62335c87674fb55d5f6ca2e0a761686fec",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-008.html": [
+     "cursor-image-png-008-manual.html": [
       "d9c296281885bdd20ce5e8dbb4a2299575a5b36b",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-009.html": [
+     "cursor-image-png-009-manual.html": [
       "b942a7a4b53dce211e5f2443fcb0d8db4e31b3dc",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-010.html": [
+     "cursor-image-png-010-manual.html": [
       "3a65c1d5f01f00657af350a8a9cb5f1f511e6833",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-011.html": [
+     "cursor-image-png-011-manual.html": [
       "9ad4b0101a46db37525f093fefc9177d2701ca69",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-012.html": [
+     "cursor-image-png-012-manual.html": [
       "437928699fcb53c9b9db488f3791878c2d3fc9ab",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-013.html": [
+     "cursor-image-png-013-manual.html": [
       "75651f133e3c74ffa2e482260faa760474271495",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-014.html": [
+     "cursor-image-png-014-manual.html": [
       "00c1dc7edcd717f6e8e6a6e4683bdc60593218be",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-015.html": [
-      "6109234178a3cc117c03d0d78d3d6636d4c3f2cf",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-016.html": [
-      "3d7ad76b25957528bf6ef0f8b7e331674bcfe599",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-017.html": [
-      "03b6d6f4144b5e208cfa503228054d8db6594d1a",
       [
        null,
        {}
@@ -15142,21 +15198,14 @@
        {}
       ]
      ],
-     "cursor-image-png-019.html": [
-      "86a33f7e1d135a9f8919cf862958002b26e3efa9",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-020.html": [
+     "cursor-image-png-020-manual.html": [
       "3c51ed96e2cc99cfcde1fd5ae4b98686f0dabfc4",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-021.html": [
+     "cursor-image-png-021-manual.html": [
       "ea66fd7da3c2a0e88eed9fb33500985129f5d541",
       [
        null,
@@ -15170,56 +15219,21 @@
        {}
       ]
      ],
-     "cursor-image-png-023.html": [
-      "397244e45e06b27432b07aed8119f27fede2696e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-024.html": [
-      "986cd8c455bf5e8d1ba64d7f67a478e37b87d987",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-025.html": [
-      "b584da62e1c7f3b77df63cf2fece7a3933c202d5",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-026.html": [
+     "cursor-image-png-026-manual.html": [
       "e9b68de4d88d653482ebffb6efdd0c3a53e3c8c8",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-027.html": [
-      "febbad5316557db00c57ac68cd6773a42975517c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-028.html": [
-      "e572419dd3f00fb08ac7f1aac71725e0d211002c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-029.html": [
+     "cursor-image-png-029-manual.html": [
       "9da6d4a537441e46eaef5afa48d4fc2764cc896d",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-030.html": [
+     "cursor-image-png-030-manual.html": [
       "b35871390dca39e496641ac646fe022b6466854c",
       [
        null,
@@ -15247,84 +15261,77 @@
        {}
       ]
      ],
-     "cursor-image-png-034.html": [
+     "cursor-image-png-034-manual.html": [
       "9331a90d91f307d600c16d7b0cda7fa910d41dd3",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-035.html": [
+     "cursor-image-png-035-manual.html": [
       "1bcffe82b5fc84abcdea7039160f93c6168af751",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-036.html": [
-      "4dabbe3c33fef457ea25367d7d0f3c06e73f787b",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-037.html": [
+     "cursor-image-png-037-manual.html": [
       "dd744992019b60494878d9327e1e4ff9b4b28fb9",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-038.html": [
+     "cursor-image-png-038-manual.html": [
       "6c7ac7fd07c1d50e12fefc221981075f0407483c",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-039.html": [
+     "cursor-image-png-039-manual.html": [
       "fd52b6b0136f6a85ebcc7dec3552734cf0234ded",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-040.html": [
-      "49473b31057bbe037c9e381a1cab990ff88024a6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-041.html": [
+     "cursor-image-png-041-manual.html": [
       "d817844d0610d6df1b0c61d29d6b3a7afb83bd89",
       [
        null,
        {}
       ]
      ],
-     "cursor-image-png-042.html": [
-      "e88ed4e23cdc48e12d3edf90a924ebcaa37789dc",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cursor-image-png-043.html": [
+     "cursor-image-png-043-manual.html": [
       "0ab16a1fc6d956a39c77738f96b5bdd8cf16d856",
       [
        null,
        {}
       ]
      ],
-     "cursor-outline-area.html": [
+     "cursor-imgge-png-015-manual.html": [
+      "6109234178a3cc117c03d0d78d3d6636d4c3f2cf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-imgie-007-manual.html": [
+      "6433142e3cedeb896e429b8a109689db24f29117",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-outline-area-manual.html": [
       "d53ecdc4014d7808b9d5b6442311b5e4faf1a2c6",
       [
        null,
        {}
       ]
      ],
-     "cursor-padding-area.html": [
+     "cursor-padding-area-manual.html": [
       "aaa993024c4b211db0f165903cf73cea776b77eb",
       [
        null,
@@ -15352,35 +15359,35 @@
        {}
       ]
      ],
-     "cursor-text-001.html": [
+     "cursor-text-001-manual.html": [
       "d894c65b9da48e8bfb7e24d72bbbda7b602d8de0",
       [
        null,
        {}
       ]
      ],
-     "cursor-text-002.html": [
+     "cursor-text-002-manual.html": [
       "3aec77f4d9b2ded0a689b227192dde03d146f7cc",
       [
        null,
        {}
       ]
      ],
-     "cursor-x-y-001.html": [
+     "cursor-x-y-001-manual.html": [
       "16b147cc2d63294b59b95fbff9cc141a753d97c5",
       [
        null,
        {}
       ]
      ],
-     "cursor-x-y-002.html": [
+     "cursor-x-y-002-manual.html": [
       "6aae01eaed3b0aba7e62a11e9b706b46be073d34",
       [
        null,
        {}
       ]
      ],
-     "cursor-x-y-003.html": [
+     "cursor-x-y-003-manual.html": [
       "cb3b7ae9df1998eb125182d21e6d27d79f408e81",
       [
        null,
@@ -251592,6 +251599,19 @@
          ]
         }
        ]
+      ],
+      "rounded-border-clipper.html": [
+       "239bcdd791db41383dd66765269590d84627a0a3",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/rounded-border-clipper-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "nested-elements-in-overflow.html": [
@@ -271789,6 +271809,32 @@
        {}
       ]
      ],
+     "empty-element-with-filter-002.html": [
+      "50c3073d1fc2f953b93ba0c3e7a094785619351b",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "empty-element-with-filter-003.html": [
+      "b9e2cb9557298c5ad4ae9bd0479ea8245985fc8e",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "empty-element-with-filter.html": [
       "3e8fc7e164cde54a8ff81a241909c2f729f32afb",
       [
@@ -272429,7 +272475,7 @@
       ]
      ],
      "filter-subregion-01.html": [
-      "c2a0c18f6c4662c3847f4b766f166583fc52ce33",
+      "e8582b17e3745667fb41c778e0dd468efee91b5a",
       [
        null,
        [
@@ -272438,7 +272484,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            1000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "filter-svg-background-image-blur.html": [
@@ -281758,7 +281820,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.drawImage.html": [
-        "3b55b2e923fb713989a7f8a851bcc2b35c07159e",
+        "41691ff15dcdfbcf850b01a3f1f9a62ac05a7efa",
         [
          null,
          [
@@ -281774,11 +281836,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281787,7 +281849,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.html": [
-        "7addb60d333672f55affdc369c4326918a3a4485",
+        "41c77addafb7c67533dc30640726372bac127deb",
         [
          null,
          [
@@ -281803,11 +281865,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281816,7 +281878,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.pattern.html": [
-        "415b0b78b7eee8cd846b642e3ae08cc84345faaf",
+        "f298e25fd58515354dfd5d8deeea1d2990fe9fe0",
         [
          null,
          [
@@ -281832,11 +281894,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281845,7 +281907,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.drawImage.html": [
-        "e9784a3dc700e07268142b71e6e63723c72018fd",
+        "1d4cad6d1f77d835807f41be42513a39b9be4f8a",
         [
          null,
          [
@@ -281861,11 +281923,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281874,7 +281936,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.fillRect.html": [
-        "784a068b7174476d5ce9cce77cb43b283e086249",
+        "f786fb5ecf57db8716a7dca07e9ac8a2ded603b6",
         [
          null,
          [
@@ -281890,11 +281952,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281903,7 +281965,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.pattern.html": [
-        "e13bf471b94c47a64f664a4d886ad06f79c6a0e4",
+        "c98180b07004daaedf31c9353c42233ec3b4aae4",
         [
          null,
          [
@@ -281919,11 +281981,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281932,7 +281994,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.html": [
-        "42a331f7c9bac63123479d027db9c5c7dc2ddc1e",
+        "a7e009c486b5e8e8e2b1a48fed602f51684adce9",
         [
          null,
          [
@@ -281948,11 +282010,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281961,7 +282023,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.html": [
-        "8a01e7abb0cdd9e4dd8e2e03ede3dd955339f3e9",
+        "2c44659aebb14f59c287353ca57c6ca35d95ce43",
         [
          null,
          [
@@ -281977,11 +282039,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -281990,7 +282052,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.html": [
-        "6c8d0e69cac01bf49a9f3b15942c493426aee37a",
+        "a6482276e8870606846a6b5032534d6d4dfb0f6a",
         [
          null,
          [
@@ -282006,11 +282068,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -282019,7 +282081,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.html": [
-        "625a613253f267d96b7dc2e9516718aa0f79b0e5",
+        "6717b26813fe6e0dd091ecf4e436c35980927dc4",
         [
          null,
          [
@@ -282035,11 +282097,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -282048,7 +282110,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.html": [
-        "d01e7bc0ed67f63e02e5ae54c54f5bf9e9516495",
+        "9f2d77c6a2ace70c46d2fa43d264e60791a0c8b8",
         [
          null,
          [
@@ -282064,11 +282126,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -282077,7 +282139,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.pattern.html": [
-        "7512b21b06913daac65846eea678bf880d8cdfd6",
+        "9be2a0ae783a3910ae7347683e7232ded1be2cc7",
         [
          null,
          [
@@ -282093,11 +282155,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -284855,7 +284917,7 @@
      "offscreen": {
       "compositing": {
        "2d.composite.grid.filter.no_shadow.drawImage.html": [
-        "33cdebbaf9a1e81d131c160f9ec9a0faaaec836c",
+        "7e67f7730c830ae4b0c70ac20a332bdc21032f55",
         [
          null,
          [
@@ -284871,11 +284933,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -284884,7 +284946,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.drawImage.w.html": [
-        "1dd45863376dfa6cbf402878a71783d9f0ef394c",
+        "0e3999ea68cd379b200493a3540e5dea02133856",
         [
          null,
          [
@@ -284900,11 +284962,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -284913,7 +284975,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.html": [
-        "b0e8021079ed0b548c686b5e30a924eda3f702c4",
+        "832caa29c0dd15381e5b3935b74e2f09950be44d",
         [
          null,
          [
@@ -284929,11 +284991,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -284942,7 +285004,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.w.html": [
-        "ad95af2f11abfc0a9fb7c0237a57e2542927b65d",
+        "e38ae35adac817c900049535172b425bf428940b",
         [
          null,
          [
@@ -284958,11 +285020,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -284971,7 +285033,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.pattern.html": [
-        "cb5578b33303b95b29bfe5c2e1fdd75d289a6f92",
+        "08b4f2860341cfafd65fc9b303fed70f584bdf46",
         [
          null,
          [
@@ -284987,11 +285049,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285000,7 +285062,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.pattern.w.html": [
-        "cba6b24442c8cfc930f71c418a3b63a93c255f4d",
+        "14c329f0e10456566ed352d087a8757d30b34708",
         [
          null,
          [
@@ -285016,11 +285078,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285029,7 +285091,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.drawImage.html": [
-        "b7366604f1eabcc4843fd416766c6386d9b70b62",
+        "b6c2185b83128fc187941afda40f50325c0158b8",
         [
          null,
          [
@@ -285045,11 +285107,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285058,7 +285120,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.drawImage.w.html": [
-        "1ab054dc4926284ef16bf7e4552987095db95ad5",
+        "01eb5418ab14596957ead48feafe2de4efc06846",
         [
          null,
          [
@@ -285074,11 +285136,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285087,7 +285149,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.fillRect.html": [
-        "b3d10c8fdd3b730d6fb2e03cb765ef1acee3ef6a",
+        "579f4e87a262a9f7bd272702707dbd23536e5a43",
         [
          null,
          [
@@ -285103,11 +285165,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285116,7 +285178,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.fillRect.w.html": [
-        "cad533fb31fd55b01d7ff68588ae82253e4e5223",
+        "ae4f71f49ba72f49695f3077a17e2a0d7941392d",
         [
          null,
          [
@@ -285132,11 +285194,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285145,7 +285207,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.pattern.html": [
-        "ce9ec1859db061f9bb8414ed12feb1571cd41584",
+        "aee85b65087ed54782dba2076e10bfdbe5791a65",
         [
          null,
          [
@@ -285161,11 +285223,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285174,7 +285236,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.pattern.w.html": [
-        "6ea16577b035a87e1902fff69c67463511522912",
+        "e14f307d12adc2242a9d5305a7abd7e4ac6ff353",
         [
          null,
          [
@@ -285190,11 +285252,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285203,7 +285265,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.html": [
-        "3f3e9aa20f9ae9b7d4bb0bfea46b39cae620ecd5",
+        "b435bbb08525cf714d9133291545fe3e3fb90c86",
         [
          null,
          [
@@ -285219,11 +285281,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285232,7 +285294,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.w.html": [
-        "a71fa1898d816f8527dec97d73ea99b8c290484e",
+        "0234582b970d2f236dfd5b07b50e7256c2ddba6c",
         [
          null,
          [
@@ -285248,11 +285310,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285261,7 +285323,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.html": [
-        "5d4cd718736b6078b69709d0381941bfda8b7170",
+        "4ca2adafd7d513b32369a26678cd28d836addf08",
         [
          null,
          [
@@ -285277,11 +285339,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285290,7 +285352,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.w.html": [
-        "b65d0781feac0309806344f649983c638910ba82",
+        "484f5592d62e74765f6af3aeee052f01c3f3cde8",
         [
          null,
          [
@@ -285306,11 +285368,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285319,7 +285381,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.html": [
-        "9fdc10468049daba8853064dc600dccc99b6fafd",
+        "004ba2bae6459753f5f3f1b06a0dcb5a5513900a",
         [
          null,
          [
@@ -285335,11 +285397,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285348,7 +285410,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.w.html": [
-        "c3b242623f932e263647ac39d41c75adf2d0cd0c",
+        "bbce39995303da04a0326ea9e4ff716c42d8e72b",
         [
          null,
          [
@@ -285364,11 +285426,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285377,7 +285439,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.html": [
-        "edbcce1044996f48ec8e9ab2579e59bd200208d1",
+        "51cd1c6227cf16a47aa388e182d918ec34f3294d",
         [
          null,
          [
@@ -285393,11 +285455,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285406,7 +285468,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.w.html": [
-        "65563217ebf8c553d93f47d9f0b976dd33267884",
+        "5c76fd5d725591500d96caaf87d3f3020b9941a8",
         [
          null,
          [
@@ -285422,11 +285484,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285435,7 +285497,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.html": [
-        "faac7dcaf6444a2d17a8186d81c15fd3f9d5a745",
+        "8fbf3a9bdee26565dfcfeb86475910e3a3cc5183",
         [
          null,
          [
@@ -285451,11 +285513,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285464,7 +285526,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.w.html": [
-        "68170021c0b37d9fe87b250c13a44ab802c69570",
+        "8c80e24aeb10783ba7563a92049b663d240ed081",
         [
          null,
          [
@@ -285480,11 +285542,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285493,7 +285555,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.pattern.html": [
-        "f92d1b8ac7a7a51455cf7877111a3d55dff7ad07",
+        "1cad90603edbe7305405fd0905cede24047f9877",
         [
          null,
          [
@@ -285509,11 +285571,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -285522,7 +285584,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.pattern.w.html": [
-        "898b5ff601e97e0ce15d31ec3b5f0f4b86f64fe8",
+        "70d12bc4c8ba0381dab0ba2b7a3392126cb2423d",
         [
          null,
          [
@@ -285538,11 +285600,11 @@
             [
              [
               0,
-              3
+              4
              ],
              [
               0,
-              25392
+              33000
              ]
             ]
            ]
@@ -293817,6 +293879,61 @@
         ]
        ]
       },
+      "field-sizing-input-number-relayout.html": [
+       "06d0d576a8cb1a60f41f0126d1fe1d7288f047e1",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/field-sizing-input-number-relayout-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "field-sizing-input-text-relayout.html": [
+       "64f8e52ab363e01a09b6f32ad6110800d88baacf",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/field-sizing-input-text-relayout-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "field-sizing-textarea-relayout.html": [
+       "1e18bd2070377923ec1e29d012ddcf94ad7aa6a2",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/field-sizing-textarea-relayout-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             153,
+             153
+            ],
+            [
+             2,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "input-checkbox-disabled-checked.html": [
        "f72fdf62fdcc148a0799b06bde02ccaf4186c8fb",
        [
@@ -314078,31 +314195,31 @@
       []
      ],
      "okp_importKey.js": [
-      "0e6a016fe2096015686e5616215f9bb81915f50a",
+      "8627f85e466199453efb59109e2ba1d7eb025ff8",
       []
      ],
      "okp_importKey_Ed25519.https.any-expected.txt": [
-      "8ae8f9f3668d066c34ff358ba90795c05cd900a2",
+      "be7b16f639ac2119e39ec70638dc3eb889fae6e2",
       []
      ],
      "okp_importKey_Ed25519.https.any.worker-expected.txt": [
-      "8ae8f9f3668d066c34ff358ba90795c05cd900a2",
+      "be7b16f639ac2119e39ec70638dc3eb889fae6e2",
       []
      ],
      "okp_importKey_Ed448.https.any-expected.txt": [
-      "6ea4352b5a729eb911feccafef821e2d7b1f3ffe",
+      "5ad60d082bfab7b9881fae59280d42cb19cd7154",
       []
      ],
      "okp_importKey_Ed448.https.any.worker-expected.txt": [
-      "6ea4352b5a729eb911feccafef821e2d7b1f3ffe",
+      "5ad60d082bfab7b9881fae59280d42cb19cd7154",
       []
      ],
      "okp_importKey_X448.https.any-expected.txt": [
-      "9a041680d718e55f577804b17e8565541a1419f6",
+      "e6052c5ef1b5501fda60cb3bd128d10df4f65c5f",
       []
      ],
      "okp_importKey_X448.https.any.worker-expected.txt": [
-      "9a041680d718e55f577804b17e8565541a1419f6",
+      "e6052c5ef1b5501fda60cb3bd128d10df4f65c5f",
       []
      ],
      "okp_importKey_failures_Ed448.https.any-expected.txt": [
@@ -319230,7 +319347,7 @@
       []
      ],
      "testharness-helper.js": [
-      "5c36e286da2b0ad68da22f7c0e9f68e29ea7857b",
+      "70d5c161f5592c294a82afd2efaf2b9fcdbd5117",
       []
      ],
      "var-a.js": [
@@ -367691,7 +367808,11 @@
         "f71cf27b2504163ccb47e5253dcbe3b26deb1226",
         []
        ]
-      }
+      },
+      "rounded-border-clipper-ref.html": [
+       "3a52919e2535a6ae3564d4115c2a1bdd55763530",
+       []
+      ]
      },
      "nested-elements-in-overflow-ref.html": [
       "a05172fa40eb5171a773bcfb25709bddc2e4939b",
@@ -374173,7 +374294,7 @@
      []
     ],
     "session_manager.py": [
-     "149ee6c0d61acdfe7b723e45f93e4af694911e93",
+     "98eb120ed7cc054acc1d3b999689299da5d6fdc0",
      []
     ],
     "setup_sharded_server_state.py": [
@@ -374185,7 +374306,7 @@
      []
     ],
     "verify_authenticated.py": [
-     "a4207af3c7a4fb982ecdaf6af5058b4521a2b479",
+     "fa81f0f0d2091581aa0a4a9dd1093c0cf3b9814e",
      []
     ]
    },
@@ -375464,10 +375585,6 @@
     ],
     "XMLSerializer-serializeToString-expected.txt": [
      "875cc37ded295a0a66c746936544fc1eab0a49c2",
-     []
-    ],
-    "idlharness.window-expected.txt": [
-     "31efe1ae4180158a5df60a37a7c90b5d2ffc628e",
      []
     ],
     "innerhtml-01-expected.txt": [
@@ -389612,7 +389729,7 @@
         []
        ],
        "compositing.yaml": [
-        "9b57a02ca970c07b626d86cca68295257957c1ba",
+        "e8e2fe9101d11c9baeed9a407b2e67bf09617faa",
         []
        ],
        "conformance_requirements.yaml": [
@@ -396098,6 +396215,18 @@
         []
        ]
       },
+      "field-sizing-input-number-relayout-ref.html": [
+       "aaec5e84640bcce30269bf870746434692a8275d",
+       []
+      ],
+      "field-sizing-input-text-relayout-ref.html": [
+       "19d977fee47dcc7fc40abd870680b987ea2b154c",
+       []
+      ],
+      "field-sizing-textarea-relayout-ref.html": [
+       "f7167ed4c312684688abf7e8efdfa27934a0bc08",
+       []
+      ],
       "input-checkbox-disabled-checked-notref.html": [
        "8caced027a54676335db3b2199e85cbafba2abee",
        []
@@ -402874,6 +403003,10 @@
      "c68126cb39f2190499b082fafc140454cb647172",
      []
     ],
+    "roles-contextual-expected.txt": [
+     "352325b24d232a655d543200e018e032981d6f2f",
+     []
+    ],
     "roles-dynamic-switch.tentative.window-expected.txt": [
      "309a1d56747745872f0b54fc394ee979dc5733a6",
      []
@@ -405914,7 +406047,7 @@
     ]
    },
    "lint.ignore": [
-    "999ea9422d40a98bac71ff4cf97ddfdd863617f1",
+    "1d552f3468a236414c6c34bca22cb88ef11f09e8",
     []
    ],
    "loading": {
@@ -410257,7 +410390,7 @@
      []
     ],
     "experimental-features": {
-     "focus-without-user-activation-enabled-tentative.sub-expected.txt": [
+     "focus-without-user-activation-enabled.sub-expected.txt": [
       "8793caf0b7e30ffa59ee258f7b65147a6e38eb19",
       []
      ],
@@ -415861,22 +415994,6 @@
       "eb86869d4ac307789e054a0e529326a7f9ceaf00",
       []
      ],
-     "cache-storage.https.any-expected.txt": [
-      "f7cc1c31504a248c4974f96a8fc8eb35ff200042",
-      []
-     ],
-     "cache-storage.https.any.serviceworker-expected.txt": [
-      "f7cc1c31504a248c4974f96a8fc8eb35ff200042",
-      []
-     ],
-     "cache-storage.https.any.sharedworker-expected.txt": [
-      "f7cc1c31504a248c4974f96a8fc8eb35ff200042",
-      []
-     ],
-     "cache-storage.https.any.worker-expected.txt": [
-      "f7cc1c31504a248c4974f96a8fc8eb35ff200042",
-      []
-     ],
      "resources": {
       "blank.html": [
        "a3c3a4689a62b45b1e429f6b7a94690e556a1259",
@@ -420393,7 +420510,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "46057a7e9d829e6302bec1eb08e8131fbfc1791f",
+     "ddd140bc40e04997ad5bcc9f4d145d79a7717097",
      []
     ],
     "interact": {
@@ -425161,7 +425278,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "753ddb573ec046a1267e3be37bccf4e892022f3a",
+     "e946ba63a67cc7b79c705a96c489019a3c8af0f1",
      []
     ],
     "js": {
@@ -486612,7 +486729,7 @@
        ]
       ],
       "animation-range-end-invalid.html": [
-       "459cdfd0cd26a9c69b33d16e0b07957bed827676",
+       "2abf4f16cfad34f940eb6735b0217dd2e9726570",
        [
         null,
         {}
@@ -486626,7 +486743,7 @@
        ]
       ],
       "animation-range-shorthand.html": [
-       "25f5c140d8c9afd2b98ed73bf97621c3e3a27be1",
+       "c9ac154c4e117136fa17338cdad54c205ae90662",
        [
         null,
         {}
@@ -486640,7 +486757,7 @@
        ]
       ],
       "animation-range-start-invalid.html": [
-       "32357d8bd4c3b2e6e4e89cec57ce4b27734e4c46",
+       "874bde44338d2e6e868f87bcf894be93e04b9e07",
        [
         null,
         {}
@@ -492373,7 +492490,7 @@
      "reading-flow": {
       "tentative": {
        "reading-flow-computed.html": [
-        "65ef90f5a50b792b1da4eef61352109b17fd4968",
+        "43972c5825f66e58cf68dd8a14fe48f178405436",
         [
          null,
          {}
@@ -492387,7 +492504,7 @@
         ]
        ],
        "reading-flow-valid.html": [
-        "3d650c53063db6baa455d6a42d7604fdd63c6830",
+        "f006ca07949aa5461df838fe124d57cbc280a49d",
         [
          null,
          {}
@@ -528793,6 +528910,13 @@
       {}
      ]
     ],
+    "refresh-replaces-config.https.html": [
+     "1ac8096b5de1d4784cb43711357ade8ff97f5889",
+     [
+      null,
+      {}
+     ]
+    ],
     "refresh-with-continue-false.https.html": [
      "9ebec2209775511a3b34c47aa1c1760a6d0e2d5c",
      [
@@ -534403,24 +534527,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "idlharness.window.js": [
-     "f5f32b3bb58bfa6e77e48fe9444c8d76d6a4b12a",
-     [
-      "domparsing/idlharness.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ]
-       ]
-      }
      ]
     ],
     "innerhtml-01.xhtml": [
@@ -576688,7 +576794,7 @@
       ]
      ],
      "generate-bid-browser-signals.https.window.js": [
-      "e0cbe96fd94fc6392931bfa1112919eb13ee3a9a",
+      "00c4bfdcc315c02211792888b0e377302df2e36d",
       [
        "fledge/tentative/generate-bid-browser-signals.https.window.html?1-4",
        {
@@ -586472,7 +586578,7 @@
       ]
      ],
      "utf8-helpers.https.window.js": [
-      "7f5391f32c32aad62b5220614a73fd9c63777f5b",
+      "4a712bf6269ea1fc2b9e7eb832a2b3cdcf2a9e07",
       [
        "fledge/tentative/utf8-helpers.https.window.html?1-5",
        {
@@ -626959,7 +627065,7 @@
       ]
      ],
      "idlharness.https.html": [
-      "d782118dbaf221b4b339804facc12b859eac19a4",
+      "bfecbbe57fde1e63af277818a91a94d481f4eae4",
       [
        "html/dom/idlharness.https.html?exclude=(Document|Window|HTML.+)",
        {
@@ -646095,6 +646201,15 @@
           "testdriver": true
          }
         ]
+       ],
+       "interesttarget-user-select.tentative.html": [
+        "0726d10da92d1eb71c31657fb9a686cda681578d",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
        ]
       }
      },
@@ -651753,7 +651868,7 @@
      ]
     ],
     "roles-contextual.html": [
-     "4edcc12e8f269c47f951b3c77027fcb733544bad",
+     "793bdf1f4130912fe679e91f04c39e0af513ae4b",
      [
       null,
       {
@@ -651811,7 +651926,7 @@
      ]
     ],
     "roles.html": [
-     "2ab2d7d8c5c82991491a70938aeaa8ef11bf40b4",
+     "9ef8e467bf116de7e8c7c699c6fc3cd1f5d646f2",
      [
       null,
       {
@@ -654211,13 +654326,6 @@
     ],
     "client-rect.html": [
      "e85171ca7c9771cb0e53cc318c88bdfbc36362ff",
-     [
-      null,
-      {}
-     ]
-    ],
-    "clip-path-animation.html": [
-     "bc8adb8b1e7cd9d4a3966a939bf75e1559019b10",
      [
       null,
       {}
@@ -671750,14 +671858,14 @@
      ]
     ],
     "experimental-features": {
-     "focus-without-user-activation-default-permissions-policy.tentative.https.sub.html": [
+     "focus-without-user-activation-default-permissions-policy.https.sub.html": [
       "9ca1426040c6edecba4200c92b53ff8ce6ee61cd",
       [
        null,
        {}
       ]
      ],
-     "focus-without-user-activation-disabled-by-permissions-policy-cross-origin.tentative.https.sub.html": [
+     "focus-without-user-activation-disabled-by-permissions-policy-cross-origin.https.sub.html": [
       "a62ca0b581d30877e4cea6fedad8a18a56e03b15",
       [
        null,
@@ -671766,7 +671874,7 @@
        }
       ]
      ],
-     "focus-without-user-activation-disabled-by-permissions-policy.tentative.https.sub.html": [
+     "focus-without-user-activation-disabled-by-permissions-policy.https.sub.html": [
       "bd43848ec115ca1ca143d4871bb5826e78aa55a4",
       [
        null,
@@ -671775,14 +671883,14 @@
        }
       ]
      ],
-     "focus-without-user-activation-disabled-tentative.html": [
+     "focus-without-user-activation-disabled.html": [
       "3980fd1219cba990454ffa86e0a5bd493b9eb5e6",
       [
        null,
        {}
       ]
      ],
-     "focus-without-user-activation-enabled-tentative.sub.html": [
+     "focus-without-user-activation-enabled.sub.html": [
       "12700d0fdb16b1fb39dd59cdbdaae51468a606f4",
       [
        null,
@@ -691801,7 +691909,7 @@
     ],
     "tentative": {
      "getdisplaymedia-captured-surface-resolution.https.html": [
-      "85867c373b6155c9c67e61e48d87018b981ef879",
+      "a1e7997ca69707d2e3c76924aa421c041d6d2926",
       [
        null,
        {
@@ -693599,7 +693707,7 @@
      ]
     ],
     "enrollment-in-iframe.sub.https.html": [
-     "9a0f2093a1bc5569d00f65807096dfc51ce02c2b",
+     "be7d5daf83b07d9b74f6d7a94047d39a9f3069da",
      [
       null,
       {
@@ -698943,7 +699051,7 @@
         ]
        ],
        "grid-order-with-position-absolute.html": [
-        "239383dd6c496cc45e3b2b000f44e74cd36d17cf",
+        "a697d13001b1885dbb6491d676d5ba35bb59a251",
         [
          null,
          {
@@ -698953,7 +699061,7 @@
         ]
        ],
        "grid-order-with-position-fixed.html": [
-        "bc496c47b4c755c9befeb6fa07df41dd1939a6c9",
+        "fdef20955b85e793726c92745a5977c362ec3b7b",
         [
          null,
          {
@@ -698993,7 +699101,27 @@
         ]
        ],
        "normal.html": [
-        "6f855b39351ccab75d44b3b862c851fca144372c",
+        "54936e71082e661eda6e78c4369f1eb0fb2cd749",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
+       "source-order-invalid.html": [
+        "e08351b2098fbd4499ca1f2c1cbdde27d50cbed9",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
+       "source-order-valid.html": [
+        "f5ba87040aef99a4de3f5887bc845014466939a9",
         [
          null,
          {

@@ -173,6 +173,8 @@ source_set("extensions") {
     "extension_assets_manager.h",
     "extension_error_controller.cc",
     "extension_error_controller.h",
+    "extension_error_controller_factory.cc",
+    "extension_error_controller_factory.h",
     "extension_error_ui.h",
     "extension_install_error_menu_item_id_provider.cc",
     "extension_install_error_menu_item_id_provider.h",
