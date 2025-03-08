@@ -99,7 +99,7 @@ public class BookmarkSaveFlowCoordinator {
                         mBookmarkModel,
                         ImageFetcherFactory.createImageFetcher(
                                 ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()),
-                        BookmarkUtils.getRoundedIconGenerator(
+                        BookmarkViewUtils.getRoundedIconGenerator(
                                 mContext, BookmarkRowDisplayPref.VISUAL));
 
         mMediator =

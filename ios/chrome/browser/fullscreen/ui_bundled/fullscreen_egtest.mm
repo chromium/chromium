@@ -213,8 +213,14 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 
   // Test that the toolbar is visible when moving from one chrome:// link to
-  // another chrome:// link.
-  [ChromeEarlGrey tapWebStateElementWithID:@"version"];
+  // another chrome:// link. The script below queries for the
+  // "chrome://version" link on the chrome://chrome-urls page, and clicks on
+  // it. The link is in the shadow DOM of the chrome-urls-app custom element
+  // that contains the page's UI.
+  NSString* clickLinkScript =
+      @"document.body.querySelector('chrome-urls-app')"
+       ".shadowRoot.querySelector('a[href=\"chrome://version\"]').click()";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 

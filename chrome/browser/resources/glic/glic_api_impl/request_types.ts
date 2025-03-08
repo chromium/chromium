@@ -204,6 +204,7 @@ export declare interface WebClientRequestTypes {
       panelActive: boolean,
     },
   };
+  glicWebClientCheckResponsive: {};
 }
 
 
@@ -323,6 +324,7 @@ export type WebClientInitialStatePrivate =
       chromeVersion: ChromeVersion,
       focusedTabData: FocusedTabDataPrivate,
       scrollToEnabled: boolean,
+      loggingEnabled: boolean,
     }>;
 
 // TabData format for postMessage transport.

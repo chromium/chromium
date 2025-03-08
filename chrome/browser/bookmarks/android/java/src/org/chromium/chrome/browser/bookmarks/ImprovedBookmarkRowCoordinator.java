@@ -53,7 +53,7 @@ public class ImprovedBookmarkRowCoordinator {
     }
 
     private void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
-        mImageSize = BookmarkUtils.getImageIconSize(mContext.getResources(), displayPref);
+        mImageSize = BookmarkViewUtils.getImageIconSize(mContext.getResources(), displayPref);
     }
 
     /** Sets the given bookmark id. */
@@ -73,7 +73,7 @@ public class ImprovedBookmarkRowCoordinator {
                     String.format(
                             "%s (%s)",
                             bookmarkItem.getTitle(),
-                            BookmarkUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel)));
+                            BookmarkViewUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel)));
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.TITLE, bookmarkItem.getTitle());
         }
@@ -90,7 +90,7 @@ public class ImprovedBookmarkRowCoordinator {
                     String.format(
                             "%s %s",
                             bookmarkItem.getTitle(),
-                            BookmarkUtils.getFolderDescriptionText(
+                            BookmarkViewUtils.getFolderDescriptionText(
                                     bookmarkId, mBookmarkModel, mContext.getResources()));
             if (isLocalBookmark) {
                 contentDescription =
@@ -146,10 +146,10 @@ public class ImprovedBookmarkRowCoordinator {
         } else if (item.isFolder()) {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
-                    BookmarkUtils.getIconBackground(mContext, mBookmarkModel, item));
+                    BookmarkViewUtils.getIconBackground(mContext, mBookmarkModel, item));
             propertyModel.set(
                     ImprovedBookmarkRowProperties.START_ICON_TINT,
-                    BookmarkUtils.getIconTint(mContext, mBookmarkModel, item));
+                    BookmarkViewUtils.getIconTint(mContext, mBookmarkModel, item));
         } else {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
@@ -163,7 +163,7 @@ public class ImprovedBookmarkRowCoordinator {
                     public void doSet() {
                         if (item.isFolder()) {
                             set(
-                                    BookmarkUtils.getFolderIcon(
+                                    BookmarkViewUtils.getFolderIcon(
                                             mContext, item.getId(), mBookmarkModel, displayPref));
                         } else if (shouldShowImagesForBookmark(item, displayPref)) {
                             mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
@@ -180,21 +180,21 @@ public class ImprovedBookmarkRowCoordinator {
             PropertyModel propertyModel, BookmarkItem bookmarkItem) {
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
-                BookmarkUtils.getChildCountForDisplay(bookmarkItem.getId(), mBookmarkModel));
+                BookmarkViewUtils.getChildCountForDisplay(bookmarkItem.getId(), mBookmarkModel));
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
-                BookmarkUtils.isSpecialFolder(mBookmarkModel, bookmarkItem)
+                mBookmarkModel.isSpecialFolder(bookmarkItem)
                         ? R.style.TextAppearance_SpecialFolderChildCount
                         : R.style.TextAppearance_RegularFolderChildCount);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
-                BookmarkUtils.getIconBackground(mContext, mBookmarkModel, bookmarkItem));
+                BookmarkViewUtils.getIconBackground(mContext, mBookmarkModel, bookmarkItem));
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
-                BookmarkUtils.getIconTint(mContext, mBookmarkModel, bookmarkItem));
+                BookmarkViewUtils.getIconTint(mContext, mBookmarkModel, bookmarkItem));
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                BookmarkUtils.getFolderIcon(
+                BookmarkViewUtils.getFolderIcon(
                         mContext,
                         bookmarkItem.getId(),
                         mBookmarkModel,

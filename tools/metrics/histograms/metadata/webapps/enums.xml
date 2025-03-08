@@ -252,6 +252,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Launched as a tab"/>
 </enum>
 
+<enum name="ManifestIconDownloaderResult">
+  <int value="0" label="No images were found while downloading"/>
+  <int value="1"
+      label="Images found did not match sizes specified in manifest"/>
+  <int value="2" label="Image download successful"/>
+</enum>
+
 <enum name="PreinstalledAppDisabledReason">
   <int value="0" label="kNotDisabled"/>
   <int value="1" label="kUninstallPreinstalledAppsNotEnabled"/>

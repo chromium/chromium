@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
@@ -42,6 +43,9 @@
 namespace blink {
 
 namespace {
+
+using AILanguageModelPromptContentOrError =
+    std::variant<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>;
 
 class CloneLanguageModelClient
     : public GarbageCollected<CloneLanguageModelClient>,
@@ -162,157 +166,181 @@ class CountPromptTokensClient
       receiver_;
 };
 
-// Return `prompt`'s content as a mojo struct or yield an error.
-std::variant<mojom::blink::AILanguageModelPromptPtr, DOMException*>
+base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
+ToMojo(String prompt) {
+  return mojom::blink::AILanguageModelPromptContent::NewText(prompt);
+}
+
+base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
+ToMojo(AudioBuffer* audio_buffer) {
+  if (audio_buffer->numberOfChannels() > 2) {
+    // TODO(crbug.com/382180351): Support more than 2 channels.
+    return base::unexpected(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kSyntaxError,
+        "Audio with more than 2 channels is not supported."));
+  }
+  on_device_model::mojom::blink::AudioDataPtr audio_data =
+      on_device_model::mojom::blink::AudioData::New();
+  audio_data->sample_rate = audio_buffer->sampleRate();
+  audio_data->frame_count = audio_buffer->length();
+  // TODO(crbug.com/382180351): Use other mono mixing utils like
+  // AudioBus::CreateByMixingToMono.
+  audio_data->channel_count = 1;
+  base::span<const float> channel0 = audio_buffer->getChannelData(0)->AsSpan();
+  audio_data->data = WTF::Vector<float>(channel0.size());
+  for (size_t i = 0; i < channel0.size(); ++i) {
+    audio_data->data[i] = channel0[i];
+    // If second channel exists, average the two channels to produce mono.
+    if (audio_buffer->numberOfChannels() > 1) {
+      audio_data->data[i] =
+          (audio_data->data[i] + audio_buffer->getChannelData(1)->AsSpan()[i]) /
+          2.0f;
+    }
+  }
+  return mojom::blink::AILanguageModelPromptContent::NewAudio(
+      std::move(audio_data));
+}
+
+base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
+ToMojo(Blob* blob, ExecutionContext* execution_context) {
+  // TODO(crbug.com/382180351): Make blob reading async or alternatively
+  // use FileReaderSync instead (fix linker and exception issues).
+  SyncedFileReaderAccumulator* blobReader =
+      MakeGarbageCollected<SyncedFileReaderAccumulator>();
+
+  auto [error_code, reader_data] = blobReader->Load(
+      blob->GetBlobDataHandle(),
+      execution_context->GetTaskRunner(TaskType::kFileReading));
+  if (error_code != FileErrorCode::kOK) {
+    return base::unexpected(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, "Failed to read blob."));
+  }
+  ArrayBufferContents audio_contents =
+      std::move(reader_data).AsArrayBufferContents();
+  if (!audio_contents.IsValid()) {
+    return base::unexpected(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, "Failed to read blob."));
+  }
+  // TODO(crbug.com/401010825): Use the file sample rate.
+  scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
+      audio_contents.Data(), audio_contents.DataLength(),
+      /*mix_to_mono=*/true, /*sample_rate=*/48000);
+
+  on_device_model::mojom::blink::AudioDataPtr audio_data =
+      on_device_model::mojom::blink::AudioData::New();
+  audio_data->sample_rate = bus->SampleRate();
+  audio_data->frame_count = bus->length();
+  audio_data->channel_count = bus->NumberOfChannels();
+  CHECK_EQ(audio_data->channel_count, 1);
+  // TODO(crbug.com/382180351): Avoid a copy.
+  audio_data->data = WTF::Vector<float>(bus->length());
+  std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
+              audio_data->data.begin());
+  return mojom::blink::AILanguageModelPromptContent::NewAudio(
+      std::move(audio_data));
+}
+
+base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
+ToMojo(V8ImageBitmapSource* bitmap,
+       ScriptState* script_state,
+       ExceptionState& exception_state) {
+  std::optional<SkBitmap> skia_bitmap =
+      ShapeDetector::GetBitmapFromSource(script_state, bitmap, exception_state);
+  if (!skia_bitmap) {
+    return base::unexpected(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kSyntaxError,
+        "Unable to get bitmap from image content"));
+  }
+  return mojom::blink::AILanguageModelPromptContent::NewBitmap(
+      skia_bitmap.value());
+}
+
+base::expected<mojom::blink::AILanguageModelPromptContentPtr, DOMException*>
+ConvertPromptToMojoContent(V8AILanguageModelPromptType content_type,
+                           const V8AILanguageModelPromptContent* content,
+                           ScriptState* script_state,
+                           ExceptionState& exception_state,
+                           ExecutionContext* execution_context) {
+  switch (content_type.AsEnum()) {
+    case V8AILanguageModelPromptType::Enum::kText:
+      return ToMojo(content->GetAsString());
+    case V8AILanguageModelPromptType::Enum::kImage:
+      if (content->IsV8ImageBitmapSource()) {
+        return ToMojo(content->GetAsV8ImageBitmapSource(), script_state,
+                      exception_state);
+      }
+      return base::unexpected(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSyntaxError, "Unsupported image content type"));
+    case V8AILanguageModelPromptType::Enum::kAudio:
+      switch (content->GetContentType()) {
+        case V8AILanguageModelPromptContent::ContentType::kAudioBuffer:
+          return ToMojo(content->GetAsAudioBuffer());
+        case V8AILanguageModelPromptContent::ContentType::kBlob:
+          return ToMojo(content->GetAsBlob(), execution_context);
+        default:
+          return base::unexpected(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kSyntaxError,
+              "Unsupported audio content type"));
+      }
+  }
+}
+
+// Return `prompt`'s content as a mojo struct or nullptr if there was an error.
+base::expected<mojom::blink::AILanguageModelPromptPtr, DOMException*>
 ConvertPromptToMojo(const V8AILanguageModelPrompt* prompt,
                     ScriptState* script_state,
                     ExceptionState& exception_state,
                     ExecutionContext* execution_context) {
-  auto result = mojom::blink::AILanguageModelPrompt::New();
-  if (prompt->IsString()) {
-    result->role = mojom::blink::AILanguageModelPromptRole::kUser;
-    result->content = mojom::blink::AILanguageModelPromptContent::NewText(
-        prompt->GetAsString());
-  } else if (prompt->IsAILanguageModelPromptDict()) {
-    const AILanguageModelPromptDict* dict =
-        prompt->GetAsAILanguageModelPromptDict();
-    result->role = AILanguageModel::ConvertRoleToMojo(dict->role());
-    const V8AILanguageModelPromptContent* content = dict->content();
-    if (dict->type() == V8AILanguageModelPromptType::Enum::kText) {
-      if (!content->IsString()) {
-        return MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSyntaxError,
-            "Content is not text, or subtype is not supported");
-      }
-      result->content = mojom::blink::AILanguageModelPromptContent::NewText(
-          content->GetAsString());
-    } else if (dict->type() == V8AILanguageModelPromptType::Enum::kImage) {
-      if (!content->IsV8ImageBitmapSource()) {
-        return MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSyntaxError,
-            "Content is not image, or subtype is not supported");
-      }
-      std::optional<SkBitmap> bitmap = ShapeDetector::GetBitmapFromSource(
-          script_state, content->GetAsV8ImageBitmapSource(), exception_state);
-      if (!bitmap) {
-        return MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSyntaxError,
-            "Unable to get bitmap from image content");
-      }
-      result->content =
-          mojom::blink::AILanguageModelPromptContent::NewBitmap(bitmap.value());
-    } else if (dict->type() == V8AILanguageModelPromptType::Enum::kAudio) {
-      if (dict->content()->IsBlob()) {
-        // TODO(crbug.com/382180351): Make blob reading async or alternatively
-        // use FileReaderSync instead (fix linker and exception issues).
-        SyncedFileReaderAccumulator* blobReader =
-            MakeGarbageCollected<SyncedFileReaderAccumulator>();
-
-        auto [error_code, reader_data] = blobReader->Load(
-            dict->content()->GetAsBlob()->GetBlobDataHandle(),
-            execution_context->GetTaskRunner(TaskType::kFileReading));
-        if (error_code != FileErrorCode::kOK) {
-          return MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kDataError, "Failed to read blob.");
-        }
-        ArrayBufferContents audio_contents =
-            std::move(reader_data).AsArrayBufferContents();
-        if (!audio_contents.IsValid()) {
-          return MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kDataError, "Failed to read blob.");
-        }
-        // TODO(crbug.com/401010825): Use the file sample rate.
-        scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
-            audio_contents.Data(), audio_contents.DataLength(),
-            /*mix_to_mono=*/true, /*sample_rate=*/48000);
-
-        on_device_model::mojom::blink::AudioDataPtr audio_data =
-            on_device_model::mojom::blink::AudioData::New();
-        audio_data->sample_rate = bus->SampleRate();
-        audio_data->frame_count = bus->length();
-        audio_data->channel_count = bus->NumberOfChannels();
-        CHECK_EQ(audio_data->channel_count, 1);
-        // TODO(crbug.com/382180351): Avoid a copy.
-        audio_data->data = WTF::Vector<float>(bus->length());
-        std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
-                    audio_data->data.begin());
-        result->content = mojom::blink::AILanguageModelPromptContent::NewAudio(
-            std::move(audio_data));
-      } else if (dict->content()->IsAudioBuffer()) {
-        AudioBuffer* audio_buffer = dict->content()->GetAsAudioBuffer();
-        if (audio_buffer->numberOfChannels() > 2) {
-          // TODO(crbug.com/382180351): Support more than 2 channels.
-          return MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kSyntaxError,
-              "Audio with more than 2 channels is not supported.");
-        }
-        on_device_model::mojom::blink::AudioDataPtr audio_data =
-            on_device_model::mojom::blink::AudioData::New();
-        audio_data->sample_rate = audio_buffer->sampleRate();
-        audio_data->frame_count = audio_buffer->length();
-        // TODO(crbug.com/382180351): Use other mono mixing utils like
-        // AudioBus::CreateByMixingToMono.
-        audio_data->channel_count = 1;
-        base::span<const float> channel0 =
-            audio_buffer->getChannelData(0)->AsSpan();
-        audio_data->data = WTF::Vector<float>(channel0.size());
-        for (size_t i = 0; i < channel0.size(); ++i) {
-          audio_data->data[i] = channel0[i];
-          // If second channel exists, average the two channels to produce mono.
-          if (audio_buffer->numberOfChannels() > 1) {
-            audio_data->data[i] =
-                (audio_data->data[i] +
-                 audio_buffer->getChannelData(1)->AsSpan()[i]) /
-                2.0f;
-          }
-        }
-        result->content = mojom::blink::AILanguageModelPromptContent::NewAudio(
-            std::move(audio_data));
-      } else {
-        return MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kSyntaxError, "Unsupported audio type.");
-      }
+  switch (prompt->GetContentType()) {
+    // Handle basic string prompt.
+    case V8AILanguageModelPrompt::ContentType::kString: {
+      auto result = mojom::blink::AILanguageModelPrompt::New();
+      ASSIGN_OR_RETURN(result->content, ToMojo(prompt->GetAsString()));
+      result->role = mojom::blink::AILanguageModelPromptRole::kUser;
+      return result;
     }
-  } else {
-    return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                              "Input type not recognized");
+    // Handle dictionary for multimodal input.
+    case V8AILanguageModelPrompt::ContentType::kAILanguageModelPromptDict:
+      AILanguageModelPromptDict* dict =
+          prompt->GetAsAILanguageModelPromptDict();
+      auto result = mojom::blink::AILanguageModelPrompt::New();
+      ASSIGN_OR_RETURN(result->content,
+                       ConvertPromptToMojoContent(dict->type(), dict->content(),
+                                                  script_state, exception_state,
+                                                  execution_context));
+      result->role = AILanguageModel::ConvertRoleToMojo(dict->role());
+      return result;
   }
-  return result;
 }
 
 // Populates the `prompts` mojo struct vector from `input`. Returns an exception
 // if some input was specified incorrectly or inaccessible, nullptr otherwise.
-DOMException* BuildPrompts(
-    const V8AILanguageModelPromptInput* input,
-    ScriptState* script_state,
-    ExceptionState& exception_state,
-    ExecutionContext* execution_context,
-    WTF::Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
+base::expected<WTF::Vector<mojom::blink::AILanguageModelPromptPtr>,
+               DOMException*>
+BuildPrompts(const V8AILanguageModelPromptInput* input,
+             ScriptState* script_state,
+             ExceptionState& exception_state,
+             ExecutionContext* execution_context) {
+  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
   if (input->IsAILanguageModelPromptDictOrStringSequence()) {
     const auto& sequence =
         input->GetAsAILanguageModelPromptDictOrStringSequence();
     for (const auto& entry : sequence) {
-      auto prompt = ConvertPromptToMojo(entry, script_state, exception_state,
-                                        execution_context);
-      if (std::holds_alternative<DOMException*>(prompt)) {
-        return std::get<DOMException*>(prompt);
-      }
-      prompts.push_back(
-          std::move(std::get<mojom::blink::AILanguageModelPromptPtr>(prompt)));
+      ASSIGN_OR_RETURN(auto prompt,
+                       ConvertPromptToMojo(entry, script_state, exception_state,
+                                           execution_context));
+      prompts.push_back(std::move(prompt));
     }
   } else {
     CHECK(input->IsV8AILanguageModelPrompt());
     auto* entry = input->GetAsV8AILanguageModelPrompt();
-    auto prompt = ConvertPromptToMojo(entry, script_state, exception_state,
-                                      execution_context);
-    if (std::holds_alternative<DOMException*>(prompt)) {
-      return std::get<DOMException*>(prompt);
-    }
-    prompts.push_back(
-        std::move(std::get<mojom::blink::AILanguageModelPromptPtr>(prompt)));
+    ASSIGN_OR_RETURN(auto prompt,
+                     ConvertPromptToMojo(entry, script_state, exception_state,
+                                         execution_context));
+    prompts.push_back(std::move(prompt));
   }
 
-  return nullptr;
+  return prompts;
 }
 
 }  // namespace
@@ -387,11 +415,10 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
     return promise;
   }
 
-  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
-  auto* exception = BuildPrompts(input, script_state, exception_state,
-                                 GetExecutionContext(), prompts);
-  if (exception) {
-    resolver->Reject(exception);
+  auto prompts =
+      BuildPrompts(input, script_state, exception_state, GetExecutionContext());
+  if (!prompts.has_value()) {
+    resolver->Reject(prompts.error());
     return promise;
   }
 
@@ -425,7 +452,8 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
                     WrapWeakPersistent(this)),
       WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                          WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(std::move(prompts), std::move(pending_remote));
+  language_model_remote_->Prompt(std::move(prompts).value(),
+                                 std::move(pending_remote));
   return promise;
 }
 
@@ -446,10 +474,10 @@ ReadableStream* AILanguageModel::promptStreaming(
     return nullptr;
   }
 
-  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts;
-  auto* exception = BuildPrompts(input, script_state, exception_state,
-                                 GetExecutionContext(), prompts);
-  if (exception) {
+  auto prompts =
+      BuildPrompts(input, script_state, exception_state, GetExecutionContext());
+  if (!prompts.has_value()) {
+    auto* exception = prompts.error();
     CHECK(IsDOMExceptionCode(exception->code()));
     exception_state.ThrowDOMException(
         static_cast<DOMExceptionCode>(exception->code()), exception->message());
@@ -487,7 +515,8 @@ ReadableStream* AILanguageModel::promptStreaming(
           WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                              WrapWeakPersistent(this)));
 
-  language_model_remote_->Prompt(std::move(prompts), std::move(pending_remote));
+  language_model_remote_->Prompt(std::move(prompts).value(),
+                                 std::move(pending_remote));
   return readable_stream;
 }
 

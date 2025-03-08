@@ -290,7 +290,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'b29851b2ada6ac6cb3e4fdf218266e47a1a877e6',
+  'skia_revision': '916caa2f0102d2f57ad12ff8e2d1b10c7b705928',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -322,7 +322,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': 'e88cb95b92acbdce9b058dd894a68e1281b38495',
+  'googletest_revision': '0bdccf4aa2f5c67af967193caf31d42d5c49bde2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
@@ -374,7 +374,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
-  'fuzztest_revision': 'f8185ff681f5e71848023a286e37f4505f3a1c7a',
+  'fuzztest_revision': '2c142922027eb5a0cd7acbe000446227d9f2ba03',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
@@ -466,7 +466,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling nearby
   # and whatever else without interference from each other.
-  'nearby_revision': '45d6317a64aad3d5060b800db267f7cea3f27198',
+  'nearby_revision': 'e8d3f607fefc93c72bede61a727c53b6271ef6be',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling securemessage
   # and whatever else without interference from each other.
@@ -514,7 +514,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '688c775e963e24b628e7f6a3a84bf9c2629c4935',
+  'llvm_libc_revision':    '10f35ee751e173ed3bd0e974659fedc3cd7a8935',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1141,7 +1141,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '4836062e4665ffe6ed4d4e91615b2f8ac5a40f3d',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '1d58adc6fd01fc26a360fe890b90e7b836a7e19d',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1470,12 +1470,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '297fd7aae591049616f6928a47668e2a7c258d2f',
+    '9fa57f6cafc78644f35baaa7b162904f17ab395b',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + 'f74c561496544a543ac51c1f4418b1b7e02bafd2',
+    'url': Var('chromium_git') + '/website.git' + '@' + '94e8b7be76fc90588aa062dbb2d25d86b4c5fd2b',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1499,7 +1499,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '23f7050e7e9ba6747d8a9913ad21c57adeb5612a',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '719af905928282d26d9b37f55d4400be02091b4a',
       'condition': 'checkout_ios',
   },
 
@@ -1629,7 +1629,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'sPgkzVtxMsa7Z_juax-v3TbwYHUoH52kAfD6fOfqcNcC',
+          'version': 'JJkKmJzF00zK2klzqJumGj8HlJ5Zud2QTjJ_-vuUYoEC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1722,7 +1722,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
-               'version': 'odZaAzq5aTldQyS4zrVQBok4BHtqZUpxdhVHlZCO0ukC',
+               'version': 'MNPAEPEDm-nqhzi1KvT_UeWIjBYRgcUgc9vM13RzXB8C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1733,7 +1733,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'DIy35BIO4jvsL0DDQvMnUdDC1rep8uWzgKeSHejYdKAC',
+               'version': '_HBnESa9CYwglHIRqaReMOQyjP7kQW9vMOqOIklS_sEC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2841,7 +2841,7 @@ deps = {
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
 
-  'src/third_party/wasm_tts_engine/src': Var('chromium_git') + '/chromium/wasm-tts-engine' + '@' + '6ab3e63276a2d66ba3e7db4f87c5b7cb00e22130',
+  'src/third_party/wasm_tts_engine/src': Var('chromium_git') + '/chromium/wasm-tts-engine' + '@' + 'ed129699578557e497d8e2d3808224c40819ce84',
 
   # Display server protocol for Linux.
   'src/third_party/wayland/src': {
@@ -2875,7 +2875,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'b9f6db2a2a2bf985470a72e06481bd151d6b6513',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '4ebc81de3b7c52b03bdf609058c3f54b429c22b2',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -4637,7 +4637,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '2cefc47c84d73574d4bc203695424dc46d3dc4ed',
+        '8cc60d69eba57a85db02d85864b596cb37f16a11',
       'condition': 'checkout_src_internal',
   },
 
@@ -4703,7 +4703,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '8d26351a4344dfc5f6f87ed3c200db3cebfa6d4a',
+        '0429c459c7c2ffd3878fcfc4f296642c9ff4ba0b',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

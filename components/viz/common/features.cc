@@ -40,7 +40,9 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If this flag is enabled, AndroidBrowserControlsInViz must also be enabled.
+// If this flag is enabled, AndroidBrowserControlsInViz and
+// BottomControlsRefactor with the "Dispatch yOffset" variation must also be
+// enabled.
 BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
              base::FEATURE_DISABLED_BY_DEFAULT);

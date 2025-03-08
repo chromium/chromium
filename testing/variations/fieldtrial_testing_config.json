@@ -748,6 +748,21 @@
             ]
         }
     ],
+    "AppBoundEncryptionKeyV3": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppBoundEncryptionKeyV3"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppCloseRefreshClankStudy": [
         {
             "platforms": [

@@ -255,14 +255,6 @@ suite('AutofillAiSectionUiTest', function() {
 
     assertEquals(1, entityDataManager.getCallCount('removeEntityInstance'));
     assertEquals('e4bbe384-ee63-45a4-8df3-713a58fdc181', guid);
-
-    const listItems =
-        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
-    assertEquals(
-        2, listItems.length,
-        'only one entity and a hidden element should be present.');
-    assertTrue(listItems[0]!.textContent!.includes('John Doe'));
-    assertFalse(isVisible(listItems[1]!));
   });
 
   test('testRemoveEntityCancelled', async function() {
@@ -287,15 +279,6 @@ suite('AutofillAiSectionUiTest', function() {
     await flushTasks();
 
     assertEquals(0, entityDataManager.getCallCount('removeEntityInstance'));
-
-    const listItems =
-        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
-    assertEquals(
-        3, listItems.length,
-        '2 entities and a hidden element should still be present.');
-    assertTrue(listItems[0]!.textContent!.includes('Toyota'));
-    assertTrue(listItems[1]!.textContent!.includes('John Doe'));
-    assertFalse(isVisible(listItems[2]!));
   });
 
   interface AddOrEditDialogParamsInterface {
@@ -389,6 +372,41 @@ suite('AutofillAiSectionUiTest', function() {
           addSpecificEntityButtons[index]!.textContent!.includes(
               testEntityTypes[index]!.typeNameAsString));
     }
+  });
+
+  test('testEntityInstancesChangedListener', async function() {
+    const newTestEntityInstancesWithLabels:
+        chrome.autofillPrivate.EntityInstanceWithLabels[] = [
+      {
+        guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
+        entityLabel: 'Mark Jane',
+        entitySubLabel: 'Passport',
+      },
+      {
+        guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
+        entityLabel: 'Honda',
+        entitySubLabel: 'Car',
+      },
+      {
+        guid: '1a89869f-dff2-461a-8ef8-769e0e1c66f7',
+        entityLabel: 'Tom Clark',
+        entitySubLabel: 'Driver\'s license',
+      },
+    ];
+
+    entityDataManager.callEntityInstancesChangedListener(
+        newTestEntityInstancesWithLabels);
+    await flushTasks();
+
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(
+        4, listItems.length,
+        'Three entity instances and a hidden element should be present.');
+    assertTrue(listItems[0]!.textContent!.includes('Mark Jane'));
+    assertTrue(listItems[1]!.textContent!.includes('Honda'));
+    assertTrue(listItems[2]!.textContent!.includes('Tom Clark'));
+    assertFalse(isVisible(listItems[3]!));
   });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/bnpl_dialog_footnote.h"
 
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -14,12 +15,12 @@ namespace autofill::payments {
 
 BnplDialogFootnote::BnplDialogFootnote() {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  SetInsideBorderInsets(gfx::Insets::TLBR(10, 10, 10, 10));
+  SetInsideBorderInsets(ChromeLayoutProvider::Get()->GetInsetsMetric(
+      views::INSETS_DIALOG_FOOTNOTE));
   AddChildView(
       views::Builder<views::Label>()
           // TODO(crbug.com/356443046): Move to resources and translate string.
           .SetText(u"To hide pay over time options, go to payment settings")
-          .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(5, 10, 5, 0))
           .Build());
 }
 

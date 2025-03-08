@@ -639,6 +639,13 @@ int Element::DefaultTabIndex() const {
   return -1;
 }
 
+int Element::ReadingOrderValue() const {
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    return style->ReadingOrder();
+  }
+  return 0;
+}
+
 bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // TODO(vmpstr): Note that this may be called by accessibility during layout
   // tree attachment, at which point we might not have cleared all of the dirty

@@ -504,8 +504,7 @@ ExtensionFunctionDispatcher::GetAssociatedWebContents() const {
 
 content::WebContents*
 ExtensionFunctionDispatcher::GetVisibleWebContents() const {
-  return delegate_ ? delegate_->GetVisibleWebContents() :
-      GetAssociatedWebContents();
+  return delegate_ ? delegate_->GetVisibleWebContents() : nullptr;
 }
 
 void ExtensionFunctionDispatcher::AddResponseTarget(ExtensionFunction* func) {

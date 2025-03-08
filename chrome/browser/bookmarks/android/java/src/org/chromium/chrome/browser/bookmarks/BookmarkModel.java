@@ -194,4 +194,9 @@ public class BookmarkModel extends BookmarkBridge {
         return Objects.equals(folderId, getLocalOrSyncableReadingListFolder())
                 || Objects.equals(folderId, getAccountReadingListFolder());
     }
+
+    /** Returns whether the given id is a special folder. */
+    public boolean isSpecialFolder(BookmarkItem item) {
+        return item != null && Objects.equals(item.getParentId(), getRootFolderId());
+    }
 }

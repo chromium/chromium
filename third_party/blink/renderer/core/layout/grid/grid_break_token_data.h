@@ -10,8 +10,6 @@
 
 namespace blink {
 
-class GridSizingTree;
-
 struct GridItemPlacementData {
   GridItemPlacementData(
       LogicalOffset offset,
@@ -30,7 +28,8 @@ struct GridItemPlacementData {
 struct GridBreakTokenData final : BlockBreakTokenData {
   GridBreakTokenData(
       const BlockBreakTokenData* break_token_data,
-      GridSizingTree&& grid_sizing_tree,
+      GridItems* grid_items,
+      GridLayoutSubtree grid_layout_subtree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit offset_in_stitched_container,
       const Vector<GridItemPlacementData>& grid_items_placement_data,
@@ -38,7 +37,8 @@ struct GridBreakTokenData final : BlockBreakTokenData {
       const Vector<EBreakBetween>& row_break_between,
       const HeapVector<Member<LayoutBox>>& oof_children)
       : BlockBreakTokenData(kGridBreakTokenData, break_token_data),
-        grid_sizing_tree(std::move(grid_sizing_tree)),
+        grid_items(grid_items),
+        grid_layout_subtree(std::move(grid_layout_subtree)),
         intrinsic_block_size(intrinsic_block_size),
         offset_in_stitched_container(offset_in_stitched_container),
         grid_items_placement_data(grid_items_placement_data),
@@ -47,12 +47,13 @@ struct GridBreakTokenData final : BlockBreakTokenData {
         oof_children(oof_children) {}
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(grid_sizing_tree);
+    visitor->Trace(grid_items);
     visitor->Trace(oof_children);
     BlockBreakTokenData::Trace(visitor);
   }
 
-  GridSizingTree grid_sizing_tree;
+  Member<GridItems> grid_items;
+  GridLayoutSubtree grid_layout_subtree;
   LayoutUnit intrinsic_block_size;
 
   // This is similar to |BlockBreakTokenData::consumed_block_size|, however

@@ -1779,8 +1779,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
       // TODO(https://crbug.com/379030052): the `CookieSettingOverride`s for
       // Storage Access API and Storage Access Headers should be handled
       // consistently during a same-site, cross-origin redirect.
-      bool cross_site =
-          net::SchemefulSite(origin) != net::SchemefulSite(pending_origin);
+      bool cross_site = !net::SchemefulSite::IsSameSite(origin, pending_origin);
       storage_access_redirect_kind =
           cross_site ? kCrossSite : kCrossOriginSameSite;
       if (cross_site ||

@@ -27,6 +27,7 @@ import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -37,7 +38,7 @@ import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_ai_section.html.js';
-import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
+import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
@@ -137,11 +138,18 @@ export class SettingsAutofillAiSectionElement extends
   // The correspondent `EntityInstanceWithLabels` model for any entity related
   // action menus or dialogs.
   private activeEntityWithLabels_: EntityInstanceWithLabels|null;
+  private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
+      null;
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.entityInstancesChangedListener_ =
+        (entityInstances => this.entityInstances_ = entityInstances);
+    this.entityDataManager_.addEntityInstancesChangedListener(
+        this.entityInstancesChangedListener_);
 
     this.entityDataManager_.getAllEntityTypes().then(
         (entityTypes: EntityType[]) => {
@@ -165,6 +173,15 @@ export class SettingsAutofillAiSectionElement extends
     // in crrev.com/c/5939704.
     this.registerHelpBubble(
         AUTOFILL_AI_HEADER_ELEMENT_ID, this.$.entriesHeaderTitle);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    assert(this.entityInstancesChangedListener_);
+    this.entityDataManager_.removeEntityInstancesChangedListener(
+        this.entityInstancesChangedListener_);
+    this.entityInstancesChangedListener_ = null;
   }
 
   private onToggleSubLabelLinkClick_(): void {
@@ -252,11 +269,6 @@ export class SettingsAutofillAiSectionElement extends
     if (wasDeletionConfirmed) {
       this.entityDataManager_.removeEntityInstance(
           this.activeEntityWithLabels_!.guid);
-      // Speculatively update local list to avoid potential stale data issues.
-      const deletedEntityIndex = this.entityInstances_.findIndex(
-          entityInstance =>
-              entityInstance.guid === this.activeEntityWithLabels_!.guid);
-      this.splice('entityInstances_', deletedEntityIndex, 1);
     }
 
     this.showRemoveEntityDialog_ = false;

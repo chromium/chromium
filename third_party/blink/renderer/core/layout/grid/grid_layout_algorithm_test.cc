@@ -54,8 +54,8 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                                            SizingConstraint::kLayout);
 
     cached_grid_items_ = MakeGarbageCollected<GridItems>(
-        std::move(grid_sizing_tree.TreeRootData().GetGridItems()));
-    layout_data_ = std::move(grid_sizing_tree.TreeRootData().layout_data);
+        std::move(grid_sizing_tree.RootGridItems()));
+    layout_data_ = std::move(grid_sizing_tree.RootLayoutData());
   }
 
   const GridItemData& GridItem(wtf_size_t index) {

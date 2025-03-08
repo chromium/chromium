@@ -141,7 +141,7 @@ public class BookmarkImageFetcher {
      */
     public void fetchFaviconForBookmark(BookmarkItem item, Callback<Drawable> callback) {
         GURL faviconUrl = item.getUrl();
-        int faviconDisplaySize = BookmarkUtils.getFaviconDisplaySize(mContext.getResources());
+        int faviconDisplaySize = BookmarkViewUtils.getFaviconDisplaySize(mContext.getResources());
         FaviconHelper.FaviconImageCallback faviconCallback =
                 (image, iconUrl) -> {
                     callback.onResult(

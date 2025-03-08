@@ -694,6 +694,24 @@ extern bool ShouldAutoFocusSearchbox();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsSimplifiedSelectionEnabled();
 
+// The text received timeout for the simplified selection feature. Time to wait
+// for Lens text response before displaying the selected region context menu, in
+// milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetSimplifiedSelectionTextReceivedTimeout();
+
+// The copy text received timeout for the simplified selection feature. Time to
+// wait for text in the interaction response before falling back to using the
+// full image response to copy text from a region.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetCopyTextReceivedTimeout();
+
+// The translate text received timeout for the simplified selection feature.
+// Time to wait for text in the interaction response before falling back to
+// using the full image response to translate text from a region.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetTranslateTextReceivedTimeout();
+
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content
 // upload request is sent.

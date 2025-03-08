@@ -91,6 +91,7 @@ class CollaborationServiceImpl : public CollaborationService,
  private:
   SyncStatus GetSyncStatus();
   SigninStatus GetSigninStatus();
+  CollaborationStatus GetCollaborationStatusWithoutEntreprise();
   CollaborationStatus GetCollaborationStatus();
   void RefreshServiceStatus();
   void ExitConflictingFlows(base::OnceCallback<void()> finish_callback);

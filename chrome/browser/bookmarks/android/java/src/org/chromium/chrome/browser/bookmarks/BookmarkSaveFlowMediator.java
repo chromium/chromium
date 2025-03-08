@@ -241,7 +241,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 item,
-                BookmarkUtils.getImageIconSize(
+                BookmarkViewUtils.getImageIconSize(
                         mContext.getResources(), BookmarkRowDisplayPref.VISUAL),
                 callback);
     }

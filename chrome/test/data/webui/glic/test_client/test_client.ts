@@ -76,6 +76,7 @@ interface PageElementTypes {
   groupName: HTMLInputElement;
   setExperimentStatus: HTMLSpanElement;
   testClipboardSave: HTMLButtonElement;
+  busyWork: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -154,6 +155,10 @@ class WebClient implements GlicWebClient {
 
   async notifyPanelClosed() {
     logMessage('notifyPanelClosed called');
+  }
+
+  async checkResponsive() {
+    // Nothing need to be checked on the test client.
   }
 }
 
@@ -591,6 +596,14 @@ $.scrollToBn.addEventListener('click', async () => {
     logMessage('scrollTo: no selector specified');
   } catch (error) {
     logMessage(`scrollTo failed: ${error}`);
+  }
+});
+
+$.busyWork.addEventListener('click', () => {
+  const workTimeMs: number = 5000;
+  const end = performance.now() + workTimeMs;
+  while (performance.now() < end) {
+    // mock busy work to test the web client unresponsive handling.
   }
 });
 

@@ -188,6 +188,7 @@ static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
   PhysicalRect overflow_rect =
       object.IsBox() ? To<LayoutBox>(object).SelfVisualOverflowRect()
                      : object.VisualOverflowRect();
+  overflow_rect = object.ApplyFiltersToRect(overflow_rect);
   overflow_rect.Move(object.FirstFragment().PaintOffset());
   return ToEnclosingRect(overflow_rect);
 }

@@ -302,7 +302,7 @@ bool BucketMatchesOriginsForDeletion(
   for (auto& requested_origin : origins) {
     if (bucket_key.origin() == requested_origin ||
         (bucket_key.IsThirdPartyContext() &&
-         bucket_key.top_level_site() == net::SchemefulSite(requested_origin))) {
+         bucket_key.top_level_site().IsSameSiteWith(requested_origin))) {
       return true;
     }
   }

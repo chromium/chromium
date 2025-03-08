@@ -398,6 +398,18 @@ constexpr base::FeatureParam<base::TimeDelta> kSupportedLanguagesCacheTimeoutMs{
 constexpr base::FeatureParam<int> kRecentLanguagesAmount{
     &kLensOverlayTranslateLanguages, "recent-languages-amount", 5};
 
+constexpr base::FeatureParam<int>
+    kLensOverlaySimplifiedSelectionTextReceivedTimeout{
+        &kLensOverlaySimplifiedSelection, "simplified-text-received-timeout",
+        2000};
+constexpr base::FeatureParam<int>
+    kLensOverlaySimplifiedSelectionCopyTextReceivedTimeout{
+        &kLensOverlaySimplifiedSelection, "copy-text-received-timeout", 500};
+constexpr base::FeatureParam<int>
+    kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout{
+        &kLensOverlaySimplifiedSelection, "translate-text-received-timeout",
+        500};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -875,6 +887,18 @@ bool ShouldAutoFocusSearchbox() {
 
 bool IsSimplifiedSelectionEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlaySimplifiedSelection);
+}
+
+int GetSimplifiedSelectionTextReceivedTimeout() {
+  return kLensOverlaySimplifiedSelectionTextReceivedTimeout.Get();
+}
+
+int GetCopyTextReceivedTimeout() {
+  return kLensOverlaySimplifiedSelectionCopyTextReceivedTimeout.Get();
+}
+
+int GetTranslateTextReceivedTimeout() {
+  return kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout.Get();
 }
 
 bool PageContentUploadRequestIdFixEnabled() {

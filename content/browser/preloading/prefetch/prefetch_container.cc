@@ -1068,8 +1068,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 
 bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
   return referring_origin_.has_value() &&
-         net::SchemefulSite(referring_origin_.value()) !=
-             net::SchemefulSite(origin);
+         !net::SchemefulSite::IsSameSite(referring_origin_.value(), origin);
 }
 
 bool PrefetchContainer::IsCrossOriginRequest(const url::Origin& origin) const {

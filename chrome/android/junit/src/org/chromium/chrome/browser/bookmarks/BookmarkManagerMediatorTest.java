@@ -1550,6 +1550,10 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testImprovedSpecialFolders() {
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mDesktopFolderItem);
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mMobileFolderItem);
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mOtherFolderItem);
+        doReturn(true).when(mBookmarkModel).isSpecialFolder(mReadingListFolderItem);
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
         final @ColorInt int specialBackgroundColor =
                 SemanticColorUtils.getColorPrimaryContainer(mActivity);

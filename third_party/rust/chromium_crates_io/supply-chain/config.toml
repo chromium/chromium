@@ -536,7 +536,13 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."yoke-derive:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."yoke-derive:0.8.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."yoke:0.7.5"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."yoke:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerocopy-derive:0.7.35"]
@@ -551,7 +557,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerofrom:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerotrie:0.2.0"]
+[policy."zerotrie:0.2.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerovec-derive:0.11.1"]
@@ -841,19 +847,6 @@ Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, bu
 Is not needed by the actual packages enabled in the ICU4X import.
 
 Sister crate of Google-co-maintained ICU4X project, maintained by Mozillian ICU4X team members.
-
-https://crbug.com/366411886
-"""
-
-[[exemptions.yoke-derive]]
-version = "0.7.5"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Unsafe code is either authored or reviewed by a
-crabal member, but a formal audit is yet to be performed.
-
-Part of Google-co-maintained ICU4X project.
-
 
 https://crbug.com/366411886
 """

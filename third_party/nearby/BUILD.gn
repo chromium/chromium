@@ -279,6 +279,9 @@ source_set("connections_implementation_mediums") {
     ":nearby_defines",
   ]
   sources = [
+    "src/connections/implementation/mediums/advertisements/advertisement_util.cc",
+    "src/connections/implementation/mediums/advertisements/data_element.cc",
+    "src/connections/implementation/mediums/advertisements/dct_advertisement.cc",
     "src/connections/implementation/mediums/ble.cc",
     "src/connections/implementation/mediums/ble_v2.cc",
     "src/connections/implementation/mediums/ble_v2/advertisement_read_result.cc",
@@ -302,6 +305,9 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/wifi_lan.cc",
   ]
   public = [
+    "src/connections/implementation/mediums/advertisements/advertisement_util.h",
+    "src/connections/implementation/mediums/advertisements/data_element.h",
+    "src/connections/implementation/mediums/advertisements/dct_advertisement.h",
     "src/connections/implementation/mediums/ble.h",
     "src/connections/implementation/mediums/ble_v2.h",
     "src/connections/implementation/mediums/ble_v2/advertisement_read_result.h",
@@ -331,6 +337,7 @@ source_set("connections_implementation_mediums") {
     ":connections_implementation_flags",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
+    ":crypto_cros",
     ":multiplex_frames_proto",
     ":platform_api_types",
     ":platform_base",

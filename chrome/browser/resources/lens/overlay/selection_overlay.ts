@@ -996,9 +996,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // region. This differs from handleCopy() since text does not need to be
   // selected to support this copy.
   private handleCopyDetectedText() {
-    this.copyText(
+    if (this.simplifiedSelectionEnabled) {
+      this.setShowSelectedRegionContextMenu(false);
+    }
+
+    this.getTextSelectionLayer().onCopyDetectedText(
         this.detectedTextStartIndex, this.detectedTextEndIndex,
-        this.highlightedText);
+        this.copyText.bind(this));
   }
 
   private copyText(textStartIndex: number, textEndIndex: number, text: string) {

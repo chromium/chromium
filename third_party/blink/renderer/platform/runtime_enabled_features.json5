@@ -3640,7 +3640,7 @@
       // composited pixel alignment issues. See
       // https://crbug.com/40084005
       name: "RenderSurfaceFor2DScaleTransform",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
@@ -4825,6 +4825,7 @@
     // https://crbug.com/41484826
     {
       name: "WebAuthenticationAlignErrorTypeForPaymentCredentialCreate",
+      status: "experimental",
     },
     // Prototyping https://github.com/w3c/webauthn/issues/2144
     {

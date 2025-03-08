@@ -94,6 +94,7 @@ public class LanguageSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/40711481")
     public void testRemoveLanguage() {
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         int originalAcceptLanguageCount = acceptLanguageList.getChildCount();

@@ -34,16 +34,16 @@
 
 namespace {
 
-using base::test::ios::kWaitForActionTimeout;
-using chrome_test_util::NavigationBarCancelButton;
-using password_manager_test_utils::EditDoneButton;
-using password_manager_test_utils::kScrollAmount;
-using password_manager_test_utils::NavigationBarEditButton;
-using password_manager_test_utils::OpenPasswordManager;
-using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
-using password_manager_test_utils::PasswordDetailsTableViewMatcher;
-using password_manager_test_utils::SaveExamplePasskeyToStore;
-using password_manager_test_utils::SavePasswordFormToProfileStore;
+using ::base::test::ios::kWaitForActionTimeout;
+using ::chrome_test_util::NavigationBarCancelButton;
+using ::password_manager_test_utils::EditDoneButton;
+using ::password_manager_test_utils::kScrollAmount;
+using ::password_manager_test_utils::NavigationBarEditButton;
+using ::password_manager_test_utils::OpenPasswordManager;
+using ::password_manager_test_utils::PasswordDetailsShareButtonMatcher;
+using ::password_manager_test_utils::PasswordDetailsTableViewMatcher;
+using ::password_manager_test_utils::SaveExamplePasskeyToStore;
+using ::password_manager_test_utils::SavePasswordFormToProfileStore;
 
 // Matcher for Password Sharing First Run.
 id<GREYMatcher> PasswordSharingFirstRunMatcher() {
@@ -73,13 +73,21 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/348484044): Re-enable the test suite on ipad on iOS 17.
-#define DISABLE_ON_IPAD_WITH_IOS_17                            \
-  if (@available(iOS 17.0, *)) {                               \
-    if ([ChromeEarlGrey isIPadIdiom]) {                        \
-      EARL_GREY_TEST_DISABLED(@"Disabled for iPad on iOS 17"); \
-    }                                                          \
-  }
+// Unless it's a first time sharing run or sharing is disabled by enterprise,
+// the beginning of the sharing flow happens in the following order:
+// 1) User taps the share button.
+// 2) Share button turns into a spinner for at least 0.5s (for UX purposes).
+// 3) Spinner turns back into a share button (when sharing data is fetched).
+// 4) Appropriate view is displayed (based on user's family status).
+//
+// This helper simulates 1) and makes sure that 3) happens, so that tests can
+// interact with the view displayed in 4).
+void TapShareButtonAndWaitForSpinnerToDisappear() {
+  id<GREYMatcher> shareButtonMatcher = PasswordDetailsShareButtonMatcher();
+  [[EarlGrey selectElementWithMatcher:shareButtonMatcher]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:shareButtonMatcher];
+}
 
 }  // namespace
 
@@ -191,7 +199,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonVisibility {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -200,7 +207,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonVisibilityForSignedOutUser {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -208,7 +214,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonVisibilityForUserOptedInToAccountStorage {
-  DISABLE_ON_IPAD_WITH_IOS_17
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fake_identity];
 
@@ -219,7 +224,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonVisibilityWithSharingPolicyDisabled {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey
       setBoolValue:NO
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
@@ -230,8 +234,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
   // Share button should be visible and display the policy info popup upon tap.
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kEnterpriseInfoBubbleViewId)]
@@ -239,7 +242,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonVisibilityDuringPasswordEditing {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -270,7 +272,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonDisabledWithJustPasskeys {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasskeyToStoreAndOpenDetails];
 
@@ -279,7 +280,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testShareButtonEnabledWithMixOfPasswordsAndPasskeys {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasskeyAndPasswordToStoreAndOpenDetails];
 
@@ -288,15 +288,13 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testFamilyPickerCancelFlow {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kFamilyPickerCancelButtonID)]
@@ -308,14 +306,12 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testPasswordPickerCancelFlow {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordPickerCancelButtonID)]
@@ -327,15 +323,12 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testFamilyPickerSwipeToDismissFlow {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewID)]
+  [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the current view is the password details view.
@@ -344,7 +337,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testFamilyPromoSwipeToDismissFlow {
-  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -356,8 +348,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kFamilyPromoViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
@@ -368,12 +359,10 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testPasswordPickerSwipeToDismissFlow {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
@@ -384,12 +373,10 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testSharingStatusSwipeToDismissFlow {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1@gmail.com")]
       performAction:grey_tap()];
@@ -408,7 +395,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testFetchingRecipientsNoFamilyStatus {
-  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -420,8 +406,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Check that the family promo view was displayed.
   [[EarlGrey selectElementWithMatcher:
@@ -443,7 +428,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testTappingGotItInFamilyPromoInviteMembersView {
-  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -456,8 +440,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Check that the family promo view was displayed.
   [[EarlGrey
@@ -481,7 +464,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testFetchingRecipientsError {
-  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kUnknown`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -493,8 +475,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Check that the error view was displayed and close it.
   [[EarlGrey selectElementWithMatcher:
@@ -510,14 +491,12 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testPasswordSharingSuccess {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Make sure that the share button is disabled before the recipient selection
   // and enabled after.
@@ -563,12 +542,10 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testNavigationBetweenPasswordAndFamilyPicker {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Check that the next button is enabled by default.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -597,14 +574,12 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testTappingFamilyPickerIneligibleRecipientInfoPopup {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
@@ -629,15 +604,13 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testTappingCancelInFirstRunExperienceView {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Tap the cancel button.
   [[EarlGrey selectElementWithMatcher:
@@ -651,22 +624,19 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 
   // Tap the share button again and verify that the first run view is still
   // displayed since it was not acknowledged.
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testTappingShareInFirstRunExperienceView {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Tap the share button in the first run experience view.
   [[EarlGrey selectElementWithMatcher:
@@ -685,22 +655,19 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 
   // Tap the share button in password details view and verify that the first run
   // view will not be displayed anymore since it was acknowledged.
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
 - (void)testFirstRunExperienceViewDismissedForAuthentication {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -718,12 +685,10 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testFamilyPickerViewDismissedForAuthentication {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -741,12 +706,10 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 }
 
 - (void)testPasswordPickerViewDismissedForAuthentication {
-  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
+  TapShareButtonAndWaitForSpinnerToDisappear();
 
   [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
