@@ -50,12 +50,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -69,7 +65,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -1156,13 +1151,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                         .getTabModelSelectorById(info.get(0).instanceId);
         assert selector != null;
 
-        TabGroupModelFilter filter =
-                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        cleanupSyncedTabGroups(selector);
+    }
 
-        Profile profile = filter.getTabModel().getProfile();
-        if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
-
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
+    @Override
+    public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
+        TabModelUtils.runOnTabStateInitialized(
+                selector,
+                (TabModelSelector initializedSelector) -> cleanupSyncedTabGroupsIfLastInstance());
     }
 }
