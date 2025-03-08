@@ -374,14 +374,4 @@ bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
       /*out_block_is_site_setting_specific=*/nullptr);
 }
 
-void SharedStorageHeaderObserver::NotifySharedStorageAccessed(
-    AccessType type,
-    FrameTreeNodeId main_frame_id,
-    const url::Origin& request_origin,
-    const SharedStorageEventParams& params) {
-  storage_partition_->GetSharedStorageRuntimeManager()
-      ->NotifySharedStorageAccessed(type, main_frame_id,
-                                    request_origin.Serialize(), params);
-}
-
 }  // namespace content
