@@ -2536,8 +2536,7 @@ void LensOverlayController::InitializeOverlayUI(
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));
   }
-  // Do not send text to the overlay from the full image response.
-  if (init_data.text_ && !lens::features::IsSimplifiedSelectionEnabled()) {
+  if (init_data.text_) {
     SendText(init_data.text_->Clone());
   }
   if (pending_region_) {
@@ -3479,11 +3478,7 @@ void LensOverlayController::HandleStartQueryResponse(
       initialization_data_->text_ = text.Clone();
     }
 
-    // Do not send text to the overlay from the full image response when
-    // simplified selection is enabled.
-    if (!lens::features::IsSimplifiedSelectionEnabled()) {
-      SendText(std::move(text));
-    }
+    SendText(std::move(text));
 
     // Try and record the OCR DOM similarity since the OCR text is now
     // available.

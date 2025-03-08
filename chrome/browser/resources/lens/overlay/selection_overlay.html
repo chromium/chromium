@@ -378,7 +378,9 @@
           selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
     </template>
     <template is="dom-if" if="[[simplifiedSelectionEnabled]]">
-      <lens-simplified-text-layer></lens-simplified-text-layer>
+      <lens-simplified-text-layer
+          selection-overlay-rect="[[selectionOverlayRect]]">
+      </lens-simplified-text-layer>
     </template>
   </div>
   <div id="initialFlashScrim"></div>

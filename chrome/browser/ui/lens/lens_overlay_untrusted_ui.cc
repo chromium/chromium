@@ -180,8 +180,14 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::IsLensOverlaySaveAsImageEnabled());
   html_source->AddInteger(
       "textReceivedTimeout",
-      lens::features::
-          GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
+      lens::features::IsSimplifiedSelectionEnabled()
+          ? lens::features::GetSimplifiedSelectionTextReceivedTimeout()
+          : lens::features::
+                GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
+  html_source->AddInteger("copyTextTimeout",
+                          lens::features::GetCopyTextReceivedTimeout());
+  html_source->AddInteger("translateTextTimeout",
+                          lens::features::GetTranslateTextReceivedTimeout());
   html_source->AddBoolean(
       "darkMode",
       lens::LensOverlayShouldUseDarkMode(
