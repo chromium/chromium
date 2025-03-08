@@ -1381,6 +1381,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void setTabIndex(int);
   int tabIndex() const;
+  int ReadingOrderValue() const;
 
   void setEditContext(EditContext* editContext, ExceptionState&);
   EditContext* editContext() const;

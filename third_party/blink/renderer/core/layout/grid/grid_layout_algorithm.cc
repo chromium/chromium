@@ -4086,27 +4086,19 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(const GridItems& grid_items) {
   HeapVector<Member<blink::Node>> reading_flow_nodes;
   reading_flow_nodes.ReserveInitialCapacity(grid_items.Size());
   // Add grid item if it is a DOM node
-  auto AddItemIfNeeded = [&](const GridItemData& grid_item) {
+  auto add_item_if_needed = [&](const GridItemData& grid_item) {
     if (blink::Node* node = grid_item.node.GetDOMNode()) {
       reading_flow_nodes.push_back(node);
     }
   };
 
-  HeapVector<Member<GridItemData>, 16> reordered_grid_items;
-  reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
-  bool should_sort_by_reading_order = false;
-  for (const auto& grid_item : grid_items) {
-    reordered_grid_items.push_back(
-        MakeGarbageCollected<GridItemData>(grid_item));
-    // We optimize to only sort by reading-order if at least one item's value is
-    // not the default (0).
-    if (grid_item.node.Style().ReadingOrder() != 0) {
-      should_sort_by_reading_order = true;
-    }
-  }
-
   if (reading_flow == EReadingFlow::kGridRows ||
       reading_flow == EReadingFlow::kGridColumns) {
+    HeapVector<const GridItemData*, 16> reordered_grid_items;
+    reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
+    for (const auto& grid_item : grid_items) {
+      reordered_grid_items.push_back(&grid_item);
+    }
     // We reorder grid items by their row/column indices.
     // If reading-flow is grid-rows, we should sort by row, then column.
     // If reading-flow is grid-columns, we should sort by column, then
@@ -4117,7 +4109,7 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(const GridItems& grid_items) {
       reading_direction_first = kForColumns;
       reading_direction_second = kForRows;
     }
-    auto CompareGridItemsForReadingFlow =
+    auto compare_grid_items_for_reading_flow =
         [reading_direction_first, reading_direction_second](const auto& lhs,
                                                             const auto& rhs) {
           if (lhs->SetIndices(reading_direction_first).begin ==
@@ -4129,21 +4121,14 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(const GridItems& grid_items) {
                  rhs->SetIndices(reading_direction_first).begin;
         };
     std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
-                     CompareGridItemsForReadingFlow);
-  }
-  // After reading-flow ordering, items should still be sorted by reading-order.
-  if (should_sort_by_reading_order) {
-    auto CompareGridItemsForReadingOrder = [](const auto& lhs,
-                                              const auto& rhs) {
-      return lhs->node.Style().ReadingOrder() <
-             rhs->node.Style().ReadingOrder();
-    };
-    std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
-                     CompareGridItemsForReadingOrder);
-  }
-
-  for (const auto& grid_item : reordered_grid_items) {
-    AddItemIfNeeded(*grid_item);
+                     compare_grid_items_for_reading_flow);
+    for (const auto& grid_item : reordered_grid_items) {
+      add_item_if_needed(*grid_item);
+    }
+  } else {
+    for (const auto& grid_item : grid_items) {
+      add_item_if_needed(grid_item);
+    }
   }
   container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }

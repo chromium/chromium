@@ -1386,7 +1386,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kFlexFlow ||
              value_id == CSSValueID::kGridRows ||
              value_id == CSSValueID::kGridColumns ||
-             value_id == CSSValueID::kGridOrder;
+             value_id == CSSValueID::kGridOrder ||
+             value_id == CSSValueID::kSourceOrder;
     case CSSPropertyID::kResize:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
              value_id == CSSValueID::kHorizontal ||
