@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -432,9 +433,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::AUTOFILL_WALLET_DATA), 1);
-  histograms.ExpectBucketCount(
-      "Sync.ClearMetadataWhileStopped",
-      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES), 1);
 
   // But for data types that use a single model in both transport mode and
   // Sync-the-feature mode (and that support transport mode in the first place),
@@ -448,6 +446,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
+
+  // With `kSeparateLocalAndAccountSearchEngines`, the same model is used for
+  // both transport mode and Sync-the-feature mode, so the metadata should *not*
+  // have been cleared.
+  histograms.ExpectBucketCount(
+      "Sync.ClearMetadataWhileStopped",
+      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES),
+      base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)? 0 : 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
