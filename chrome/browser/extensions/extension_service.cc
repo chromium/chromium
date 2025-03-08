@@ -389,6 +389,7 @@ ExtensionService::ExtensionService(
     const base::FilePath& unpacked_install_directory,
     ExtensionPrefs* extension_prefs,
     Blocklist* blocklist,
+    ExtensionErrorController* error_controller,
     bool autoupdate_enabled,
     bool extensions_enabled,
     base::OneShotEvent* ready)
@@ -413,6 +414,7 @@ ExtensionService::ExtensionService(
       extensions_enabled_(extensions_enabled),
       ready_(ready),
       component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
+      error_controller_(error_controller),
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(
@@ -477,8 +479,7 @@ ExtensionService::ExtensionService(
   // if required.
   is_first_run_ = !extension_prefs_->SetAlertSystemFirstRun();
 
-  error_controller_ =
-      std::make_unique<ExtensionErrorController>(profile_, is_first_run_);
+  error_controller_->set_is_first_run(is_first_run_);
   external_install_manager_ =
       std::make_unique<ExternalInstallManager>(profile_, is_first_run_);
 
@@ -532,6 +533,7 @@ void ExtensionService::Shutdown() {
   blocklist_ = nullptr;
   registry_ = nullptr;
   pending_extension_manager_ = nullptr;
+  error_controller_ = nullptr;
 }
 
 void ExtensionService::Init() {
