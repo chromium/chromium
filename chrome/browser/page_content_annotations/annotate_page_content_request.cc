@@ -5,6 +5,7 @@
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -111,7 +112,7 @@ void AnnotatedPageContentRequest::DidFinishNavigation(
   // commits.
   waiting_for_fcp_ = false;
   waiting_for_load_ = false;
-  RequestContentIfReady();
+  MaybeScheduleExtraction();
 }
 
 void AnnotatedPageContentRequest::DidStopLoading() {
@@ -133,16 +134,16 @@ void AnnotatedPageContentRequest::DidStopLoading() {
   }
 
   waiting_for_load_ = false;
-  RequestContentIfReady();
+  MaybeScheduleExtraction();
 }
 
 void AnnotatedPageContentRequest::OnFirstContentfulPaintInPrimaryMainFrame() {
   waiting_for_fcp_ = false;
-  RequestContentIfReady();
+  MaybeScheduleExtraction();
 }
 
 void AnnotatedPageContentRequest::ResetForNewNavigation() {
-  page_content_pending_ = true;
+  lifecycle_ = Lifecycle::kPending;
   waiting_for_fcp_ = true;
   waiting_for_load_ = true;
 
@@ -150,11 +151,12 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void AnnotatedPageContentRequest::RequestContentIfReady() {
-  if (!Ready()) {
+void AnnotatedPageContentRequest::MaybeScheduleExtraction() {
+  if (!ShouldScheduleExtraction()) {
     return;
   }
 
+  lifecycle_ = Lifecycle::kScheduled;
   if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
 #if BUILDFLAG(ENABLE_PDF)
     content::GetUIThreadTaskRunner()->PostDelayedTask(
@@ -165,10 +167,6 @@ void AnnotatedPageContentRequest::RequestContentIfReady() {
             GetAnnotatedPageContentCaptureDelay());
 #endif  // BUILDFLAG(ENABLE_PDF)
   } else {
-    if (delay_.is_zero()) {
-      RequestAnnotatedPageContentSync();
-      return;
-    }
     content::GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -179,6 +177,8 @@ void AnnotatedPageContentRequest::RequestContentIfReady() {
 }
 
 void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
+  TRACE_EVENT0("browser",
+               "AnnotatedPageContentRequest::RequestAnnotatedPageContentSync");
   optimization_guide::GetAIPageContent(
       web_contents_, request_.Clone(),
       base::BindOnce(&AnnotatedPageContentRequest::OnPageContentReceived,
@@ -192,8 +192,8 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   }
 }
 
-bool AnnotatedPageContentRequest::Ready() const {
-  if (!page_content_pending_) {
+bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
+  if (lifecycle_ != Lifecycle::kPending) {
     return false;
   }
 
@@ -202,6 +202,7 @@ bool AnnotatedPageContentRequest::Ready() const {
 
 void AnnotatedPageContentRequest::OnPageContentReceived(
     std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {
+  lifecycle_ = Lifecycle::kDone;
   if (!proto) {
     return;
   }
