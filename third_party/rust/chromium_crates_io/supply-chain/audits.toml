@@ -3786,11 +3786,30 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto"]
 version = "0.7.5"
 
+[[audits.yoke]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.7.5 -> 0.8.0"
+notes = """
+Cleaning up a previous hack for adding trait bounds to yoke objects. Unsafe changes:
+- deleting the hack itself removes a lot of unsafe use required in the hack's implementation
+- changes another unsafe use to remove the use of the hack, now that it's no longer needed
+
+
+See https://crrev.com/c/6323349 for more audit notes.
+"""
+
 [[audits.yoke-derive]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.7.5"
 notes = "Custom derive implementing the `Yokeable` trait. Generally generates simple code that asserts covariance."
+
+[[audits.yoke-derive]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.7.5 -> 0.8.0"
+notes = "No code changes: only incrementing the version."
 
 [[audits.zerofrom]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -3821,6 +3840,17 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.2.0"
 notes = "Minor repr(transparent) unsafe code. Improved comments in https://github.com/unicode-org/icu4x/pull/6054"
+
+[[audits.zerotrie]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.2.0 -> 0.2.1"
+notes = """
+Changes in unsafe blocks are wrapping direct calls to `core::mem::transmute` with the `transparent_ref_from_store` wrapper.
+No safety guarantees change, but providing the `transparent_ref_from_store` as a wrapper provides a convenient marker that this transmute operation is actually sound.
+
+See https://crrev.com/c/6323349 for more audit notes.
+"""
 
 [[audits.zerovec]]
 who = "Manish Goregaokar <manishearth@google.com>"
