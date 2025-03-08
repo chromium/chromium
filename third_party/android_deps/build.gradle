@@ -148,14 +148,6 @@ dependencies {
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
-    // Not used directly, but listing here to pin versions to latest because
-    // that's what's been uploaded to CIPD.
-    compile 'com.google.firebase:firebase-datatransport:19.0.0'
-    compile 'com.google.firebase:firebase-measurement-connector:20.0.1'
-    compile 'com.google.android.datatransport:transport-backend-cct:4.0.0'
-    compile 'com.google.android.gms:play-services-stats:17.1.0'
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1'
-
     buildCompile 'com.google.code.gson:gson:2.8.0'
     buildCompile 'org.ow2.asm:asm:7.0'
     buildCompile 'org.ow2.asm:asm-commons:7.0'

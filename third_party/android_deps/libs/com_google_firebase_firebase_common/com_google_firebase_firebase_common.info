@@ -9,8 +9,6 @@ has_proguard_flags = true
 has_r_text_file = true
 is_manifest_empty = false
 manifest_package = "com.google.firebase"
-resources = [
-  "res/raw/firebase_common_keep.xml"
-]
+resources = []
 subjar_tuples = []
 subjars = []

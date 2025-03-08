@@ -1,7 +1,7 @@
 Name: kotlinx-coroutines-play-services
 Short Name: kotlinx-coroutines-play-services
 URL: https://github.com/Kotlin/kotlinx.coroutines
-Version: 1.10.1
+Version: 1.6.4
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
