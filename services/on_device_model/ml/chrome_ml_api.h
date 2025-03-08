@@ -241,6 +241,9 @@ struct ChromeMLMetricsFns {
                                       size_t buckets);
 };
 
+// Precision used by the gpu delegate during inference.
+enum class GpuDelegatePrecision { kFp16, kFp32 };
+
 struct ChromeMLTSAPI {
   // Construct a text safety model.
   // Destroy the returned object by passing it to DestroyModel.
@@ -395,6 +398,9 @@ struct ChromeMLAPI {
 
   // Creates a new TFLite delegate using the GPU inference engine.
   TfLiteDelegate* (*CreateGpuDelegate)();
+
+  TfLiteDelegate* (*CreateGpuDelegateWithPrecision)(
+      GpuDelegatePrecision precision);
 
   // Destroys the TFLite delegate created by `CreateDelegate()` call.
   void (*DestroyGpuDelegate)(TfLiteDelegate* delegate);
