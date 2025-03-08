@@ -9221,6 +9221,13 @@
        {}
       ]
      ],
+     "selection-detached-range-find-crash.html": [
+      "e64446467daf00b8200c9852116d7c889fc89c4f",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-details-editor-ui.html": [
       "444306207a4617468447327b4a3e292cec0154d8",
       [
@@ -418084,10 +418091,6 @@
       "4e31ed49627c40f145e87e867d5c0395a72783f3",
       []
      ],
-     "getinnerhtml.tentative-expected.txt": [
-      "a1e94a1fa40c7b0d0fab7247e8f3c0effce19f9b",
-      []
-     ],
      "support": {
       "declarative-child-frame.html": [
        "603c47743b807ecc00a483d328edcacb7ebb8d57",
@@ -421871,6 +421874,10 @@
     ],
     "idlharness.window-expected.txt": [
      "9d36f476f0a42e895f5845aba7dd5098bb32ac08",
+     []
+    ],
+    "inheriting-csp-for-local-schemes.html.headers": [
+     "a4e416b2bcace387277597527bf6048c53c56cbd",
      []
     ],
     "legacy-trusted-script-urls-expected.txt": [
@@ -534868,6 +534875,15 @@
      ],
      "edit-context-execCommand.tentative.https.html": [
       "daa9df3ccedc7b7307dc5d3fdbc1a6f116927395",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "edit-context-focus.tentative.html": [
+      "5ede5f06bae6eb320062f007ba6f7e0bb6080792",
       [
        null,
        {
@@ -698342,13 +698358,6 @@
        }
       ]
      ],
-     "getinnerhtml.tentative.html": [
-      "139cba2a517f666e444f891a46f5426944bad68a",
-      [
-       null,
-       {}
-      ]
-     ],
      "innerhtml-before-closing-tag.html": [
       "f038d3ecb2e50652e802132f03e5c41c10bd3dd2",
       [
@@ -722597,6 +722606,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "inheriting-csp-for-local-schemes.html": [
+     "de065f0d06e7fa686dcccb2aee3418210ea9e72a",
+     [
+      null,
+      {}
      ]
     ],
     "legacy-trusted-script-urls.html": [
@@ -778422,7 +778438,14 @@
    },
    "webrtc-stats": {
     "getStats-remote-candidate-address.html": [
-     "d30f2252bf23fe6ceb69349af2106e56885573b6",
+     "add679044c7499806e1da9a3dce1b75c56822fb1",
+     [
+      null,
+      {}
+     ]
+    ],
+    "getStats-remote-candidate-ufrag.html": [
+     "df3ddb2bfd2c037f3aaca299890108aa5ca7895b",
      [
       null,
       {}
