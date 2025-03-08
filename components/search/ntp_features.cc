@@ -425,10 +425,10 @@ const base::FeatureParam<NtpSharepointModuleDataType>::Option
          "fake-non-insights"}};
 
 const base::FeatureParam<NtpSharepointModuleDataType>
-    kNtpSharepointModuleDataParam{
-        &ntp_features::kNtpSharepointModule, "NtpSharepointModuleDataParam",
-        NtpSharepointModuleDataType::kTrendingInsights,
-        &kNtpSharepointModuleDataTypeOptions};
+    kNtpSharepointModuleDataParam{&ntp_features::kNtpSharepointModule,
+                                  "NtpSharepointModuleDataParam",
+                                  NtpSharepointModuleDataType::kNonInsights,
+                                  &kNtpSharepointModuleDataTypeOptions};
 
 const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam(
     &ntp_features::kNtpSharepointModule,
