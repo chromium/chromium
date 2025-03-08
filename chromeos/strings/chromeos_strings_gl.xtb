@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Versión do SDK:</translation>
 <translation id="2016697457005847575">Probar os pasos para tentar solucionar o problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Escolle un tema e despois selecciona as palabras subliñadas para personalizar as túas imaxes xeradas por IA.</translation>
 <translation id="2045814230297767491">cubertos</translation>
 <translation id="2047316797244836561">Para ver o protector de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">Nestes momentos, non se admite este idioma</translation>
 <translation id="2787435249130282949">teclado máis brillante</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
+<translation id="2822702442014805146">Descarga en curso do modelo de creación de nomes e resumos</translation>
 <translation id="28232023175184696">Non foi posible conectarse a Internet. Facer clic para tentalo de novo.</translation>
 <translation id="2855718259207180827">la</translation>
 <translation id="2859243502336719778">Actualización esencial</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">Estrés</translation>
 <translation id="4897058166682006107">Nivel de batería do auricular esquerdo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Activa a función para seleccionar as opcións de protector de pantalla</translation>
+<translation id="4910853326379896417">Completouse a descarga do modelo de creación de nomes e resumos</translation>
 <translation id="4910858703033903787">Tipos de APN</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="5078711626843651677">Os modelos de voz almacenaranse de forma temporal no dispositivo ata que remate o etiquetado de interlocutores. Podes desactivar esta opción cando queiras en Configuración.</translation>
 <translation id="5078983345702708852">futurista</translation>
+<translation id="5085224064082122501">Non se puido descargar o modelo de creación de nomes e resumos. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="5087864757604726239">volver</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Desactivar o tema claro</translation>
 <translation id="6359919876285606596">Esta é unha acción permanente, polo que non se poderá desfacer</translation>
-<translation id="6368342879959028556">Ao seleccionar Crear con IA, escribe unha solicitude personalizada. Coa opción Fondos de pantalla xerados por IA podes escoller un tema e, a continuación, elixir as palabras subliñadas para personalizar un fondo de pantalla xerado por IA.</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
 <translation id="6369221585240879141">Non se poden crear nomes de gravación para este idioma de transcrición</translation>
 <translation id="6373461326814131011">estanque</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">Queres permitir que os servizos do sistema usen a túa localización?</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="66621959568103627">rosa coral</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A opción Inspírame pode ofrecerche máis opcións de imaxes xeradas por IA únicas e variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Cando creas contido con IA, a solicitude envíase aos servidores de IA de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A IA xenerativa ten carácter experimental e aínda se está desenvolvendo, polo que actualmente ten dispoñibilidade limitada.</translation>
 <translation id="6673898378497337661">aumentar o brillo do teclado</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6694534975463174713">cadeado</translation>
@@ -1431,6 +1422,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil con conexión por USB</translation>
 <translation id="757747079855995705">pedra</translation>
+<translation id="7584853321964440104">Non se puido realizar a descarga. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">A persoa administradora de <ph name="MANAGER" /> configurou cando se pode usar este dispositivo (<ph name="DEVICE_TYPE" />).</translation>

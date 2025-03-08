@@ -402,6 +402,7 @@
 <translation id="6539122709674868420">A túa organización pecha Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />. Elimináronse os datos de navegación. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="6542839706527980775">En cada perfil gárdase a información de Chromium que lle corresponde (por exemplo, os marcadores, o historial ou os contrasinais)</translation>
 <translation id="6563921047760808519">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chromium a privacidade dos teus datos<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Os cambios nesta opción de configuración aplicaranse cando se reinicie Chromium.</translation>
 <translation id="656935081669708576">Podes cambiar de perfil para ver os contrasinais doutro perfil de Chromium</translation>
 <translation id="6570579332384693436">Para solucionar os erros ortográficos, Chromium envía a Google o texto que escribes nos campos de texto</translation>
 <translation id="6598877126913850652">Ir á configuración de notificacións de Chromium</translation>

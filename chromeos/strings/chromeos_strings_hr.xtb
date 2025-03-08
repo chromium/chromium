@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Verzija SDK-a:</translation>
 <translation id="2016697457005847575">Isprobajte upute za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Odaberite temu, a zatim podcrtane riječi da biste personalizirali svoje AI slike.</translation>
 <translation id="2045814230297767491">pribor za jelo</translation>
 <translation id="2047316797244836561">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali čuvar zaslona.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">različiti planet</translation>
 <translation id="6359706544163531585">Onemogućivanje svijetle teme</translation>
 <translation id="6359919876285606596">Ta je radnja trajna i ne može se poništiti</translation>
-<translation id="6368342879959028556">Kad odaberete Izradite pomoću AI-ja, napišite prilagođeni upit. Možete odabrati i opciju AI pozadine da biste odabrali temu, a zatim podcrtane riječi kako biste personalizirali svoju AI pozadinu.</translation>
 <translation id="636850387210749493">Prijava poduzeća</translation>
 <translation id="6369221585240879141">Izrada naziva snimki za taj jezik prijepisa nije uspjela</translation>
 <translation id="6373461326814131011">jezero</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Želite li uslugama sustava dopustiti da upotrebljavaju vašu lokaciju?</translation>
 <translation id="6657585470893396449">Zaporka</translation>
 <translation id="66621959568103627">koraljno ružičaste boje</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Odaberite Nadahni me da biste dobili jedinstvenije i raznolikije opcije AI slika.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kad izrađujete sadržaj pomoću AI-ja, poslužiteljima Googleovog AI-ja šalje se upit radi generiranja slika i poboljšanja proizvoda, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativni AI u eksperimentalnoj je fazi ranog razvoja, a dostupnost je trenutačno ograničena.</translation>
 <translation id="6673898378497337661">pojačavanje svjetline tipkovnice</translation>
 <translation id="6692996468359469499">Dohvaćanje informacija povezanih s vašim odabirom</translation>
 <translation id="6694534975463174713">zaključaj</translation>

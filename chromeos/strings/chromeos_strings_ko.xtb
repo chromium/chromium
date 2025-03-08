@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK 버전:</translation>
 <translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">테마를 고른 후 밑줄이 그어진 단어를 선택해 AI 생성 이미지를 맞춤설정하세요.</translation>
 <translation id="2045814230297767491">식사용 날붙이</translation>
 <translation id="2047316797244836561">화면 보호기를 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">다른 행성</translation>
 <translation id="6359706544163531585">밝은 테마 사용 중지</translation>
 <translation id="6359919876285606596">이 작업은 영구적이며, 되돌릴 수 없습니다.</translation>
-<translation id="6368342879959028556">'AI로 만들기'를 선택한 경우 맞춤 프롬프트를 작성하세요. 또는 'AI 배경화면'을 선택하여 테마를 고른 후 밑줄이 그어진 단어를 선택해 AI 배경화면을 맞춤설정하세요.</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6369221585240879141">이 스크립트 언어의 녹화 이름을 만들 수 없습니다.</translation>
 <translation id="6373461326814131011">연못</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">시스템 서비스에서 내 위치를 사용하도록 허용하시겠습니까?</translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="66621959568103627">코랄 핑크색</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          '아이디어 얻기'를 선택하면 더욱 다양하고 고유한 AI 생성 이미지 옵션이 제공됩니다.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI를 사용해 이미지를 만드는 경우 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 이미지를 생성하고 제품을 개선하기 위해 프롬프트가 Google AI 서버로 전송됩니다.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          생성형 AI는 실험 단계의 기술로, 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="6673898378497337661">키보드 밝기를 높입니다</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6694534975463174713">잠금</translation>

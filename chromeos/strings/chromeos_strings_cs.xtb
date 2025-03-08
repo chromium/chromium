@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Verze sady SDK:</translation>
 <translation id="2016697457005847575">Vyzkoušet postup odstraňování problémů</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Vyberte motiv a pak si obrázky od AI přizpůsobte výběrem podtržených slov.</translation>
 <translation id="2045814230297767491">příbory</translation>
 <translation id="2047316797244836561">Pokud chcete zobrazit spořič obrazovky, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">Tenhle jazyk teď není podporován</translation>
 <translation id="2787435249130282949">jasnější klávesnice</translation>
 <translation id="2805756323405976993">Aplikace</translation>
+<translation id="2822702442014805146">Probíhá stahování modelu k vytváření souhrnů a názvů</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
 <translation id="2855718259207180827">vlna</translation>
 <translation id="2859243502336719778">Kritická aktualizace</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">Zátěž</translation>
 <translation id="4897058166682006107">Stav baterie levého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Pokud chcete vybrat možnosti spořiče obrazovky, zapněte tuto funkci</translation>
+<translation id="4910853326379896417">Stažení modelu k vytváření souhrnů a názvů bylo dokončeno</translation>
 <translation id="4910858703033903787">Typy APN</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="5078711626843651677">Hlasové modely se dočasně ukládají do zařízení, dokud není označování mluvících osob dokončeno. Tuto funkci můžete v Nastavení kdykoli vypnout.</translation>
 <translation id="5078983345702708852">futuristické</translation>
+<translation id="5085224064082122501">Model k vytváření souhrnů a názvů nelze stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="5087864757604726239">zpět</translation>
 <translation id="5088172560898466307">Název hostitele serveru</translation>
 <translation id="5089810972385038852">Stát/kraj</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">jiná planeta</translation>
 <translation id="6359706544163531585">Deaktivovat světlý motiv</translation>
 <translation id="6359919876285606596">Tato akce je trvalá a nelze ji vrátit zpět</translation>
-<translation id="6368342879959028556">Můžete vybrat Vytvořit pomocí AI a napsat vlastní pokyn. Nebo můžete vybrat AI tapety, zvolit motiv a pak AI tapetu upravit tím, že vyberete podtržená slova.</translation>
 <translation id="636850387210749493">Podniková registrace</translation>
 <translation id="6369221585240879141">Pro tento jazyk přepisu nelze vytvořit názvy nahrávek</translation>
 <translation id="6373461326814131011">rybník</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">Povolit systémovým službám používat vaši polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="66621959568103627">korálově růžová</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pomocí možnosti Inspiruj mě získáte další jedinečné a rozmanité možnosti obrázků od AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Při vytváření pomocí AI se pokyn odesílá na servery Google AI, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativní umělá inteligence je experimentální, na počátku vývoje a v současné době má omezenou dostupnost.</translation>
 <translation id="6673898378497337661">zvýšit jas klávesnice</translation>
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
 <translation id="6694534975463174713">zámek</translation>
@@ -1431,6 +1422,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Dotyková obrazovka USB</translation>
 <translation id="757747079855995705">kámen</translation>
+<translation id="7584853321964440104">Model nelze stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrátor domény <ph name="MANAGER" /> nastavil, kdy se tohle zařízení <ph name="DEVICE_TYPE" /> může používat.</translation>

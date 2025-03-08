@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK versiyasi:</translation>
 <translation id="2016697457005847575">Muammoni hal qilishga urining</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Mavzu tanlang va AI yaratgan rasmlarni tagiga chizilgan soʻzlarni tanlash orqali moslashtiring.</translation>
 <translation id="2045814230297767491">pichoqchilik</translation>
 <translation id="2047316797244836561">Ekran lavhasini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">oʻzga sayyora</translation>
 <translation id="6359706544163531585">Kunduzgi mavzuni faolsizlantirish</translation>
 <translation id="6359919876285606596">Bu amalni bekor qilish imkonsiz</translation>
-<translation id="6368342879959028556">“AI bilan yaratish” tanlansa, keyin maxsus soʻrov yozish mumkin. Shuningdek, “AI fon rasmlari” bandini tanlash mumkin. Bunda kerakli mavzuni tanlasangiz, siz uchun moslangan AI fon rasmi yaratiladi.</translation>
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
 <translation id="6369221585240879141">Bu transkripsiya tili uchun yozuv nomi yaratilmadi</translation>
 <translation id="6373461326814131011">hovuz</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Tizim xizmatlariga joylashuvingizdan foydalanish uchun ruxsat berilsinmi?</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="66621959568103627">marjon pushti</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yanada unikal va xilma-xil AI rasmlar olish uchun "Menga ilhom ber" ustiga bosing.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI bilan kontent yaratish vaqtida rasm yaratish va mahsulotni yaxshilash uchun soʻrovlar Google AI serverlariga yuboriladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI tajribaviy funksiya hisoblanib, hali erta ishlab chiqish jarayonida va hozirda sanoqli foydalanuvchilar uchun mavjud.</translation>
 <translation id="6673898378497337661">klaviatura yorqinligini oshirish</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6694534975463174713">qulf</translation>

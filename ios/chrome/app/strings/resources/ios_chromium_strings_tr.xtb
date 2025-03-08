@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Lens'i buradan açabilirsiniz.</translation>
 <translation id="1042296835509784301">Chromium'da Şifre Yöneticisi'ni açar.</translation>
 <translation id="1047130070405668746">Chromium'u seçin</translation>
+<translation id="1086486568852410168">Google Lens ile ara</translation>
 <translation id="1091252999271033193">Bu durumda Chromium her seferinde mobil siteyi ister.</translation>
 <translation id="1115463765356382667">Chromium'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın.</translation>
 <translation id="1140315115515116765">Fiyat analizlerini kolayca almak İçin varsayılan olarak Chromium'u kullanın</translation>
@@ -98,6 +99,7 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Geçmiş ve otomatik doldurma da bu kapsamda yer alabilir.}other{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Geçmiş ve otomatik doldurma da bu kapsamda yer alabilir.}}</translation>
 <translation id="3410395242749598859">Chromium verilerinizden bazıları henüz <ph name="EMAIL" /> hesabına kaydedilmedi.
 Hesap değiştirmeden önce birkaç dakika beklemeyi deneyin. Hesabı şimdi değiştirirseniz bu veriler silinir.</translation>
+<translation id="3440830787838130530">Google Şifre Yöneticisi'ndeki bir şifrenin kopyasını aile grubunuzla kolay ve güvenli bir şekilde paylaşın</translation>
 <translation id="3472200483164753384">Chromium Canary'de desteklenmiyor</translation>
 <translation id="347967311580159871">Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="3512168799938877162">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chromium'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>

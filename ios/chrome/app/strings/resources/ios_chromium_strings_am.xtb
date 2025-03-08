@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">ሌንስ እዚህ መክፈት ይችላሉ።</translation>
 <translation id="1042296835509784301">በChromium ውስጥ የሚስጥር ቁልፍ አስተዳዳሪውን ይከፍታል።</translation>
 <translation id="1047130070405668746">Chromiumን ይምረጡ</translation>
+<translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="1091252999271033193">ይህ ማለት Chromium የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="1115463765356382667">ከChromium ላይ ምርጡን ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ እርምጃዎች ያጠናቅቁ።</translation>
 <translation id="1140315115515116765">የዋጋ ግንዛቤዎችን በቀላሉ ለማግኘት Chromium በነባሪ ይጠቀሙ</translation>
@@ -97,6 +98,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}one{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}other{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}}</translation>
 <translation id="3410395242749598859">አንዳንድ የChromium ውሂብዎ <ph name="EMAIL" /> ውስጥ ገና አልተቀመጠም።
 መለያ ከመቀየር በፊት ጥቂት ደቂቃዎች ለመጠበቅ ይሞክሩ። አሁን መለያዎችን ከቀየሩ ይህ ውሂብ ይሰረዛል።</translation>
+<translation id="3440830787838130530">በGoogle የይለፍ ቃል አስተዳዳሪ ውስጥ በቀላሉ እና ደህንነቱ በተጠበቀ መልኩ የይለፍ ቃል ቅጂ ለቤተሰብ ቡድንዎ ያጋሩ</translation>
 <translation id="3472200483164753384">በChromium Canary ላይ አይደገፍም</translation>
 <translation id="347967311580159871">የChromium ተሞክሮዎን ለማሻሻል ውሂብን ለሚጠቀሙ ተጨማሪ ቅንብሮች ወደ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="3512168799938877162">የይለፍ ቃልዎ አልተጋራም። የበይነመረብ ግንኙነትዎን ይፈትሹ እና ወደ Chromium መግባትዎን ያረጋግጡ። ከዚያም፣ እንደገና ይሞክሩ።</translation>

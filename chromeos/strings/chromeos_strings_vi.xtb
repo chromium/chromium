@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Phiên bản SDK:</translation>
 <translation id="2016697457005847575">Thử các bước khắc phục vấn đề</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Chọn một chủ đề, sau đó chọn các từ gạch chân để cá nhân hoá hình ảnh do AI tạo.</translation>
 <translation id="2045814230297767491">dao kéo</translation>
 <translation id="2047316797244836561">Vui lòng kết nối mạng và tải lại trang để xem trình bảo vệ màn hình.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">hành tinh khác</translation>
 <translation id="6359706544163531585">Tắt giao diện sáng</translation>
 <translation id="6359919876285606596">Thao tác này có hiệu lực vĩnh viễn và không thể huỷ</translation>
-<translation id="6368342879959028556">Khi bạn chọn "Sáng tạo bằng AI", hãy viết một câu lệnh tuỳ chỉnh. Hoặc bạn có thể chọn "Hình nền AI" để tìm chủ đề, sau đó chọn các từ gạch chân để cá nhân hoá Hình nền AI.</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
 <translation id="6369221585240879141">Không thể tạo tên bản ghi cho ngôn ngữ này của bản chép lời</translation>
 <translation id="6373461326814131011">cái ao</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Cho phép các dịch vụ hệ thống sử dụng thông tin vị trí của bạn?</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="66621959568103627">hồng san hô</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Chọn "Truyền cảm hứng cho tôi" để xem thêm lựa chọn hình ảnh đa dạng và độc đáo do AI tạo.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Khi bạn sáng tạo bằng AI, hệ thống sẽ gửi câu lệnh đến các máy chủ AI của Google để tạo hình ảnh và cải thiện sản phẩm theo <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Chính sách quyền riêng tư của Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI tạo sinh đang được thử nghiệm, vẫn đang trong quá trình phát triển ban đầu và hiện được cung cấp có giới hạn.</translation>
 <translation id="6673898378497337661">tăng độ sáng đèn bàn phím</translation>
 <translation id="6692996468359469499">Nhận thông tin liên quan đến lựa chọn của bạn</translation>
 <translation id="6694534975463174713">khoá</translation>

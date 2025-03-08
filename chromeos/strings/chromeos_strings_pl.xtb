@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Wersja SDK:</translation>
 <translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy wygenerowane przez AI.</translation>
 <translation id="2045814230297767491">sztućce</translation>
 <translation id="2047316797244836561">Aby wyświetlić wygaszacz ekranu, połącz się z siecią i odśwież stronę.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">inna planeta</translation>
 <translation id="6359706544163531585">Wyłącz jasny motyw</translation>
 <translation id="6359919876285606596">To działanie jest trwałe i nie można go cofnąć</translation>
-<translation id="6368342879959028556">Gdy wybierzesz „Utwórz przy pomocy AI”, wpisz niestandardowy prompt. Możesz też kliknąć „Tapety AI”, a potem wybrać motyw i podkreślone słowa, aby spersonalizować tapetę AI.</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="6369221585240879141">Nie można utworzyć nazw nagrań dla tego języka transkrypcji</translation>
 <translation id="6373461326814131011">staw</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Zezwolić usługom systemowym na korzystanie z Twojej lokalizacji?</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="66621959568103627">koralowy</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Gdy tworzysz treści za pomocą AI, prompt jest wysyłany na serwery AI od Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami.</translation>
 <translation id="6673898378497337661">zwiększ jasność klawiatury</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
 <translation id="6694534975463174713">zablokuj</translation>

@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Verzija paketa za razvoj softvera:</translation>
 <translation id="2016697457005847575">Isprobajte korake za rešavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Odaberite temu, pa izaberite podvučene reči da biste personalizovali AI slike.</translation>
 <translation id="2045814230297767491">pribor za jelo</translation>
 <translation id="2047316797244836561">Povežite se na mrežu i ponovo učitajte stranicu da biste videli čuvar ekrana.</translation>
 <translation id="2056550196601855911">IPv4 ili IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">druga planeta</translation>
 <translation id="6359706544163531585">Onemogući svetlu temu</translation>
 <translation id="6359919876285606596">Ova radnja je trajna i ne možete da je opozovete</translation>
-<translation id="6368342879959028556">Kada izaberete Napravi pomoću veštačke inteligencije, napišite prilagođeni upit. Možete i da izaberete AI pozadine da biste odabrali temu, pa da izaberete podvučene reči da biste personalizovali AI pozadinu.</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="6369221585240879141">Pravljenje naziva snimaka za ovaj jezik transkripta nije uspelo</translation>
 <translation id="6373461326814131011">Jezerce</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Želite da dozvolite sistemskim uslugama da koriste lokaciju?</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="66621959568103627">koralnoroze</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-          Izaberite Inspiriši me da biste dobili više jedinstvenih i raznovrsnijih opcija za AI slike.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kada pravite sadržaj pomoću veštačke inteligencije, upit se šalje serverima Google veštačke inteligencije radi generisanja slika i poboljšanja proizvoda, u skladu sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google politikom privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativni AI je eksperimentalan, u ranom razvoju i trenutno ima ograničenu dostupnost.</translation>
 <translation id="6673898378497337661">povećajte osvetljenost tastature</translation>
 <translation id="6692996468359469499">Pronađite informacije u vezi sa vašim izborom</translation>
 <translation id="6694534975463174713">brava</translation>

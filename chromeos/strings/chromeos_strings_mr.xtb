@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK आवृत्ती:</translation>
 <translation id="2016697457005847575">ट्रबलशूटिंगच्या पायऱ्या वापरून पहा</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">तुमच्या AI इमेज पर्सनलाइझ करण्यासाठी थीम निवडा आणि त्यानंतर अधोरेखित केलेले शब्द निवडा.</translation>
 <translation id="2045814230297767491">कटलरी</translation>
 <translation id="2047316797244836561">कृपया नेटवर्कशी कनेक्ट करा आणि स्क्रीन सेव्हर पाहण्यासाठी पेज रीलोड करा.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">वेगळा ग्रह</translation>
 <translation id="6359706544163531585">फिकट थीम बंद करा</translation>
 <translation id="6359919876285606596">ही कृती कायमस्वरूपी असते आणि ती पहिल्यासारखी केली जाऊ शकत नाही</translation>
-<translation id="6368342879959028556">तुम्ही “AI वापरून तयार करा” निवडल्यावर, कस्टम प्रॉम्प्ट लिहा. किंवा तुम्ही थीम निवडण्यासाठी “AI वॉलपेपर” निवडू शकता आणि त्यानंतर तुमचा AI वॉलपेपर पर्सनलाइझ करण्याकरिता अधोरेखित केलेले शब्द निवडू शकता.</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="6369221585240879141">या ट्रान्स्क्रिप्ट भाषेसाठी रेकॉर्डिंगची नावे तयार करू शकत नाही</translation>
 <translation id="6373461326814131011">तळे</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">सिस्टीम सेवांना तुमचे स्थान वापरण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="66621959568103627">कोरल पिंक</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI इमेजचे आणखी युनिक आणि वैविध्यपूर्ण पर्याय मिळवण्यासाठी "मला प्रेरणा द्या" निवडा.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तुम्ही AI वापरून तयार करता, तेव्हा इमेज जनरेट करण्यासाठी आणि उत्पादनामध्ये सुधारणा करण्यासाठी, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google चे गोपनीयता धोरण<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> याच्या अधीन राहून, प्रॉम्प्ट Google AI सर्व्हरला पाठवला जातो.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जनरेटिव्ह AI प्रायोगिक आहे, विकासाच्या सुरुवातीच्या टप्प्यात आहे आणि सध्या त्याची उपलब्धता मर्यादित आहे.</translation>
 <translation id="6673898378497337661">कीबोर्डचा ब्राइटनेस वाढवा</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
 <translation id="6694534975463174713">लॉक</translation>

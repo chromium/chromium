@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Turpinot jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Netiek saglabātas</translation>
 <translation id="1062138828266376352">PIN netika mainīts. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
+<translation id="1072476005125066234">Atsauksmes, kuru pamatā ir jūsu intereses</translation>
 <translation id="1074827084851510304">Jūs gatavojaties dzēst paroles ({password_count}) un to vietņu un lietotņu sarakstu, kurām izvēlējāties nekad nesaglabāt pierakstīšanās informāciju. Konti, kurus izveidojāt vietnēm un lietotnēm, netiks dzēsti.</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} cilne}zero{{count} cilņu}one{{count} cilne}other{{count} cilnes}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386">Vēl <ph name="COUNT" /> kontos tiek izmantota tā pati parole.</translation>
 <translation id="2059166748188874810">Pašvaldība</translation>
 <translation id="2060114494785549741">Dzēst pēc viena mēneša</translation>
+<translation id="2060638295449304809">Šī adrese ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šo adresi citās ierīcēs, saglabājiet to savā Google kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Mērvienību veidu atlasītājs</translation>
 <translation id="2067852168641682340">Katru reizi saglabāt šajā kontā</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 cilne}zero{{count} cilņu}one{{count} cilne}other{{count} cilnes}}</translation>
@@ -888,6 +890,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4824480232751123840">Tilpums</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} un viena cita cilne}zero{{domain} un {count} citu ciļņu}one{{domain} un {count} cita cilne}other{{domain} un {count} citas cilnes}}</translation>
 <translation id="4826588772550366629">kameru un mikrofonu</translation>
+<translation id="4828431027673677473">Produkti atbilstoši jūsu interesēm</translation>
 <translation id="4833786495304741580">Automātiski sūtīt lietojuma statistiku un avāriju pārskatus Google serveriem.</translation>
 <translation id="483689884442613745">Saglabāt…</translation>
 <translation id="4840495572919996524">Jūsu grāmatzīmes, vēsture, paroles un citi iestatījumi vairs netiks sinhronizēti ar jūsu Google kontu.</translation>
@@ -1724,6 +1727,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="828291969289324795">{count,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
 <translation id="8283172974887967105">Iestatīt…</translation>
 <translation id="8289930144142009940">Paziņojumi par funkciju “<ph name="FEATURE_NAME" />” ir izslēgti</translation>
+<translation id="8290077367744012649">Cenu izsekošana no jūsu cilnēm</translation>
 <translation id="8299417921174340354">Lai izmantotu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="8307481894409578819">Šo failu nevarēja augšupielādēt</translation>
 <translation id="8319076807703933069">Jauns meklēšanas vaicājums</translation>

@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">ເວີຊັນ SDK:</translation>
 <translation id="2016697457005847575">ກະລຸນາລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາ</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">ເລືອກຮູບແບບສີສັນ ແລະ ຈາກນັ້ນເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບ AI ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="2045814230297767491">ເຄື່ອງໃຊ້ເທິງໂຕະກິນເຂົ້າ</translation>
 <translation id="2047316797244836561">ກະລຸນາເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ ແລະ ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຕົວພັກໜ້າຈໍ.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">ດາວເຄາະດວງອື່ນ</translation>
 <translation id="6359706544163531585">ປິດການນຳໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="6359919876285606596">ການດຳເນີນການນີ້ມີຜົນຖາວອນ ແລະ ບໍ່ສາມາດຍົກເລີກໄດ້</translation>
-<translation id="6368342879959028556">ເມື່ອທ່ານເລືອກ “ສ້າງດ້ວຍ AI”, ໃຫ້ຂຽນ prompt ທີ່ກຳນົດເອງ. ຫຼື ທ່ານສາມາດເລືອກ “ຮູບພື້ນຫຼັງ AI” ເພື່ອເລືອກຮູບແບບສີສັນ ແລ້ວເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບພື້ນຫຼັງ AI ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="6369221585240879141">ບໍ່ສາມາດສ້າງຊື່ການບັນທຶກສຳລັບພາສາຂອງການຖອດຂໍ້ຄວາມຈາກສຽງນີ້ໄດ້</translation>
 <translation id="6373461326814131011">ໜອງປາ</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">ອະນຸຍາດໃຫ້ບໍລິການລະບົບໃຊ້ສະຖານທີ່ຂອງທ່ານບໍ?</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
 <translation id="66621959568103627">ບົວໂຄລໍລ໌</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເລືອກ "ຂໍແຮງບັນດານໃຈໃຫ້ຂ້ອຍແດ່" ເພື່ອຮັບຕົວເລືອກຮູບ AI ທີ່ເປັນເອກະລັກ ແລະ ຫຼາກຫຼາຍຍິ່ງຂຶ້ນ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເມື່ອທ່ານສ້າງດ້ວຍ AI, ລະບົບຈະສົ່ງ prompt ໄປຫາເຊີບເວີ Google AI ເພື່ອສ້າງຮູບ ແລະ ປັບປຸງຜະລິດຕະພັນ, ໂດຍເປັນໄປຕາມ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ສ້າງເນື້ອຫາແມ່ນເວີຊັນທົດລອງ, ທີ່ຢູ່ໃນຊ່ວງການພັດທະນາຂັ້ນຕົ້ນ ແລະ ມີໃຫ້ບໍລິການແບບຈຳກັດໃນຕອນນີ້.</translation>
 <translation id="6673898378497337661">ເພີ່ມຄວາມສະຫວ່າງແປ້ນພິມ</translation>
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6694534975463174713">ລັອກ</translation>

@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Versione SDK:</translation>
 <translation id="2016697457005847575">Prova i passaggi per la risoluzione dei problemi</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Scegli un tema e seleziona le parole sottolineate per personalizzare le tue immagini AI.</translation>
 <translation id="2045814230297767491">posate</translation>
 <translation id="2047316797244836561">Connettiti a una rete e ricarica la pagina per visualizzare il salvaschermo.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1139,7 +1138,6 @@
 <translation id="6352210854422428614">un altro pianeta</translation>
 <translation id="6359706544163531585">Disabilita il tema chiaro</translation>
 <translation id="6359919876285606596">Questa azione è definitiva e non può essere annullata</translation>
-<translation id="6368342879959028556">Quando selezioni "Crea con l'AI", scrivi un prompt personalizzato. In alternativa, puoi selezionare "Sfondi AI" per scegliere un tema e poi selezionare le parole sottolineate per personalizzare il tuo sfondo creato dall'AI.</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="6369221585240879141">Impossibile creare nomi di registrazioni per trascrizioni in questa lingua</translation>
 <translation id="6373461326814131011">stagno</translation>
@@ -1212,16 +1210,6 @@
 <translation id="6657240842932274095">Consentire ai servizi di sistema di utilizzare la tua posizione?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="66621959568103627">rosa corallo</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini create dall'AI univoche e diversificate.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quando crei contenuti con l'AI, ai server di Google AI viene inviata una richiesta di generazione di immagini e miglioramento del prodotto, ai sensi delle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          L'AI generativa è sperimentale, in fase di sviluppo iniziale, e attualmente ha una disponibilità limitata.</translation>
 <translation id="6673898378497337661">aumenta la luminosità della tastiera</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6694534975463174713">serratura</translation>

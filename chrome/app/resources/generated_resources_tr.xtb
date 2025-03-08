@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
 <translation id="140723521119632973">Hücresel Etkinleştirme</translation>
+<translation id="1407908250220330281">Bu profil bundan sonra yönetilecek</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" /> düzenleme iletişim kutusunu açmak için tıklayın</translation>
 <translation id="1408504635543854729">Cihazın içeriğini Dosyalar uygulamasında keşfedin. İçerik, bir yönetici tarafından kısıtlanmış ve üzerinde değişiklik yapılamaz.</translation>
 <translation id="1408980562518920698">Kişisel bilgileri yönetin</translation>
@@ -800,6 +801,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1549966883323105187">Kayıtlı şifrelerinize daha hızlı ulaşın</translation>
 <translation id="1550656959113606473">Chrome Varsayılanı</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" uzantısı, <ph name="SEARCH_PROVIDER_DOMAIN" /> alan adını kullanacak şekilde aramayı değiştirdi.</translation>
+<translation id="1552357433305859738">Bu profil ile senkronize etmeye devam et ve verileri birleştir</translation>
 <translation id="1552752544932680961">Uzantıyı yönet</translation>
 <translation id="1553538517812678578">sınırsız</translation>
 <translation id="1553947773881524342">Chromebook'unuzdaki Microsoft 365 hakkında <ph name="LINK_BEGIN" />daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
@@ -1433,6 +1435,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1980168597243156">Uzay istasyonu</translation>
 <translation id="1981434377190976112">Web sitelerindeki tüm verilerinizi okuma</translation>
 <translation id="1982851102516626421">Oturumunuz kapalı</translation>
+<translation id="1983612835086592681">Geçen hafta açtınız</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1984683754853869253">Okul için yeni bir profil oluşturmak istiyor musunuz?</translation>
 <translation id="198507684520034826">Yardım</translation>
@@ -1595,6 +1598,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> İşlem sırasında sistem yeniden başlatılacaktır.</translation>
+<translation id="209423774103268003">Akıllı kart okuyucularınıza erişiliyor</translation>
 <translation id="2095774564753225041">Desteklenen dosya türleri</translation>
 <translation id="2096716221239095980">Tüm verileri sil</translation>
 <translation id="2097950021134740304">Aboneliği unutmayı iptal et</translation>
@@ -2237,6 +2241,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2530166226437958497">Sorun giderme</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Bir sorun oluştuğu için <ph name="DEVICE_OS" /> yüklenemedi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım için g.co/flex/InstallErrors sayfasını ziyaret edin.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">Daha fazla bilgi edinin</translation>
 <translation id="2532144599248877204">Pilinizi %80 civarında tutarak pil ömrünü uzatır. Tipik olarak güç bağlantısını kesmeden önce pil tamamen şarj olur.</translation>
 <translation id="2532146950330687938">Cihaz hazırlanıyor...</translation>
 <translation id="2532198298278778531">ChromeOS Flex ayarlarında güvenli DNS'yi yönetin</translation>
@@ -3136,6 +3141,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3183139917765991655">Profil İçe Aktarıcısı</translation>
 <translation id="3183143381919926261">Mobil veri ağları</translation>
 <translation id="3183700187146209259">Tarayıcı yazılımı yüklenemiyor</translation>
+<translation id="3183750649832309748">Kuruluşunuz (<ph name="ACCOUNT_MANAGER" />) aşağıdakiler dahil bazı bilgileri görüntüleyebilecek:</translation>
 <translation id="3183944777708523606">Monitör düzenlemesi</translation>
 <translation id="3184536091884214176">CUPS yazıcıları kurun veya yönetin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Ebeveyn denetimleri ayarlarını değiştirmek için bu PIN'i kullanın.
@@ -3161,6 +3167,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3202499879214571401">Ekranı <ph name="DEVICE_NAME" /> adlı cihazda yayınlamayı duraklatın</translation>
 <translation id="3202578601642193415">En yeni</translation>
 <translation id="3204648577100496185">Bu uygulamayla ilişkili veriler bu cihazdan kaldırılabilir</translation>
+<translation id="3204717934117444051">Mevcut profilde, yalnızca bu cihaza kaydedilen veriler saklanır. Veriler <ph name="EMAIL" /> ile senkronize edilmez</translation>
 <translation id="3207344462385471911">Son etkinliğinize göre ilginizi çekebilecek önerilen aramaları ve alışveriş indirimlerini görüyorsunuz.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4294,6 +4301,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3977886311744775419">Otomatik güncellemeler bu ağ türünde indirilmez ancak güncellemeleri manuel olarak kontrol edebilirsiniz.</translation>
 <translation id="3978325380690188371">ChromeVox açıkken yapışkan tuşlar kullanılamaz</translation>
 <translation id="3978732922947854545">Chrome, PDF'leri daha iyi hale getirir</translation>
+<translation id="3979093622823535817"><ph name="MEETING_TITLE" /> toplantısına katılın</translation>
 <translation id="3979395879372752341">Yeni uzantı eklendi (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ağ cihazını etkinleştir</translation>
 <translation id="398095528354975981">Bu sekmeleri gizle</translation>
@@ -4330,6 +4338,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3994878504415702912">Y&amp;aklaştır</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
 <translation id="3995963973192100066">Animasyonu oynat</translation>
+<translation id="3997537546406230684">İş için yeni profil oluşturulsun ve mevcut verilerim ayrı tutulsun</translation>
 <translation id="399788104667917863">Araç çubuğuna sabitle</translation>
 <translation id="3998780825367526465">Sekme önizleme resimlerini göster</translation>
 <translation id="3998976413398910035">Yazıcıları yönetme</translation>
@@ -5776,6 +5785,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5059526285558225588">Neler paylaşacağınızı seçin</translation>
 <translation id="5060332552815861872">Kaydedilebilecek 1 yazıcı var.</translation>
 <translation id="5060419232449737386">Altyazı ayarları</translation>
+<translation id="5061270227873845372">Şu anda <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> ile daha fazla içeriğiniz var. Kuruluşunuz bu verileri görebilecek ve yönetebilecek</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Bu klasör bir yer işareti içeriyor. Silmek istediğinizden emin misiniz?}other{Bu klasör # yer işareti içeriyor. Silmek istediğinizden emin misiniz?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Oturum açma başarısız oldu. Lütfen İnternet'e bağlanın ve tekrar deneyin.</translation>
@@ -5959,6 +5969,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5186788525428341874">Cihazlarınızda daha hızlı oturum açmak için bu geçiş anahtarını kullanabilirsiniz. <ph name="ACCOUNT_NAME" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="5187641678926990264">&amp;Sayfayı Uygulama Olarak Yükle...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> tarafından paylaşıldı</translation>
 <translation id="5188648870018555788">Konumu kullan. Konum izinleri olan ChromeOS ile Android uygulamaları, web siteleri ve hizmetlerinin cihazınızın konumunu kullanmasına izin verin. Konum Doğruluğu, Android uygulamaları ve hizmetleri için daha doğru konum bilgisi sunar. Google bunu yapmak için bu cihazdan kitle kaynaklı kablosuz sinyal konumlarına gönderilen kablosuz sinyaller ve cihaz sensörleri hakkındaki bilgileri düzenli aralıklarla işler. Bu bilgiler, konum doğruluğunu artırmanın ve konuma dayalı hizmetleri geliştirmenin yanı sıra Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak üzere Google'ın hizmetlerinin sağlanması, sürdürülmesi ve geliştirilmesi için kimliğinizi tanımlamadan kullanılır. <ph name="BEGIN_LINK1" />Konum bilgisini kullanma hakkında daha fazla bilgi edinin<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">İşlem paylaşımını devre dışı bırakmak için tarayıcının yeniden başlatılması gerekiyor. Bu tarayıcı şimdi yeniden başlatılacak.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
@@ -8005,6 +8016,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="668599234725812620">Google Play'i aç</translation>
 <translation id="6686490380836145850">Sağdaki sekmeleri kapat</translation>
 <translation id="6686665106869989887">Sekme sağa taşındı</translation>
+<translation id="6686676261102452995">Bugün açtınız</translation>
 <translation id="6686817083349815241">Şifrenizi kaydedin</translation>
 <translation id="6687008241368170505">Google Şifre Yöneticisi PIN'ini değiştir</translation>
 <translation id="6687079240787935001">Gizle: <ph name="MODULE_TITLE" /></translation>
@@ -9387,6 +9399,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> sayfasında.</translation>
 <translation id="7672726198839739113">Kilitli. Program şu anda <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> olarak ayarlandı ve yalnızca manuel olarak güncellenebilir.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (Bağlantı Yöneticisi) Günlükleri</translation>
+<translation id="767381852303199643">Mevcut profil verilerinizin nasıl saklanmasını istersiniz?</translation>
 <translation id="7674416868315480713">Linux'ta yönlendirilen tüm bağlantı noktalarını devre dışı bırak</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> uygulama</translation>
 <translation id="7674542105240814168">Konum erişimi reddedildi</translation>
@@ -9618,6 +9631,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Kaydedilen özel kelimeler burada görünür</translation>
 <translation id="7836577093182643605">Engellediğiniz ve sitelerle paylaşılmasını istemediğiniz konuların listesi</translation>
+<translation id="7836745198769390202">Şu anda <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ile daha fazla içeriğiniz var. Kuruluşunuz bu verileri görebilecek ve yönetebilecek</translation>
 <translation id="7836850009646241041">Güvenlik anahtarınıza tekrar dokunmayı deneyin</translation>
 <translation id="7838838951812478896">"<ph name="NETWORK_NAME" />", <ph name="DEVICE_NAME" /> cihazından kaydedilemedi</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> cihazına gönderildi}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> cihazına gönderildi}}</translation>
@@ -10119,6 +10133,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8176529144855282213">Mikrofon erişimini etkinleştirmek için cihazınızdaki fiziksel mikrofon anahtarını açın</translation>
 <translation id="8177196903785554304">Ağ Ayrıntıları</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Sekmeyi yeni pencereye taşı}other{Sekmeleri yeni pencereye taşı}}</translation>
+<translation id="8178657161962192959">Dün açtınız</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />, <ph name="PRINTER_STATUS" />. Yazıcı <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Enerji Tasarrufu açık</translation>
@@ -10226,6 +10241,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="825238165904109940">Her Zaman URL'leri Tam Olarak Göster</translation>
 <translation id="8252569384384439529">Yükleniyor...</translation>
 <translation id="8253198102038551905">Ağ özelliklerini almak için "+" işaretini tıklayın</translation>
+<translation id="8254871563792426806">Bu site, cihazınıza bağlı akıllı kart okuyucularına ve bu okuyucuların erişebileceği akıllı kartlara erişiyor</translation>
 <translation id="8255212965098517578">Son fotoğraflar, bildirimler ve uygulamalar</translation>
 <translation id="8255927332875030912">Ara + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Çomar</translation>
@@ -11379,6 +11395,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9052404922357793350">Engellemeye devam et</translation>
 <translation id="90528604757378587">Arka plan etkinliği ve yumuşak kaydırma gibi bazı görsel efektler sınırlı olabilir.</translation>
 <translation id="9053563360605707198">Her iki yüze yazdır</translation>
+<translation id="9055810458113674066">Şu anda <ph name="NUMBERED_ITEM" /> ile daha fazla içeriğiniz var. Kuruluşunuz bu verileri görebilecek ve yönetebilecek</translation>
 <translation id="9056788090206401048">Geçiş anahtarınızı farklı bir cihazda kullanabilmeniz için Bluetooth'un açık olması gerekir. Bunu istediğiniz zaman ayarlardan yönetebilirsiniz.</translation>
 <translation id="9056810968620647706">Eşleştirme bulunamadı.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> aşağıdaki içeriğe erişmek istiyor:</translation>

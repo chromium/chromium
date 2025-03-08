@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">‏גרסת SDK:</translation>
 <translation id="2016697457005847575">להוראות לפתרון בעיות</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">‏כדי להתאים אישית את התמונות שנוצרו על ידי AI, בוחרים עיצוב ואז בוחרים את המילים שמסומנות בקו תחתון.</translation>
 <translation id="2045814230297767491">סכו"ם</translation>
 <translation id="2047316797244836561">כדי לצפות בשומר המסך, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
@@ -1139,7 +1138,6 @@
 <translation id="6352210854422428614">כוכב לכת אחר</translation>
 <translation id="6359706544163531585">השבתת העיצוב הבהיר</translation>
 <translation id="6359919876285606596">המחיקה היא סופית ואי אפשר לבטל אותה.</translation>
-<translation id="6368342879959028556">‏כשבוחרים באפשרות 'יצירה באמצעות AI', צריך לכתוב הנחיה מותאמת אישית. אפשר גם לבחור באפשרות 'טפטים מבוססי-AI', לבחור עיצוב ואז לבחור את המילים שמסומנות בקו תחתון כדי להתאים אישית את הטפט מבוסס ה-AI.</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6369221585240879141">אי אפשר ליצור שמות להקלטות בשפה של התמליל הזה</translation>
 <translation id="6373461326814131011">אגם קטן</translation>
@@ -1212,16 +1210,6 @@
 <translation id="6657240842932274095">לתת לשירותי המערכת הרשאה להשתמש במיקום שלך?</translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="66621959568103627">ורוד קורל</translation>
-<translation id="6667885109186363316">‏<ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          כדי לקבל אפשרויות ייחודיות ומגוונות יותר לתמונות ה-AI, בוחרים באפשרות 'אני רוצה לקבל השראה'.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          כשיוצרים באמצעות AI, נשלחת לשרתים של AI‏ מבית Google הנחיה ליצור תמונות ולשפר את המוצר, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ה-AI הגנרטיבי הוא מערכת ניסיונית שנמצאת בשלבי פיתוח ראשוניים וכרגע הזמינות שלה מוגבלת.</translation>
 <translation id="6673898378497337661">הגברת הבהירות של המקלדת</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6694534975463174713">מנעול</translation>

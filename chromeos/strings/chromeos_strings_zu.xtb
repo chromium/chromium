@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Uhlobo lwe-SDK:</translation>
 <translation id="2016697457005847575">Zama izinyathelo zokuxazulula inkinga</translation>
 <translation id="202500043506723828">I-EID</translation>
-<translation id="2041627599411887437">Khetha itimu bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu imifanekiso yakho ye-AI.</translation>
 <translation id="2045814230297767491">izinkezo</translation>
 <translation id="2047316797244836561">Sicela uxhume kunethiwekhi bese ulayisha kabusha ikhasi ukuze ubuke isilondolozi sesikrini.</translation>
 <translation id="2056550196601855911">I-IPv4/i-IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">iplanethi elihlukile</translation>
 <translation id="6359706544163531585">Khubaza itimu ekhanyayo</translation>
 <translation id="6359919876285606596">Lesi senzo singunaphakade futhi asikwazi ukuhlehliswa</translation>
-<translation id="6368342879959028556">Lapho ukhetha okuthi “Sungula nge-AI,” bhala umyalelo womuntu ngamunye. Noma ungakhetha okuthi "Iphepha langemuva le-AI" ukuze ukhethe itimu bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu iphepha langemuva le-AI lakho.</translation>
 <translation id="636850387210749493">Ukubhalisa kwebhizinisi</translation>
 <translation id="6369221585240879141">Ayikwazi ukusungula amagama arekhodiwe ngalolu limi lokuloba</translation>
 <translation id="6373461326814131011">i-pond</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Vumela amasevisi esistimu ukuthi asebenzise indawo yakho?</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
 <translation id="66621959568103627">uphinki we-coral</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Khetha okuthi "Ngikhuthaze" ukuze uthole imifanekiso ongakhetha kuyo ye-AI eyingqayizivele nehlukile.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Uma usungula nge-AI, umyalelo uthunyelwa kumaseva eGoogle AI ukuze kukhiqizwe imifanekiso futhi kuthuthukiswe umkhiqizo, ngaphansi kokuthi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Inqubomgomo Yobumfihlo yeGoogle<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          I-AI Ekhiqizayo ingeyokulinga, isaqala ukuthuthukiswa, futhi manje inokutholakala okukhawulelwe.</translation>
 <translation id="6673898378497337661">ukukhanya kwekhibhodi kuphezulu</translation>
 <translation id="6692996468359469499">Thola ukwaziswa okuhlobene nokhetho lwakho</translation>
 <translation id="6694534975463174713">khiya</translation>
