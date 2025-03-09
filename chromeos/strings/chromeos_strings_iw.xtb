@@ -405,6 +405,7 @@
 <translation id="2787237339470862294">השפה הזו לא נתמכת כרגע</translation>
 <translation id="2787435249130282949">איך להגביר את בהירות המקלדת</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
+<translation id="2822702442014805146">מתבצעת הורדה של מודל ליצירת סיכום ושם</translation>
 <translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
 <translation id="2855718259207180827">צמר</translation>
 <translation id="2859243502336719778">עדכון קריטי</translation>
@@ -826,6 +827,7 @@
 <translation id="4891842000192098784">בדיקת עומסים</translation>
 <translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="4905998861748258752">צריך להפעיל את התכונה כדי לבחור אפשרויות לשומר המסך</translation>
+<translation id="4910853326379896417">הורדת המודל ליצירת סיכום ושם הסתיימה</translation>
 <translation id="4910858703033903787">‏סוגי APN</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
@@ -863,6 +865,7 @@
 <translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="5078711626843651677">תבניות הקול נשמרות באופן זמני במכשיר עד להשלמת ההוספה של התוויות לזיהוי הדוברים. אפשר להשבית את זה ב'הגדרות' בכל שלב.</translation>
 <translation id="5078983345702708852">עתידני</translation>
+<translation id="5085224064082122501">‏לא הצלחנו להוריד את המודל ליצירת סיכום ושם. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="5087864757604726239">הקודם</translation>
 <translation id="5088172560898466307">שם מארח של שרת</translation>
 <translation id="5089810972385038852">מדינה</translation>
@@ -1419,6 +1422,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
 <translation id="757747079855995705">אבן</translation>
+<translation id="7584853321964440104">‏לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.</translation>
