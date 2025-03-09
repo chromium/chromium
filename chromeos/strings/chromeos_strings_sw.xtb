@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Toleo la SDK:</translation>
 <translation id="2016697457005847575">Jaribu hatua za utatuzi</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Chagua mada kisha uchague maneno yaliyopigiwa mistari ili uwekee mapendeleo picha zako zinazotayarishwa kwa AI.</translation>
 <translation id="2045814230297767491">vyombo vya kulia mezani</translation>
 <translation id="2047316797244836561">Tafadhali unganisha kwenye mtandao na upakie upya ukurasa ili uangalie taswira ya skrini.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">sayari tofauti</translation>
 <translation id="6359706544163531585">Zima mandhari meupe</translation>
 <translation id="6359919876285606596">Hatua hii ni ya kudumu na haiwezi kutenduliwa</translation>
-<translation id="6368342879959028556">Unapochagua “Tayarisha kwa kutumia AI,” andika kidokezo maalum. Au unaweza kuchagua “mandhari ya AI,” ili uchague mada kisha uchague maneno yaliyopigiwa mstari ili uwekee mapendeleo mandhari yako ya AI.</translation>
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="6369221585240879141">Imeshindwa kuandaa majina ya rekodi katika lugha ya manukuu haya</translation>
 <translation id="6373461326814131011">dimbwi</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Ungependa kuruhusu huduma za mfumo zitumie data ya mahali ulipo?</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="66621959568103627">marijani ya waridi</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-           Chagua 'Nihamasishe' ili upate chaguo tofauti na za kipekee zaidi za picha za AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unapotayarisha ukitumia AI, kidokezo hutumwa kwenye seva za Google AI ili kutayarisha picha na kuboresha bidhaa, kwa mujibu wa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Sera ya Faragha ya Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI Zalishi inafanyiwa majaribio, iko katika hatua za mwanzo za kubuniwa na kwa sasa upatikanaji wake unadhibitiwa.</translation>
 <translation id="6673898378497337661">kuongeza mwangaza wa kibodi</translation>
 <translation id="6692996468359469499">Pata maelezo yanayohusiana na chaguo lako</translation>
 <translation id="6694534975463174713">funga</translation>

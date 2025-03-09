@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK version:</translation>
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Choose a theme and then select the underlined words to personalise your AI images.</translation>
 <translation id="2045814230297767491">cutlery</translation>
 <translation id="2047316797244836561">Please connect to a network and reload the page to view screen saver.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">different planet</translation>
 <translation id="6359706544163531585">Disable Light theme</translation>
 <translation id="6359919876285606596">This action is permanent and can't be undone</translation>
-<translation id="6368342879959028556">When you select 'Create with AI', write a custom prompt. Or, you can select 'AI wallpapers' to choose a theme and then select the underlined words to personalise your AI wallpaper.</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6369221585240879141">Can't create recording names for this transcript language</translation>
 <translation id="6373461326814131011">pond</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Allow system services to use your location?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="66621959568103627">coral pink</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Select 'Inspire me' to get more unique and varied AI images options.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          When you create with AI, the prompt is sent to Google AI servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI is experimental, in early development and currently has limited availability.</translation>
 <translation id="6673898378497337661">keyboard brightness up</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6694534975463174713">lock</translation>

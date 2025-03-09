@@ -591,6 +591,7 @@
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="140723521119632973">सेल्युलर एक्टिवेशन</translation>
+<translation id="1407908250220330281">अब इस प्रोफ़ाइल को मैनेज किया जाएगा</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" /> के 'बदलाव करें' डायलॉग बॉक्स को खोलने के लिए क्लिक करें</translation>
 <translation id="1408504635543854729">डिवाइस की सामग्री फ़ाइल ऐप्लिकेशन में एक्सप्लोर करें. सामग्री किसी एडमिन ने प्रतिबंधित की है और उसे बदला नहीं जा सकता.</translation>
 <translation id="1408980562518920698">निजी जानकारी को प्रबंधित करें</translation>
@@ -802,6 +803,7 @@
 <translation id="1549966883323105187">अपने सेव किए गए पासवर्ड तुरंत ऐक्सेस करें</translation>
 <translation id="1550656959113606473">Chrome की डिफ़ॉल्ट सेटिंग</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने <ph name="SEARCH_PROVIDER_DOMAIN" /> का इस्तेमाल करने के लिए सर्च इंजन बदला है</translation>
+<translation id="1552357433305859738">इस प्रोफ़ाइल के साथ डेटा सिंक करना जारी रखें और मौजूदा डेटा को मर्ज करें</translation>
 <translation id="1552752544932680961">एक्‍सटेंशन मैनेज करें</translation>
 <translation id="1553538517812678578">असीमित</translation>
 <translation id="1553947773881524342">अपने Chromebook पर Microsoft 365 के बारे में <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" />.</translation>
@@ -1444,6 +1446,7 @@
 <translation id="1980168597243156">स्पेस स्टेशन</translation>
 <translation id="1981434377190976112">यह एक्सटेंशन, सभी वेबसाइटों पर आपका पूरा डेटा पढ़ सकेगा</translation>
 <translation id="1982851102516626421">आपको साइन आउट कर दिया गया है</translation>
+<translation id="1983612835086592681">आपने इसे पिछले हफ़्ते खोला था</translation>
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
 <translation id="1984683754853869253">क्या आपको स्कूल के लिए एक नई प्रोफ़ाइल बनानी है?</translation>
 <translation id="198507684520034826">सहायता</translation>
@@ -1607,6 +1610,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" />  प्रोसेस के दौरान, सिस्टम को फिर चालू किया जाएगा.</translation>
+<translation id="209423774103268003">आपके स्मार्ट कार्ड रीडर ऐक्सेस किए जा रहे हैं</translation>
 <translation id="2095774564753225041">इस्तेमाल किए जा सकने वाले फ़ाइल टाइप</translation>
 <translation id="2096716221239095980">सारा डेटा मिटाएं</translation>
 <translation id="2097950021134740304">सदस्यता हटाने की प्रोसेस रद्द करें</translation>
@@ -2253,6 +2257,7 @@
 <translation id="2530166226437958497">समस्या का हल</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />किसी गड़बड़ी की वजह से <ph name="DEVICE_OS" /> को इंस्टॉल नहीं किया जा सका.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ज़्यादा जानकारी के लिए, यहां जाएं: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">ज़्यादा जानकारी पाएं</translation>
 <translation id="2532144599248877204">बैटरी को 80% के आस-पास रखकर, यह सुविधा आपकी बैटरी लाइफ़ बढ़ाती है. आम तौर पर, चार्जिंग से हटाने के पहले, बैटरी पूरी तरह से चार्ज हो जाएगी.</translation>
 <translation id="2532146950330687938">डिवाइस तैयार किया जा रहा है...</translation>
 <translation id="2532198298278778531">ChromeOS Flex की सेटिंग में सुरक्षित डीएनएस को मैनेज करें</translation>
@@ -3152,6 +3157,7 @@
 <translation id="3183139917765991655">प्रोफ़ाइल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
 <translation id="3183700187146209259">स्कैनर सॉफ़्टवेयर इंस्टॉल नहीं किया जा सका</translation>
+<translation id="3183750649832309748">आपका संगठन (<ph name="ACCOUNT_MANAGER" />), कुछ जानकारी देख पाएगा. इसमें यह जानकारी शामिल है:</translation>
 <translation id="3183944777708523606">मॉनिटर की डिसप्ले सेटिंग</translation>
 <translation id="3184536091884214176">CUPS प्रिंटर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">माता-पिता के कंट्रोल वाली सेटिंग बदलने के लिए, इस पिन का इस्तेमाल करें.
@@ -3179,6 +3185,7 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> पर, स्क्रीन कास्ट करना रोकें</translation>
 <translation id="3202578601642193415">नवीनतम</translation>
 <translation id="3204648577100496185">इस ऐप्लिकेशन से जुड़े डेटा को इस डिवाइस से हटाया जा सकता है</translation>
+<translation id="3204717934117444051">इस डिवाइस में सेव किया गया डेटा ही मौजूदा प्रोफ़ाइल में रहेगा. यह <ph name="EMAIL" /> के साथ सिंक नहीं होगा</translation>
 <translation id="3207344462385471911">आपकी हाल की गतिविधि के आधार पर, आपकी दिलचस्पी के हिसाब से, सुझाई गई खोजें और खरीदारी पर मिलने वाली छूट की जानकारी दिखाई जा रही है.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4311,6 +4318,7 @@
 <translation id="3977886311744775419">इस नेटवर्क प्रकार पर अपडेट अपने आप डाउनलोड नहीं होते, लेकिन आप मैन्युअल रूप से अपडेट के लिए देख सकते हैं.</translation>
 <translation id="3978325380690188371">ChromeVox के चालू होने पर, स्टिकी बटन की सुविधा उपलब्ध नहीं होती</translation>
 <translation id="3978732922947854545">Chrome, PDF फ़ाइलों को बेहतर बनाता है</translation>
+<translation id="3979093622823535817">मीटिंग में शामिल हों <ph name="MEETING_TITLE" /></translation>
 <translation id="3979395879372752341">नया एक्सटेंशन जोड़ा गया (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> चालू करें</translation>
 <translation id="398095528354975981">इन टैब को छिपाएं</translation>
@@ -4347,6 +4355,7 @@
 <translation id="3994878504415702912">&amp;ज़ूम</translation>
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
 <translation id="3995963973192100066">ऐनिमेशन चलाएं</translation>
+<translation id="3997537546406230684">एक नई वर्क प्रोफ़ाइल बनाएं और मेरा मौजूदा डेटा अलग रखें</translation>
 <translation id="399788104667917863">टूलबार पर पिन करें</translation>
 <translation id="3998780825367526465">टैब की झलक वाली इमेज दिखाएं</translation>
 <translation id="3998976413398910035">प्रिंटर मैनेज करें</translation>
@@ -5792,6 +5801,7 @@
 <translation id="5059526285558225588">चुनें कि क्या शेयर करना है</translation>
 <translation id="5060332552815861872">सेव करने के लिए एक प्रिंटर उपलब्ध है.</translation>
 <translation id="5060419232449737386">कैप्शन सेटिंग</translation>
+<translation id="5061270227873845372">इसमें फ़िलहाल <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" />, और अन्य डेटा मौजूद है. आपका संगठन इस डेटा को देख और मैनेज कर पाएगा</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{इस फ़ोल्डर में एक बुकमार्क है. क्या आप वाकई इसे मिटाना चाहते हैं?}one{इस फ़ोल्डर में # बुकमार्क हैं. क्या आप वाकई इसे मिटाना चाहते हैं?}other{इस फ़ोल्डर में # बुकमार्क हैं. क्या आप वाकई इसे मिटाना चाहते हैं?}}</translation>
 <translation id="5061531353537614467">टुण्ड्रा</translation>
 <translation id="5062930723426326933">साइन इन नहीं हो पाया, कृपया इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
@@ -5975,6 +5985,7 @@
 <translation id="5186788525428341874">अपने सभी डिवाइसों पर तेज़ी से साइन इन करने के लिए, इस पासकी का इस्तेमाल किया जा सकता है. यह <ph name="ACCOUNT_NAME" /> के Google Password Manager में सेव हो जाएगा.</translation>
 <translation id="5187641678926990264">पेज को ऐप्लिकेशन के तौर पर इंस्टॉल करें...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> ने शेयर किया</translation>
 <translation id="5188648870018555788">जगह की जानकारी इस्तेमाल करने की अनुमति दें. ChromeOS और Android ऐप्लिकेशन, वेबसाइटों, और जिन सेवाओं को जगह की जानकारी का ऐक्सेस होता है उन्हें अपने डिवाइस की जगह की जानकारी इस्तेमाल करने की अनुमति दें. जगह की सटीक जानकारी देने की सुविधा से, Android ऐप्लिकेशन और सेवाओं को, आपके डिवाइस की जगह की ज़्यादा सटीक जानकारी मिलती है. इसके लिए, Google समय-समय पर आपके डिवाइस के सेंसर और वायरलेस सिग्नल से जुड़ी जानकारी को प्रोसेस करता है, ताकि वह वायरलेस सिग्नल वाली जगहों को क्राउडसोर्स कर सके. इस जानकारी का इस्तेमाल, जगह की सटीक जानकारी देने की सुविधा और जगह के हिसाब से दी जाने वाली सेवाओं को बेहतर बनाने के लिए किया जाता है. ऐसा आपकी पहचान ज़ाहिर किए बिना किया जाता है. Google की सेवाओं को बेहतर बनाने, उपलब्ध कराने, और उनकी क्वालिटी को बनाए रखने के लिए भी इस जानकारी का इस्तेमाल किया जाता है. इससे Google और तीसरे पक्ष को, उपयोगकर्ताओं की ज़रूरतें पूरी करने में मदद मिलती है. <ph name="BEGIN_LINK1" />जगह की जानकारी इस्तेमाल करने के बारे में ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">शेयर करने की प्रोसेस से ऑप्ट आउट करने पर, ब्राउज़र को रीस्टार्ट करना होगा. यह ब्राउज़र अभी रीस्टार्ट होगा.</translation>
 <translation id="5189404424758444348">स्टीमपंक</translation>
@@ -8022,6 +8033,7 @@
 <translation id="668599234725812620">Google Play खोलें</translation>
 <translation id="6686490380836145850">दाईं ओर के टैब बंद करें</translation>
 <translation id="6686665106869989887">टैब को दाईं ओर ले जाया गया</translation>
+<translation id="6686676261102452995">आपने इसे आज खोला था</translation>
 <translation id="6686817083349815241">अपना पासवर्ड सेव करें</translation>
 <translation id="6687008241368170505">Google Password Manager का पिन बदलें</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> छिपाएं</translation>
@@ -9404,6 +9416,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> में.</translation>
 <translation id="7672726198839739113">ब्लॉक किया गया. फ़िलहाल, शेड्यूल <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> पर सेट है. इसे सिर्फ़ मैन्युअल तरीके से अपडेट किया जा सकता है.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (कनेक्शन मैनेजर) के लॉग</translation>
+<translation id="767381852303199643">आपको अपनी मौजूदा प्रोफ़ाइल के डेटा को किस तरह से मैनेज करना है?</translation>
 <translation id="7674416868315480713">Linux में फ़ॉरवर्ड किए जा रहे सभी पोर्ट बंद करें</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ऐप्लिकेशन</translation>
 <translation id="7674542105240814168">जगह की जानकारी का ऐक्सेस नहीं मिला</translation>
@@ -9634,6 +9647,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">सेव किए गए कस्टम शब्द यहां दिखाई देंगे</translation>
 <translation id="7836577093182643605">उन विषयों की सूची जिन्हें आपने ब्लॉक किया है और जिन्हें साइटों के साथ शेयर नहीं करना है</translation>
+<translation id="7836745198769390202">इसमें फ़िलहाल <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, और अन्य डेटा मौजूद है. आपका संगठन इस डेटा को देख और मैनेज कर पाएगा</translation>
 <translation id="7836850009646241041">अपनी सुरक्षा कुंजी को फिर से छुएं</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> से मिले '<ph name="NETWORK_NAME" />' को सेव नहीं किया जा सका</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> को <ph name="DEVICE_NAME" /> पर भेजा गया}one{<ph name="ATTACHMENTS" /> को <ph name="DEVICE_NAME" /> पर भेजा गया}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> पर भेजे गए}}</translation>
@@ -10135,6 +10149,7 @@
 <translation id="8176529144855282213">माइक्रोफ़ोन का ऐक्सेस चालू करने के लिए, डिवाइस पर माइक्रोफ़ोन का स्विच चालू करें</translation>
 <translation id="8177196903785554304">नेटवर्क विवरण</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{टैब को नई विंडो पर ले जाएं}one{टैब को नई विंडो पर ले जाएं}other{टैब को नई विंडो पर ले जाएं}}</translation>
+<translation id="8178657161962192959">आपने इसे कल खोला था</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" /> में से <ph name="ITEM_POSITION" /> प्रिंटर.</translation>
 <translation id="8180785270975217276">एनर्जी सेवर चालू किया गया</translation>
@@ -10242,6 +10257,7 @@
 <translation id="825238165904109940">हमेशा पूरे यूआरएल दिखाएं</translation>
 <translation id="8252569384384439529">अपलोड हो रही है...</translation>
 <translation id="8253198102038551905">नेटवर्क प्रॉपर्टी पाने के लिए '+' बटन पर क्‍लिक करें</translation>
+<translation id="8254871563792426806">यह साइट, आपके डिवाइस से कनेक्ट किए गए और ऐसे स्मार्ट कार्ड से कनेक्ट किए गए कार्ड रीडर ऐक्सेस कर रही है जो शायद इन रीडर के लिए उपलब्ध हैं</translation>
 <translation id="8255212965098517578">हाल ही की फ़ोटो, सूचनाएं, और ऐप्लिकेशन</translation>
 <translation id="8255927332875030912">खोज बटन + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">स्‍पार्की</translation>
@@ -11396,6 +11412,7 @@
 <translation id="9052404922357793350">ब्लॉक करना जारी रखें</translation>
 <translation id="90528604757378587">बैकग्राउंड में होने वाली गतिविधि और कुछ विज़ुअल इफ़ेक्ट, जैसे कि आसानी से स्क्रोल करने की सुविधा सीमित हो सकती है.</translation>
 <translation id="9053563360605707198">दोनों तरफ़ प्रिंट करें</translation>
+<translation id="9055810458113674066">इसमें फ़िलहाल <ph name="NUMBERED_ITEM" /> और अन्य डेटा मौजूद है. आपका संगठन इस डेटा को देख और मैनेज कर पाएगा</translation>
 <translation id="9056788090206401048">किसी दूसरे डिवाइस पर पासकी का इस्तेमाल करने के लिए, ब्लूटूथ चालू होना चाहिए. सेटिंग में जाकर, इसे कभी भी मैनेज किया जा सकता है.</translation>
 <translation id="9056810968620647706">कोई मिलान नहीं मिले.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> को यह कॉन्टेंट ऐक्सेस करना है:</translation>

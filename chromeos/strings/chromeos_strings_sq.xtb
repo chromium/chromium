@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Versioni i SDK-së:</translation>
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Zgjidh një temë dhe më pas zgjidh fjalët e nënvizuara për të personalizuar imazhet nga IA-ja.</translation>
 <translation id="2045814230297767491">artikuj tavoline</translation>
 <translation id="2047316797244836561">Lidhu në një rrjet dhe ringarko faqen për të parë mbrojtësin e ekranit.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">Kjo gjuhë nuk mbështetet në këtë moment</translation>
 <translation id="2787435249130282949">tastiera më e ndritshme</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
+<translation id="2822702442014805146">Shkarkimi i modelit për krijimin e përmbledhjeve dhe emrave është në vazhdim</translation>
 <translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
 <translation id="2855718259207180827">lesh</translation>
 <translation id="2859243502336719778">Përditësim kritik</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">Tensioni</translation>
 <translation id="4897058166682006107">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e majtë.</translation>
 <translation id="4905998861748258752">Aktivizo veçorinë për të zgjedhur opsionet e mbrojtësit të ekranit</translation>
+<translation id="4910853326379896417">Shkarkimi i modelit për krijimin e përmbledhjeve dhe emrave përfundoi</translation>
 <translation id="4910858703033903787">Llojet e APN-ve</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">Krijo një imazh</translation>
 <translation id="5078711626843651677">Modelet e zërit ruhen përkohësisht në pajisje derisa të përfundojë etiketimi i folësit. Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5078983345702708852">futuriste</translation>
+<translation id="5085224064082122501">Modeli për krijimin e përmbledhjeve dhe emrave nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="5087864757604726239">prapa</translation>
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">planet tjetër</translation>
 <translation id="6359706544163531585">Çaktivizo temën e ndriçuar</translation>
 <translation id="6359919876285606596">Ky veprim është i përhershëm dhe nuk mund të zhbëhet</translation>
-<translation id="6368342879959028556">Kur zgjedh "Krijo me IA-në", shkruaj një kërkesë të personalizuar. Ndryshe, mund të zgjedhësh "Imazhet e sfondit nga IA-ja", të zgjedhësh një temë dhe më pas të zgjedhësh fjalët e nënvizuara për të personalizuar imazhin e sfondit nga IA-ja.</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="6369221585240879141">Nuk mund të krijohen emrat e regjistrimeve për këtë gjuhë të transkriptit</translation>
 <translation id="6373461326814131011">pellg</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">Të lejohen shërbimet e sistemit që të përdorin vendndodhjen tënde?</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="66621959568103627">rozë korali</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Zgjidh "Më frymëzo" për të marrë opsione më të larmishme dhe më unike për imazhet nga IA-ja.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kur krijon me IA-në, kërkesa dërgohet te serverët e IA-së së Google për të gjeneruar imazhe dhe për të përmirësuar produktin, sipas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />"Politikës së privatësisë" të Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          IA-ja gjeneruese është eksperimentale, në fazë të hershme zhvillimi dhe ka aktualisht disponueshmëri të kufizuar.</translation>
 <translation id="6673898378497337661">ngritja e ndriçimit të tastierës</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
 <translation id="6694534975463174713">kyç</translation>
@@ -1431,6 +1422,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="757747079855995705">gur</translation>
+<translation id="7584853321964440104">Nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7600430297804876776">Administratori i <ph name="MANAGER" /> ka caktuar se kur mund të përdoret kjo pajisje <ph name="DEVICE_TYPE" />.</translation>

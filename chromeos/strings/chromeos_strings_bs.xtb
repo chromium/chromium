@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Verzija SDK:</translation>
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Odaberite temu, a zatim podvučene riječi da personalizirate AI slike.</translation>
 <translation id="2045814230297767491">Pribor za jelo</translation>
 <translation id="2047316797244836561">Povežite se s mrežom i ponovo učitajte stranicu da vidite čuvara ekrana.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,7 +405,7 @@
 <translation id="2787237339470862294">Ovaj jezik trenutno nije podržan</translation>
 <translation id="2787435249130282949">svjetlija tastatura</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
-<translation id="2822702442014805146">U tijeku je preuzimanje modela za izradu sažetaka i naziva</translation>
+<translation id="2822702442014805146">Preuzimanje modela za kreiranje sažetaka i naziva je u toku</translation>
 <translation id="28232023175184696">Nije moguće povezivanje na internet. Kliknite da pokušate ponovo.</translation>
 <translation id="2855718259207180827">vune</translation>
 <translation id="2859243502336719778">Kritično ažuriranje</translation>
@@ -828,7 +827,7 @@
 <translation id="4891842000192098784">Opterećenje</translation>
 <translation id="4897058166682006107">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije lijeve slušalice.</translation>
 <translation id="4905998861748258752">Uključite funkciju da odaberete opcije čuvara ekrana</translation>
-<translation id="4910853326379896417">Dovršeno je preuzimanje modela za izradu sažetaka i naziva</translation>
+<translation id="4910853326379896417">Završeno je preuzimanje modela za kreiranje sažetaka i naziva</translation>
 <translation id="4910858703033903787">Vrste APN-a</translation>
 <translation id="4917385247580444890">Jako</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
@@ -866,7 +865,7 @@
 <translation id="5056587122125565772">Kreiraj sliku</translation>
 <translation id="5078711626843651677">Modeli glasova se privremeno čuvaju na uređaju dok se označavanje govornika ne izvrši. Ovo možete isključiti bilo kada u Postavkama.</translation>
 <translation id="5078983345702708852">futurističko</translation>
-<translation id="5085224064082122501">Preuzimanje modela za izradu sažetaka i naziva nije uspjelo. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
+<translation id="5085224064082122501">Nije moguće preuzeti model za kreiranje sažetaka i naziva. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
 <translation id="5087864757604726239">nazad</translation>
 <translation id="5088172560898466307">Naziv host računara servera</translation>
 <translation id="5089810972385038852">Država</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">drugačija planeta</translation>
 <translation id="6359706544163531585">Onemogući svijetlu temu</translation>
 <translation id="6359919876285606596">Radnja je trajna i ne može se opozvati</translation>
-<translation id="6368342879959028556">Kada odaberete "Kreirajte putem AI-ja", napišite prilagođeni upit. Ili možete odabrati "AI pozadinske slike" da odaberete temu, a zatim odaberite podvučene riječi da personalizirate AI pozadinsku sliku.</translation>
 <translation id="636850387210749493">Prijava preduzeća</translation>
 <translation id="6369221585240879141">Nije moguće kreirati nazive snimaka za ovaj jezik transkripta</translation>
 <translation id="6373461326814131011">Ribnjak</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Dozvoliti sistemskim uslugama da koriste vašu lokaciju?</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="66621959568103627">koraljno ružičaste</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Odaberite "Inspiriraj me" da dobijete više jedinstvenih i raznolikih opcija AI slika.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kada kreirate pomoću AI-ja, upit će se poslati na servere Google AI-ja radi generiranja slika i poboljšanja proizvoda podložno <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim Pravilima privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativni AI je eksperimentalan, u ranoj je fazi razvoja i trenutno je njegova dostupnost ograničena.</translation>
 <translation id="6673898378497337661">povećavanje osvjetljenja tastature</translation>
 <translation id="6692996468359469499">Primajte informacije u vezi s vašim odabirom</translation>
 <translation id="6694534975463174713">brava</translation>
@@ -1434,7 +1422,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ekran na dodir</translation>
 <translation id="757747079855995705">kamena</translation>
-<translation id="7584853321964440104">Preuzimanje nije uspjelo. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
+<translation id="7584853321964440104">Nije moguće preuzeti. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
 <translation id="7590883480672980941">Postavke unosa</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrator web lokacije <ph name="MANAGER" /> je postavio kada se ovaj <ph name="DEVICE_TYPE" /> može koristiti.</translation>

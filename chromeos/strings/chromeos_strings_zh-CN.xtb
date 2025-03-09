@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">选择一个主题，然后选择带下划线的字词，打造个性化的 AI 图像。</translation>
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">若要查看屏保，请连接到网络并重新加载此页面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">其他星球</translation>
 <translation id="6359706544163531585">停用浅色主题</translation>
 <translation id="6359919876285606596">此操作一旦执行便无法撤消</translation>
-<translation id="6368342879959028556">如果选择“利用 AI 创建”，请撰写自定义提示。或者，您也可以选择“AI 壁纸”，选择一个主题，然后选择带下划线的字词，打造个性化的 AI 壁纸。</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6369221585240879141">无法为此转写语言创建录制名称</translation>
 <translation id="6373461326814131011">池塘</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">允许系统服务使用您的位置信息？</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="66621959568103627">珊瑚粉</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          当您利用 AI 创作内容时，系统会将提示发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的隐私权政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6694534975463174713">锁定</translation>

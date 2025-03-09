@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK-versie:</translation>
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Kies een thema en selecteer de onderstreepte woorden om je AI-afbeeldingen te personaliseren.</translation>
 <translation id="2045814230297767491">bestek</translation>
 <translation id="2047316797244836561">Maak verbinding met een netwerk en laad de pagina opnieuw om de screensaver te bekijken.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">andere planeet</translation>
 <translation id="6359706544163531585">Licht thema uitzetten</translation>
 <translation id="6359919876285606596">Deze actie is definitief en kan niet ongedaan worden gemaakt</translation>
-<translation id="6368342879959028556">Als je Maken met AI selecteert, schrijf je een aangepaste prompt. Je kunt ook AI-achtergronden selecteren om een thema te kiezen en dan de onderstreepte woorden selecteren om je AI-achtergrond te personaliseren.</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="6369221585240879141">Kan geen namen voor opnamen maken voor deze transcripttaal</translation>
 <translation id="6373461326814131011">vijver</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Systeemservices toestaan je locatie te gebruiken?</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="66621959568103627">koraalroze</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-<ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Selecteer Inspireer me voor meer unieke en gevarieerde opties voor AI-afbeeldingen.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Als je iets maakt met AI, wordt de prompt naar de AI-servers van Google gestuurd om afbeeldingen te genereren en het product te verbeteren, in overeenstemming met het <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Privacybeleid van Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt beschikbaar.</translation>
 <translation id="6673898378497337661">helderheid van toetsenbord verhogen</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6694534975463174713">slot</translation>

@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK" />सेवाका सर्तहरू<ph name="END_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1062138828266376352">तपाईंको PIN परिवर्तन गरिएको छैन। इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
+<translation id="1072476005125066234">तपाईंका रुचिमा आधारित रिभ्यूहरू</translation>
 <translation id="1074827084851510304">तपाईं {password_count} वटा पासवर्ड र आफूले कहिल्यै पनि साइन इनसम्बन्धी जानकारी सेभ नगर्ने विकल्प रोजेका साइट तथा एपहरूको सूची मेटाउन लाग्दै हुनुहुन्छ। तपाईंले साइट तथा एपहरूको खाता बनाउनुभएको छ भने सो खाता मेटाइने छैन।</translation>
 <translation id="1076421457278169141">कोड स्क्यान गरियो</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ट्याब}other{{count} वटा ट्याब}}</translation>
@@ -261,6 +262,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> वटा खाताको पासवर्ड एउटै छ</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2060114494785549741">एक महिनामा मेटाउनुहोस्</translation>
+<translation id="2060638295449304809">यो ठेगाना यो डिभाइसमा मात्र सेभ गरिन्छ। यो ठेगाना आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो Google खाता <ph name="USER_EMAIL" /> मा सेभ गर्नुहोस्</translation>
 <translation id="20638360198452347">युनिट टाइप सेलेक्टर</translation>
 <translation id="2067852168641682340">हरेक पटक यो खातामा सेभ गर्नुहोस्</translation>
 <translation id="2074119687904553223">{count,plural, =1{एउटा ट्याब}other{{count} वटा ट्याब}}</translation>
@@ -878,6 +880,7 @@
 <translation id="4824480232751123840">आयतन</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
+<translation id="4828431027673677473">तपाईंका रुचिमा आधारित उत्पादनहरू</translation>
 <translation id="4833786495304741580">यसले Google मा प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः पठाउँछ।</translation>
 <translation id="483689884442613745">सेभ गर्नुहोस्…</translation>
 <translation id="4840495572919996524">अब उप्रान्त तपाईंको Google खातामा तपाईंका पुस्तक चिन्ह, इतिहाससम्बन्धी डेटा, पासवर्ड र अन्य सेटिङहरू सिंक हुने छैनन्।</translation>
@@ -1708,6 +1711,7 @@
 <translation id="828291969289324795">{count,plural, =1{यो ट्याब नयाँ समूहमा हाल्नुहोस्}other{यी ट्याबहरू नयाँ समूहमा हाल्नुहोस्}}</translation>
 <translation id="8283172974887967105">सेट गर्नुहोस्…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> सम्बन्धी सूचना प्राप्त गर्ने सुविधा अफ गरिएको छ</translation>
+<translation id="8290077367744012649">आफ्ना ट्याबहरूबाटै मूल्यहरू ट्र्याक गर्नुहोस्</translation>
 <translation id="8299417921174340354">पासवर्डहरू प्रयोग गर्न सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="8307481894409578819">यो फाइल अपलोड गर्न सकिएन</translation>
 <translation id="8319076807703933069">नयाँ खोज</translation>

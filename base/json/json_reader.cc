@@ -26,56 +26,47 @@ namespace base {
 #if !BUILDFLAG(IS_NACL)
 
 namespace {
-using serde_json_lenient::ContextPointer;
 
 const char kSecurityJsonParsingTime[] = "Security.JSONParser.ParsingTime";
 
-ContextPointer& ListAppendList(ContextPointer& ctx) {
-  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
-  list.Append(base::Value::List());
-  return reinterpret_cast<ContextPointer&>(list.back());
+Value::List& ListAppendList(Value::List& ctx) {
+  ctx.Append(base::Value::List());
+  return ctx.back().GetList();
 }
 
-ContextPointer& ListAppendDict(ContextPointer& ctx) {
-  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
-  list.Append(base::Value::Dict());
-  return reinterpret_cast<ContextPointer&>(list.back());
+Value::Dict& ListAppendDict(Value::List& ctx) {
+  ctx.Append(base::Value::Dict());
+  return ctx.back().GetDict();
 }
 
-void ListAppendNone(ContextPointer& ctx) {
-  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
-  list.Append(base::Value());
+void ListAppendNone(Value::List& ctx) {
+  ctx.Append(base::Value());
 }
 
 template <class T, class As = T>
-void ListAppendValue(ContextPointer& ctx, T v) {
-  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
-  list.Append(As{v});
+void ListAppendValue(Value::List& ctx, T v) {
+  ctx.Append(As{v});
 }
 
-ContextPointer& DictSetList(ContextPointer& ctx, rust::Str key) {
-  auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
+Value::List& DictSetList(Value::Dict& ctx, rust::Str key) {
   base::Value* value =
-      dict.Set(base::RustStrToStringView(key), base::Value::List());
-  return reinterpret_cast<ContextPointer&>(*value);
+      ctx.Set(base::RustStrToStringView(key), base::Value::List());
+  return value->GetList();
 }
 
-ContextPointer& DictSetDict(ContextPointer& ctx, rust::Str key) {
-  auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
+Value::Dict& DictSetDict(Value::Dict& ctx, rust::Str key) {
   base::Value* value =
-      dict.Set(base::RustStrToStringView(key), base::Value::Dict());
-  return reinterpret_cast<ContextPointer&>(*value);
+      ctx.Set(base::RustStrToStringView(key), base::Value::Dict());
+  return value->GetDict();
 }
 
-void DictSetNone(ContextPointer& ctx, rust::Str key) {
-  auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringView(key), base::Value());
+void DictSetNone(Value::Dict& ctx, rust::Str key) {
+  ctx.Set(base::RustStrToStringView(key), base::Value());
 }
 
 template <class T, class As = T>
-void DictSetValue(ContextPointer& ctx, rust::Str key, T v) {
-  auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringView(key), base::Value(As{v}));
+void DictSetValue(Value::Dict& ctx, rust::Str key, T v) {
+  ctx.Set(base::RustStrToStringView(key), base::Value(As{v}));
 }
 
 JSONReader::Result DecodeJSONInRust(std::string_view json,
@@ -110,11 +101,10 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
       .dict_set_dict_fn = DictSetDict,
   };
 
-  base::Value value(base::Value::Type::LIST);
-  auto& ctx = reinterpret_cast<ContextPointer&>(value);
+  base::Value::List list;
   serde_json_lenient::DecodeError error;
   bool ok = serde_json_lenient::decode_json(
-      base::StringViewToRustSlice(json), rust_options, functions, ctx, error);
+      base::StringViewToRustSlice(json), rust_options, functions, list, error);
 
   if (!ok) {
     return base::unexpected(base::JSONReader::Error{
@@ -124,7 +114,7 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
     });
   }
 
-  return std::move(std::move(value.GetList()).back());
+  return std::move(list.back());
 }
 
 }  // anonymous namespace

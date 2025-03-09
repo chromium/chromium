@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK ভার্সন:</translation>
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">আপনার AI ছবি পছন্দমতো সেট করতে একটি থিম, তারপর নিচে দাগ দেওয়া শব্দগুলি বেছে নিন।</translation>
 <translation id="2045814230297767491">কাঁটা-চামচ-ছুরি</translation>
 <translation id="2047316797244836561">স্ক্রিনসেভার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">অন্য গ্রহ</translation>
 <translation id="6359706544163531585">হালকা থিম বন্ধ করুন</translation>
 <translation id="6359919876285606596">এই অ্যাকশন স্থায়ী এবং আগের অবস্থায় ফিরিয়ে আনা যাবে না</translation>
-<translation id="6368342879959028556">“AI-এর সাহায্যে তৈরি করো” বিকল্প বেছে নিয়ে কাস্টম প্রম্পট লিখুন। অথবা থিম বেছে নিতে আপনি “AI ওয়ালপেপার” বাছুন এবং তারপর আপনার AI ওয়ালপেপার পছন্দমতো করে তুলতে নিচে দাগ দেওয়া শব্দ বেছে নিন।</translation>
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
 <translation id="6369221585240879141">এই ট্রান্সক্রিপ্টের ভাষার জন্য রেকর্ডিংয়ের নাম তৈরি করা যাচ্ছে না</translation>
 <translation id="6373461326814131011">পুকুর</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">আপনার লোকেশন ব্যবহার করার জন্য সিস্টেম সার্ভিসকে অনুমতি দিতে চান?</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="66621959568103627">কোরাল পিঙ্ক</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ছবি সংক্রান্ত আরও অনন্য ও নানারকম বিকল্প পেতে "আমাকে অনুপ্রাণিত করো" বিকল্প বেছে নিন।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          আপনি AI ব্যবহার করে কিছু তৈরি করার সময়, ছবি জেনারেট ও প্রোডাক্টের উন্নতি করতে <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী প্রম্পট, Google AI সার্ভারে পাঠানো হয়।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          জেনারেটিভ AI পরীক্ষামূলক, প্রাথমিক পর্যায়ে ও বর্তমানে সীমিতভাবে উপলভ্য।</translation>
 <translation id="6673898378497337661">কীবোর্ডের উজ্জ্বলতা বাড়ান</translation>
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
 <translation id="6694534975463174713">লক</translation>

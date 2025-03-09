@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">ଆପଣ ଏଠାରେ Lens ଖୋଲିପାରିବେ।</translation>
 <translation id="1042296835509784301">Chromiumରେ Password Managerକୁ ଖୋଲେ।</translation>
 <translation id="1047130070405668746">Chromium ଚୟନ କରନ୍ତୁ</translation>
+<translation id="1086486568852410168">Google Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1091252999271033193">ଏହାର ଅର୍ଥ ପ୍ରତ୍ୟେକ ଥର Chromium ଏକ ମୋବାଇଲ ସାଇଟ ଅନୁରୋଧ କରିବ।</translation>
 <translation id="1115463765356382667">Chromiumରୁ ସବୁଠୁ ଅଧିକ ଲାଭ ପାଇବା ପାଇଁ ନିମ୍ନରେ ଏହି ପ୍ରସ୍ତାବିତ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ।</translation>
 <translation id="1140315115515116765">ସହଜରେ ମୂଲ୍ୟ ଇନସାଇଟଗୁଡ଼ିକ ପାଇବାକୁ ଡିଫଲ୍ଟ ଭାବେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -98,6 +99,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଏଥିରେ ଇତିହାସ ଏବଂ ଅଟୋଫିଲ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଏଥିରେ ଇତିହାସ ଏବଂ ଅଟୋଫିଲ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>
 <translation id="3410395242749598859">ଆପଣଙ୍କର କିଛି Chromium ଡାଟାକୁ ଏପର୍ଯ୍ୟନ୍ତ <ph name="EMAIL" />ରେ ସେଭ କରାଯାଇନାହିଁ।
 ଆକାଉଣ୍ଟ ସୁଇଚ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ଆକାଉଣ୍ଟ ସୁଇଚ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
+<translation id="3440830787838130530">Google Password Managerରେ ଆପଣଙ୍କ ପରିବାର ଗୋଷ୍ଠୀ ସହିତ ସହଜରେ ଏବଂ ସୁରକ୍ଷିତ ଭାବରେ ଏକ ପାସୱାର୍ଡର ଗୋଟିଏ କପି ସେୟାର କରନ୍ତୁ</translation>
 <translation id="3472200483164753384">Chromium Canaryରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="347967311580159871">ଆପଣଙ୍କ Chromium ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟା ବ୍ୟବହାର କରୁଥିବା ଅଧିକ ସେଟିଂସ ନିମନ୍ତେ <ph name="BEGIN_LINK" />Google ସେବାଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଯାଆନ୍ତୁ।</translation>
 <translation id="3512168799938877162">ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେୟାର କରାଯାଇନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନକୁ ଯାଞ୍ଚ କରି ଆପଣ Chromiumରେ ସାଇନ ଇନ କରିଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ତା'ପରେ, ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>

@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Fersiwn SDK:</translation>
 <translation id="2016697457005847575">Rhowch gynnig ar gamau datrys problemau</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Dewiswch thema ac yna dewiswch y geiriau sydd wedi'u tanlinellu i bersonoleiddio'ch lluniau AI.</translation>
 <translation id="2045814230297767491">cyllyll a ffyrc</translation>
 <translation id="2047316797244836561">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld arbedwr sgrîn.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">planed wahanol</translation>
 <translation id="6359706544163531585">Analluogi'r thema olau</translation>
 <translation id="6359919876285606596">Mae'r cam gweithredu hwn yn barhaol ac ni ellir ei ddadwneud.</translation>
-<translation id="6368342879959028556">Pan ddewiswch “Creu gydag AI,” ysgrifennwch anogwr personol. Neu gallwch ddewis “papurau wal AI,” i ddewis thema ac yna dewis y geiriau sydd wedi'u tanlinellu i bersonoleiddio'ch papur wal AI.</translation>
 <translation id="636850387210749493">Cofrestru menter</translation>
 <translation id="6369221585240879141">Nid oes modd creu enwau recordio ar gyfer yr iaith drawsgrifio hon</translation>
 <translation id="6373461326814131011">pwll</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Caniatáu i wasanaethau system ddefnyddio'ch lleoliad?</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="66621959568103627">pinc cwrel</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Dewiswch "Ysbrydolwch fi" i gael opsiynau lluniau AI mwy unigryw ac amrywiol.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pan fyddwch yn creu gydag AI, anfonir yr anogwr at weinyddion AI Google i gynhyrchu lluniau a gwella'r cynnyrch, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Bolisi Preifatrwydd Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Mae AI cynhyrchiol yn arbrofol, yn ei ddatblygiad cynnar, ac mae ganddo argaeledd cyfyngedig ar hyn o bryd.</translation>
 <translation id="6673898378497337661">disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
 <translation id="6694534975463174713">clo</translation>

@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Продовжуючи, ви приймаєте <ph name="BEGIN_LINK" />Умови використання<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
 <translation id="1062138828266376352">Ваш PIN-код не змінено. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
+<translation id="1072476005125066234">Відгуки на основі ваших інтересів</translation>
 <translation id="1074827084851510304">Ви збираєтеся видалити паролі ({password_count}) та список сайтів і додатків, для яких вирішили не зберігати дані для входу. Облікові записи, створені для сайтів і додатків, не видалятимуться.</translation>
 <translation id="1076421457278169141">Код зіскановано</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386">Кілька облікових записів (<ph name="COUNT" />) використовують такий самий пароль</translation>
 <translation id="2059166748188874810">Муніципалітет</translation>
 <translation id="2060114494785549741">Видалити через 1 місяць</translation>
+<translation id="2060638295449304809">Цю адресу збережено лише на поточному пристрої. Щоб використовувати її на інших пристроях, збережіть цю адресу в обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="20638360198452347">Засіб вибору типу одиниць</translation>
 <translation id="2067852168641682340">Щоразу зберігати в цьому обліковому записі</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">Об’єм</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і ще 1}one{{domain} і ще {count}}few{{domain} і ще {count}}many{{domain} і ще {count}}other{{domain} і ще {count}}}</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
+<translation id="4828431027673677473">Товари на основі ваших інтересів</translation>
 <translation id="4833786495304741580">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google.</translation>
 <translation id="483689884442613745">Зберегти…</translation>
 <translation id="4840495572919996524">Закладки, історія, паролі тощо більше не синхронізуватимуться з обліковим записом Google.</translation>
@@ -1724,6 +1727,7 @@
 <translation id="828291969289324795">{count,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8289930144142009940">Сповіщення функції "<ph name="FEATURE_NAME" />" вимкнено</translation>
+<translation id="8290077367744012649">Відстежуйте ціни на вкладках</translation>
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="8307481894409578819">Не вдалося завантажити цей файл</translation>
 <translation id="8319076807703933069">Новий пошук</translation>

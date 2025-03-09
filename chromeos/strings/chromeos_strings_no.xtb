@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK-versjon:</translation>
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Velg et tema og deretter de understrekede ordene for å tilpasse AI-bildene.</translation>
 <translation id="2045814230297767491">bestikk</translation>
 <translation id="2047316797244836561">Koble til et nettverk og last inn siden på nytt for å se skjermspareren.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">en annen planet</translation>
 <translation id="6359706544163531585">Slå av lyst tema</translation>
 <translation id="6359919876285606596">Denne handlingen er permanent og kan ikke angres</translation>
-<translation id="6368342879959028556">Når du velger «Opprett med AI», skriver du en egendefinert forespørsel. Du kan også velge «AI-bakgrunn», velge et tema og deretter velge de understrekede ordene for å tilpasse AI-bakgrunnen.</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="6369221585240879141">Kan ikke opprette opptaksnavn for dette transkripsjonsspråket</translation>
 <translation id="6373461326814131011">dam</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Vil du la systemtjenester bruke posisjonen din?</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="66621959568103627">korallrosa</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Velg «Inspirer meg» for å få mer unike og varierte alternativer for AI-bilder.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Når du lager innhold med AI, blir forespørselen sendt til Googles AI-tjenere for å generere bildene og forbedre produktet, i henhold til <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles personvernregler<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI er på forsøksstadiet og i en tidlig fase av utviklingen, og tilgjengeligheten er foreløpig begrenset.</translation>
 <translation id="6673898378497337661">tastaturlysstyrke opp</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6694534975463174713">lås</translation>

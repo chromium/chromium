@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -56,11 +57,20 @@ class EnterpriseIdentityServiceImpl : public EnterpriseIdentityService,
       GetManagedAccountsCallback callback) override;
   void GetManagedAccountsAccessTokens(
       base::OnceCallback<void(std::vector<std::string>)> callback) override;
+  void AddObserver(EnterpriseIdentityService::Observer* observer) override;
+  void RemoveObserver(EnterpriseIdentityService::Observer* observer) override;
 
   // signin::IdentityManager::Observer:
   void OnRefreshTokensLoaded() override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
 
  private:
+  // Will invoke `callback` with the subset of `accounts` which end up being
+  // identified as managed.
+  void GetManagedAccounts(const std::vector<CoreAccountInfo>& accounts,
+                          GetManagedAccountsCallback callback);
+
   void OnAccountTypesIdentified(
       std::unique_ptr<std::vector<
           std::unique_ptr<signin::AccountManagedStatusFinder>>> status_finders,
@@ -77,9 +87,17 @@ class EnterpriseIdentityServiceImpl : public EnterpriseIdentityService,
       std::vector<base::expected<signin::AccessTokenInfo,
                                  GoogleServiceAuthError>> access_token_infos);
 
+  void OnRefreshTokenUpdatedForManagedAccounts(
+      std::vector<CoreAccountInfo> accounts);
+
   bool refresh_tokens_loaded_{false};
   std::vector<base::OnceClosure> pending_requests_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ObserverList<EnterpriseIdentityService::Observer> observers_;
+
+  // Singular status finder used to verify if a single account is managed or
+  // not, for the purpose of notifying observers.
+  std::unique_ptr<signin::AccountManagedStatusFinder> status_finder_;
 
   base::WeakPtrFactory<EnterpriseIdentityServiceImpl> weak_factory_{this};
 };
@@ -112,8 +130,59 @@ void EnterpriseIdentityServiceImpl::GetManagedAccountsWithRefreshTokens(
     return;
   }
 
-  const auto& accounts = identity_manager_->GetAccountsWithRefreshTokens();
+  GetManagedAccounts(identity_manager_->GetAccountsWithRefreshTokens(),
+                     std::move(callback));
+}
 
+void EnterpriseIdentityServiceImpl::GetManagedAccountsAccessTokens(
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  GetManagedAccountsWithRefreshTokens(base::BindOnce(
+      &EnterpriseIdentityServiceImpl::OnManagedAccountsIdentified,
+      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void EnterpriseIdentityServiceImpl::AddObserver(
+    EnterpriseIdentityService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void EnterpriseIdentityServiceImpl::RemoveObserver(
+    EnterpriseIdentityService::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void EnterpriseIdentityServiceImpl::OnRefreshTokensLoaded() {
+  if (refresh_tokens_loaded_) {
+    // No-op.
+    return;
+  }
+
+  refresh_tokens_loaded_ = true;
+
+  // Resume all pending requests.
+  for (auto& closure : pending_requests_) {
+    std::move(closure).Run();
+  }
+
+  pending_requests_.clear();
+}
+
+void EnterpriseIdentityServiceImpl::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (!refresh_tokens_loaded_) {
+    return;
+  }
+
+  // Verify if `account_info` represents a managed account. If so, notify
+  // observers.
+  GetManagedAccounts(std::vector<CoreAccountInfo>{account_info},
+                     base::BindOnce(&EnterpriseIdentityServiceImpl::
+                                        OnRefreshTokenUpdatedForManagedAccounts,
+                                    weak_factory_.GetWeakPtr()));
+}
+void EnterpriseIdentityServiceImpl::GetManagedAccounts(
+    const std::vector<CoreAccountInfo>& accounts,
+    GetManagedAccountsCallback callback) {
   if (accounts.empty()) {
     // No signed-in accounts.
     std::move(callback).Run(std::vector<CoreAccountInfo>());
@@ -143,29 +212,6 @@ void EnterpriseIdentityServiceImpl::GetManagedAccountsWithRefreshTokens(
       barrier_closure.Run();
     }
   }
-}
-
-void EnterpriseIdentityServiceImpl::GetManagedAccountsAccessTokens(
-    base::OnceCallback<void(std::vector<std::string>)> callback) {
-  GetManagedAccountsWithRefreshTokens(base::BindOnce(
-      &EnterpriseIdentityServiceImpl::OnManagedAccountsIdentified,
-      weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void EnterpriseIdentityServiceImpl::OnRefreshTokensLoaded() {
-  if (refresh_tokens_loaded_) {
-    // No-op.
-    return;
-  }
-
-  refresh_tokens_loaded_ = true;
-
-  // Resume all pending requests.
-  for (auto& closure : pending_requests_) {
-    std::move(closure).Run();
-  }
-
-  pending_requests_.clear();
 }
 
 void EnterpriseIdentityServiceImpl::OnAccountTypesIdentified(
@@ -246,6 +292,18 @@ void EnterpriseIdentityServiceImpl::OnAccessTokensFetched(
     }
   }
   std::move(callback).Run(access_tokens);
+}
+
+void EnterpriseIdentityServiceImpl::OnRefreshTokenUpdatedForManagedAccounts(
+    std::vector<CoreAccountInfo> accounts) {
+  if (accounts.empty()) {
+    // Refresh tokens were updated for a consumer user, so no-op.
+    return;
+  }
+
+  // Notify observers.
+  observers_.Notify(
+      &EnterpriseIdentityService::Observer::OnManagedAccountSessionChanged);
 }
 
 }  // namespace enterprise

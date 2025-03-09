@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Versión del SDK:</translation>
 <translation id="2016697457005847575">Sigue los pasos para solucionar el problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Elige un tema y selecciona las palabras subrayadas para personalizar tus imágenes generadas con IA.</translation>
 <translation id="2045814230297767491">cubertería</translation>
 <translation id="2047316797244836561">Conéctate a una red y vuelve a cargar la página para ver el salvapantallas.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Inhabilitar tema claro</translation>
 <translation id="6359919876285606596">Esta acción es permanente y no se puede deshacer</translation>
-<translation id="6368342879959028556">Cuando selecciones Crear con IA, escribe una petición personalizada. También puedes seleccionar Fondos de pantalla creados con IA para elegir un tema y, a continuación, seleccionar las palabras subrayadas para personalizar tu fondo de pantalla creado con IA.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6369221585240879141">No se pueden crear nombres de grabación para este idioma de transcripción</translation>
 <translation id="6373461326814131011">estanque</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">¿Permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="66621959568103627">rosa coral</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Selecciona Inspírame para ver opciones de imágenes generadas con IA más singulares y variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Cuando creas contenido con IA, la petición se envía a los servidores de IA de Google para generar imágenes y mejorar el producto de acuerdo con la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidad de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          La IA generativa es experimental, se encuentra en sus primeras fases de desarrollo y, por el momento, tiene una disponibilidad limitada.</translation>
 <translation id="6673898378497337661">aumentar brillo del teclado</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6694534975463174713">candado</translation>
