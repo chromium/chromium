@@ -56,8 +56,8 @@ class PaletteWelcomeBubbleTest : public AshTestBase {
 
     welcome_bubble_ = std::make_unique<PaletteWelcomeBubble>(
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->palette_tray());
-    GetSessionControllerClient()->AddUserSession({kUser1Email});
-    GetSessionControllerClient()->AddUserSession({kUser2Email});
+    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({kUser2Email});
     GetSessionControllerClient()->SwitchActiveUser(
         AccountId::FromUserEmail(kUser1Email));
   }

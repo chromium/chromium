@@ -495,7 +495,7 @@ TEST_F(ColorPaletteControllerTest,
 
 TEST_F(ColorPaletteControllerTest, GuestLogin_UsesCelebiColor) {
   const SkColor celebi_color = SK_ColorBLUE;
-
+  ClearLogin();
   SimulateGuestLogin();
   base::RunLoop().RunUntilIdle();
   UpdateWallpaperColor(celebi_color);

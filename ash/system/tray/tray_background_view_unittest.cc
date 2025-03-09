@@ -340,7 +340,7 @@ TEST_F(NoSessionTrayBackgroundViewTest, HandleSessionChange) {
 
   // Not showing animation when switching users.
   // TODO: Fix bug. switching active user fails the test.
-  GetSessionControllerClient()->AddUserSession({"a@tray"});
+  auto account_id = GetSessionControllerClient()->AddUserSession({"a@tray"});
 
   test_tray_background_view()->SetVisiblePreferred(false);
   test_tray_background_view()->SetVisiblePreferred(true);
@@ -349,7 +349,7 @@ TEST_F(NoSessionTrayBackgroundViewTest, HandleSessionChange) {
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
   // Simulates user switching by changing the order of session_ids.
-  Shell::Get()->session_controller()->SetUserSessionOrder({2u, 1u});
+  SwitchActiveUser(account_id);
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());

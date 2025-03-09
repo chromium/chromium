@@ -46,13 +46,7 @@ void InformedRestoreTestBase::SetUp() {
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
 
-  session_controller->AddUserSession({kTestUserEmail}, std::nullopt,
-                                     std::move(test_prefs));
-
-  // Switch to the test user and simulate login.
-  session_controller->SwitchActiveUser(
-      AccountId::FromUserEmail(kTestUserEmail));
-  session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
+  SimulateUserLogin({kTestUserEmail}, std::nullopt, std::move(test_prefs));
 }
 
 }  // namespace ash

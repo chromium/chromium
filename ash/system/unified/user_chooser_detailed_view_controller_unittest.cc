@@ -26,13 +26,6 @@
 namespace ash {
 namespace {
 
-AccountId GetActiveUser() {
-  return Shell::Get()
-      ->session_controller()
-      ->GetUserSession(/*user_index=*/0)
-      ->user_info.account_id;
-}
-
 class UserChooserDetailedViewControllerTest : public AshTestBase {
  public:
   UserChooserDetailedViewControllerTest() = default;
@@ -102,10 +95,13 @@ TEST_F(UserChooserDetailedViewControllerTest,
 }
 
 TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
-  // Add a secondary user.
-  const auto secondary_user =
-      GetSessionControllerClient()->AddUserSession({"secondary@gmail.com"});
-  ASSERT_NE(GetActiveUser(), secondary_user);
+  auto* session_controller = Shell::Get()->session_controller();
+  auto first_user = session_controller->GetActiveAccountId();
+
+  // Add a secondary user then switch back to first user.
+  auto secondary_user = SimulateUserLogin({"secondary@gmail.com"});
+  SwitchActiveUser(first_user);
+  ASSERT_NE(session_controller->GetActiveAccountId(), secondary_user);
 
   // Create an activatable widget.
   std::unique_ptr<views::Widget> widget =
@@ -128,7 +124,7 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   tray_test_api()->ClickBubbleView(secondary_user_button_id);
 
   // Active user is switched.
-  EXPECT_EQ(GetActiveUser(), secondary_user);
+  EXPECT_EQ(session_controller->GetActiveAccountId(), secondary_user);
 }
 
 TEST_F(UserChooserDetailedViewControllerTest,

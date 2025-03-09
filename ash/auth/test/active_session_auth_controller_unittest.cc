@@ -65,13 +65,10 @@ class ActiveSessionAuthControllerTest
     UserDataAuthClient::InitializeFake();
     auth_parts_ = AuthParts::Create(local_state());
 
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(
-        {kUserEmail, user_manager::UserType::kRegular});
-    GetSessionControllerClient()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
+    SimulateUserLogin({kUserEmail, user_manager::UserType::kRegular});
   }
 
   void TearDown() override {
@@ -84,7 +81,7 @@ class ActiveSessionAuthControllerTest
     CryptohomeMiscClient::Shutdown();
     UserDataAuthClient::Shutdown();
 
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   void InitializeUserManager() {
