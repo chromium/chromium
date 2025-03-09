@@ -290,7 +290,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '345dc2d05dcdd7f50930d5951d22df4623777a4c',
+  'skia_revision': '0f53870c7449b732a7ad5e150768a6c09ecd24f6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -298,7 +298,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '0331847e97e187e22365c1f9cac97da0bcc3d5e4',
+  'angle_revision': '6c2737be88ac40f63a258c30e6a68d29feca0b1f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -406,7 +406,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'f6ed7f55ea44972942b6d00713c7f611701f6ce3',
+  'dawn_revision': 'a04b51ef7139340e66baf2263c571d902178d003',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1470,7 +1470,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '75c6bb2f1a1bc63653624d39113bde3a6a7cf567',
+    '2ada14a027e1c5f81e68485cb768c3bd3d3c20be',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1700,7 +1700,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/error_prone',
-               'version': 'yV2AWEuHgVYgavFYLJw7j7TY-u0ti8S84sQtfQ_2Wo0C',
+               'version': 'PUFyo5eTRLBVraTti00zSIPJ9JJazDE9OU5e-mc6sicC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1722,7 +1722,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
-               'version': 'MNPAEPEDm-nqhzi1KvT_UeWIjBYRgcUgc9vM13RzXB8C',
+               'version': 'tsOuC8RTor7xvEQGKjf4UUWbOZ6CXLUAWTapMfyjtSIC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1733,7 +1733,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': '_HBnESa9CYwglHIRqaReMOQyjP7kQW9vMOqOIklS_sEC',
+               'version': 'XsYjBCg98jVV1y2tdwYTvXS_V_53hDdGBdsLsI_Cd-AC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2213,7 +2213,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'NShn5-fzHFBEkE52SIgUXx7DD0UAP1io9XKff3xFEpQC',
+              'version': 'pGc0IwjF9qATYBTA1j_EEb5uRBILDRjHPjeWULvZ4pQC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2881,7 +2881,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'cec4b95104c3660e0a1eeafea3e0f6176b8d389d',
+    Var('webrtc_git') + '/src.git' + '@' + 'ccf5114570f58450b8b51c1ed7262bfd76df4aa3',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3000,7 +3000,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': '4q5x4PwiDhWhdDYPp5qCjA8Q9gvVB1xG38m7k_b0CUUC',
+        'version': 'dzPU_m9IxhqBnbEc30IaFFcmC7pWmrX3XgpkwJSIvesC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3011,7 +3011,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'PBx3m7dOoAqCMYY05HGdtbf31c8Yk-KjMY-fw0qqDCAC',
+        'version': 'Y8r2LnPhC_kivcCFO8ouL0SE5DSz4sgQmeME3sTnCzYC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3022,7 +3022,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'lFNLnW-JChHCTFYCELSjYo-GB0XksH57QyiCPogswZIC',
+        'version': 'XB6majZoNtHjHr66AFGGmk6GS99qWdNPKtPx1V9xqAoC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3055,7 +3055,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'I6WfJorfxm3BDNQ3e0Wie2Sp_717asbdi5Xo0m41mPoC',
+        'version': 'mkzekdJtAjeL60kOYYzqz5YPypsJ7wSBb5yjuysbY7QC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4571,7 +4571,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '8cc60d69eba57a85db02d85864b596cb37f16a11',
+        '69b1f4ae24adc147e4bdc087b6a545c3783f3674',
       'condition': 'checkout_src_internal',
   },
 
@@ -4637,7 +4637,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '10c7f334118c66bc8ebd83e7a124935c863c59c3',
+        '132439a2be6b4cd56a89b91d5a0129b8eb283f20',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

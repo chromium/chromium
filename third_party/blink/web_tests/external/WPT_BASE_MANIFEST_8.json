@@ -423010,7 +423010,7 @@
       []
      ],
      "urlpatterntestdata.json": [
-      "5a279e9e712e75359297b5412a4c6fbb8d7b65fd",
+      "3d5ddce1eab21ee8eca63666cfe2e096903c397f",
       []
      ],
      "urlpatterntests.js": [
@@ -423019,35 +423019,35 @@
      ]
     },
     "urlpattern.any-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.any.serviceworker-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.any.sharedworker-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.any.worker-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.https.any-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.https.any.serviceworker-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.https.any.sharedworker-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ],
     "urlpattern.https.any.worker-expected.txt": [
-     "1e9f1ab268d23ba9cd6ea215b4df549cbd1ca42d",
+     "631a4632deebe61c6f8d88c2d782c70e7ffb0b2f",
      []
     ]
    },
@@ -631431,7 +631431,7 @@
        ]
       },
       "field-sizing-input-number.html": [
-       "859d35197b05ee31f350d157604308f5309ad372",
+       "6056f9320a5e0b39e33e07a4363ed3252603e5ea",
        [
         null,
         {}

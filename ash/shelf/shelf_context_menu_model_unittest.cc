@@ -33,7 +33,7 @@ class MockNewWindowDelegate
 };
 
 class ShelfContextMenuModelTest
-    : public AshTestBase,
+    : public NoSessionAshTestBase,
       public ::testing::WithParamInterface<user_manager::UserType> {
  public:
   ShelfContextMenuModelTest() = default;
@@ -46,10 +46,7 @@ class ShelfContextMenuModelTest
 
   void SetUp() override {
     AshTestBase::SetUp();
-    TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession({"user1@test.com", GetUserType()});
-    session->SetSessionState(session_manager::SessionState::ACTIVE);
-    session->SwitchActiveUser(AccountId::FromUserEmail("user1@test.com"));
+    SimulateUserLogin({"user1@test.com", GetUserType()});
   }
 
   user_manager::UserType GetUserType() const { return GetParam(); }
