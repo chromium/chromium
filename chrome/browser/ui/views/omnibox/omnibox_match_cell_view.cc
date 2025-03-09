@@ -318,10 +318,14 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       apply_vector_icon(
           AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer_type));
     } else {
+      // Use the hovered background color as the default placeholder color.
       SkColor color = GetColorProvider()->GetColor(
-          GetOmniboxBackgroundColorId(result_view->GetThemeState()));
-      content::ParseHexColorString(match.image_dominant_color, &color);
-      color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
+          GetOmniboxBackgroundColorId(OmniboxPartState::HOVERED));
+      // If `image_dominant_color` is provided, override the default.
+      if (!match.image_dominant_color.empty()) {
+        content::ParseHexColorString(match.image_dominant_color, &color);
+        color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
+      }
 
       gfx::Size size(kUniformRowHeightIconSize, kUniformRowHeightIconSize);
       answer_image_view_->SetImageSize(size);
