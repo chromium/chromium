@@ -2606,8 +2606,8 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
+crbug.com/401111779 [ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
+crbug.com/401111779 [ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
 [ Mac14-arm64 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Timeout ]
 crbug.com/401430860 external/wpt/html/rendering/widgets/field-sizing-textarea-relayout.html [ Failure ]
 [ Mac14 ] external/wpt/urlpattern/urlpattern.https.any.serviceworker.html [ Crash Failure ]
