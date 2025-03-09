@@ -461,6 +461,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/settings/AutofillDeletePaymentMethodConfirmationDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillDeleteSavedCvcsConfirmationDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalCardEditorTest.java",
+      "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalIbanEditorTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardEnrollmentDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/SettingsNavigationHelperTest.java",
