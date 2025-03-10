@@ -13091,6 +13091,21 @@
             ]
         }
     ],
+    "InputVizard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputOnViz"
+                    ]
+                }
+            ]
+        }
+    ],
     "InsecureFormSubmissionInterstitial": [
         {
             "platforms": [
