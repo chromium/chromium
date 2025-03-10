@@ -27,14 +27,22 @@ declare_args() {
   # and build) with the runtime --load-webui-from-disk command line switch.
   load_webui_from_disk = false
 
-  # Enable generation of compiled JS bytecode for opted-in WebUI scripts. When
-  # the host and current toolchains are the same there are issues instrumenting
-  # the code_cache_generator msan binaries, see crbug.com/40055221#comment17.
-  # TODO(crbug.com/399764218): Enable this build-step on cross-compiled builds.
-  # This is necessary for universalized mac builds that produce x64 / arm64
-  # chrome builds in the same package.
+  # Enable generation of compiled JS bytecode for opted-in WebUI scripts for
+  # compatible build configurations (see comment for the
+  # `enable_webui_generate_code_cache` update below).
+  enable_webui_generate_code_cache = false
+}
+
+# Build-time WebUI code caching is only used in optimize_webui builds. When the
+# host and current toolchains are the same there are issues instrumenting the
+# code_cache_generator msan binaries, see crbug.com/40055221#comment17.
+# TODO(crbug.com/399764218): Enable this build-step on cross-compiled builds.
+# This is necessary for universalized mac builds that produce x64 / arm64 chrome
+# builds in the same package.
+if (enable_webui_generate_code_cache) {
   enable_webui_generate_code_cache =
-      host_toolchain == current_toolchain && !is_msan && (is_linux || is_win)
+      optimize_webui && host_toolchain == current_toolchain && !is_msan &&
+      (is_linux || is_win)
 }
 
 if (load_webui_from_disk) {
