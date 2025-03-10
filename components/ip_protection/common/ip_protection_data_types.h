@@ -144,7 +144,7 @@ enum class MdlType {
 // indicates that the resource does not represent any MDL types which is
 // unexpected and will be logged as such.
 std::vector<MdlType> FromMdlResourceProto(
-    masked_domain_list::Resource resource);
+    const masked_domain_list::Resource& resource);
 
 struct ProbabilisticRevealToken {
   std::int32_t version;

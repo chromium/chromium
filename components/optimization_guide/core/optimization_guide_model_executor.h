@@ -97,7 +97,7 @@ using OptimizationGuideModelExecutionResultStreamingCallback =
 
 // The callback for receiving the token size of the given input.
 using OptimizationGuideModelSizeInTokenCallback =
-    base::OnceCallback<void(uint32_t)>;
+    base::OnceCallback<void(std::optional<uint32_t>)>;
 
 // Params used to control sampling output tokens for the on-device model.
 struct SamplingParams {

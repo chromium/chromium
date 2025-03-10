@@ -523,6 +523,7 @@
   E(kActionSidePanelShowCustomizeChrome) \
   E(kActionSidePanelShowFeed) \
   E(kActionSidePanelShowHistoryCluster) \
+  E(kActionSidePanelShowHistory) \
   E(kActionSidePanelShowLens) \
   E(kActionSidePanelShowLensOverlayResults, IDC_CONTENT_CONTEXT_LENS_OVERLAY) \
   E(kActionSidePanelShowReadAnything) \

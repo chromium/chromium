@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
@@ -210,12 +211,22 @@ void BrowserActions::InitializeBrowserActions() {
           .Build());
 
   if (side_panel::history_clusters::
-          IsHistoryClustersSidePanelSupportedForProfile(profile)) {
+          IsHistoryClustersSidePanelSupportedForProfile(profile) &&
+      !HistorySidePanelCoordinator::IsSupported()) {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
                         IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
                         vector_icons::kHistoryChromeRefreshIcon,
                         kActionSidePanelShowHistoryCluster, browser, true)
+            .Build());
+  }
+
+  if (HistorySidePanelCoordinator::IsSupported()) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kHistory, IDS_HISTORY_TITLE,
+                        IDS_HISTORY_SHOW_SIDE_PANEL,
+                        vector_icons::kHistoryChromeRefreshIcon,
+                        kActionSidePanelShowHistory, browser, true)
             .Build());
   }
 

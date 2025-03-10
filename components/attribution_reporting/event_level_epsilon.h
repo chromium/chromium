@@ -7,8 +7,11 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -19,7 +22,7 @@ namespace attribution_reporting {
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventLevelEpsilon {
  public:
   static base::expected<EventLevelEpsilon, mojom::SourceRegistrationError>
-  Parse(const base::Value::Dict&);
+  Parse(const base::DictValue&);
 
   // Creates an epsilon with the maximum allowed value.
   EventLevelEpsilon();
@@ -43,7 +46,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventLevelEpsilon {
 
   [[nodiscard]] bool SetIfValid(double);
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
  private:
   double epsilon_;

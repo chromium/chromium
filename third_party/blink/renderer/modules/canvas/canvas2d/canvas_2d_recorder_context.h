@@ -305,37 +305,12 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   bool IsAccelerated() const;
 
-  virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
-
-  // Returns the color to use as the current color for operations that identify
-  // the current color.
-  virtual Color GetCurrentColor() const = 0;
-
-  virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
-  virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
-  cc::PaintCanvas* GetPaintCanvas() {
-    return const_cast<cc::PaintCanvas*>(
-        const_cast<const Canvas2DRecorderContext*>(this)->GetPaintCanvas());
-  }
-
   // Returns the paint ops recorder this context uses. Can be `nullptr` if no
   // recorder is available.
   virtual const MemoryManagedPaintRecorder* Recorder() const = 0;
   MemoryManagedPaintRecorder* Recorder() {
     return const_cast<MemoryManagedPaintRecorder*>(
         const_cast<const Canvas2DRecorderContext*>(this)->Recorder());
-  }
-
-  // Called when about to draw. When this is called GetPaintCanvas() has already
-  // been called and returned a non-null value.
-  virtual void WillDraw(const SkIRect& dirty_rect,
-                        CanvasPerformanceMonitor::DrawType) = 0;
-
-  virtual sk_sp<PaintFilter> StateGetFilter() = 0;
-  void SnapshotStateForFilter();
-
-  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() const {
-    return nullptr;
   }
 
   ExecutionContext* GetTopExecutionContext() const override = 0;
@@ -346,13 +321,7 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 #endif
   }
 
-  virtual bool HasAlpha() const = 0;
-
-  virtual bool IsDesynchronized() const { NOTREACHED(); }
-
   virtual bool isContextLost() const = 0;
-
-  virtual void WillDrawImage(CanvasImageSource*) const {}
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
@@ -510,6 +479,36 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   // Returns if the current Document is within installed WebApp scope.
   bool IsInWebAppScope() const;
 
+  virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
+
+  // Returns the color to use as the current color for operations that identify
+  // the current color.
+  virtual Color GetCurrentColor() const = 0;
+
+  virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
+  virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
+  cc::PaintCanvas* GetPaintCanvas() {
+    return const_cast<cc::PaintCanvas*>(
+        const_cast<const Canvas2DRecorderContext*>(this)->GetPaintCanvas());
+  }
+
+  // Called when about to draw. When this is called GetPaintCanvas() has already
+  // been called and returned a non-null value.
+  virtual void WillDraw(const SkIRect& dirty_rect,
+                        CanvasPerformanceMonitor::DrawType) = 0;
+
+  virtual sk_sp<PaintFilter> StateGetFilter() = 0;
+
+  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() const {
+    return nullptr;
+  }
+
+  virtual bool HasAlpha() const = 0;
+
+  virtual bool IsDesynchronized() const { NOTREACHED(); }
+
+  virtual void WillDrawImage(CanvasImageSource*) const {}
+
   // TODO(crbug.com/383575391): Move context lost logic to
   // BaseRenderingContext2D.
   CanvasRenderingContext::LostContextMode context_lost_mode_{
@@ -629,6 +628,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   bool BlendModeSupportsShadowFilter(SkBlendMode) const;
   bool BlendModeDoesntPreserveOpaqueDestinationAlpha(SkBlendMode);
+
+  void SnapshotStateForFilter();
 
   static bool IsFullCanvasCompositeMode(SkBlendMode);
 

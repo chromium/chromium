@@ -7,9 +7,12 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -20,7 +23,7 @@ namespace attribution_reporting {
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) MaxEventLevelReports {
  public:
   static base::expected<MaxEventLevelReports, mojom::SourceRegistrationError>
-  Parse(const base::Value::Dict&, mojom::SourceType);
+  Parse(const base::DictValue&, mojom::SourceType);
 
   // https://wicg.github.io/attribution-reporting-api/#max-settable-event-level-attributions-per-source
   static MaxEventLevelReports Max();
@@ -47,7 +50,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) MaxEventLevelReports {
 
   [[nodiscard]] bool SetIfValid(int);
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
  private:
   int max_event_level_reports_ = 0;

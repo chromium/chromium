@@ -50,34 +50,38 @@ GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        MainFrameActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // TODO(crbug.com/386089639): Use GetTestUrl() when it accounts for localhost
-  // requests which are ignored.
-  GURL url = embedded_test_server()->GetURL("a.example",
-                                            "/frame_with_included_script.html");
+  GURL url_a = GetTestUrl("/frame_with_included_script.html");
+  GURL url_b = GetCrossSiteTestUrl("/included_script.js");
 
-  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
+  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
-  ASSERT_TRUE(NavigateToDestination(url));
+  ASSERT_TRUE(NavigateToDestination(url_a));
+  UpdateIncludedScriptSource(url_b);
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
-  /// the next check.
-  ASSERT_TRUE(NavigateToDestination(GURL("about:blank")));
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+  // Use frame_with_no_subresources.html so the only version of
+  // "/included_script.js" navigated to is on domain cross-origin.test.
+  ASSERT_TRUE(
+      NavigateToDestination(GetTestUrl("/frame_with_no_subresources.html")));
+  UpdateIncludedScriptSource(url_b);
 
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ASSERT_TRUE(NavigateToDestination(url));
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
-  ASSERT_TRUE(NavigateToDestination(GURL("about:blank")));
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(NavigateToDestination(url_a));
 
   // The root frame document should never be filtered.
-  SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
-  ASSERT_TRUE(NavigateToDestination(url));
+  SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
@@ -93,22 +97,22 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
-  // loading included_script.js, unless the document is loaded from an allowed
+  // loading included_script.html, unless the document is loaded from an allowed
   // (not in the blocklist) domain. This enables the third part of this test
   // disallowing a load only after the first redirect.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html"));
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
   // Now navigate the first subframe to an allowed URL and ensure that the load
   // successfully commits and the frame gets restored (no longer collapsed).
-  GURL allowed_subdocument_url(GetTestUrl("frame_with_allowed_script.html"));
+  GURL allowed_subdocument_url(
+      GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
   const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
@@ -118,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   // Navigate the first subframe to a document that does not load the probe JS.
   GURL allowed_empty_subdocument_url(
-      GetTestUrl("frame_with_no_subresources.html"));
+      GetCrossSiteTestUrl("/frame_with_no_subresources.html"));
   NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
 
   // Finally, navigate the first subframe to an allowed URL that redirects to a
@@ -126,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // collapsed.
   const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
-      GetTestUrl("frame_with_included_script.html"));
+      GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
       kAllowedDomain, "/server-redirect?" + disallowed_subdocument_url.spec()));
   NavigateFrame(kSubframeNames[0], redirect_to_disallowed_subdocument_url);
@@ -188,19 +192,19 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // with redirects. However, in dry run mode, all framees are expected as
   // nothing is blocked.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
 
   // Now navigate the first subframe to an allowed URL and ensure that the load
   // successfully commits.
-  GURL allowed_subdocument_url(GetTestUrl("frame_with_allowed_script.html"));
+  GURL allowed_subdocument_url(
+      GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
@@ -210,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // Navigate the first subframe to a document that does not load the probe
   // JS.
   GURL allowed_empty_subdocument_url(
-      GetTestUrl("frame_with_no_subresources.html"));
+      GetCrossSiteTestUrl("/frame_with_no_subresources.html"));
   NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
 
   // Finally, navigate the first subframe to an allowed URL that redirects to a
@@ -218,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // blocked and the frame doesn't collapse under dry run mode.
   const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
-      GetTestUrl("frame_with_included_script.html"));
+      GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
       kAllowedDomain, "/server-redirect?" + disallowed_subdocument_url.spec()));
   NavigateFrame(kSubframeNames[0], redirect_to_disallowed_subdocument_url);
@@ -288,18 +292,18 @@ IN_PROC_BROWSER_TEST_F(
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
   // Now navigate the first subframe to an allowed URL and ensure that the load
   // successfully commits and the frame gets restored (no longer collapsed).
-  GURL allowed_subdocument_url(GetTestUrl("frame_with_allowed_script.html"));
+  GURL allowed_subdocument_url(
+      GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
   const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
@@ -365,25 +369,26 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js, unless the document is loaded from an allowed
   // (not in the blocklist) domain. This enables the third part of this test
   // disallowing a load only after the first redirect.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
-  ASSERT_TRUE(NavigateToDestination(url));
+      SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html"));
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
   // Now navigate the first subframe to an allowed URL and ensure that the load
   // successfully commits and the frame gets restored (no longer collapsed).
-  GURL allowed_subdocument_url(GetTestUrl("frame_with_allowed_script.html"));
+  GURL allowed_subdocument_url(
+      GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
   const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
@@ -393,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate the first subframe to a document that does not load the probe JS.
   GURL allowed_empty_subdocument_url(
-      GetTestUrl("frame_with_no_subresources.html"));
+      GetCrossSiteTestUrl("/frame_with_no_subresources.html"));
   NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
 
   // Finally, navigate the first subframe to an allowed URL that redirects to a
@@ -401,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(
   // collapsed.
   const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
-      GetTestUrl("frame_with_included_script.html"));
+      GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
       kAllowedDomain, "/server-redirect?" + disallowed_subdocument_url.spec()));
   NavigateFrame(kSubframeNames[0], redirect_to_disallowed_subdocument_url);
@@ -484,17 +489,16 @@ IN_PROC_BROWSER_TEST_F(
 
   base::HistogramTester histogram_tester;
 
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -502,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(
   // Now navigate the first subframe to an allowed URL and ensure that the load
   // successfully commits and the frame gets restored (no longer collapsed).
   GURL allowed_subdocument_url(
-      GetTestUrl("subresource_filter/frame_with_allowed_script.html"));
+      GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
   const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
@@ -538,10 +542,11 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
 
-  // Expect 6 subresource loads, 1 per frame in `kTestFrameSetPath`: "one",
-  // "two", "three", "four", "five" + 1 from `NavigateFrame` call above.
-  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationWallDuration, 6);
-  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationCpuDuration, 6);
+  // Expect 4 subresource loads, 1 per frame in
+  // `kMultiPlatformTestFrameSetPath`: "one", "two", "three" + 1
+  // from `NavigateFrame` call above.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationWallDuration, 4);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadEvaluationCpuDuration, 4);
 }
 
 // TODO(https://crbug.com/382055410): Adjust
@@ -570,17 +575,17 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect initially only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -597,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -610,8 +616,9 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Exception added - expect all subframes to be visible.
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -639,17 +646,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect initially only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -658,6 +665,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -667,6 +675,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -704,17 +713,18 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect initially only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -723,6 +733,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -732,6 +743,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -759,17 +771,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect initially only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -783,6 +795,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -796,8 +809,9 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Exception added - expect all subframes to be visible.
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -835,17 +849,17 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -860,11 +874,13 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Exception added - expect all subframes to be visible.
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -917,17 +933,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -936,17 +952,19 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
+
   // Exception added - expect all subframes to be visible.
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
 
   // Check that UKM is logged, one for each frame with "included_script.html" is
-  // blocked,until exception is present.
+  // blocked, until exception is present.
   ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
                          /*is_dry_run=*/false);
 
@@ -964,6 +982,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Go to same URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Exception doesn't persist into nonincognito.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
@@ -1001,17 +1020,17 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
   // Expect only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -1020,6 +1039,7 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -1029,6 +1049,7 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -1055,17 +1076,18 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
 
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
-  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+  GURL url(embedded_test_server()->GetURL("google.test",
+                                          kMultiPlatformTestFrameSetPath));
 
   // Disallow child frame documents.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
   // Expect only second subframe loads due to blocking.
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -1074,6 +1096,7 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -1083,6 +1106,7 @@ IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
   // Blocking still has effect.
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -1123,18 +1147,19 @@ IN_PROC_BROWSER_TEST_F(
   // (not in the blocklist) domain. This enables the third part of this test
   // disallowing a load only after the first redirect.
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
-  ASSERT_TRUE(NavigateToDestination(url));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
   // Now navigate the first subframe to an allowed URL and ensure that the load
   // successfully commits and the frame gets restored (no longer collapsed).
-  GURL allowed_subdocument_url(GetTestUrl("frame_with_allowed_script.html"));
+  GURL allowed_subdocument_url(
+      GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
   const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
@@ -1144,7 +1169,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate the first subframe to a document that does not load the probe JS.
   GURL allowed_empty_subdocument_url(
-      GetTestUrl("frame_with_no_subresources.html"));
+      GetCrossSiteTestUrl("/frame_with_no_subresources.html"));
   NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
 
   // Finally, navigate the first subframe to an allowed URL that redirects to a
@@ -1152,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(
   // collapsed.
   const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
-      GetTestUrl("frame_with_included_script.html"));
+      GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
       kAllowedDomain, "/server-redirect?" + disallowed_subdocument_url.spec()));
   NavigateFrame(kSubframeNames[0], redirect_to_disallowed_subdocument_url);
@@ -1210,11 +1235,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateMultiFrameSubframesAndLoad3pScripts();
 
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -1253,12 +1277,11 @@ IN_PROC_BROWSER_TEST_F(
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
   // Filtering off
-  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
-  const std::vector<bool> kExpectAllSubframes{true, true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -1269,9 +1292,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Refresh
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
   // Filtering on
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -1282,6 +1305,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Refresh
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
   // Filtering off
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
@@ -1294,6 +1318,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Refresh
   ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
 
   // Filtering on
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(

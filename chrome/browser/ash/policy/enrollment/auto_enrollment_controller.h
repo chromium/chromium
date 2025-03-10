@@ -53,9 +53,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // case a check is currently running or a decision has already been made.
   void Start();
 
-  // Retry checking.
-  void Retry();
-
   // Returns true if auto-enrollment check is running.
   bool IsInProgress() const;
 

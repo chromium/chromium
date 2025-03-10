@@ -84,6 +84,10 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                    (testUMADemographicsReportingWithFeatureDisabled)]) {
     config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
   }
+  // Note: Can't use the actual feature definition, because its build target
+  // depends on a bunch of stuff that mustn't make it into the EG test target.
+  config.additional_args.push_back(
+      "--enable-features=ManualLogUploadsInTheFRE");
   return config;
 }
 
@@ -229,8 +233,10 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   const int success =
       static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
+  // Expect 2 counts because in the iOS First Run, the MetricsService is started
+  // quicker, which causes two metrics log uploads to happen by this point.
   GREYAssertNil([MetricsAppInterface
-                    expectUniqueSampleWithCount:1
+                    expectUniqueSampleWithCount:2
                                       forBucket:success
                                    forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents");

@@ -4,12 +4,13 @@
 
 package org.chromium.components.collaboration.messaging;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupMember;
 
 /** Provides functions to safely read fields out of messages, performing null checks. */
+@NullMarked
 public class MessageUtils {
 
     /** No instantiation. */
@@ -51,7 +52,7 @@ public class MessageUtils {
     }
 
     /** Returns the tab title or the empty string. */
-    public static String extractTabTitle(@Nullable InstantMessage message) {
+    public static @Nullable String extractTabTitle(@Nullable InstantMessage message) {
         return message == null
                         || message.attribution == null
                         || message.attribution.tabMetadata == null
@@ -60,16 +61,16 @@ public class MessageUtils {
     }
 
     /** Returns the tab group title or the empty string. */
-    public static String extractTabGroupTitle(@Nullable InstantMessage message) {
+    public static @Nullable String extractTabGroupTitle(@Nullable InstantMessage message) {
         return message == null ? "" : extractTabGroupTitle(message.attribution);
     }
 
     /** Returns the tab group title or the empty string. */
-    public static String extractTabGroupTitle(@Nullable PersistentMessage message) {
+    public static @Nullable String extractTabGroupTitle(@Nullable PersistentMessage message) {
         return message == null ? "" : extractTabGroupTitle(message.attribution);
     }
 
-    private static String extractTabGroupTitle(@Nullable MessageAttribution attribution) {
+    private static @Nullable String extractTabGroupTitle(@Nullable MessageAttribution attribution) {
         return attribution == null || attribution.tabGroupMetadata == null
                 ? ""
                 : attribution.tabGroupMetadata.lastKnownTitle;
@@ -91,16 +92,16 @@ public class MessageUtils {
     }
 
     /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
-    public static GroupMember extractMember(@Nullable InstantMessage message) {
+    public static @Nullable GroupMember extractMember(@Nullable InstantMessage message) {
         return message == null ? null : extractMember(message.attribution);
     }
 
     /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
-    public static GroupMember extractMember(@Nullable PersistentMessage message) {
+    public static @Nullable GroupMember extractMember(@Nullable PersistentMessage message) {
         return message == null ? null : extractMember(message.attribution);
     }
 
-    private static GroupMember extractMember(@Nullable MessageAttribution attribution) {
+    private static @Nullable GroupMember extractMember(@Nullable MessageAttribution attribution) {
         if (attribution == null) {
             return null;
         } else if (attribution.affectedUser != null) {
@@ -111,7 +112,7 @@ public class MessageUtils {
     }
 
     /** Returns the url of the tab or null. */
-    public static String extractTabUrl(@Nullable InstantMessage message) {
+    public static @Nullable String extractTabUrl(@Nullable InstantMessage message) {
         return message == null
                         || message.attribution == null
                         || message.attribution.tabMetadata == null

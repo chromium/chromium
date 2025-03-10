@@ -11,9 +11,12 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -33,7 +36,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableDedupKey {
 
   AggregatableDedupKey(std::optional<uint64_t> dedup_key, FilterPair);
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const AggregatableDedupKey&,
                          const AggregatableDedupKey&) = default;

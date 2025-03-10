@@ -6,6 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"

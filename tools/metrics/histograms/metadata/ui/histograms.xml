@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".Emoji"/>
   <variant name=".Feed"/>
   <variant name=".HistoryClustersSidePanel"/>
+  <variant name=".HistorySidePanel"/>
   <variant name=".LensOverlayUntrusted"/>
   <variant name=".LensSidePanelUntrusted"/>
   <variant name=".MakoUntrusted"/>
@@ -83,6 +84,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Downloads"/>
   <variant name="History"/>
   <variant name="HistoryClustersSidePanel"/>
+  <variant name="HistorySidePanel"/>
   <variant name="NewTabPage"/>
   <variant name="NewTabPageThirdParty"/>
   <variant name="ReadAnythingSidePanel"/>

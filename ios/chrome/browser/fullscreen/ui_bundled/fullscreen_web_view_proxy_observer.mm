@@ -83,7 +83,6 @@
                             withVelocity:(CGPoint)velocity
                      targetContentOffset:(inout CGPoint*)targetContentOffset {
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    self.model->SetScrollViewIsScrolling(false);
     self.model->SetScrollViewIsDragging(false);
   }
 }
@@ -92,8 +91,14 @@
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                          willDecelerate:(BOOL)decelerate {
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    self.model->SetScrollViewIsScrolling(false);
     self.model->SetScrollViewIsDragging(false);
+  }
+}
+
+- (void)webViewScrollViewDidEndDecelerating:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsScrolling(false);
   }
 }
 

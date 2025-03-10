@@ -26,6 +26,7 @@
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
+#include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/document_user_data.h"
@@ -177,6 +178,13 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
     AsyncDocumentSubresourceFilter* parent_filter =
         GetParentFrameFilter(navigation_handle);
     if (parent_filter) {
+      if (navigation_handle->GetParentFrame() &&
+          !subresource_filter::FirstPartyOrigin(
+               navigation_handle->GetParentFrame()->GetLastCommittedOrigin())
+               .IsThirdParty(navigation_handle->GetURL())) {
+        // Don't create throttles for first-party requests.
+        return;
+      }
       throttles->push_back(
           std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
               navigation_handle, parent_filter, is_incognito_,

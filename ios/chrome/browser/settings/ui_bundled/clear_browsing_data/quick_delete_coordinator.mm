@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_ui_constants.h"
@@ -84,6 +86,8 @@ using browsing_data::DeleteBrowsingDataDialogAction;
       BrowsingDataRemoverFactory::GetForProfile(profile);
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(profile);
 
   _mediator =
       [[QuickDeleteMediator alloc] initWithPrefs:profile->GetPrefs()
@@ -92,7 +96,8 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                              browsingDataRemover:browsingDataRemover
                              discoverFeedService:discoverFeedService
                   canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation
-                                 uiBlockerTarget:self.browser->GetSceneState()];
+                                 uiBlockerTarget:self.browser->GetSceneState()
+                        featureEngagementTracker:tracker];
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _viewController.modalPresentationStyle = UIModalPresentationFormSheet;

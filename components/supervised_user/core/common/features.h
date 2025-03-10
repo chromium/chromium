@@ -93,15 +93,6 @@ BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);
 // ClassifyUrl fetches.
 BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
 
-#if BUILDFLAG(IS_IOS)
-// Replaces usages of prefs::kSupervisedUserID with AccountInfo capabilities on
-// iOS.
-BASE_DECLARE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-// Replaces usages of system capabilities with AccountInfo capabilities on iOS.
-BASE_DECLARE_FEATURE(
-    kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
-#endif
-
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

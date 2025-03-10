@@ -4,7 +4,10 @@
 
 package org.chromium.components.media_router;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An interface providing callbacks for {@link BaseMediaRouteDialogManager}. */
+@NullMarked
 public interface MediaRouteDialogDelegate {
     /**
      * Notifies the delegate if the user has chosen a {@link MediaSink} to connect to.

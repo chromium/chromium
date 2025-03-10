@@ -8057,6 +8057,14 @@ const char kEnterpriseFileObfuscationDescription[] =
     "scanning, preventing access before verification is complete.";
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kAllowUserInstalledChromeAppsName[] =
+    "Allow user installed Chrome Apps";
+const char kAllowUserInstalledChromeAppsDescription[] =
+    "Enables users to override the Chrome Apps deprecation for apps installed "
+    "by users.";
+#endif
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

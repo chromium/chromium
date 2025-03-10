@@ -63,7 +63,7 @@ class ProcessNodeImpl
       public SupportsNodeInlineData<
           ProcessPriorityAggregatorData,
           FrozenData,
-          PerformanceScenarioMemoryData,
+          PerformanceScenarioData,
           resource_attribution::CPUMeasurementData,
           resource_attribution::SharedCPUTimeResultData,
           LoadingScenarioCounts,

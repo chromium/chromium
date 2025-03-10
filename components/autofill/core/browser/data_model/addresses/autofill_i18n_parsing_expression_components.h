@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {

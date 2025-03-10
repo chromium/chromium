@@ -10,9 +10,12 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/summary_operator.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -24,7 +27,7 @@ class MaxEventLevelReports;
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SummaryBuckets {
  public:
   static base::expected<SummaryBuckets, mojom::SourceRegistrationError> Parse(
-      const base::Value::Dict&,
+      const base::DictValue&,
       MaxEventLevelReports);
 
   // Represents `[1, 2, ... max_event_level_reports]`.
@@ -45,7 +48,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SummaryBuckets {
 
   const base::flat_set<uint32_t>& starts() const { return starts_; }
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
   friend bool operator==(const SummaryBuckets&,
                          const SummaryBuckets&) = default;
@@ -56,10 +59,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SummaryBuckets {
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<mojom::SummaryOperator, mojom::SourceRegistrationError>
-ParseSummaryOperator(const base::Value::Dict&);
+ParseSummaryOperator(const base::DictValue&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-void Serialize(mojom::SummaryOperator, base::Value::Dict&);
+void Serialize(mojom::SummaryOperator, base::DictValue&);
 
 }  // namespace attribution_reporting
 

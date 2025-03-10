@@ -9,7 +9,7 @@ dictionary BeginLayerOptions {
   CanvasFilterInput? filter = null;
 };
 
-interface mixin CanvasRecordingContext2D {
+interface mixin Canvas2DRecorderContext {
     // state
     [NoAllocDirectCall] void save(); // push state on state stack
     [NoAllocDirectCall, RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state

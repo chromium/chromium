@@ -12,10 +12,10 @@ DwaRotationScheduler::DwaRotationScheduler(
     const base::RepeatingClosure& upload_callback,
     const base::RepeatingCallback<base::TimeDelta(void)>&
         upload_interval_callback,
-    bool fast_startup_for_testing)
+    bool fast_startup)
     : metrics::MetricsRotationScheduler(upload_callback,
                                         upload_interval_callback,
-                                        fast_startup_for_testing) {}
+                                        fast_startup) {}
 
 DwaRotationScheduler::~DwaRotationScheduler() = default;
 

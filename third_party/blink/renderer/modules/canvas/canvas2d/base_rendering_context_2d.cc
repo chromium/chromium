@@ -103,7 +103,7 @@
 
 namespace blink {
 
-const char BaseRenderingContext2D::kDefaultFont[] = "10px sans-serif";
+constexpr char kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritString[] = "inherit";
 
 // After context lost, it waits |kTryRestoreContextInterval| before start the
@@ -882,7 +882,7 @@ void BaseRenderingContext2D::fillTextCluster(
   }
   DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
                    CanvasRenderingContext2DState::kFillPaintType, cluster_align,
-                   cluster_baseline, text_cluster->begin(), text_cluster->end(),
+                   cluster_baseline, text_cluster->start(), text_cluster->end(),
                    nullptr, text_cluster->textMetrics()->GetFont());
 }
 
@@ -937,7 +937,7 @@ void BaseRenderingContext2D::strokeTextCluster(
   }
   DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
                    CanvasRenderingContext2DState::kStrokePaintType,
-                   cluster_align, cluster_baseline, text_cluster->begin(),
+                   cluster_align, cluster_baseline, text_cluster->start(),
                    text_cluster->end(), nullptr,
                    text_cluster->textMetrics()->GetFont());
 }

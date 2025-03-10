@@ -491,7 +491,7 @@ base::TimeDelta AndroidMetricsServiceClient::GetStandardUploadInterval() {
   return metrics::GetUploadInterval(false /* use_cellular_upload_interval */);
 }
 
-bool AndroidMetricsServiceClient::ShouldStartUpFastForTesting() const {
+bool AndroidMetricsServiceClient::ShouldStartUpFast() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fast_startup_for_testing_;
 }

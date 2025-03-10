@@ -164,7 +164,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       std::move(dip_reporter),
       frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
-      frame->CreateCookieAccessObserver(),
+      frame->CreateCookieAccessObserver(
+          CookieAccessDetails::Source::kNonNavigation),
       frame->CreateTrustTokenAccessObserver(),
       frame->CreateSharedDictionaryAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
@@ -198,7 +199,8 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       mojo::NullRemote(),  // dip_reporter
       frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       true,  // is_for_isolated_world
-      frame->CreateCookieAccessObserver(),
+      frame->CreateCookieAccessObserver(
+          CookieAccessDetails::Source::kNonNavigation),
       frame->CreateTrustTokenAccessObserver(),
       frame->CreateSharedDictionaryAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
@@ -230,7 +232,8 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       mojo::NullRemote(),  // dip_reporter
       frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
-      frame->CreateCookieAccessObserver(),
+      frame->CreateCookieAccessObserver(
+          CookieAccessDetails::Source::kNonNavigation),
       frame->CreateTrustTokenAccessObserver(),
       frame->CreateSharedDictionaryAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),

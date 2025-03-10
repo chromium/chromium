@@ -85,9 +85,9 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
   }
 
   // Record forms control flag transitioning from unset to set.
-  int new_experimental_mode_flags =
-      mode.experimental_flags() & (~previous_mode.experimental_flags());
-  if (new_experimental_mode_flags & AXMode::kExperimentalFormControls) {
+  int new_filter_mode_flags =
+      mode.filter_flags() & (~previous_mode.filter_flags());
+  if (new_filter_mode_flags & AXMode::kFormsAndLabelsOnly) {
     switch (prefix) {
       case AXHistogramPrefix::kNone:
         base::UmaHistogramBoolean(

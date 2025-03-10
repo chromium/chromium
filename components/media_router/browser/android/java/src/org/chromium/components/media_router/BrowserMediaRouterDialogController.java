@@ -4,6 +4,8 @@
 
 package org.chromium.components.media_router;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.mediarouter.app.MediaRouteChooserDialogFragment;
 import androidx.mediarouter.app.MediaRouteControllerDialogFragment;
 import androidx.mediarouter.media.MediaRouteSelector;
@@ -12,6 +14,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.caf.CastMediaSource;
 import org.chromium.components.media_router.caf.remoting.RemotingMediaSource;
 import org.chromium.content_public.browser.WebContents;
@@ -21,10 +25,11 @@ import org.chromium.content_public.browser.WebContents;
  * Android.
  */
 @JNINamespace("media_router")
+@NullMarked
 public class BrowserMediaRouterDialogController implements MediaRouteDialogDelegate {
 
     private final long mNativeDialogController;
-    private BaseMediaRouteDialogManager mDialogManager;
+    private @Nullable BaseMediaRouteDialogManager mDialogManager;
     private WebContents mWebContents;
 
     /**
@@ -64,6 +69,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
             return;
         }
 
+        assumeNonNull(source);
         mDialogManager =
                 new MediaRouteChooserDialogManager(source.getSourceId(), routeSelector, this);
         mDialogManager.openDialog(mWebContents);
@@ -90,6 +96,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
             return;
         }
 
+        assumeNonNull(source);
         mDialogManager =
                 new MediaRouteControllerDialogManager(
                         source.getSourceId(), routeSelector, mediaRouteId, this);

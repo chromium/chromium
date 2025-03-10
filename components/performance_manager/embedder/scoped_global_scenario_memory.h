@@ -9,6 +9,10 @@
 
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 
+namespace base {
+class SharedMemoryMapper;
+}
+
 namespace performance_manager {
 
 // A scoped object that maps in writable shared memory for the global
@@ -19,7 +23,11 @@ namespace performance_manager {
 // //components/performance_manager/scenario_api/performance_scenarios.h.
 class ScopedGlobalScenarioMemory {
  public:
-  ScopedGlobalScenarioMemory();
+  // If `mapper` is non-null, it will be used to map the shared scenario
+  // memory region. This is useful for testing.
+  explicit ScopedGlobalScenarioMemory(
+      base::SharedMemoryMapper* mapper = nullptr);
+
   ~ScopedGlobalScenarioMemory();
 
   ScopedGlobalScenarioMemory(const ScopedGlobalScenarioMemory&) = delete;
@@ -32,6 +40,9 @@ class ScopedGlobalScenarioMemory {
   // query functions will read from this for ScenarioScope::kGlobal.
   std::optional<performance_scenarios::ScopedReadOnlyScenarioMemory>
       read_only_mapping_;
+
+  // True when the writable shared memory region was successfully installed.
+  bool writable_global_memory_installed_ = false;
 };
 
 }  // namespace performance_manager

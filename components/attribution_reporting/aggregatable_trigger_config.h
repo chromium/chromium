@@ -10,10 +10,13 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -21,7 +24,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerConfig {
  public:
   static base::expected<AggregatableTriggerConfig,
                         mojom::TriggerRegistrationError>
-  Parse(base::Value::Dict&);
+  Parse(base::DictValue&);
 
   static std::optional<AggregatableTriggerConfig> Create(
       mojom::SourceRegistrationTimeConfig,
@@ -41,7 +44,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerConfig {
   friend bool operator==(const AggregatableTriggerConfig&,
                          const AggregatableTriggerConfig&) = default;
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
   // Returns true when this config requires that a report be sent
   // unconditionally, i.e., if there is no report created a null report should
