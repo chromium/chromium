@@ -248,7 +248,8 @@ bool PrefProvider::SetWebsiteSetting(
   metadata.SetFromConstraints(constraints);
   GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern,
-                          std::move(in_value), metadata, partition_key);
+                          std::move(in_value), std::move(metadata),
+                          partition_key);
   return true;
 }
 

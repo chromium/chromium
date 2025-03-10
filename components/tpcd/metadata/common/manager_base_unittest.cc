@@ -84,7 +84,7 @@ TEST_P(ManagerBaseFeatureTest, GetContentSetting) {
       ContentSettingsPattern::FromString(primary_pattern_spec),
       ContentSettingsPattern::FromString(secondary_pattern_spec),
       std::move(value), content_settings::ProviderType::kNone,
-      /*incognito=*/false, rule_metadata);
+      /*incognito=*/false, std::move(rule_metadata));
 
   auto index = std::move(
       content_settings::HostIndexedContentSettings::Create(grants).front());
@@ -190,7 +190,7 @@ TEST_P(ManagerBaseCohortTest, GetContentSetting) {
       ContentSettingsPattern::FromString(primary_pattern_spec),
       ContentSettingsPattern::FromString(secondary_pattern_spec),
       std::move(value), content_settings::ProviderType::kNone,
-      /*incognito=*/false, rule_metadata);
+      /*incognito=*/false, std::move(rule_metadata));
 
   auto index = std::move(
       content_settings::HostIndexedContentSettings::Create(grants).front());

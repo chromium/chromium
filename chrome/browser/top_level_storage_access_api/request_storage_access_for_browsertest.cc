@@ -386,13 +386,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
           base::Value(CONTENT_SETTING_ALLOW),
           content_settings::ProviderType::kPrefProvider,
-          /*incognito=*/false, metadata),
+          /*incognito=*/false, metadata.Clone()),
       ContentSettingPatternSource(
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
           base::Value(CONTENT_SETTING_ALLOW),
           content_settings::ProviderType::kPrefProvider,
-          /*incognito=*/false, metadata),
+          /*incognito=*/false, metadata.Clone()),
   };
 
   auto* cookie_manager = browser()

@@ -5136,7 +5136,7 @@ TEST_F(NetworkContextTest,
                                      ContentSettingsPattern::FromString(url),
                                      base::Value(CONTENT_SETTING_ALLOW),
                                      content_settings::ProviderType::kNone,
-                                     /*incognito=*/true, metadata)});
+                                     /*incognito=*/true, metadata.Clone())});
 
     EXPECT_TRUE(
         network_context->ip_protection_core()->HasTrackingProtectionException(
@@ -5150,7 +5150,7 @@ TEST_F(NetworkContextTest,
                                      ContentSettingsPattern::FromString(url),
                                      base::Value(CONTENT_SETTING_BLOCK),
                                      content_settings::ProviderType::kNone,
-                                     /*incognito=*/true, metadata)});
+                                     /*incognito=*/true, std::move(metadata))});
 
     EXPECT_FALSE(
         network_context->ip_protection_core()->HasTrackingProtectionException(

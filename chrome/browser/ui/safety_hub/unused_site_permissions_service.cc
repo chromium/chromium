@@ -223,8 +223,9 @@ PermissionsData::~PermissionsData() = default;
 PermissionsData::PermissionsData(const PermissionsData& other)
     : primary_pattern(other.primary_pattern),
       permission_types(other.permission_types),
-      constraints(other.constraints),
-      abusive_revocation_constraints(other.abusive_revocation_constraints) {
+      constraints(other.constraints.Clone()),
+      abusive_revocation_constraints(
+          other.abusive_revocation_constraints.Clone()) {
   chooser_permissions_data = other.chooser_permissions_data.Clone();
 }
 
@@ -557,7 +558,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
     abusive_notification_manager_->UndoRegrantPermissionForOriginIfNecessary(
         GURL(permissions_data.primary_pattern.ToString()),
         permissions_data.permission_types,
-        permissions_data.abusive_revocation_constraints);
+        permissions_data.abusive_revocation_constraints.Clone());
   }
 
   // If `permissions_data` had abusive notifications revoked, remove the
@@ -594,7 +595,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
 
   StorePermissionInRevokedPermissionSetting(
       unused_site_permission_types, permissions_data.chooser_permissions_data,
-      permissions_data.constraints, permissions_data.primary_pattern,
+      permissions_data.constraints.Clone(), permissions_data.primary_pattern,
       ContentSettingsPattern::Wildcard());
 }
 
@@ -939,8 +940,9 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   // |ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS| is always wildcard.
   StorePermissionInRevokedPermissionSetting(
       permissions_data.permission_types,
-      permissions_data.chooser_permissions_data, permissions_data.constraints,
-      permissions_data.primary_pattern, ContentSettingsPattern::Wildcard());
+      permissions_data.chooser_permissions_data,
+      permissions_data.constraints.Clone(), permissions_data.primary_pattern,
+      ContentSettingsPattern::Wildcard());
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(

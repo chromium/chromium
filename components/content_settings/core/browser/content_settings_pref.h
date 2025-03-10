@@ -73,7 +73,7 @@ class ContentSettingsPref {
   void SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          base::Value value,
-                         const RuleMetaData& metadata,
+                         RuleMetaData metadata,
                          const PartitionKey& partition_key);
 
   void ClearAllContentSettingsRules(const PartitionKey& partition_key);

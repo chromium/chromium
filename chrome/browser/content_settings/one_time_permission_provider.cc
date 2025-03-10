@@ -154,7 +154,8 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   {
     base::AutoLock lock(value_map_.GetLock());
     value_map_.SetValue(primary_pattern, secondary_pattern,
-                        content_settings_type, std::move(value), metadata);
+                        content_settings_type, std::move(value),
+                        std::move(metadata));
   }
 
   NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,

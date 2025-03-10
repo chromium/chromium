@@ -7,6 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,6 +67,7 @@ TEST(RuleMetaDataTest, DefaultConstructor) {
   EXPECT_EQ(metadata.session_model(), mojom::SessionModel::DURABLE);
   EXPECT_EQ(metadata.lifetime(), base::TimeDelta());
   EXPECT_FALSE(metadata.decided_by_related_website_sets());
+  EXPECT_TRUE(metadata.rule_options().is_none());
 }
 
 TEST(RuleMetaDataTest, SetFromConstraints) {
@@ -75,6 +77,7 @@ TEST(RuleMetaDataTest, SetFromConstraints) {
     constraints.set_session_model(mojom::SessionModel::USER_SESSION);
     constraints.set_lifetime(base::Days(10));
     constraints.set_decided_by_related_website_sets(true);
+    constraints.set_options(base::Value(true));
 
     RuleMetaData metadata;
     metadata.SetFromConstraints(constraints);
@@ -84,6 +87,7 @@ TEST(RuleMetaDataTest, SetFromConstraints) {
               base::Time::FromSecondsSinceUnixEpoch(12345) + base::Days(10));
     EXPECT_EQ(metadata.lifetime(), base::Days(10));
     EXPECT_EQ(metadata.decided_by_related_website_sets(), true);
+    EXPECT_EQ(metadata.rule_options(), base::Value(true));
   }
 }
 

@@ -811,7 +811,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_HasSiteException) {
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString(top_frame_url),
       base::Value(CONTENT_SETTING_ALLOW), content_settings::ProviderType::kNone,
-      /*incognito=*/true, metadata)});
+      /*incognito=*/true, std::move(metadata))});
 
   auto delegate = CreateDelegate(ipp_core.get());
 
@@ -858,7 +858,7 @@ TEST_F(IpProtectionProxyDelegateTest,
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString(top_frame_url),
       base::Value(CONTENT_SETTING_ALLOW), content_settings::ProviderType::kNone,
-      /*incognito=*/true, metadata)});
+      /*incognito=*/true, std::move(metadata))});
 
   auto delegate = CreateDelegate(ipp_core.get());
 
@@ -899,7 +899,7 @@ TEST_F(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString(top_frame_url),
       base::Value(CONTENT_SETTING_ALLOW), content_settings::ProviderType::kNone,
-      /*incognito=*/true, metadata)});
+      /*incognito=*/true, std::move(metadata))});
 
   auto delegate = CreateDelegate(ipp_core.get());
 

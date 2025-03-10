@@ -14,12 +14,9 @@ ContentSettingConstraints::ContentSettingConstraints(base::Time now)
 
 ContentSettingConstraints::ContentSettingConstraints(
     ContentSettingConstraints&& other) = default;
-ContentSettingConstraints::ContentSettingConstraints(
-    const ContentSettingConstraints& other) = default;
+
 ContentSettingConstraints& ContentSettingConstraints::operator=(
     ContentSettingConstraints&& other) = default;
-ContentSettingConstraints& ContentSettingConstraints::operator=(
-    const ContentSettingConstraints& other) = default;
 
 ContentSettingConstraints::~ContentSettingConstraints() = default;
 
@@ -28,5 +25,17 @@ bool ContentSettingConstraints::operator==(
 
 bool ContentSettingConstraints::operator!=(
     const ContentSettingConstraints& other) const = default;
+
+ContentSettingConstraints ContentSettingConstraints::Clone() const {
+  ContentSettingConstraints clone;
+  clone.created_at_ = created_at_;
+  clone.lifetime_ = lifetime_;
+  clone.session_model_ = session_model_;
+  clone.track_last_visit_for_autoexpiration_ =
+      track_last_visit_for_autoexpiration_;
+  clone.decided_by_related_website_sets_ = decided_by_related_website_sets_;
+  clone.options_ = options_.Clone();
+  return clone;
+}
 
 }  // namespace content_settings
