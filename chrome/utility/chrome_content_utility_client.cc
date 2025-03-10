@@ -27,9 +27,9 @@
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -102,9 +102,9 @@ void ChromeContentUtilityClient::RegisterIOThreadServices(
   return ::RegisterIOThreadServices(services);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 mojo::GenericPendingReceiver
 ChromeContentUtilityClient::InitMojoServiceManager() {
   return ash::mojo_service_manager::BootstrapServiceManagerInUtilityProcess();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
