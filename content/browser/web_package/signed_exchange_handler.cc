@@ -729,7 +729,8 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
                             : net::CookieSettingOverrides(),
           /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
           cookie_manager_.BindNewPipeAndPassReceiver(),
-          render_frame_host ? render_frame_host->CreateCookieAccessObserver()
+          render_frame_host ? render_frame_host->CreateCookieAccessObserver(
+                                  CookieAccessDetails::Source::kNonNavigation)
                             : mojo::NullRemote());
 
   CHECK(isolation_info.top_frame_origin().has_value());

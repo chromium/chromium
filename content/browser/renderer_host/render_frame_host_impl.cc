@@ -185,6 +185,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_ref.h"
 #include "content/public/browser/document_service_internal.h"
@@ -243,6 +244,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -2323,6 +2325,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       media_device_id_salt_base_(CreateRandomMediaDeviceIDSalt()),
       document_associated_data_(std::in_place, *this, document_token),
       lifecycle_state_(lifecycle_state),
+      cookie_observers_(*this),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(fenced_frame_status),
@@ -14083,7 +14086,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
       /*is_service_worker=*/false, GetProcess()->GetDeprecatedID(),
       GetRoutingID(), cookie_setting_overrides,
       devtools_cookie_setting_overrides, std::move(receiver),
-      CreateCookieAccessObserver());
+      CreateCookieAccessObserver(CookieAccessDetails::Source::kNonNavigation));
 }
 
 void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
@@ -15274,7 +15277,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // the network service. When the remote interface in the network service is
     // destructed, `mojo::ReceiverSet` automatically removes the receiver.
     for (auto& receiver : navigation_request->TakeCookieObservers()) {
-      cookie_observers_.Add(this, std::move(receiver));
+      cookie_observers_.Add(std::move(receiver),
+                            CookieAccessDetails::Source::kNavigation);
     }
     for (auto& receiver : navigation_request->TakeTrustTokenObservers()) {
       trust_token_observers_.Add(this, std::move(receiver));
@@ -17881,9 +17885,10 @@ RenderFrameHostImpl::FaviconURLs() {
 }
 
 mojo::PendingRemote<network::mojom::CookieAccessObserver>
-RenderFrameHostImpl::CreateCookieAccessObserver() {
+RenderFrameHostImpl::CreateCookieAccessObserver(
+    CookieAccessDetails::Source source) {
   mojo::PendingRemote<network::mojom::CookieAccessObserver> remote;
-  cookie_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  cookie_observers_.Add(remote.InitWithNewPipeAndPassReceiver(), source);
   return remote;
 }
 
@@ -17926,9 +17931,28 @@ void RenderFrameHostImpl::CreateMdnsResponder(
 }
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-void RenderFrameHostImpl::Clone(
+RenderFrameHostImpl::CookieAccessObservers::CookieAccessObservers(
+    RenderFrameHostImpl& parent)
+    : parent_(parent) {}
+
+RenderFrameHostImpl::CookieAccessObservers::~CookieAccessObservers() = default;
+
+void RenderFrameHostImpl::CookieAccessObservers::Add(
+    mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
+    CookieAccessDetails::Source source) {
+  cookie_observer_set_.Add(this, std::move(receiver), source);
+}
+
+void RenderFrameHostImpl::CookieAccessObservers::OnCookiesAccessed(
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  parent_->NotifyCookiesAccessed(std::move(details_vector),
+                                 cookie_observer_set_.current_context());
+}
+
+void RenderFrameHostImpl::CookieAccessObservers::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
-  cookie_observers_.Add(this, std::move(observer));
+  cookie_observer_set_.Add(this, std::move(observer),
+                           cookie_observer_set_.current_context());
 }
 
 void RenderFrameHostImpl::Clone(
@@ -17948,8 +17972,9 @@ void RenderFrameHostImpl::Clone(
   device_bound_session_observers_.Add(this, std::move(observer));
 }
 
-void RenderFrameHostImpl::OnCookiesAccessed(
-    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+void RenderFrameHostImpl::NotifyCookiesAccessed(
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector,
+    CookieAccessDetails::Source source) {
   UMA_HISTOGRAM_COUNTS_1M("Cookie.OnCookiesAccessed.BatchSize",
                           details_vector.size());
   size_t access_sum = 0;
@@ -17959,7 +17984,7 @@ void RenderFrameHostImpl::OnCookiesAccessed(
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;
-    SplitCookiesIntoAllowedAndBlocked(details, &allowed, &blocked);
+    SplitCookiesIntoAllowedAndBlocked(details, source, &allowed, &blocked);
     if (!allowed.cookie_access_result_list.empty()) {
       delegate_->OnCookiesAccessed(this, allowed);
     }

@@ -111,6 +111,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/network_service_instance.h"
@@ -1019,7 +1020,9 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
       for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
                storage_partition_, url::Origin::Create(details->url))) {
         if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
-          rfh->OnCookiesAccessed(mojo::Clone(details_vector));
+          rfh->NotifyCookiesAccessed(
+              mojo::Clone(details_vector),
+              CookieAccessDetails::Source::kNonNavigation);
         }
       }
     }
