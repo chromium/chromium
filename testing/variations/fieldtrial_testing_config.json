@@ -23766,21 +23766,6 @@
             ]
         }
     ],
-    "TabSwitcherFullNewTabButton": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabSwitcherFullNewTabButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabstripComboButton": [
         {
             "platforms": [

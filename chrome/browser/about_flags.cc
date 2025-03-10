@@ -10402,11 +10402,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceListTabSwitcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kForceListTabSwitcher)},
 
-    {"tab-switcher-full-new-tab-button",
-     flag_descriptions::kTabSwitcherFullNewTabButtonName,
-     flag_descriptions::kTabSwitcherFullNewTabButtonDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabSwitcherFullNewTabButton)},
-
     {"tab-group-sync-android", flag_descriptions::kTabGroupSyncAndroidName,
      flag_descriptions::kTabGroupSyncAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncAndroid)},

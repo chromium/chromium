@@ -4824,10 +4824,6 @@ const char kTabStripTransitionInDesktopWindowDescription[] =
     "Allows hiding / showing the tab strip with varying desktop window widths "
     "by initiating a fade transition.";
 
-const char kTabSwitcherFullNewTabButtonName[] = "Tab Switcher New Tab Button";
-const char kTabSwitcherFullNewTabButtonDescription[] =
-    "Modifies the visual behavior of the new tab button in the tab switcher.";
-
 const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";
 const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =
