@@ -25,16 +25,34 @@
 
 using ::testing::ElementsAre;
 
+class ReadAnythingAppModelNoInitTest : public ChromeRenderViewTest {
+ public:
+  ReadAnythingAppModelNoInitTest() = default;
+  ReadAnythingAppModelNoInitTest(const ReadAnythingAppModelNoInitTest&) =
+      delete;
+  ReadAnythingAppModelNoInitTest& operator=(
+      const ReadAnythingAppModelNoInitTest&) = delete;
+  ~ReadAnythingAppModelNoInitTest() override = default;
+
+  const ReadAnythingAppModel& model() const { return model_; }
+
+ private:
+  ReadAnythingAppModel model_;
+};
+
+TEST_F(ReadAnythingAppModelNoInitTest, IsDocs_FalseBeforeTreeInitialization) {
+  EXPECT_FALSE(model().IsDocs());
+}
+
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  public:
   ReadAnythingAppModelTest() = default;
-  ~ReadAnythingAppModelTest() override = default;
   ReadAnythingAppModelTest(const ReadAnythingAppModelTest&) = delete;
   ReadAnythingAppModelTest& operator=(const ReadAnythingAppModelTest&) = delete;
+  ~ReadAnythingAppModelTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    model_ = std::make_unique<ReadAnythingAppModel>();
 
     // Create a tree id.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
@@ -48,17 +66,13 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model().Reset({});
   }
 
-  void SetUpWithoutInitialization() {
-    model_ = std::make_unique<ReadAnythingAppModel>();
-  }
-
-  ReadAnythingAppModel& model() { return *model_; }
-  const ReadAnythingAppModel& model() const { return *model_; }
+  ReadAnythingAppModel& model() { return model_; }
+  const ReadAnythingAppModel& model() const { return model_; }
 
   bool AreAllPendingUpdatesEmpty() {
     size_t count = 0;
     for (auto const& [tree_id, updates] :
-         model_->GetPendingUpdatesForTesting()) {
+         model().GetPendingUpdatesForTesting()) {
       count += updates.size();
     }
     return count == 0;
@@ -74,14 +88,14 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
                                   const std::vector<ui::AXTreeUpdate>& updates,
                                   bool speech_playing = false) {
     std::vector<ui::AXEvent> events;
-    model_->AccessibilityEventReceived(
+    model().AccessibilityEventReceived(
         tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events,
         speech_playing);
   }
 
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     model().Reset(content_node_ids);
-    model_->ComputeDisplayNodeIdsForDistilledTree();
+    model().ComputeDisplayNodeIdsForDistilledTree();
   }
 
   std::vector<int> SendSimpleUpdateAndGetChildIds() {
@@ -103,14 +117,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   ui::AXTreeID tree_id_;
 
  private:
-  std::unique_ptr<ReadAnythingAppModel> model_ = nullptr;
+  ReadAnythingAppModel model_;
 };
-
-TEST_F(ReadAnythingAppModelTest, IsDocs_FalseBeforeTreeInitialization) {
-  EXPECT_FALSE(model().IsDocs());
-  SetUpWithoutInitialization();
-  EXPECT_FALSE(model().IsDocs());
-}
 
 TEST_F(ReadAnythingAppModelTest, FontName) {
   EXPECT_NE(model().font_name(), std::string());
