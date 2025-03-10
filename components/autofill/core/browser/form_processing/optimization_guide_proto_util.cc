@@ -21,6 +21,8 @@ optimization_guide::proto::FormControlType ToFormControlTypeProto(
     case FormControlType::kInputCheckbox:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX;
     case FormControlType::kInputEmail:
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_DATE;
+    case FormControlType::kInputDate:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_EMAIL;
     case FormControlType::kInputMonth:
       return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_MONTH;

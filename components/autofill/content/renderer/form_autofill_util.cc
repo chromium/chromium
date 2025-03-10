@@ -259,6 +259,7 @@ bool IsTextInput(const WebFormControlElement& element) {
     case FormControlType::kContentEditable:
     case FormControlType::kInputCheckbox:
     case FormControlType::kInputMonth:
+    case FormControlType::kInputDate:
     case FormControlType::kInputRadio:
     case FormControlType::kSelectOne:
     case FormControlType::kTextArea:
@@ -1334,6 +1335,7 @@ void FillFormField(const FormFieldData::FillData& data,
       return;
     case FormControlType::kContentEditable:
       NOTREACHED();
+    case FormControlType::kInputDate:
     case FormControlType::kInputEmail:
     case FormControlType::kInputMonth:
     case FormControlType::kInputNumber:
@@ -1395,6 +1397,7 @@ void PreviewFormField(const FormFieldData::FillData& data,
       return;
     case FormControlType::kContentEditable:
       NOTREACHED();
+    case FormControlType::kInputDate:
     case FormControlType::kInputEmail:
     case FormControlType::kInputMonth:
     case FormControlType::kInputNumber:
@@ -2333,6 +2336,11 @@ std::optional<FormControlType> ToAutofillFormControlType(
       return FormControlType::kSelectOne;
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
+    case blink::mojom::FormControlType::kInputDate:
+      if (base::FeatureList::IsEnabled(features::kAutofillExtractInputDate)) {
+        return FormControlType::kInputDate;
+      }
+      break;
     case blink::mojom::FormControlType::kButtonButton:
     case blink::mojom::FormControlType::kButtonSubmit:
     case blink::mojom::FormControlType::kButtonReset:
@@ -2340,7 +2348,6 @@ std::optional<FormControlType> ToAutofillFormControlType(
     case blink::mojom::FormControlType::kFieldset:
     case blink::mojom::FormControlType::kInputButton:
     case blink::mojom::FormControlType::kInputColor:
-    case blink::mojom::FormControlType::kInputDate:
     case blink::mojom::FormControlType::kInputDatetimeLocal:
     case blink::mojom::FormControlType::kInputFile:
     case blink::mojom::FormControlType::kInputHidden:

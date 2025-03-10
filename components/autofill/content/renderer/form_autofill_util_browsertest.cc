@@ -263,6 +263,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 // Tests that some form control types are extracted by ExtractFormData() and
 // others are not.
 TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillExtractInputDate};
   LoadHTML(R"(
     <form id=form-id>
       <!-- These form controls are not extracted. -->
@@ -274,7 +276,6 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
       <fieldset></fieldset>
       <input type=button>
       <input type=color>
-      <input type=date>
       <input type=datetime-local>
       <input type=file>
       <input type=hidden>
@@ -299,6 +300,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
       <input type=tel>
       <input type=text>
       <input type=url>
+      <input type=date>
       <select><option>Foo</option><option>Bar</option></select>
       <textarea>Foo</textarea>
     </form>
@@ -311,7 +313,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
       FormControlTypesAre(kInputText, kInputCheckbox, kInputEmail, kInputMonth,
                           kInputNumber, kInputPassword, kInputRadio,
                           kInputSearch, kInputTelephone, kInputText, kInputUrl,
-                          kSelectOne, kTextArea));
+                          kInputDate, kSelectOne, kTextArea));
 }
 
 // Tests that WebFormElementToFormData() sets the

@@ -373,6 +373,26 @@ TEST_F(GetFillValueForEntityTest, FillingDateValueIntoTextInput) {
 }
 
 // Tests that a date is filled into an input according to the format string.
+TEST_F(GetFillValueForEntityTest, FillingDateValueIntoDateInput) {
+  EntityInstance drivers_license =
+      test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
+  AutofillField field;
+  FieldPrediction prediction;
+  prediction.set_type(PASSPORT_ISSUE_DATE);
+  prediction.set_source(
+      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+          FieldPrediction::SOURCE_AUTOFILL_AI);
+  field.set_server_predictions({prediction});
+  field.set_form_control_type(FormControlType::kInputDate);
+
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+                                  mojom::ActionPersistence::kFill,
+                                  /*app_locale=*/"",
+                                  /*address_normalizer=*/nullptr),
+            u"2022-12-16");
+}
+
+// Tests that a date is filled into an input according to the format string.
 TEST_F(GetFillValueForEntityTest, FillingDateValueIntoMonthInput) {
   EntityInstance drivers_license =
       test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});

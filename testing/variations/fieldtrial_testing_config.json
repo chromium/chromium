@@ -1595,7 +1595,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillAiWithDataSchema"
+                        "AutofillAiWithDataSchema",
+                        "AutofillExtractInputDate"
                     ]
                 }
             ]

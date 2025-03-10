@@ -609,6 +609,10 @@ void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {
 }
 
 base::optional_ref<const std::u16string> AutofillField::format_string() const {
+  if (form_control_type() == FormControlType::kInputDate) {
+    static const base::NoDestructor<std::u16string> kFormat(u"YYYY-MM-DD");
+    return *kFormat;
+  }
   if (form_control_type() == FormControlType::kInputMonth) {
     static const base::NoDestructor<std::u16string> kFormat(u"YYYY-MM");
     return *kFormat;
