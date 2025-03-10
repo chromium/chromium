@@ -7,6 +7,8 @@ package org.chromium.components.media_router;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Set;
  * media sinks were requested for. Once a route is added or removed, updates the
  * {@link BrowserMediaRouter} with the new routes.
  */
+@NullMarked
 public class DiscoveryCallback extends MediaRouter.Callback {
     private final DiscoveryDelegate mDiscoveryDelegate;
     private final MediaRouteSelector mRouteSelector;

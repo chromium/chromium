@@ -4,9 +4,13 @@
 
 package org.chromium.components.media_router.caf.remoting;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import com.google.android.gms.cast.framework.CastSession;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.CastSessionUtil;
 import org.chromium.components.media_router.MediaSource;
 import org.chromium.components.media_router.caf.BaseNotificationController;
@@ -16,16 +20,17 @@ import org.chromium.components.media_router.caf.CafBaseMediaRouteProvider;
 import java.lang.ref.WeakReference;
 
 /** Wrapper for {@link CastSession} for remoting. */
+@NullMarked
 public class RemotingSessionController extends BaseSessionController {
     private static final String TAG = "RmtSessionCtrl";
 
-    private static WeakReference<RemotingSessionController> sInstance;
+    private static @Nullable WeakReference<RemotingSessionController> sInstance;
 
-    public static RemotingSessionController getInstance() {
+    public static @Nullable RemotingSessionController getInstance() {
         return sInstance != null ? sInstance.get() : null;
     }
 
-    private FlingingControllerAdapter mFlingingControllerAdapter;
+    private @Nullable FlingingControllerAdapter mFlingingControllerAdapter;
     private RemotingNotificationController mNotificationController;
 
     RemotingSessionController(CafBaseMediaRouteProvider provider) {
@@ -40,8 +45,9 @@ public class RemotingSessionController extends BaseSessionController {
      * @param source The new media source.
      */
     public void updateMediaSource(MediaSource source) {
+        assumeNonNull(mFlingingControllerAdapter);
         mFlingingControllerAdapter.updateMediaUrl(((RemotingMediaSource) source).getMediaUrl());
-        getRouteCreationInfo().setMediaSource(source);
+        assumeNonNull(getRouteCreationInfo()).setMediaSource(source);
         getProvider().updateRouteMediaSource(getRouteCreationInfo().routeId, source.getSourceId());
     }
 
@@ -50,7 +56,7 @@ public class RemotingSessionController extends BaseSessionController {
         super.attachToCastSession(session);
 
         try {
-            getSession()
+            assumeNonNull(getSession())
                     .setMessageReceivedCallbacks(
                             CastSessionUtil.MEDIA_NAMESPACE, this::onMessageReceived);
         } catch (Exception e) {
@@ -75,12 +81,13 @@ public class RemotingSessionController extends BaseSessionController {
 
     @Override
     protected void onStatusUpdated() {
+        assumeNonNull(mFlingingControllerAdapter);
         mFlingingControllerAdapter.onStatusUpdated();
         super.onStatusUpdated();
     }
 
     @Override
-    public FlingingControllerAdapter getFlingingController() {
+    public @Nullable FlingingControllerAdapter getFlingingController() {
         return mFlingingControllerAdapter;
     }
 
