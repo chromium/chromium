@@ -209,6 +209,9 @@ public final class ProductionSupportedFlagList {
                 "Enables using the new ALPS codepoint to negotiate application settings for"
                         + " HTTP2."),
         Flag.baseFeature(
+                BlinkFeatures.LAYOUT_NG_SHAPE_CACHE,
+                "Cache shape results for short text blocks."),
+        Flag.baseFeature(
                 BlinkFeatures.SIMPLIFY_LOADING_TRANSPARENT_PLACEHOLDER_IMAGE,
                 "Enables simplifying loading known transparent placeholder images."),
         Flag.baseFeature(
