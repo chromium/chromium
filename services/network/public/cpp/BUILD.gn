@@ -764,6 +764,24 @@ source_set("tests") {
   public_deps = [ ":buildflags" ]
 }
 
+source_set("perftests") {
+  testonly = true
+
+  sources = [ "url_request_mojom_traits_perftest.cc" ]
+
+  deps = [
+    ":cpp_base",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//net",
+    "//testing/gtest",
+    "//testing/perf:perf",
+    "//third_party/google_benchmark",
+  ]
+}
+
 fuzzer_test("coop_fuzzer") {
   sources = [ "cross_origin_opener_policy_parser_fuzzer.cc" ]
   dict = "cross_origin_opener_policy.dict"

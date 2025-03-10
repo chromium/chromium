@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/source_type_mojom_traits.h"
@@ -422,6 +423,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool allows_device_bound_sessions(
       const network::ResourceRequest& request) {
     return request.allows_device_bound_sessions;
+  }
+  static const std::optional<network::PermissionsPolicy>& permissions_policy(
+      const network::ResourceRequest& request) {
+    return request.permissions_policy;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

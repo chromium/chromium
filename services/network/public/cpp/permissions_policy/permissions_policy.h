@@ -115,6 +115,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
 
     Allowlist(Allowlist&&) noexcept;
     Allowlist& operator=(Allowlist&&) noexcept;
+    Allowlist& operator=(const Allowlist& other) = default;
 
     friend bool operator==(const Allowlist&, const Allowlist&) = default;
 
@@ -177,8 +178,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   // Only used by mojo traits.
   explicit PermissionsPolicy(mojo::DefaultConstruct::Tag);
 
-  PermissionsPolicy(const PermissionsPolicy&) = delete;
-  PermissionsPolicy& operator=(const PermissionsPolicy&) = delete;
+  PermissionsPolicy(const PermissionsPolicy&);
+  PermissionsPolicy& operator=(const PermissionsPolicy&);
   ~PermissionsPolicy();
 
   PermissionsPolicy(PermissionsPolicy&&) noexcept;

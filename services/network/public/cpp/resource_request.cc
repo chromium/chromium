@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "net/log/net_log_source.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -350,7 +351,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          shared_dictionary_writer_enabled ==
              request.shared_dictionary_writer_enabled &&
          socket_tag == request.socket_tag &&
-         allows_device_bound_sessions == request.allows_device_bound_sessions;
+         allows_device_bound_sessions == request.allows_device_bound_sessions &&
+         permissions_policy == request.permissions_policy;
 }
 
 bool ResourceRequest::SendsCookies() const {
