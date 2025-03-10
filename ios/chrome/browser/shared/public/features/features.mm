@@ -245,7 +245,7 @@ BASE_FEATURE(kLensOverlayEnableLocationBarEntrypoint,
 
 BASE_FEATURE(kLensOverlayEnableLocationBarEntrypointOnSRP,
              "LensOverlayEnableLocationBarEntrypointOnSRP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableSameTabNavigation,
              "EnableLensOverlaySameTabNavigation",
