@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -30,12 +31,18 @@ class BASE_EXPORT Environment {
   // Returns the appropriate platform-specific instance.
   static std::unique_ptr<Environment> Create();
 
+  // Returns an environment variable's value.
+  // Returns std::nullopt if the key is unset.
+  // Note that the variable may be set to an empty string.
+  virtual std::optional<std::string> GetVar(std::string_view variable_name) = 0;
+
+  // DEPRECATED. Prefer GetVar() overload above.
   // Gets an environment variable's value and stores it in |result|.
   // Returns false if the key is unset.
-  virtual bool GetVar(std::string_view variable_name, std::string* result) = 0;
+  bool GetVar(std::string_view variable_name, std::string* result);
 
-  // Syntactic sugar for GetVar(variable_name, nullptr);
-  virtual bool HasVar(std::string_view variable_name);
+  // Syntactic sugar for GetVar(variable_name).has_value();
+  bool HasVar(std::string_view variable_name);
 
   // Returns true on success, otherwise returns false. This method should not
   // be called in a multi-threaded process.
