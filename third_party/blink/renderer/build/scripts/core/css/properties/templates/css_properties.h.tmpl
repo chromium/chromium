@@ -101,7 +101,7 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
   {% if property.logical_property_group %}
   bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
     {% if property.logical_property_group.is_logical %}
-  const CSSProperty& ResolveDirectionAwarePropertyInternal(
+  const CSSProperty& ToPhysicalInternal(
       WritingDirectionMode) const override;
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,

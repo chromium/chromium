@@ -585,15 +585,13 @@ INSTANTIATE_TEST_SUITE_P(CSSPropertyTest,
                          DirectionAwareConverterTest,
                          testing::ValuesIn(DirectionAwareConverterTestData));
 
-TEST_P(DirectionAwareConverterTest, ResolveDirectionAwareProperty) {
+TEST_P(DirectionAwareConverterTest, ToPhysical) {
   DirectionAwarePropertyData property_data = GetParam();
 
   const CSSProperty& property = CSSProperty::Get(property_data.logical);
-  EXPECT_EQ(
-      static_cast<int>(
-          property.ResolveDirectionAwareProperty(property_data.writing_mode)
-              .PropertyID()),
-      static_cast<int>(property_data.physical));
+  EXPECT_EQ(static_cast<int>(
+                property.ToPhysical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(property_data.physical));
 }
 
 TEST_P(DirectionAwareConverterTest, TestToLogical) {
@@ -611,11 +609,9 @@ TEST_P(DirectionAwareConverterTest, TestConvertsEquality) {
   EXPECT_EQ(static_cast<int>(
                 physical.ToLogical(property_data.writing_mode).PropertyID()),
             static_cast<int>(logical.PropertyID()));
-  EXPECT_EQ(
-      static_cast<int>(physical.PropertyID()),
-      static_cast<int>(
-          logical.ResolveDirectionAwareProperty(property_data.writing_mode)
-              .PropertyID()));
+  EXPECT_EQ(static_cast<int>(physical.PropertyID()),
+            static_cast<int>(
+                logical.ToPhysical(property_data.writing_mode).PropertyID()));
 }
 
 }  // namespace blink
