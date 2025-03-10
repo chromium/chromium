@@ -74,11 +74,11 @@ void PaintUnderInvalidationChecker::CheckNewItem() {
     return;
   }
 
-  const auto& new_item = NewDisplayItemList().back();
+  const auto& new_item = UNSAFE_TODO(NewDisplayItemList().back());
   if (old_item_index_ >= OldDisplayItemList().size())
     ShowItemError("extra display item", new_item);
 
-  auto& old_item = OldDisplayItemList()[old_item_index_];
+  auto& old_item = UNSAFE_TODO(OldDisplayItemList()[old_item_index_]);
   if (!new_item.EqualsForUnderInvalidation(old_item))
     ShowItemError("display item changed", new_item, &old_item);
 
@@ -88,9 +88,9 @@ void PaintUnderInvalidationChecker::CheckNewItem() {
   // leaving only disappeared or invalidated display items in the old list after
   // painting.
   NewDisplayItemList().ReplaceLastByMoving(old_item);
-  NewDisplayItemList().back().SetPaintInvalidationReason(
+  UNSAFE_TODO(NewDisplayItemList().back().SetPaintInvalidationReason(
       old_item.IsCacheable() ? PaintInvalidationReason::kNone
-                             : PaintInvalidationReason::kUncacheable);
+                             : PaintInvalidationReason::kUncacheable));
 
   if (subsequence_client_id_ != kInvalidDisplayItemClientId) {
     // We are checking under-invalidation of a cached subsequence.
