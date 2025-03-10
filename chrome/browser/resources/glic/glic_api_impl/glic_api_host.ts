@@ -596,11 +596,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
               'glicWebClientCheckResponsive', undefined);
 
           let timeoutId: number|undefined;
+          let timeoutMs = WEB_CLIENT_RESPONSIVENESS_CHECK_TIMEOUT_MS;
+          if (loadTimeData.getBoolean('devMode')) {
+            timeoutMs = timeoutMs * 1000;
+          }
           const timeoutPromise = new Promise((_, reject) => {
             timeoutId = setTimeout(
                 () => reject(
                     new Error('No response received within the timeout.')),
-                WEB_CLIENT_RESPONSIVENESS_CHECK_TIMEOUT_MS);
+                timeoutMs);
           });
 
           try {

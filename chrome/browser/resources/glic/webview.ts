@@ -193,7 +193,7 @@ export function matcherForOrigin(originPattern: string): URLPattern|null {
 
 export function urlMatchesAllowedOrigin(url: string) {
   // For development.
-  if (loadTimeData.getBoolean('glicSkipOriginCheck')) {
+  if (loadTimeData.getBoolean('devMode')) {
     return true;
   }
 
