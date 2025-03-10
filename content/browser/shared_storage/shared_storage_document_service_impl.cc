@@ -58,8 +58,8 @@ bool CheckSecureContext(RenderFrameHost& frame) {
 }
 
 using AccessScope = blink::SharedStorageAccessScope;
-using AccessType =
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
+using AccessMethod =
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
 
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
@@ -230,7 +230,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
   }
 
   GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
-      AccessType::kDocumentGet, main_frame_id(), SerializeLastCommittedOrigin(),
+      AccessScope::kWindow, AccessMethod::kGet, main_frame_id(),
+      SerializeLastCommittedOrigin(),
       SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
 
   auto operation_completed_callback = base::BindOnce(

@@ -25,11 +25,12 @@ TestSharedStorageObserver::~TestSharedStorageObserver() = default;
 
 void TestSharedStorageObserver::OnSharedStorageAccessed(
     const base::Time& access_time,
-    AccessType type,
+    AccessScope scope,
+    AccessMethod method,
     FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
-  accesses_.emplace_back(type, main_frame_id, owner_origin, params);
+  accesses_.emplace_back(scope, method, main_frame_id, owner_origin, params);
 }
 
 void TestSharedStorageObserver::OnUrnUuidGenerated(const GURL& urn_uuid) {}
@@ -48,5 +49,8 @@ void TestSharedStorageObserver::ExpectAccessObserved(
     }
   }
 }
+
+bool operator==(const TestSharedStorageObserver::Access& lhs,
+                const TestSharedStorageObserver::Access& rhs) = default;
 
 }  // namespace content

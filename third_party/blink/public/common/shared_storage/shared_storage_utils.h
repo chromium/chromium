@@ -35,6 +35,8 @@ static constexpr char kSharedStorageReturnValueOutOfRangeErrorMessage[] =
     "Promise resolved to a number outside the length of the input urls.";
 
 // Scope from which a shared storage call is made.
+// TODO(https://crbug.com/380291909): Implement DevTools event notifications for
+// shared storage access from PA worklet access.
 enum class SharedStorageAccessScope {
   kWindow,
   kSharedStorageWorklet,

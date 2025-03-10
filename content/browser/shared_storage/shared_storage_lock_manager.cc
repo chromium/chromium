@@ -18,66 +18,21 @@ namespace content {
 namespace {
 
 using AccessScope = blink::SharedStorageAccessScope;
-using AccessType =
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
+using AccessMethod =
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
 using OperationResult = storage::SharedStorageManager::OperationResult;
 
-AccessType GetAccessType(
-    const network::mojom::SharedStorageModifierMethodPtr& method,
-    AccessScope scope) {
+AccessMethod GetAccessMethod(
+    const network::mojom::SharedStorageModifierMethodPtr& method) {
   switch (method->which()) {
-    case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
-      switch (scope) {
-        case AccessScope::kWindow:
-          return AccessType::kDocumentSet;
-        case AccessScope::kSharedStorageWorklet:
-          return AccessType::kWorkletSet;
-        case AccessScope::kProtectedAudienceWorklet:
-          return AccessType::kWorkletSet;
-        case AccessScope::kHeader:
-          return AccessType::kHeaderSet;
-      }
-      break;
-    }
-    case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
-      switch (scope) {
-        case AccessScope::kWindow:
-          return AccessType::kDocumentAppend;
-        case AccessScope::kSharedStorageWorklet:
-          return AccessType::kWorkletAppend;
-        case AccessScope::kProtectedAudienceWorklet:
-          return AccessType::kWorkletAppend;
-        case AccessScope::kHeader:
-          return AccessType::kHeaderAppend;
-      }
-      break;
-    }
-    case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
-      switch (scope) {
-        case AccessScope::kWindow:
-          return AccessType::kDocumentDelete;
-        case AccessScope::kSharedStorageWorklet:
-          return AccessType::kWorkletDelete;
-        case AccessScope::kProtectedAudienceWorklet:
-          return AccessType::kWorkletDelete;
-        case AccessScope::kHeader:
-          return AccessType::kHeaderDelete;
-      }
-      break;
-    }
-    case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
-      switch (scope) {
-        case AccessScope::kWindow:
-          return AccessType::kDocumentClear;
-        case AccessScope::kSharedStorageWorklet:
-          return AccessType::kWorkletClear;
-        case AccessScope::kProtectedAudienceWorklet:
-          return AccessType::kWorkletClear;
-        case AccessScope::kHeader:
-          return AccessType::kHeaderClear;
-      }
-      break;
-    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod:
+      return AccessMethod::kSet;
+    case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod:
+      return AccessMethod::kAppend;
+    case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod:
+      return AccessMethod::kDelete;
+    case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod:
+      return AccessMethod::kClear;
   }
 
   NOTREACHED();
@@ -227,7 +182,7 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
     std::optional<int> batch_update_id,
     mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
     mojo::Remote<blink::mojom::LockManager> lock_manager) {
-  AccessType access_type = GetAccessType(method, scope);
+  AccessMethod access_method = GetAccessMethod(method);
 
   switch (method->which()) {
     case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
@@ -241,7 +196,8 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
 
       storage_partition_->GetSharedStorageRuntimeManager()
           ->NotifySharedStorageAccessed(
-              access_type, main_frame_id, shared_storage_origin.Serialize(),
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
               SharedStorageEventParams::CreateForSet(
                   base::UTF16ToUTF8(set_method->key),
                   base::UTF16ToUTF8(set_method->value),
@@ -271,7 +227,8 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
 
       storage_partition_->GetSharedStorageRuntimeManager()
           ->NotifySharedStorageAccessed(
-              access_type, main_frame_id, shared_storage_origin.Serialize(),
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
               SharedStorageEventParams::CreateForAppend(
                   base::UTF16ToUTF8(append_method->key),
                   base::UTF16ToUTF8(append_method->value)));
@@ -299,7 +256,8 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
 
       storage_partition_->GetSharedStorageRuntimeManager()
           ->NotifySharedStorageAccessed(
-              access_type, main_frame_id, shared_storage_origin.Serialize(),
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
               SharedStorageEventParams::CreateForGetOrDelete(
                   base::UTF16ToUTF8(delete_method->key)));
 
@@ -323,7 +281,8 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
     case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
       storage_partition_->GetSharedStorageRuntimeManager()
           ->NotifySharedStorageAccessed(
-              access_type, main_frame_id, shared_storage_origin.Serialize(),
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
               SharedStorageEventParams::CreateDefault());
 
       auto completed_callback = base::BindOnce(

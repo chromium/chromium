@@ -11,6 +11,8 @@
 
 namespace content {
 
+using AccessScope = blink::SharedStorageAccessScope;
+
 SharedStorageRuntimeManager::SharedStorageRuntimeManager(
     StoragePartitionImpl& storage_partition)
     : lock_manager_(storage_partition) {}
@@ -108,7 +110,8 @@ void SharedStorageRuntimeManager::RemoveSharedStorageObserver(
 }
 
 void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
-    SharedStorageObserverInterface::AccessType type,
+    AccessScope scope,
+    SharedStorageObserverInterface::AccessMethod method,
     FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
@@ -118,8 +121,8 @@ void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
   }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
-    observer.OnSharedStorageAccessed(now, type, main_frame_id, owner_origin,
-                                     params);
+    observer.OnSharedStorageAccessed(now, scope, method, main_frame_id,
+                                     owner_origin, params);
   }
 }
 

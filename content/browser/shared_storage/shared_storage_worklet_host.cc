@@ -56,8 +56,8 @@ namespace content {
 namespace {
 
 using AccessScope = blink::SharedStorageAccessScope;
-using AccessType =
-    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
+using AccessMethod =
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
 
 constexpr base::TimeDelta kKeepAliveTimeout = base::Seconds(2);
 
@@ -415,8 +415,8 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
   // or a createWorklet call using `creation_method_`, and also send
   // `data_origin_type` as part of the event params.
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-      AccessType::kDocumentAddModule, document_service_->main_frame_id(),
-      shared_storage_origin_.Serialize(),
+      AccessScope::kWindow, AccessMethod::kAddModule,
+      document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForAddModule(script_source_url));
 
   create_worklet_finished_callback_ = std::move(callback);
@@ -772,8 +772,8 @@ void SharedStorageWorkletHost::SelectURL(
   shared_storage_runtime_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-      AccessType::kDocumentSelectURL, document_service_->main_frame_id(),
-      shared_storage_origin_.Serialize(),
+      AccessScope::kWindow, AccessMethod::kSelectURL,
+      document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForSelectURL(name, serialized_data,
                                                    std::move(converted_urls)));
 
@@ -925,8 +925,8 @@ void SharedStorageWorkletHost::Run(
   std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-      AccessType::kDocumentRun, document_service_->main_frame_id(),
-      shared_storage_origin_.Serialize(),
+      AccessScope::kWindow, AccessMethod::kRun,
+      document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForRun(name, serialized_data));
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
@@ -1016,8 +1016,8 @@ void SharedStorageWorkletHost::SharedStorageGet(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletGet, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
+        AccessScope::kSharedStorageWorklet, AccessMethod::kGet,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
   }
 
@@ -1067,8 +1067,8 @@ void SharedStorageWorkletHost::SharedStorageKeys(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletKeys, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
+        AccessScope::kSharedStorageWorklet, AccessMethod::kKeys,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
   }
 
@@ -1093,8 +1093,8 @@ void SharedStorageWorkletHost::SharedStorageEntries(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletEntries, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
+        AccessScope::kSharedStorageWorklet, AccessMethod::kEntries,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
   }
 
@@ -1117,8 +1117,8 @@ void SharedStorageWorkletHost::SharedStorageLength(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletLength, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
+        AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
   }
 
@@ -1159,8 +1159,8 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletRemainingBudget, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
+        AccessScope::kSharedStorageWorklet, AccessMethod::kRemainingBudget,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
   }
 
