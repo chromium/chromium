@@ -54,7 +54,9 @@ source_set("base_unittests_filters") {
 source_set("blink_platform_unittests") {
   testonly = true
 
-  data = []
+  data = [
+    "//testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
+  ]
 }
 
 bundle_data("blink_platform_unittests_filters_bundle_data") {
