@@ -763,7 +763,7 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
   auto service_reset =
       video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
-  std::unique_ptr<base::test::TestFuture<void>> effects_processor_future =
+  base::test::TestFuture<void> effects_processor_future =
       fake_effects_service.GetEffectsProcessorCreationFuture();
 
   TestChromeContentBrowserClient test_content_browser_client;
@@ -773,7 +773,7 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
       "test_device_id", &profile_,
       video_effects_processor.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(effects_processor_future.Wait());
   EXPECT_TRUE(video_effects_processor.is_connected());
 }
 #endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)

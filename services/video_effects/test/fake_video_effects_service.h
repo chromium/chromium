@@ -43,11 +43,9 @@ class FakeVideoEffectsService : public mojom::VideoEffectsService {
   // Returns a test future which will be resolved when the next video effects
   // processor creation request is fulfilled. There can be at most one
   // outstanding test feature created at any given time.
-  std::unique_ptr<base::test::TestFuture<void>>
-  GetEffectsProcessorCreationFuture();
+  base::test::TestFuture<void> GetEffectsProcessorCreationFuture();
 
-  std::unique_ptr<base::test::TestFuture<base::File>>
-  GetBackgroundSegmentationModelFuture();
+  base::test::TestFuture<base::File> GetBackgroundSegmentationModelFuture();
 
   // For testing, get the processors that this service created.
   base::flat_map<std::string, std::unique_ptr<FakeVideoEffectsProcessor>>&

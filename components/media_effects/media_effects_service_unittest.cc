@@ -200,7 +200,7 @@ TEST_F(
             GetConfigurationSync(effects_manager2)->framing->padding_ratios);
 
   // Wait for the fake effects service to create the processor:
-  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(effects_processor_future.Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 1u);
   EXPECT_EQ(
       gfx::InsetsF{kFramingPaddingRatio},
@@ -240,7 +240,7 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsProcessor) {
   service_->BindVideoEffectsProcessor(
       kDeviceId, effects_processor.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(effects_processor_future.Wait());
   EXPECT_TRUE(effects_processor.is_connected());
   EXPECT_EQ(fake_effects_service.GetProcessors().size(), 1u);
 }
@@ -279,7 +279,7 @@ TEST_F(
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor1;
   service_->BindVideoEffectsProcessor(
       kDeviceId2, effects_processor1.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(effects_processor_future1->Wait());
+  EXPECT_TRUE(effects_processor_future1.Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 1u);
 
   constexpr float kFramingPaddingRatio2 = 0.345;
@@ -298,7 +298,7 @@ TEST_F(
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor2;
   service_->BindVideoEffectsProcessor(
       kDeviceId3, effects_processor2.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(effects_processor_future2->Wait());
+  EXPECT_TRUE(effects_processor_future2.Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 2u);
 
   constexpr float kFramingPaddingRatio3 = 0.456;
@@ -341,7 +341,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(temporary_model_file_path1.path());
 
-  auto model_file = model_opened_future->Take();
+  auto model_file = model_opened_future.Take();
   EXPECT_TRUE(model_file.IsValid());
 
   // Validate that the contents match the contents of the model file:
@@ -361,7 +361,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(temporary_model_file_path2.path());
 
-  model_file = model_opened_future->Take();
+  model_file = model_opened_future.Take();
   EXPECT_TRUE(model_file.IsValid());
 
   // Validate that the contents match the contents of the model file:
@@ -379,13 +379,13 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
   model_provider_->SetModelPath(
       temporary_directory.GetPath().AppendASCII("should_not_exist.tmp"));
 
-  model_file = model_opened_future->Take();
+  model_file = model_opened_future.Take();
   EXPECT_FALSE(model_file.IsValid());
 
   model_opened_future =
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(std::nullopt);
 
-  model_file = model_opened_future->Take();
+  model_file = model_opened_future.Take();
   EXPECT_FALSE(model_file.IsValid());
 }

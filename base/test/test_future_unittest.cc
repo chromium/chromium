@@ -82,8 +82,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
   const int expected_value = 42;
   TestFuture<int> future;
 
-  PostDelayedTask(BindOnce(future.GetCallback(), expected_value),
-                  Milliseconds(1));
+  PostDelayedTask(BindOnce(future.GetCallback(), expected_value), Hours(1));
 
   std::ignore = future.Wait();
 
@@ -95,7 +94,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrivesOnOtherSequence) {
   TestFuture<int> future;
 
   PostDelayedTask(BindOnce(future.GetSequenceBoundCallback(), expected_value),
-                  Milliseconds(1), ThreadPool::CreateSequencedTaskRunner({}));
+                  Hours(1), ThreadPool::CreateSequencedTaskRunner({}));
 
   std::ignore = future.Wait();
 
@@ -105,7 +104,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrivesOnOtherSequence) {
 TEST_F(TestFutureTest, WaitShouldReturnTrueWhenValueArrives) {
   TestFuture<int> future;
 
-  PostDelayedTask(BindOnce(future.GetCallback(), kAnyValue), Milliseconds(1));
+  PostDelayedTask(BindOnce(future.GetCallback(), kAnyValue), Hours(1));
 
   bool success = future.Wait();
   EXPECT_TRUE(success);
@@ -115,14 +114,14 @@ TEST_F(TestFutureTest, WaitShouldReturnTrueWhenValueArrivesOnOtherSequence) {
   TestFuture<int> future;
 
   PostDelayedTask(BindOnce(future.GetSequenceBoundCallback(), kAnyValue),
-                  Milliseconds(1), ThreadPool::CreateSequencedTaskRunner({}));
+                  Hours(1), ThreadPool::CreateSequencedTaskRunner({}));
 
   bool success = future.Wait();
   EXPECT_TRUE(success);
 }
 
 TEST_F(TestFutureTest, WaitShouldReturnFalseIfTimeoutHappens) {
-  ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
+  ScopedRunLoopTimeout timeout(FROM_HERE, Hours(1));
 
   // `ScopedRunLoopTimeout` will automatically fail the test when a timeout
   // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
@@ -139,8 +138,7 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrives) {
   const int expected_value = 42;
   TestFuture<int> future;
 
-  PostDelayedTask(BindOnce(future.GetCallback(), expected_value),
-                  Milliseconds(1));
+  PostDelayedTask(BindOnce(future.GetCallback(), expected_value), Hours(1));
 
   int actual_value = future.Get();
 
@@ -152,7 +150,7 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrivesOnOtherSequence) {
   TestFuture<int> future;
 
   PostDelayedTask(BindOnce(future.GetSequenceBoundCallback(), expected_value),
-                  Milliseconds(1), ThreadPool::CreateSequencedTaskRunner({}));
+                  Hours(1), ThreadPool::CreateSequencedTaskRunner({}));
 
   int actual_value = future.Get();
 
@@ -160,7 +158,7 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrivesOnOtherSequence) {
 }
 
 TEST_F(TestFutureDeathTest, GetShouldCheckIfTimeoutHappens) {
-  ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
+  ScopedRunLoopTimeout timeout(FROM_HERE, Hours(1));
 
   TestFuture<AnyType> future;
 
@@ -192,7 +190,7 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValueOnOtherSequence) {
 }
 
 TEST_F(TestFutureDeathTest, TakeShouldCheckIfTimeoutHappens) {
-  ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
+  ScopedRunLoopTimeout timeout(FROM_HERE, Hours(1));
 
   TestFuture<AnyType> future;
 
@@ -727,6 +725,47 @@ TEST_F(TestFutureWithoutValuesTest, InvokeFuture) {
   RunLater(cb.Get());
 
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(TestFutureTest, IsReadyShouldBeTrueWhenValueIsSetBeforeFutureMoved) {
+  TestFuture<AnyType> original_future;
+  original_future.SetValue(kAnyValue);
+  ASSERT_TRUE(original_future.IsReady());
+
+  TestFuture<int> new_future = std::move(original_future);
+  EXPECT_TRUE(new_future.IsReady());
+}
+
+TEST_F(TestFutureTest,
+       WaitShouldBlockUntilValueArrivesWhenFutureMovedBeforeGetCallback) {
+  const int expected_value = 42;
+  TestFuture<int> original_future;
+
+  TestFuture<int> new_future = std::move(original_future);
+  ASSERT_FALSE(new_future.IsReady());
+
+  PostDelayedTask(BindOnce(new_future.GetCallback(), expected_value), Hours(1));
+
+  ASSERT_TRUE(new_future.Wait());
+
+  EXPECT_EQ(expected_value, new_future.Get());
+}
+
+TEST_F(TestFutureTest,
+       WaitShouldBlockUntilValueArrivesWhenFutureMovedAfterGetCallback) {
+  const int expected_value = 42;
+  TestFuture<int> original_future;
+
+  PostDelayedTask(BindOnce(original_future.GetCallback(), expected_value),
+                  Hours(1));
+  ASSERT_FALSE(original_future.IsReady());
+
+  TestFuture<int> new_future = std::move(original_future);
+  ASSERT_FALSE(new_future.IsReady());
+
+  ASSERT_TRUE(new_future.Wait());
+
+  EXPECT_EQ(expected_value, new_future.Get());
 }
 
 }  // namespace base::test
