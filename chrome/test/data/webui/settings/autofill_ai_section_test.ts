@@ -229,57 +229,57 @@ suite('AutofillAiSectionUiTest', function() {
     assertFalse(isVisible(listItems[2]!));
   });
 
-  test('testRemoveEntityConfirmed', async function() {
-    const actionMenuButton =
-        entitiesListElement.querySelector<HTMLElement>('#moreButton');
-    assertTrue(!!actionMenuButton);
-    actionMenuButton.click();
-    await flushTasks();
 
-    const deleteButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
+  interface RemoveEntityInstanceParamsInterface {
+    // Whether the user confirms the delete dialog.
+    confirmed: boolean;
+    // The title of the test.
+    title: string;
+  }
 
-    assertTrue(!!deleteButton);
-    deleteButton.click();
-    await flushTasks();
+  const removeEntityInstanceParams: RemoveEntityInstanceParamsInterface[] = [
+    {confirmed: true, title: 'testRemoveEntityConfirmed'},
+    {confirmed: false, title: 'testRemoveEntityCancelled'},
+  ];
 
-    const removeEntityDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#removeEntityDialog');
-    assertTrue(!!removeEntityDialog);
+  removeEntityInstanceParams.forEach(
+      (params) => test(params.title, async function() {
+        const actionMenuButton =
+            entitiesListElement.querySelector<HTMLElement>('#moreButton');
+        assertTrue(!!actionMenuButton);
+        actionMenuButton.click();
+        await flushTasks();
 
-    removeEntityDialog.$.confirm.click();
-    const guid = await entityDataManager.whenCalled('removeEntityInstance');
-    await flushTasks();
+        const deleteButton =
+            section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
 
-    assertEquals(1, entityDataManager.getCallCount('removeEntityInstance'));
-    assertEquals('e4bbe384-ee63-45a4-8df3-713a58fdc181', guid);
-  });
+        assertTrue(!!deleteButton);
+        deleteButton.click();
+        await flushTasks();
 
-  test('testRemoveEntityCancelled', async function() {
-    const actionMenuButton =
-        entitiesListElement.querySelector<HTMLElement>('#moreButton');
-    assertTrue(!!actionMenuButton);
-    actionMenuButton.click();
-    await flushTasks();
+        const removeEntityDialog =
+            section.shadowRoot!
+                .querySelector<SettingsSimpleConfirmationDialogElement>(
+                    '#removeEntityDialog');
+        assertTrue(!!removeEntityDialog);
 
-    const deleteButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
-    assertTrue(!!deleteButton);
-    deleteButton.click();
-    await flushTasks();
+        if (params.confirmed) {
+          removeEntityDialog.$.confirm.click();
+          const guid =
+              await entityDataManager.whenCalled('removeEntityInstance');
+          await flushTasks();
 
-    const removeEntityDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#removeEntityDialog');
-    assertTrue(!!removeEntityDialog);
-    removeEntityDialog.$.cancel.click();
-    await flushTasks();
+          assertEquals(
+              1, entityDataManager.getCallCount('removeEntityInstance'));
+          assertEquals('e4bbe384-ee63-45a4-8df3-713a58fdc181', guid);
+        } else {
+          removeEntityDialog.$.cancel.click();
+          await flushTasks();
 
-    assertEquals(0, entityDataManager.getCallCount('removeEntityInstance'));
-  });
+          assertEquals(
+              0, entityDataManager.getCallCount('removeEntityInstance'));
+        }
+      }));
 
   interface AddOrEditDialogParamsInterface {
     // True if the user is adding an entity instance, false if the user is
