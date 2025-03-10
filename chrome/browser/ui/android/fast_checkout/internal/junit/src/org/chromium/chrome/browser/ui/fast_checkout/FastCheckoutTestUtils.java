@@ -37,18 +37,6 @@ class FastCheckoutTestUtils {
                 /* languageCode= */ "en-US");
     }
 
-    /** Creates a simple {@link FastCheckoutAutofillProfile}.  */
-    static FastCheckoutAutofillProfile createDummyProfile(String name, String email) {
-        return createDetailedProfile(
-                /* guid= */ "",
-                name,
-                /* streetAddress= */ "",
-                /* city= */ "",
-                /* postalCode= */ "",
-                email,
-                /* phoneNumber= */ "");
-    }
-
     /** Creates a detailed {@link FastCheckoutCreditCard}. */
     static FastCheckoutCreditCard createDetailedCreditCard(
             String guid,
@@ -102,8 +90,9 @@ class FastCheckoutTestUtils {
                 issuerIcon);
     }
 
-    /** Creates a simple {@link FastCheckoutCreditCard}.  */
-    static FastCheckoutCreditCard createDummyCreditCard(String guid, String origin, String number) {
+    /** Creates a simple {@link FastCheckoutCreditCard}. */
+    static FastCheckoutCreditCard createSampleCreditCard(
+            String guid, String origin, String number) {
         return createDetailedLocalCreditCard(
                 guid,
                 origin,

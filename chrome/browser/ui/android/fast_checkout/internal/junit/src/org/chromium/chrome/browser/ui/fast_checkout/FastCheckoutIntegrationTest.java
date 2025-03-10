@@ -63,7 +63,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class FastCheckoutIntegrationTest {
-    private static final List<FastCheckoutAutofillProfile> DUMMY_PROFILES =
+    private static final List<FastCheckoutAutofillProfile> SAMPLE_PROFILES =
             List.of(
                     FastCheckoutTestUtils.createDetailedProfile(
                             /* guid= */ "123",
@@ -90,7 +90,7 @@ public class FastCheckoutIntegrationTest {
                             /* email= */ "foo@gmail.com",
                             /* phoneNumber= */ "+1-205-333-009"));
 
-    private static final List<FastCheckoutCreditCard> DUMMY_CARDS =
+    private static final List<FastCheckoutCreditCard> SAMPLE_CARDS =
             List.of(
                     FastCheckoutTestUtils.createDetailedLocalCreditCard(
                             /* guid= */ "154",
@@ -145,15 +145,15 @@ public class FastCheckoutIntegrationTest {
     public void testOpenBottomSheetSelectOtherProfileAndAccept() {
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // The first Autofill profile should be displayed.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
 
         // Clicking on it opens the Autofill profile selection sheet.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).perform(click());
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).perform(click());
         onView(
                         withText(
                                 mActivityTestRule
@@ -164,8 +164,8 @@ public class FastCheckoutIntegrationTest {
                 .check(matches(isDisplayed()));
 
         // Clicking on another profile opens the home sheet again.
-        onView(withText(DUMMY_PROFILES.get(1).getFullName())).check(matches(isDisplayed()));
-        onView(withText(DUMMY_PROFILES.get(1).getFullName())).perform(click());
+        onView(withText(SAMPLE_PROFILES.get(1).getFullName())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_PROFILES.get(1).getFullName())).perform(click());
         onView(
                         withText(
                                 mActivityTestRule
@@ -181,7 +181,7 @@ public class FastCheckoutIntegrationTest {
                                         .getString(R.string.fast_checkout_home_sheet_accept)))
                 .perform(click());
 
-        waitForEvent(mMockBridge).onOptionsSelected(DUMMY_PROFILES.get(1), DUMMY_CARDS.get(0));
+        waitForEvent(mMockBridge).onOptionsSelected(SAMPLE_PROFILES.get(1), SAMPLE_CARDS.get(0));
         // `onDismissed` is only called when the selection screen. was not accepted.
         verify(mMockBridge, never()).onDismissed();
     }
@@ -191,16 +191,16 @@ public class FastCheckoutIntegrationTest {
     public void testOpenCardsListAndSelect() {
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // The first Autofill profile and credit card should be displayed.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
-        onView(withText(DUMMY_CARDS.get(0).getObfuscatedNumber())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_CARDS.get(0).getObfuscatedNumber())).check(matches(isDisplayed()));
 
         // Clicking on it opens the credit card selection sheet.
-        onView(withText(DUMMY_CARDS.get(0).getObfuscatedNumber())).perform(click());
+        onView(withText(SAMPLE_CARDS.get(0).getObfuscatedNumber())).perform(click());
         onView(
                         withText(
                                 mActivityTestRule
@@ -209,8 +209,8 @@ public class FastCheckoutIntegrationTest {
                 .check(matches(isDisplayed()));
 
         // Clicking on another card opens the home sheet again.
-        onView(withText(DUMMY_CARDS.get(1).getObfuscatedNumber())).check(matches(isDisplayed()));
-        onView(withText(DUMMY_CARDS.get(1).getObfuscatedNumber())).perform(click());
+        onView(withText(SAMPLE_CARDS.get(1).getObfuscatedNumber())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_CARDS.get(1).getObfuscatedNumber())).perform(click());
         onView(
                         withText(
                                 mActivityTestRule
@@ -226,7 +226,7 @@ public class FastCheckoutIntegrationTest {
                                         .getString(R.string.fast_checkout_home_sheet_accept)))
                 .perform(click());
 
-        waitForEvent(mMockBridge).onOptionsSelected(DUMMY_PROFILES.get(0), DUMMY_CARDS.get(1));
+        waitForEvent(mMockBridge).onOptionsSelected(SAMPLE_PROFILES.get(0), SAMPLE_CARDS.get(1));
         verify(mMockBridge, never()).onDismissed();
     }
 
@@ -235,7 +235,7 @@ public class FastCheckoutIntegrationTest {
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -250,7 +250,7 @@ public class FastCheckoutIntegrationTest {
     public void testUserDismissBottomSheetCallsCallback() {
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -267,15 +267,15 @@ public class FastCheckoutIntegrationTest {
     public void testOpenProfilesAndDismissBottomSheetCallsCallback() {
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // The first Autofill profile should be displayed.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
 
         // Clicking on it opens the Autofill profile selection sheet.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).perform(click());
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).perform(click());
         onView(
                         withText(
                                 mActivityTestRule
@@ -298,15 +298,15 @@ public class FastCheckoutIntegrationTest {
     public void testOpenProfilesAndUpdateProfilesList() {
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // The first Autofill profile should be displayed.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).check(matches(isDisplayed()));
 
         // Clicking on it opens the Autofill profile selection sheet.
-        onView(withText(DUMMY_PROFILES.get(0).getFullName())).perform(click());
+        onView(withText(SAMPLE_PROFILES.get(0).getFullName())).perform(click());
         onView(
                         withText(
                                 mActivityTestRule
@@ -337,7 +337,7 @@ public class FastCheckoutIntegrationTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(updatedProfiles, DUMMY_CARDS);
+                    mFastCheckout.showOptions(updatedProfiles, SAMPLE_CARDS);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -424,7 +424,7 @@ public class FastCheckoutIntegrationTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mFastCheckout.showOptions(DUMMY_PROFILES, DUMMY_CARDS);
+                    mFastCheckout.showOptions(SAMPLE_PROFILES, SAMPLE_CARDS);
                 });
 
         waitForEvent(mMockBridge).onDismissed();
