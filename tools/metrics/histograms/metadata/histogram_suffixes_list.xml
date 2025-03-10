@@ -1378,8 +1378,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="ZoomedIn" label="Zoomed in view: shorter range, more buckets."/>
   <suffix name="ZoomedOut"
       label="Zoomed out view: longer time range, less buckets."/>
-  <affected-histogram
-      name="ChromeGeneratedCustomTab.IntentToFirstNavigationStartTime"/>
   <affected-histogram name="CustomTabs.IntentToFirstCommitNavigationTime3"/>
   <affected-histogram name="CustomTabs.IntentToFirstNavigationStartTime"/>
 </histogram_suffixes>
@@ -4316,17 +4314,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="21_" label="21 or more tabs"/>
   <affected-histogram name="WebUITabStrip.TabCreation"/>
   <affected-histogram name="WebUITabStrip.TabDataReceived"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WindowsImageCaptureOutcomeCategories" separator=".">
-  <suffix name="DirectShowAnyRes" label="Using DirectShow at any resolution."/>
-  <suffix name="DirectShowHighRes"
-      label="Using DirectShow at high resolution (width &gt; 1920)."/>
-  <suffix name="MediaFoundationAnyRes"
-      label="Using MediaFoundation at any resolution."/>
-  <suffix name="MediaFoundationHighRes"
-      label="Using MediaFoundation at high resolution (width &gt; 1920)."/>
-  <affected-histogram name="Media.VideoCapture.Windows.ImageCaptureOutcome"/>
 </histogram_suffixes>
 
 </histogram_suffixes_list>

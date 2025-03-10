@@ -311,14 +311,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SCROLLED_CLICKED"/>
 </enum>
 
-<enum name="SearchAnswerRequestResult">
-  <int value="0" label="Another Request Started"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="No Answer"/>
-  <int value="3" label="Received Answer"/>
-  <int value="4" label="Received Answer - Too Large"/>
-</enum>
-
 <enum name="SearchEngineChoiceReprompt">
   <int value="0" label="Reprompt"/>
   <int value="1" label="No reprompt: invalid dictionary"/>
@@ -395,11 +387,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Invalid choice version"/>
   <int value="3" label="Force reprompt"/>
   <int value="4" label="Command line flag"/>
-</enum>
-
-<enum name="SearchEntryPoint">
-  <int value="0" label="From search widget"/>
-  <int value="1" label="From omnibox"/>
 </enum>
 
 <enum name="SearchPolicyConflictType">

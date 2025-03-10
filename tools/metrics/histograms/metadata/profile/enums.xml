@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanReset">
-  <int value="0" label="Not reset"/>
-  <int value="1" label="Reset"/>
-</enum>
-
 <enum name="BooleanStale">
   <int value="0" label="Fresh"/>
   <int value="1" label="Stale"/>

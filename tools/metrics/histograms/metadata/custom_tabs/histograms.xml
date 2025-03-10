@@ -465,16 +465,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.IntentToPageLoadedTime" units="ms"
-    expires_after="M77">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Time between the intent arrival in Chrome and the first &quot;page
-    loaded&quot; event, if the navigation is successful. Non-&quot;Herb&quot;
-    mode.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.MayLaunchUrlType" enum="MayLaunchUrlType"
     expires_after="2025-08-24">
   <owner>lizeb@chromium.org</owner>

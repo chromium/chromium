@@ -2542,16 +2542,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ownership taken"/>
 </enum>
 
-<enum name="PrintScanningContext">
-  <int value="0" label="System print: Before system dialog"/>
-  <int value="1" label="Normal print: Before preview dialog"/>
-  <int value="2" label="System print: Before print document"/>
-  <int value="3" label="Normal print: Before print document"/>
-  <int value="4" label="System print: Before print job"/>
-  <int value="5" label="Normal print: Before print job"/>
-  <int value="6" label="Normal print: Open PDF in Preview"/>
-</enum>
-
 <enum name="PromotionBannerAction">
   <int value="0" label="Promotion banner dismissed">
     The promotion banner was dismissed by the user.

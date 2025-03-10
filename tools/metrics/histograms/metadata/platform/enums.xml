@@ -518,11 +518,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="RollbackDisallowed"/>
 </enum>
 
-<enum name="DiscodBurstResult">
-  <int value="0" label="No transition"/>
-  <int value="1" label="WriteBooster enabled"/>
-</enum>
-
 <enum name="DlcService.InstallResult">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Success - New install"/>

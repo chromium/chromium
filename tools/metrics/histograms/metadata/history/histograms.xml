@@ -2917,17 +2917,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HistoryPage.ClickPositionSubset" units="units"
-    expires_after="M81">
-  <owner>rpop@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    Subset of the Click Position histogram. Contains only the first smaller
-    subset of entries on the page. Number of entries that the clicked entry is
-    older than in History page. Last bucket is entries of that value or higher.
-  </summary>
-</histogram>
-
 <histogram name="HistoryPage.OtherDevicesMenu" enum="OtherSessionsActions"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
@@ -2943,30 +2932,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.RemoveEntryPosition" units="units"
-    expires_after="M81">
-  <owner>rpop@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    Number of entries that the deleted entry is older than in History page. Last
-    bucket is any entry of that value or higher. Confirmed removal is not
-    guaranteed, just an initiation of 'Remove selected items'.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.RemoveEntryPositionSubset" units="units"
-    expires_after="M81">
-  <owner>rpop@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    Subset of Remove Entry Position histogram. Contains only the first smaller
-    subset of entries on the page. Number of entries that the deleted entry is
-    older than in History page. Last bucket is any entry of that value or
-    higher. Confirmed removal is not guaranteed, just an initiation of 'Remove
-    selected items'.
   </summary>
 </histogram>
 

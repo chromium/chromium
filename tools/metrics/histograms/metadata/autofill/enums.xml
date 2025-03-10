@@ -149,23 +149,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Other"/>
 </enum>
 
-<enum name="AutofillAssistantIntent">
-  <int value="0" label="UNDEFINED_INTENT"/>
-  <int value="3" label="BUY_MOVIE_TICKET"/>
-  <int value="9" label="RENT_CAR"/>
-  <int value="10" label="SHOPPING"/>
-  <int value="11" label="TELEPORT"/>
-  <int value="14" label="SHOPPING_ASSISTED_CHECKOUT"/>
-  <int value="15" label="FLIGHTS_CHECKIN"/>
-  <int value="17" label="FOOD_ORDERING"/>
-  <int value="18" label="PASSWORD_CHANGE"/>
-  <int value="19" label="FOOD_ORDERING_PICKUP"/>
-  <int value="20" label="FOOD_ORDERING_DELIVERY"/>
-  <int value="22" label="UNLAUNCHED_VERTICAL_1"/>
-  <int value="25" label="FIND_COUPONS"/>
-  <int value="32" label="CHROME_FAST_CHECKOUT"/>
-</enum>
-
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
   <int value="1" label="Valid"/>
@@ -2001,20 +1984,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
-<enum name="AutofillFormControlType">
-  <obsolete>
-    Deprecated as of 11/2023. Replaced by AutofillFormControlType2.
-  </obsolete>
-  <int value="0" label="Empty"/>
-  <int value="1" label="Other"/>
-  <int value="2" label="Text"/>
-  <int value="3" label="Textarea"/>
-  <int value="4" label="Checkbox"/>
-  <int value="5" label="Radio"/>
-  <int value="6" label="Select one"/>
-  <int value="7" label="Selectmenu"/>
-</enum>
-
 <enum name="AutofillFormControlType2">
   <int value="0" label="ContentEditable"/>
   <int value="1" label="InputCheckbox"/>
@@ -3794,19 +3763,6 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Phone: [cc]:3 [phone]"/>
   <int value="13" label="Phone: [ac] - [phone]"/>
   <int value="14" label="Phone: [phone]"/>
-</enum>
-
-<enum name="PlusAddressModalEvent">
-  <int value="0" label="Modal shown"/>
-  <int value="1" label="Modal canceled"/>
-  <int value="2" label="Modal confirmed"/>
-</enum>
-
-<enum name="PlusAddressSuggestionEvent">
-  <int value="0" label="Existing plus address suggested"/>
-  <int value="1" label="Create new plus address suggested"/>
-  <int value="2" label="Existing plus address suggestion chosen"/>
-  <int value="3" label="Create new plus address suggestion chosen"/>
 </enum>
 
 <enum name="PredictionStateAutocompleteStatePair">
