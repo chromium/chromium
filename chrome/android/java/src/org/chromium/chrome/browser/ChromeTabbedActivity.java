@@ -2829,6 +2829,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 MessageDispatcherProvider.from(getWindowAndroid()),
                 getActivityTabProvider(),
                 mTabModelProfileSupplier.get());
+
+        mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
     }
 
     @Override
