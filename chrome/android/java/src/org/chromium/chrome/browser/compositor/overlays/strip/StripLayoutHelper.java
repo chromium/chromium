@@ -332,6 +332,11 @@ public class StripLayoutHelper
                 }
 
                 @Override
+                public void willCloseTabGroup(Token tabGroupId, boolean isHiding) {
+                    onWillCloseView(StripLayoutUtils.findGroupTitle(mStripGroupTitles, tabGroupId));
+                }
+
+                @Override
                 public void didRemoveTabGroup(
                         int oldRootId,
                         @Nullable Token oldTabGroupId,
@@ -377,7 +382,6 @@ public class StripLayoutHelper
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private ReorderDelegate mReorderDelegate = new ReorderDelegate();
-    private final Callback<Boolean> mInReorderModeObserver = this::onInReorderModeChanged;
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -708,7 +712,6 @@ public class StripLayoutHelper
 
         mActionConfirmationManager = actionConfirmationManager;
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
-        mReorderDelegate.addInReorderModeObserver(mInReorderModeObserver);
 
         mIsFirstLayoutPass = true;
     }
@@ -717,7 +720,6 @@ public class StripLayoutHelper
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
         mLastHoveredTab = null;
-        mReorderDelegate.removeInReorderModeObserver(mInReorderModeObserver);
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
@@ -1415,7 +1417,10 @@ public class StripLayoutHelper
      * @param tab The tab that will be closed.
      */
     public void willCloseTab(long time, Tab tab) {
-        if (tab != null) updateGroupTextAndSharedState(tab.getRootId());
+        if (tab == null) return;
+
+        updateGroupTextAndSharedState(tab.getRootId());
+        onWillCloseView(findTabById(tab.getId()));
     }
 
     /**
@@ -1801,7 +1806,7 @@ public class StripLayoutHelper
 
     private void updateTouchableRect() {
         // Make the entire strip touchable when during dragging / reordering mode.
-        boolean isTabDraggingInProgress = isTabDraggingInProgress();
+        boolean isTabDraggingInProgress = isViewDraggingInProgress();
         if (isTabStripFull() || mReorderDelegate.getInReorderMode() || isTabDraggingInProgress) {
             mTouchableRect.set(getVisibleLeftBound(), 0, getVisibleRightBound(), mHeight);
             return;
@@ -1918,6 +1923,7 @@ public class StripLayoutHelper
             // its expected position.
             startReorderMode(
                     mDelayedReorderInitialX, y, mDelayedReorderView, ReorderType.START_DRAG_DROP);
+            resetDelayedReorderState();
         } else if (mReorderDelegate.getInReorderMode()) {
             // 2.b. If already reordering, instead update the in-progress reorder.
             mReorderDelegate.updateReorderPosition(
@@ -2671,9 +2677,7 @@ public class StripLayoutHelper
          * immediately after View#startDrag to stop ongoing gesture events. Do not stop reorder in
          * this case.
          */
-        if (mReorderDelegate.getInReorderMode() && !isTabDraggingInProgress()) {
-            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
-        }
+        if (!isViewDraggingInProgress()) stopReorderMode();
 
         // 2. Reset state
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
@@ -3995,12 +3999,6 @@ public class StripLayoutHelper
         }
     }
 
-    private void onInReorderModeChanged(boolean inReorderMode) {
-        if (!inReorderMode) {
-            mDelayedReorderView = null;
-        }
-    }
-
     /**
      * @param id The id of the selected tab.
      * @return The outline color if the selected tab will show its Tab Group Indicator outline.
@@ -4385,7 +4383,7 @@ public class StripLayoutHelper
     /**
      * @return The view that we'll delay enter reorder mode for.
      */
-    StripLayoutView getDelayedReorderView() {
+    StripLayoutView getDelayedReorderViewForTesting() {
         return mDelayedReorderView;
     }
 
@@ -4551,8 +4549,20 @@ public class StripLayoutHelper
         return mStripTabs.length;
     }
 
-    private boolean isTabDraggingInProgress() {
-        return mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
+    private boolean isViewDraggingInProgress() {
+        return mTabDragSource != null && mTabDragSource.isViewDraggingInProgress();
+    }
+
+    private void onWillCloseView(StripLayoutView view) {
+        if (view == null) return;
+
+        if (view == mDelayedReorderView) resetDelayedReorderState();
+        if (view == mReorderDelegate.getInteractingView()) stopReorderMode();
+    }
+
+    private void resetDelayedReorderState() {
+        mDelayedReorderView = null;
+        mDelayedReorderInitialX = 0.f;
     }
 
     private void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

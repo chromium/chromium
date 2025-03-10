@@ -393,8 +393,8 @@ public class TabDragSource implements View.OnDragListener {
         mTabModelSelector = tabModelSelector;
     }
 
-    /** Whether a tab drag and drop has started. */
-    public boolean isTabDraggingInProgress() {
+    /** Whether a view drag and drop has started. */
+    public boolean isViewDraggingInProgress() {
         return sDragTrackerToken != null;
     }
 
