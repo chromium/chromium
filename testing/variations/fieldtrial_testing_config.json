@@ -7722,6 +7722,24 @@
             ]
         }
     ],
+    "DefaultProfileEnterpriseBadging": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseProfileBadgingForAvatar",
+                        "EnterpriseProfileBadgingForMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferConciergeStartup": [
         {
             "platforms": [
