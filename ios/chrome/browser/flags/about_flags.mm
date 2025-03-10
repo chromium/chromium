@@ -1284,7 +1284,7 @@ const FeatureEntry::FeatureParam
     kDeprecateFeedHeaderVariationRemoveFeedLabel[] = {
         {kDeprecateFeedHeaderParameterRemoveLabel, "true"}};
 const FeatureEntry::FeatureParam
-    kDeprecateFeedHeaderVariationAbovePlusAddTopPadding[] = {
+    kDeprecateFeedHeaderVariationAbovePlusMoreSpacing[] = {
         {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
         {kDeprecateFeedHeaderParameterTopPadding, "34"}};
 const FeatureEntry::FeatureParam
@@ -1297,8 +1297,8 @@ const FeatureEntry::FeatureVariation kDeprecateFeedHeaderVariations[] = {
     {" (remove feed label)", kDeprecateFeedHeaderVariationRemoveFeedLabel,
      std::size(kDeprecateFeedHeaderVariationRemoveFeedLabel), nullptr},
     {" (also add top padding)",
-     kDeprecateFeedHeaderVariationAbovePlusAddTopPadding,
-     std::size(kDeprecateFeedHeaderVariationAbovePlusAddTopPadding), nullptr},
+     kDeprecateFeedHeaderVariationAbovePlusMoreSpacing,
+     std::size(kDeprecateFeedHeaderVariationAbovePlusMoreSpacing), nullptr},
     {" (and enlarge doodle too)",
      kDeprecateFeedHeaderVariationAbovePlusEnlargeElements,
      std::size(kDeprecateFeedHeaderVariationAbovePlusEnlargeElements),
