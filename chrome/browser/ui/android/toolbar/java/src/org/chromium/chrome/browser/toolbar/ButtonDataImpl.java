@@ -76,7 +76,8 @@ public class ButtonDataImpl implements ButtonData {
                         buttonVariant,
                         actionChipLabelResId,
                         tooltipTextResId,
-                        showHoverHighlight);
+                        showHoverHighlight,
+                        /* hasErrorBadge= */ false);
     }
 
     @Override
@@ -120,7 +121,8 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.getShouldShowHoverHighlight());
+                        currentSpec.getShouldShowHoverHighlight(),
+                        currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
 
@@ -138,7 +140,8 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         newActionChipResourceId,
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.getShouldShowHoverHighlight());
+                        currentSpec.getShouldShowHoverHighlight(),
+                        currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
 
@@ -156,7 +159,8 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(),
                         currentSpec.getActionChipLabelResId(),
                         currentSpec.getHoverTooltipTextId(),
-                        currentSpec.getShouldShowHoverHighlight());
+                        currentSpec.getShouldShowHoverHighlight(),
+                        currentSpec.hasErrorBadge());
         setButtonSpec(newSpec);
     }
 

@@ -96,7 +96,8 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverHighlight= */ false,
+                        /* hasErrorBadge= */ false);
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {

@@ -56,4 +56,13 @@ found in the LICENSE file.
 
     <!-- Defines how much the omnibox and the long-press menu should overlap.-->
     <dimen name="omnibox_longpress_menu_overlap">2dp</dimen>
+
+    <!-- Padding of optional phone button, used to adjust button's icon within its clickable area. -->
+    <dimen name="optional_toolbar_phone_button_with_error_badge_padding_bottom">12dp</dimen>
+
+    <!-- Padding of optional tablet button, used to adjust button's icon within its clickable area. -->
+    <dimen name="optional_toolbar_tablet_button_padding_start">0dp</dimen>
+    <dimen name="optional_toolbar_tablet_button_padding_top">0dp</dimen>
+    <dimen name="optional_toolbar_tablet_button_with_error_badge_padding_start">4dp</dimen>
+    <dimen name="optional_toolbar_tablet_button_with_error_badge_padding_top">4dp</dimen>
 </resources>
