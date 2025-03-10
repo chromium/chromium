@@ -147,6 +147,11 @@ class InteractiveGlicTestT : public T {
     }
   }
 
+  void TearDownOnMainThread() override {
+    T::TearDownOnMainThread();
+    glic_test_environment_.reset();
+  }
+
   // Ensures that the WebContents for some combination of glic host and contents
   // are instrumented, per `instrument_mode`.
   auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
@@ -300,6 +305,10 @@ class InteractiveGlicTestT : public T {
     return Api::CheckResult(
         [this] { return window_controller().attached_browser(); }, new_browser,
         "attached to the other browser");
+  }
+
+  glic::GlicTestEnvironment& glic_test_environment() {
+    return *glic_test_environment_;
   }
 
  protected:

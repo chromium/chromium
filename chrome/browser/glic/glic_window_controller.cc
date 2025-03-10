@@ -475,6 +475,7 @@ void GlicWindowController::Show(Browser* browser, InvocationSource source) {
   }
   glic_service_->NotifyWindowIntentToShow();
   glic_service_->GetAuthController().CheckAuthBeforeShow(
+      AuthController::FallbackBehavior::kNone,
       base::BindOnce(&GlicWindowController::AuthCheckDoneBeforeShow,
                      GetWeakPtr(), browser ? browser->AsWeakPtr() : nullptr));
 }

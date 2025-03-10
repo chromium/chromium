@@ -42,6 +42,7 @@ void AuthController::CheckAuthBeforeLoad(
 }
 
 void AuthController::CheckAuthBeforeShow(
+    FallbackBehavior fallback_behavior,
     base::OnceCallback<void(BeforeShowResult)> callback) {
   CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -60,10 +61,9 @@ void AuthController::CheckAuthBeforeShow(
         profile_, signin_metrics::AccessPoint::kGlicLaunchButton);
     std::move(callback).Run(kShowingReauthSigninPage);
   } else {
-    SyncCookiesIfRequired(base::BindOnce([](bool success) {
-                            return success ? BeforeShowResult::kReady
-                                           : BeforeShowResult::kSyncFailed;
-                          }).Then(std::move(callback)));
+    SyncCookiesIfRequired(base::BindOnce(&AuthController::DoFallback,
+                                         GetWeakPtr(), fallback_behavior,
+                                         std::move(callback)));
   }
 }
 
@@ -117,6 +117,23 @@ void AuthController::SyncCookiesIfRequired(
   last_cookie_sync_time_ = std::nullopt;
   cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(base::BindOnce(
       &AuthController::CookieSyncDone, GetWeakPtr(), std::move(callback)));
+}
+
+void AuthController::DoFallback(
+    FallbackBehavior fallback_behavior,
+    base::OnceCallback<void(BeforeShowResult)> callback,
+    bool sync_success) {
+  if (fallback_behavior == FallbackBehavior::kShowReauthPage && !sync_success) {
+    CoreAccountInfo primary_account_info =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    signin_ui_util::ShowReauthForAccount(
+        profile_, primary_account_info.email,
+        signin_metrics::AccessPoint::kGlicLaunchButton);
+    std::move(callback).Run(BeforeShowResult::kShowingReauthSigninPage);
+    return;
+  }
+  std::move(callback).Run(sync_success ? BeforeShowResult::kReady
+                                       : BeforeShowResult::kSyncFailed);
 }
 
 void AuthController::CookieSyncDone(base::OnceCallback<void(bool)> callback,
