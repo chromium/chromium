@@ -1528,16 +1528,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public String getTabGroupSyncId(int rootId) {
-        return TabGroupSyncIdUtils.getTabGroupSyncId(rootId);
-    }
-
-    @Override
-    public void setTabGroupSyncId(int rootId, String syncId) {
-        TabGroupSyncIdUtils.putTabGroupSyncId(rootId, syncId);
-    }
-
-    @Override
     public int getRootIdFromTabGroupId(@Nullable Token stableId) {
         if (stableId == null) return Tab.INVALID_TAB_ID;
         return mGroupIdToRootIdMap.getOrDefault(stableId, Tab.INVALID_TAB_ID);
