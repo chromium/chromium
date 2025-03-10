@@ -264,7 +264,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected abstract @Nullable String getCollaborationIdOrNull(T id);
 
     /** Returns menu background drawable. */
-    public Drawable getMenuBackground(Context context, boolean isIncognito) {
+    public static Drawable getMenuBackground(Context context, boolean isIncognito) {
         final @DrawableRes int bgDrawableId =
                 isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
 
@@ -348,6 +348,12 @@ public abstract class TabOverflowMenuCoordinator<T> {
         if (mMenuHolder != null) {
             mMenuHolder.dismiss();
         }
+    }
+
+    /** Returns true if the menu is currently showing. */
+    public boolean isMenuShowing() {
+        if (mMenuHolder == null) return false;
+        return mMenuHolder.mMenuWindow.isShowing();
     }
 
     protected void onMenuDismissed() {}

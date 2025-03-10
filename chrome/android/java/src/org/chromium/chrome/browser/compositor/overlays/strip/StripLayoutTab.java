@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
@@ -150,7 +151,6 @@ public class StripLayoutTab extends StripLayoutView {
     // Tab's ID this view refers to.
     private int mTabId;
 
-    private final Context mContext;
     private final TabLoadTracker mLoadTracker;
     private final LayoutUpdateHost mUpdateHost;
     private TintedCompositorButton mCloseButton;
@@ -204,9 +204,8 @@ public class StripLayoutTab extends StripLayoutView {
             TabLoadTrackerCallback loadTrackerCallback,
             LayoutUpdateHost updateHost,
             boolean incognito) {
-        super(incognito, clickHandler);
+        super(incognito, clickHandler, context);
         mTabId = id;
-        mContext = context;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mUpdateHost = updateHost;
         mCloseButton =
@@ -793,6 +792,16 @@ public class StripLayoutTab extends StripLayoutView {
 
     public int getCloseButtonOffsetX() {
         return CLOSE_BUTTON_OFFSET_X;
+    }
+
+    @Override
+    public void getAnchorRect(Rect out) {
+        float dpToPx = getDpToPx();
+        out.set(
+                Math.round((getDrawX() + FOLIO_FOOT_LENGTH_DP) * dpToPx),
+                Math.round(getDrawY() * dpToPx),
+                Math.round((getDrawX() + getWidth() - FOLIO_FOOT_LENGTH_DP) * dpToPx),
+                Math.round((getDrawY() + getHeight()) * dpToPx));
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.

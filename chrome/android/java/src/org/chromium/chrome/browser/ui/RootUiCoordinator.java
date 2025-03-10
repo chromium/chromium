@@ -2047,4 +2047,9 @@ public class RootUiCoordinator
     public ObservableSupplier<ScrimManager> getScrimManagerSupplier() {
         return mScrimManagerSupplier;
     }
+
+    /** Returns a supplier of the share delegate. */
+    public Supplier<ShareDelegate> getShareDelegateSupplier() {
+        return mShareDelegateSupplier;
+    }
 }
