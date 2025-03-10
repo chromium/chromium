@@ -12,6 +12,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -545,7 +546,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
                                        mojom::AmbientTheme::kVideo, 1);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::kDefaultAmbientVideo, 1);
+                                       ash::GetDefaultAmbientVideo(), 1);
 
   SetAmbientObserver();
   FetchSettings();
@@ -564,7 +565,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
                                        mojom::AmbientTheme::kVideo, 2);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::kDefaultAmbientVideo, 2);
+                                       ash::GetDefaultAmbientVideo(), 2);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,

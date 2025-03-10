@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ambient_video.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
@@ -49,6 +50,10 @@ ASH_EXPORT void GetAmbientVideoHtmlPath(
 // will be successful and simpler since the resources have already been
 // downloaded and persisted on device.
 ASH_EXPORT void InstallAmbientVideoDlcInBackground();
+
+// Before the user explicitly selects anything, the hub automatically selects
+// this default for the user when the video theme is active.
+ASH_EXPORT AmbientVideo GetDefaultAmbientVideo();
 
 // TimeOfDay video file names.
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayCloudsVideo[];

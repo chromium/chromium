@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -222,7 +223,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
 
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
-  AmbientVideo video = orig_settings.video().value_or(kDefaultAmbientVideo);
+  AmbientVideo video = orig_settings.video().value_or(GetDefaultAmbientVideo());
   if (to_theme == mojom::AmbientTheme::kVideo) {
     LogAmbientModeVideo(video);
   }
@@ -513,7 +514,7 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
   // Video:
   AppendAmbientVideoAlbums(
       /*currently_selected_video*/ GetCurrentUiSettings().video().value_or(
-          kDefaultAmbientVideo),
+          GetDefaultAmbientVideo()),
       albums);
 
   ambient_observer_remote_->OnAlbumsChanged(std::move(albums));

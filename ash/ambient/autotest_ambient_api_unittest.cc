@@ -12,6 +12,7 @@
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/session/session_controller_impl.h"
@@ -118,7 +119,7 @@ TEST_F(AutotestAmbientApiTest,
 
 TEST_F(AutotestAmbientApiTest, ShouldSuccessfullyWaitForVideoStarted) {
   SetAmbientUiSettings(
-      AmbientUiSettings(AmbientTheme::kVideo, kDefaultAmbientVideo));
+      AmbientUiSettings(AmbientTheme::kVideo, GetDefaultAmbientVideo()));
   SetAmbientShownAndWaitForWidgets();
 
   // Simulate video playback starting half-way to the timeout.
@@ -136,7 +137,7 @@ TEST_F(AutotestAmbientApiTest, ShouldSuccessfullyWaitForVideoStarted) {
 
 TEST_F(AutotestAmbientApiTest, ShouldCallErrorCallbackIfVideoPlaybackTimedOut) {
   SetAmbientUiSettings(
-      AmbientUiSettings(AmbientTheme::kVideo, kDefaultAmbientVideo));
+      AmbientUiSettings(AmbientTheme::kVideo, GetDefaultAmbientVideo()));
   SetAmbientShownAndWaitForWidgets();
 
   AutotestAmbientApi test_api;
@@ -151,7 +152,7 @@ TEST_F(AutotestAmbientApiTest, ShouldCallErrorCallbackIfVideoPlaybackTimedOut) {
 
 TEST_F(AutotestAmbientApiTest, ShouldCallErrorCallbackIfVideoPlaybackFailed) {
   SetAmbientUiSettings(
-      AmbientUiSettings(AmbientTheme::kVideo, kDefaultAmbientVideo));
+      AmbientUiSettings(AmbientTheme::kVideo, GetDefaultAmbientVideo()));
   SetAmbientShownAndWaitForWidgets();
 
   // Simulate immediate video playback failure.
