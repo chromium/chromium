@@ -597,7 +597,9 @@ std::tuple<float, float, float> HSLToSRGB(float h, float s, float l) {
 }
 
 std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
-  // See https://www.w3.org/TR/css-color-4/#rgb-to-hsl
+  // See https://drafts.csswg.org/css-color-4/#rgb-to-hsl
+  // TODO(crbug.com/329301908): check if there's any change after this draft
+  // becomes settled.
   auto [min, max] = std::minmax({r, g, b});
   float hue = 0.0f, saturation = 0.0f, lightness = std::midpoint(min, max);
   float d = max - min;
@@ -614,6 +616,18 @@ std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
       hue = (r - g) / d + 4.0f;
     }
     hue *= 60.0f;
+  }
+
+  // Very out of gamut colors can produce negative saturation.
+  // If so, just rotate the hue by 180 and use a positive saturation.
+  // See https://github.com/w3c/csswg-drafts/issues/9222
+  if (saturation < 0) {
+    hue += 180;
+    saturation = std::abs(saturation);
+  }
+
+  if (hue >= 360) {
+    hue -= 360;
   }
 
   return std::make_tuple(hue, saturation, lightness);
@@ -636,10 +650,40 @@ std::tuple<float, float, float> HWBToSRGB(float h, float w, float b) {
   return std::make_tuple(red, green, blue);
 }
 
+static inline float SRGBToHue(float r, float g, float b) {
+  // See https://drafts.csswg.org/css-color-4/#rgb-to-hwb
+  // Similar to rgbToHsl, except that saturation and lightness are not
+  // calculated, and potential negative saturation is ignored.
+  // TODO(crbug.com/329301908): check if there's any change after this draft
+  // becomes settled.
+  auto [min, max] = std::minmax({r, g, b});
+  float hue = 0.0f;
+  float d = max - min;
+
+  if (d != 0) {
+    if (max == r) {
+      hue = (g - b) / d + (g < b ? 6 : 0);
+    } else if (max == g) {
+      hue = (b - r) / d + 2;
+    } else {
+      hue = (r - g) / d + 4;
+    }
+
+    hue *= 60;
+  }
+
+  if (hue >= 360) {
+    hue -= 360;
+  }
+
+  return hue;
+}
+
 std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
-  // Leverage RGB to HSL conversion to find RGB to HWB, see
-  // https://www.w3.org/TR/css-color-4/#rgb-to-hwb
-  auto [hue, saturation, light] = SRGBToHSL(r, g, b);
+  // See https://drafts.csswg.org/css-color-4/#rgb-to-hwb
+  // TODO(crbug.com/329301908): check if there's any change after this draft
+  // becomes settled.
+  float hue = SRGBToHue(r, g, b);
   float white = std::min({r, g, b});
   float black = 1.0f - std::max({r, g, b});
 
