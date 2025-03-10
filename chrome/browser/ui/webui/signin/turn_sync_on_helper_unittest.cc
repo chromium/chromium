@@ -1309,6 +1309,28 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
   // Check expectations.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+  CheckSigninMetrics({});
+}
+
+// Abort after the enterprise confirmation prompt.
+TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationAbortSeparationEnforced) {
+  // Set expectations.
+  expected_enterprise_confirmation_email_ = kEmail;
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+
+  SetIsProfileCreationRequiredByPolicy(true);
+
+  // Signin flow.
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  WaitUntilFlowCompletion();
+
+  // Check expectations.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
   CheckSigninMetrics({});
