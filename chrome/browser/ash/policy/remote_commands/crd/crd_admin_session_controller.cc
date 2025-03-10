@@ -360,8 +360,9 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
   params.allow_reconnections = parameters.allow_reconnections;
   params.allow_file_transfer = parameters.allow_file_transfer;
   params.connection_dialog_required = parameters.show_confirmation_dialog;
-  // TODO(b:397902801): Add `connection_auto_accept_timeout` when the dialog is
-  // auto-approved.
+  params.connection_auto_accept_timeout =
+      parameters.connection_auto_accept_timeout.value_or(base::TimeDelta());
+
   return params;
 }
 
