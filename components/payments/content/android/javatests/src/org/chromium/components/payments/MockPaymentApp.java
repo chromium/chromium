@@ -16,7 +16,9 @@ package org.chromium.components.payments;
  *           .setPackage("test.payments.app")
  *           .setMethod("https://payments.test/web-pay")
  *           .setSignature("AABBCCDDEEFF001122334455")
- *           .setSha256CertificateFingerprint("79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE"));
+ *           .setSha256CertificateFingerprint("79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE")
+ *           .setHandlesShippingAddress()
+ *           .setHandlesContactInformation();
  * </pre>
  */
 public class MockPaymentApp {
@@ -25,6 +27,8 @@ public class MockPaymentApp {
     private String mMethod;
     private String mSignature;
     private String mSha256CertificateFingerprint;
+    private boolean mHandlesShippingAddress;
+    private boolean mHandlesContactInformation;
 
     /**
      * @param label The app's user visible label, e.g., "Test Payments App". Must be non-empty for
@@ -80,6 +84,26 @@ public class MockPaymentApp {
     }
 
     /**
+     * Enables this mock payment app to provide a shipping address.
+     *
+     * @return A reference to this {@link MockPaymentApp} instance.
+     */
+    public MockPaymentApp setHandlesShippingAddress() {
+        mHandlesShippingAddress = true;
+        return this;
+    }
+
+    /**
+     * Enables this mock payment app to provide contact information.
+     *
+     * @return A reference to this {@link MockPaymentApp} instance.
+     */
+    public MockPaymentApp setHandlesContactInformation() {
+        mHandlesContactInformation = true;
+        return this;
+    }
+
+    /**
      * @return The app's user visible label, e.g., "Test Payments App".
      */
     public String getLabel() {
@@ -112,5 +136,19 @@ public class MockPaymentApp {
      */
     public String getSha256CertificateFingerprint() {
         return mSha256CertificateFingerprint;
+    }
+
+    /**
+     * @return Whether this mock payment app can provide a shipping address.
+     */
+    public boolean getHandlesShippingAddress() {
+        return mHandlesShippingAddress;
+    }
+
+    /**
+     * @return Whether this mock payment app can provide contact information.
+     */
+    public boolean getHandlesContactInformation() {
+        return mHandlesContactInformation;
     }
 }

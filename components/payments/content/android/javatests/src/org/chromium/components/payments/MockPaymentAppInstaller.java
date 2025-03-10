@@ -23,13 +23,15 @@ import java.util.Set;
  *                    .setPackage("test.payments.app")
  *                    .setMethod("https://payments.test/web-pay")
  *                    .setSignature("AABBCCDDEEFF001122334455")
- *                    .setSha256CertificateFingerprint("79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE"))
+ *                    .setSha256CertificateFingerprint("79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE")
+ *                    .setHandlesShippingAddress())
  *            .addApp(new MockPaymentApp()
  *                    .setLabel("Other Test Payments App")
  *                    .setPackage("test.payments.other.app")
  *                    .setMethod("https://other-payments.example/web-pay")
  *                    .setSignature("001122334455AABBCCDDEEFF")
- *                    .setSha256CertificateFingerprint("01:9D:A6:93:7D:A2:1D:64:25:D8:D4:93:37:29"))
+ *                    .setSha256CertificateFingerprint("01:9D:A6:93:7D:A2:1D:64:25:D8:D4:93:37:29")
+ *                    .setHandlesContactInformation())
  *             .install();
  * </pre>
  */
@@ -64,17 +66,40 @@ public class MockPaymentAppInstaller {
         for (MockPaymentApp app : mApps) {
             downloader.serveManifestFor(app);
             packageManagerDelegate.installPaymentApp(
-                    app.getLabel(), app.getPackage(), app.getMethod(), app.getSignature());
+                    app.getLabel(),
+                    app.getPackage(),
+                    app.getMethod(),
+                    getSupportedDelegations(app),
+                    app.getSignature());
         }
 
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
         AndroidPaymentAppFinder.setDownloaderForTest(downloader);
 
+        // TODO(crbug.com/401576628): Pass the mock payment apps into the mock Android intent
+        // launcher, so it can return shipping address and contact information only for the apps
+        // that support it.
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(
                 new MockAndroidIntentLauncher(
-                        /* returnShippingAddress= */ false, /* returnContactInfo= */ false));
+                        /* returnShippingAddress= */ mApps.get(0).getHandlesShippingAddress(),
+                        /* returnContactInfo= */ mApps.get(0).getHandlesContactInformation()));
 
         AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
+    }
+
+    private static String[] getSupportedDelegations(MockPaymentApp app) {
+        List<String> delegations = new ArrayList<>();
+        if (app.getHandlesShippingAddress()) {
+            delegations.add("shippingAddress");
+        }
+
+        if (app.getHandlesContactInformation()) {
+            delegations.add("payerName");
+            delegations.add("payerEmail");
+            delegations.add("payerPhone");
+        }
+
+        return delegations.isEmpty() ? null : delegations.toArray(new String[0]);
     }
 
     /**
