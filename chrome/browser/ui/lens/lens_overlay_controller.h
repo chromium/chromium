@@ -779,25 +779,43 @@ class LensOverlayController : public LensSearchboxClient,
                                  const std::u16string& page_text);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  // Callback for when the inner text is retrieved from the underlying page.
-  void OnInnerTextReceived(
-      PageContentRetrievedCallback callback,
-      std::unique_ptr<content_extraction::InnerTextResult> result);
+  // Gets the inner HTML for contextualization if flag enabled. Otherwise skip
+  // to MaybeGetInnerText().
+  void MaybeGetInnerHtml(std::vector<lens::PageContent> page_contents,
+                         content::RenderFrameHost* render_frame_host,
+                         PageContentRetrievedCallback callback);
 
   // Callback for when the inner HTML is retrieved from the underlying page.
-  void OnInnerHtmlReceived(PageContentRetrievedCallback callback,
+  // Calls MaybeGetInnerText().
+  void OnInnerHtmlReceived(std::vector<lens::PageContent> page_contents,
+                           content::RenderFrameHost* render_frame_host,
+                           PageContentRetrievedCallback callback,
                            const std::optional<std::string>& result);
 
-  // Callback for when the inner text is retrieved for the HTML request flow,
-  // which sends HTML, innerText, and Annotated page content.
-  void OnInnerTextForHtmlRequestReceived(
+  // Gets the inner text for contextualization if flag enabled. Otherwise skip
+  // to MaybeGetAnnotatedPageContent().
+  void MaybeGetInnerText(std::vector<lens::PageContent> page_contents,
+                         content::RenderFrameHost* render_frame_host,
+                         PageContentRetrievedCallback callback);
+
+  // Callback for when the inner text is retrieved from the underlying page.
+  // Calls MaybeGetAnnotatedPageContent().
+  void OnInnerTextReceived(
       std::vector<lens::PageContent> page_contents,
+      content::RenderFrameHost* render_frame_host,
       PageContentRetrievedCallback callback,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  // Callback for when the annotated page content is retrieved for the HTML
-  // request flow, which sends HTML, innerText, and Annotated page content.
-  void OnAnnotatedPageContentForHtmlRequestReceived(
+  // Gets the annotated page content for contextualization if flag enabled.
+  // Otherwise run the callback with the HTML and/or innerText.
+  void MaybeGetAnnotatedPageContent(
+      std::vector<lens::PageContent> page_contents,
+      content::RenderFrameHost* render_frame_host,
+      PageContentRetrievedCallback callback);
+
+  // Callback for when the annotated page content is retrieved. Runs the
+  // callback with the HTML, innerText, and/or annotated page content.
+  void OnAnnotatedPageContentReceived(
       std::vector<lens::PageContent> page_contents,
       PageContentRetrievedCallback callback,
       std::optional<optimization_guide::proto::AnnotatedPageContent> apc);

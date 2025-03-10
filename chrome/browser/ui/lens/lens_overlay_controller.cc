@@ -1764,27 +1764,19 @@ void LensOverlayController::GetPageContextualization(
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  // Try and fetch the innerText if enabled.
+  std::vector<lens::PageContent> page_contents;
   auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
-  if (lens::features::UseInnerTextAsContext() && render_frame_host) {
-    content_extraction::GetInnerText(
-        *render_frame_host, /*node_id=*/std::nullopt,
-        base::BindOnce(&LensOverlayController::OnInnerTextReceived,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  if (!render_frame_host || (!lens::features::UseInnerHtmlAsContext() &&
+                             !lens::features::UseInnerTextAsContext() &&
+                             !lens::features::UseApcAsContext())) {
+    std::move(callback).Run(page_contents, lens::MimeType::kUnknown,
+                            std::nullopt);
     return;
   }
-
-  // Try and fetch the innerHTML if enabled.
-  if (lens::features::UseInnerHtmlAsContext() && render_frame_host) {
-    content_extraction::GetInnerHtml(
-        *render_frame_host,
-        base::BindOnce(&LensOverlayController::OnInnerHtmlReceived,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  std::move(callback).Run(/*page_contents*/ {}, lens::MimeType::kUnknown,
-                          std::nullopt);
+  // TODO(crbug.com/399610478): The fetches for innerHTML, innerText, and APC
+  // should be parallelized to fetch all data at once. Currently fetches are
+  // sequential to prevent getting stuck in a race condition.
+  MaybeGetInnerHtml(page_contents, render_frame_host, std::move(callback));
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1885,109 +1877,100 @@ void LensOverlayController::GetPartialPdfTextCallback(
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-void LensOverlayController::OnInnerTextReceived(
-    PageContentRetrievedCallback callback,
-    std::unique_ptr<content_extraction::InnerTextResult> result) {
-  if (!result || result->inner_text.size() >
-                     lens::features::GetLensOverlayFileUploadLimitBytes()) {
-    std::move(callback).Run(
-        {lens::PageContent(/*bytes=*/{}, lens::MimeType::kPlainText)},
-        lens::MimeType::kPlainText, std::nullopt);
+void LensOverlayController::MaybeGetInnerHtml(
+    std::vector<lens::PageContent> page_contents,
+    content::RenderFrameHost* render_frame_host,
+    PageContentRetrievedCallback callback) {
+  if (!lens::features::UseInnerHtmlAsContext()) {
+    MaybeGetInnerText(page_contents, render_frame_host, std::move(callback));
     return;
   }
-
-  std::move(callback).Run(
-      {lens::PageContent(std::vector<uint8_t>(result->inner_text.begin(),
-                                              result->inner_text.end()),
-                         lens::MimeType::kPlainText)},
-      lens::MimeType::kPlainText, std::nullopt);
+  content_extraction::GetInnerHtml(
+      *render_frame_host,
+      base::BindOnce(&LensOverlayController::OnInnerHtmlReceived,
+                     weak_factory_.GetWeakPtr(), page_contents,
+                     render_frame_host, std::move(callback)));
 }
 
 void LensOverlayController::OnInnerHtmlReceived(
+    std::vector<lens::PageContent> page_contents,
+    content::RenderFrameHost* render_frame_host,
     PageContentRetrievedCallback callback,
     const std::optional<std::string>& result) {
-  // Exit early to prevent fetching unnecessary data if innerHTML is empty.
-  if (!result.has_value() ||
-      result->size() > lens::features::GetLensOverlayFileUploadLimitBytes()) {
-    std::move(callback).Run(
-        {lens::PageContent(/*bytes=*/{}, lens::MimeType::kHtml)},
-        lens::MimeType::kHtml, std::nullopt);
-    return;
-  }
-
-  // If the other page content types are disabled, exit early to prevent
-  // fetching them.
-  if (!lens::features::IncludeInnerTextWithInnerHtml() &&
-      !lens::features::IncludeApcWithInnerHtml()) {
-    std::move(callback).Run(
-        {lens::PageContent(std::vector<uint8_t>(result->begin(), result->end()),
-                           lens::MimeType::kHtml)},
-        lens::MimeType::kHtml, std::nullopt);
-    return;
-  }
-
-  // Add the innerHTML to the page contents.
-  std::vector<lens::PageContent> page_contents = {
-      lens::PageContent(std::vector<uint8_t>(result->begin(), result->end()),
-                        lens::MimeType::kHtml)};
-
-  // Try and fetch the innerText which will then include the APC if that flag is
-  // enabled.
-  // TODO(crbug.com/399610478): The fetches for innerHTML, innerText, and APC,
-  // are should be parallelized to fetch all data at once. Currently fetches are
-  // sequential to prevent getting stuck in a race condition.
-  auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
-  if (lens::features::IncludeInnerTextWithInnerHtml() && render_frame_host) {
-    content_extraction::GetInnerText(
-        *render_frame_host, /*node_id=*/std::nullopt,
-        base::BindOnce(
-            &LensOverlayController::OnInnerTextForHtmlRequestReceived,
-            weak_factory_.GetWeakPtr(), page_contents, std::move(callback)));
-    return;
-  }
-
-  // If IncludeInnerTextWithInnerHtml is disabled, include the APC if needed.
-  if (lens::features::IncludeApcWithInnerHtml()) {
-    optimization_guide::GetAIPageContent(
-        tab_->GetContents(), optimization_guide::DefaultAIPageContentOptions(),
-        base::BindOnce(&LensOverlayController::
-                           OnAnnotatedPageContentForHtmlRequestReceived,
-                       weak_factory_.GetWeakPtr(), page_contents,
-                       std::move(callback)));
-    return;
-  }
+  const bool was_successful =
+      result.has_value() &&
+      result->size() <= lens::features::GetLensOverlayFileUploadLimitBytes();
+  // Add the innerHTML to the page contents if successful, or empty bytes if
+  // not.
+  page_contents.emplace_back(
+      /*bytes=*/was_successful
+          ? std::vector<uint8_t>(result->begin(), result->end())
+          : std::vector<uint8_t>{},
+      lens::MimeType::kHtml);
+  MaybeGetInnerText(page_contents, render_frame_host, std::move(callback));
 }
 
-void LensOverlayController::OnInnerTextForHtmlRequestReceived(
+void LensOverlayController::MaybeGetInnerText(
     std::vector<lens::PageContent> page_contents,
+    content::RenderFrameHost* render_frame_host,
+    PageContentRetrievedCallback callback) {
+  if (!lens::features::UseInnerTextAsContext()) {
+    MaybeGetAnnotatedPageContent(page_contents, render_frame_host,
+                                 std::move(callback));
+    return;
+  }
+  content_extraction::GetInnerText(
+      *render_frame_host, /*node_id=*/std::nullopt,
+      base::BindOnce(&LensOverlayController::OnInnerTextReceived,
+                     weak_factory_.GetWeakPtr(), page_contents,
+                     render_frame_host, std::move(callback)));
+}
+
+void LensOverlayController::OnInnerTextReceived(
+    std::vector<lens::PageContent> page_contents,
+    content::RenderFrameHost* render_frame_host,
     PageContentRetrievedCallback callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  // Add the innerText to the page_contents if it exists.
-  if (result && result->inner_text.size() <=
-                    lens::features::GetLensOverlayFileUploadLimitBytes()) {
-    page_contents.emplace_back(std::vector<uint8_t>(result->inner_text.begin(),
-                                                    result->inner_text.end()),
-                               lens::MimeType::kPlainText);
-  }
-
-  // If including APC is enabled, fetch the APC, which will then run the
-  // callback.
-  if (lens::features::IncludeApcWithInnerHtml()) {
-    optimization_guide::GetAIPageContent(
-        tab_->GetContents(), optimization_guide::DefaultAIPageContentOptions(),
-        base::BindOnce(&LensOverlayController::
-                           OnAnnotatedPageContentForHtmlRequestReceived,
-                       weak_factory_.GetWeakPtr(), page_contents,
-                       std::move(callback)));
-    return;
-  }
-
-  // APC is disabled, so run the callback with the current innerHTML and
-  // innerText.
-  std::move(callback).Run(page_contents, lens::MimeType::kHtml, std::nullopt);
+  const bool was_successful =
+      result && result->inner_text.size() <=
+                    lens::features::GetLensOverlayFileUploadLimitBytes();
+  // Add the innerText to the page_contents if successful, or empty bytes if
+  // not.
+  page_contents.emplace_back(
+      /*bytes=*/was_successful
+          ? std::vector<uint8_t>(result->inner_text.begin(),
+                                 result->inner_text.end())
+          : std::vector<uint8_t>{},
+      lens::MimeType::kPlainText);
+  MaybeGetAnnotatedPageContent(page_contents, render_frame_host,
+                               std::move(callback));
 }
 
-void LensOverlayController::OnAnnotatedPageContentForHtmlRequestReceived(
+void LensOverlayController::MaybeGetAnnotatedPageContent(
+    std::vector<lens::PageContent> page_contents,
+    content::RenderFrameHost* render_frame_host,
+    PageContentRetrievedCallback callback) {
+  if (!lens::features::UseApcAsContext()) {
+    // Done fetching page contents.
+    // Keep legacy behavior consistent by setting the primary content type to
+    // plain text if that is the only content type enabled.
+    // TODO(crbug.com/401614601): Set primary content type to kHtml in all
+    // cases.
+    auto primary_content_type = lens::features::UseInnerTextAsContext() &&
+                                        !lens::features::UseInnerHtmlAsContext()
+                                    ? lens::MimeType::kPlainText
+                                    : lens::MimeType::kHtml;
+    std::move(callback).Run(page_contents, primary_content_type, std::nullopt);
+    return;
+  }
+  optimization_guide::GetAIPageContent(
+      tab_->GetContents(), optimization_guide::DefaultAIPageContentOptions(),
+      base::BindOnce(&LensOverlayController::OnAnnotatedPageContentReceived,
+                     weak_factory_.GetWeakPtr(), page_contents,
+                     std::move(callback)));
+}
+
+void LensOverlayController::OnAnnotatedPageContentReceived(
     std::vector<lens::PageContent> page_contents,
     PageContentRetrievedCallback callback,
     std::optional<optimization_guide::proto::AnnotatedPageContent> apc) {
@@ -1999,7 +1982,7 @@ void LensOverlayController::OnAnnotatedPageContentForHtmlRequestReceived(
         std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
         lens::MimeType::kAnnotatedPageContent);
   }
-
+  // Done fetching page contents.
   std::move(callback).Run(page_contents, lens::MimeType::kHtml, std::nullopt);
 }
 
@@ -2168,7 +2151,7 @@ void LensOverlayController::UpdatePageContextualizationPart2(
   // contexualized. Notify the side panel so the ghost loader isn't shown. No
   // need to update update the overlay as this update only happens on navigation
   // where the side panel will already be open.
-  if (new_page_content || new_page_content->bytes_.empty()) {
+  if (!new_page_content || new_page_content->bytes_.empty()) {
     SuppressGhostLoader();
   }
 

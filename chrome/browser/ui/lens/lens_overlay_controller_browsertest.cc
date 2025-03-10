@@ -698,7 +698,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           {
               {"send-page-url-for-contextualization", "true"},
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "true"},
+              {"use-inner-html-as-context", "false"},
               {"update-viewport-each-query", "true"},
           }},
          {lens::features::kLensOverlaySurvey, {}},
@@ -4936,7 +4936,7 @@ class LensOverlayControllerBrowserStartQueryFlowOptimization
          {lens::features::kLensOverlayContextualSearchbox,
           {
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "true"},
+              {"use-inner-html-as-context", "false"},
               {"use-webpage-vit-param", "true"},
           }},
          {lens::features::kLensOverlaySurvey, {}},
@@ -7231,6 +7231,7 @@ class LensOverlayControllerInnerTextEnabledSmallByteLimitTest
         lens::features::kLensOverlayContextualSearchbox,
         {
             {"use-inner-text-as-context", "true"},
+            {"use-inner-html-as-context", "false"},
             {"file-upload-limit-bytes", "10"},
         });
   }
@@ -7660,11 +7661,10 @@ class LensOverlayControllerInnerHtmlWithInnerTextAndApc
         lens::features::kLensOverlayContextualSearchbox,
         {
             {"send-page-url-for-contextualization", "true"},
-            {"use-inner-text-as-context", "false"},
+            {"use-inner-text-as-context", "true"},
             {"use-inner-html-as-context", "true"},
+            {"use-apc-as-context", "true"},
             {"use-updated-content-fields", "true"},
-            {"use-inner-text-with-inner-html", "true"},
-            {"use-apc-with-inner-html", "true"},
         });
   }
 };
@@ -7710,13 +7710,33 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
       "thêrē 🐶 ©</p>\n\n</body>",
       std::string(last_sent_html_bytes.begin(), last_sent_html_bytes.end()));
 
-  // Verify the other content types were also sent.
+  // Verify innerText is what we expect it to be.
   EXPECT_EQ(lens::ContentData::CONTENT_TYPE_INNER_TEXT,
             last_sent_content.content_data(1).content_type());
-  EXPECT_GT(last_sent_content.content_data(1).data().size(), 0u);
+  const auto last_sent_text_bytes = last_sent_content.content_data(1).data();
+  ASSERT_EQ(
+      "The below are non-ascii characters.\n\nこんにちは thêrē 🐶 ©",
+      std::string(last_sent_text_bytes.begin(), last_sent_text_bytes.end()));
+
+  // Verify APC is what we expect it to be.
   EXPECT_EQ(lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT,
             last_sent_content.content_data(2).content_type());
-  EXPECT_GT(last_sent_content.content_data(2).data().size(), 0u);
+  const auto last_sent_apc_bytes = last_sent_content.content_data(2).data();
+  optimization_guide::proto::AnnotatedPageContent apc;
+  ASSERT_TRUE(apc.ParseFromString(
+      std::string(last_sent_apc_bytes.begin(), last_sent_apc_bytes.end())));
+  EXPECT_EQ("The below are non-ascii characters.", apc.root_node()
+                                                       .children_nodes(0)
+                                                       .children_nodes(0)
+                                                       .content_attributes()
+                                                       .text_data()
+                                                       .text_content());
+  EXPECT_EQ("こんにちは thêrē 🐶 ©", apc.root_node()
+                                         .children_nodes(1)
+                                         .children_nodes(0)
+                                         .content_attributes()
+                                         .text_data()
+                                         .text_content());
 
   // Verify the searchbox was shown.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -8164,7 +8184,7 @@ class LensOverlayControllerBrowserSimplifiedSelectionTest
           {
               {"send-page-url-for-contextualization", "true"},
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "true"},
+              {"use-inner-html-as-context", "false"},
           }},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}},

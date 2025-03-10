@@ -235,9 +235,8 @@ std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
     case lens::MimeType::kUnknown:
       break;
     case lens::MimeType::kAnnotatedPageContent:
-      // The APC should only be sent as part of the innerHtml path. Therefore,
-      // the vit should have been kWebpage above. If this path is hit, its a
-      // mistake.
+      // APC is not used as a primary content type; the primary content type
+      // should be kHtml when APC is sent. If this path is hit, it's a mistake.
       NOTREACHED() << "Apc should not be uploaded by itself.";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
@@ -298,9 +297,8 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
     case lens::MimeType::kUnknown:
       break;
     case lens::MimeType::kAnnotatedPageContent:
-      // The APC should only be sent as part of the innerHtml path. Therefore,
-      // the vit should have been kWebpage above. If this path is hit, its a
-      // mistake.
+      // APC is not used as a primary content type; the primary content type
+      // should be kHtml when APC is sent. If this path is hit, it's a mistake.
       NOTREACHED() << "Apc should not be uploaded by itself.";
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
