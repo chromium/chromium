@@ -65,7 +65,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
                   DebugReportSentCallback) override;
 
   void SendReport(AggregatableDebugReport,
-                  base::Value::Dict report_body,
+                  base::DictValue report_body,
                   AggregatableDebugReportSentCallback) override;
 
  private:

@@ -11,8 +11,11 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -20,7 +23,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableFilteringIdsMaxBytes {
  public:
   static base::expected<AggregatableFilteringIdsMaxBytes,
                         mojom::TriggerRegistrationError>
-  Parse(const base::Value::Dict&);
+  Parse(const base::DictValue&);
 
   static std::optional<AggregatableFilteringIdsMaxBytes> Create(int);
 
@@ -46,7 +49,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableFilteringIdsMaxBytes {
   friend bool operator==(AggregatableFilteringIdsMaxBytes,
                          AggregatableFilteringIdsMaxBytes) = default;
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
   uint8_t value() const { return value_; }
 
