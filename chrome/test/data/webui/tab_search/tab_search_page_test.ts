@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://tab-search.top-chrome/tab_search.js';
+
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SEARCH_QUERY_MAX_LENGTH, TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
@@ -141,6 +143,16 @@ suite('TabSearchAppTest', () => {
     assertNotEquals(
         -1, tabSearchPage.getSelectedTabIndex(),
         'No default selection in the presence of data');
+  });
+
+  test('Search text has an upper limit', async () => {
+    await setupTest(createProfileData());
+    // Ensure an upper limit exists, to prevent errors like
+    // "SyntaxError: Invalid regular expression: ..."
+    assertEquals(
+        SEARCH_QUERY_MAX_LENGTH,
+        Number.parseInt(
+            tabSearchPage.getSearchInput().getAttribute('maxlength')!, 10));
   });
 
   test('Search text changes tab items', async () => {

@@ -42,6 +42,10 @@ import {TitleItem} from './title_item.js';
 // height. Includes a half row that hints to the user the capability to scroll.
 const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
 
+// A maximum limit for search queries, to prevent  errors like
+// "SyntaxError: Invalid regular expression: ..."
+export const SEARCH_QUERY_MAX_LENGTH: number = 400;
+
 const TabSearchSearchFieldBase = CrSearchFieldMixinLit(CrLitElement);
 
 /**
@@ -78,6 +82,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       filteredItems_: {type: Array},
       listMaxHeight_: {type: Number},
       listItemSize_: {type: Number},
+      searchQueryMaxLength_: {type: Number},
 
       /**
        * Options for search. Controls how heavily weighted fields are relative
@@ -99,6 +104,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private searchText_: string = '';
   protected listMaxHeight_?: number;
   protected listItemSize_?: number;
+  protected searchQueryMaxLength_: number = SEARCH_QUERY_MAX_LENGTH;
   protected filteredItems_: Array<TitleItem|TabData|TabGroupData> = [];
   private searchOptions_: SearchOptions = {
     includeScore: true,
