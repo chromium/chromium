@@ -5388,6 +5388,17 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3" label="Start on NTP"/>
 </enum>
 
+<!-- LINT.IfChange(FrameHandlingType) -->
+
+<enum name="FrameHandlingType">
+  <int value="0" label="None"/>
+  <int value="1" label="InteractionOnly"/>
+  <int value="2" label="AnimationOnly"/>
+  <int value="3" label="InteractionAndAnimation"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/ipc/service/image_transport_surface_overlay_mac.mm:AnimationOrInteractionType) -->
+
 <enum name="FsckResult">
   <summary>
     These correspond to e2fsck exit codes. Note that 0 differs from e2fsck's man
