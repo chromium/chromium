@@ -114,6 +114,10 @@ source_set("permissions") {
     "pref_names.h",
     "request_type.cc",
     "request_type.h",
+    "resolvers/content_setting_permission_resolver.cc",
+    "resolvers/content_setting_permission_resolver.h",
+    "resolvers/permission_resolver.cc",
+    "resolvers/permission_resolver.h",
     "switches.cc",
     "switches.h",
   ]
@@ -308,6 +312,7 @@ source_set("unit_tests") {
     "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",
     "permission_uma_util_unittest.cc",
+    "resolvers/content_setting_permission_resolver_unittest.cc",
   ]
   if (!is_android) {
     sources += [
