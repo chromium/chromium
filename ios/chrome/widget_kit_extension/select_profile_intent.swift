@@ -17,11 +17,22 @@ struct ProfileQuery: EntityQuery {
   }
 
   func defaultResult() async -> ProfileDetail? {
-    if let firstAccount = try? await suggestedEntities().first {
-      return firstAccount
-    } else {
-      return ProfileDetail(id: "No account", gaia: "Default")
+    let noAccount = ProfileDetail(id: "No account", gaia: "Default")
+
+    guard let accounts = try? await suggestedEntities()
+    else { return noAccount }
+
+    // If available, return the primary account as default result.
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+    else { return noAccount }
+    guard let primaryAccount = sharedDefaults.object(forKey: "ios.primary_account") as? String
+    else { return noAccount }
+    for account in accounts {
+      if account.gaia == primaryAccount {
+        return ProfileDetail(id: account.id, gaia: account.gaia)
+      }
     }
+    return noAccount
   }
 }
 
