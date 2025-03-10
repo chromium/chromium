@@ -139,6 +139,7 @@ static_library("shelf") {
     "//components/prefs",
     "//components/sync_preferences",
     "//components/webapps/common",
+    "//extensions/browser",
     "//extensions/common",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
   ]
