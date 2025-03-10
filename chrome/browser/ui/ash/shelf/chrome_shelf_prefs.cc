@@ -378,9 +378,41 @@ void AddMallPinIfNeeded(Profile* profile,
     return;
   }
 
-  InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                               {{ash::kMallSystemAppId}},
-                                               /*is_policy_initiated=*/false);
+  // Mall should be pinned immediately after Chrome, but also after Gemini if it
+  // is next after Chrome.
+  syncer::StringOrdinal chrome_position =
+      syncable_service->GetPinPosition(app_constants::kChromeAppId);
+  CHECK(chrome_position.IsValid());
+  syncer::StringOrdinal first_pin_after_chrome = GetNextPositionAfter(
+      syncable_service, chrome_position, /*exclude_chrome=*/true);
+  syncer::StringOrdinal gemini_position =
+      syncable_service->GetPinPosition(ash::kGeminiAppId);
+
+  syncer::StringOrdinal pin_mall_after;
+  syncer::StringOrdinal pin_mall_before;
+
+  if (gemini_position.IsValid() && first_pin_after_chrome == gemini_position) {
+    // Current order is <possibly some apps>, Chrome, Gemini, <something else>.
+    // Insert Mall after Gemini.
+    pin_mall_after = gemini_position;
+    pin_mall_before = GetNextPositionAfter(syncable_service, gemini_position,
+                                           /*exclude_chrome=*/true);
+
+  } else {
+    // Current order is <possibly some apps>, Chrome, <non-Gemini app>. Insert
+    // Mall immdiately after Chrome.
+    pin_mall_after = chrome_position;
+    pin_mall_before = first_pin_after_chrome;
+  }
+
+  if (!pin_mall_before.IsValid()) {
+    pin_mall_before = pin_mall_after.CreateAfter();
+  }
+
+  syncer::StringOrdinal mall_position =
+      pin_mall_after.CreateBetween(pin_mall_before);
+  syncable_service->SetPinPosition(
+      ash::kMallSystemAppId, mall_position, /*pinned_by_policy=*/false);
 
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kShelfMallAppPinRolls);
