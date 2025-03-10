@@ -3855,9 +3855,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.ChimePreferenceRegistration"
-    enum="BooleanSuccess" expires_after="2025-04-21">
-  <owner>danieltwhite@google.com</owner>
+    enum="BooleanSuccess" expires_after="2026-04-21">
   <owner>scottyoder@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
   <summary>
     Logs whether the user's push notification permissions for each push
     notification enable feature in Chrome were successfully applied to the Chime
