@@ -19934,6 +19934,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "throttle-frame-rate-on-initialization": "true"
+                    },
                     "enable_features": [
                         "RenderBlockingFullFrameRate",
                         "RenderThrottleFrameRate"

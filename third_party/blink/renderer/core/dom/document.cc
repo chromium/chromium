@@ -7403,6 +7403,14 @@ void Document::OnLargestContentfulPaintUpdated() {
 void Document::OnPrepareToStopParsing() {
   if (render_blocking_resource_manager_) {
     render_blocking_resource_manager_->ClearPendingParsingElements();
+    if (features::kThrottleFrameRateOnInitialization.Get() && GetFrame() &&
+        GetFrame()->IsLocalRoot() && GetFrame()->GetPage() &&
+        GetFrame()->IsAttached()) {
+      // The frame rate will be implicitly throttled during initialization
+      // if the feature is enabled so unthrottle here.
+      GetFrame()->GetPage()->GetChromeClient().SetShouldThrottleFrameRate(
+          false, *GetFrame());
+    }
   }
   MaybeExecuteDelayedAsyncScripts(
       MilestoneForDelayedAsyncScript::kFinishedParsing);
