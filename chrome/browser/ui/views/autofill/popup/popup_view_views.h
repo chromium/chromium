@@ -154,6 +154,12 @@ class PopupViewViews : public PopupBaseView,
                        AutoselectFirstSuggestion autoselect_first_suggestion,
                        bool suppress_popup = false);
 
+  // Shows any available in-product-help (IPH) promos associated with the
+  // current suggestions. This function iterates through the suggestions and
+  // displays a feature promo bubble if the suggestion has associated IPH
+  // metadata.
+  void ShowIPHFeaturePromos();
+
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
   // check false.
