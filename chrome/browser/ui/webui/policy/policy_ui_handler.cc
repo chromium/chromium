@@ -124,6 +124,12 @@ constexpr char kPolicyPromotionBannerLocale[] = "en-US";
 
 }  // namespace
 
+namespace features {
+BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
+             "PolicyPagePromotionEligibilityCheckedBanner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace features
+
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
