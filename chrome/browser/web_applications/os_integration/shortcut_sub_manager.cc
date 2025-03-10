@@ -299,7 +299,14 @@ void ShortcutSubManager::UpdateShortcut(
         synchronize_options->add_shortcut_to_desktop;
     creation_locations.in_quick_launch_bar =
         synchronize_options->add_to_quick_launch_bar;
-    locations = creation_locations;
+    // Leaving `locations` as null if there are no creation locations will avoid
+    // creating duplicates of existing shortcuts because the creation locations
+    // don't match the existing locations (e.g., UpdatePlatformShortcuts in
+    // web_app_shortcut_win.cc).
+    if (creation_locations.in_quick_launch_bar ||
+        creation_locations.on_desktop) {
+      locations = creation_locations;
+    }
   }
 
   base::FilePath shortcut_data_dir =
