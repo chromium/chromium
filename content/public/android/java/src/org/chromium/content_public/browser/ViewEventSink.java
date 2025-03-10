@@ -86,12 +86,11 @@ public interface ViewEventSink {
 
     /**
      * Set the Container view Internals.
+     *
      * @param internalDispatcher Handles dispatching all hidden or super methods to the
-     *                           containerView.
+     *     containerView.
      */
     void setAccessDelegate(InternalAccessDelegate internalDispatcher);
 
-    void onPauseForTesting();
-
-    void onResumeForTesting();
+    void onActivityTopResumedChangedForTesting(boolean isTopResumedActivity);
 }
