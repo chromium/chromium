@@ -2013,8 +2013,6 @@ bool RTCVideoEncoder::Impl::NeedConvertToI420MemoryFrame(
   using enum media::VideoFrame::StorageType;
   using StorageType = media::VideoFrame::StorageType;
   const StorageType storage_type = frame.storage_type();
-  // GPU_MEMORY_BUFFER frame must not reach this path.
-  CHECK_NE(storage_type, STORAGE_GPU_MEMORY_BUFFER);
 
   constexpr StorageType kStorageTypeSupportedByMojo[] = {
       STORAGE_UNOWNED_MEMORY,
