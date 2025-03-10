@@ -682,6 +682,9 @@ extern const char kEnterpriseProfileBadgingForAvatarDescription[];
 extern const char kEnterpriseProfileBadgingForMenuName[];
 extern const char kEnterpriseProfileBadgingForMenuDescription[];
 
+extern const char kEnterpriseBadgingForNtpFooterName[];
+extern const char kEnterpriseBadgingForNtpFooterDescription[];
+
 extern const char kEnterpriseUpdatedProfileCreationScreenName[];
 extern const char kEnterpriseUpdatedProfileCreationScreenDescription[];
 

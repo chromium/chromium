@@ -2916,14 +2916,19 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-enterprise-badging-for-ntp-footer",
+    "owners": ["esalma@google.com","cbe-magic@google.com"],
+    "expiry_milestone": 139
+  },
+  {
     "name": "enable-enterprise-profile-badging-for-avatar",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 139
   },
   {
     "name": "enable-enterprise-profile-badging-for-menu",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 139
   },
   {
     "name": "enable-enterprise-profile-required-interstitial",

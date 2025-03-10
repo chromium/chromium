@@ -1197,6 +1197,12 @@ const char kEnterpriseProfileBadgingForMenuDescription[] =
     "Enable enterprise profile badging in the profile menu. This includes "
     "showing the enterprise logo and the management disclaimer under the email";
 
+const char kEnterpriseBadgingForNtpFooterName[] =
+    "Enable enterprise badging on the New Tab Page";
+const char kEnterpriseBadgingForNtpFooterDescription[] =
+    "Enable enterprise profile badging in the footer on the New Tab Page. This "
+    "includes showing the enterprise logo and the management disclaimer";
+
 const char kEnterpriseUpdatedProfileCreationScreenName[] =
     "Enable enterprise updated profile creation screens";
 const char kEnterpriseUpdatedProfileCreationScreenDescription[] =
