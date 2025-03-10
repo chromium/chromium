@@ -279,10 +279,6 @@ bool IsSelectElement(const WebFormControlElement& element) {
   return GetAutofillFormControlType(element) == FormControlType::kSelectOne;
 }
 
-bool IsMonthInput(const WebFormControlElement& element) {
-  return GetAutofillFormControlType(element) == FormControlType::kInputMonth;
-}
-
 bool IsCheckableElement(const WebFormControlElement& element) {
   using enum blink::mojom::FormControlType;
   // We intentionally use `FormControlType()` instead of
@@ -1325,61 +1321,98 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
 // causing the background to be blue.
 void FillFormField(const FormFieldData::FillData& data,
                    bool is_initiating_node,
-                   WebFormControlElement& field,
+                   WebFormControlElement& form_control,
                    FieldDataManager& field_data_manager) {
-  // Fill fields for text input, textarea and select fields.
-  // Filling not supported for checkboxes and radio buttons.
-  if (!IsTextInput(field) && !IsMonthInput(field) &&
-      !IsTextAreaElement(field) && !IsSelectElement(field)) {
+  std::optional<FormControlType> type =
+      GetAutofillFormControlType(form_control);
+  if (!type) {
     return;
   }
+  switch (*type) {
+    case FormControlType::kInputCheckbox:
+    case FormControlType::kInputRadio:
+      return;
+    case FormControlType::kContentEditable:
+      NOTREACHED();
+    case FormControlType::kInputEmail:
+    case FormControlType::kInputMonth:
+    case FormControlType::kInputNumber:
+    case FormControlType::kInputPassword:
+    case FormControlType::kInputSearch:
+    case FormControlType::kInputTelephone:
+    case FormControlType::kInputText:
+    case FormControlType::kInputUrl:
+    case FormControlType::kSelectOne:
+    case FormControlType::kTextArea:
+      break;
+  }
+
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kAutofilled
                                             : WebAutofillState::kNotFilled;
 
-  if (IsTextInput(field)) {
+  if (IsTextInput(form_control)) {
     field_data_manager.UpdateFieldDataMap(
-        GetFieldRendererId(field), data.value.substr(0, field.MaxLength()),
+        GetFieldRendererId(form_control),
+        data.value.substr(0, form_control.MaxLength()),
         FieldPropertiesFlags::kAutofilledOnUserTrigger);
   }
 
-  field.SetAutofillValue(WebString::FromUTF16(data.value), new_autofill_state);
+  form_control.SetAutofillValue(WebString::FromUTF16(data.value),
+                                new_autofill_state);
   // Changing the field's value might trigger JavaScript, which is capable
   // of destroying the frame.
-  if (!field.GetDocument().GetFrame()) {
+  if (!form_control.GetDocument().GetFrame()) {
     return;
   }
 
-  if (!is_initiating_node || IsSelectElement(field)) {
+  if (!is_initiating_node || IsSelectElement(form_control)) {
     return;
   }
-  auto length = base::checked_cast<unsigned>(field.Value().length());
-  field.SetSelectionRange(length, length);
+  auto length = base::checked_cast<unsigned>(form_control.Value().length());
+  form_control.SetSelectionRange(length, length);
   // selectionchange event is capable of destroying the frame.
-  if (!field.GetDocument().GetFrame()) {
+  if (!form_control.GetDocument().GetFrame()) {
     return;
   }
   // Clear the current IME composition (the underline), if there is one.
-  field.GetDocument().GetFrame()->UnmarkText();
+  form_control.GetDocument().GetFrame()->UnmarkText();
 }
 
 // Sets the |field|'s "suggested" (non JS visible) value to the value in |data|.
 // Also sets the "autofilled" attribute, causing the background to be blue.
 void PreviewFormField(const FormFieldData::FillData& data,
-                      WebFormControlElement& field,
+                      WebFormControlElement& form_control,
                       FieldDataManager& field_data_manager) {
-  // Preview text input, textarea and select fields.
-  // Preview not supported for checkboxes and radio buttons.
-  if (!IsTextInput(field) && !IsMonthInput(field) &&
-      !IsTextAreaElement(field) && !IsSelectElement(field)) {
+  std::optional<FormControlType> type =
+      GetAutofillFormControlType(form_control);
+  if (!type) {
     return;
   }
+  switch (*type) {
+    case FormControlType::kInputCheckbox:
+    case FormControlType::kInputRadio:
+      return;
+    case FormControlType::kContentEditable:
+      NOTREACHED();
+    case FormControlType::kInputEmail:
+    case FormControlType::kInputMonth:
+    case FormControlType::kInputNumber:
+    case FormControlType::kInputPassword:
+    case FormControlType::kInputSearch:
+    case FormControlType::kInputTelephone:
+    case FormControlType::kInputText:
+    case FormControlType::kInputUrl:
+    case FormControlType::kSelectOne:
+    case FormControlType::kTextArea:
+      break;
+  }
 
-  field.SetSuggestedValue(WebString::FromUTF16(data.value));
+  form_control.SetSuggestedValue(WebString::FromUTF16(data.value));
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kPreviewed
                                             : WebAutofillState::kNotFilled;
-  field.SetAutofillState(new_autofill_state);
+  form_control.SetAutofillState(new_autofill_state);
 }
 
 // A less-than comparator for FormFieldData's pointer by their FieldRendererId.
