@@ -1495,7 +1495,7 @@
   {
     "name": "compare-management-interface",
     "owners": ["chazzy@chromium.org", "mdjones@chromium.org", "chrome-shopping-eng@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "compose-nudge-display-at-cursor",
