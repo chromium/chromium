@@ -10,7 +10,10 @@ shim_headers("zlib_shim") {
 }
 
 config("system_zlib") {
-  defines = [ "USE_SYSTEM_ZLIB=1" ]
+  defines = [
+    "CHROMIUM_ZLIB_NO_CHROMECONF=1",
+    "USE_SYSTEM_ZLIB=1",
+  ]
 }
 
 config("zlib_config") {
