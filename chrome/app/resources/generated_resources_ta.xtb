@@ -6966,7 +6966,6 @@
 <translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5911545422157959623">கெஸ்ட் பயன்முறையில் புக்மார்க்குகள் கிடைக்காது</translation>
 <translation id="5914016309240354769">இயற்கை</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> இந்தப் பக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="5914724413750400082">தனிமதிப்பு (<ph name="MODULUS_NUM_BITS" /> பிட்கள்):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -8248,6 +8247,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">இடதுபுறம் சீரமை</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{பக்கத்தை அகற்றிவிட்டு குழுவை நீக்க வேண்டுமா?}=1{பக்கங்களை அகற்றிவிட்டு குழுவை நீக்க வேண்டுமா?}other{பக்கங்களை அகற்றிவிட்டு குழுக்களை நீக்க வேண்டுமா?}}</translation>
+<translation id="6833103209700200188">அடிக்குறிப்பு</translation>
 <translation id="6833479554815567477">இந்தக் குழுவிலிருந்து தாவல் நகர்த்தப்பட்டது <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">நடுநிலை (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="6835762382653651563">உங்கள் <ph name="DEVICE_TYPE" />ஐப் புதுப்பிக்க இணையத்துடன் இணையவும்.</translation>
@@ -11592,7 +11592,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{ஆப்ஸ்}other{# ஆப்ஸ்}}</translation>
 <translation id="9186963452600581158">பிள்ளையின் Google கணக்கு மூலம் உள்நுழைக</translation>
 <translation id="9187967020623675250">ஒரே பட்டனை மீண்டும் அழுத்தக்கூடாது. <ph name="RESPONSE" />, ஏதேனும் ஒரு பட்டனை அழுத்தவும்.</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> இந்தப் பக்கத்தை மாற்றியுள்ளார்</translation>
 <translation id="9192019773545828776">பேச்சுவடிவத்தில் விளக்கம் அளிக்கப்படுவதால் திரையைப் பார்க்காமலேயே நீங்கள் சாதனத்தைப் பயன்படுத்த முடியும். இணைக்கப்பட்ட சாதனத்தின் மூலம் பிரெய்ல் கருத்தைப் பெறலாம். ChromeVoxஸை இயக்கவும் முடக்கவும் Ctrl + Alt + Z அழுத்தவும். உலாவ, Search + இடது அம்புக்குறி/வலது அம்புக்குறியைப் பயன்படுத்தவும். தேர்ந்தெடுக்க (செயல்படுத்த) Search + Space அழுத்தவும்.</translation>
 <translation id="9195969368671142407">உங்கள் Google கணக்கில் சேமிப்பதை உங்கள் நிறுவனம் கட்டுப்படுத்தினால், பக்கக் குழுக்களை உங்களால் பகிரவோ அவற்றில் சேரவோ முடியாது</translation>
 <translation id="919686179725692564">ஆப்ஸைக் காப்புப் பிரதி எடுப்பது குறித்து மேலும் அறிக</translation>

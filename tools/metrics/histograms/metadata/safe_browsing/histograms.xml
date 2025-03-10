@@ -1604,7 +1604,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.CacheDuration.RemainingOnHit" units="ms"
-    expires_after="2025-04-16">
+    expires_after="2026-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1614,7 +1614,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.CacheHit" enum="BooleanCacheHit"
-    expires_after="2025-03-09">
+    expires_after="2026-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1628,7 +1628,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.CacheHitAllPrefixes" enum="BooleanCacheHit"
-    expires_after="2025-03-09">
+    expires_after="2026-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1918,7 +1918,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.Request.CountOfPrefixes" units="prefixes"
-    expires_after="2025-03-09">
+    expires_after="2026-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

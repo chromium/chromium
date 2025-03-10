@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
       secondary_account_info.account_id));
 }
 
-// Test that Sync is paused when browsing data is cleared if Sync was in
+// Test that Sync remained in error when browsing data is cleared if Sync was in
 // authentication error.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   Profile* profile = browser()->profile();
@@ -181,11 +181,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, browser()->profile()));
-  // Check that the account was not removed and Sync was paused.
+  // Check that the account was not removed and Sync remains in auth error.
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_CLIENT,
+                CREDENTIALS_REJECTED_BY_SERVER,
             identity_manager
                 ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
                 .GetInvalidGaiaCredentialsReason());

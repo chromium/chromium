@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -172,7 +173,12 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
-  return IsUserEligibleForAccountStorage(pref_service, sync_service);
+  // TODO(crbug.com/303613699): Merge IsUserEligibleForAccountStorage() and
+  // IsAccountStorageEnabled() after kReplaceSyncPromosWithSignInPromos is
+  // launched and cleaned-up.
+  return IsUserEligibleForAccountStorage(pref_service, sync_service) &&
+         !base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 void MigrateDefaultProfileStorePref(PrefService* pref_service) {

@@ -25,8 +25,28 @@ PrefetchHandleImpl::~PrefetchHandleImpl() {
   if (prefetch_service_) {
     // TODO(crbug.com/390329781): Consider setting appropriate
     // PrefetchStatus/PreloadingAttempt.
+    if (prefetch_status_on_release_started_prefetch_ && prefetch_container_) {
+      switch (prefetch_container_->GetLoadState()) {
+        case PrefetchContainer::LoadState::kNotStarted:
+        case PrefetchContainer::LoadState::kEligible:
+        case PrefetchContainer::LoadState::kFailedIneligible:
+        case PrefetchContainer::LoadState::kFailedHeldback:
+          break;
+        case PrefetchContainer::LoadState::kStarted:
+          prefetch_container_->SetPrefetchStatus(
+              *prefetch_status_on_release_started_prefetch_);
+          break;
+      }
+    }
     prefetch_service_->MayReleasePrefetch(prefetch_container_);
   }
+}
+
+void PrefetchHandleImpl::SetPrefetchStatusOnReleaseStartedPrefetch(
+    PrefetchStatus prefetch_status_on_release_started_prefetch) {
+  CHECK(!prefetch_status_on_release_started_prefetch_);
+  prefetch_status_on_release_started_prefetch_ =
+      prefetch_status_on_release_started_prefetch;
 }
 
 }  // namespace content

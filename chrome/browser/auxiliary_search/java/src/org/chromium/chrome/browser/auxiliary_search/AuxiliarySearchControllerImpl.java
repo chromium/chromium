@@ -187,15 +187,17 @@ public class AuxiliarySearchControllerImpl
 
     @VisibleForTesting
     <T> void onNonSensitiveDataAvailable(List<T> entries, long startTimeMs) {
+        int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
         Callback<Boolean> onDonationCompleteCallback =
                 (success) -> {
+                    AuxiliarySearchMetrics.recordDonationCount(counts);
                     AuxiliarySearchMetrics.recordDonateTime(TimeUtils.uptimeMillis() - startTimeMs);
                     AuxiliarySearchMetrics.recordDonationRequestStatus(
                             success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL);
                 };
 
         // Donates the list of entries without favicons.
-        mDonor.donateEntries(entries, onDonationCompleteCallback);
+        mDonor.donateEntries(entries, counts, onDonationCompleteCallback);
 
         if (!mIsFaviconEnabled) {
             return;
@@ -271,7 +273,7 @@ public class AuxiliarySearchControllerImpl
     @VisibleForTesting
     public void onNonSensitiveHistoryDataAvailable(
             @Nullable List<AuxiliarySearchDataEntry> entries, long startTimeMs) {
-        AuxiliarySearchMetrics.recordQueryTabTime(TimeUtils.uptimeMillis() - startTimeMs);
+        AuxiliarySearchMetrics.recordQueryHistoryDataTime(TimeUtils.uptimeMillis() - startTimeMs);
 
         if (entries == null || entries.isEmpty()) return;
 

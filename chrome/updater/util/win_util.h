@@ -462,11 +462,6 @@ bool IsOemInstalling();
 // Stores the runtime enrollment token to the persistent storage.
 bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
 
-// Returns a unique temp file path of the form
-// `%TMP%\{name}{guid}.{fileextension}`, where `name` and `extension` are the
-// name and extension of `file`.
-std::optional<base::FilePath> GetUniqueTempFilePath(base::FilePath file);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

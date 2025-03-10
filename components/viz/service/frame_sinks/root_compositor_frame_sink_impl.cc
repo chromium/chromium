@@ -294,9 +294,21 @@ RootCompositorFrameSinkImpl::~RootCompositorFrameSinkImpl() {
       begin_frame_source());
 }
 
-bool RootCompositorFrameSinkImpl::WillEvictSurface(
-    const SurfaceId& surface_id) {
-  return eviction_handler_.WillEvictSurface(surface_id);
+void RootCompositorFrameSinkImpl::DidEvictSurface(const SurfaceId& surface_id) {
+  const SurfaceId& current_surface_id = display_->CurrentSurfaceId();
+  if (!current_surface_id.is_valid()) {
+    return;
+  }
+  DCHECK_EQ(surface_id.frame_sink_id(), current_surface_id.frame_sink_id());
+
+  // This matches CompositorFrameSinkSupport's eviction logic, which will
+  // evict `surface_id` or matching but older ones. Avoid overwriting the
+  // contents of `current_surface_id` if it's newer here by doing the same
+  // check.
+  if (surface_id.local_surface_id().parent_sequence_number() >=
+      current_surface_id.local_surface_id().parent_sequence_number()) {
+    display_->InvalidateCurrentSurfaceId();
+  }
 }
 
 const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
@@ -304,11 +316,6 @@ const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
-  if (visible) {
-    // If the display has been explicitly set to visible, no need to push any
-    // eviction content.
-    eviction_handler_.MaybeFinishEvictionProcess();
-  }
   display_->SetVisible(visible);
 }
 
@@ -594,10 +601,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
           /*is_root=*/true)),
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       external_begin_frame_source_(std::move(external_begin_frame_source)),
-      display_(std::move(display)),
-      eviction_handler_(display_.get(),
-                        support_.get(),
-                        frame_sink_manager->reserved_resource_id_tracker()) {
+      display_(std::move(display)) {
   DCHECK(display_);
   DCHECK(begin_frame_source());
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),
@@ -931,9 +935,7 @@ RootCompositorFrameSinkImpl::GetPreferredFrameIntervalForFrameSinkId(
       ->GetPreferredFrameIntervalForFrameSinkId(id, type);
 }
 
-void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {
-  eviction_handler_.DisplayDidDrawAndSwap();
-}
+void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {}
 
 BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   if (external_begin_frame_source_) {

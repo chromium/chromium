@@ -32,9 +32,6 @@ std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
           [](AutoEnrollmentSafeguardTimeoutError) {
             return std::string("Safeguard timeout");
           },
-          [](AutoEnrollmentSystemClockSyncError) {
-            return std::string("System clock sync error");
-          },
           [](AutoEnrollmentStateKeysRetrievalError) {
             return std::string("State keys retrieval error");
           },

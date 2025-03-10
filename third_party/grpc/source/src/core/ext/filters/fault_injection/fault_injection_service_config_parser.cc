@@ -14,13 +14,12 @@
 // limitations under the License.
 //
 
-#include <grpc/support/port_platform.h>
-
 #include "src/core/ext/filters/fault_injection/fault_injection_service_config_parser.h"
 
-#include <vector>
+#include <grpc/support/port_platform.h>
 
-#include "absl/types/optional.h"
+#include <optional>
+#include <vector>
 
 #include "src/core/lib/channel/channel_args.h"
 #include "src/core/lib/channel/status_util.h"
@@ -58,7 +57,7 @@ void FaultInjectionMethodParsedConfig::FaultInjectionPolicy::JsonPostLoad(
     const Json& json, const JsonArgs& args, ValidationErrors* errors) {
   // Parse abort_code.
   auto abort_code_string = LoadJsonObjectField<std::string>(
-      json.object_value(), args, "abortCode", errors, /*required=*/false);
+      json.object(), args, "abortCode", errors, /*required=*/false);
   if (abort_code_string.has_value() &&
       !grpc_status_code_from_string(abort_code_string->c_str(), &abort_code)) {
     ValidationErrors::ScopedField field(errors, ".abortCode");

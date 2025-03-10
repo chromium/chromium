@@ -49,8 +49,10 @@ namespace {
 bool IsFirstPartyRequest(ResponseAdapter* response_adapter) {
   const url::Origin* top_frame_origin =
       response_adapter->GetRequestTopFrameOrigin();
-  return top_frame_origin && net::SchemefulSite(*top_frame_origin) ==
-                                 net::SchemefulSite(response_adapter->GetUrl());
+  return top_frame_origin &&
+         net::SchemefulSite::IsSameSite(
+             *top_frame_origin,
+             url::Origin::Create(response_adapter->GetUrl()));
 }
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

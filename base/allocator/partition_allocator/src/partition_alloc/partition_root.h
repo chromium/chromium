@@ -380,7 +380,11 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
-  std::atomic<int> thread_caches_being_constructed_{0};
+
+  // A lock which is hold during thread cache construction.
+  // Any (de)allocation code path should not try to `Acquire()` this lock to
+  // prevent deadlocks. Instead, `TryAcquire()`.
+  internal::Lock thread_cache_construction_lock;
 
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
@@ -901,7 +905,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   void SetSchedulerLoopQuarantineThreadLocalBranchCapacity(
       size_t capacity_in_bytes) {
-    ThreadCache* thread_cache = this->GetOrCreateThreadCache();
+    ThreadCache* thread_cache = this->EnsureThreadCache();
     PA_CHECK(ThreadCache::IsValid(thread_cache));
     thread_cache->GetSchedulerLoopQuarantineBranch().SetCapacityInBytes(
         capacity_in_bytes);
@@ -1046,10 +1050,16 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE void RawFreeLocked(uintptr_t slot_start)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   ThreadCache* MaybeInitThreadCache();
+  ThreadCache* ForceInitThreadCache();
 
   // May return an invalid thread cache.
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
   PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
+  // Similar to `GetOrCreateThreadCache()`, but this creates a new thread cache
+  // with `ForceInitThreadCache()`. This can be slow since it acquires a lock,
+  // and hence with a risk of deadlock.
+  // Must NOT be used inside (de)allocation code path.
+  PA_ALWAYS_INLINE ThreadCache* EnsureThreadCache();
 
   PA_ALWAYS_INLINE internal::LightweightQuarantineBranch&
   GetSchedulerLoopQuarantineBranch();
@@ -2597,6 +2607,17 @@ ThreadCache* PartitionRoot::GetThreadCache() {
     return ThreadCache::Get();
   }
   return nullptr;
+}
+
+ThreadCache* PartitionRoot::EnsureThreadCache() {
+  ThreadCache* thread_cache = nullptr;
+  if (settings.with_thread_cache) [[likely]] {
+    thread_cache = ThreadCache::Get();
+    if (!ThreadCache::IsValid(thread_cache)) [[unlikely]] {
+      thread_cache = ForceInitThreadCache();
+    }
+  }
+  return thread_cache;
 }
 
 // private.

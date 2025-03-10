@@ -4,15 +4,21 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
+#include <memory>
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -92,6 +98,37 @@ mojom::blink::DirectTCPSocketOptionsPtr CreateTCPSocketOptions(
   }
 
   return socket_options;
+}
+
+protocol::Network::DirectSocketDnsQueryType MapProbeDnsQueryType(
+    V8SocketDnsQueryType dns_query_type) {
+  switch (dns_query_type.AsEnum()) {
+    case V8SocketDnsQueryType::Enum::kIpv4:
+      return protocol::Network::DirectSocketDnsQueryTypeEnum::Ipv4;
+    case V8SocketDnsQueryType::Enum::kIpv6:
+      return protocol::Network::DirectSocketDnsQueryTypeEnum::Ipv6;
+  }
+}
+
+std::unique_ptr<protocol::Network::DirectTCPSocketOptions> MapProbeTCPOptions(
+    const TCPSocketOptions* options) {
+  auto probe_options_builder =
+      protocol::Network::DirectTCPSocketOptions::create();
+  if (options->hasKeepAliveDelay()) {
+    probe_options_builder.setKeepAliveDelay(options->keepAliveDelay());
+  }
+  if (options->hasSendBufferSize()) {
+    probe_options_builder.setSendBufferSize(options->sendBufferSize());
+  }
+  if (options->hasReceiveBufferSize()) {
+    probe_options_builder.setReceiveBufferSize(options->receiveBufferSize());
+  }
+  if (options->hasDnsQueryType()) {
+    probe_options_builder.setDnsQueryType(
+        MapProbeDnsQueryType(options->dnsQueryType()));
+  }
+
+  return probe_options_builder.setNoDelay(options->noDelay()).build();
 }
 
 }  // namespace
@@ -205,6 +242,12 @@ bool TCPSocket::Open(const String& remote_address,
   GetServiceRemote()->OpenTCPSocket(
       std::move(open_tcp_socket_options), std::move(socket_receiver),
       std::move(observer_remote), std::move(callback));
+
+  std::unique_ptr<protocol::Network::DirectTCPSocketOptions> proble_options =
+      MapProbeTCPOptions(options);
+  probe::DirectTCPSocketCreated(GetExecutionContext(), inspector_id_,
+                                remote_address, remote_port, *proble_options);
+
   return true;
 }
 
@@ -232,7 +275,7 @@ void TCPSocket::OnTCPSocketOpened(
     opened_->Reject(exception);
     GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
                                            exception->ToV8(GetScriptState())));
-
+    abort_net_error_ = result;
     SetState(State::kAborted);
   }
 
@@ -269,16 +312,27 @@ void TCPSocket::FinishOpenOrAccept(
   open_info->setReadable(readable_stream_wrapper_->Readable());
   open_info->setWritable(writable_stream_wrapper_->Writable());
 
-  open_info->setRemoteAddress(String{peer_addr.ToStringWithoutPort()});
+  String remote_address(peer_addr.ToStringWithoutPort());
+
+  open_info->setRemoteAddress(remote_address);
   open_info->setRemotePort(peer_addr.port());
 
+  std::optional<String> opt_local_address;
+  std::optional<uint16_t> opt_local_port;
   if (local_addr) {
-    open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    opt_local_address = String{local_addr->ToStringWithoutPort()};
+    opt_local_port = local_addr->port();
+
+    open_info->setLocalAddress(*opt_local_address);
     open_info->setLocalPort(local_addr->port());
   }
 
   opened_->Resolve(open_info);
   SetState(State::kOpen);
+
+  probe::DirectTCPSocketOpened(GetExecutionContext(), inspector_id_,
+                               remote_address, peer_addr.port(),
+                               opt_local_address, opt_local_port);
 }
 
 void TCPSocket::OnSocketConnectionError() {
@@ -338,12 +392,29 @@ void TCPSocket::ContextDestroyed() {
   ReleaseResources();
 }
 
-void TCPSocket::OnStreamClosed(v8::Local<v8::Value> exception) {
+void TCPSocket::SetState(State state) {
+  Socket::SetState(state);
+  switch (state) {
+    case Socket::State::kOpening:
+    case Socket::State::kOpen:
+      break;
+    case Socket::State::kClosed:
+      probe::DirectTCPSocketClosed(GetExecutionContext(), inspector_id_);
+      break;
+    case Socket::State::kAborted:
+      probe::DirectTCPSocketAborted(GetExecutionContext(), inspector_id_,
+                                    abort_net_error_);
+      break;
+  }
+}
+
+void TCPSocket::OnStreamClosed(v8::Local<v8::Value> exception, int net_error) {
   DCHECK_EQ(GetState(), State::kOpen);
   DCHECK_LE(streams_closed_count_, 1);
 
   if (stream_error_.IsEmpty() && !exception.IsEmpty()) {
     stream_error_.Reset(GetScriptState()->GetIsolate(), exception);
+    abort_net_error_ = net_error;
   }
 
   if (++streams_closed_count_ == 2) {

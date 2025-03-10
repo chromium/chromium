@@ -24,15 +24,19 @@
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
                                                     std::optional<gfx::Size>,
                                                     std::optional<gfx::Rect>,
+                                                    std::optional<float>,
                                                     bool)>;
 using ErrorCallback = base::RepeatingClosure;
 
 namespace {
 API_AVAILABLE(macos(12.3))
-std::tuple<std::optional<gfx::Rect>, std::optional<gfx::Size>>
+std::tuple<std::optional<gfx::Rect>,
+           std::optional<gfx::Size>,
+           std::optional<float>>
 GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
   std::optional<gfx::Rect> visibleRect;
   std::optional<gfx::Size> contentSize;
+  float scaleFactor = 1.0f;
 
   CFDictionaryRef contentRectValue = base::apple::CFCast<CFDictionaryRef>(
       CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
@@ -48,7 +52,6 @@ GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
     CGRect contentRect = {};
     bool succeed =
         CGRectMakeWithDictionaryRepresentation(contentRectValue, &contentRect);
-    float scaleFactor = 1.0f;
     succeed &=
         CFNumberGetValue(scaleFactorValue, kCFNumberFloatType, &scaleFactor);
     float contentScale = 1.0f;
@@ -68,7 +71,7 @@ GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
                           round(contentRect.size.height / contentScale));
     }
   }
-  return std::make_tuple(visibleRect, contentSize);
+  return std::make_tuple(visibleRect, contentSize, scaleFactor);
 }
 
 bool IsPresenterOverlayLargeActive(CFDictionaryRef attachment) {
@@ -152,6 +155,7 @@ API_AVAILABLE(macos(12.3))
   // is needed because the IOSurface may be larger than the captured content.
   std::optional<gfx::Size> contentSize;
   std::optional<gfx::Rect> visibleRect;
+  std::optional<float> scaleFactor;
   bool isPresenterOverlayLargeActive = false;
   CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(
       sampleBuffer, /*createIfNecessary=*/false);
@@ -159,7 +163,7 @@ API_AVAILABLE(macos(12.3))
     CFDictionaryRef attachment = base::apple::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(attachmentsArray, 0));
     if (attachment) {
-      std::tie(visibleRect, contentSize) =
+      std::tie(visibleRect, contentSize, scaleFactor) =
           GetVisibleRectAndContentSize(attachment);
       isPresenterOverlayLargeActive = IsPresenterOverlayLargeActive(attachment);
     }
@@ -169,7 +173,7 @@ API_AVAILABLE(macos(12.3))
     return;
   _sampleCallback.Run(
       gfx::ScopedInUseIOSurface(ioSurface, base::scoped_policy::RETAIN),
-      contentSize, visibleRect, isPresenterOverlayLargeActive);
+      contentSize, visibleRect, scaleFactor, isPresenterOverlayLargeActive);
 }
 
 - (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
@@ -363,6 +367,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   void OnStreamSample(gfx::ScopedInUseIOSurface io_surface,
                       std::optional<gfx::Size> content_size,
                       std::optional<gfx::Rect> visible_rect,
+                      std::optional<float> scale_factor,
                       bool is_presenter_overlay_large_active) {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
 
@@ -446,9 +451,12 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     }
     // The IO surface may be larger than the actual content size. Pass on
     // visible rect to be able to render/encode the frame correctly.
+    // `content_size` is passed to know the actual content size for the
+    // metadata.
     OnReceivedIOSurfaceFromStream(
         io_surface, actual_capture_format_,
-        visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)));
+        visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)),
+        content_size, scale_factor);
   }
   void OnStreamError() {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());

@@ -9,7 +9,7 @@ import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -534,7 +534,7 @@ gCrWeb.fill.webFormControlElementToFormField = function(
   }
 
   if (gCrWeb.fill.isAutofillableInputElement(element)) {
-    if (gCrWeb.fill.isTextInput(element)) {
+    if (isTextField(element)) {
       field.max_length = (element as HTMLInputElement).maxLength;
       if (field.max_length === -1) {
         // Take default value as defined by W3C.

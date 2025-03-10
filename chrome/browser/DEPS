@@ -579,17 +579,17 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  '.*Test\.java': [
+  r'.*Test\.java': [
     # Android instrumentation tests depend on the whole app.
     "+chrome/android",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
-  '.*TestUtils\.java': [
+  r'.*TestUtils\.java': [
       "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java",
       "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     ],
-  "platform_util_ash\.cc": [
+  r"platform_util_ash\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
   "platform_util_linux.cc": [
@@ -597,7 +597,7 @@ specific_include_rules = {
     # DBus interface to highlight a file within its parent folder
     "+dbus"
   ],
-  "exo_parts\.cc": [
+  r"exo_parts\.cc": [
     "+ash/shell.h",
   ],
   # TODO(estade): the message center is initialized and shut down here, but it
@@ -613,18 +613,18 @@ specific_include_rules = {
     "+services/network/network_context.h",
     "+services/network/network_service.h",
   ],
-  "bound_session_cookie_observer_unittest\.cc": [
+  r"bound_session_cookie_observer_unittest\.cc": [
     "+services/network/cookie_manager.h",
     "+services/network/network_context.h",
     "+services/network/network_service.h",
   ],
-  "chrome_authenticator_request_delegate_unittest\.cc": [
+  r"chrome_authenticator_request_delegate_unittest\.cc": [
     "+third_party/microsoft_webauthn/webauthn.h",
   ],
-  "chrome_content_browser_client_receiver_bindings\.cc" : [
+  r"chrome_content_browser_client_receiver_bindings\.cc" : [
     "+chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h",
   ],
-  "chrome_content_browser_client\.cc" : [
+  r"chrome_content_browser_client\.cc" : [
     "+ash/shell.h",
     "+ash/multi_capture/multi_capture_service.h",
     "+content/public/browser/tts_controller.h",
@@ -632,12 +632,12 @@ specific_include_rules = {
   "chrome_navigation_browsertest.cc" : [
     "+content/common/content_navigation_policy.h",
   ],
-  "about_flags\.cc" : [
+  r"about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+sandbox/policy/features.h",
     "+skia/rusty_png_feature.h",
   ],
-  "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
+  r"dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",
   ],
   "permission_element_browsertest.cc": [
@@ -646,7 +646,7 @@ specific_include_rules = {
   "browsing_data_model_browsertest.cc" : [
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
-  "ash_session_restore_page_load_metrics_observer_browsertest\.cc": [
+  r"ash_session_restore_page_load_metrics_observer_browsertest\.cc": [
     "+ash/wm/window_restore/window_restore_util.h",
   ],
   "render_view_context_menu_browsertest.cc" : [

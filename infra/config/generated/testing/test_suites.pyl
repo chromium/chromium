@@ -2050,6 +2050,32 @@
       },
     },
 
+    'translatekit_tests': {
+      'blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
+        'results_handler': 'layout tests',
+        'args': [
+          '-t',
+          'Release',
+          'external/wpt/ai/translator',
+        ],
+      },
+    },
+
     'vulkan_swiftshader_isolated_scripts': {
       'vulkan_swiftshader_blink_web_tests': {
         'test_common': {

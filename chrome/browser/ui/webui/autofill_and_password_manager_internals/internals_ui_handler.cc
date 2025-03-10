@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/i18n/time_formatting.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -119,6 +121,10 @@ void InternalsUIHandler::RegisterMessages() {
       "getAutofillAiCache",
       base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiCache,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "removeAutofillAiCacheEntry",
+      base::BindRepeating(&InternalsUIHandler::OnDeleteAutofillAiCacheEntry,
+                          base::Unretained(this)));
 #if BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
       "resetUpmEviction",
@@ -135,6 +141,18 @@ void InternalsUIHandler::OnJavascriptDisallowed() {
   EndSubscription();
 }
 
+void InternalsUIHandler::OnDeleteAutofillAiCacheEntry(
+    const base::Value::List& args) {
+  AutofillAiModelCache* model_cache =
+      AutofillAiModelCacheFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+  uint64_t number;
+  if (!model_cache || args.size() != 1 || !args[0].is_string() ||
+      !base::StringToUint64(args[0].GetString(), &number)) {
+    return;
+  }
+  model_cache->Erase(FormSignature(number));
+}
+
 void InternalsUIHandler::OnGetAutofillAiCache(const base::Value::List& args) {
   AutofillAiModelCache* model_cache =
       AutofillAiModelCacheFactory::GetForProfile(Profile::FromWebUI(web_ui()));
@@ -146,13 +164,37 @@ void InternalsUIHandler::OnGetAutofillAiCache(const base::Value::List& args) {
   base::Value::List results;
   for (const auto& [form_signature, cache_entry] :
        model_cache->GetAllEntries()) {
+    const int num_fields =
+        std::min(cache_entry.field_identifiers_size(),
+                 cache_entry.server_response().field_responses_size());
+    auto fields = base::Value::List::with_capacity(num_fields);
+    for (int i = 0; i < num_fields; ++i) {
+      const auto& field_response =
+          cache_entry.server_response().field_responses(i);
+      const auto& field_identifier = cache_entry.field_identifiers(i);
+      auto field_info =
+          base::Value::Dict()
+              .Set("signature",
+                   base::NumberToString(field_identifier.field_signature()))
+              .Set("rank",
+                   base::NumberToString(
+                       field_identifier.field_rank_in_signature_group()))
+              .Set("type",
+                   FieldTypeToStringView(ToSafeFieldType(
+                       field_response.field_type(), autofill::UNKNOWN_TYPE)));
+      if (!field_response.formatting_meta().empty()) {
+        field_info.Set("format", field_response.formatting_meta());
+      }
+      fields.Append(std::move(field_info));
+    }
     results.Append(
         base::Value::Dict()
             .Set("formSignature", base::NumberToString(*form_signature))
             .Set("creationTime",
                  base::TimeFormatFriendlyDateAndTime(
                      base::Time::FromDeltaSinceWindowsEpoch(
-                         base::Microseconds(cache_entry.creation_time())))));
+                         base::Microseconds(cache_entry.creation_time()))))
+            .Set("fields", std::move(fields)));
   }
 
   FireWebUIListener("display-autofill-ai-cache", std::move(results));

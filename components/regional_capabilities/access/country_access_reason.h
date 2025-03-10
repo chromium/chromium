@@ -5,6 +5,18 @@
 #ifndef COMPONENTS_REGIONAL_CAPABILITIES_ACCESS_COUNTRY_ACCESS_REASON_H_
 #define COMPONENTS_REGIONAL_CAPABILITIES_ACCESS_COUNTRY_ACCESS_REASON_H_
 
+#include "base/gtest_prod_util.h"
+
+class TemplateURLService;
+class ProfileInternalsHandler;
+
+namespace search_engines {
+class SearchEngineChoiceService;
+}
+namespace TemplateURLPrepopulateData {
+class Resolver;
+}
+
 namespace regional_capabilities {
 
 // Keys for `CountryIdHolder::GetRestricted()`.
@@ -42,7 +54,6 @@ enum class CountryAccessReason {
 
 // Pass key inspired from `base::NonCopyablePassKey` that also allows specifying
 // an access reason, for more granularity than class-level access control.
-template <typename T>
 class CountryAccessKey {
  public:
   CountryAccessKey(const CountryAccessKey&) = delete;
@@ -51,7 +62,13 @@ class CountryAccessKey {
   const CountryAccessReason reason;
 
  private:
-  friend T;
+  friend class TemplateURLPrepopulateData::Resolver;
+  friend class search_engines::SearchEngineChoiceService;
+  friend class RegionalCapabilitiesService;
+  friend class ::TemplateURLService;
+  friend class ::ProfileInternalsHandler;
+  FRIEND_TEST_ALL_PREFIXES(RegionalCapabilitiesCountryIdTest, GetRestricted);
+
   explicit CountryAccessKey(CountryAccessReason reason) : reason(reason) {}
 };
 

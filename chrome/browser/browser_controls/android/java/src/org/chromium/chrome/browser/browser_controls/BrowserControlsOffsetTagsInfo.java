@@ -36,9 +36,7 @@ public final class BrowserControlsOffsetTagsInfo {
      * controls. Only the OffsetTags are set, the other fields should be set properly before being
      * passed to the renderer.
      *
-     * @param topControls An OffsetTag enabling viz to move the top controls. Note: For now, this
-     *     tag is only used when AndroidBcivZeroBrowserFrames is enabled. When the flag is disabled,
-     *     the top controls will be tagged with the content OffsetTag.
+     * @param topControls An OffsetTag enabling viz to move the top controls.
      * @param content An OffsetTag enabling viz to move the viewport of the rendered web contents.
      * @param bottomControls An OffsetTag enabling viz to move the bottom controls.
      */

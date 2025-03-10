@@ -316,7 +316,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // ShouldTriggerHelpUI() to always return false if another promo is being
   // displayed. Once we have machinery to allow concurrency in the FE system
   // all of this logic can be rewritten.
-  bool CheckScreenReaderPromptAvailable(bool for_demo) const;
+  bool CheckExtendedPropertiesPromptAvailable(bool for_demo) const;
 
   // Creates a lifecycle for the given promo.
   std::unique_ptr<FeaturePromoLifecycle> CreateLifecycleFor(

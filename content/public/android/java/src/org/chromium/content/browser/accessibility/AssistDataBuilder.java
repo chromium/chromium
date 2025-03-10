@@ -87,7 +87,11 @@ public class AssistDataBuilder {
                         absoluteLeft + absoluteWidth,
                         absoluteTop + absoluteHeight);
         AccessibilityNodeInfoBuilder.convertWebRectToAndroidCoordinates(
-                rect, node.getExtras(), accessibilityCoordinates, view);
+                rect,
+                node.getExtras(),
+                accessibilityCoordinates,
+                view,
+                /* isScreenCoordinates= */ true);
 
         node.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());
     }

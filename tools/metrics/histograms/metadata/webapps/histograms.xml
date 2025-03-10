@@ -1435,6 +1435,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.ManifestIconDownloader.ChromeUrl.Result"
+    enum="ManifestIconDownloaderResult" expires_after="2026-04-05">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of icons being downloaded from the manifest for various
+    reasons but only for urls that begin with the &quot;chrome&quot; scheme.
+    This is recorded when an user triggers an install from the omnibox or from
+    the three dot menu, when the installability of the site is measured by
+    fetching icons (on desktop platforms) or screenshots (all platforms,
+    including Android). This is also measured for installation of the payments
+    app, as well as when the splash image is being downloaded while creating a
+    shortcut on Android.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ManifestIconDownloader.Result"
+    enum="ManifestIconDownloaderResult" expires_after="2026-04-05">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of icons being downloaded from the manifest for various
+    reasons, like when an user triggers an install from the omnibox or from the
+    three dot menu, when the installability of the site is measured by fetching
+    icons (on desktop platforms) or screenshots (all platforms, including
+    Android). This is also measured for installation of the payments app, as
+    well as when the splash image is being downloaded while creating a shortcut
+    on Android.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Media.SystemMediaControls"
     enum="WebAppSystemMediaControlsEvent" expires_after="2025-09-10">
   <owner>dmurph@chromium.org</owner>

@@ -399,6 +399,7 @@
 <translation id="6539122709674868420"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium は組織によって終了されます。閲覧データは削除されました。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="6542839706527980775">Chromium の情報（ブックマーク、履歴、パスワードなど）はプロフィールごとに分けて保持されます</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
+<translation id="6564039629497156115">この設定の変更内容は、Chromium を再起動すると適用されます。</translation>
 <translation id="656935081669708576">別の Chromium プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
 <translation id="6570579332384693436">スペルミスを修正するために、テキスト欄に入力したテキストが Chromium から Google に送信されます</translation>
 <translation id="6598877126913850652">Chromium の通知設定に移動</translation>

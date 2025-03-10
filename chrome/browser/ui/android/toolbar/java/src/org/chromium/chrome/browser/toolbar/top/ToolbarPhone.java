@@ -1260,7 +1260,14 @@ public class ToolbarPhone extends ToolbarLayout
         if (mTabSwitcherState == TAB_SWITCHER || mTabSwitcherState == ENTERING_TAB_SWITCHER) return;
 
         boolean isExpanded = mUrlExpansionFraction > 0f;
-        setAncestorsShouldClipChildren(!isExpanded);
+        boolean isPartiallyExpanded = isExpanded && mUrlExpansionFraction < 1f;
+        // We only need to avoid getting clipped in the period where the fakebox drawable belongs to
+        // us but is taller than our bounds. It doesn't yet belong to us when the expansion fraction
+        // is 0 and by design matches our height when the expansion fraction is 1. Restoring
+        // clipChildren as soon as possible helps prevent visual glitches caused by views
+        // inadvertently drawing out of their bounds and on top of each other, e.g.
+        // crbug.com/396456418
+        setAncestorsShouldClipChildren(!isPartiallyExpanded);
         setClipToPadding(!isExpanded);
         if (!mUrlFocusChangeInProgress) {
             float alpha = 0.f;

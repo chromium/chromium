@@ -6961,7 +6961,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5911533659001334206">Visor de combinaciones de teclas</translation>
 <translation id="5911545422157959623">Los marcadores no están disponibles en el modo Invitado</translation>
 <translation id="5914016309240354769">Naturaleza</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ha añadido esta pestaña</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
 <ph name="MODULUS_HEX_DUMP" />
 
@@ -8244,6 +8243,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6832218595502288407">Alinear a la izquierda</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Eliminar la pestaña y el grupo?}=1{¿Eliminar la pestaña y el grupo?}other{¿Eliminar pestañas y grupos?}}</translation>
+<translation id="6833103209700200188">Etiqueta de pie de página</translation>
 <translation id="6833479554815567477">Pestaña quitada del grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833753236242482566">Equilibrado (recomendado)</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
@@ -8770,7 +8770,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7223952304612664117">Esto permite que los servicios del sistema usen la precisión de la ubicación para determinar tu ubicación. La precisión de la ubicación usa información sobre las señales inalámbricas y los sensores para estimar la ubicación del dispositivo.</translation>
 <translation id="7225082563376899794">Usar Windows Hello al rellenar contraseñas</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
-<translation id="7227235818314667565">Administrar uso compartido</translation>
+<translation id="7227235818314667565">Gestionar uso compartido</translation>
 <translation id="7227458944009118910">Las aplicaciones que se indican abajo también pueden procesar enlaces de protocolo. Otras aplicaciones pedirán permiso.</translation>
 <translation id="7228056665272655255">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales, que está en la esquina superior derecha del teclado. Los datos de la huella digital de tu hijo/a se almacenan de forma segura y nunca salen de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
@@ -11593,7 +11593,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicaciones}}</translation>
 <translation id="9186963452600581158">Iniciar sesión con la cuenta de Google de un niño/a</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ha cambiado esta pestaña</translation>
 <translation id="9192019773545828776">Escucha mensajes de voz para poder usar el dispositivo sin mirar la pantalla. Se pueden recibir mensajes en braille con un dispositivo conectado. Pulsa Ctrl + Alt + Z para activar o desactivar ChromeVox. Usa la tecla de búsqueda + flecha hacia la izquierda o hacia la derecha para desplazarte. Pulsa la tecla de búsqueda y la barra espaciadora para seleccionar (activar).</translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
 <translation id="919686179725692564">Más información sobre cómo crear una copia de seguridad de tus aplicaciones</translation>

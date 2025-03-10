@@ -46,6 +46,12 @@
     background-color: var(--cros-sys-hover_on_subtle);
   }
 
+  #tabContainer {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+
   #tabContainer,
   #promptingGuide {
     flex-grow: 1;
@@ -60,6 +66,7 @@
     font: var(--cros-annotation-1-font);
     margin-top: 16px;
     padding-inline-end: 0;
+    padding-inline-start: 16px;
   }
 
   #shuffle {

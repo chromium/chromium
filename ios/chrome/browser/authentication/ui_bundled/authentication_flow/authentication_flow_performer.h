@@ -43,9 +43,8 @@ using OnProfileSwitchCompletion =
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Cancels any outstanding work and dismisses an alert view (if shown). Calls
-// `completion` synchronously.
-- (void)interruptWithCompletion:(ProceduralBlock)completion;
+// Cancels any outstanding work and dismisses an alert view (if shown).
+- (void)interrupt;
 
 // Fetches the list of data types with unsync data in the primary account.
 // `-[id<AuthenticationFlowPerformerDelegate>
@@ -106,7 +105,7 @@ using OnProfileSwitchCompletion =
 // `hostedDomain`. The confirmation dialog's content will be different depending
 // on the status of User Policy.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
-                                     userEmail:(NSString*)userEmail
+                                      identity:(id<SystemIdentity>)identity
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
                      skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration

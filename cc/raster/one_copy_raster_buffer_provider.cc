@@ -234,11 +234,6 @@ uint64_t OneCopyRasterBufferProvider::SetReadyToDrawCallback(
   return callback_id;
 }
 
-void OneCopyRasterBufferProvider::SetShutdownEvent(
-    base::WaitableEvent* shutdown_event) {
-  shutdown_event_ = shutdown_event;
-}
-
 void OneCopyRasterBufferProvider::Shutdown() {
   staging_pool_.Shutdown();
 }

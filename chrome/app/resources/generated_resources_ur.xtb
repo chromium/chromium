@@ -6960,7 +6960,6 @@
 <translation id="5911533659001334206">شارٹ کٹ ناظر</translation>
 <translation id="5911545422157959623">بُک مارکس مہمان وضع میں دستیاب نہیں ہیں</translation>
 <translation id="5914016309240354769">فطرت</translation>
-<translation id="5914465277418006379">‫<ph name="MEMBER_FIRST_NAME" /> نے اس ٹیب کو شامل کیا</translation>
 <translation id="5914724413750400082">ماڈیولس (<ph name="MODULUS_NUM_BITS" /> بٹس):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -8243,6 +8242,7 @@
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6832218595502288407">بائیں موافق بنائیں</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ٹیب کو ہٹائیں اور گروپ کو حذف کریں؟}=1{ٹیبز کو ہٹائیں اور گروپ کو حذف کریں؟}other{ٹیبز کو ہٹائیں اور گروپس کو حذف کریں؟}}</translation>
+<translation id="6833103209700200188">فوٹر</translation>
 <translation id="6833479554815567477">ٹیب گروپ سے ہٹا دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">متوازن (تجویز کردہ)</translation>
 <translation id="6835762382653651563">براہ کرم اپنا <ph name="DEVICE_TYPE" /> اپ ڈیٹ کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
@@ -11590,7 +11590,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{ایپ}other{# ایپس}}</translation>
 <translation id="9186963452600581158">‏بچے کے Google اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="9187967020623675250">کلیدیں مماثل نہیں ہیں۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
-<translation id="9189468832660648522">‫<ph name="MEMBER_FIRST_NAME" /> نے اس ٹیب کو تبدیل کیا</translation>
 <translation id="9192019773545828776">‏صوتی تاثرات سنیں تاکہ آپ اسکرین پر دیکھے بغیر اپنا آلہ استعمال کر سکیں۔ بریل تاثرات منسلک آلہ کے ساتھ دستیاب ہے۔ ChromeVox کو آن اور آف کرنے کے لیے Ctrl + Alt + Z استعمال کریں۔ نیویگیٹ کرنے کے لیے Search + بائیں تیر کے نشان یا دائیں تیر کے نشان کا استعمال کریں۔ منتخب کرنے کے لیے Search + Space استعمال کریں (فعال کریں)۔</translation>
 <translation id="9195969368671142407">‏جب آپ کی تنظیم آپ کے Google اکاؤنٹ میں محفوظ کرنے کے عمل کو محدود کرتی ہے تو آپ ٹیب گروپس کا اشتراک نہیں کر سکتے یا اس میں شامل نہیں ہو سکتے</translation>
 <translation id="919686179725692564">اپنی ایپس کا بیک اپ لینے کے بارے میں مزید جانیں</translation>

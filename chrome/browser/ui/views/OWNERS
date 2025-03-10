@@ -3,6 +3,9 @@
 # individuals. These CLs will be automatically reassigned to a reviewer within
 # about 5 minutes. This approach helps our team to load-balance incoming
 # reviews. Googlers can read more about this at go/gwsq-gerrit.
+#
+# To join the rotation modify the OWNERS and gwsq files in
+# go/gwsq-gerrit-cbuiviews
 chromium-chrome-browser-ui-views-reviews@google.com
 
 # The find-owners plugin does not support groups, so the actual c/b/ui/views
@@ -18,7 +21,6 @@ ellyjones@chromium.org    #{LAST_RESORT_SUGGESTION}
 emshack@chromium.org      #{LAST_RESORT_SUGGESTION}
 kylixrd@chromium.org      #{LAST_RESORT_SUGGESTION}
 msw@chromium.org          #{LAST_RESORT_SUGGESTION}
-pbos@chromium.org         #{LAST_RESORT_SUGGESTION}
 pkasting@chromium.org     #{LAST_RESORT_SUGGESTION}
 tbergquist@chromium.org   #{LAST_RESORT_SUGGESTION}
 

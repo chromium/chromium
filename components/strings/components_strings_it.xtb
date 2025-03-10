@@ -1632,7 +1632,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3831065134033923230">Controlla le password salvate</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ha installato estensioni relative a funzioni aggiuntive. Le estensioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="3832522519263485449">Perforatura multipla a sinistra</translation>
-<translation id="3835233591525155343">Utilizzo del tuo dispositivo</translation>
+<translation id="3835233591525155343">Utilizzo del dispositivo</translation>
 <translation id="3836246517890985658">Piccoli elettrodomestici da cucina</translation>
 <translation id="3839220096695873023">Veicoli ibridi e alternativi</translation>
 <translation id="3841356782900714251">Lettori di smart card</translation>
@@ -2767,6 +2767,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5910140988253729859">Annulla la compilazione automatica</translation>
 <translation id="5911020115933784199">Eventi e spettacoli</translation>
 <translation id="5911110632211230665">Apertura bloccata</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ha aggiunto questa scheda</translation>
 <translation id="5915189366813702112">Condizioni lavorative flessibili</translation>
 <translation id="59174027418879706">Attivato</translation>
 <translation id="5918373444239520146">Gadget e dispositivi elettronici portatili</translation>
@@ -4625,6 +4626,7 @@ Ulteriori dettagli:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilizza un protocollo non supportato.</translation>
 <translation id="918454845714257218">Controlla il codice sulla <ph name="SIDE_OF_CARD" /> e riprova</translation>
 <translation id="9186203289258525843">Pulsante Imposta Chrome come browser predefinito, attiva per impostare Chrome come browser predefinito del sistema</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ha modificato questa scheda</translation>
 <translation id="9189789270972826888">Fai clic sui dettagli della carta di seguito per copiarli e incollarli se non sono stati compilati automaticamente. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Gli argomenti più vecchi di 4 settimane vengono eliminati automaticamente</translation>
 <translation id="9191834167571392248">Perforatura in basso a sinistra</translation>

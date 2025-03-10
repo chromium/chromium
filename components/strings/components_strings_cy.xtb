@@ -138,6 +138,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1230244617745022071"><ph name="SOURCE" /> (wedi'i ganfod yn awtomatig)</translation>
 <translation id="1232569758102978740">Di-deitl</translation>
 <translation id="1236081509407217141">Caniatáu VR?</translation>
+<translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">Enw'ch dyfais</translation>
 <translation id="124116460088058876">Rhagor o ieithoedd</translation>
 <translation id="1243027604378859286">Awdur:</translation>
@@ -1438,6 +1439,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3536227077203206203">Caniateir y tro hwn</translation>
 <translation id="3537165859691846083">Llythyr Plws</translation>
 <translation id="353816159217417898">Sgrîn (Wedi'i Dudalennu)</translation>
+<translation id="3541016556608204104">Rhagor am Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Delwedd cerdyn</translation>
 <translation id="3542768452570884558">Agor Dolen mewn Ffenest Newydd</translation>
 <translation id="3543935938072367282">Gallwch dalu yn gyflymach gydag awtolenwi</translation>
@@ -1802,6 +1804,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="415440494507469262">Ychwanegu Tab at Dabl Cymharu</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4165422751765527461">Yn agor erthygl Canolfan Gymorth mewn tab newydd</translation>
+<translation id="4165584779486830267">Gallwch bellach dalu dros gyfnod gan ddefnyddio Affirm neu Zip.</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
 <translation id="4169535189173047238">Peidio â chaniatáu</translation>
 <translation id="4171400957073367226">Llofnod dilysu gwael</translation>
@@ -2766,6 +2769,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5910140988253729859">Dadwneud awtolenwi</translation>
 <translation id="5911020115933784199">Digwyddiadau a Rhestrau</translation>
 <translation id="5911110632211230665">Agor wedi'i rwystro</translation>
+<translation id="5914465277418006379">Mae <ph name="MEMBER_FIRST_NAME" /> wedi ychwanegu'r tab hwn</translation>
 <translation id="5915189366813702112">Trefniadau Gwaith Hyblyg</translation>
 <translation id="59174027418879706">Galluogwyd</translation>
 <translation id="5918373444239520146">Teclynnau ac Electroneg Gludadwy</translation>
@@ -3730,6 +3734,7 @@ Manylion ychwanegol:
 <translation id="7569983096843329377">Du</translation>
 <translation id="7574998639136359461">Offer Chwaraeon Gaeaf</translation>
 <translation id="7575207903026901870">Tynnu'r botwm Awgrymiadau, pwyswch Enter i dynnu'r awgrym hwn</translation>
+<translation id="7575800019233204241">"Nid yw eich cysylltiad yn breifat" neu "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" neu "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" neu "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" neu "Gwall tystysgrif SSL"</translation>
 <translation id="7575887283389198269">Ffonau Symudol</translation>
 <translation id="7578104083680115302">Talu'n gyflym ar wefannau ac apiau ar draws dyfeisiau gan ddefnyddio cardiau rydych wedi'u cadw gyda Google.</translation>
 <translation id="7579442726219254162">Newidyn anhysbys "<ph name="VARIABLE" />" yn ffurfweddiad a reolir "<ph name="APPLICATION_ID" />".</translation>
@@ -4624,6 +4629,7 @@ Manylion ychwanegol:
 <translation id="9183425211371246419">Mae <ph name="HOST_NAME" /> yn defnyddio protocol na chefnogir.</translation>
 <translation id="918454845714257218">Gwiriwch y cod ar <ph name="SIDE_OF_CARD" /> a rhowch gynnig arall arni</translation>
 <translation id="9186203289258525843">Gosod Chrome fel botwm porwr diofyn, gweithredwch i osod Chrome fel porwr diofyn y system</translation>
+<translation id="9189468832660648522">Mae <ph name="MEMBER_FIRST_NAME" /> wedi newid y tab hwn</translation>
 <translation id="9189789270972826888">Cliciwch ar fanylion y cerdyn isod i gopïo a gludo os nad oedd y cerdyn wedi'i lenwi. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Mae pynciau sy'n hŷn na 4 wythnos yn cael eu dileu'n awtomatig</translation>
 <translation id="9191834167571392248">Twll ar y chwith isaf</translation>

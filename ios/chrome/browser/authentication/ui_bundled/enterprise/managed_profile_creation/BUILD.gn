@@ -21,6 +21,7 @@ source_set("managed_profile_creation") {
   deps = [
     "//components/signin/public/base:base",
     "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/keyboard/ui_bundled",
@@ -35,6 +36,7 @@ source_set("managed_profile_creation") {
     "//ios/chrome/browser/shared/ui/table_view:table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin/model:model",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:promo_style",

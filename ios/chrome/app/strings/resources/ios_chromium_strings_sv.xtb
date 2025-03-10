@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Du kan öppna Lens här.</translation>
 <translation id="1042296835509784301">Öppnar Lösenordshantering i Chromium.</translation>
 <translation id="1047130070405668746">Välj Chromium</translation>
+<translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1091252999271033193">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chromium.</translation>
 <translation id="1115463765356382667">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chromium.</translation>
 <translation id="1140315115515116765">Använd Chromium som standard för att enkelt få prisinformation</translation>
@@ -98,6 +99,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
 <translation id="3410395242749598859">Viss Chromium-data har inte sparats i <ph name="EMAIL" /> ännu.
 Testa att vänta några minuter innan du byter konto. Om du byter konto nu raderas denna data.</translation>
+<translation id="3440830787838130530">Dela enkelt och säkert en kopia av ett lösenord med familjegruppen i Google Lösenordshantering</translation>
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="347967311580159871">Du hittar fler inställningar som använder data för att förbättra Chromium-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chromium. Försök sedan igen.</translation>

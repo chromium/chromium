@@ -4505,15 +4505,9 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
 }
 
 // TODO(https://crbug.com/40304461): Flaky on Mac debug, failing with a timeout.
-#if (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
-#define MAYBE_DownloadExtensionTest_AcceptDanger \
-  DISABLED_DownloadExtensionTest_AcceptDanger
-#else
-#define MAYBE_DownloadExtensionTest_AcceptDanger \
-  DownloadExtensionTest_AcceptDanger
-#endif
+// TODO(crbug.com/401426458): Now flaky crash on all platforms.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_AcceptDanger) {
+                       DISABLED_DownloadExtensionTest_AcceptDanger) {
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
 

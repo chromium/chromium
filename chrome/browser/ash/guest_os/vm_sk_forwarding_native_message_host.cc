@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"

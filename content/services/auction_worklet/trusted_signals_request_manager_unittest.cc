@@ -1030,7 +1030,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
 
   AddBidderJsonResponse(&url_loader_factory_,
                         GURL("https://url.test/?hostname=publisher"
-                             "&keys=key1,key2,key3"
+                             "&keys=key1,key3,key2"
                              "&interestGroupNames=name1,name2"
                              "&trusted_bidding_signals_slot_size_param=foo"),
                         kBaseBiddingJson);
@@ -1054,7 +1054,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   bidding_request_manager_.StartBatchedTrustedSignalsRequest();
 
   run_loop1.Run();
-  EXPECT_FALSE(error_msg1);
+  EXPECT_FALSE(error_msg1) << *error_msg1;
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
@@ -1064,7 +1064,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
             *priority_vector);
 
   run_loop2.Run();
-  EXPECT_FALSE(error_msg2);
+  EXPECT_FALSE(error_msg2) << *error_msg2;
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
@@ -1232,14 +1232,16 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelAllLiveRequests) {
   const std::vector<std::string> kKeys2{"key2"};
   const GURL kSignalsUrl = GURL(
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2&interestGroupNames=name1"
+      "&keys=key1,key2&interestGroupNames=name1,name2"
       "&trusted_bidding_signals_slot_size_param=foo");
 
+  // Note: different IG names are needed to make the order of fields in URL
+  // deterministic.
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&NeverInvokedLoadSignalsCallback));
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   // Wait for network request to be made, which should include both keys in the
@@ -1347,12 +1349,13 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
                                   kTinyTime);
   EXPECT_EQ(0, url_loader_factory_.NumPending());
 
-  // Create another Request.
+  // Create another Request.  Note: different IG names are needed to make the
+  // order of fields in URL deterministic.
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -1363,16 +1366,16 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
 
   AddBidderJsonResponse(&url_loader_factory_,
                         GURL("https://url.test/?hostname=publisher"
-                             "&keys=key1,key2&interestGroupNames=name1"),
+                             "&keys=key1,key2&interestGroupNames=name1,name2"),
                         kBaseBiddingJson);
 
   run_loop1.Run();
-  EXPECT_FALSE(error_msg1);
+  EXPECT_FALSE(error_msg1) << *error_msg1;
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals1.get(), kKeys1));
 
   run_loop2.Run();
-  EXPECT_FALSE(error_msg2);
+  EXPECT_FALSE(error_msg2) << *error_msg2;
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
 
@@ -1816,7 +1819,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsJointBatchedRequests) {
 
   const std::string kSignalsUrl =
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2,key3"
+      "&keys=key1,key3,key2"
       "&interestGroupNames=name1,name2"
       "&trusted_bidding_signals_slot_size_param=foo";
 
@@ -1842,7 +1845,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsJointBatchedRequests) {
   bidding_request_manager_.StartBatchedTrustedSignalsRequest();
 
   run_loop1.Run();
-  EXPECT_FALSE(error_msg1);
+  EXPECT_FALSE(error_msg1) << *error_msg1;
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
@@ -1852,7 +1855,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsJointBatchedRequests) {
             *priority_vector);
 
   run_loop2.Run();
-  EXPECT_FALSE(error_msg2);
+  EXPECT_FALSE(error_msg2) << *error_msg2;
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
@@ -2120,7 +2123,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   const std::string kUrl1 =
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2,key3&interestGroupNames=name1,name2"
+      "&keys=key1,key3,key2&interestGroupNames=name1,name2"
       "&trusted_bidding_signals_slot_size_param=foo";
   const std::string kUrl2 =
       "https://url.test/?hostname=publisher"
@@ -2161,7 +2164,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   bidding_request_manager_.StartBatchedTrustedSignalsRequest();
 
   run_loop1.Run();
-  EXPECT_FALSE(error_msg1);
+  EXPECT_FALSE(error_msg1) << *error_msg1;
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
@@ -2224,8 +2227,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
   const std::string kUrl1 =
       "https://url.test/"
       "?hostname=publisher&renderUrls=https%3A%2F%2Fbar.test%2F,https%3A%2F%"
-      "2Fbaz.test%2F&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,https%"
-      "3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+      "2Fbaz.test%2F&adComponentRenderUrls=https%3A%2F%2Fbazsub.test%2F,https%"
+      "3A%2F%2Ffoosub.test%2F,https%3A%2F%2Fbarsub.test%2F";
   const std::string kUrl2 =
       "https://url.test/"
       "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F&"
@@ -2265,7 +2268,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   scoring_request_manager_.StartBatchedTrustedSignalsRequest();
 
   run_loop1.Run();
-  EXPECT_FALSE(error_msg1);
+  EXPECT_FALSE(error_msg1) << *error_msg1;
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"renderURL":{"https://bar.test/":[2]},)"
             R"("renderUrl":{"https://bar.test/":[2]},)"
@@ -2277,7 +2280,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
                                   kAdComponentRenderUrls1));
 
   run_loop2.Run();
-  EXPECT_FALSE(error_msg2);
+  EXPECT_FALSE(error_msg2) << *error_msg2;
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"renderURL":{"https://baz.test/":null},)"
             R"("renderUrl":{"https://baz.test/":null},)"
@@ -2289,7 +2292,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
                                   kAdComponentRenderUrls2));
 
   run_loop3.Run();
-  EXPECT_FALSE(error_msg3);
+  EXPECT_FALSE(error_msg3) << *error_msg3;
   ASSERT_TRUE(signals3);
   EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
             R"("renderUrl":{"https://foo.test/":1},)"
@@ -2317,6 +2320,9 @@ TEST_F(TrustedSignalsRequestManagerTest,
 // Request C has a limit of 131.
 // The combined URL length of requests A and B is 143.
 // The combined URL length of requests B and C is 131.
+//
+// Note that the order here is by interest group name, so
+// "extremelyLongName" before "name1" before "name2".
 TEST_F(TrustedSignalsRequestManagerTest,
        BiddingSignalsPartlyJointBatchedRequests2) {
   const std::vector<std::string> kKeys1{"key1", "key3"};
@@ -2329,7 +2335,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
       "&trusted_bidding_signals_slot_size_param=foo";
   const std::string kUrl2 =
       "https://url.test/?hostname=publisher"
-      "&keys=key1,key2,key3&interestGroupNames=name1,name2"
+      "&keys=key2,key3,key1&interestGroupNames=name1,name2"
       "&trusted_bidding_signals_slot_size_param=foo";
 
   base::RunLoop run_loop3;
@@ -2368,7 +2374,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   bidding_request_manager_.StartBatchedTrustedSignalsRequest();
 
   run_loop1.Run();
-  EXPECT_FALSE(error_msg1);
+  EXPECT_FALSE(error_msg1) << *error_msg1;
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":[2],"key3":[3]})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
@@ -2379,7 +2385,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
             *priority_vector);
 
   run_loop2.Run();
-  EXPECT_FALSE(error_msg2);
+  EXPECT_FALSE(error_msg2) << *error_msg2;
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
@@ -2389,7 +2395,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
             *priority_vector);
 
   run_loop3.Run();
-  EXPECT_FALSE(error_msg3);
+  EXPECT_FALSE(error_msg3) << *error_msg3;
   ASSERT_TRUE(signals3);
   EXPECT_EQ(R"({"key1":1,"key2":[2]})",
             ExtractBiddingSignals(signals3.get(), kKeys3));

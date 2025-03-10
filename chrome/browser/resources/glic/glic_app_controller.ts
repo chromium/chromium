@@ -9,6 +9,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {WebUiState} from './glic.mojom-webui.js';
 import type {PageInterface} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
+import {WebClientState} from './glic_api_impl/glic_api_host.js';
 import {exceptionFromTransferable} from './glic_api_impl/request_types.js';
 import type {TransferableException} from './glic_api_impl/request_types.js';
 import type {PageType, WebviewDelegate} from './webview.js';
@@ -199,9 +200,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       WebUiState.kUnresponsive,
       {
         onEnter: () => {
-          this.destroyWebview();
           // TODO(crbug.com/394162784): Create an unresponsive UI and permit
           // transitioning back to being responsive.
+          this.destroyWebview();
           this.showPanel('errorPanel');
         },
       },
@@ -365,6 +366,19 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         console.error(exceptionFromTransferable(exception));
       }
       this.setState(WebUiState.kError);
+    }
+  }
+
+  webClientStateChanged(state: WebClientState): void {
+    switch (state) {
+      case WebClientState.RESPONSIVE:
+        if (this.state === WebUiState.kUnresponsive) {
+          this.setState(WebUiState.kReady);
+        }
+        break;
+      case WebClientState.UNRESPONSIVE:
+        this.webviewUnresponsive();
+        break;
     }
   }
 

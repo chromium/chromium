@@ -685,11 +685,12 @@ class PermissionUmaUtil {
       bool show_infobar,
       bool page_reload);
 
-  // Recorded when a permission prompt creation is in progress.
+  // This gets recorded during the creation process of a prompt, but only for
+  // prompts that aren't labeled as abusive or disruptive.
   static void RecordPermissionPromptAttempt(
       const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
           requests,
-      bool IsLocationBarEditingOrEmpty);
+      bool can_display_prompt);
 
   // UMA specifically for when permission prompts are shown. This should be
   // roughly equivalent to the metrics above, however it is

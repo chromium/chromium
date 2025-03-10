@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Set Up List"/>
   <int value="6" label="Omnibox navigation"/>
   <int value="7" label="Safety Check tile"/>
-  <int value="8" label="Parcel Tracking tile"/>
+  <int value="8" label="Obsolete in M136 - Parcel Tracking tile"/>
   <int value="9" label="Distant tab resumption tile"/>
   <int value="10" label="Price Tracking Promo tile"/>
   <int value="11" label="Tips tile"/>

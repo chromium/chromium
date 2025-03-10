@@ -19,7 +19,6 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/surface/transport_dib.h"
 

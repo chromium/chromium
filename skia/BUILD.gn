@@ -235,6 +235,7 @@ component("skia") {
     "ext/image_operations.h",
     "ext/legacy_display_globals.h",
     "ext/opacity_filter_canvas.h",
+    "ext/pmcolor_utils.h",
     "ext/recursive_gaussian_convolution.h",
     "ext/rgba_to_yuva.h",
     "ext/skcolorspace_primaries.h",
@@ -629,7 +630,8 @@ if (enable_rust_png) {
     sources = skia_codec_rust_png_ffi_rs_srcs
     cxx_bindings = skia_codec_rust_png_ffi_cxx_bridge_srcs
     public_deps = [ ":rust_png_ffi_cpp" ]
-    deps = [ "//third_party/rust/png/v0_17:lib" ]
+    deps = [ "//third_party/rust/png/v0_18:lib" ]
+    features = [ "png_0_18" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",

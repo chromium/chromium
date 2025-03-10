@@ -248,7 +248,9 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // CVPixelBufferPool, and gfx::ScopedInUseIOSurface is used to prevent reuse
     // of buffers until all consumers have consumed them. |visible_rect|
     // specifies the region in the memory pointed to by |buffer.handle| that
-    // contains the captured content.
+    // contains the captured content. |metadata| is used for storing an initial
+    // metadata and if not provided, then the initial metadata used would be the
+    // default values of VideoFrameMetadata.
     virtual void OnIncomingCapturedExternalBuffer(
         CapturedExternalVideoBuffer buffer,
         base::TimeTicks reference_time,

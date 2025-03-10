@@ -20,7 +20,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -299,7 +298,6 @@ class MultiCaptureTest
     fake_user_manager_->LoginUser(account_id);
 
     // Settings required to create startup data.
-    crosapi::IdleServiceAsh::DisableForTesting();
     if (!ash::LoginState::IsInitialized()) {
       ash::LoginState::Initialize();
     }

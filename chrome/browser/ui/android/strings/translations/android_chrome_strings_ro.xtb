@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1045899828449635435">Ștergi și datele de la aceste site-uri?</translation>
 <translation id="1049743911850919806">Incognito</translation>
+<translation id="1052842760770519282">Unele dintre parolele tale nu sunt accesibile</translation>
 <translation id="1058669287135776095">Ești offline. Verifică-ți conexiunea la internet și încearcă din nou.</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
@@ -70,6 +71,7 @@
 <translation id="1269129608791067105">Aici vei vedea istoricul</translation>
 <translation id="1273937721055267968">Blochează <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Atinge pentru a extinde</translation>
+<translation id="1289129165308566697">Vezi istoricul pe alte dispozitive</translation>
 <translation id="129553762522093515">Închise recent</translation>
 <translation id="1298077576058087471">Economisește până la 60 % din date, citește știrile de azi</translation>
 <translation id="1303339473099049190">Parola nu a fost găsită. Verifică dacă ai scris-o corect și încearcă din nou.</translation>
@@ -359,6 +361,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2666092431469916601">Sus</translation>
 <translation id="2669454659051515572">Oricine folosește acest dispozitiv poate să vadă fișierele descărcate</translation>
 <translation id="2677748264148917807">Ieși</translation>
+<translation id="2687009626279857299">Nu mai funcționează pe acest dispozitiv</translation>
 <translation id="2702516483241149200">Nou: distribuie un link care derulează la acest text</translation>
 <translation id="2705073298859543115">Creează un rezumat</translation>
 <translation id="2708051474374549906">Protecție proactivă în timp real împotriva site-urilor, descărcărilor și extensiilor periculoase, pe baza datelor de navigare trimise la Google</translation>
@@ -936,6 +939,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponibili</translation>
 <translation id="543338862236136125">Editează parola</translation>
 <translation id="5433691172869980887">Numele de utilizator a fost copiat</translation>
+<translation id="5436928407363358055">Pentru a relua cu ușurință de unde ai rămas, sincronizează istoricul și filele</translation>
 <translation id="5438292632479953702">Descarcă din nou</translation>
 <translation id="5439191312780166229">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți să omiți avertismentele din Chrome.</translation>
 <translation id="5441137934526263133">Site-ul nu funcționează? Cookie-urile terță parte sunt blocate</translation>

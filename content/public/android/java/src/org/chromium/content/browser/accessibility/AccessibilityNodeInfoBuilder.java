@@ -35,6 +35,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_LINE;
@@ -140,9 +141,12 @@ public class AccessibilityNodeInfoBuilder {
     public static final String ACCESSIBILITY_SPANNABLE_CREATION_TIME =
             "Accessibility.Android.Performance.SpannableCreationTime";
 
-    // Static instances of the two types of extra data keys that can be added to nodes.
+    // Static instances of the three types of extra data keys that can be added to nodes.
     private static final List<String> sTextCharacterLocation =
             Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+
+    private static final List<String> sTextCharacterLocationInWindow =
+            Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY);
 
     private static final List<String> sRequestImageData =
             Collections.singletonList(EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY);
@@ -258,6 +262,7 @@ public class AccessibilityNodeInfoBuilder {
 
         if (hasCharacterLocations) {
             node.setAvailableExtraData(sTextCharacterLocation);
+            node.setAvailableExtraData(sTextCharacterLocationInWindow);
         }
 
         node.setMovementGranularities(
@@ -590,7 +595,8 @@ public class AccessibilityNodeInfoBuilder {
                 rect,
                 node.getExtras(),
                 mDelegate.getAccessibilityCoordinates(),
-                mDelegate.getView());
+                mDelegate.getView(),
+                /* isScreenCoordinates= */ true);
 
         node.setBoundsInScreen(rect);
 
@@ -826,7 +832,8 @@ public class AccessibilityNodeInfoBuilder {
             Rect rect,
             Bundle extras,
             AccessibilityDelegate.AccessibilityCoordinates accessibilityCoordinates,
-            View view) {
+            View view,
+            boolean isScreenCoordinates) {
         // Offset by the scroll position.
         AccessibilityDelegate.AccessibilityCoordinates ac = accessibilityCoordinates;
         rect.offset(-(int) ac.getScrollX(), -(int) ac.getScrollY());
@@ -843,7 +850,11 @@ public class AccessibilityNodeInfoBuilder {
         // Finally offset by the location of the view within the screen.
         final int[] viewLocation = new int[2];
         view.getLocationOnScreen(viewLocation);
-        rect.offset(viewLocation[0], viewLocation[1]);
+        // Only offset the view location when the screen coordinates are requested.
+        // For window coordinates, no need to offset the view location.
+        if (isScreenCoordinates) {
+            rect.offset(viewLocation[0], viewLocation[1]);
+        }
 
         // TODO(mschillaci): This block is the same per-node and is purely viewport dependent,
         //                   pull this out into a reusable object for simplicity/performance.

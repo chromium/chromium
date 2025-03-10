@@ -6,12 +6,16 @@ package org.chromium.components.data_sharing.configs;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Config class for the Data Sharing UI Strings. */
+@NullMarked
 public class DataSharingStringConfig {
 
     private Map<Integer, Integer> mResourceIds;
@@ -24,7 +28,7 @@ public class DataSharingStringConfig {
         this.mResourceIds = builder.mResourceIds;
     }
 
-    public Integer getResourceId(@StringKey.Key int key) {
+    public @Nullable Integer getResourceId(@StringKey.Key int key) {
         return mResourceIds.get(key);
     }
 

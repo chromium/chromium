@@ -46,7 +46,6 @@ class OfferNotificationIconView : public PageActionIconView,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   std::u16string_view GetIconLabelForTesting() const;
-  void SetAnimateOutTimerForTesting(base::RetainingOneShotTimer* timer);
 
  protected:
   // PageActionIconView:
@@ -56,23 +55,7 @@ class OfferNotificationIconView : public PageActionIconView,
 
  private:
   OfferNotificationBubbleController* GetController() const;
-  // IconLabelBubbleView:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
 
-  // Show page action label if it meets the requirements.
-  void MaybeShowPageActionLabel();
-  // Hides the page action label.
-  void HidePageActionLabel();
-  base::RetainingOneShotTimer& AnimateOutTimer();
-  // Animates out the price tracking icon label after a fixed period of time.
-  // This keeps the label visible for long enough to give users an opportunity
-  // to read the label text.
-  base::RetainingOneShotTimer animate_out_timer_;
-  raw_ptr<base::RetainingOneShotTimer> animate_out_timer_for_testing_ = nullptr;
-  // Boolean that tracks whether we should extend the duration for which the
-  // label is shown when it animates in.
-  bool should_extend_label_shown_duration_ = false;
   // Observing the bubble view.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

@@ -30,6 +30,8 @@ using std::transform;
 
 namespace grpc_ruby_generator {
 
+std::string RubifyConstant(const std::string& name);
+
 // Split splits a string using char into elems.
 inline std::vector<std::string>& Split(const std::string& s, char delim,
                                        std::vector<std::string>* elems) {
@@ -102,7 +104,7 @@ inline std::string Modularize(std::string s) {
 
 // RubyPackage gets the ruby package in either proto or ruby_package format
 inline std::string RubyPackage(const grpc::protobuf::FileDescriptor* file) {
-  std::string package_name = file->package();
+  std::string package_name(file->package());
   if (file->options().has_ruby_package()) {
     package_name = file->options().ruby_package();
 
@@ -117,10 +119,10 @@ inline std::string RubyPackage(const grpc::protobuf::FileDescriptor* file) {
 
 // RubyTypeOf updates a proto type to the required ruby equivalent.
 inline std::string RubyTypeOf(const grpc::protobuf::Descriptor* descriptor) {
-  std::string proto_type = descriptor->full_name();
+  std::string proto_type(descriptor->full_name());
   if (descriptor->file()->options().has_ruby_package()) {
     // remove the leading package if present
-    ReplacePrefix(&proto_type, descriptor->file()->package(), "");
+    ReplacePrefix(&proto_type, std::string(descriptor->file()->package()), "");
     ReplacePrefix(&proto_type, ".", "");  // remove the leading . (no package)
     proto_type = RubyPackage(descriptor->file()) + "." + proto_type;
   }
@@ -137,7 +139,7 @@ inline std::string RubyTypeOf(const grpc::protobuf::Descriptor* descriptor) {
       if (i < prefixes_and_type.size() - 1) {
         res += Modularize(prefixes_and_type[i]);  // capitalize pkgs
       } else {
-        res += prefixes_and_type[i];
+        res += RubifyConstant(prefixes_and_type[i]);
       }
     }
     return res;

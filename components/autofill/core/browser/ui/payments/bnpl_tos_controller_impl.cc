@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 
-#include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"  // TODO: crbug.com/391141123 - Remove when the controller is implemented.
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -24,6 +22,13 @@ constexpr std::string_view kWalletLinkText = "wallet.google.com";
 constexpr std::string_view kWalletUrlString = "https://wallet.google.com/";
 }  // namespace
 
+BnplTosModel::BnplTosModel() = default;
+
+BnplTosModel::BnplTosModel(BnplTosModel&& other) = default;
+BnplTosModel& BnplTosModel::operator=(BnplTosModel&& other) = default;
+
+BnplTosModel::~BnplTosModel() = default;
+
 BnplTosControllerImpl::BnplTosControllerImpl() = default;
 
 BnplTosControllerImpl::~BnplTosControllerImpl() = default;
@@ -31,6 +36,12 @@ BnplTosControllerImpl::~BnplTosControllerImpl() = default;
 void BnplTosControllerImpl::OnViewClosing(bool user_accepted) {
   // The view is being closed so set the pointer to nullptr.
   view_.reset();
+
+  if (user_accepted) {
+    std::move(accept_callback_).Run();
+  } else {
+    std::move(cancel_callback_).Run();
+  }
 }
 
 u16string BnplTosControllerImpl::GetOkButtonLabel() const {
@@ -42,23 +53,26 @@ u16string BnplTosControllerImpl::GetCancelButtonLabel() const {
 }
 
 u16string BnplTosControllerImpl::GetTitle() const {
-  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_TITLE, issuer_name_);
+  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_TITLE,
+                         model_.issuer.GetDisplayName());
 }
 
 u16string BnplTosControllerImpl::GetReviewText() const {
-  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT, issuer_name_);
+  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT,
+                         model_.issuer.GetDisplayName());
 }
 
 u16string BnplTosControllerImpl::GetApproveText() const {
-  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT, issuer_name_);
+  return GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT,
+                         model_.issuer.GetDisplayName());
 }
 
 TextWithLink BnplTosControllerImpl::GetLinkText() const {
   TextWithLink text_with_link;
   std::vector<size_t> offsets;
-  text_with_link.text =
-      GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_LINK_TEXT, issuer_name_,
-                      base::UTF8ToUTF16(kWalletLinkText), &offsets);
+  text_with_link.text = GetStringFUTF16(
+      IDS_AUTOFILL_BNPL_TOS_LINK_TEXT, model_.issuer.GetDisplayName(),
+      base::UTF8ToUTF16(kWalletLinkText), &offsets);
 
   // The link is the second replacement string making it the second offset.
   text_with_link.offset =
@@ -70,16 +84,15 @@ TextWithLink BnplTosControllerImpl::GetLinkText() const {
 }
 
 const LegalMessageLines& BnplTosControllerImpl::GetLegalMessageLines() const {
-  return legal_message_lines_;
+  return model_.legal_message_lines;
 }
 
-AccountInfo BnplTosControllerImpl::GetAccountInfo() const {
-  // TODO: crbug.com/391141123 - Actually get the account info when the
-  // controller is implemented.
-  AccountInfo account_info = AccountInfo();
-  account_info.email =
-      "somebody@example.test";  // Temporary email to verify the view.
-  return account_info;
+const AccountInfo& BnplTosControllerImpl::GetAccountInfo() const {
+  return model_.account_info;
+}
+
+const std::string& BnplTosControllerImpl::GetIssuerId() const {
+  return model_.issuer.issuer_id();
 }
 
 base::WeakPtr<BnplTosController> BnplTosControllerImpl::GetWeakPtr() {
@@ -88,32 +101,18 @@ base::WeakPtr<BnplTosController> BnplTosControllerImpl::GetWeakPtr() {
 
 void BnplTosControllerImpl::Show(
     base::OnceCallback<std::unique_ptr<BnplTosView>()>
-        create_and_show_view_callback) {
+        create_and_show_view_callback,
+    BnplTosModel model,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
   // If the view already exists, don't create and show a new view.
   if (view_) {
     return;
   }
 
-  // TODO: crbug.com/391141123 - Pass in the issuer name and legal lines from
-  // the controller when it is implemented.
-  issuer_name_ = u"Affirm";
-  std::string legal_lines_as_json_string =
-      "{ \"line\" : [ { \"template\": \"By continuing, you agree to the {0} "
-      "and that Google Pay may share or receive some data from Affirm, such as "
-      "transaction or account data, in order to provide this service. The {1} "
-      "describes how Google Pay handles your data. Eligibility and payment "
-      "plans are provided by Affirm, who processes your data in accordance "
-      "with their {2}.\", \"template_parameter\": [ { \"display_text\": "
-      "\"Google Pay Terms of Service\", \"url\": \"http://www.example.com/\" "
-      "}, { \"display_text\": "
-      "\"Google Pay Privacy Notice\", \"url\": \"http://www.example.com/\" }, "
-      "{ \"display_text\": "
-      "\"privacy notice\", \"url\": \"http://www.example.com/\" } "
-      "] }] }";
-  std::optional<base::Value> legal_lines_as_json(
-      (base::JSONReader::Read(legal_lines_as_json_string)));
-  LegalMessageLine::Parse(legal_lines_as_json->GetDict(), &legal_message_lines_,
-                          true);
+  model_ = std::move(model);
+  accept_callback_ = std::move(accept_callback);
+  cancel_callback_ = std::move(cancel_callback);
 
   view_ = std::move(create_and_show_view_callback).Run();
 }

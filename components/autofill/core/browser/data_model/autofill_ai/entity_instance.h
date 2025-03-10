@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
+#include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -68,9 +69,9 @@ class EntityTable;
 // `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
 // how this problem is handled.
 class AttributeInstance final {
-  // TODO(crbug.com/389625753): Also add support for states.
+  using StateInfo = base::StrongAlias<class StateInfoTag, std::u16string>;
   using InfoStructure =
-      absl::variant<CountryInfo, DateInfo, NameInfo, std::u16string>;
+      absl::variant<CountryInfo, DateInfo, NameInfo, StateInfo, std::u16string>;
 
  public:
   // Transparent less-than relation based on the AttributeType.

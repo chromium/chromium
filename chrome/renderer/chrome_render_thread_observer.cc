@@ -27,7 +27,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
@@ -56,7 +55,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/renderer/ash_merge_session_loader_throttle.h"
 #endif
 
@@ -71,7 +70,7 @@ using content::RenderThread;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
   content::ChildThread* child_thread = content::ChildThread::Get();
   if (child_thread)
@@ -80,11 +79,11 @@ scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
   // This will happen when running via tests.
   return base::SequencedTaskRunner::GetCurrentDefault();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
 ChromeRenderThreadObserver::ChromeOSListener::Create(
@@ -131,7 +130,7 @@ void ChromeRenderThreadObserver::ChromeOSListener::BindOnIOThread(
         chromeos_listener_receiver) {
   receiver_.Bind(std::move(chromeos_listener_receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ChromeRenderThreadObserver::ChromeRenderThreadObserver()
     : visited_link_reader_(new visitedlink::VisitedLinkReader) {
@@ -201,12 +200,12 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
   if (content_settings_manager)
     content_settings_manager_.Bind(std::move(content_settings_manager));
   SetIsIncognitoProcess(is_incognito_process);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos_listener_receiver) {
     chromeos_listener_ =
         ChromeOSListener::Create(std::move(chromeos_listener_receiver));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (bound_session_request_throttled_handler) {

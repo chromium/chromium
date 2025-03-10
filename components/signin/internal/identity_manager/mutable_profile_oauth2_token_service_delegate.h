@@ -290,10 +290,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // credentials.  This member is empty otherwise.
   CoreAccountId loading_primary_account_id_;
 
-  // Whether sync is enabled for the primary account of this service's profile
-  // during the loading of credentials.  This member is false otherwise.
-  bool loading_is_syncing_ = false;
-
   std::vector<std::unique_ptr<RevokeServerRefreshToken>> server_revokes_;
 
   // Used to verify that certain methods are called only on the thread on which

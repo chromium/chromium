@@ -192,8 +192,8 @@ void AudioManagerWin::GetAudioOutputDeviceNames(
 AudioParameters AudioManagerWin::GetInputStreamParameters(
     const std::string& device_id) {
   AudioParameters parameters;
-  HRESULT hr =
-      CoreAudioUtil::GetPreferredAudioParameters(device_id, false, &parameters);
+  HRESULT hr = CoreAudioUtil::GetPreferredAudioParameters(
+      device_id, /*is_output_device=*/false, &parameters);
 
   if (FAILED(hr) || !parameters.IsValid()) {
     LOG(WARNING) << "Unable to get preferred audio params for " << device_id
@@ -211,11 +211,6 @@ AudioParameters AudioManagerWin::GetInputStreamParameters(
   int user_buffer_size = GetUserBufferSize();
   if (user_buffer_size)
     parameters.set_frames_per_buffer(user_buffer_size);
-
-  if (IsEchoCancellationSupported(device_id)) {
-    parameters.set_effects(parameters.effects() |
-                           AudioParameters::ECHO_CANCELLER);
-  }
 
   return parameters;
 }
@@ -327,20 +322,6 @@ std::string AudioManagerWin::GetCommunicationsInputDeviceID() {
 
 std::string AudioManagerWin::GetCommunicationsOutputDeviceID() {
   return CoreAudioUtil::GetCommunicationsOutputDeviceID();
-}
-
-bool AudioManagerWin::IsEchoCancellationSupported(
-    const std::string& audio_device_id) {
-  if (!media::IsSystemEchoCancellationEnforced()) {
-    return false;
-  }
-
-  if (AudioDeviceDescription::IsLoopbackDevice(audio_device_id)) {
-    VLOG(1) << "Native system AEC can't be applied for loopback devices";
-    return false;
-  }
-
-  return true;
 }
 
 AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(

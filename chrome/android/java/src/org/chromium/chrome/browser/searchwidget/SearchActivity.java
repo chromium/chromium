@@ -260,6 +260,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 this,
                 /* listenToActivityState= */ true,
                 new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
+                /* activityTopResumedSupported= */ false,
                 getIntentRequestTracker(),
                 getInsetObserver(),
                 /* trackOcclusion= */ true) {

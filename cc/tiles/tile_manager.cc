@@ -407,17 +407,9 @@ void TileManager::FinishTasksAndCleanUp() {
 
   global_state_ = GlobalStateThatImpactsTilePriority();
 
-  // This must be signalled before the Shutdown call below so that if there are
-  // any pending tasks on the worker thread that might be waiting on tasks
-  // posted to this thread they are cancelled.
-  shutdown_event_.Signal();
-
   // This cancels tasks if possible, finishes pending tasks, and release any
   // uninitialized resources.
   tile_task_manager_->Shutdown();
-
-  // Reset the signal since SetResources() might be called later.
-  shutdown_event_.Reset();
 
   raster_buffer_provider_->Shutdown();
 
@@ -577,8 +569,6 @@ void TileManager::SetResources(ResourcePool* resource_pool,
           &TileManager::ExternalDependencyCompletedForNonRasterTask,
           base::Unretained(this)));
   raster_buffer_provider_ = raster_buffer_provider;
-
-  raster_buffer_provider_->SetShutdownEvent(&shutdown_event_);
 }
 
 void TileManager::Release(Tile* tile) {

@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -67,6 +68,7 @@ class MODULES_EXPORT TCPReadableStreamWrapper
 
   // Stores a v8::Local<v8::Value> V8DOMException inside.
   TraceWrapperV8Reference<v8::Value> pending_exception_;
+  int pending_net_error_ = net::OK;
 };
 
 }  // namespace blink

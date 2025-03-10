@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">您可以在此处打开智能镜头。</translation>
 <translation id="1042296835509784301">在 Chromium 中打开密码管理工具。</translation>
 <translation id="1047130070405668746">选择“Chromium”</translation>
+<translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1091252999271033193">这意味着 Chromium 每次都会对移动网站发出请求。</translation>
 <translation id="1115463765356382667">请完成下面这些建议的操作，以便充分利用 Chromium。</translation>
 <translation id="1140315115515116765">默认使用 Chromium 轻松获取价格分析</translation>
@@ -98,6 +99,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}}</translation>
 <translation id="3410395242749598859">部分 Chromium 数据尚未保存到 <ph name="EMAIL" />。
 建议等待几分钟，然后再尝试切换账号。如果现在就切换账号，这些数据将被删除。</translation>
+<translation id="3440830787838130530">在 Google 密码管理工具中，您可以轻松安全地与家人群组分享密码</translation>
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="347967311580159871">如需更多使用数据来提升 Chromium 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="3512168799938877162">未能分享密码。请检查互联网连接，确保您已登录 Chromium。然后，再试一次。</translation>

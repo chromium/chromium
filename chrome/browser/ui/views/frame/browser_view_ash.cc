@@ -72,11 +72,17 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
   CHECK_NE(devtools_placement, DevToolsDockedPlacement::kUnknown);
 
   // Rounded the contents webview.
-  ContentsWebView* contents_webview = contents_web_view();
+  std::vector<ContentsWebView*> contents_views =
+      GetAllVisibleContentsWebViews();
+  ContentsWebView* contents_webview = contents_views.front();
+  // In a split view, the contents area bounds are equivalent to the
+  // MultiContentsView parent bounds.
+  const gfx::Rect& contents_bounds = contents_views.size() > 1
+                                         ? contents_webview->parent()->bounds()
+                                         : contents_webview->bounds();
   const views::View* container = contents_container();
 
-  const bool devtools_showing =
-      contents_webview->bounds() != container->GetLocalBounds();
+  const bool devtools_showing = contents_bounds != container->GetLocalBounds();
 
   // With window controls overlay enabled, the web content extends over the
   // entire window height, overlapping the window's top-two rounded corners.

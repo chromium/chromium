@@ -338,6 +338,9 @@
       <message name="IDS_ACCESSIBILITY_TOOLBAR_MULTI_SELECT" desc="Accessibility announcement to inform users about more items selected.">
         <ph name="ITEM_COUNT">%1$s<ex>3</ex></ph> selected
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_EXIT_SELECT" desc="Accessibility announcement to inform users that they have just exited selection mode.">
+        Exited selection mode
+      </message>
       <message name="IDS_ACCESSIBILITY_CANCEL_SELECTION" desc="Content description for the cancel selection button that deselects the selected items in a selectable list view.">
         Cancel selection
       </message>

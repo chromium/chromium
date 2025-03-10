@@ -12,7 +12,7 @@ desc: |-
 
   The <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph> field specifies the URL on which to search. Enter the web address for the search engine's results page, and use <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> in place of the query.
 
-  The <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> field specifies the URL that provides search suggestions. If <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> contains <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, then Chrome will obtain search suggestions by a GET request to the URL replacing <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> with the user's search query. Otherwise, a POST request will be made, the the user's query will be passed in the POST params under key <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY">'query'</ph>.
+  The <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> field specifies the URL that provides search suggestions. If <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> contains <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, then Chrome will obtain search suggestions by a GET request to the URL replacing <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> with the user's search query. Otherwise, a POST request will be made and the user's query will be passed in the POST params under key <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY">'query'</ph>.
 
   The <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">icon_url</ph> field specifies the URL to an image that will be used on the search suggestions. A default icon will be used when this field is not set. It's recommended to use a favicon (example <ph name="ICON_URL_EXAMPLE">https://www.google.com/favicon.ico</ph>).
 
@@ -25,8 +25,8 @@ desc: |-
 example_value:
   name: My Search Aggregator
   shortcut: work
-  search_url: https://www.aggregator.com/search?q=site%3Awikipedia.com+{searchTerms}
-  suggest_url: https://www.aggregator.com/suggest?q={searchTerms}
+  search_url: https://www.aggregator.com/search?q={searchTerms}
+  suggest_url: https://www.aggregator.com/suggest
   icon_url: https://www.google.com/favicon.ico
   require_shortcut: true
 features:

@@ -796,7 +796,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeIgnoresPolicyAndPlayAPIEngines) {
     auto play_api_engine = CreateTestTemplateURL(
         u"key2", "http://key2.com", "localguid2", base::Time::FromTimeT(100));
     TemplateURLData data(play_api_engine->data());
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     play_api_engine = std::make_unique<TemplateURL>(data);
     model()->Add(std::move(play_api_engine));
   }
@@ -3545,7 +3545,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
     auto play_api_engine = CreateTestTemplateURL(
         u"key2", "http://key2.com", "localguid2", base::Time::FromTimeT(100));
     TemplateURLData data(play_api_engine->data());
-    data.created_from_play_api = true;
+    data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
     play_api_engine = std::make_unique<TemplateURL>(data);
     model()->Add(std::move(play_api_engine));
   }

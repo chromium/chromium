@@ -103,6 +103,22 @@ TEST_F(TimeClamperTest, ClampingIsPerInstance) {
   }
 }
 
+TEST_F(TimeClamperTest, OverflowHandling) {
+  // Tests that when starting with base::TimeDelta::Min(), the
+  // smallest possible value, we won't overflow.
+  for (bool cross_origin : {true, false}) {
+    for (int ii = 0; ii < 10000; ++ii) {  // For testing TimeClamper::secret_.
+      TimeClamper clamper;
+      int64_t clamped =
+          clamper.ClampTimeResolution(base::TimeDelta::Min(), cross_origin)
+              .InMicroseconds();
+      ASSERT_LT(clamped, 0);  // Should still be negative.
+      // Can't be smaller than the smallest allowed time.
+      ASSERT_GE(clamped, base::TimeDelta::Min().InMicroseconds());
+    }
+  }
+}
+
 void UniformityTest(int64_t time_microseconds,
                     int interval,
                     bool cross_origin_isolated_capability) {

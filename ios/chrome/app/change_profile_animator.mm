@@ -12,20 +12,25 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 
 namespace {
 
-// Invokes `continuation` if `weak_scene_state` is not nil.
+// Invokes `continuation` if `weak_scene_state` is not nil and the UI is
+// enabled (to avoid crashing if the `SceneState` is disconnected while
+// the callback was pending).
 void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
                                      __weak SceneState* weak_scene_state) {
   if (SceneState* strong_scene_state = weak_scene_state) {
-    std::move(continuation).Run(strong_scene_state, base::DoNothing());
+    if (strong_scene_state.UIEnabled) {
+      std::move(continuation).Run(strong_scene_state, base::DoNothing());
+    }
   }
 }
 
 }  // namespace
 
-@interface ChangeProfileAnimator () <ProfileStateObserver>
+@interface ChangeProfileAnimator () <ProfileStateObserver, SceneStateObserver>
 @end
 
 @implementation ChangeProfileAnimator {
@@ -53,23 +58,23 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
              continuation:(ChangeProfileContinuation)continuation {
   DCHECK(continuation);
   DCHECK(sceneState.profileState);
+  DCHECK_GE(initStage, ProfileInitStage::kUIReady);
 
   _sceneState = sceneState;
   _continuation = std::move(continuation);
   _minimumInitStage = initStage;
 
-  ProfileState* profileState = sceneState.profileState;
-  if (profileState.initStage < _minimumInitStage) {
-    // Attach self as an associated object of the ProfileState. This ensures
-    // that the ChangeProfileAnimator will not be destroyed until the profile
-    // is ready or destroyed.
-    objc_setAssociatedObject(profileState, [self associationKey], self,
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [profileState addObserver:self];
-    return;
-  }
+  // Attach self as an associated object of the SceneState. This ensures
+  // that the ChangeProfileAnimator will live as long as the SceneState.
+  objc_setAssociatedObject(_sceneState, [self associationKey], self,
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-  [self profileReachedInitStage];
+  // Observe both the SceneState and the ProfileState to detect when the
+  // profile and the UI initialisations are complete. ProfileState calls
+  // -profileState:didTransitionToInitStage:fromInitStage: when adding
+  // an observer, so there is no need to check the initState here.
+  [_sceneState addObserver:self];
+  [_sceneState.profileState addObserver:self];
 }
 
 #pragma mark ProfileStateObserver
@@ -77,15 +82,13 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
-  if (nextInitStage >= _minimumInitStage) {
-    [self profileReachedInitStage];
+  [self initialisationProgressed];
+}
 
-    // Stop observing the ProfileState and detach self. This may cause the
-    // object to be deallocated, thus nothing should happen after this line.
-    [profileState removeObserver:self];
-    objc_setAssociatedObject(profileState, [self associationKey], nil,
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  }
+#pragma mark SceneStateObserver
+
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  [self initialisationProgressed];
 }
 
 #pragma mark Private methods
@@ -98,7 +101,18 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   // accessed and changed by the UI code.
 }
 
-- (void)profileReachedInitStage {
+// Called when the initialisation progressed (i.e. the state of any of the
+// observed object changed).
+- (void)initialisationProgressed {
+  if (!_sceneState.UIEnabled) {
+    return;
+  }
+
+  ProfileState* profileState = _sceneState.profileState;
+  if (profileState.initStage < _minimumInitStage) {
+    return;
+  }
+
   [self stopAnimation];
 
   // Ensure that the completion is always invoked asynchronously, even if
@@ -107,6 +121,15 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InvokeChangeProfileContinuation,
                                 std::move(_continuation), _sceneState));
+
+  // Stop observing the ProfileState and the SceneState.
+  [profileState removeObserver:self];
+  [_sceneState removeObserver:self];
+
+  // Uninstall self as an associated object for the SceneState, as the wait
+  // is complete and the object not needed anymore.
+  objc_setAssociatedObject(_sceneState, [self associationKey], nil,
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 // Returns a unique pointer that can be used to attach the current instance

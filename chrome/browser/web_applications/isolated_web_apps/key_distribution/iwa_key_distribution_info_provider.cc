@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
@@ -89,6 +90,16 @@ base::TaskPriority GetLoadTaskPriority() {
 #else
   return base::TaskPriority::BEST_EFFORT;
 #endif
+}
+
+bool IsOnDemandUpdateSupported() {
+  // `switches::kDisableComponentUpdate` is set by default in
+  // browsertests.
+  return component_updater::IwaKeyDistributionComponentInstallerPolicy::
+             IsSupported() &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableComponentUpdate) &&
+         g_browser_process && g_browser_process->component_updater();
 }
 
 }  // namespace
@@ -210,11 +221,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
-  if (!component_updater::IwaKeyDistributionComponentInstallerPolicy::
-          IsSupported() ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableComponentUpdate)) {
-    // `switches::kDisableComponentUpdate` is set by default in browsertests.
+  if (!IsOnDemandUpdateSupported()) {
     return AlreadySignalled();
   }
 
@@ -271,7 +278,7 @@ void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
     const base::Version& version,
-    bool is_preloaded) const {
+    bool is_preloaded) {
   if (data_ && version.IsValid()) {
     // Custom key rotations via chrome://web-app-internals (indicated by an
     // invalid version) should not be logged.
@@ -281,19 +288,15 @@ void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
                                       : IwaComponentUpdateSource::kDownloaded);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnComponentUpdateSuccess(version, is_preloaded);
-  }
+  observers_.Notify(&Observer::OnComponentUpdateSuccess, version, is_preloaded);
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
-    const base::Version& component_version,
-    IwaComponentUpdateError error) const {
+    const base::Version& version,
+    IwaComponentUpdateError error) {
   base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateError, error);
 
-  for (auto& observer : observers_) {
-    observer.OnComponentUpdateError(component_version, error);
-  }
+  observers_.Notify(&Observer::OnComponentUpdateError, version, error);
 }
 
 void IwaKeyDistributionInfoProvider::

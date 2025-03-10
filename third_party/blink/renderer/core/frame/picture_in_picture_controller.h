@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 
+#include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -93,6 +94,11 @@ class CORE_EXPORT PictureInPictureController
 
   // Notifies that one of the states used by Picture-in-Picture has changed.
   virtual void OnPictureInPictureStateChange() = 0;
+
+  // Notifies that the media position has changed for the player in
+  // Picture-in-Picture.
+  virtual void OnMediaPositionStateChanged(
+      const media_session::mojom::blink::MediaPositionPtr& media_position) = 0;
 
   // Returns element currently in Picture-in-Picture if any. Null otherwise.
   virtual Element* PictureInPictureElement() const = 0;

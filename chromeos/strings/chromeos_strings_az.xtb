@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK Versiyası:</translation>
 <translation id="2016697457005847575">Nasazlıqların aradan qaldırılması addımlarını sınayın</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Tema seçdikdən sonra Sİ şəkillərini fərdiləşdirmək üçün altından xətt çəkilən sözləri seçin.</translation>
 <translation id="2045814230297767491">süfrə aksesuarları</translation>
 <translation id="2047316797244836561">Ekran qoruyucusu görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">fərqli planet</translation>
 <translation id="6359706544163531585">İşıqlı temanı deaktiv edin</translation>
 <translation id="6359919876285606596">Bu əməliyyat daimidir və geri qaytarıla bilməz</translation>
-<translation id="6368342879959028556">"Sİ ilə yaradın" seçdiyiniz zaman fərdi sorğu yazın. Ya da mövzu seçmək üçün "Sİ divar kağızları" seçə, daha sonra Sİ divar kağızınızı fərdiləşdirmək üçün altından xətt çəkilmiş sözləri seçə bilərsiniz.</translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="6369221585240879141">Bu transkript dili üçün qeydəalma adları yaratmaq mümkün deyil</translation>
 <translation id="6373461326814131011">gölməçə</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Sistem xidmətlərinin məkan istifadəsinə icazə verilsin?</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="66621959568103627">mərcan çəhrayısı</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unikal və müxtəlif Sİ şəkilləri üçün "Təsadüfi" seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Sİ ilə yaradıcılıq zamanı <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> uyğun olaraq şəkil yaratmaq və məhsul təkmilləşdirmək sorğusu Google Sİ serverlərinə göndərilir.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yaradan Sİ təcrübidir, ilkin hazırlanma mərhələsindədir və hazırda məhdud əlçatanlığa malikdir.</translation>
 <translation id="6673898378497337661">klaviatura parlaqlığını artırın</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
 <translation id="6694534975463174713">kilid</translation>

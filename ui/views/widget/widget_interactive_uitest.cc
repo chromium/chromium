@@ -410,7 +410,9 @@ void DeactivateSync(Widget* widget) {
   // activating (and closing) a temporary widget.
   widget->widget_delegate()->SetCanActivate(false);
   Widget* stealer = new Widget;
-  stealer->Init(Widget::InitParams(Widget::InitParams::TYPE_WINDOW));
+  stealer->Init(
+      Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW));
   ShowSync(stealer);
   stealer->CloseNow();
   widget->widget_delegate()->SetCanActivate(true);

@@ -4425,6 +4425,8 @@ bool LayoutBox::IsReadingFlowContainer() const {
     case EReadingFlow::kGridColumns:
     case EReadingFlow::kGridOrder:
       return IsLayoutGrid();
+    case EReadingFlow::kSourceOrder:
+      return IsLayoutBlock() || IsFlexibleBox() || IsLayoutGrid();
   }
   return false;
 }

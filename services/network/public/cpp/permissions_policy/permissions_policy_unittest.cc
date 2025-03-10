@@ -29,25 +29,17 @@ namespace network {
 namespace {
 
 const network::mojom::PermissionsPolicyFeature kDefaultOnFeature =
-    static_cast<network::mojom::PermissionsPolicyFeature>(
-        static_cast<int>(network::mojom::PermissionsPolicyFeature::kMaxValue) +
-        1);
+    network::mojom::PermissionsPolicyFeature::kDeferredFetchMinimal;
 
 const network::mojom::PermissionsPolicyFeature kDefaultSelfFeature =
-    static_cast<network::mojom::PermissionsPolicyFeature>(
-        static_cast<int>(network::mojom::PermissionsPolicyFeature::kMaxValue) +
-        2);
+    network::mojom::PermissionsPolicyFeature::kAmbientLightSensor;
 
 const network::mojom::PermissionsPolicyFeature kDefaultOffFeature =
-    static_cast<network::mojom::PermissionsPolicyFeature>(
-        static_cast<int>(network::mojom::PermissionsPolicyFeature::kMaxValue) +
-        3);
+    network::mojom::PermissionsPolicyFeature::kUnload;
 
-// This feature is defined in code, but not present in the feature list.
+// This feature is defined in mojo, but not present in the feature list.
 const network::mojom::PermissionsPolicyFeature kUnavailableFeature =
-    static_cast<network::mojom::PermissionsPolicyFeature>(
-        static_cast<int>(network::mojom::PermissionsPolicyFeature::kMaxValue) +
-        4);
+    network::mojom::PermissionsPolicyFeature::kNotFound;
 
 }  // namespace
 
@@ -135,7 +127,7 @@ class PermissionsPolicyTest : public testing::Test {
   bool PolicyContainsInheritedValue(
       const PermissionsPolicy* policy,
       network::mojom::PermissionsPolicyFeature feature) {
-    return base::Contains(policy->inherited_policies_, feature);
+    return policy->inherited_policies_.Contains(feature);
   }
 
   url::Origin origin_a_ = url::Origin::Create(GURL("https://example.com/"));

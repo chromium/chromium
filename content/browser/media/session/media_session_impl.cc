@@ -623,6 +623,19 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
     ResetDurationUpdateGuard();
   }
 
+  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
+  // or not the position has actually changed, since there may or may not have
+  // been a picture-in-picture window last time we updated. We also must only
+  // give the VideoPictureInPictureWindowControllerImpl a position if it's been
+  // explicitly set by the website (and not calculated based on players like
+  // below), since the VideoPictureInPictureWindowControllerImpl has its own
+  // connection for its specific player which may be different.
+  if (auto* pip_window_controller =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller->MediaSessionPositionChanged(position);
+  }
+
   // If we only have a single player then we should use the position from that.
   if (!position && normal_players_.size() == 1 && one_shot_players_.empty() &&
       pepper_players_.empty()) {
@@ -637,15 +650,6 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
 
       position = MaybeGuardDurationUpdate(position);
     }
-  }
-
-  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
-  // or not the position has actually changed, since there may or may not have
-  // been a picture-in-picture window last time we updated.
-  if (auto* pip_window_controller_ =
-          VideoPictureInPictureWindowControllerImpl::FromWebContents(
-              web_contents())) {
-    pip_window_controller_->MediaSessionPositionChanged(position);
   }
 
   if (position == position_)

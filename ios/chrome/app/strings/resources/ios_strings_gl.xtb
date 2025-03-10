@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Ao continuar, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1062138828266376352">Non se modificou o PIN. Comproba a túa conexión a Internet e téntao de novo</translation>
+<translation id="1072476005125066234">Recensións en función dos teus intereses</translation>
 <translation id="1074827084851510304">Vas eliminar {password_count} contrasinais e a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestana}other{{count} pestanas}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386">Hai <ph name="COUNT" /> contas nas que se usa o mesmo contrasinal</translation>
 <translation id="2059166748188874810">Concello</translation>
 <translation id="2060114494785549741">Eliminar dentro dun mes</translation>
+<translation id="2060638295449304809">Este enderezo está gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">Selector do tipo de unidade</translation>
 <translation id="2067852168641682340">Gardar sempre nesta conta</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 pestana}other{{count} pestanas}}</translation>
@@ -888,6 +890,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 máis}other{{domain} e {count} máis}}</translation>
 <translation id="4826588772550366629">cámara e micrófono</translation>
+<translation id="4828431027673677473">Produtos en función dos teus intereses</translation>
 <translation id="4833786495304741580">Envía estatísticas de uso e informes de fallos automaticamente a Google.</translation>
 <translation id="483689884442613745">Gardar…</translation>
 <translation id="4840495572919996524">Os marcadores, o historial, os contrasinais e outros datos deixarán de sincronizarse coa túa Conta de Google.</translation>
@@ -1724,6 +1727,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="828291969289324795">{count,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8289930144142009940">As notificacións de <ph name="FEATURE_NAME" /> están desactivadas</translation>
+<translation id="8290077367744012649">Facer un seguimento dos prezos das túas pestanas</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
 <translation id="8319076807703933069">Nova busca</translation>

@@ -58,7 +58,7 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
 
   GURL refresh_url(bound_session_params.refresh_url());
   if (!refresh_url.is_valid() ||
-      net::SchemefulSite(site) != net::SchemefulSite(refresh_url)) {
+      !net::SchemefulSite::IsSameSite(site, refresh_url)) {
     return false;
   }
 
@@ -134,7 +134,7 @@ GURL ResolveEndpointPath(const GURL& request_url,
       base::UnescapeRule::PATH_SEPARATORS |
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
   GURL result = request_url.Resolve(unescaped);
-  if (net::SchemefulSite(result) == net::SchemefulSite(request_url)) {
+  if (net::SchemefulSite::IsSameSite(result, request_url)) {
     return result;
   }
 

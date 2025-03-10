@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MediaDeviceIdSalt) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Test that Sync is paused when cookies are cleared.
+// Test that Sync is not paused when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncToken) {
   Profile* profile = browser()->profile();
   // Set a Gaia cookie.
@@ -405,24 +405,20 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncToken) {
       AddAccountToProfile(kSecondaryAccountId, profile, /*is_primary=*/false);
   // Clear cookies.
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
-  // Check that the Sync account was not removed and Sync was paused.
+  // Check that the primary account was not removed and has valid auth.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(primary_account.account_id));
-  EXPECT_EQ(
-      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-          CREDENTIALS_REJECTED_BY_CLIENT,
-      identity_manager
-          ->GetErrorStateOfRefreshTokenForAccount(primary_account.account_id)
-          .GetInvalidGaiaCredentialsReason());
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account.account_id));
   // Check that the secondary token was revoked.
   EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(
       secondary_account.account_id));
 }
 
-// Test that Sync is not paused when cookies are cleared, if synced data is
-// being deleted.
+// Test that Sync is not paused when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
                        SyncTokenScopedDeletion) {
   Profile* profile = browser()->profile();
@@ -435,10 +431,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
   const char kSecondaryAccountId[] = "secondary_account_id";
   AccountInfo secondary_account =
       AddAccountToProfile(kSecondaryAccountId, profile, /*is_primary=*/false);
-  // Sync data is being deleted.
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-      AccountReconcilorFactory::GetForProfile(profile)
-          ->GetScopedSyncDataDeletion();
   // Clear cookies.
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
   // Check that the Sync token was not revoked.
@@ -453,14 +445,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
       secondary_account.account_id));
 }
 
-// Test that Sync is paused when cookies are cleared if Sync was in error, even
-// if synced data is being deleted.
+// Test that Sync is left in error when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncTokenError) {
   Profile* profile = browser()->profile();
   // Set a Gaia cookie.
   ASSERT_TRUE(SetGaiaCookieForProfile(profile));
   // Set a Sync account with authentication error.
   const char kAccountId[] = "account_id";
+
   AccountInfo primary_account =
       AddAccountToProfile(kAccountId, profile, /*is_primary=*/true);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -470,10 +462,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncTokenError) {
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
 
-  // Sync data is being deleted.
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-      AccountReconcilorFactory::GetForProfile(profile)
-          ->GetScopedSyncDataDeletion();
   // Clear cookies.
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
   // Check that the account was not removed and Sync was paused.
@@ -481,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncTokenError) {
       identity_manager->HasAccountWithRefreshToken(primary_account.account_id));
   EXPECT_EQ(
       GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-          CREDENTIALS_REJECTED_BY_CLIENT,
+          CREDENTIALS_REJECTED_BY_SERVER,
       identity_manager
           ->GetErrorStateOfRefreshTokenForAccount(primary_account.account_id)
           .GetInvalidGaiaCredentialsReason());

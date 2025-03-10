@@ -1370,8 +1370,8 @@ bool PrivacySandboxServiceImpl::IsPartOfManagedRelatedWebsiteSet(
     const net::SchemefulSite& site) const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
     return IsRelatedWebsiteSetsDataAccessManaged() ||
-           GetSampleRelatedWebsiteSets()[site] ==
-               net::SchemefulSite(GURL("https://chromium.org"));
+           GetSampleRelatedWebsiteSets()[site].IsSameSiteWith(
+               GURL("https://chromium.org"));
   }
 
   return first_party_sets_policy_service_->IsSiteInManagedSet(site);

@@ -102,7 +102,7 @@ class CONTENT_EXPORT CacheStorageManager
 
   void NotifyCacheListChanged(const storage::BucketLocator& bucket_locator);
   void NotifyCacheContentChanged(const storage::BucketLocator& bucket_locator,
-                                 const std::string& name);
+                                 const std::u16string& name);
 
   base::FilePath profile_path() const { return profile_path_; }
 

@@ -204,12 +204,7 @@ size_t CloudBinaryUploadService::GetParallelActiveRequestsMax() {
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
       profile_(profile),
-      weakptr_factory_(this) {
-  // Only initialize binary_fcm_service_ if the experiment is off.
-  if (!enterprise_connectors::IsStopRegisterFcmEnabled()) {
-    binary_fcm_service_ = BinaryFCMService::Create(profile);
-  }
-}
+      weakptr_factory_(this) {}
 
 CloudBinaryUploadService::CloudBinaryUploadService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -217,14 +212,7 @@ CloudBinaryUploadService::CloudBinaryUploadService(
     std::unique_ptr<BinaryFCMService> binary_fcm_service)
     : url_loader_factory_(url_loader_factory),
       profile_(profile),
-      weakptr_factory_(this) {
-  {
-    // Only initialize binary_fcm_service_ if the experiment is off.
-    if (!enterprise_connectors::IsStopRegisterFcmEnabled()) {
-      binary_fcm_service_ = std::move(binary_fcm_service);
-    }
-  }
-}
+      weakptr_factory_(this) {}
 
 CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 

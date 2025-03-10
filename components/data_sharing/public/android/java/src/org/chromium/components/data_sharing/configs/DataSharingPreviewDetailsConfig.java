@@ -6,11 +6,15 @@ package org.chromium.components.data_sharing.configs;
 
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /** Preview details images in join flow */
+@NullMarked
 public final class DataSharingPreviewDetailsConfig {
-    private final List<TabPreview> mTabPreviews;
+    private final @Nullable List<TabPreview> mTabPreviews;
 
     /** Preview entry for a tab in the details view */
     public static final class TabPreview {
@@ -25,17 +29,17 @@ public final class DataSharingPreviewDetailsConfig {
         }
     }
 
-    private DataSharingPreviewDetailsConfig(List<TabPreview> tabPreviews) {
+    private DataSharingPreviewDetailsConfig(@Nullable List<TabPreview> tabPreviews) {
         this.mTabPreviews = tabPreviews;
     }
 
-    public List<TabPreview> getTabPreviews() {
+    public @Nullable List<TabPreview> getTabPreviews() {
         return mTabPreviews;
     }
 
     // Builder class
     public static class Builder {
-        private List<TabPreview> mTabPreviews;
+        private @Nullable List<TabPreview> mTabPreviews;
 
         /** The list of tab previews. */
         public Builder setTabPreviews(List<TabPreview> tabPreviews) {

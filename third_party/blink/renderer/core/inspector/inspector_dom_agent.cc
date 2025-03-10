@@ -1487,6 +1487,9 @@ protocol::Response InspectorDOMAgent::NodeForRemoteObjectId(
   v8::Local<v8::Value> value;
   v8::Local<v8::Context> context;
   std::unique_ptr<v8_inspector::StringBuffer> error;
+  if (!v8_session_) {
+    return protocol::Response::ServerError("The agent has been detached");
+  }
   if (!v8_session_->unwrapObject(&error, ToV8InspectorStringView(object_id),
                                  &value, &context, nullptr)) {
     return protocol::Response::ServerError(
@@ -1758,6 +1761,8 @@ protocol::Response InspectorDOMAgent::resolveNode(
 
   if (!node)
     return protocol::Response::ServerError("No node with given id found");
+  // This should only be called via CDP, so agent should not be detached.
+  CHECK(v8_session_);
   *result = ResolveNode(v8_session_, node, object_group_name,
                         std::move(execution_context_id));
   if (!*result) {
@@ -2824,6 +2829,8 @@ protocol::Response InspectorDOMAgent::setInspectedNode(int node_id) {
   protocol::Response response = AssertNode(node_id, node);
   if (!response.IsSuccess())
     return response;
+  // Method should only be called from CDP, so won't happen after detach.
+  CHECK(v8_session_);
   v8_session_->addInspectedObject(std::make_unique<InspectableNode>(node));
   return protocol::Response::Success();
 }
@@ -2957,6 +2964,9 @@ protocol::Response InspectorDOMAgent::getFrameOwner(
 
 protocol::Response InspectorDOMAgent::getFileInfo(const String& object_id,
                                                   String* path) {
+  // Method is only called from CDP, so will not be called after Detach().
+  CHECK(isolate_);
+  CHECK(v8_session_);
   v8::HandleScope handles(isolate_);
   v8::Local<v8::Value> value;
   v8::Local<v8::Context> context;
@@ -3051,6 +3061,12 @@ void InspectorDOMAgent::Trace(Visitor* visitor) const {
   visitor->Trace(dom_editor_);
   visitor->Trace(node_to_creation_source_location_map_);
   InspectorBaseAgent::Trace(visitor);
+}
+
+void InspectorDOMAgent::Dispose() {
+  InspectorBaseAgent<protocol::DOM::Metainfo>::Dispose();
+  isolate_ = nullptr;
+  v8_session_ = nullptr;
 }
 
 }  // namespace blink

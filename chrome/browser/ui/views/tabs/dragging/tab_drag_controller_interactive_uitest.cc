@@ -487,7 +487,7 @@ Browser* TabDragControllerTest::CreateAnotherBrowserAndResize() {
   gfx::Rect browser_rect(work_area.origin() + gfx::Vector2d(50, 50), size);
 
   if (test::PlatformSupportsScreenCoordinates()) {
-    browser()->window()->SetBounds(browser_rect);
+    ui_test_utils::SetAndWaitForBounds(*browser(), browser_rect);
     browser_rect.set_x(browser_rect.right());
   } else {
     test::ResizeUsingMouseEmulation(browser(), browser_rect);
@@ -509,7 +509,7 @@ Browser* TabDragControllerTest::CreateAnotherBrowserAndResize() {
   Browser* browser2 = CreateBrowser(browser()->profile());
   ResetIDs(browser2->tab_strip_model(), 100);
   if (test::PlatformSupportsScreenCoordinates()) {
-    browser2->window()->SetBounds(browser_rect);
+    ui_test_utils::SetAndWaitForBounds(*browser2, browser_rect);
   } else {
     test::ResizeUsingMouseEmulation(browser2, browser_rect);
   }

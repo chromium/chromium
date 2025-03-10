@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/input_methods_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
@@ -108,10 +107,6 @@
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
-#if BUILDFLAG(USE_CUPS)
-#include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
-#endif  // BUILDFLAG(USE_CUPS)
-
 namespace crosapi {
 namespace {
 
@@ -166,7 +161,6 @@ CrosapiAsh::CrosapiAsh()
       full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
-      idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       input_methods_ash_(std::make_unique<InputMethodsAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
@@ -184,9 +178,6 @@ CrosapiAsh::CrosapiAsh()
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
       nonclosable_app_toast_service_ash_(
           std::make_unique<NonclosableAppToastServiceAsh>()),
-#if BUILDFLAG(USE_CUPS)
-      printing_metrics_ash_(std::make_unique<PrintingMetricsAsh>()),
-#endif  // BUILDFLAG(USE_CUPS)
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
@@ -380,11 +371,6 @@ void CrosapiAsh::BindIdentityManager(
   identity_manager_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindIdleService(
-    mojo::PendingReceiver<crosapi::mojom::IdleService> receiver) {
-  idle_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindInputMethods(
     mojo::PendingReceiver<mojom::InputMethods> receiver) {
   input_methods_ash_->BindReceiver(std::move(receiver));
@@ -506,13 +492,6 @@ void CrosapiAsh::BindNonclosableAppToastService(
 void CrosapiAsh::BindPrintPreviewCrosDelegate(
     mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) {
   print_preview_webcontents_adapter_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPrintingMetrics(
-    mojo::PendingReceiver<mojom::PrintingMetrics> receiver) {
-#if BUILDFLAG(USE_CUPS)
-  printing_metrics_ash_->BindReceiver(std::move(receiver));
-#endif  // BUILDFLAG(USE_CUPS)
 }
 
 void CrosapiAsh::BindReceiver(

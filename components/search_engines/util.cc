@@ -258,8 +258,7 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
   url_to_update->sync_guid = original_turl->sync_guid();
   url_to_update->date_created = original_turl->date_created();
   url_to_update->last_modified = original_turl->last_modified();
-  url_to_update->created_from_play_api =
-      original_turl->data().created_from_play_api;
+  url_to_update->regulatory_origin = original_turl->data().regulatory_origin;
 }
 
 ActionsFromCurrentData::ActionsFromCurrentData() = default;

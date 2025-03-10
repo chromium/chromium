@@ -48,7 +48,7 @@ class MockWindowController : public GlicWindowController {
   ~MockWindowController() override = default;
 
   bool IsShowing() const override { return showing_; }
-  bool IsAttached() override { return attached_; }
+  bool IsAttached() const override { return attached_; }
   bool showing_ = false;
   bool attached_ = false;
 };

@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -130,8 +131,10 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
 
         if (hasTabGroups()) {
             showBottomSheet(tabs, filter, profile, controller);
+            RecordUserAction.record("TabGroupParity.TabListEditorMenuActions.GroupsExist");
         } else {
             createNewTabGroup(tabs, filter, destinationTab);
+            RecordUserAction.record("TabGroupParity.TabListEditorMenuActions.NoGroupsExist");
         }
 
         return true;

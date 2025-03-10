@@ -1494,7 +1494,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
         EnumForPredicate(element_type));
   } else {
     // When TalkBack isn't running, split by AXMode (for TB we know we will for
-    // sure be in a mode with kScreenReader).
+    // sure be in a mode with kExtendedProperties).
     BrowserAccessibilityStateImpl* accessibility_state =
         BrowserAccessibilityStateImpl::GetInstance();
     ui::AXMode mode = accessibility_state->GetAccessibilityMode();

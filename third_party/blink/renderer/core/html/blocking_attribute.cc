@@ -74,6 +74,10 @@ void BlockingAttribute::OnAttributeValueChanged(const AtomicString& old_value,
   if (contains(keywords::kRender)) {
     GetElement().GetDocument().CountUse(
         WebFeature::kBlockingAttributeRenderToken);
+  } else if (contains(keywords::kFullFrameRate) &&
+             RuntimeEnabledFeatures::RenderBlockingFullFrameRateEnabled()) {
+    GetElement().GetDocument().CountUse(
+        WebFeature::kBlockingAttributeFullFrameRateToken);
   }
 }
 

@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "skia/ext/convolver.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkRect.h"
 
 namespace skia {

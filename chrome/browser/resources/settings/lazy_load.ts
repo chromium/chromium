@@ -128,13 +128,15 @@ export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} 
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
-export {EntityDataManagerProxy, EntityDataManagerProxyImpl} from './autofill_page/entity_data_manager_proxy.js';
+export {EntityDataManagerProxy, EntityDataManagerProxyImpl, EntityInstancesChangedListener} from './autofill_page/entity_data_manager_proxy.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
 export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 // <if expr="is_win or is_macosx">
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
+export {SettingsPayOverTimeIssuerListEntryElement} from './autofill_page/pay_over_time_issuer_list_entry.js';
+export {SettingsPaymentsListElement} from './autofill_page/payments_list.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';

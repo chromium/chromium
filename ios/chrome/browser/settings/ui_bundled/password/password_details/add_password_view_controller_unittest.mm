@@ -54,11 +54,6 @@ constexpr char kPassword[] = "test";
 @implementation FakeAddPasswordDelegate
 
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
-         didEditCredentialDetails:(CredentialDetails*)credential {
-  self.credential = credential;
-}
-
-- (void)addPasswordViewController:(AddPasswordViewController*)viewController
             didAddPasswordDetails:(NSString*)username
                          password:(NSString*)password
                              note:(NSString*)note {

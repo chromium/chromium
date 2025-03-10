@@ -115,6 +115,10 @@ bool GlicKeyedService::IsWindowShowing() const {
   return window_controller_->IsShowing();
 }
 
+bool GlicKeyedService::IsWindowDetached() const {
+  return window_controller_->IsDetached();
+}
+
 void GlicKeyedService::NotifyWindowIntentToShow() {
   for (auto& handler : page_handlers_) {
     handler->NotifyWindowIntentToShow();

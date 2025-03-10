@@ -65,19 +65,15 @@ using l10n_util::GetNSStringF;
   return self;
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   __weak __typeof(self) weakSelf = self;
   void (^cancelCompletion)(void) = ^() {
     // The reauthentication callback is dropped when the dialog is canceled.
     // The completion block has to be called explicitly.
     [weakSelf runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                          completionIdentity:nil];
-    if (completion) {
-      completion();
-    }
   };
   // This coordinator should be either showing an error dialog or the trusted
   // vault dialog.

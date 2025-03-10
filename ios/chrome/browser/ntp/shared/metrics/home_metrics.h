@@ -21,7 +21,7 @@ enum class IOSHomeActionType {
   kSetUpList = 5,
   kOmnibox = 6,
   kSafetyCheck = 7,
-  kParcelTracking = 8,
+  // Removed: kParcelTracking = 8,
   kOpenDistantTabResumption = 9,
   kPriceTrackingPromo = 10,
   kTips = 11,

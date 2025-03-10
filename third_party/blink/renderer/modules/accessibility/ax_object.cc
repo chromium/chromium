@@ -1388,7 +1388,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeBoundingBoxAttributes(*node_data);
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+  if (accessibility_mode.has_mode(ui::AXMode::kExtendedProperties)) {
     // TODO(accessibility) We serialize these even on ignored nodes, in order
     // for the browser side to compute inherited colors for descendants, but we
     // do not ensure that elements that change foreground/background color are
@@ -1398,7 +1398,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeColorAttributes(node_data);  // Blends using all nodes' values.
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
+  if (accessibility_mode.has_mode(ui::AXMode::kExtendedProperties) ||
       accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     SerializeLangAttribute(node_data);  // Propagates using all nodes' values.
   }
@@ -1423,7 +1423,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeUnignoredAttributes(node_data, accessibility_mode, is_snapshot);
 
-  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+  if (!accessibility_mode.has_mode(ui::AXMode::kExtendedProperties)) {
     // Return early. None of the following attributes are needed outside of
     // screen reader mode.
     return;
@@ -1936,8 +1936,9 @@ void AXObject::SerializeNameAndDescriptionAttributes(
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kTooltip, title);
 
-  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+  if (!accessibility_mode.has_mode(ui::AXMode::kExtendedProperties)) {
     return;
+  }
 
   String placeholder = Placeholder(name_from);
   TruncateAndAddStringAttribute(
@@ -2371,7 +2372,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                             bool is_snapshot) const {
   SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
 
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+  if (accessibility_mode.has_mode(ui::AXMode::kExtendedProperties)) {
     SerializeMarkerAttributes(node_data);
 #if BUILDFLAG(IS_ANDROID)
     // On Android, style attributes are only serialized for snapshots, or, when
@@ -2458,7 +2459,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   else if (Orientation() == blink::kAccessibilityOrientationHorizontal)
     node_data->AddState(ax::mojom::blink::State::kHorizontal);
 
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
+  if (accessibility_mode.has_mode(ui::AXMode::kExtendedProperties) ||
       accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     // Heading level.
     if (ui::IsHeading(role) && HeadingLevel()) {
@@ -7725,12 +7726,19 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
     const gfx::Rect& rect,
     blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
     blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
-  LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
+  const LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
   if (!layout_object)
     return false;
 
   PhysicalRect target_rect =
       layout_object->LocalToAbsoluteRect(PhysicalRect(rect));
+  // To scroll an element into view, we don't scroll the element itself
+  // unless it is the document scrolling element.
+  // TODO(crbug.com/401443093): Consider moving this logic further down
+  // affecting focus and scrollIntoView calls as well.
+  if (const LayoutObject* container = layout_object->Container()) {
+    layout_object = container;
+  }
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
       scroll_into_view_util::CreateScrollIntoViewParams(

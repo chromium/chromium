@@ -445,15 +445,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 }
 
-- (void)didFinishEditingPasswordDetails {
+- (void)didFinishEditingCredentialDetails {
   [self providePasswordsToConsumer];
-}
-
-- (void)passwordDetailsViewController:
-            (PasswordDetailsTableViewController*)viewController
-                didAddPasswordDetails:(NSString*)username
-                             password:(NSString*)password {
-  NOTREACHED();
 }
 
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {

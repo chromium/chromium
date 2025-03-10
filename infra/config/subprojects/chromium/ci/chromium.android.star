@@ -3644,6 +3644,9 @@ ci.builder(
                     "--timeout-scale=2.0",
                 ],
             ),
+            "content_browsertests": targets.remove(
+                reason = "TODO(crbug.com/40152686): Temporarily remove it from android-11 ci builder until it is stable.",
+            ),
             "crashpad_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",

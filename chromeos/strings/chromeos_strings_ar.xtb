@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">‏إصدار حزمة تطوير البرامج (SDK):</translation>
 <translation id="2016697457005847575">تجربة خطوات تحديد المشاكل وحلّها</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">‏يمكنك اختيار مظهر والنقر على الكلمات التي تحتها خط لتخصيص صورك التي أنشأها الذكاء الاصطناعي (AI).</translation>
 <translation id="2045814230297767491">أدوات مائدة</translation>
 <translation id="2047316797244836561">يُرجى الاتصال بشبكة وإعادة تحميل الصفحة لعرض شاشة الاستراحة.</translation>
 <translation id="2056550196601855911">‫IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">كوكب مختلف</translation>
 <translation id="6359706544163531585">إيقاف المظهر الفاتح</translation>
 <translation id="6359919876285606596">هذا الإجراء نهائي ولا يمكن التراجع عنه</translation>
-<translation id="6368342879959028556">‏عند اختيار "الإنشاء باستخدام الذكاء الاصطناعي (AI)"، اكتب طلبًا مخصّصًا. أو يمكنك أيضًا اختيار "خلفيات قائمة على الذكاء الاصطناعي" لاختيار مظهر ثمّ النقر على الكلمات التي تحتها خط لتخصيص خلفيتك القائمة على الذكاء الاصطناعي.</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
 <translation id="6369221585240879141">يتعذّر إنشاء أسماء تسجيلات للغة الطلب الصوتي هذه</translation>
 <translation id="6373461326814131011">بِركة صناعية</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">هل تريد السماح لخدمات النظام باستخدام موقعك الجغرافي؟</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="66621959568103627">وردي مرجاني</translation>
-<translation id="6667885109186363316">‏<ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          للحصول على صور كثيرة ومتنوعة من إنشاء الذكاء الاصطناعي، انقر على "أريد أفكارًا جديدة".
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          عند إنشاء الصور باستخدام الذكاء الاصطناعي، يتم إرسال الطلب إلى خوادم الذكاء الاصطناعي من Google لإنشاء الصور وتحسين المنتج، ويخضع ذلك لـ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />سياسة خصوصية Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ما زال الذكاء الاصطناعي التوليدي في المرحلة التجريبية ومراحل التطوير الأولى ويتوفّر حاليًا بشكل محدود.</translation>
 <translation id="6673898378497337661">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="6692996468359469499">الحصول على معلومات ذات صلة باختيارك</translation>
 <translation id="6694534975463174713">رمز القفل</translation>

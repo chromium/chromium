@@ -4,7 +4,11 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
 
-#include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
+#include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 
@@ -14,24 +18,23 @@ PrintingMetricsGetPrintJobsFunction::~PrintingMetricsGetPrintJobsFunction() =
     default;
 
 ExtensionFunction::ResponseAction PrintingMetricsGetPrintJobsFunction::Run() {
-  PrintingMetricsService::Get(browser_context())
+  ash::PrintJobHistoryServiceFactory::GetForBrowserContext(browser_context())
       ->GetPrintJobs(base::BindOnce(
           &PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved, this));
-
   return RespondLater();
 }
 
 void PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved(
-    base::Value::List print_jobs) {
-  std::vector<api::printing_metrics::PrintJobInfo> print_job_infos;
-  for (const auto& print_job : print_jobs) {
-    std::optional<api::printing_metrics::PrintJobInfo> print_job_info =
-        api::printing_metrics::PrintJobInfo::FromValue(print_job);
-    DCHECK(print_job_info);
-    print_job_infos.emplace_back(std::move(print_job_info).value());
+    bool success,
+    std::vector<ash::printing::proto::PrintJobInfo> proto_infos) {
+  std::vector<api::printing_metrics::PrintJobInfo> api_infos;
+  if (success) {
+    for (const auto& proto_info : proto_infos) {
+      api_infos.push_back(extensions::PrintJobInfoProtoToIdl(proto_info));
+    }
   }
   Respond(ArgumentList(
-      api::printing_metrics::GetPrintJobs::Results::Create(print_job_infos)));
+      api::printing_metrics::GetPrintJobs::Results::Create(api_infos)));
 }
 
 }  // namespace extensions

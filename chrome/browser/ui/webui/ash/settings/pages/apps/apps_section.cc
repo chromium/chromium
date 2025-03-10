@@ -637,9 +637,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,
                                  chrome::kIsolatedWebAppsLearnMoreUrl));
 
-  html_source->AddBoolean("privacyHubAppPermissionsV2Enabled",
-                          features::IsCrosPrivacyHubAppPermissionsV2Enabled());
-
   html_source->AddBoolean("privacyHubLocationAccessControlEnabled",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
 

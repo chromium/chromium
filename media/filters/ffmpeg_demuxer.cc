@@ -519,8 +519,12 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       buffer->set_decrypt_config(std::move(decrypt_config));
 
   if (packet->duration >= 0) {
-    buffer->set_duration(
-        ConvertStreamTimestamp(stream_->time_base, packet->duration));
+    // Treat durations under 1ms as not having duration, later stages of the
+    // pipeline will then use the timestamps to estimate duration. Incorrect
+    // duration information can lead to stuttering effects during seeking. See
+    // https://crbug.com/397343886.
+    auto d = ConvertStreamTimestamp(stream_->time_base, packet->duration);
+    buffer->set_duration(d <= base::Milliseconds(1) ? kNoTimestamp : d);
   } else {
     // TODO(wolenetz): Remove when FFmpeg stops returning negative durations.
     // https://crbug.com/394418

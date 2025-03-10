@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.GaiaId;
 import org.chromium.url.GURL;
@@ -17,6 +18,7 @@ import java.util.Objects;
 
 /** Information about a member of a group. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class GroupMember {
     public final GaiaId gaiaId;
     public final String displayName;

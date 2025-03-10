@@ -25,6 +25,7 @@ include_rules = [
   "+chrome/browser/extensions/chrome_test_extension_loader.h",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/extensions/extension_error_controller.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/external_provider_impl.h",
   "+chrome/browser/extensions/pending_extension_manager.h",

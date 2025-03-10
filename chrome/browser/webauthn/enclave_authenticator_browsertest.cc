@@ -182,6 +182,10 @@ base::span<const uint8_t, 16> TestProtobufCredId() {
   return base::span<const uint8_t>(kTestProtobuf).subspan<20, 16>();
 }
 
+base::span<const uint8_t, 1> TestProtobufUserId() {
+  return base::span<const uint8_t>(kTestProtobuf).subspan<55, 1>();
+}
+
 static constexpr char kIsUVPAA[] = R"((() => {
   window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
     then(result => window.domAutomationController.send('IsUVPAA: ' + result),
@@ -548,6 +552,24 @@ static constexpr char kMakeCredentialConditionalCreateWithExcludeList[] =
           e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kSignalHideTestPasskey[] = R"((() => {
+  PublicKeyCredential.signalAllAcceptedCredentials({
+    rpId: "www.example.com",
+    allAcceptedCredentialIds: [],
+    userId: "AA",
+  }).then(c => window.domAutomationController.send('webauthn: OK'),
+          e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kSignalRestoreTestPasskey[] = R"((() => {
+  PublicKeyCredential.signalAllAcceptedCredentials({
+    rpId: "www.example.com",
+    allAcceptedCredentialIds: ["SHQCLMWFONoi2Iyv1AUphA"],
+    userId: "AA",
+  }).then(c => window.domAutomationController.send('webauthn: OK'),
+          e => window.domAutomationController.send('error ' + e));
+})())";
+
 bool IsReady(GPMEnclaveController::AccountState state) {
   switch (state) {
     case GPMEnclaveController::AccountState::kReady:
@@ -831,6 +853,10 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     }
     scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{device::kWebAuthnNoAccountTimeout,
+                              device::kWebAuthnSignalApiHidePasskeys},
+        /*disabled_features=*/{});
     OSCryptMocker::SetUp();
     // Log call `FIDO_LOG` messages.
     scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
@@ -1131,8 +1157,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       fake_uv_provider_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
   bool sync_feature_enabled_ = true;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnNoAccountTimeout};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class EnclaveAuthenticatorWithTimeout : public EnclaveAuthenticatorBrowserTest {
@@ -2746,6 +2771,60 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+// Tests hiding a passkey using the Signal API, then restoring it.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       SignalApiHideAndRestorePasskey) {
+  AddTestPasskeyToModel();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  // Make a request and expect to see the credential listed as a mechanism.
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  std::vector<uint8_t> user_id =
+      absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+          dialog_model()
+              ->mechanisms.at(*dialog_model()->priority_mechanism_index)
+              .type)
+          ->user_id;
+  EXPECT_EQ(base::span(user_id), TestProtobufUserId());
+  dialog_model()->CancelAuthenticatorRequest();
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+
+  // Hide the passkey.
+  content::ExecuteScriptAsync(web_contents, kSignalHideTestPasskey);
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ("\"webauthn: OK\"", script_result);
+
+  // The credential should not be offered in the next request.
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  EXPECT_TRUE(
+      std::ranges::none_of(dialog_model()->mechanisms, [](const auto& mech) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Credential>(mech.type);
+      }));
+  dialog_model()->CancelAuthenticatorRequest();
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+
+  // Restore the passkey.
+  content::ExecuteScriptAsync(web_contents, kSignalRestoreTestPasskey);
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ("\"webauthn: OK\"", script_result);
+
+  // Make a request and expect to see the credential listed again.
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  user_id = absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+                dialog_model()
+                    ->mechanisms.at(*dialog_model()->priority_mechanism_index)
+                    .type)
+                ->user_id;
+  EXPECT_EQ(base::span(user_id), TestProtobufUserId());
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,

@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK-verzió:</translation>
 <translation id="2016697457005847575">Problémamegoldási lépések kipróbálása</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Válasszon egy témát, majd válassza ki az aláhúzott szavakat az AI-képek személyre szabásához.</translation>
 <translation id="2045814230297767491">evőeszközök</translation>
 <translation id="2047316797244836561">A képernyővédő megtekintéséhez csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">másik bolygó</translation>
 <translation id="6359706544163531585">Világos téma kikapcsolása</translation>
 <translation id="6359919876285606596">Ez a művelet végleges, és nem vonható vissza.</translation>
-<translation id="6368342879959028556">Írhat egyéni utasítást a „Létrehozás AI használatával” lehetőséget választva. Másik lehetőségként kiválaszthatja az „AI-háttérképek” lehetőséget, majd választhat egy témát, és az aláhúzott szavak kiválasztásával személyre szabhatja az AI-háttérképet.</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6369221585240879141">Nem lehet felvételnevet létrehozni ehhez az átiratnyelvhez</translation>
 <translation id="6373461326814131011">tavacska</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Engedélyezi a rendszerszolgáltatásoknak a helyadatok használatát?</translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="66621959568103627">korallrózsaszín</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Amikor AI-jal hoz létre tartalmat, a rendszer elküldi az utasítást a Google AI szervereinek a képek generálásához és a termék továbbfejlesztéséhez a <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A generatív AI egy kísérleti szolgáltatás, korai fejlesztési fázisban van, és jelenleg korlátozottan áll rendelkezésre.</translation>
 <translation id="6673898378497337661">billentyűzet fényerejének növelése</translation>
 <translation id="6692996468359469499">Információk kérése a kiválasztott elemmel kapcsolatban</translation>
 <translation id="6694534975463174713">zárolás</translation>

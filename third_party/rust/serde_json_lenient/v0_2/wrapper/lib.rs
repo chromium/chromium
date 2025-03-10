@@ -20,38 +20,33 @@ mod ffi {
     unsafe extern "C++" {
         include!("third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h");
 
-        type ContextPointer;
+        type Dict;
+        type List;
 
         type Functions;
-        fn list_append_none(self: &Functions, ctx: Pin<&mut ContextPointer>);
-        fn list_append_bool(self: &Functions, ctx: Pin<&mut ContextPointer>, val: bool);
-        fn list_append_i32(self: &Functions, ctx: Pin<&mut ContextPointer>, val: i32);
-        fn list_append_f64(self: &Functions, ctx: Pin<&mut ContextPointer>, val: f64);
-        fn list_append_str(self: &Functions, ctx: Pin<&mut ContextPointer>, val: &str);
-        fn list_append_list<'a>(
-            self: &Functions,
-            ctx: Pin<&'a mut ContextPointer>,
-        ) -> Pin<&'a mut ContextPointer>;
-        fn list_append_dict<'a>(
-            self: &Functions,
-            ctx: Pin<&'a mut ContextPointer>,
-        ) -> Pin<&'a mut ContextPointer>;
+        fn list_append_none(self: &Functions, ctx: Pin<&mut List>);
+        fn list_append_bool(self: &Functions, ctx: Pin<&mut List>, val: bool);
+        fn list_append_i32(self: &Functions, ctx: Pin<&mut List>, val: i32);
+        fn list_append_f64(self: &Functions, ctx: Pin<&mut List>, val: f64);
+        fn list_append_str(self: &Functions, ctx: Pin<&mut List>, val: &str);
+        fn list_append_list<'a>(self: &Functions, ctx: Pin<&'a mut List>) -> Pin<&'a mut List>;
+        fn list_append_dict<'a>(self: &Functions, ctx: Pin<&'a mut List>) -> Pin<&'a mut Dict>;
 
-        fn dict_set_none(self: &Functions, ctx: Pin<&mut ContextPointer>, key: &str);
-        fn dict_set_bool(self: &Functions, ctx: Pin<&mut ContextPointer>, key: &str, val: bool);
-        fn dict_set_i32(self: &Functions, ctx: Pin<&mut ContextPointer>, key: &str, val: i32);
-        fn dict_set_f64(self: &Functions, ctx: Pin<&mut ContextPointer>, key: &str, val: f64);
-        fn dict_set_str(self: &Functions, ctx: Pin<&mut ContextPointer>, key: &str, val: &str);
+        fn dict_set_none(self: &Functions, ctx: Pin<&mut Dict>, key: &str);
+        fn dict_set_bool(self: &Functions, ctx: Pin<&mut Dict>, key: &str, val: bool);
+        fn dict_set_i32(self: &Functions, ctx: Pin<&mut Dict>, key: &str, val: i32);
+        fn dict_set_f64(self: &Functions, ctx: Pin<&mut Dict>, key: &str, val: f64);
+        fn dict_set_str(self: &Functions, ctx: Pin<&mut Dict>, key: &str, val: &str);
         fn dict_set_list<'f, 'a>(
             self: &Functions,
-            ctx: Pin<&'a mut ContextPointer>,
+            ctx: Pin<&'a mut Dict>,
             key: &'f str,
-        ) -> Pin<&'a mut ContextPointer>;
+        ) -> Pin<&'a mut List>;
         fn dict_set_dict<'f, 'a>(
             self: &Functions,
-            ctx: Pin<&'a mut ContextPointer>,
+            ctx: Pin<&'a mut Dict>,
             key: &'f str,
-        ) -> Pin<&'a mut ContextPointer>;
+        ) -> Pin<&'a mut Dict>;
     }
 
     extern "Rust" {
@@ -59,7 +54,7 @@ mod ffi {
             json: &[u8],
             options: &JsonOptions,
             functions: &'static Functions,
-            ctx: Pin<&mut ContextPointer>,
+            ctx: Pin<&mut List>,
             error: Pin<&mut DecodeError>,
         ) -> bool;
     }
@@ -101,9 +96,10 @@ mod ffi {
 }
 
 pub type DecodeError = ffi::DecodeError;
+pub type Dict = ffi::Dict;
 pub type JsonOptions = ffi::JsonOptions;
 pub type Functions = ffi::Functions;
-pub type ContextPointer = ffi::ContextPointer;
+pub type List = ffi::List;
 
 /// Decode a JSON input from `json` and call back out to functions defined in
 /// `options` when visiting each node in order for the caller to construct an
@@ -125,7 +121,7 @@ pub fn decode_json(
     options: &JsonOptions,
     functions: &'static Functions,
     // TODO(danakj): Use std::ptr::NonNull when the binding generator supports it.
-    ctx: Pin<&mut ContextPointer>,
+    ctx: Pin<&mut List>,
     // TODO(danakj): Return `Result<(), DecodeError>` once the binding generator supports it.
     mut error: Pin<&mut DecodeError>,
 ) -> bool {

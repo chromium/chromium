@@ -107,10 +107,10 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
                    /*format_string=*/u"", VerificationStatus::kNoStatus);
       country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"",
                       /*format_string=*/u"", VerificationStatus::kNoStatus);
-      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"2098-09-01",
+      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE, u"2098-09-01",
                           /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
                           VerificationStatus::kNoStatus);
-      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"1998-10-11",
+      issue_date.SetInfo(PASSPORT_ISSUE_DATE, u"1998-10-11",
                          /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
                          VerificationStatus::kNoStatus);
       table.AddOrUpdateEntityInstance(EntityInstance(

@@ -845,17 +845,23 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   // is the active duration or scaled active duration depending on the magnitude
   // of the playback rate. If this value cannot be expressed in int64, then we
   // cannot composite the animation.
+  // TODO(crbug.com/401244300): Consider treating animations with an effectively
+  // infinite iteration duration as static, since they don't require ticking on
+  // the compositor or main.
+  AnimationTimeDelta duration_saturation_check = out.scaled_duration;
   if (animation_playback_rate < 0) {
-    AnimationTimeDelta active_duration =
-        out.scaled_duration * out.adjusted_iteration_count;
-    if (std::abs(animation_playback_rate) < 1) {
-      active_duration /= std::abs(animation_playback_rate);
-    }
-    // base::TimeDelta ticks are in microseconds.
-    if (active_duration.InSecondsF() >
-        std::numeric_limits<int64_t>::max() / 1e6) {
-      return false;
-    }
+    // When the playback rate is positive, we only require that a single
+    // iteration has a finite duration; however, when negative, the entire
+    // active duration must be finite.
+    duration_saturation_check *= out.adjusted_iteration_count;
+  }
+  if (std::abs(animation_playback_rate) < 1) {
+    duration_saturation_check /= std::abs(animation_playback_rate);
+  }
+  // base::TimeDelta ticks are in microseconds.
+  if (duration_saturation_check.InSecondsF() >
+      std::numeric_limits<int64_t>::max() / 1e6) {
+    return false;
   }
 
   DCHECK_GT(out.scaled_duration, AnimationTimeDelta());

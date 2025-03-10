@@ -111,6 +111,16 @@ export declare interface GlicWebClient {
    * @deprecated: Not supported anymore and will eventually be removed.
    */
   notifyPanelClosed?(): Promise<void>;
+
+
+  /**
+   * The web client should resolve the promise after verifying the app is
+   * responsive.
+   *
+   * If the host receives no response within 500 ms, it will flag the web client
+   * as unresponsive and displaying an error state to the user.
+   */
+  checkResponsive?(): Promise<void>;
 }
 
 /**

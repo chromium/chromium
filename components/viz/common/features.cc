@@ -40,13 +40,11 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If this flag is enabled, AndroidBrowserControlsInViz must also be enabled.
+// If this flag is enabled, AndroidBrowserControlsInViz and
+// BottomControlsRefactor with the "Dispatch yOffset" variation must also be
+// enabled.
 BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidBcivZeroBrowserFrames,
-             "AndroidBcivZeroBrowserFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -435,17 +433,6 @@ BASE_FEATURE(kShutdownForFailedChannelCreation,
              "ShutdownForFailedChannelCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, snapshot the root surface when it is evicted.
-BASE_FEATURE(kSnapshotEvictedRootSurface,
-             "SnapshotEvictedRootSurface",
-// TODO(edcourtney): Enable for Android.
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // If enabled, info for quads from the last render pass will be reported as
 // UMAs.
 BASE_FEATURE(kShouldLogFrameQuadInfo,
@@ -461,11 +448,6 @@ BASE_FEATURE(kShouldLogFrameQuadInfo,
 BASE_FEATURE(kBatchResourceRelease,
              "BatchResourceRelease",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The scale to use for root surface snapshots on eviction. See
-// `kSnapshotEvictedRootSurface`.
-const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
-    &kSnapshotEvictedRootSurface, "scale", 0.4};
 
 // Do HDR color conversion per render pass update rect in renderer instead of
 // inserting a separate color conversion pass during surface aggregation.
@@ -607,13 +589,6 @@ NumCooldownFramesForAckOnSurfaceActivationDuringInteraction() {
       << "The number of cooldown frames must be non-negative";
   return static_cast<uint64_t>(
       kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction.Get());
-}
-
-std::optional<double> SnapshotEvictedRootSurfaceScale() {
-  if (!base::FeatureList::IsEnabled(kSnapshotEvictedRootSurface)) {
-    return std::nullopt;
-  }
-  return kSnapshotEvictedRootSurfaceScale.Get();
 }
 
 bool ShouldLogFrameQuadInfo() {

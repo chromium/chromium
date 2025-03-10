@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (شناسایی خودکار)</translation>
 <translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1236081509407217141">‏VR مجاز باشد؟</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">نام دستگاهتان</translation>
 <translation id="124116460088058876">زبان‌های بیشتر</translation>
 <translation id="1243027604378859286">نویسنده:</translation>
@@ -1803,6 +1804,7 @@
 <translation id="415440494507469262">افزودن برگه به جدول مقایسه</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="4165422751765527461">مقاله «مرکز راهنمایی» را در برگه جدید باز می‌کند</translation>
+<translation id="4165584779486830267">‏ازاین‌پس می‌توانید بااستفاده از Affirm یا Zip، به‌صورت قسطی پرداخت کنید.</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
 <translation id="4169535189173047238">اجازه داده نشود</translation>
 <translation id="4171400957073367226">امضای تأیید نامناسب</translation>
@@ -2767,6 +2769,7 @@
 <translation id="5910140988253729859">واگرد تکمیل خودکار</translation>
 <translation id="5911020115933784199">رویداد و نام‌نویسی</translation>
 <translation id="5911110632211230665">باز کردن مسدود است</translation>
+<translation id="5914465277418006379">‫<ph name="MEMBER_FIRST_NAME" /> این برگه را اضافه کرد</translation>
 <translation id="5915189366813702112">ساعات کاری انعطاف‌پذیر</translation>
 <translation id="59174027418879706">فعال شد</translation>
 <translation id="5918373444239520146">اسبابک‌ها و وسایل الکترونیکی قابل‌حمل</translation>
@@ -4627,6 +4630,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> از یک پروتکل پشتیبانی‌نشده استفاده می‌کند.</translation>
 <translation id="918454845714257218">کد <ph name="SIDE_OF_CARD" /> را بررسی و دوباره امتحان کنید</translation>
 <translation id="9186203289258525843">‏دکمه «تنظیم Chrome به‌عنوان مرورگر پیش‌فرض»؛ برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم، آن را فعال کنید</translation>
+<translation id="9189468832660648522">‫<ph name="MEMBER_FIRST_NAME" /> این برگه را تغییر داد</translation>
 <translation id="9189789270972826888">اگر جزئیات کارت کامل نشده است، روی جزئیات کارت در پایین کلیک کنید تا کپی و جای‌گذاری شود. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">موضوع‌های قدیمی‌تر از ۴ هفته به‌طور خودکار حذف می‌شوند</translation>
 <translation id="9191834167571392248">سوراخ در پایین سمت چپ</translation>

@@ -485,8 +485,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="CREDIT_CARD_TYPE"/>
   <variant name="CREDIT_CARD_VERIFICATION_CODE"/>
   <variant name="DELIVERY_INSTRUCTIONS"/>
-  <variant name="DRIVERS_LICENSE_EXPIRATION_DATE_TAG"/>
-  <variant name="DRIVERS_LICENSE_ISSUE_DATE_TAG"/>
+  <variant name="DRIVERS_LICENSE_EXPIRATION_DATE"/>
+  <variant name="DRIVERS_LICENSE_ISSUE_DATE"/>
   <variant name="DRIVERS_LICENSE_NAME_TAG"/>
   <variant name="DRIVERS_LICENSE_NUMBER"/>
   <variant name="DRIVERS_LICENSE_REGION"/>
@@ -520,9 +520,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NOT_USERNAME"/>
   <variant name="NUMERIC_QUANTITY"/>
   <variant name="ONE_TIME_CODE"/>
-  <variant name="PASSPORT_EXPIRATION_DATE_TAG"/>
-  <variant name="PASSPORT_ISSUE_DATE_TAG"/>
-  <variant name="PASSPORT_ISSUING_COUNTRY_TAG"/>
+  <variant name="PASSPORT_EXPIRATION_DATE"/>
+  <variant name="PASSPORT_ISSUE_DATE"/>
+  <variant name="PASSPORT_ISSUING_COUNTRY"/>
   <variant name="PASSPORT_NAME_TAG"/>
   <variant name="PASSPORT_NUMBER"/>
   <variant name="PASSWORD"/>
@@ -5691,6 +5691,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     experience. Records false whenever they switch back to the default,
     Chrome-provided autofill experience. Recorded when the user flips the toggle
     in the autofill options settings.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SettingsPage.BnplToggled" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>wilsonlow@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks user enablement of the buy-now-pay-later feature by flipping the
+    pay-over-time toggle in the payment methods settings page. Records true when
+    the user switches on buy-now-pay-later. Records false when the user switches
+    off buy-now-pay-later. Recorded at the time of the user clicking the toggle
+    in the settings page.
   </summary>
 </histogram>
 

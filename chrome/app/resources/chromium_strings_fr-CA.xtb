@@ -401,6 +401,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="6539122709674868420">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />. Les données de navigation ont été supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.</translation>
 <translation id="6542839706527980775">Chaque profil Chromium contient ses propres données, comme les favoris, l'historique, les mots de passe, etc.</translation>
 <translation id="6563921047760808519">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chromium préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Les modifications apportées à ce paramètre seront appliquées une fois que Chromium aura redémarré.</translation>
 <translation id="656935081669708576">Vous pouvez passer à un autre profil Chromium pour voir les mots de passe</translation>
 <translation id="6570579332384693436">Pour corriger les fautes d'orthographe, Chromium envoie le texte que vous entrez dans des zones de texte à Google</translation>
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>

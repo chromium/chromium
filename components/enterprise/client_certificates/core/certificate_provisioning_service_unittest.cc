@@ -279,7 +279,7 @@ TEST_F(CertificateProvisioningServiceTest,
 }
 
 // When the service is created, the policy is enabled and the store has an
-// existing identity, the service will simply load it up and sync the key.
+// existing identity, the service will simply load it up.
 TEST_F(CertificateProvisioningServiceTest,
        CreatedWithPref_ExistingIdentityLoaded) {
   SetPolicyPref(true);
@@ -287,7 +287,7 @@ TEST_F(CertificateProvisioningServiceTest,
   auto mock_context_delegate =
       std::make_unique<StrictMock<MockContextDelegate>>();
   EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
-      .Times(7)
+      .Times(3)
       .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
       .Times(2)
@@ -301,29 +301,13 @@ TEST_F(CertificateProvisioningServiceTest,
   EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
       .WillOnce(RunOnceCallback<1>(existing_permanent_identity));
 
-  auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
-  EXPECT_CALL(*mock_client, SyncKey(testing::Eq(mocked_private_key), _))
-      .WillOnce(RunOnceCallback<1>(kSuccessUploadCode));
-
-  CreateProvisioningService(std::move(mock_context_delegate),
-                            std::move(mock_client));
-
-  VerifySuccessState(mocked_private_key, fake_cert);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.ClientCertificate.Profile.PublicKeySync.UploadCode",
-      kSuccessUploadCode, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.ClientCertificate.Profile.Provisioning.PublicKeySync.Outcome",
-      true, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Enterprise.ClientCertificate.Profile.Provisioning.PublicKeySync.Success."
-      "Latency",
-      1);
+  CreateProvisioningService(
+      std::move(mock_context_delegate),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
   EXPECT_EQ(
       histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
           .size(),
-      3U);
+      0U);
 }
 
 // When the service is created, the policy is enabled and the store has an

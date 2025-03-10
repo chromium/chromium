@@ -190,6 +190,75 @@
         Latin Modern Math
       </message>
 
+      <!-- The default value for |WebPreference::standard_font_family_map| for
+           Japanese script. -->
+      <message name="IDS_STANDARD_FONT_FAMILY_JAPANESE" use_name_for_id="true">
+        ,Noto Sans JP,Noto Sans CJK JP,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::serif_font_family_map| for
+           Japanese script. -->
+      <message name="IDS_SERIF_FONT_FAMILY_JAPANESE" use_name_for_id="true">
+        ,Noto Serif JP,Noto Serif CJK JP,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::sans_serif_font_family_map| for
+           Japanese script.  -->
+      <message name="IDS_SANS_SERIF_FONT_FAMILY_JAPANESE" use_name_for_id="true">
+        ,Noto Sans JP,Noto Sans CJK JP,Arial
+      </message>
+     <!-- The default value for |WebPreference::standard_font_family_map| for
+           Korean script. -->
+      <message name="IDS_STANDARD_FONT_FAMILY_KOREAN" use_name_for_id="true">
+        ,Noto Sans KR,Noto Sans CJK KR,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::serif_font_family_map| for
+           Korean script. -->
+      <message name="IDS_SERIF_FONT_FAMILY_KOREAN" use_name_for_id="true">
+        ,Noto Serif KR,Noto Serif CJK KR,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::sans_serif_font_family_map| for
+           Korean script.  -->
+      <message name="IDS_SANS_SERIF_FONT_FAMILY_KOREAN" use_name_for_id="true">
+        ,Noto Sans KR,Noto Sans CJK KR,Arial
+      </message>
+      <!-- The default value for |WebPreference::standard_font_family_map| for
+           Simplified Chinese script. -->
+      <message name="IDS_STANDARD_FONT_FAMILY_SIMPLIFIED_HAN" use_name_for_id="true">
+        ,Noto Sans SC,Noto Sans CJK SC,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::serif_font_family_map| for
+           Simplified Chinese script. -->
+      <message name="IDS_SERIF_FONT_FAMILY_SIMPLIFIED_HAN" use_name_for_id="true">
+        ,Noto Serif SC,Noto Serif CJK SC,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::sans_serif_font_family_map| for
+           Simplified Chinese script.  -->
+      <message name="IDS_SANS_SERIF_FONT_FAMILY_SIMPLIFIED_HAN" use_name_for_id="true">
+        ,Noto Sans SC,Noto Sans CJK SC,Arial
+      </message>
+      <!-- The default value for |WebPreference::standard_font_family_map| for
+           Traditional Chinese script. -->
+      <message name="IDS_STANDARD_FONT_FAMILY_TRADITIONAL_HAN" use_name_for_id="true">
+        ,Noto Sans TC,Noto Sans CJK TC,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::serif_font_family_map| for
+           Traditional Chinese script. -->
+      <message name="IDS_SERIF_FONT_FAMILY_TRADITIONAL_HAN" use_name_for_id="true">
+        ,Noto Serif TC,Noto Serif CJK TC,Times New Roman
+      </message>
+
+      <!-- The default value for |WebPreference::sans_serif_font_family_map| for
+           Traditional Chinese script.  -->
+      <message name="IDS_SANS_SERIF_FONT_FAMILY_TRADITIONAL_HAN" use_name_for_id="true">
+        ,Noto Sans TC,Noto Sans CJK TC,Arial
+      </message>
+
       <!-- The default value for |WebPreference::minimum_font_size| -->
       <message name="IDS_MINIMUM_FONT_SIZE" use_name_for_id="true">
         0

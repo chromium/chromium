@@ -399,6 +399,7 @@
 <translation id="6539122709674868420">Jūsu organizācija aizver pārlūku Chromium, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots. Pārlūkošanas dati tika izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.</translation>
 <translation id="6542839706527980775">Katrā profilā tiek glabāta attiecīgā Chromium profila informācija, piemēram, grāmatzīmes, vēsture, paroles un citi dati.</translation>
 <translation id="6563921047760808519">Uzziniet vairāk par to, <ph name="BEGIN_LINK" />kā pārlūkā Chromium tiek saglabāta jūsu datu konfidencialitāte<ph name="END_LINK" />.</translation>
+<translation id="6564039629497156115">Šī iestatījuma izmaiņas tiks lietotas pēc pārlūka Chromium restartēšanas.</translation>
 <translation id="656935081669708576">Varat pārslēgties, lai skatītu paroles no cita Chromium profila.</translation>
 <translation id="6570579332384693436">Lai izlabotu pareizrakstības kļūdas, Chromium nosūta teksta laukos ievadīto tekstu Google serveriem.</translation>
 <translation id="6598877126913850652">Pāriet uz Chromium paziņojumu iestatījumiem</translation>

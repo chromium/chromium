@@ -138,6 +138,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatiskt identifierad)</translation>
 <translation id="1232569758102978740">Namnlös</translation>
 <translation id="1236081509407217141">Vill du tillåta VR?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Ditt enhetsnamn</translation>
 <translation id="124116460088058876">Fler språk</translation>
 <translation id="1243027604378859286">Författare:</translation>
@@ -1440,6 +1441,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3536227077203206203">Tillåts den här gången</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Screen (med sidor)</translation>
+<translation id="3541016556608204104">Mer om Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Kortbild</translation>
 <translation id="3542768452570884558">Öppna länk i nytt fönster</translation>
 <translation id="3543935938072367282">Betala snabbare med autofyll</translation>
@@ -1804,6 +1806,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="415440494507469262">Lägg till en flik i jämförelsetabellen</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4165422751765527461">Öppnar en hjälpcenterartikel på en ny flik</translation>
+<translation id="4165584779486830267">Nu kan du betala över tid med Affirm eller Zip.</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
 <translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4171400957073367226">Felaktig verifieringssignatur</translation>
@@ -2768,6 +2771,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5910140988253729859">Ångra autofyll</translation>
 <translation id="5911020115933784199">Evenemang och evenemangsuppgifter</translation>
 <translation id="5911110632211230665">Öppning har blockerats</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> lade till den här fliken</translation>
 <translation id="5915189366813702112">Flexibla arbetsarrangemang</translation>
 <translation id="59174027418879706">Aktiverad</translation>
 <translation id="5918373444239520146">Prylar och bärbar elektronik</translation>
@@ -4629,6 +4633,7 @@ Mer information:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> använder ett protokoll som inte stöds.</translation>
 <translation id="918454845714257218">Kontrollera koden på <ph name="SIDE_OF_CARD" /> och försök igen</translation>
 <translation id="9186203289258525843">Knappen Ställ in Chrome som standardwebbläsare: aktivera om du vill ställa in Chrome som standardwebbläsare för systemet</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ändrade den här fliken</translation>
 <translation id="9189789270972826888">Klicka på kortuppgifterna nedan om du vill kopiera och klistra in dem om kortet inte har fyllts i. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Ämnen som är äldre än fyra veckor raderas automatiskt</translation>
 <translation id="9191834167571392248">Hål nere till vänster</translation>

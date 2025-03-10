@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Ако наставите, прихватате <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Никада се не чува</translation>
 <translation id="1062138828266376352">PIN није промењен. Проверите интернет везу и пробајте поново</translation>
+<translation id="1072476005125066234">Рецензије на основу интересовања</translation>
 <translation id="1074827084851510304">Избрисаћете лозинке ({password_count}) и листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
 <translation id="1076421457278169141">Скенирали сте кôд</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
@@ -155,6 +156,7 @@
 <translation id="1605658421715042784">Копирај слику</translation>
 <translation id="1612754831519568745">Безбедно прегледање је тренутно искључено. Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1622195983844804153">Постојећи подаци прегледања неће бити пренети на пословни налог. И даље можете да им приступате тако што ћете се одјавити или додати лични налог.</translation>
 <translation id="1622717322707146952">Изаберите Додај у Google календар или Додај у Apple Calendar.</translation>
 <translation id="1629162218487290695">Потврдите да сте то ви…</translation>
 <translation id="1636234353664774105">Добијајте упутства до одредишта помоћу детаљних упутстава уз функцију за навигацију.</translation>
@@ -264,6 +266,7 @@
 <translation id="2049727122989709386">Налози (<ph name="COUNT" />) користе исту лозинку</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2060114494785549741">Избриши за 1 месец</translation>
+<translation id="2060638295449304809">Ова адреса се чува само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Бирач типа јединице</translation>
 <translation id="2067852168641682340">Сачувај на овом налогу сваки пут</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
@@ -888,6 +891,7 @@
 <translation id="4824480232751123840">Запремина</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и још 1}one{{domain} и још {count}}few{{domain} и још {count}}other{{domain} и још {count}}}</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
+<translation id="4828431027673677473">Производи на основу интересовања</translation>
 <translation id="4833786495304741580">Аутоматски шаље Google-у статистику коришћења и извештаје о отказивању.</translation>
 <translation id="483689884442613745">Сачувај…</translation>
 <translation id="4840495572919996524">Обележивачи, историја, лозинке и други подаци више се неће синхронизовати са Google налогом.</translation>
@@ -1142,6 +1146,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Да бисте делили са људима у близини, дајте им да скенирају овај QR кôд помоћу камере или апликације за скенирање QR кода</translation>
 <translation id="5911030830365207728">Google преводилац</translation>
+<translation id="5917913282764181683">Аутоматски бришите преузимања</translation>
 <translation id="5922999516621365983">Превуците картицу овде да бисте је закачили.</translation>
 <translation id="5936006948844852401">Управљај простором</translation>
 <translation id="5936065461722368675">Преведи целу страницу</translation>
@@ -1724,6 +1729,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="828291969289324795">{count,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
 <translation id="8283172974887967105">Подеси…</translation>
 <translation id="8289930144142009940">Обавештења за функцију <ph name="FEATURE_NAME" /> су искључена</translation>
+<translation id="8290077367744012649">Пратите цене са картица</translation>
 <translation id="8299417921174340354">Да бисте користили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="8307481894409578819">Отпремање овог фајла није успело</translation>
 <translation id="8319076807703933069">Нова претрага</translation>

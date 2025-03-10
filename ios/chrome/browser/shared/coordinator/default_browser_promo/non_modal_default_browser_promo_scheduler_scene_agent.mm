@@ -234,8 +234,9 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   }
 
   if (IsNonModalPromoMigrationEnabled()) {
-    return self.tracker->WouldTriggerHelpUI(
-        GetFeatureForPromoReason(self.currentPromoReason));
+    return self.tracker &&
+           self.tracker->WouldTriggerHelpUI(
+               GetFeatureForPromoReason(self.currentPromoReason));
   }
 
   if (UserInNonModalPromoCooldown()) {
@@ -253,7 +254,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   _userInteractionWithNonModalPromoCount =
       UserInteractionWithNonModalPromoCount();
 
-  if (!IsNonModalPromoMigrationEnabled() && IsNonModalPromoMigrationDone()) {
+  if (!IsNonModalPromoMigrationEnabled() && IsNonModalPromoMigrationDone() &&
+      self.tracker) {
     self.tracker->NotifyEvent(
         GetFeatureEventNameForPromoReason(self.currentPromoReason));
   }
@@ -368,7 +370,12 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (feature_engagement::Tracker*)tracker {
-  CHECK(_browser);
+  // TODO(crbug.com/401306954): Browser seems to become null in some cases when
+  // the app backgrounds.
+  if (!_browser) {
+    return nullptr;
+  }
+
   return feature_engagement::TrackerFactory::GetForProfile(
       _browser->GetProfile());
 }
@@ -532,7 +539,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
     return;
   }
 
-  if (IsNonModalPromoMigrationEnabled() &&
+  if (IsNonModalPromoMigrationEnabled() && self.tracker &&
       !self.tracker->ShouldTriggerHelpUI(
           GetFeatureForPromoReason(self.currentPromoReason))) {
     return;
@@ -574,6 +581,14 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 - (int)nonModalPromoInteractionCount {
   if (!IsNonModalPromoMigrationEnabled()) {
     return _userInteractionWithNonModalPromoCount;
+  }
+
+  // This is temporary fix to unblock crbug.com/399429580.
+  // TODO(crbug.com/401306954): Find a better solution, as the browser can
+  // become null in some cases when the app backgrounds and the impressions from
+  // the FET cannot be retrieved.
+  if (!self.tracker) {
+    return -1;
   }
 
   unsigned int interactions = 0;

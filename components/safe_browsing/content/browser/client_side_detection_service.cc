@@ -145,6 +145,7 @@ ClientSideDetectionService::~ClientSideDetectionService() {
 
 void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
+  delegate_->StopListeningToOnDeviceModelUpdate();
   delegate_.reset();
   enabled_ = false;
   client_side_phishing_model_.reset();
@@ -166,7 +167,6 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 
   enabled_ = enabled;
   extended_reporting_ = extended_reporting;
-
   if (enabled_ && client_side_phishing_model_) {
     update_model_subscription_ = client_side_phishing_model_->RegisterCallback(
         base::BindRepeating(&ClientSideDetectionService::SendModelToRenderers,
@@ -180,15 +180,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
         delegate_->StartListeningToOnDeviceModelUpdate();
       }
     } else {
-      if (base::FeatureList::IsEnabled(
-              kClientSideDetectionBrandAndIntentForScamDetection) ||
-          base::FeatureList::IsEnabled(
-              kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
-        delegate_->StopListeningToOnDeviceModelUpdate();
-        on_device_model_available_ = false;
-      }
-      client_side_phishing_model_
-          ->UnsubscribeToImageEmbedderOptimizationGuide();
+      UnsubscribeToModelSubscription();
     }
   } else {
     // Invoke pending callbacks with a false verdict.
@@ -199,11 +191,27 @@ void ClientSideDetectionService::OnPrefsUpdated() {
             .Run(info->phishing_url, false, std::nullopt, std::nullopt);
       }
     }
+
+    // Unsubscribe to any SafeBrowsing preference related subscriptions if the
+    // SafeBrowsing enabled state is false entirely or
+    // client_side_phishing_model_ is unavailable.
+    UnsubscribeToModelSubscription();
+
     client_phishing_reports_.clear();
     cache_.clear();
   }
 
   SendModelToRenderers();  // always refresh the renderer state
+}
+
+void ClientSideDetectionService::UnsubscribeToModelSubscription() {
+  delegate_->StopListeningToOnDeviceModelUpdate();
+  on_device_model_available_ = false;
+  // We will check for the model object below because we also call this function
+  // when the model object is not available.
+  if (client_side_phishing_model_) {
+    client_side_phishing_model_->UnsubscribeToImageEmbedderOptimizationGuide();
+  }
 }
 
 void ClientSideDetectionService::NotifyOnDeviceModelAvailable() {

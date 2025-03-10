@@ -28,6 +28,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".Tabs" summary="Tabs"/>
 </variants>
 
+<variants name="AuxiliarySearchEntryType">
+  <variant name="CustomTabs" summary="CustomTabs"/>
+  <variant name="Tabs" summary="Tabs"/>
+  <variant name="TopSites" summary="MostVisitedSites"/>
+</variants>
+
+<variants name="AuxiliarySearchQueryType">
+  <variant name="Favicons" summary="Favicons"/>
+  <variant name="History" summary="Tabs and CCTs"/>
+  <variant name="Tabs" summary="Tabs"/>
+</variants>
+
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
     expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
@@ -93,6 +105,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Search.AuxiliarySearch.DonationCount.{AuxiliarySearchEntryType}"
+    units="count" expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the count of contents which are sent to the auxiliary search. The
+    histogram is logged when Chrome is paused and a set of data are donated to
+    the auxiliary search. Android-only.
+  </summary>
+  <token key="AuxiliarySearchEntryType" variants="AuxiliarySearchEntryType"/>
+</histogram>
+
+<histogram
     name="Search.AuxiliarySearch.DonationFailure{AuxiliarySearchDataType}"
     units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
@@ -112,16 +138,6 @@ chromium-metrics-reviews@google.com.
     Recorded twice for every donation request: once to capture the request sent,
     and once to capture the consumer's response.
   </summary>
-</histogram>
-
-<histogram name="Search.AuxiliarySearch.DonationSent{AuxiliarySearchDataType}"
-    units="count" expires_after="2025-07-06">
-  <owner>gangwu@chromium.org</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Records the count of contents which are sent to the auxiliary search.
-  </summary>
-  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.Favicon.FirstDonateCount" units="Count"
@@ -148,20 +164,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.AuxiliarySearch.QueryTime.Favicons" units="ms"
-    expires_after="2025-09-15">
+<histogram name="Search.AuxiliarySearch.QueryTime.{AuxiliarySearchQueryType}"
+    units="ms" expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <owner>clank-start@google.com</owner>
-  <summary>Time taken for query favicons for the auxiliary search.</summary>
-</histogram>
-
-<histogram name="Search.AuxiliarySearch.QueryTime{AuxiliarySearchDataType}"
-    units="ms" expires_after="2025-09-15">
-  <owner>gangwu@chromium.org</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>Time taken for query contents for the auxiliary search.</summary>
-  <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
+  <summary>
+    Records the time taken for query contents for the auxiliary search. The
+    histogram is logged when Chrome is on paused and the query of a set of data
+    is completed for the auxiliary search. Android only.
+  </summary>
+  <token key="AuxiliarySearchQueryType" variants="AuxiliarySearchQueryType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.Schedule.DelayTime" units="ms"

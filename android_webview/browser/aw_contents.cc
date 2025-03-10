@@ -97,6 +97,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/preload_pipeline_info.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1546,6 +1548,9 @@ jint AwContents::StartPrerendering(
           /*should_warm_up_compositor=*/false,
           /*should_prepare_paint_tree=*/false,
           content::PreloadingHoldbackStatus::kUnspecified,
+          content::PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/content::PreloadingType::
+                  kPrerender),
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});
 

@@ -4,6 +4,8 @@ include_rules = [
   "+chromeos/ash/services/recording/public/mojom",
   "+chromeos/ash/services/recording/recording_service_test_api.h",
   "+components/capture_mode/camera_video_frame_handler.h",
+  "+components/lens",
+  "+components/search_engines",
   "+components/viz/client/client_resource_provider.h",
   "+google_apis",
   "+gpu/command_buffer/client/client_shared_image.h",

@@ -87,6 +87,7 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void EndSubscription();
 
   // JavaScript call handler.
+  void OnDeleteAutofillAiCacheEntry(const base::Value::List& args);
   void OnGetAutofillAiCache(const base::Value::List& args);
   void OnLoaded(const base::Value::List& args);
   void OnResetCache(const base::Value::List& args);

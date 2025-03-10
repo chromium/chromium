@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Tutaj możesz otworzyć Obiektyw.</translation>
 <translation id="1042296835509784301">Otwiera Menedżera haseł w Chromium.</translation>
 <translation id="1047130070405668746">Wybierz Chromium.</translation>
+<translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1091252999271033193">Oznacza to, że Chromium będzie za każdym razem wyświetlać witrynę mobilną.</translation>
 <translation id="1115463765356382667">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="1140315115515116765">Używaj domyślnie Chromium, aby łatwo otrzymywać statystyki dotyczące cen</translation>
@@ -98,6 +99,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minutę. Może to obejmować historię i autouzupełnianie.}few{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}many{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minut. Może to obejmować historię i autouzupełnianie.}other{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}}</translation>
 <translation id="3410395242749598859">Niektóre dane z Chromium nie zostały jeszcze zapisane na koncie <ph name="EMAIL" />.
 Zanim przełączysz się na inne konto, odczekaj kilka minut. Jeśli przełączysz się teraz, te dane zostaną usunięte.</translation>
+<translation id="3440830787838130530">W Menedżerze haseł Google możesz łatwo i bezpiecznie udostępniać kopie swoich haseł grupie rodzinnej</translation>
 <translation id="3472200483164753384">Nieobsługiwane w Chromium Canary</translation>
 <translation id="347967311580159871">W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chromium.</translation>
 <translation id="3512168799938877162">Hasło nie zostało udostępnione. Sprawdź połączenie z internetem i upewnij się, że jesteś zalogowany(-a) w Chromium. Następnie spróbuj ponownie.</translation>

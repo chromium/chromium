@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">לחיצה על המשך מבטאת הסכמה ל<ph name="BEGIN_LINK" />תנאים ולהגבלות<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא יישמרו</translation>
 <translation id="1062138828266376352">קוד האימות לא השתנה. מומלץ לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
+<translation id="1072476005125066234">ביקורות על סמך תחומי העניין שלך</translation>
 <translation id="1074827084851510304">‏בחרת למחוק {password_count} סיסמאות ואת רשימת האתרים והאפליקציות שבחרת לא לשמור בהם אף פעם פרטי כניסה. חשבונות שיצרת לאתרים ולאפליקציות לא יימחקו.</translation>
 <translation id="1076421457278169141">הקוד נסרק</translation>
 <translation id="1081932398873105675">{count,plural, =1{כרטיסייה אחת ({count})}one{‫{count} כרטיסיות}two{‫{count} כרטיסיות}other{‫{count} כרטיסיות}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> חשבונות משתמשים באותה סיסמה</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2060114494785549741">מחיקת הנתונים בעוד חודש</translation>
+<translation id="2060638295449304809">‏הכתובת הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">בורר סוגי היחידות</translation>
 <translation id="2067852168641682340">שמירה בחשבון הזה בכל פעם</translation>
 <translation id="2074119687904553223">{count,plural, =1{כרטיסייה אחת}one{‫{count} כרטיסיות}two{‫{count} כרטיסיות}other{‫{count} כרטיסיות}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">נפח</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ואחד נוסף}one{{domain} ו-{count} נוספים}two{{domain} ו-{count} נוספים}other{{domain} ו-{count} נוספים}}</translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
+<translation id="4828431027673677473">מוצרים על סמך תחומי העניין שלך</translation>
 <translation id="4833786495304741580">‏שליחת דוחות קריסה וסטטיסטיקות שימוש אל Google באופן אוטומטי.</translation>
 <translation id="483689884442613745">שמירה…</translation>
 <translation id="4840495572919996524">‏הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים שלך כבר לא יסונכרנו עם חשבון Google.</translation>
@@ -1724,6 +1727,7 @@
 <translation id="828291969289324795">{count,plural, =1{הוספת הכרטיסייה לקבוצה חדשה}one{הוספת הכרטיסיות לקבוצה חדשה}two{הוספת הכרטיסיות לקבוצה חדשה}other{הוספת הכרטיסיות לקבוצה חדשה}}</translation>
 <translation id="8283172974887967105">להגדרה…</translation>
 <translation id="8289930144142009940">ההתראות של <ph name="FEATURE_NAME" /> מושבתות</translation>
+<translation id="8290077367744012649">מעקב אחר המחירים בכרטיסיות</translation>
 <translation id="8299417921174340354">כדי שניתן יהיה להשתמש בסיסמאות, יש להגדיר תחילה קוד גישה במכשיר.</translation>
 <translation id="8307481894409578819">לא ניתן להעלות את הקובץ הזה</translation>
 <translation id="8319076807703933069">חיפוש חדש</translation>

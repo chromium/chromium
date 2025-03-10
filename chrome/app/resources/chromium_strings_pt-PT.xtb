@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">A sua organização fecha o Chromium quando este não é usado durante <ph name="TIMEOUT_DURATION" />. Os dados de navegação foram eliminados. Estes dados podem incluir o histórico, o preenchimento automático e as transferências.</translation>
 <translation id="6542839706527980775">Cada perfil possui as suas próprias informações do Chromium, como marcadores, histórico, palavras-passe e muito mais.</translation>
 <translation id="6563921047760808519">Saiba <ph name="BEGIN_LINK" />como o Chromium mantém os seus dados privados<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">As alterações a esta definição vão ser aplicadas assim que o Chromium for reiniciado.</translation>
 <translation id="656935081669708576">Pode mudar para ver as palavras-passe de outro perfil do Chromium</translation>
 <translation id="6570579332384693436">Para corrigir erros ortográficos, o Chromium envia o texto que introduzir nos campos de texto para a Google.</translation>
 <translation id="6598877126913850652">Aceder às definições de notificação do Chromium</translation>

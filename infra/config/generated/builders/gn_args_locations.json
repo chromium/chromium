@@ -210,6 +210,7 @@
     "chromeos-js-code-coverage": "ci/chromeos-js-code-coverage/gn-args.json",
     "fuchsia-code-coverage": "ci/fuchsia-code-coverage/gn-args.json",
     "ios-simulator-code-coverage": "ci/ios-simulator-code-coverage/gn-args.json",
+    "linux-centipede-fuzz-coverage": "ci/linux-centipede-fuzz-coverage/gn-args.json",
     "linux-chromeos-code-coverage": "ci/linux-chromeos-code-coverage/gn-args.json",
     "linux-code-coverage": "ci/linux-code-coverage/gn-args.json",
     "linux-fuzz-coverage": "ci/linux-fuzz-coverage/gn-args.json",

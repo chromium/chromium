@@ -380,7 +380,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // base::Unretained(navigation_handler_) is safe because navigation_handler_
     // is the bubble view which is the owner of this view and therefore will
     // always exist when this view exists.
-    connection_button_ = security_container_view_->AddChildView(
+    connection_button_ = security_container_view_->AddChildViewRaw(
         std::make_unique<RichHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),

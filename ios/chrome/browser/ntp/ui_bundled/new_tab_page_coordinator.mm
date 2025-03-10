@@ -1408,13 +1408,6 @@
   [self dismissCustomizationMenu];
 }
 
-- (void)parcelTrackingOpened {
-  RecordMagicStackClick(ContentSuggestionsModuleType::kParcelTracking,
-                        [self isStartSurface]);
-  RecordHomeAction(IOSHomeActionType::kParcelTracking, [self isStartSurface]);
-  [self dismissCustomizationMenu];
-}
-
 - (void)priceTrackingPromoOpened {
   RecordMagicStackClick(ContentSuggestionsModuleType::kPriceTrackingPromo,
                         [self isStartSurface]);

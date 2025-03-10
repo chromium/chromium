@@ -64,6 +64,9 @@ specific_include_rules = {
   "mhtml_archive_test\.cc": [
     "+services/network/public/cpp/is_potentially_trustworthy.h",
   ],
+  "picture_in_picture_controller\.h": [
+    "+services/media_session/public/mojom/media_session.mojom-blink.h",
+  ],
   "remote_frame\.h": [
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
     "+services/network/public/cpp/permissions_policy/permissions_policy_declaration.h",

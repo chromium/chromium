@@ -325,12 +325,16 @@ void BluetoothDeviceChooserController::GetDevice(
     return;
   }
 
+  // TODO(crbug.com/399916650): Improve BluetoothChooserDialog and remove the
+  // conditional compilation macro.
+#if !BUILDFLAG(IS_ANDROID)
   if (adapter_->GetOsPermissionStatus() ==
       device::BluetoothAdapter::PermissionStatus::kDenied) {
     chooser_->SetAdapterPresence(
         BluetoothChooser::AdapterPresence::UNAUTHORIZED);
     return;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (!chooser_->CanAskForScanningPermission()) {
     DVLOG(1) << "Closing immediately because Chooser cannot obtain permission.";

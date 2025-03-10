@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-struct AutocompleteMatch;
 @protocol AutocompleteMatchWrapperDelegate;
-class AutocompleteResult;
+@protocol AutocompleteSuggestion;
+@protocol AutocompleteSuggestionGroup;
 @class AutocompleteMatchFormatter;
+class AutocompleteResult;
+struct AutocompleteMatch;
 @class OmniboxPedalAnnotator;
 class TemplateURLService;
 
@@ -40,6 +42,12 @@ class TemplateURLService;
 /// an array of AutocompleteSuggestion objects.
 - (NSMutableArray<AutocompleteMatchFormatter*>*)wrapMatchesFromResult:
     (const AutocompleteResult&)autocompleteResult;
+
+/// Take a list of suggestions and break it into groups determined by sectionId
+/// field. Use `headerMap` to extract group names.
+- (NSArray<id<AutocompleteSuggestionGroup>>*)
+            groupSuggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+    usingACResultAsHeaderMap:(const AutocompleteResult&)headerMap;
 
 @end
 

@@ -42,7 +42,7 @@ public abstract class AwContentsIoThreadClient {
     public abstract boolean getSafeBrowsingEnabled();
 
     @CalledByNative
-    public abstract AwContentsBackgroundThreadClient getBackgroundThreadClient();
+    public abstract ShouldInterceptRequestMediator getShouldInterceptRequestMediator();
 
     @NativeMethods
     interface Natives {

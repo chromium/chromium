@@ -36,6 +36,46 @@
 #include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
+
+std::ostream& operator<<(std::ostream& out, TrustedSignals::UrlField uf) {
+  switch (uf) {
+    case TrustedSignals::UrlField::kBase:
+      return out << "kBase";
+    case TrustedSignals::UrlField::kKeys:
+      return out << "kKeys";
+    case TrustedSignals::UrlField::kInterestGroupNames:
+      return out << "kInterestGroupNames";
+    case TrustedSignals::UrlField::kRenderUrls:
+      return out << "kRenderUrls";
+    case TrustedSignals::UrlField::kAdComponentRenderUrls:
+      return out << "kAdComponentRenderUrls";
+    case TrustedSignals::UrlField::kExperimentGroupId:
+      return out << "kExperimentGroupId";
+    case TrustedSignals::UrlField::kSlotSizeParam:
+      return out << "kSlotSizeParam";
+    case TrustedSignals::UrlField::kAdCreativeScanningMetadata:
+      return out << "kAdCreativeScanningMetadata";
+    case TrustedSignals::UrlField::kAdComponentCreativeScanningMetadata:
+      return out << "kAdComponentCreativeScanningMetadata";
+    case TrustedSignals::UrlField::kAdSizes:
+      return out << "kAdSizes";
+    case TrustedSignals::UrlField::kAdComponentSizes:
+      return out << "kAdComponentSizes";
+    case TrustedSignals::UrlField::kAdBuyer:
+      return out << "kAdBuyer";
+    case TrustedSignals::UrlField::kAdComponentBuyer:
+      return out << "kAdComponentBuyer";
+    case TrustedSignals::UrlField::kBuyerAndSellerReportingIds:
+      return out << "kBuyerAndSellerReportingIds";
+    case TrustedSignals::UrlField::kNumValues:
+      return out << "kNumValues";
+  };
+}
+
+std::ostream& operator<<(std::ostream& out, const TrustedSignals::UrlPiece fv) {
+  return out << "{ " << fv.field << ", \"" << fv.text << "\"}";
+}
+
 namespace {
 
 // Json response using bidding format version 1. Keys and values should match
@@ -207,12 +247,17 @@ class TrustedSignalsTest : public testing::Test {
 
     DCHECK(!load_signals_result_);
 
+    std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+    TrustedSignals::BuildTrustedBiddingSignalsURL(
+        hostname, base_url_, interest_group_names, trusted_bidding_signals_keys,
+        experiment_group_id, trusted_bidding_signals_slot_size_param,
+        main_fragments, aux_fragments);
+
     auto bidding_signals = TrustedSignals::LoadBiddingSignals(
         &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
         std::move(interest_group_names),
-        std::move(trusted_bidding_signals_keys), hostname, base_url_,
-        experiment_group_id, trusted_bidding_signals_slot_size_param,
-        v8_helper_,
+        std::move(trusted_bidding_signals_keys), base_url_,
+        std::move(main_fragments), std::move(aux_fragments), v8_helper_,
         base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
@@ -258,10 +303,16 @@ class TrustedSignalsTest : public testing::Test {
     base::HistogramTester histogram_tester;
     CHECK(!load_signals_run_loop_);
     DCHECK(!load_signals_result_);
+    std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+    TrustedSignals::BuildTrustedScoringSignalsURL(
+        send_creative_scanning_metadata, hostname, base_url_, ads,
+        ad_components, experiment_group_id, main_fragments, aux_fragments);
+
     auto scoring_signals = TrustedSignals::LoadScoringSignals(
         &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
         std::move(ads), std::move(ad_components), hostname, base_url_,
-        experiment_group_id, send_creative_scanning_metadata, v8_helper_,
+        experiment_group_id, std::move(main_fragments),
+        std::move(aux_fragments), send_creative_scanning_metadata, v8_helper_,
         base::BindOnce(&TrustedSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     WaitForLoadComplete();
@@ -1146,11 +1197,17 @@ TEST_F(TrustedSignalsTest, BiddingSignalsDeleteBeforeCallback) {
   // Wedge the V8 thread to control when the JSON parsing takes place.
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
 
+  std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+  TrustedSignals::BuildTrustedBiddingSignalsURL(
+      "publisher", base_url_, {"name1"}, {"key1"},
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", main_fragments,
+      aux_fragments);
+
   auto bidding_signals = TrustedSignals::LoadBiddingSignals(
       &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
-      {"name1"}, {"key1"}, "publisher", base_url_,
-      /*experiment_group_id=*/std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_,
+      {"name1"}, {"key1"}, base_url_, std::move(main_fragments),
+      std::move(aux_fragments), v8_helper_,
       base::BindOnce([](scoped_refptr<TrustedSignals::Result> result,
                         std::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
@@ -1171,11 +1228,19 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDeleteBeforeCallback) {
 
   // Wedge the V8 thread to control when the JSON parsing takes place.
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  auto ads = CreateCreativeInfoSet({"http://foo.test/"});
+  std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/false, "publisher", base_url_, ads,
+      /*component_ads=*/{}, /*experiment_group_id=*/std::nullopt,
+      main_fragments, aux_fragments);
+
   auto scoring_signals = TrustedSignals::LoadScoringSignals(
       &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
-      CreateCreativeInfoSet({"http://foo.test/"}),
-      /*ad_components=*/{}, "publisher", base_url_,
-      /*experiment_group_id=*/std::nullopt,
+      std::move(ads), /*ad_components=*/{}, "publisher", base_url_,
+      /*experiment_group_id=*/std::nullopt, std::move(main_fragments),
+      std::move(aux_fragments),
       /*send_creative_scanning_metadata=*/false, v8_helper_,
       base::BindOnce([](scoped_refptr<TrustedSignals::Result> result,
                         std::optional<std::string> error_msg) {
@@ -1388,7 +1453,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
   EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
-TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
+TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLAndComposeURL) {
   for (const bool send_creative_scanning_metadata : {false, true}) {
     SCOPED_TRACE(send_creative_scanning_metadata);
 
@@ -1463,20 +1528,32 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
     }
     single_ad_set.insert(std::move(single_ad));
 
-    GURL ads_result = TrustedSignals::BuildTrustedScoringSignalsURL(
-        send_creative_scanning_metadata,
-        /*hostname=*/"https://publisher.test/",
-        /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
-        /*ads=*/creative_set,
-        /*component_ads=*/{},
-        /*experiment_group_id=*/std::nullopt);
-    GURL component_ads_result = TrustedSignals::BuildTrustedScoringSignalsURL(
-        send_creative_scanning_metadata,
-        /*hostname=*/"https://publisher.test/",
-        /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
-        /*ads=*/single_ad_set,
-        /*component_ads=*/creative_set,
-        /*experiment_group_id=*/std::nullopt);
+    GURL ads_result;
+    {
+      std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+      TrustedSignals::BuildTrustedScoringSignalsURL(
+          send_creative_scanning_metadata,
+          /*hostname=*/"https://publisher.test/",
+          /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
+          /*ads=*/creative_set,
+          /*component_ads=*/{},
+          /*experiment_group_id=*/std::nullopt, main_fragments, aux_fragments);
+      ads_result =
+          TrustedSignals::ComposeURLForTesting(main_fragments, aux_fragments);
+    }
+    GURL component_ads_result;
+    {
+      std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+      TrustedSignals::BuildTrustedScoringSignalsURL(
+          send_creative_scanning_metadata,
+          /*hostname=*/"https://publisher.test/",
+          /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
+          /*ads=*/single_ad_set,
+          /*component_ads=*/creative_set,
+          /*experiment_group_id=*/std::nullopt, main_fragments, aux_fragments);
+      component_ads_result =
+          TrustedSignals::ComposeURLForTesting(main_fragments, aux_fragments);
+    }
 
     if (send_creative_scanning_metadata) {
       EXPECT_EQ(
@@ -1558,13 +1635,16 @@ TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
         /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
         /*buyer_and_seller_reporting_id=*/"chair"));
 
-    GURL result = TrustedSignals::BuildTrustedScoringSignalsURL(
+    std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+    TrustedSignals::BuildTrustedScoringSignalsURL(
         /*send_creative_scanning_metadata=*/true,
         /*hostname=*/"https://publisher.test/",
         /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
         /*ads=*/input,
         /*component_ads=*/{},
-        /*experiment_group_id=*/std::nullopt);
+        /*experiment_group_id=*/std::nullopt, main_fragments, aux_fragments);
+    GURL result =
+        TrustedSignals::ComposeURLForTesting(main_fragments, aux_fragments);
 
     if (both_without_size) {
       EXPECT_EQ(
@@ -1610,13 +1690,16 @@ TEST_F(TrustedSignalsTest,
       /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test")),
       /*buyer_and_seller_reporting_id=*/"recliner"));
 
-  GURL result = TrustedSignals::BuildTrustedScoringSignalsURL(
+  std::vector<TrustedSignals::UrlPiece> main_fragments, aux_fragments;
+  TrustedSignals::BuildTrustedScoringSignalsURL(
       /*send_creative_scanning_metadata=*/true,
       /*hostname=*/"https://publisher.test/",
       /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
       /*ads=*/std::move(input),
       /*component_ads=*/{},
-      /*experiment_group_id=*/std::nullopt);
+      /*experiment_group_id=*/std::nullopt, main_fragments, aux_fragments);
+  GURL result =
+      TrustedSignals::ComposeURLForTesting(main_fragments, aux_fragments);
 
   EXPECT_EQ(
       "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
@@ -1717,6 +1800,413 @@ TEST_F(TrustedSignalsTest, ScoringSignalsCreativeScanning) {
           "adComponentRenderURLs":{"https://barsub.test/":[3]},
           "adComponentRenderUrls":{"https://barsub.test/":[3]}
       })"));
+}
+
+TEST_F(TrustedSignalsTest, ComposeURL) {
+  EXPECT_EQ(
+      GURL("https://example.test/?stuff&foo=bar"),
+      TrustedSignals::ComposeURLForTesting(
+          {{TrustedSignals::UrlField::kKeys, "&foo=bar"},
+           {TrustedSignals::UrlField::kBase, "https://example.test/?stuff"}},
+          {}));
+
+  EXPECT_EQ(
+      GURL("https://example.test/?stuff&foo=bar,baz"
+           "&igs=cars,bicycles,biplanes&buyer=pub1.com,pub2.com&bsid=cushion"),
+      TrustedSignals::ComposeURLForTesting(
+          {{TrustedSignals::UrlField::kKeys, "&foo=bar"},
+           {TrustedSignals::UrlField::kBase, "https://example.test/?stuff"},
+           {TrustedSignals::UrlField::kKeys, ",baz"},
+           {TrustedSignals::UrlField::kBuyerAndSellerReportingIds,
+            "&bsid=cushion"}},
+          {{TrustedSignals::UrlField::kInterestGroupNames, "&igs=cars"},
+           {TrustedSignals::UrlField::kAdBuyer, "&buyer=pub1.com"},
+           {TrustedSignals::UrlField::kInterestGroupNames, ",bicycles"},
+           {TrustedSignals::UrlField::kInterestGroupNames, ",biplanes"},
+           {TrustedSignals::UrlField::kAdBuyer, ",pub2.com"}}));
+}
+
+TEST_F(TrustedSignalsTest, IncrementalBuildTrustedSignalsURL) {
+  using enum TrustedSignals::UrlField;
+
+  const GURL kBaseURL("https://tkv.com/");
+  const uint16_t kExperiment = 123;
+  const std::string kSlotSize = "slotSize=giant";
+
+  std::vector<TrustedSignals::UrlPiece> main_fragments;
+  std::vector<TrustedSignals::UrlPiece> key_fragments;
+
+  TrustedSignals::BuildTrustedBiddingSignalsURL(
+      kHostname, kBaseURL, {"ig1"}, {"k1", "k2"}, kExperiment, kSlotSize,
+      main_fragments, key_fragments);
+  std::vector<TrustedSignals::UrlPiece> expected_main = {
+      {kBase, "https://tkv.com/?hostname=publisher"},
+      {kInterestGroupNames, "&interestGroupNames=ig1"},
+      {kExperimentGroupId, "&experimentGroupId=123"},
+      {kSlotSizeParam, "&slotSize=giant"}};
+  std::vector<TrustedSignals::UrlPiece> expected_key = {{kKeys, "&keys=k1,k2"}};
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(key_fragments, testing::ElementsAreArray(expected_key));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&keys=k1,k2&interestGroupNames=ig1&experimentGroupId="
+      "123&slotSize=giant",
+      TrustedSignals::ComposeURLForTesting(main_fragments, key_fragments));
+
+  TrustedSignals::BuildTrustedBiddingSignalsURL(
+      kHostname, kBaseURL, {"ig2"}, {"k3", "k4"}, kExperiment, kSlotSize,
+      main_fragments, key_fragments);
+  expected_main.push_back({kInterestGroupNames, ",ig2"});
+  expected_key.push_back({kKeys, ",k3,k4"});
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(key_fragments, testing::ElementsAreArray(expected_key));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&keys=k1,k2,k3,k4&interestGroupNames=ig1,ig2&"
+      "experimentGroupId=123&slotSize=giant",
+      TrustedSignals::ComposeURLForTesting(main_fragments, key_fragments));
+
+  TrustedSignals::BuildTrustedBiddingSignalsURL(kHostname, kBaseURL, {"ig3"},
+                                                {}, kExperiment, kSlotSize,
+                                                main_fragments, key_fragments);
+  expected_main.push_back({kInterestGroupNames, ",ig3"});
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(key_fragments, testing::ElementsAreArray(expected_key));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&keys=k1,k2,k3,k4&interestGroupNames=ig1,ig2,ig3&"
+      "experimentGroupId=123&slotSize=giant",
+      TrustedSignals::ComposeURLForTesting(main_fragments, key_fragments));
+}
+
+// Variant where keys is empty on first call.
+TEST_F(TrustedSignalsTest, IncrementalBuildTrustedSignalsURL2) {
+  using enum TrustedSignals::UrlField;
+
+  const GURL kBaseURL("https://tkv.com/");
+  const uint16_t kExperiment = 123;
+  const std::string kSlotSize = "slotSize=giant";
+
+  std::vector<TrustedSignals::UrlPiece> main_fragments;
+  std::vector<TrustedSignals::UrlPiece> key_fragments;
+
+  TrustedSignals::BuildTrustedBiddingSignalsURL(kHostname, kBaseURL, {"ig1"},
+                                                {}, kExperiment, kSlotSize,
+                                                main_fragments, key_fragments);
+  std::vector<TrustedSignals::UrlPiece> expected_main = {
+      {kBase, "https://tkv.com/?hostname=publisher"},
+      {kInterestGroupNames, "&interestGroupNames=ig1"},
+      {kExperimentGroupId, "&experimentGroupId=123"},
+      {kSlotSizeParam, "&slotSize=giant"}};
+  std::vector<TrustedSignals::UrlPiece> expected_key = {};
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(key_fragments, testing::ElementsAreArray(expected_key));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&interestGroupNames=ig1&experimentGroupId=123&"
+      "slotSize=giant",
+      TrustedSignals::ComposeURLForTesting(main_fragments, key_fragments));
+
+  TrustedSignals::BuildTrustedBiddingSignalsURL(
+      kHostname, kBaseURL, {"ig2"}, {"k3", "k4"}, kExperiment, kSlotSize,
+      main_fragments, key_fragments);
+  expected_main.push_back({kInterestGroupNames, ",ig2"});
+  expected_key.push_back({kKeys, "&keys=k3,k4"});
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(key_fragments, testing::ElementsAreArray(expected_key));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&keys=k3,k4&interestGroupNames=ig1,ig2&"
+      "experimentGroupId=123&slotSize=giant",
+      TrustedSignals::ComposeURLForTesting(main_fragments, key_fragments));
+}
+
+TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL) {
+  using enum TrustedSignals::UrlField;
+
+  const GURL kBaseURL("https://tkv.com/");
+  const uint16_t kExperiment = 123;
+
+  std::vector<TrustedSignals::UrlPiece> main_fragments;
+  std::vector<TrustedSignals::UrlPiece> ad_component_fragments;
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/false, kHostname, kBaseURL,
+      CreateCreativeInfoSet({"https://a1.com"}),
+      CreateCreativeInfoSet({"https://c1.com", "https://c3.com"}), kExperiment,
+      main_fragments, ad_component_fragments);
+  std::vector<TrustedSignals::UrlPiece> expected_main = {
+      {kBase, "https://tkv.com/?hostname=publisher"},
+      {kRenderUrls, "&renderUrls=https%3A%2F%2Fa1.com%2F"},
+      {kExperimentGroupId, "&experimentGroupId=123"}};
+  std::vector<TrustedSignals::UrlPiece> expected_component = {
+      {kAdComponentRenderUrls,
+       "&adComponentRenderUrls=https%3A%2F%2Fc1.com%2F,"
+       "https%3A%2F%2Fc3.com%2F"}};
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fa1.com%2F&"
+      "adComponentRenderUrls=https%3A%2F%2Fc1.com%2F,https%3A%2F%2Fc3.com%2F&"
+      "experimentGroupId=123",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/false, kHostname, kBaseURL,
+      CreateCreativeInfoSet({"https://a2.com"}), {}, kExperiment,
+      main_fragments, ad_component_fragments);
+  expected_main.push_back({kRenderUrls, ",https%3A%2F%2Fa2.com%2F"});
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fa1.com%2F,https%3A%2F%2Fa2."
+      "com%2F&adComponentRenderUrls=https%3A%2F%2Fc1.com%2F,https%3A%2F%2Fc3."
+      "com%2F&experimentGroupId=123",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/false, kHostname, kBaseURL,
+      CreateCreativeInfoSet({"https://a3.com"}),
+      CreateCreativeInfoSet({"https://c2.com", "https://c4.com"}), kExperiment,
+      main_fragments, ad_component_fragments);
+  expected_main.push_back({kRenderUrls, ",https%3A%2F%2Fa3.com%2F"});
+  expected_component.push_back(
+      {kAdComponentRenderUrls,
+       ",https%3A%2F%2Fc2.com%2F,https%3A%2F%2Fc4.com%2F"});
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fa1.com%2F,https%3A%2F%2Fa2."
+      "com%2F,https%3A%2F%2Fa3.com%2F&adComponentRenderUrls=https%3A%2F%2Fc1."
+      "com%2F,https%3A%2F%2Fc3.com%2F,https%3A%2F%2Fc2.com%2F,https%3A%2F%2Fc4."
+      "com%2F&experimentGroupId=123",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+}
+
+// Variant where component ads set is empty on first call.
+TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL2) {
+  using enum TrustedSignals::UrlField;
+
+  const GURL kBaseURL("https://tkv.com/");
+  const uint16_t kExperiment = 123;
+
+  std::vector<TrustedSignals::UrlPiece> main_fragments;
+  std::vector<TrustedSignals::UrlPiece> ad_component_fragments;
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/false, kHostname, kBaseURL,
+      CreateCreativeInfoSet({"https://a1.com"}), {}, kExperiment,
+      main_fragments, ad_component_fragments);
+  std::vector<TrustedSignals::UrlPiece> expected_main = {
+      {kBase, "https://tkv.com/?hostname=publisher"},
+      {kRenderUrls, "&renderUrls=https%3A%2F%2Fa1.com%2F"},
+      {kExperimentGroupId, "&experimentGroupId=123"}};
+  std::vector<TrustedSignals::UrlPiece> expected_component;
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fa1.com%2F&"
+      "experimentGroupId=123",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/false, kHostname, kBaseURL,
+      CreateCreativeInfoSet({"https://a2.com"}),
+      CreateCreativeInfoSet({"https://c1.com", "https://c3.com"}), kExperiment,
+      main_fragments, ad_component_fragments);
+  expected_main.push_back({kRenderUrls, ",https%3A%2F%2Fa2.com%2F"});
+  expected_component.push_back(
+      {kAdComponentRenderUrls,
+       "&adComponentRenderUrls=https%3A%2F%2Fc1.com%2F,"
+       "https%3A%2F%2Fc3.com%2F"});
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fa1.com%2F,https%3A%2F%2Fa2."
+      "com%2F&adComponentRenderUrls=https%3A%2F%2Fc1.com%2F,https%3A%2F%2Fc3."
+      "com%2F&experimentGroupId=123",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+}
+
+// Variant with creative scanning info.
+TEST_F(TrustedSignalsTest, IncrementalBuildScoringSignalsURL3) {
+  using enum TrustedSignals::UrlField;
+
+  const GURL kBaseURL("https://tkv.com/");
+  const uint16_t kExperiment = 123;
+
+  TrustedSignals::CreativeInfo m1(
+      /*ad_descriptor=*/blink::AdDescriptor(
+          GURL("https://creative1.test"),
+          std::optional(
+              blink::AdSize(200, blink::AdSize::LengthUnit::kPixels, 100,
+                            blink::AdSize::LengthUnit::kScreenHeight))),
+      /*creative_scanning_metadata=*/"scan1",
+      /*interest_group_owner=*/
+      std::optional(url::Origin::Create(GURL("https://bidder1.test"))),
+      /*buyer_and_seller_reporting_id=*/"chair");
+
+  TrustedSignals::CreativeInfo m2(
+      /*ad_descriptor=*/blink::AdDescriptor(
+          GURL("https://creative1.test"),
+          std::optional(
+              blink::AdSize(200, blink::AdSize::LengthUnit::kPixels, 100,
+                            blink::AdSize::LengthUnit::kScreenHeight))),
+      /*creative_scanning_metadata=*/"scan1b",
+      /*interest_group_owner=*/
+      std::optional(url::Origin::Create(GURL("https://bidder1.test"))),
+      /*buyer_and_seller_reporting_id=*/"sofa");
+
+  TrustedSignals::CreativeInfo m3(
+      /*ad_descriptor=*/blink::AdDescriptor(GURL("https://creative2.test")),
+      /*creative_scanning_metadata=*/"scan2",
+      /*interest_group_owner=*/
+      std::optional(url::Origin::Create(GURL("https://bidder2.test"))),
+      /*buyer_and_seller_reporting_id=*/"stool");
+
+  TrustedSignals::CreativeInfo c1(
+      /*ad_descriptor=*/blink::AdDescriptor(
+          GURL("https://c1.test"),
+          std::optional(
+              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                            blink::AdSize::LengthUnit::kScreenHeight))),
+      /*creative_scanning_metadata=*/"cs1",
+      /*interest_group_owner=*/
+      std::optional(url::Origin::Create(GURL("https://c.bidder1.test"))),
+      /*buyer_and_seller_reporting_id=*/"c.chair");
+
+  TrustedSignals::CreativeInfo c2(
+      /*ad_descriptor=*/blink::AdDescriptor(
+          GURL("https://c2.test"),
+          std::optional(
+              blink::AdSize(99, blink::AdSize::LengthUnit::kPixels, 49,
+                            blink::AdSize::LengthUnit::kScreenHeight))),
+      /*creative_scanning_metadata=*/"cs2",
+      /*interest_group_owner=*/
+      std::optional(url::Origin::Create(GURL("https://c.bidder1.test"))),
+      /*buyer_and_seller_reporting_id=*/"c.sofa");
+
+  TrustedSignals::CreativeInfo c3(
+      /*ad_descriptor=*/blink::AdDescriptor(GURL("https://c3.test")),
+      /*creative_scanning_metadata=*/"cs3",
+      /*interest_group_owner=*/
+      std::optional(url::Origin::Create(GURL("https://c.bidder2.test"))),
+      /*buyer_and_seller_reporting_id=*/"c.stool");
+
+  std::vector<TrustedSignals::UrlPiece> main_fragments;
+  std::vector<TrustedSignals::UrlPiece> ad_component_fragments;
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/true, kHostname, kBaseURL, {m1}, {},
+      kExperiment, main_fragments, ad_component_fragments);
+  std::vector<TrustedSignals::UrlPiece> expected_main = {
+      {kBase, "https://tkv.com/?hostname=publisher"},
+      {kRenderUrls, "&renderUrls=https%3A%2F%2Fcreative1.test%2F"},
+      {kExperimentGroupId, "&experimentGroupId=123"},
+      {kAdCreativeScanningMetadata, "&adCreativeScanningMetadata=scan1"},
+      {kAdSizes, "&adSizes=200px,100sh"},
+      {kAdBuyer, "&adBuyer=https%3A%2F%2Fbidder1.test"},
+      {kBuyerAndSellerReportingIds, "&adBuyerAndSellerReportingIds=chair"}};
+  std::vector<TrustedSignals::UrlPiece> expected_component = {};
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fcreative1.test%2F&"
+      "experimentGroupId=123&adCreativeScanningMetadata=scan1&adSizes=200px,"
+      "100sh&adBuyer=https%3A%2F%2Fbidder1.test&adBuyerAndSellerReportingIds="
+      "chair",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/true, kHostname, kBaseURL, {m2},
+      {c1, c2}, kExperiment, main_fragments, ad_component_fragments);
+  expected_main.push_back({kRenderUrls, ",https%3A%2F%2Fcreative1.test%2F"});
+  expected_main.push_back({kAdCreativeScanningMetadata, ",scan1b"});
+  expected_main.push_back({kAdSizes, ",200px,100sh"});
+  expected_main.push_back({kAdBuyer, ",https%3A%2F%2Fbidder1.test"});
+  expected_main.push_back({kBuyerAndSellerReportingIds, ",sofa"});
+
+  expected_component.push_back({kAdComponentRenderUrls,
+                                "&adComponentRenderUrls=https%3A%2F%2Fc1.test%"
+                                "2F,https%3A%2F%2Fc2.test%2F"});
+  expected_component.push_back(
+      {kAdComponentCreativeScanningMetadata,
+       "&adComponentCreativeScanningMetadata=cs1,cs2"});
+  expected_component.push_back(
+      {kAdComponentSizes, "&adComponentSizes=100px,50sh,99px,49sh"});
+  expected_component.push_back({kAdComponentBuyer,
+                                "&adComponentBuyer=https%3A%2F%2Fc.bidder1."
+                                "test,https%3A%2F%2Fc.bidder1.test"});
+
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fcreative1.test%2F,https%3A%"
+      "2F%2Fcreative1.test%2F&adComponentRenderUrls=https%3A%2F%2Fc1.test%2F,"
+      "https%3A%2F%2Fc2.test%2F&experimentGroupId=123&"
+      "adCreativeScanningMetadata=scan1,scan1b&"
+      "adComponentCreativeScanningMetadata=cs1,cs2&adSizes=200px,100sh,200px,"
+      "100sh&adComponentSizes=100px,50sh,99px,49sh&adBuyer=https%3A%2F%"
+      "2Fbidder1.test,https%3A%2F%2Fbidder1.test&adComponentBuyer=https%3A%2F%"
+      "2Fc.bidder1.test,https%3A%2F%2Fc.bidder1.test&"
+      "adBuyerAndSellerReportingIds=chair,sofa",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
+
+  TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/true, kHostname, kBaseURL, {m3}, {c3},
+      kExperiment, main_fragments, ad_component_fragments);
+  expected_main.push_back({kRenderUrls, ",https%3A%2F%2Fcreative2.test%2F"});
+  expected_main.push_back({kAdCreativeScanningMetadata, ",scan2"});
+  expected_main.push_back({kAdSizes, ",,"});
+  expected_main.push_back({kAdBuyer, ",https%3A%2F%2Fbidder2.test"});
+  expected_main.push_back({kBuyerAndSellerReportingIds, ",stool"});
+
+  expected_component.push_back(
+      {kAdComponentRenderUrls, ",https%3A%2F%2Fc3.test%2F"});
+  expected_component.push_back({kAdComponentCreativeScanningMetadata, ",cs3"});
+  expected_component.push_back({kAdComponentSizes, ",,"});
+  expected_component.push_back(
+      {kAdComponentBuyer, ",https%3A%2F%2Fc.bidder2.test"});
+
+  EXPECT_THAT(main_fragments, testing::ElementsAreArray(expected_main));
+  EXPECT_THAT(ad_component_fragments,
+              testing::ElementsAreArray(expected_component));
+  EXPECT_EQ(
+      "https://tkv.com/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fcreative1.test%2F,https%3A%"
+      "2F%2Fcreative1.test%2F,https%3A%2F%2Fcreative2.test%2F&"
+      "adComponentRenderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F,"
+      "https%3A%2F%2Fc3.test%2F&experimentGroupId=123&"
+      "adCreativeScanningMetadata=scan1,scan1b,scan2&"
+      "adComponentCreativeScanningMetadata=cs1,cs2,cs3&adSizes=200px,100sh,"
+      "200px,100sh,,&adComponentSizes=100px,50sh,99px,49sh,,&adBuyer=https%3A%"
+      "2F%2Fbidder1.test,https%3A%2F%2Fbidder1.test,https%3A%2F%2Fbidder2.test&"
+      "adComponentBuyer=https%3A%2F%2Fc.bidder1.test,https%3A%2F%2Fc.bidder1."
+      "test,https%3A%2F%2Fc.bidder2.test&adBuyerAndSellerReportingIds=chair,"
+      "sofa,stool",
+      TrustedSignals::ComposeURLForTesting(main_fragments,
+                                           ad_component_fragments));
 }
 
 }  // namespace

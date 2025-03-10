@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import type {EntityDataManagerProxy} from 'chrome://settings/lazy_load.js';
+import type {EntityDataManagerProxy, EntityInstancesChangedListener} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type AttributeType = chrome.autofillPrivate.AttributeType;
@@ -17,15 +17,19 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   private attributeTypes_: AttributeType[] = [];
   private entityInstance_: EntityInstance|null = null;
   private entityTypes_: EntityType[] = [];
+  private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
+      null;
 
   constructor() {
     super([
+      'addEntityInstancesChangedListener',
       'addOrUpdateEntityInstance',
-      'removeEntityInstance',
-      'loadEntityInstances',
       'getAllAttributeTypesForEntity',
       'getAllEntityTypes',
       'getEntityInstanceByGuid',
+      'loadEntityInstances',
+      'removeEntityInstance',
+      'removeEntityInstancesChangedListener',
     ]);
   }
 
@@ -47,6 +51,12 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.attributeTypes_ = attributeTypes;
   }
 
+  callEntityInstancesChangedListener(
+      entityInstancesWithLabels: EntityInstanceWithLabels[]): void {
+    assert(this.entityInstancesChangedListener_);
+    this.entityInstancesChangedListener_(entityInstancesWithLabels);
+  }
+
   addOrUpdateEntityInstance(entityInstance: EntityInstance): void {
     this.methodCalled(
         'addOrUpdateEntityInstance', structuredClone(entityInstance));
@@ -63,7 +73,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
 
   getEntityInstanceByGuid(guid: string) {
     this.methodCalled('getEntityInstanceByGuid', guid);
-    assert(this.entityInstance_!);
+    assert(this.entityInstance_);
     return Promise.resolve(structuredClone(this.entityInstance_));
   }
 
@@ -75,5 +85,16 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   getAllAttributeTypesForEntity(entityType: number): Promise<AttributeType[]> {
     this.methodCalled('getAllAttributeTypesForEntity', entityType);
     return Promise.resolve(structuredClone(this.attributeTypes_));
+  }
+
+  addEntityInstancesChangedListener(listener: EntityInstancesChangedListener) {
+    this.methodCalled('addEntityInstancesChangedListener');
+    this.entityInstancesChangedListener_ = listener;
+  }
+
+  removeEntityInstancesChangedListener(
+      _listener: EntityInstancesChangedListener) {
+    this.methodCalled('removeEntityInstancesChangedListener');
+    this.entityInstancesChangedListener_ = null;
   }
 }

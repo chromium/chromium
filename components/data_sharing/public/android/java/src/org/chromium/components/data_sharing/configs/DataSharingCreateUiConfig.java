@@ -7,16 +7,19 @@ package org.chromium.components.data_sharing.configs;
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.sync.protocol.GroupData;
 
 /** Config class for the Data Sharing Create UI. */
+@NullMarked
 public class DataSharingCreateUiConfig {
 
     // --- Create Usage Config ---
-    private Bitmap mPreviewImage;
-    private CreateCallback mCreateCallback;
-    private DataSharingUiConfig mCommonConfig;
+    private @Nullable Bitmap mPreviewImage;
+    private @Nullable CreateCallback mCreateCallback;
+    private @Nullable DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing create UI events. */
     public interface CreateCallback {
@@ -40,23 +43,23 @@ public class DataSharingCreateUiConfig {
         this.mCommonConfig = builder.mCommonConfig;
     }
 
-    public Bitmap getPreviewImage() {
+    public @Nullable Bitmap getPreviewImage() {
         return mPreviewImage;
     }
 
-    public CreateCallback getCreateCallback() {
+    public @Nullable CreateCallback getCreateCallback() {
         return mCreateCallback;
     }
 
-    public DataSharingUiConfig getCommonConfig() {
+    public @Nullable DataSharingUiConfig getCommonConfig() {
         return mCommonConfig;
     }
 
     // Builder class
     public static class Builder {
-        private Bitmap mPreviewImage;
-        private CreateCallback mCreateCallback;
-        private DataSharingUiConfig mCommonConfig;
+        private @Nullable Bitmap mPreviewImage;
+        private @Nullable CreateCallback mCreateCallback;
+        private @Nullable DataSharingUiConfig mCommonConfig;
 
         /**
          * Sets the preview image for the tab group.

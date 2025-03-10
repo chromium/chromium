@@ -447,11 +447,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
+        // Multi-resume feature is from Android 10.
+        // https://source.android.com/docs/core/display/multi_display/multi-resume
+        boolean activityTopResumedSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
         return new ChromeWindow(
                 /* activity= */ this,
                 mCompositorViewHolderSupplier,
                 getModalDialogManagerSupplier(),
                 mManualFillingComponentSupplier,
+                activityTopResumedSupported,
                 getIntentRequestTracker(),
                 getInsetObserver());
     }
@@ -1452,6 +1456,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             }
         }
         super.onTopResumedActivityChanged(isTopResumedActivity);
+        WindowAndroid windowAndroid = getWindowAndroid();
+        if (windowAndroid != null) {
+            windowAndroid.onActivityTopResumedChanged(isTopResumedActivity);
+        }
     }
 
     /**

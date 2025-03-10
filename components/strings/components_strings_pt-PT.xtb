@@ -138,6 +138,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detetado automaticamente)</translation>
 <translation id="1232569758102978740">Sem nome</translation>
 <translation id="1236081509407217141">Permitir a RV?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">O nome do dispositivo</translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
@@ -1440,6 +1441,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3536227077203206203">Permitida desta vez</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Ecrã (paginado)</translation>
+<translation id="3541016556608204104">Mais sobre os Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Imagem do cartão</translation>
 <translation id="3542768452570884558">Abrir link numa nova janela</translation>
 <translation id="3543935938072367282">Pague mais rapidamente com o preenchimento automático</translation>
@@ -1804,6 +1806,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="415440494507469262">Adicionar separador à tabela de comparação</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165422751765527461">Abre um artigo do Centro de Ajuda num novo separador</translation>
+<translation id="4165584779486830267">Já pode pagar em prestações com a Affirm ou a Zip.</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4171400957073367226">Assinatura de verificação incorreta</translation>
@@ -2768,6 +2771,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5910140988253729859">Anular preenchimento automático</translation>
 <translation id="5911020115933784199">Eventos e agendas</translation>
 <translation id="5911110632211230665">Abertura bloqueada</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> adicionou este separador</translation>
 <translation id="5915189366813702112">Condições de trabalho flexíveis</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5918373444239520146">Gadgets e dispositivos eletrónicos portáteis</translation>
@@ -4628,6 +4632,7 @@ Detalhes adicionais:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza um protocolo não suportado.</translation>
 <translation id="918454845714257218">Verifique o código no <ph name="SIDE_OF_CARD" /> e tente novamente</translation>
 <translation id="9186203289258525843">Botão Definir o Chrome como o navegador predefinido; ative para definir o Chrome como o navegador predefinido do sistema</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> alterou este separador</translation>
 <translation id="9189789270972826888">Clique nos detalhes do cartão abaixo para copiar e colar se o cartão não estiver preenchido. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Os tópicos com mais de 4 semanas são eliminados automaticamente</translation>
 <translation id="9191834167571392248">Perfurar na parte inferior esquerda</translation>

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_COMMON_H_
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_COMMON_H_
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "printing/buildflags/buildflags.h"
@@ -22,7 +22,7 @@ namespace printing {
 // documents.
 bool StartPrint(
     content::WebContents* web_contents,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
     bool print_preview_disabled,

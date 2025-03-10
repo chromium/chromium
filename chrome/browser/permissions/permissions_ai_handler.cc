@@ -144,7 +144,6 @@ void PermissionsAiHandler::SetOnDeviceModelAvailable() {
   LogOnDeviceModelDownloadSuccessAndTime(/*success=*/true,
                                          on_device_download_start_time_);
   is_on_device_model_available_ = true;
-  observing_on_device_model_availability_ = false;
 }
 
 void PermissionsAiHandler::OnDeviceModelAvailabilityChanged(

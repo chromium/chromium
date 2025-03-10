@@ -145,6 +145,41 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, Redirects) {
               HasUrl(url3))));
 }
 
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeRedirect) {
+  const GURL top_level_url1 = embedded_https_test_server().GetURL(
+      "a.test", "/page_with_blank_iframe.html");
+  // Set in //content/test/data/page_with_blank_iframe.html.
+  const std::string kIframeId = "test_iframe";
+  // Starts a chain of 2 server redirects.
+  const GURL iframe_redirector_url = embedded_https_test_server().GetURL(
+      "b.test", "/server-redirect?%2Fcross-site%3Fc.test%252Fempty.html");
+  const GURL top_level_url2 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(web_contents, top_level_url1));
+  ASSERT_TRUE(
+      NavigateIframeToURL(web_contents, kIframeId, iframe_redirector_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, top_level_url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  EXPECT_THAT(
+      recorder.visits(),
+      ElementsAre(
+          AllOf(PreviousPage(
+                    AllOf(HasUrl(GURL()), HasSourceId(ukm::kInvalidSourceId))),
+                Navigation(ServerRedirects(IsEmpty())), HasUrl(top_level_url1)),
+          AllOf(PreviousPage(
+                    AllOf(HasUrl(top_level_url1),
+                          HasSourceIdForUrl(top_level_url1, &ukm_recorder))),
+                // Only top-level redirects should be reported; redirects in
+                // iframes should be ignored.
+                Navigation(ServerRedirects(IsEmpty())),
+                HasUrl(top_level_url2))));
+}
+
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, DocumentCookie) {
   const GURL url1 =
       embedded_https_test_server().GetURL("a.test", "/empty.html");
@@ -451,6 +486,88 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
                                            HadQualifyingStorageAccess(false))),
                         HasUrl(url3))));
 }
+
+class BtmPageVisitObserverClientRedirectBrowserTest
+    : public BtmPageVisitObserverBrowserTest,
+      public testing::WithParamInterface<BtmClientRedirectMethod> {
+ protected:
+  BtmClientRedirectMethod client_redirect_type() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverClientRedirectBrowserTest,
+                       ClientRedirect) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(
+      PerformClientRedirect(client_redirect_type(), web_contents, url3));
+  ASSERT_TRUE(recorder.WaitForSize(3));
+
+  // Expect no server redirects to be reported.
+  EXPECT_THAT(recorder.visits(),
+              ElementsAre(AllOf(PreviousPage(HasUrl(GURL())), HasUrl(url1),
+                                Navigation(ServerRedirects(IsEmpty()))),
+                          AllOf(PreviousPage(HasUrl(url1)), HasUrl(url2),
+                                Navigation(ServerRedirects(IsEmpty()))),
+                          AllOf(PreviousPage(HasUrl(url2)), HasUrl(url3),
+                                Navigation(ServerRedirects(IsEmpty())))));
+}
+
+IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverClientRedirectBrowserTest,
+                       MixOfClientAndServerRedirects) {
+  const GURL url1 = embedded_https_test_server().GetURL(
+      "a.test", "/cross-site?b.test%2Fempty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 = embedded_https_test_server().GetURL(
+      "c.test", "/cross-site-with-cookie?d.test%2Fempty.html");
+  const GURL url4 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  BtmPageVisitRecorder recorder(web_contents);
+
+  // Navigate to a.test, which server-redirects to b.test.
+  ASSERT_TRUE(NavigateToURL(web_contents, url1, url2));
+  // Client-redirect from b.test to c.test, which in turn server-redirects to
+  // d.test.
+  ASSERT_TRUE(
+      PerformClientRedirect(client_redirect_type(), web_contents, url3, url4));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  // Expect that client redirectors are reported as page visits rather than
+  // server redirects, and that source IDs for server redirects are populated
+  // correctly.
+  EXPECT_THAT(
+      recorder.visits(),
+      ElementsAre(
+          AllOf(PreviousPage(HasUrl(GURL())), HasUrl(url2),
+                Navigation(ServerRedirects(ElementsAre(
+                    AllOf(HasUrl(url1), HasSourceIdForUrl(url1, &ukm_recorder),
+                          DidWriteCookies(false)))))),
+          AllOf(PreviousPage(HasUrl(url2)), HasUrl(url4),
+                Navigation(ServerRedirects(ElementsAre(
+                    AllOf(HasUrl(url3), HasSourceIdForUrl(url3, &ukm_recorder),
+                          DidWriteCookies(true))))))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BtmPageVisitObserverClientRedirectBrowserTest,
+    kAllBtmClientRedirectMethods,
+    [](const testing::TestParamInfo<
+        BtmPageVisitObserverClientRedirectBrowserTest::ParamType>& param_info) {
+      BtmClientRedirectMethod client_redirect_method = param_info.param;
+      return StringifyBtmClientRedirectMethod(client_redirect_method);
+    });
 
 class BtmPageVisitObserverSiteDataAccessBrowserTest
     : public BtmPageVisitObserverBrowserTest,

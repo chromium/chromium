@@ -271,8 +271,9 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
 }
 
+// TODO(crbug.com/401535901): Test is flaky.
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
-                       RemoveVisitByUrlAndTime) {
+                       DISABLED_RemoveVisitByUrlAndTime) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   // Open in a new tab to keep the history clusters UI open.

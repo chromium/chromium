@@ -617,6 +617,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (
             r'^base/third_party/symbolize/.*',
             r'^third_party/abseil-cpp/.*',
+            r'^third_party/grpc/source/.*',
         ),
     ),
     BanRule(

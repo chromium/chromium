@@ -55,11 +55,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   void LogNotificationOpened();
   void LogNotificationDismissed();
 
-  // The button that owns |this|.
-  // TODO(b/361445261): Update this to PinnedActionToolbarButton after
-  // ToolbarPinning is fully launched.
-  raw_ptr<View> toolbar_button_;
-
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 
   bool opened_ = false;

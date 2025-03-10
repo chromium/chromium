@@ -1097,13 +1097,6 @@ base::Value::Dict SerializeTailoredVerdict(
       "tailored_verdict_type",
       ClientDownloadResponse_TailoredVerdict_TailoredVerdictType_Name(
           tv.tailored_verdict_type()));
-  base::Value::List adjustments;
-  for (const auto& adjustment : tv.adjustments()) {
-    adjustments.Append(
-        ClientDownloadResponse_TailoredVerdict_ExperimentalWarningAdjustment_Name(
-            adjustment));
-  }
-  dict_tailored_verdict.Set("adjustments", std::move(adjustments));
   return dict_tailored_verdict;
 }
 
@@ -2941,18 +2934,6 @@ void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
   } else if (*tailored_verdict_type == "SUSPICIOUS_ARCHIVE") {
     tv.set_tailored_verdict_type(
         ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE);
-  }
-
-  const base::Value::List* adjustments = input.FindList("adjustments");
-  CHECK(adjustments);
-  for (const base::Value& adjustment : *adjustments) {
-    if (adjustment.GetString() == "ADJUSTMENT_UNSPECIFIED") {
-      tv.add_adjustments(
-          ClientDownloadResponse::TailoredVerdict::ADJUSTMENT_UNSPECIFIED);
-    } else if (adjustment.GetString() == "ACCOUNT_INFO_STRING") {
-      tv.add_adjustments(
-          ClientDownloadResponse::TailoredVerdict::ACCOUNT_INFO_STRING);
-    }
   }
 
   WebUIInfoSingleton::GetInstance()->SetTailoredVerdictOverride(std::move(tv),

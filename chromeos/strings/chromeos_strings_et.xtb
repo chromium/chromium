@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK versioon:</translation>
 <translation id="2016697457005847575">Proovige neid veaotsingu toiminguid</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Selleks et oma AI-pilte isikupärastada, valige teema ja seejärel allajoonitud sõnad.</translation>
 <translation id="2045814230297767491">söögiriistad</translation>
 <translation id="2047316797244836561">Ekraanisäästja vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">teine planeet</translation>
 <translation id="6359706544163531585">Heleda teema keelamine</translation>
 <translation id="6359919876285606596">See toiming on jäädav ja seda ei saa tagasi võtta</translation>
-<translation id="6368342879959028556">Kui teete valiku „Looge AI-ga”, kirjutage kohandatud päring. Või saate teema valimiseks teha valiku „AI taustapildid” ja seejärel AI taustapildi isikupärastamiseks allajoonitud sõnad valida.</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6369221585240879141">Selle transkriptsiooni keele puhul ei saa salvestiste nimesid luua</translation>
 <translation id="6373461326814131011">tiik</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Kas lubada süsteemiteenustel teie asukohta kasutada?</translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="66621959568103627">korallroosades toonides</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ainulaadsemate ja mitmekesisemate AI-piltide saamiseks tehke valik „Inspireeri mind”.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kui loote AI-ga, saadetakse Google'i AI serveritele päring, et genereerida pilte ja täiustada toodet kooskõlas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'i privaatsuseeskirjadega<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatiivne AI on varajases katsejärgus ja sellel on praegu piiratud saadavus.</translation>
 <translation id="6673898378497337661">suurendab klaviatuuri eredust</translation>
 <translation id="6692996468359469499">Hankige oma valiku kohta teavet</translation>
 <translation id="6694534975463174713">lukk</translation>

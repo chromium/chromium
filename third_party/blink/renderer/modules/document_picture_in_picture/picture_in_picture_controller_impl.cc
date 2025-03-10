@@ -259,6 +259,19 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
     picture_in_picture_element_->GetWebMediaPlayer()
         ->UnregisterFrameSinkHierarchy();
   }
+
+  // We need to initialize the media position for this window as we won't be
+  // updated with a position until the next time the player forces an update.
+  double effective_playback_rate = element->playbackRate();
+  if (element->paused() ||
+      element->getReadyState() < HTMLMediaElement::kHaveFutureData) {
+    effective_playback_rate = 0.0;
+  }
+  picture_in_picture_session_->UpdateMediaPosition(
+      media_session::mojom::blink::MediaPosition::New(
+          effective_playback_rate, base::Seconds(element->duration()),
+          base::Seconds(element->currentTime()), base::TimeTicks::Now(),
+          element->ended()));
 }
 
 void PictureInPictureControllerImpl::ExitPictureInPicture(
@@ -552,6 +565,14 @@ void PictureInPictureControllerImpl::OnPictureInPictureStateChange() {
       picture_in_picture_element_->GetWebMediaPlayer()->GetSurfaceId().value(),
       picture_in_picture_element_->GetWebMediaPlayer()->NaturalSize(),
       ShouldShowPlayPauseButton(*picture_in_picture_element_));
+}
+
+void PictureInPictureControllerImpl::OnMediaPositionStateChanged(
+    const media_session::mojom::blink::MediaPositionPtr& media_position) {
+  if (!picture_in_picture_session_.is_bound()) {
+    return;
+  }
+  picture_in_picture_session_->UpdateMediaPosition(media_position.Clone());
 }
 
 void PictureInPictureControllerImpl::OnWindowSizeChanged(

@@ -1441,6 +1441,7 @@
 <translation id="3536227077203206203">ຂະນະນີ້ອະນຸຍາດແລ້ວ</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">ສະກຣີນ (ແບ່ງໜ້າ)</translation>
+<translation id="3541016556608204104">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບ Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">ຮູບບັດ</translation>
 <translation id="3542768452570884558">ເປີດລິ້ງຢູ່ໃນໜ້າຕ່າງໃຫມ່</translation>
 <translation id="3543935938072367282">ຈ່າຍເງິນໄດ້ວ່ອງໄວຍິ່ງຂຶ້ນດ້ວຍການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
@@ -2770,6 +2771,7 @@
 <translation id="5910140988253729859">ຍົກເລີກການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="5911020115933784199">ກິດຈະກຳ ແລະ ລາຍຊື່</translation>
 <translation id="5911110632211230665">ການເປີດໄຟລ໌ຖືກບລັອກ</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ເພີ່ມແຖບນີ້ແລ້ວ</translation>
 <translation id="5915189366813702112">ຄວາມຍືດຍຸ່ນເລື່ອງການເຮັດວຽກ</translation>
 <translation id="59174027418879706">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5918373444239520146">ແກດເຈັດ ແລະ ອຸປະກອນອີເລັກໂທຣນິກພົກພາ</translation>
@@ -3019,6 +3021,7 @@
 <translation id="6337133576188860026">ຂະຫຍາຍພື້ນທີ່ຫວ່າງໄດ້ໜ້ອຍກວ່າ <ph name="SIZE" />. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນການເຂົ້າເບິ່ງຄັ້ງຕໍ່ໄປຂອງທ່ານ.</translation>
 <translation id="6337534724793800597">ກັ່ນຕອງນະໂຍບາຍຕາມຊື່</translation>
 <translation id="633770708279464947">ຄ່າ <ph name="SECURE_DNS_SALT" /> ບໍ່ຖືກຕ້ອງ ແລະ ຈະບໍ່ຖືກນຳໃຊ້.</translation>
+<translation id="6338645927051849741">ລະຫັດຜ່ານ • ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6340739886198108203">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຖ່າຍຮູບ ຫຼື ບັນທຶກໜ້າຈໍໃນເວລາປາກົດມີເນື້ອຫາທີ່ເປັນຄວາມລັບ:</translation>
 <translation id="6341434961864773665">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ອັບໂຫຼດໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ອັບໂຫຼດໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">ເມື່ອກີ້ນີ້</translation>
@@ -4629,6 +4632,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ໃຊ້ໂປຣໂຕຄໍທີ່ບໍ່ຖືກຮອງຮັບ.</translation>
 <translation id="918454845714257218">ກວດສອບລະຫັດຢູ່ <ph name="SIDE_OF_CARD" /> ແລ້ວລອງໃໝ່</translation>
 <translation id="9186203289258525843">ປຸ່ມຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ, ເປີດນຳໃຊ້ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ປ່ຽນແປງແຖບນີ້ແລ້ວ</translation>
 <translation id="9189789270972826888">ຄລິກລາຍລະອຽດບັດຂ້າງລຸ່ມເພື່ອສຳເນົາ ແລະ ວາງຫາກບໍ່ໄດ້ຕື່ມຂໍ້ມູນບັດ. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">ຫົວຂໍ້ທີ່ເກົ່າກວ່າ 4 ອາທິດຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="9191834167571392248">ເຈາະຮູຢູ່ລຸ່ມສຸດເບື້ອງຊ້າຍ</translation>

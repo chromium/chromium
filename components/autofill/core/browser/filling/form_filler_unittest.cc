@@ -421,7 +421,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
 TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
   FormData form = FormSeen(
       {.fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FULL},
-                  {.role = PASSPORT_ISSUING_COUNTRY_TAG,
+                  {.role = PASSPORT_ISSUING_COUNTRY,
                    .heuristic_type = ADDRESS_HOME_COUNTRY},
                   {.role = PASSPORT_NUMBER},
                   {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
@@ -1549,10 +1549,10 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   set_server_type(0, PASSPORT_NUMBER);
   set_server_type(1, NAME_FIRST, PASSPORT_NAME_TAG);
   set_server_type(2, NAME_LAST, PASSPORT_NAME_TAG);
-  set_server_type(3, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY_TAG);
-  set_server_type(4, PASSPORT_ISSUE_DATE_TAG);
+  set_server_type(3, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY);
+  set_server_type(4, PASSPORT_ISSUE_DATE);
   set_format_string(4, "M/YY");
-  set_server_type(5, PASSPORT_EXPIRATION_DATE_TAG);
+  set_server_type(5, PASSPORT_EXPIRATION_DATE);
   set_format_string(5, "DD/MM/YYYY");
   form_structure->UpdateAutofillCount();
 

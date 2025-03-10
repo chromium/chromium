@@ -176,6 +176,7 @@
             {
                 "domain": "BluetoothEmulation",
                 "async": [
+                    "setSimulatedCentralState",
                     "simulatePreconnectedPeripheral",
                     "simulateAdvertisement"
                 ]

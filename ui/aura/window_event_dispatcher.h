@@ -130,6 +130,9 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   void OnHostLostMouseGrab();
   void OnCursorMovedToRootLocation(const gfx::Point& root_location);
 
+  // Invoked when mouse exit the underlying window tree host.
+  void OnHostCursorExit();
+
   // TODO(beng): This is only needed because this cleanup needs to happen after
   //             all other observers are notified of OnWindowDestroying() but
   //             before OnWindowDestroyed() is sent (i.e. while the window

@@ -6727,6 +6727,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode.">
         Capture Mode, default is <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab for keyboard navigation.
       </message>
+      <message name="IDS_ASH_SUNFISH_MODE_ALERT_OPEN" desc="Alert spoken by screen readers on entering a mode where users can select a region on their screen to search.">
+        Select to search my screen. Press tab then space for keyboard navigation.
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN" desc="Spoken by screen readers for the open alert with the source as full screen.">
         full screen
       </message>
@@ -6925,8 +6928,8 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCANNER_ERROR_GENERIC" desc="Generic message shown when an error occurs while loading actions for a screenshot.">
         Something went wrong.
       </message>
-      <message name="IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message shown when the language detected in the screenshot area is unsupported for this feature.">
-        This language isn't supported
+      <message name="IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message shown when more actions are not available because the language detected in the screenshot area is unsupported.">
+        No more actions for this language
       </message>
 
       <!-- Snap Group -->

@@ -13,13 +13,10 @@
 namespace safe_browsing {
 
 // Implementation of DeepScanningMetadata for DownloadItem.
-class DownloadItemMetadata : public DeepScanningMetadata,
-                             public download::DownloadItem::Observer {
+class DownloadItemMetadata : public DeepScanningMetadata {
  public:
   explicit DownloadItemMetadata(download::DownloadItem* item);
   ~DownloadItemMetadata() override;
-
-  void OnDownloadDestroyed(download::DownloadItem* download) override;
 
   content::BrowserContext* GetBrowserContext() const override;
   const base::FilePath& GetFullPath() const override;

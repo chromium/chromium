@@ -115,9 +115,8 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
 
   // Add a primary user session for an existing user. This should *not* trigger
   // the Welcome Tour to start.
-  auto* const session_controller_client = GetSessionControllerClient();
-  const auto primary_account_id =
-      session_controller_client->AddUserSession({"primary@test"});
+  const auto primary_account_id = SimulateUserLogin(
+      {.display_email = "primary@test", .activate_session = false});
 
   const std::optional<ExperimentalArm> pref_value = GetPrefValue();
   if (pref_value) {
@@ -128,7 +127,7 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
                      static_cast<int>(pref_value.value()));
   }
 
-  session_controller_client->SetSessionState(
+  GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
 
   // If there is change between the pref value and the enabled experimental

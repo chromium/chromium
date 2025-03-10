@@ -415,6 +415,7 @@
 <translation id="6520670145826811516">Para usar a localização, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="6632473616050862500">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6634299872736643004">As mudanças nessa configuração serão aplicadas assim que o Chrome for reiniciado.</translation>
 <translation id="6660596345553328257">Fazer login no Chrome?</translation>
 <translation id="6664219008737641504">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="SETTINGS_LINK" /> os dados do Chrome da sua conta</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>

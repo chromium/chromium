@@ -277,6 +277,8 @@ declare global {
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
            accountInfo?: AccountInfo) => void>;
+      export const onEntityInstancesChanged: ChromeEvent<
+          (entityInstancesWithLabels: EntityInstanceWithLabels[]) => void>;
     }
   }
 }

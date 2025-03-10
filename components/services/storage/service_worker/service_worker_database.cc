@@ -2314,9 +2314,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteAllDataForOrigins(
       }
 
       auto match = key.origin() == requested_origin;
-      match = match ||
-              (key.IsThirdPartyContext() &&
-               key.top_level_site() == net::SchemefulSite(requested_origin));
+      match = match || (key.IsThirdPartyContext() &&
+                        key.top_level_site().IsSameSiteWith(requested_origin));
       if (!match) {
         continue;
       }

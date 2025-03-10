@@ -259,11 +259,8 @@ constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-html-as-context", true};
 
-constexpr base::FeatureParam<bool> kIncludeInnerTextWithInnerHtml{
-    &kLensOverlayContextualSearchbox, "use-inner-text-with-inner-html", false};
-
-constexpr base::FeatureParam<bool> kIncludeApcWithInnerHtml{
-    &kLensOverlayContextualSearchbox, "use-apc-with-inner-html", false};
+constexpr base::FeatureParam<bool> kUseApcAsContext{
+    &kLensOverlayContextualSearchbox, "use-apc-as-context", false};
 
 constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
@@ -397,6 +394,18 @@ constexpr base::FeatureParam<base::TimeDelta> kSupportedLanguagesCacheTimeoutMs{
     base::Days(30)};
 constexpr base::FeatureParam<int> kRecentLanguagesAmount{
     &kLensOverlayTranslateLanguages, "recent-languages-amount", 5};
+
+constexpr base::FeatureParam<int>
+    kLensOverlaySimplifiedSelectionTextReceivedTimeout{
+        &kLensOverlaySimplifiedSelection, "simplified-text-received-timeout",
+        2000};
+constexpr base::FeatureParam<int>
+    kLensOverlaySimplifiedSelectionCopyTextReceivedTimeout{
+        &kLensOverlaySimplifiedSelection, "copy-text-received-timeout", 500};
+constexpr base::FeatureParam<int>
+    kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout{
+        &kLensOverlaySimplifiedSelection, "translate-text-received-timeout",
+        500};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -627,12 +636,8 @@ bool UseInnerHtmlAsContext() {
   return kUseInnerHtmlAsContext.Get();
 }
 
-bool IncludeInnerTextWithInnerHtml() {
-  return kIncludeInnerTextWithInnerHtml.Get();
-}
-
-bool IncludeApcWithInnerHtml() {
-  return kIncludeApcWithInnerHtml.Get();
+bool UseApcAsContext() {
+  return kUseApcAsContext.Get();
 }
 
 bool SendPageUrlForContextualization() {
@@ -875,6 +880,18 @@ bool ShouldAutoFocusSearchbox() {
 
 bool IsSimplifiedSelectionEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlaySimplifiedSelection);
+}
+
+int GetSimplifiedSelectionTextReceivedTimeout() {
+  return kLensOverlaySimplifiedSelectionTextReceivedTimeout.Get();
+}
+
+int GetCopyTextReceivedTimeout() {
+  return kLensOverlaySimplifiedSelectionCopyTextReceivedTimeout.Get();
+}
+
+int GetTranslateTextReceivedTimeout() {
+  return kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout.Get();
 }
 
 bool PageContentUploadRequestIdFixEnabled() {

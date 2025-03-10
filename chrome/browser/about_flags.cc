@@ -4769,10 +4769,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCellularUseSecondEuiccName,
      flag_descriptions::kCellularUseSecondEuiccDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCellularUseSecondEuicc)},
-    {"cros-privacy-hub-app-permissions-v2",
-     flag_descriptions::kCrosPrivacyHubAppPermissionsV2Name,
-     flag_descriptions::kCrosPrivacyHubAppPermissionsV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kCrosPrivacyHubAppPermissionsV2)},
     {"enable-cros-privacy-hub", flag_descriptions::kCrosPrivacyHubName,
      flag_descriptions::kCrosPrivacyHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrosPrivacyHub)},
@@ -6324,6 +6320,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-instance-limit", flag_descriptions::kDisableInstanceLimitName,
      flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},
+
+    {"clear-instance-info-when-closed-intentionally",
+     flag_descriptions::kClearInstanceInfoWhenClosedIntentionallyName,
+     flag_descriptions::kClearInstanceInfoWhenClosedIntentionallyDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kClearInstanceInfoWhenClosedIntentionally)},
 
     {"change-unfocused-priority",
      flag_descriptions::kChangeUnfocusedPriorityName,
@@ -8320,6 +8323,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockTpcsIncognitoDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(privacy_sandbox::kAlwaysBlock3pcsIncognito)},
 
+    {"rws-v2-ui", flag_descriptions::kRwsV2UiName,
+     flag_descriptions::kRwsV2UiDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi)},
+
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,
      kOsDesktop | kOsAndroid,
@@ -10065,13 +10072,6 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(ash::switches::kSealKey, "")},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"esb-download-row-promo",
-     flag_descriptions::kEsbDownloadRowPromoFeatureName,
-     flag_descriptions::kEsbDownloadRowPromoFeatureDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(feature_engagement::kEsbDownloadRowPromoFeature)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     {"enable-builtin-hls", flag_descriptions::kEnableBuiltinHlsName,
      flag_descriptions::kEnableBuiltinHlsDescription, kOsAll,
@@ -10171,11 +10171,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComposeNudgeAtCursorDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kEnableComposeNudgeAtCursor)},
-
-    {"compose-polite-nudge", flag_descriptions::kComposePoliteNudgeName,
-     flag_descriptions::kComposePoliteNudgeDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(autofill::features::kComposePopupAnnouncePolitely)},
 
     {"compose-segmentation-promotion",
      flag_descriptions::kComposeSegmentationPromotionName,
@@ -10575,12 +10570,6 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootGravedigger")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"clear-undecryptable-passwords",
-     flag_descriptions::kClearUndecryptablePasswordsName,
-     flag_descriptions::kClearUndecryptablePasswordsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kClearUndecryptablePasswords)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"replace-sync-promos-with-sign-in-promos",
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
@@ -10664,19 +10653,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConchSystemAudioFromMicName,
      flag_descriptions::kConchSystemAudioFromMicDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kConchSystemAudioFromMic)},
-
-    {"conch-expand-transcription-language",
-     flag_descriptions::kConchExpandTranscriptionLanguageName,
-     flag_descriptions::kConchExpandTranscriptionLanguageDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kConchExpandTranscriptionLanguage)},
-
-    {"conch-gen-ai", flag_descriptions::kConchGenAiName,
-     flag_descriptions::kConchGenAiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kConchGenAi)},
-
-    {"conch-large-model", flag_descriptions::kConchLargeModelName,
-     flag_descriptions::kConchLargeModelDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kConchLargeModel)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -11752,6 +11728,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterpriseFileObfuscationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(enterprise_obfuscation::kEnterpriseFileObfuscation)},
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+    {"iph-autofill-credit-card-benefit-feature",
+     flag_descriptions::kIPHAutofillCreditCardBenefitFeatureName,
+     flag_descriptions::kIPHAutofillCreditCardBenefitFeatureDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHAutofillCreditCardBenefitFeature)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

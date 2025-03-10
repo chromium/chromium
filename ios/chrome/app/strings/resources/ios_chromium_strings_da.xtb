@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Du kan åbne Lens her.</translation>
 <translation id="1042296835509784301">Åbner Adgangskodeadministrator i Chromium.</translation>
 <translation id="1047130070405668746">Vælg Chromium</translation>
+<translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1091252999271033193">Det betyder, at Chromium anmoder om mobilwebsitet hver gang.</translation>
 <translation id="1115463765356382667">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chromium.</translation>
 <translation id="1140315115515116765">Brug som standard Chromium til nemt at få prisinfo</translation>
@@ -98,6 +99,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Dette kan omfatte historik og autofyld.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Dette kan omfatte historik og autofyld.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Dette kan omfatte historik og autofyld.}}</translation>
 <translation id="3410395242749598859">Nogle af dine Chromium-data er endnu ikke gemt på <ph name="EMAIL" />.
 Prøv at vente et par minutter, før du skifter konto. Hvis du skifter konto nu, slettes disse data.</translation>
+<translation id="3440830787838130530">Del nemt og sikkert en kopi af en adgangskode med din familiegruppe i Google Adgangskodeadministrator</translation>
 <translation id="3472200483164753384">Understøttes ikke i Chromium Canary</translation>
 <translation id="347967311580159871">Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-oplevelse, ved at gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chromium. Prøv derefter igen.</translation>

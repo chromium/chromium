@@ -86,8 +86,7 @@ bool IsImplicitBrowserSigninOrExplicitDisabled(
 bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
     signin::IdentityManager& manager,
     PrefService& prefs) {
-  return !signin::IsImplicitBrowserSigninOrExplicitDisabled(&manager, &prefs) &&
-         !manager.HasPrimaryAccount(signin::ConsentLevel::kSync);
+  return !signin::IsImplicitBrowserSigninOrExplicitDisabled(&manager, &prefs);
 }
 
 base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(

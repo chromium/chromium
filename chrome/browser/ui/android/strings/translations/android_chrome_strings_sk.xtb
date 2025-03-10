@@ -1128,6 +1128,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6296366034485697675">Exportovať a odstrániť</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6303969859164067831">Odhlásiť sa a vypnúť synchronizáciu</translation>
+<translation id="6307241780749477694">Overte svoju totožnosť a budete mať v tomto zariadení k dispozícii všetky svoje heslá</translation>
 <translation id="6312687380483398334">Webové aplikácie (ticho)</translation>
 <translation id="6315386555979018699">Odstrániť a pokračovať</translation>
 <translation id="6316139424528454185">Verzia Androidu nie je podporovaná</translation>
@@ -1389,6 +1390,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7359002509206457351">Poskytnúť prístup k spôsobom platby</translation>
 <translation id="7363349185727752629">Sprievodca vašimi voľbami ochrany súkromia</translation>
 <translation id="7364103838544876661">Ďalšie možnosti, ako odstrániť dáta prehliadania</translation>
+<translation id="7365073365123878797">Ak chcete začať ukladať a používať heslá pomocou Správcu hesiel Google, aktualizujte Služby Google Play</translation>
 <translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Ak zahrniete viac textu stránky, môžu sa vám zobraziť lepšie výsledky pri používaní vyhľadávania klepnutím. Môžete to kedykoľvek zmeniť v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Pre weby je k dispozícii tmavý motív</translation>
@@ -1467,10 +1469,12 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7686086654630106285">Ďalšie informácie o reklamách navrhovaných webmi</translation>
 <translation id="7690596512217303514">Chrome sa nepodarilo vo vašom zariadení otvoriť. Ak chcete tento problém vyriešiť, stiahnite si z obchodu s aplikáciami jeho najnovšiu aktualizáciu.</translation>
 <translation id="7691043218961417207">Pozrite si obsah na sledovanie</translation>
+<translation id="7692761875510935111">Rýchlo otvorte v prehliadači. Ak chcete túto skratku upraviť, pridržte ju.</translation>
 <translation id="7697383401610880082">Presúvadlo</translation>
 <translation id="7698359219371678927">Vytvorte správu v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Dolný hárok nedávnej aktivity je otvorený na celú výšku</translation>
 <translation id="7707922173985738739">Používať mobilné dáta</translation>
+<translation id="7708994397325774423">Získajte všetky svoje heslá</translation>
 <translation id="7733878270780732638">V zariadení nie je dostatok priestoru.</translation>
 <translation id="7746817319925672889">Správca hesiel Google prestane v tomto zariadení fungovať</translation>
 <translation id="774876555279732384">Služby automatického dopĺňania sa dajú spravovať aj v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
@@ -1612,6 +1616,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8310451567823644042">Heslá čoskoro prestanú fungovať</translation>
 <translation id="831192587911042850">Týmto pridáte aktuálny web na zoznam sledovaných webov.</translation>
 <translation id="8320212361750431956">Nedávna aktivita</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome vás bude informovať o weboch, ktoré môžu odosielať priveľa upozornení</translation>
 <translation id="834313815369870491">Nikdy neprekladať weby</translation>
 <translation id="8348430946834215779">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú</translation>
@@ -1743,6 +1748,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8937772741022875483">Chcete z digitálnej rovnováhy odstrániť svoju aktivitu v Chrome?</translation>
 <translation id="8942627711005830162">Otvoriť v ďalšom okne</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – tento jazyk sa nedá stiahnuť. Skúste to neskôr.</translation>
+<translation id="8946759102391960088">Zachovajte si prístup k heslám</translation>
 <translation id="8957528460562961174">Ak chcete si zachovať prístup k svojim heslám, exportujte ich a potom importujte do svojho preferovaného správcu hesiel. Správca hesiel Google prestal fungovať, pretože Služby Google Play nie sú k dispozícii.</translation>
 <translation id="8963117664422609631">Prejsť na nastavenia webu</translation>
 <translation id="8965591936373831584">nespracované</translation>

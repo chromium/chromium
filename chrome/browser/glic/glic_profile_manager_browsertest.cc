@@ -8,11 +8,9 @@
 #include <type_traits>
 
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -22,9 +20,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
-#include "glic_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +36,10 @@ class MockGlicKeyedService : public GlicKeyedService {
                          identity_manager,
                          profile_manager) {}
   MOCK_METHOD(void, ClosePanel, (), (override));
+
+  bool IsWindowDetached() const override { return detached_; }
+
+  bool detached_ = false;
 };
 
 class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
@@ -91,23 +91,38 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
-                       ProfileForLaunch_WithActiveGlic) {
+                       ProfileForLaunch_WithDetachedGlic) {
   GlicProfileManager profile_manager;
   signin::IdentityTestEnvironment identity_test_environment;
+
+  // Setup Profile 1
   TestingProfile profile1;
-  TestingProfile profile2;
+  ForceSigninAndModelExecutionCapability(&profile1);
   MockGlicKeyedService service1(&profile1,
                                 identity_test_environment.identity_manager(),
                                 &profile_manager);
+  Browser::CreateParams browser_params1(&profile1, false);
+  auto browser1 = CreateBrowserWithTestWindowForParams(browser_params1);
+
+  // Setup Profile 2
+  TestingProfile profile2;
+  ForceSigninAndModelExecutionCapability(&profile2);
   MockGlicKeyedService service2(&profile2,
                                 identity_test_environment.identity_manager(),
                                 &profile_manager);
+  Browser::CreateParams browser_params2(&profile2, false);
+  auto browser2 = CreateBrowserWithTestWindowForParams(browser_params2);
 
+  // Profile 1 is the last used Glic and Profile 2 is the last used window.
+  // Profile 2 should be selected for launch.
   profile_manager.SetActiveGlic(&service1);
-  EXPECT_EQ(&profile1, profile_manager.GetProfileForLaunch());
-
-  profile_manager.SetActiveGlic(&service2);
+  BrowserList::SetLastActive(browser2.get());
   EXPECT_EQ(&profile2, profile_manager.GetProfileForLaunch());
+
+  // Simulate showing detached for Profile 1.
+  // Profile 1 should now be selected for launch.
+  service1.detached_ = true;
+  EXPECT_EQ(&profile1, profile_manager.GetProfileForLaunch());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,

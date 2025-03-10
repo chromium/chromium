@@ -143,10 +143,10 @@ class IwaKeyDistributionInfoProvider {
       base::expected<KeyRotations, IwaComponentUpdateError>);
 
   void DispatchComponentUpdateSuccess(const base::Version& version,
-                                      bool is_preloaded) const;
+                                      bool is_preloaded);
 
   void DispatchComponentUpdateError(const base::Version& version,
-                                    IwaComponentUpdateError error) const;
+                                    IwaComponentUpdateError error);
 
   void SignalOnDataReady(bool is_preloaded);
 

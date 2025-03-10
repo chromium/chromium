@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -44,16 +45,17 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridItemsAndTrackCollections(GridLayoutAlgorithm& algorithm) {
-    LayoutUnit unused_intrinsic_block_size;
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
 
-    algorithm.ComputeGridGeometry(grid_sizing_tree,
-                                  &unused_intrinsic_block_size);
+    algorithm.InitializeTrackSizes(grid_sizing_tree);
+    algorithm.CompleteTrackSizingAlgorithm(grid_sizing_tree, kForColumns,
+                                           SizingConstraint::kLayout);
+    algorithm.CompleteTrackSizingAlgorithm(grid_sizing_tree, kForRows,
+                                           SizingConstraint::kLayout);
 
-    auto& tree_data = grid_sizing_tree.TreeRootData();
-
-    cached_grid_items_ = &tree_data.GetGridItems();
-    layout_data_ = std::move(tree_data.layout_data);
+    cached_grid_items_ = MakeGarbageCollected<GridItems>(
+        std::move(grid_sizing_tree.RootGridItems()));
+    layout_data_ = std::move(grid_sizing_tree.RootLayoutData());
   }
 
   const GridItemData& GridItem(wtf_size_t index) {

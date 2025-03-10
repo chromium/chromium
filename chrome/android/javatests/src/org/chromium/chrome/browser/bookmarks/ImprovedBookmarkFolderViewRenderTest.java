@@ -153,7 +153,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             imageSupplier);
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                            BookmarkUtils.getFolderIcon(
+                            BookmarkViewUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     new BookmarkId(0, BookmarkType.NORMAL),
                                     mBookmarkModel,
@@ -185,7 +185,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null)));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                            BookmarkUtils.getFolderIcon(
+                            BookmarkViewUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     bookmarksBarId,
                                     mBookmarkModel,
@@ -217,7 +217,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             LazyOneshotSupplier.fromSupplier(() -> new Pair<>(null, null)));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
-                            BookmarkUtils.getFolderIcon(
+                            BookmarkViewUtils.getFolderIcon(
                                     mActivityTestRule.getActivity(),
                                     new BookmarkId(0, BookmarkType.READING_LIST),
                                     mBookmarkModel,

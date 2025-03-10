@@ -564,6 +564,7 @@ bool Tab::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void Tab::OnMouseReleased(const ui::MouseEvent& event) {
+  base::WeakPtr<Tab> self = weak_ptr_factory_.GetWeakPtr();
   controller_->OnMouseEventInTab(this, event);
 
   // Notify the drag helper that we're done with any potential drag operations.
@@ -601,6 +602,11 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
     // selection. Reset it now to handle the case where multiple tabs were
     // selected.
     controller_->SelectTab(this, event);
+  }
+  // If the tab was closed with the animation disabled, the tab may have
+  // already been destroyed.
+  if (!self) {
+    return;
   }
   shift_pressed_on_mouse_down_ = false;
 }

@@ -135,6 +135,10 @@ class CaptureModeBehavior {
   // a capture region phase.
   virtual const std::u16string GetCaptureLabelRegionText() const;
 
+  // Returns the text to be announced by a screen reader when capture mode is
+  // opened with this behavior.
+  virtual const std::string GetCaptureModeOpenAnnouncement() const;
+
   // Creates the capture mode bar view, which might look different depending on
   // the actual type of the behavior.
   virtual std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView();

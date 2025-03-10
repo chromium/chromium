@@ -129,9 +129,6 @@ extern const char kBottomOmniboxDefaultSettingDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-extern const char kClearUndecryptablePasswordsName[];
-extern const char kClearUndecryptablePasswordsDescription[];
-
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 

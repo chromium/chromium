@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1062138828266376352">你的 PIN 碼並未變更。請檢查網路連線，然後再試一次</translation>
+<translation id="1072476005125066234">依興趣喜好顯示的評論</translation>
 <translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 個帳戶使用相同的密碼</translation>
 <translation id="2059166748188874810">縣/市</translation>
 <translation id="2060114494785549741">1 個月後刪除</translation>
+<translation id="2060638295449304809">這個地址只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="20638360198452347">單位類型選取器</translation>
 <translation id="2067852168641682340">每次都儲存到這個帳戶</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 個分頁}other{{count} 個分頁}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">體積</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個分頁}other{{domain} 和另外 {count} 個分頁}}</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
+<translation id="4828431027673677473">依興趣喜好顯示的產品</translation>
 <translation id="4833786495304741580">自動將使用統計資料和當機報告傳送給 Google。</translation>
 <translation id="483689884442613745">儲存…</translation>
 <translation id="4840495572919996524">你的書籤、歷史記錄、密碼等資料將停止同步到你的 Google 帳戶。</translation>
@@ -1724,6 +1727,7 @@
 <translation id="828291969289324795">{count,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8289930144142009940">「<ph name="FEATURE_NAME" />」的通知已關閉</translation>
+<translation id="8290077367744012649">透過已開啟的分頁追蹤價格</translation>
 <translation id="8299417921174340354">你必須先在裝置上設定螢幕解鎖密碼才能使用密碼。</translation>
 <translation id="8307481894409578819">無法上傳這個檔案</translation>
 <translation id="8319076807703933069">新搜尋</translation>

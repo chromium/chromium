@@ -122,16 +122,13 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   return self;
 }
 
-- (void)interruptWithCompletion:(ProceduralBlock)completion {
+- (void)interrupt {
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
   [_errorAlertCoordinator stop];
   _errorAlertCoordinator = nil;
-  if (completion) {
-    completion();
-  }
   _delegate = nil;
   [self stopWatchdogTimer];
 }
@@ -265,7 +262,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
-                                     userEmail:(NSString*)userEmail
+                                      identity:(id<SystemIdentity>)identity
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
                      skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
@@ -284,7 +281,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
     _managedConfirmationScreenCoordinator =
         [[ManagedProfileCreationCoordinator alloc]
                        initWithBaseViewController:viewController
-                                        userEmail:userEmail
+                                         identity:identity
                                      hostedDomain:hostedDomain
                                           browser:browser
                         skipBrowsingDataMigration:skipBrowsingDataMigration

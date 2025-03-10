@@ -75,9 +75,8 @@ TEST_F(UserMetricsRecorderTest, VerifyIsUserInActiveDesktopEnvironmentValues) {
 
   // Kiosk logins are not considered active.
   client->Reset();
-  client->AddUserSession({"app@kiosk-apps.device-local.localhost",
-                          user_manager::UserType::kKioskApp});
-  client->SetSessionState(session_manager::SessionState::ACTIVE);
+  SimulateUserLogin({"app@kiosk-apps.device-local.localhost",
+                     user_manager::UserType::kKioskApp});
   EXPECT_FALSE(test_api().IsUserInActiveDesktopEnvironment());
 }
 

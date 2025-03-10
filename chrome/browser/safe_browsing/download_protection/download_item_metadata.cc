@@ -21,7 +21,6 @@ namespace safe_browsing {
 DownloadItemMetadata::DownloadItemMetadata(download::DownloadItem* item)
     : item_(item) {
   CHECK(item_);
-  item_->AddObserver(this);
 }
 
 DownloadItemMetadata::~DownloadItemMetadata() {
@@ -30,17 +29,6 @@ DownloadItemMetadata::~DownloadItemMetadata() {
     if (observation) {
       observation->Stop();
     }
-  }
-
-  if (item_) {
-    item_->RemoveObserver(this);
-  }
-}
-
-void DownloadItemMetadata::OnDownloadDestroyed(
-    download::DownloadItem* download) {
-  if (download == item_) {
-    item_ = nullptr;
   }
 }
 

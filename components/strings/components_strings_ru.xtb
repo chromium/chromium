@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (определен автоматически)</translation>
 <translation id="1232569758102978740">Без имени</translation>
 <translation id="1236081509407217141">Разрешить VR?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Название вашего устройства</translation>
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1243027604378859286">Автор:</translation>
@@ -628,6 +629,7 @@
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешать при каждом посещении</translation>
 <translation id="2085876078937250610">Сохранить</translation>
+<translation id="2090451897496479509">За дополнительной информацией обратитесь к провайдеру.</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2093982008204312032">Google Chrome пытается отключить Windows Hello, чтобы не использовать этот сервис для подстановки паролей.</translation>
 <translation id="2094505752054353250">Несоответствие домена</translation>
@@ -1309,6 +1311,7 @@
 <translation id="33073482541490531">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
 <translation id="3307649904964670439">Кнопка "Настроить Chrome". Нажмите ее, чтобы настроить внешний вид браузера.</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
+<translation id="3317077846337994567">Оплата в рассрочку сейчас недоступна. Повторите попытку позже.</translation>
 <translation id="3318016344440038475">Телекомедии</translation>
 <translation id="3324687287337751929">4 x 6 дюймов</translation>
 <translation id="3324983252691184275">Малиновый</translation>
@@ -1437,6 +1440,7 @@
 <translation id="3536227077203206203">Дано разовое разрешение</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Экранная форма (с разбивкой на страницы)</translation>
+<translation id="3541016556608204104">О Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Изображение карты</translation>
 <translation id="3542768452570884558">Открыть ссылку в новом окне</translation>
 <translation id="3543935938072367282">Оплачивайте покупки быстрее с помощью автозаполнения</translation>
@@ -1801,6 +1805,7 @@
 <translation id="415440494507469262">Добавить вкладку в сравнительную таблицу</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4165422751765527461">Откроется статья Справочного центра в новой вкладке</translation>
+<translation id="4165584779486830267">Теперь вы можете платить в рассрочку с помощью сервиса Affirm или Zip.</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4169535189173047238">Запретить</translation>
 <translation id="4171400957073367226">Подтверждающая подпись недействительна</translation>
@@ -2765,6 +2770,7 @@
 <translation id="5910140988253729859">Отменить автозаполнение</translation>
 <translation id="5911020115933784199">Списки событий</translation>
 <translation id="5911110632211230665">Открывать запрещено</translation>
+<translation id="5914465277418006379">Пользователь <ph name="MEMBER_FIRST_NAME" /> добавил эту вкладку.</translation>
 <translation id="5915189366813702112">Гибкие условия работы</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5918373444239520146">Гаджеты и портативные электронные устройства</translation>
@@ -4625,6 +4631,7 @@
 <translation id="9183425211371246419">На сайте <ph name="HOST_NAME" /> используется неподдерживаемый протокол.</translation>
 <translation id="918454845714257218">Проверьте код <ph name="SIDE_OF_CARD" /> и повторите попытку</translation>
 <translation id="9186203289258525843">Кнопка "Сделать Chrome браузером по умолчанию". Нажмите ее, чтобы сделать Chrome браузером по умолчанию.</translation>
+<translation id="9189468832660648522">Пользователь <ph name="MEMBER_FIRST_NAME" /> изменил эту вкладку.</translation>
 <translation id="9189789270972826888">Если реквизиты карты не были заполнены, нажмите на поля ниже, чтобы скопировать и подставить указанные в них данные. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Темы, добавленные более 4 недель назад, автоматически удаляются</translation>
 <translation id="9191834167571392248">Отверстие в левом нижнем углу</translation>

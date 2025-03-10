@@ -16,7 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
-#include "chrome/browser/extensions/extension_error_ui_default.h"
+#include "chrome/browser/extensions/extension_error_ui_desktop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_error.h"
 #include "chrome/browser/extensions/test_blocklist.h"

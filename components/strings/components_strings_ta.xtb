@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (தானாகக் கண்டறியப்பட்டது)</translation>
 <translation id="1232569758102978740">தலைப்பிடாதது</translation>
 <translation id="1236081509407217141">VRரை அனுமதிக்கவா?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">உங்கள் சாதனப் பெயர்</translation>
 <translation id="124116460088058876">மேலும் மொழிகள்</translation>
 <translation id="1243027604378859286">உருவாக்கியவர்:</translation>
@@ -1798,6 +1799,7 @@
 <translation id="415440494507469262">ஒப்பீட்டு அட்டவணையில் பக்கத்தைச் சேர்</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4165422751765527461">புதிய பக்கத்தில் உதவி மையக் கட்டுரையைத் திறக்கும்</translation>
+<translation id="4165584779486830267">நீங்கள் இப்போது Affirm அல்லது Zip மூலம் பிறகு பணம் செலுத்தும் விருப்பத்தைப் பயன்படுத்தலாம்.</translation>
 <translation id="4165986682804962316">இணையதள அமைப்புகள்</translation>
 <translation id="4169535189173047238">அனுமதிக்காதே</translation>
 <translation id="4171400957073367226">தவறான சரிபார்ப்பு கையொப்பம்</translation>
@@ -2762,6 +2764,7 @@
 <translation id="5910140988253729859">தானாக நிரப்பப்பட்டதை நீக்கு</translation>
 <translation id="5911020115933784199">நிகழ்வுகள் &amp; விவரங்கள்</translation>
 <translation id="5911110632211230665">ஃபைல்களைத் திறப்பது தடுக்கப்பட்டுள்ளது</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> இந்தப் பக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="5915189366813702112">பணியை விருப்பத்திற்கேற்ப செய்வதற்கான ஏற்பாடுகள்</translation>
 <translation id="59174027418879706">இயக்கப்பட்டது</translation>
 <translation id="5918373444239520146">கேட்ஜெட்டுகள் &amp; போர்டபிள் எலக்ட்ரானிக்ஸ்</translation>
@@ -4622,6 +4625,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ஆதரிக்கப்படாத நெறிமுறையைப் பயன்படுத்துகிறது.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> உள்ள குறியீட்டைச் சரிபார்க்கவும்</translation>
 <translation id="9186203289258525843">Chromeமை இயல்பு உலாவியாக அமைப்பதற்கான பட்டன், சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்க இதை இயக்குங்கள்</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> இந்தப் பக்கத்தை மாற்றியுள்ளார்</translation>
 <translation id="9189789270972826888">கார்டு நிரப்பப்படவில்லை என்றால் நகலெடுத்து ஒட்ட கீழே உள்ள கார்டு விவரங்களைக் கிளிக் செய்யவும். <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 வாரங்களுக்கு முந்தைய தலைப்புகள் தானாக நீக்கப்படும்</translation>
 <translation id="9191834167571392248">பஞ்ச் பாட்டம் லெஃப்ட்</translation>

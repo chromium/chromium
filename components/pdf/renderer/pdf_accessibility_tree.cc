@@ -543,8 +543,8 @@ void PdfAccessibilityTree::OnHasSearchifyText() {
   content::RenderAccessibility* render_accessibility =
       render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
   bool screen_reader_mode =
-      (render_accessibility &&
-       render_accessibility->GetAXMode().has_mode(ui::AXMode::kScreenReader));
+      (render_accessibility && render_accessibility->GetAXMode().has_mode(
+                                   ui::AXMode::kExtendedProperties));
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
       screen_reader_mode);

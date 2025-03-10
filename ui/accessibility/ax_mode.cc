@@ -42,8 +42,8 @@ std::string AXMode::ToString() const {
       case AXMode::kInlineTextBoxes:
         flag_name = "kInlineTextBoxes";
         break;
-      case AXMode::kScreenReader:
-        flag_name = "kScreenReader";
+      case AXMode::kExtendedProperties:
+        flag_name = "kExtendedProperties";
         break;
       case AXMode::kHTML:
         flag_name = "kHTML";

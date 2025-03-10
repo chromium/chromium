@@ -139,9 +139,10 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
 
   // Notifications from a user other than the active one (in this case, default)
   // are generally blocked unless they're ash system notifications.
-  GetSessionControllerClient()->AddUserSession({"user1@tray"});
+  SimulateUserLogin({"user1@tray"});
+  SwitchActiveUser(kDefaultUserEmail);
 
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
+  EXPECT_EQ(2, GetStateChangedCountAndReset());
   const std::string_view kInvalidUserId("invalid");
   EXPECT_FALSE(ShouldShowAsPopup(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShowAsPopup(ash_system_notifier, kEmptyUserId));

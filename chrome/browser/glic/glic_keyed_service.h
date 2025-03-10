@@ -77,6 +77,8 @@ class GlicKeyedService : public KeyedService {
   void PageHandlerRemoved(GlicPageHandler* page_handler);
 
   bool IsWindowShowing() const;
+  // Virtual for testing.
+  virtual bool IsWindowDetached() const;
 
   // Private API for the glic WebUI.
 

@@ -243,7 +243,10 @@ class TabListEditorCoordinator {
     private final @NonNull ObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final TabListEditorLayout mTabListEditorLayout;
-    private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
+    // Make sure the selection delegate starts out with selection mode enabled for 0 items.
+    // Otherwise we'll trigger notifyObservers when we enable the selection mode, and that will
+    // result in an accessibility announcement.
+    private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>(true);
     private final PropertyModel mModel;
     private final TabListEditorMediator mTabListEditorMediator;
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
@@ -536,7 +539,6 @@ class TabListEditorCoordinator {
                 mTabListCoordinator.getContainerView(),
                 mTabListCoordinator.getContainerView().getAdapter(),
                 mSelectionDelegate);
-        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
         mTabListEditorMediator.initializeWithTabListCoordinator(mTabListCoordinator, resetHandler);
 
         mTabListEditorLayoutChangeProcessor =

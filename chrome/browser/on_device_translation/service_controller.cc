@@ -156,7 +156,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
                                       to_be_registered_packs);
 
     if (!to_be_registered_packs.empty()) {
-      if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
+      if (!base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
           (kTranslationAPILimitLanguagePackCount.Get() &&
            to_be_registered_packs.size() >
                GetInstallablePackageCount(

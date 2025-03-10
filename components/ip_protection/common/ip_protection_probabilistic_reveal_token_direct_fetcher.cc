@@ -225,7 +225,6 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::
   std::move(callback).Run(std::move(response));
 }
 
-// TODO(crbug.com/391358904): add metrics
 void IpProtectionProbabilisticRevealTokenDirectFetcher::
     OnGetProbabilisticRevealTokensCompleted(
         TryGetProbabilisticRevealTokensCallback callback,
@@ -245,8 +244,6 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::
         TryGetProbabilisticRevealTokensResult{
             TryGetProbabilisticRevealTokensStatus::kNetNotOk, response.error(),
             no_get_probabilistic_reveal_tokens_until_});
-    // TODO(crbug.com/391358904): add failure metrics using response.error()
-    // before returning.
     return;
   } else if (!response.value().has_value()) {
     // url_loader->NetError() is net::OK, however, DownloadToString returned
@@ -256,8 +253,6 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::
         TryGetProbabilisticRevealTokensResult{
             TryGetProbabilisticRevealTokensStatus::kNetOkNullResponse, net::OK,
             no_get_probabilistic_reveal_tokens_until_});
-    // TODO(crbug.com/391358904): add failure metrics using response.error()
-    // before returning.
     return;
   }
 

@@ -709,6 +709,9 @@ void DeepScanningRequest::OnDownloadDestroyed(
   // has finished.
   callback_.Reset();
 
+  // `FinishRequest` always clears the `download_observation` and `metadata`,
+  // preventing use-after-free issues for `download_item` after it's been
+  // destroyed.
   FinishRequest(DownloadCheckResult::UNKNOWN);
 }
 
@@ -822,6 +825,11 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
                        metadata_->GetFullPath()),
         base::BindOnce(&DeepScanningRequest::OnDeobfuscationComplete,
                        weak_ptr_factory_.GetWeakPtr(), result));
+
+    // Reset to prevent use-after-free issues.
+    download_observation_.reset();
+    metadata_.reset();
+
     return;
   }
 

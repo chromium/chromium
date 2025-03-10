@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
 #include "ui/gfx/codec/vector_wstream.h"

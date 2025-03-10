@@ -66,7 +66,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -379,14 +378,6 @@ void ToolbarView::Init() {
         std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
   }
 
-  std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
-      send_tab_to_self_button;
-  if (!browser_->profile()->IsOffTheRecord()) {
-    send_tab_to_self_button =
-        std::make_unique<send_tab_to_self::SendTabToSelfToolbarIconView>(
-            browser_view_);
-  }
-
   // Always add children in order from left to right, for accessibility.
   back_ = container_view_->AddChildView(std::move(back));
   forward_ = container_view_->AddChildView(std::move(forward));
@@ -456,11 +447,6 @@ void ToolbarView::Init() {
   if (download_button) {
     download_button_ =
         container_view_->AddChildView(std::move(download_button));
-  }
-
-  if (send_tab_to_self_button) {
-    send_tab_to_self_button_ =
-        container_view_->AddChildView(std::move(send_tab_to_self_button));
   }
 
   avatar_ = container_view_->AddChildView(

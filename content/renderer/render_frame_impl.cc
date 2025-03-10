@@ -4469,6 +4469,15 @@ base::UnguessableToken RenderFrameImpl::GetDevToolsFrameToken() {
 
 void RenderFrameImpl::AbortClientNavigation(bool for_new_navigation) {
   CHECK(in_frame_tree_);
+
+  // If the navigations are deferred, cancellations should be deferred too.
+  client_navigation_throttler_.DispatchOrScheduleNavigation(
+      base::BindOnce(&RenderFrameImpl::AbortClientNavigationImpl,
+                     base::Unretained(this), for_new_navigation));
+}
+
+void RenderFrameImpl::AbortClientNavigationImpl(bool for_new_navigation) {
+  CHECK(navigation_client_impl_);
   is_requesting_navigation_ = false;
   if (mhtml_body_loader_client_) {
     mhtml_body_loader_client_->Detach();
@@ -4478,7 +4487,6 @@ void RenderFrameImpl::AbortClientNavigation(bool for_new_navigation) {
   // See comment in header for more information of how navigation cleanup works.
   // Note: This might not actually cancel the navigation if the navigation is
   // already in the process of committing to a different RenderFrame.
-
   if (for_new_navigation) {
     navigation_client_impl_->ResetForNewNavigation(
         /*is_duplicate_navigation=*/false);
@@ -5727,7 +5735,6 @@ void RenderFrameImpl::BeginNavigation(
   for (auto& observer : observers_) {
     observer.DidStartNavigation(info->url_request.Url(), info->navigation_type);
   }
-  is_requesting_navigation_ = true;
 
   // Everything else is handled asynchronously by the browser process through
   // BeginNavigation.
@@ -6178,6 +6185,8 @@ void RenderFrameImpl::BeginNavigationInternal(
     base::TimeTicks renderer_before_unload_end) {
   // Provisional frames shouldn't initiate navigations.
   CHECK(!GetWebFrame()->IsProvisional());
+
+  is_requesting_navigation_ = true;
 
   // Set SiteForCookies.
   WebDocument frame_document = frame_->GetDocument();

@@ -184,7 +184,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",

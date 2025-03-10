@@ -30,13 +30,11 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -121,8 +119,6 @@ downloads::mojom::TailoredWarningType GetTailoredWarningType(
       return downloads::mojom::TailoredWarningType::kSuspiciousArchive;
     case TailoredWarningType::kCookieTheft:
       return downloads::mojom::TailoredWarningType::kCookieTheft;
-    case TailoredWarningType::kCookieTheftWithAccountInfo:
-      return downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo;
     case TailoredWarningType::kNoTailoredWarning:
       return downloads::mojom::TailoredWarningType::
           kNoApplicableTailoredWarningType;
@@ -504,20 +500,6 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     DownloadItemWarningData::AddWarningActionEvent(
         download_item, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
         DownloadItemWarningData::WarningAction::SHOWN);
-  }
-
-  if (tailored_warning_type ==
-      downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo) {
-    if (auto* identity_manager =
-            IdentityManagerFactory::GetForProfile(download_model.profile());
-        identity_manager) {
-      std::string email =
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .email;
-      if (!email.empty()) {
-        file_value->account_email = std::move(email);
-      }
-    }
   }
 
   return file_value;

@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (تم التعرّف عليها تلقائيًا)</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
 <translation id="1236081509407217141">هل تريد السماح باستخدام "الواقع الافتراضي"؟</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">اسم الجهاز</translation>
 <translation id="124116460088058876">مزيد من اللغات</translation>
 <translation id="1243027604378859286">المؤلف:</translation>
@@ -628,6 +629,7 @@
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">السماح بالاستخدام في كل زيارة</translation>
 <translation id="2085876078937250610">حفظ…</translation>
+<translation id="2090451897496479509">يُرجى التواصل مع مقدِّم الخدمة للحصول على مزيد من المعلومات</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2093982008204312032">‏يحاول Google Chrome إيقاف استخدام Windows Hello لملء كلمات المرور.</translation>
 <translation id="2094505752054353250">النطاق غير متطابق</translation>
@@ -1311,6 +1313,7 @@
 <translation id="33073482541490531">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات، لذلك ينصح "مدير كلمات المرور" في Google بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="3307649904964670439">‏زر تخصيص Chrome: انقر على هذا الزر لتخصيص مظهر المتصفِّح.</translation>
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
+<translation id="3317077846337994567">ميزة "الدفع على أقساط" غير متاحة حاليًا. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3318016344440038475">أعمال تلفزيونية كوميدية</translation>
 <translation id="3324687287337751929">4 × 6 بوصة</translation>
 <translation id="3324983252691184275">قرمزي</translation>
@@ -1804,6 +1807,7 @@
 <translation id="415440494507469262">إضافة علامة التبويب إلى "جدول مقارنة"</translation>
 <translation id="4159784952369912983">أرجواني</translation>
 <translation id="4165422751765527461">يفتح هذا الرابط مقالة مركز المساعدة في علامة تبويب جديدة</translation>
+<translation id="4165584779486830267">‏يمكنك الآن الدفع على أقساط باستخدام Affirm أو Zip.</translation>
 <translation id="4165986682804962316">إعدادات الموقع الإلكتروني</translation>
 <translation id="4169535189173047238">عدم السماح</translation>
 <translation id="4171400957073367226">توقيع تحقق سيئ</translation>
@@ -2769,6 +2773,7 @@
 <translation id="5910140988253729859">التراجع عن الملء التلقائي</translation>
 <translation id="5911020115933784199">فعاليات وقوائم</translation>
 <translation id="5911110632211230665">فتح الملفات محظور</translation>
+<translation id="5914465277418006379">تمت إضافة علامة التبويب هذه من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="5915189366813702112">ترتيبات عمل مرنة</translation>
 <translation id="59174027418879706">تم التفعيل</translation>
 <translation id="5918373444239520146">أدوات وأجهزة إلكترونية محمولة</translation>
@@ -4632,6 +4637,7 @@
 <translation id="9183425211371246419">يستخدم <ph name="HOST_NAME" /> بروتوكول غير مدعوم.</translation>
 <translation id="918454845714257218">يُرجى التأكّد من صحة الرمز المكتوب على <ph name="SIDE_OF_CARD" /> ثم إعادة المحاولة.</translation>
 <translation id="9186203289258525843">‏زر ضبط Chrome كمتصفِّح تلقائي: انقر على هذا الزر لضبط Chrome كمتصفِّح تلقائي للنظام.</translation>
+<translation id="9189468832660648522">تم تغيير علامة التبويب هذه من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="9189789270972826888">انقر على تفاصيل البطاقة أدناه لنسخ البيانات ولصقها إذا لم يتم ملؤها تلقائيًا. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">يتم تلقائيًا حذف المواضيع التي مرّ عليها أكثر من 4 أسابيع</translation>
 <translation id="9191834167571392248">عمل ثقب أسفل اليسار</translation>

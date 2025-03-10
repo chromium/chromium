@@ -566,58 +566,35 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
       reading_flow != EReadingFlow::kFlexFlow) {
     return;
   }
-  bool should_sort_by_reading_order = false;
-  Vector<const BlockNode*, 16> reordered_flex_nodes;
-  reordered_flex_nodes.ReserveInitialCapacity(flex_items_.size());
-  auto AddItemIfNeeded = [&](const wtf_size_t item_index) {
-    const BlockNode& block_node = flex_items_[item_index].block_node;
-    // Add flex item if it is a DOM node.
-    if (block_node.GetDOMNode()) {
-      reordered_flex_nodes.emplace_back(&block_node);
-      // We optimize to only sort by reading-order if at least one flex item's
-      // reading-order value is not the default (0).
-      if (block_node.Style().ReadingOrder() != 0) {
-        should_sort_by_reading_order = true;
-      }
+  HeapVector<Member<blink::Node>> reading_flow_nodes;
+  reading_flow_nodes.ReserveInitialCapacity(flex_items_.size());
+  // Add flex item if it is a DOM node
+  auto add_item_if_needed = [&](const wtf_size_t item_index) {
+    if (blink::Node* node = flex_items_[item_index].block_node.GetDOMNode()) {
+      reading_flow_nodes.push_back(node);
     }
   };
   // Given CSS reading-flow, flex-flow, flex-direction; read values
   // in correct order.
-  auto AddFlexItems = [&](const FlexLine& line) {
+  auto add_flex_items = [&](const FlexLine& line) {
     if (reading_flow == EReadingFlow::kFlexFlow && is_reverse_direction_) {
       for (const wtf_size_t item_index : base::Reversed(line.item_indices)) {
-        AddItemIfNeeded(item_index);
+        add_item_if_needed(item_index);
       }
     } else {
       for (const wtf_size_t item_index : line.item_indices) {
-        AddItemIfNeeded(item_index);
+        add_item_if_needed(item_index);
       }
     }
   };
   if (reading_flow == EReadingFlow::kFlexFlow && is_wrap_reverse_) {
     for (const auto& line : base::Reversed(flex_lines)) {
-      AddFlexItems(line);
+      add_flex_items(line);
     }
   } else {
     for (const auto& line : flex_lines) {
-      AddFlexItems(line);
+      add_flex_items(line);
     }
-  }
-
-  // A flex reading flow container's items should be further sorted by the
-  // reading-order property (default to 0).
-  if (should_sort_by_reading_order) {
-    auto CompareFlexItemsForReadingOrder = [](const auto& lhs,
-                                              const auto& rhs) {
-      return lhs->Style().ReadingOrder() < rhs->Style().ReadingOrder();
-    };
-    std::stable_sort(reordered_flex_nodes.begin(), reordered_flex_nodes.end(),
-                     CompareFlexItemsForReadingOrder);
-  }
-  HeapVector<Member<blink::Node>> reading_flow_nodes;
-  reading_flow_nodes.ReserveInitialCapacity(reordered_flex_nodes.size());
-  for (const BlockNode* flex_block_node : reordered_flex_nodes) {
-    reading_flow_nodes.push_back(flex_block_node->GetDOMNode());
   }
   container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }

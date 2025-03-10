@@ -50,7 +50,7 @@ using PermissionsPolicyFeatureList =
 
 // `origin` is used, in combination with flags, to decide whether the "unload"
 // feature will be enabled or disabled by default.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
     const url::Origin& origin);
 
@@ -62,13 +62,8 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
 // flag to avoid flakiness. Note that, like the general feature flag
 // calculation, if the flags for multiple `default_value_behind_flag` are
 // enabled, the default from the first listed is used.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 void UpdatePermissionsPolicyFeatureListForTesting();
-
-// TODO(iclelland): Generate, instead of this map, a set of bool flags, one
-// for each feature, as all features are supposed to be represented here.
-using PermissionsPolicyFeatureState =
-    std::map<network::mojom::PermissionsPolicyFeature, bool>;
 
 }  // namespace network
 

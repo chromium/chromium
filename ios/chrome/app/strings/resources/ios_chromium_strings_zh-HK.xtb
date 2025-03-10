@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">你可在此開啟「智能鏡頭」。</translation>
 <translation id="1042296835509784301">在 Chromium 中開啟「密碼管理工具」。</translation>
 <translation id="1047130070405668746">選取 [Chromium]</translation>
+<translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
 <translation id="1091252999271033193">這代表 Chromium 每次都會要求取得流動網站。</translation>
 <translation id="1115463765356382667">完成下列建議動作，充分運用 Chromium 的各項功能。</translation>
 <translation id="1140315115515116765">預設使用 Chromium 可輕鬆取得價格分析資料</translation>
@@ -98,6 +99,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}}</translation>
 <translation id="3410395242749598859">部分 Chromium 資料尚未儲存至 <ph name="EMAIL" />。
 請等待幾分鐘後再嘗試切換帳戶。如果現在切換帳戶，系統將刪除有關資料。</translation>
+<translation id="3440830787838130530">「Google 密碼管理工具」讓你輕鬆又安全地與家庭群組分享密碼副本</translation>
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
 <translation id="347967311580159871">如需其他會運用資料提升 Chromium 體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="3512168799938877162">系統沒有分享你的密碼。請檢查互聯網連線，並確保你已登入 Chromium，然後再試一次。</translation>

@@ -39,7 +39,6 @@ chromium-metrics-reviews@google.com.
 <variants name="CertificateProvisioningScenario">
   <variant name="CertificateCreation" summary="certificate creation"/>
   <variant name="CertificateRenewal" summary="certificate renewal"/>
-  <variant name="PublicKeySync" summary="private key sync"/>
   <variant name="Unknown" summary="unknown"/>
 </variants>
 
@@ -61,7 +60,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ClientCertificateUploadScenario">
   <variant name="CreateCertificate" summary="certificate creation"/>
-  <variant name="PublicKeySync" summary="public key sync"/>
 </variants>
 
 <variants name="ContentAnalysisProtocol">

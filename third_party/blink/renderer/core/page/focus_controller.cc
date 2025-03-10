@@ -378,23 +378,14 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     }
   }
 
-#if DCHECK_IS_ON()
-  // Elements that have position absolute/fixed or display: contents will not
-  // be sorted in reading-flow order. They should be visited at the end of
-  // the reading flow elements, in DOM order.
-  bool ShouldBeAtEndOfReadingFlow(const Element& element) {
-    if (LayoutObject* layout = element.GetLayoutObject()) {
-      return layout->IsFixedPositioned() || layout->IsAbsolutePositioned();
-    }
-    return element.HasDisplayContentsStyle();
-  }
-#endif
-
   void SetReadingFlowInfo(const ContainerNode& reading_flow_container) {
     DCHECK(reading_flow_container.GetLayoutBox());
     DCHECK(!reading_flow_container_);
     reading_flow_container_ = reading_flow_container;
     auto* children = MakeGarbageCollected<HeapVector<Member<Element>>>();
+    // We optimize to only sort by reading-order if at least one child's
+    // reading-order value is not the default (0).
+    bool should_sort_by_reading_order = false;
     // Layout box only includes elements that are in the reading flow
     // container's layout. For each reading flow item, check if itself or its
     // ancestor should be included in this scope instead, in reading flow order.
@@ -409,6 +400,9 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
           // TODO(dizhangg) this check is O(n^2)
           if (!children->Contains(reading_flow_item)) {
             children->push_back(reading_flow_item);
+            if (reading_flow_item->ReadingOrderValue() != 0) {
+              should_sort_by_reading_order = true;
+            }
           }
           break;
         }
@@ -425,11 +419,19 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     for (Element& child : ElementTraversal::ChildrenOf(*root_)) {
       // TODO(dizhangg) this check is O(n^2)
       if (!children->Contains(child) && IsOwnedByRoot(child)) {
-#if DCHECK_IS_ON()
-        DCHECK(ShouldBeAtEndOfReadingFlow(child));
-#endif
         children->push_back(child);
+        if (child.ReadingOrderValue() != 0) {
+          should_sort_by_reading_order = true;
+        }
       }
+    }
+    // Now that we have a complete list of children, sort them by reading-order.
+    if (should_sort_by_reading_order) {
+      std::stable_sort(children->begin(), children->end(),
+                       [](const auto& lhs, const auto& rhs) {
+                         return lhs->ReadingOrderValue() <
+                                rhs->ReadingOrderValue();
+                       });
     }
     reading_flow_next_elements_.ReserveCapacityForSize(children->size());
     reading_flow_previous_elements_.ReserveCapacityForSize(children->size());

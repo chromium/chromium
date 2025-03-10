@@ -48,7 +48,7 @@ enum class SignInHistorySyncStep {
 
 @implementation SignInAndHistorySyncCoordinator {
   // Sign-in or history sync coordinator, according to `_currentStep`.
-  InterruptibleChromeCoordinator* _childCoordinator;
+  ChromeCoordinator<InterruptibleChromeCoordinator>* _childCoordinator;
   // The current step.
   SignInHistorySyncStep _currentStep;
   // Promo button used to trigger the sign-in.
@@ -90,7 +90,7 @@ enum class SignInHistorySyncStep {
 
 - (void)stop {
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
-    [self interruptAnimated:NO completion:nil];
+    [self interruptAnimated:NO];
   }
 
   _syncService = nullptr;
@@ -98,16 +98,15 @@ enum class SignInHistorySyncStep {
   [super stop];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
   // Interrupt `_childCoordinator` which will trigger the end of this
   // coordinator. Its callback will triggered.
-  [_childCoordinator interruptAnimated:animated completion:completion];
+  [_childCoordinator interruptAnimated:animated];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate
@@ -170,7 +169,8 @@ enum class SignInHistorySyncStep {
 }
 
 // Creates the current step coordinator according to `_currentStep`.
-- (InterruptibleChromeCoordinator*)createPresentStepChildCoordinator {
+- (ChromeCoordinator<InterruptibleChromeCoordinator>*)
+    createPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kBottomSheetSignin: {
       SigninCoordinator* coordinator =

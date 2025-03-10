@@ -23,8 +23,7 @@ bool CountryIdHolder::operator==(const CountryIdHolder& other) const {
   return country_id_ == other.country_id_;
 }
 
-CountryId CountryIdHolder::GetRestricted(
-    CountryAccessReason access_reason) const {
+CountryId CountryIdHolder::GetRestricted(CountryAccessKey access_key) const {
   // TODO(crbug.com/328040066): Record access to UMA.
   return country_id_;
 }
@@ -32,28 +31,6 @@ CountryId CountryIdHolder::GetRestricted(
 CountryId CountryIdHolder::GetForTesting() const {
   CHECK_IS_TEST();
   return country_id_;
-}
-
-CountryId CountryIdHolder::GetRestricted(
-    CountryAccessKey<TemplateURLPrepopulateData::Resolver> access_key) const {
-  return GetRestricted(access_key.reason);
-}
-CountryId CountryIdHolder::GetRestricted(
-    CountryAccessKey<search_engines::SearchEngineChoiceService> access_key)
-    const {
-  return GetRestricted(access_key.reason);
-}
-CountryId CountryIdHolder::GetRestricted(
-    CountryAccessKey<RegionalCapabilitiesService> access_key) const {
-  return GetRestricted(access_key.reason);
-}
-CountryId CountryIdHolder::GetRestricted(
-    CountryAccessKey<TemplateURLService> access_key) const {
-  return GetRestricted(access_key.reason);
-}
-CountryId CountryIdHolder::GetRestricted(
-    CountryAccessKey<ProfileInternalsHandler> access_key) const {
-  return GetRestricted(access_key.reason);
 }
 
 }  // namespace regional_capabilities

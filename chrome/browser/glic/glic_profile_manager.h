@@ -57,7 +57,7 @@ class GlicProfileManager {
   base::MemoryPressureMonitor::MemoryPressureLevel GetCurrentPressureLevel()
       const;
 
-  base::WeakPtr<GlicKeyedService> active_glic_;
+  base::WeakPtr<GlicKeyedService> last_active_glic_;
   bool did_auto_open_ = false;
   base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};
 };

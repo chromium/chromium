@@ -412,7 +412,7 @@ void UDPSocket::ReleaseResources() {
   udp_socket_->Close();
 }
 
-void UDPSocket::OnStreamClosed(v8::Local<v8::Value> exception) {
+void UDPSocket::OnStreamClosed(v8::Local<v8::Value> exception, int net_error) {
   DCHECK_EQ(GetState(), State::kOpen);
   DCHECK_LE(streams_closed_count_, 1);
 

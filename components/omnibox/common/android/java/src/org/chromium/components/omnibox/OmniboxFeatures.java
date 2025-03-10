@@ -114,7 +114,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sAndroidHubSearch =
-            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
@@ -178,7 +178,7 @@ public class OmniboxFeatures {
     // This parameter allows the user to click enter when on hub search to perform a search on the
     // listed suggestions or perform a google search on the query if no suggestions are found.
     public static final BooleanCachedFeatureParam sAndroidHubSearchEnterPerformsSearch =
-            newBooleanParam(sAndroidHubSearch, "enable_press_enter_to_search", false);
+            newBooleanParam(sAndroidHubSearch, "enable_press_enter_to_search", true);
 
     // Omnibox Diagnostics
     private static final CachedFlag sDiagnostics =

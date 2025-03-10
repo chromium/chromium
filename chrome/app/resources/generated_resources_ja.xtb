@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="140723521119632973">モバイル有効化</translation>
+<translation id="1407908250220330281">このプロフィールは管理対象になりました</translation>
 <translation id="1407970155431887387">クリックすると <ph name="SEARCH_ENGINE_NAME" /> の [編集] ダイアログが開きます</translation>
 <translation id="1408504635543854729">ファイルアプリでデバイスの内容を確認できます。ただし管理者が制限を設定しているため、デバイスの内容を変更することはできません。</translation>
 <translation id="1408980562518920698">個人情報の管理</translation>
@@ -800,6 +801,7 @@
 <translation id="1549966883323105187">保存したパスワードにすばやくアクセスできます</translation>
 <translation id="1550656959113606473">デフォルトの Chrome</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」拡張機能により <ph name="SEARCH_PROVIDER_DOMAIN" /> を使用して検索するよう変更されました</translation>
+<translation id="1552357433305859738">このプロフィールと同期してデータを統合する</translation>
 <translation id="1552752544932680961">拡張機能を管理</translation>
 <translation id="1553538517812678578">無制限</translation>
 <translation id="1553947773881524342">Chromebook での Microsoft 365 の使用に関する<ph name="LINK_BEGIN" />説明<ph name="LINK_END" />をご覧ください。</translation>
@@ -1430,6 +1432,7 @@
 <translation id="1980168597243156">宇宙ステーション</translation>
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
 <translation id="1982851102516626421">ログアウトしています</translation>
+<translation id="1983612835086592681">過去 1 週間以内に開きました</translation>
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
 <translation id="1984683754853869253">学校用のプロフィールを新しく作成しますか？</translation>
 <translation id="198507684520034826">ヘルプ</translation>
@@ -1593,6 +1596,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> このプロセス中にシステムが再起動されます。</translation>
+<translation id="209423774103268003">スマートカード リーダーにアクセスしています</translation>
 <translation id="2095774564753225041">サポートされているファイル形式</translation>
 <translation id="2096716221239095980">すべてのデータを削除</translation>
 <translation id="2097950021134740304">登録の削除をキャンセル</translation>
@@ -2233,6 +2237,7 @@
 <translation id="2529887123641260401">設定はいつでも変更できます。スイッチ アクセスの設定から設定ガイドを開くこともできます。</translation>
 <translation id="2530166226437958497">トラブルシューティング</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">詳細</translation>
 <translation id="2532144599248877204">バッテリーを 80% 前後に保つことでバッテリー寿命を伸ばします。電源から取り外すいつもの頃合いでバッテリーが完全に充電されます。</translation>
 <translation id="2532146950330687938">デバイスを準備しています...</translation>
 <translation id="2532198298278778531">ChromeOS Flex の設定でセキュア DNS を管理する</translation>
@@ -3132,6 +3137,7 @@
 <translation id="3183139917765991655">プロフィール インポーター</translation>
 <translation id="3183143381919926261">モバイルデータ ネットワーク</translation>
 <translation id="3183700187146209259">スキャナ ソフトウェアをインストールできません</translation>
+<translation id="3183750649832309748">あなたの組織（<ph name="ACCOUNT_MANAGER" />）は次の情報を見ることができます</translation>
 <translation id="3183944777708523606">モニターの配置</translation>
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">この PIN を使用して保護者による使用制限の設定を変更できます。
@@ -3157,6 +3163,7 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> への画面のキャストを一時停止する</translation>
 <translation id="3202578601642193415">新しい順</translation>
 <translation id="3204648577100496185">このアプリに関連付けられているデータがこのデバイスから削除される可能性があります</translation>
+<translation id="3204717934117444051">このデバイスにのみ保存されているデータは、既存のプロフィールに残ります。<ph name="EMAIL" /> には同期されません。</translation>
 <translation id="3207344462385471911">最近のアクティビティに基づいて、興味のありそうな検索候補とショッピングの割引が表示されています。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4289,6 +4296,7 @@
 <translation id="3977886311744775419">このネットワーク タイプでは自動更新はダウンロードされませんが、手動で更新を確認できます。</translation>
 <translation id="3978325380690188371">ChromeVox が有効になっている場合、固定キーは利用できません</translation>
 <translation id="3978732922947854545">Chrome で PDF が使いやすく</translation>
+<translation id="3979093622823535817">会議 <ph name="MEETING_TITLE" /> に参加</translation>
 <translation id="3979395879372752341">新しい拡張機能が追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> を有効にする</translation>
 <translation id="398095528354975981">これらのタブを非表示にする</translation>
@@ -4325,6 +4333,7 @@
 <translation id="3994878504415702912">ズーム(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
 <translation id="3995963973192100066">アニメーションを再生</translation>
+<translation id="3997537546406230684">仕事用のプロフィールを新しく作成して、既存のデータを別に保持する</translation>
 <translation id="399788104667917863">ツールバーに固定する</translation>
 <translation id="3998780825367526465">タブのプレビュー画像を表示する</translation>
 <translation id="3998976413398910035">プリンタを管理</translation>
@@ -5768,6 +5777,7 @@
 <translation id="5059526285558225588">共有する内容を選択</translation>
 <translation id="5060332552815861872">保存できるプリンタが 1 件あります。</translation>
 <translation id="5060419232449737386">字幕設定</translation>
+<translation id="5061270227873845372">現在、<ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />、<ph name="NUMBERED_ITEM_3" /> などのデータがあります。組織はこのデータを確認、管理できます。</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{このフォルダにはブックマークが含まれています。削除してもよろしいですか？}other{このフォルダには # 件のブックマークが含まれています。削除してもよろしいですか？}}</translation>
 <translation id="5061531353537614467">ツンドラ</translation>
 <translation id="5062930723426326933">ログインできませんでした。インターネットに接続してもう一度お試しください。</translation>
@@ -5950,6 +5960,7 @@
 <translation id="5186788525428341874">このパスキーを使用してどのデバイスでもすばやくログインできます。パスキーは <ph name="ACCOUNT_NAME" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="5187641678926990264">ページをアプリとしてインストール(&amp;I)...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />（<ph name="DEVICE" />）</translation>
+<translation id="5188242000716462162"><ph name="USER_NAME" /> さんが共有しました</translation>
 <translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">共有プロセスを無効にするにはブラウザの再起動が必要です。このブラウザは今すぐ再起動されます。</translation>
 <translation id="5189404424758444348">スチームパンク</translation>
@@ -6936,7 +6947,6 @@
 <translation id="5911533659001334206">ショートカット ビューア</translation>
 <translation id="5911545422157959623">ゲストモードではブックマークを使用できません</translation>
 <translation id="5914016309240354769">自然</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> さんがこのタブを追加しました</translation>
 <translation id="5914724413750400082">モジュール（<ph name="MODULUS_NUM_BITS" /> ビット）:
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -7993,6 +8003,7 @@
 <translation id="668599234725812620">Google Play を開く</translation>
 <translation id="6686490380836145850">右側のタブを閉じる</translation>
 <translation id="6686665106869989887">タブを右に移動しました</translation>
+<translation id="6686676261102452995">今日開いたファイル</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
 <translation id="6687008241368170505">Google パスワード マネージャーの PIN を変更する</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
@@ -8216,6 +8227,7 @@
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6832218595502288407">左揃え</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{タブとグループを削除しますか？}=1{タブとグループを削除しますか？}other{タブとグループを削除しますか？}}</translation>
+<translation id="6833103209700200188">フッター</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">バランス重視（推奨）</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
@@ -9374,6 +9386,7 @@
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> 内の <ph name="HUNG_IFRAME_URL" /> が停止しています。</translation>
 <translation id="7672726198839739113">ブロックされています。現在、スケジュールは <ph name="SUNRISE_TIME" />～<ph name="SUNSET_TIME" /> に設定されており、手動でのみ更新できます。</translation>
 <translation id="7673313156293624327">ChromeOS Shill（接続マネージャー）のログ</translation>
+<translation id="767381852303199643">既存のプロフィールのデータはどうしますか？</translation>
 <translation id="7674416868315480713">Linux で転送中のポートをすべて無効にする</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 個のアプリ</translation>
 <translation id="7674542105240814168">位置情報へのアクセスは許可されていません</translation>
@@ -9604,6 +9617,7 @@
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
 <translation id="7836577093182643605">サイトと共有しないようブロックしたトピックのリスト</translation>
+<translation id="7836745198769390202">現在、<ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" /> などのデータがあります。組織はこのデータを確認、管理できます。</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」を保存できませんでした</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" />を <ph name="DEVICE_NAME" /> に送信しました}other{<ph name="ATTACHMENTS" />を <ph name="DEVICE_NAME" /> に送信しました}}</translation>
@@ -10105,6 +10119,7 @@
 <translation id="8176529144855282213">マイクへのアクセスを有効にするには、デバイスの物理的なマイクスイッチをオンにしてください</translation>
 <translation id="8177196903785554304">ネットワークの詳細</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
+<translation id="8178657161962192959">昨日開いたファイル</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。プリンタ <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />。</translation>
 <translation id="8180785270975217276">省エネモードがオンになっています</translation>
@@ -10212,6 +10227,7 @@
 <translation id="825238165904109940">URL 全体を常に表示</translation>
 <translation id="8252569384384439529">アップロードしています...</translation>
 <translation id="8253198102038551905">ネットワークのプロパティを表示するには [+] をクリック</translation>
+<translation id="8254871563792426806">このサイトは、デバイスに接続されているスマートカード リーダーと、リーダーで読み取り可能なスマートカードにアクセスしています。</translation>
 <translation id="8255212965098517578">最近の写真、通知、アプリ</translation>
 <translation id="8255927332875030912">検索+<ph name="KEY" /></translation>
 <translation id="8256319818471787266">スパーキー</translation>
@@ -11365,6 +11381,7 @@
 <translation id="9052404922357793350">引き続きブロックする</translation>
 <translation id="90528604757378587">バックグラウンド アクティビティや一部の視覚効果（スムーズ スクロールなど）が制限されることがあります。</translation>
 <translation id="9053563360605707198">両面に印刷する</translation>
+<translation id="9055810458113674066">現在、<ph name="NUMBERED_ITEM" /> などのデータがあります。組織はこのデータを確認、管理できます。</translation>
 <translation id="9056788090206401048">別のデバイスでパスキーを使用するには、Bluetooth をオンにする必要があります。これは設定でいつでも管理できます。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> さんが次のコンテンツへのアクセスをリクエストしています:</translation>
@@ -11559,7 +11576,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
 <translation id="9187967020623675250">キーが一致しません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> さんがこのタブを変更しました</translation>
 <translation id="9192019773545828776">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。ChromeVox のオンとオフを切り替えるには Ctrl+Alt+Z キーを使用します。移動するには検索+左矢印または右矢印キーを使用します。選択（有効化）するには検索+Space キーを使用します。</translation>
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="919686179725692564">アプリのバックアップについて詳細を確認する</translation>

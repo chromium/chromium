@@ -27,7 +27,13 @@ BASE_FEATURE(kEnableBandAPrivateAggregation,
              "EnableBandAPrivateAggregation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable parsing forDebuggingOnly reports from B&A response, for down sampling.
+// Enable parsing forDebuggingOnly reports from B&A response. B&A sends these
+// reports back to Chrome in its response for (1) device orchestrated multi
+// seller auctions, (2) fDO down sampling.
+// This flag name is confusing because it controls whether Chrome will parse fDO
+// reports from B&A, not about whether enabling fDO sampling on B&A. But since
+// this flag has been enabled by default and will be removed after one Chrome
+// version, so not worth renaming it which may affect B&A's end to end test.
 BASE_FEATURE(kEnableBandASampleDebugReports,
              "EnableBandASampleDebugReports",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -41,6 +47,14 @@ BASE_FEATURE(kEnableBandATriggeredUpdates,
 BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
              "FledgeBiddingAndAuctionNonceSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Force sampling of forDebuggingOnly reports, for testing purpose. This flag
+// will always be disabled by default, and will only be enabled in some tests,
+// or manually enabling it in command for manual testing such as B&A's end to
+// end test of forDebuggingOnly sampling.
+BASE_FEATURE(kFledgeDoSampleDebugReportForTesting,
+             "FledgeDoSampleDebugReportForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable un-noised real time reporting for certain user settings.
 BASE_FEATURE(kFledgeEnableUnNoisedRealTimeReport,

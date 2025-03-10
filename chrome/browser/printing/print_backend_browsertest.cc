@@ -26,7 +26,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_test_utils.h"
@@ -483,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
             kDefaultPrinterName);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
                        GetPrinterSemanticCapsAndDefaults) {
   AddDefaultPrinter();
@@ -531,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
   ASSERT_TRUE(printer_caps->is_result_code());
   EXPECT_EQ(printer_caps->get_result_code(), mojom::ResultCode::kAccessDenied);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
   AddDefaultPrinter();

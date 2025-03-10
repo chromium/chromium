@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">আপুনি ইয়াত Lens খুলিব পাৰে।</translation>
 <translation id="1042296835509784301">Chromiumত Password Manager খোলে।</translation>
 <translation id="1047130070405668746">Chromium বাছনি কৰক</translation>
+<translation id="1086486568852410168">Google Lensৰে সন্ধান কৰক</translation>
 <translation id="1091252999271033193">ইয়াৰ অৰ্থ হৈছে Chromiumএ প্ৰত্যেকবাৰ ম’বাইল ছাইটৰ অনুৰোধ কৰিব।</translation>
 <translation id="1115463765356382667">Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ তলত পৰামৰ্শ দিয়া কাৰ্যসমূহ সম্পূৰ্ণ কৰক।</translation>
 <translation id="1140315115515116765">সহজে দামৰ ইনছাইট পাবলৈ Chromiumক ডিফ’ল্ট হিচাপে ব্যৱহাৰ কৰক</translation>
@@ -98,6 +99,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। ইয়াত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা অন্তৰ্ভুক্ত হ’ব পাৰে।}one{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। ইয়াত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা অন্তৰ্ভুক্ত হ’ব পাৰে।}other{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। ইয়াত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা অন্তৰ্ভুক্ত হ’ব পাৰে।}}</translation>
 <translation id="3410395242749598859">আপোনাৰ Chromiumৰ কিছুমান ডেটা এতিয়াও <ph name="EMAIL" />ত ছেভ কৰা হোৱা নাই।
 একাউণ্ট সলনি কৰাৰ আগতে কেইমিনিটমান অপেক্ষা কৰি চাওক। যদি আপুনি এতিয়াই একাউণ্ট সলনি কৰে, এই ডেটা মচি পেলোৱা হ’ব।</translation>
+<translation id="3440830787838130530">Google Password Managerত আপোনাৰ পৰিয়ালৰ গোটৰ সৈতে সহজে আৰু সুৰক্ষিতভাৱে এটা পাছৱৰ্ডৰ প্ৰতিলিপি শ্বেয়াৰ কৰক</translation>
 <translation id="3472200483164753384">Chromium Canaryত সমৰ্থিত নহয়</translation>
 <translation id="347967311580159871">আপোনাৰ Chromiumৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ ডেটা ব্যৱহাৰ কৰা অধিক ছেটিং পাবলৈ <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="3512168799938877162">আপোনাৰ পাছৱৰ্ড শ্বেয়াৰ কৰা হোৱা নাই। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু আপুনি Chromiumত ছাইন ইন হৈ থকাটো নিশ্চিত কৰক। তাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>

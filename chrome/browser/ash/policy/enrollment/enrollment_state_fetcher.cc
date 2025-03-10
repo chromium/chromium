@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -84,9 +83,6 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
   return absl::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
-            return kUMASuffixConnectionError;
-          },
-          [](AutoEnrollmentSystemClockSyncError) {
             return kUMASuffixConnectionError;
           },
           [](AutoEnrollmentStateKeysRetrievalError) {

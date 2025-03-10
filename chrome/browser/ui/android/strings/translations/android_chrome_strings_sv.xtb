@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1045899828449635435">Vill du även rensa data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
+<translation id="1052842760770519282">Vissa av dina lösenord är inte tillgängliga</translation>
 <translation id="1058669287135776095">Du är offline. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="10614374240317010">Aldrig sparad</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
@@ -70,6 +71,7 @@
 <translation id="1269129608791067105">Du hittar historiken här</translation>
 <translation id="1273937721055267968">Blockera <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
+<translation id="1289129165308566697">Se din historik på andra enheter</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1298077576058087471">Spara upp till 60 % data och läs dagens nyheter</translation>
 <translation id="1303339473099049190">Det gick inte att hitta lösenordet. Kontrollera stavningen och försök igen.</translation>
@@ -265,6 +267,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
+<translation id="2281243904606300427"><ph name="TAB_TITLE" />, vald inkognitoflik</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
 <translation id="228704530595896923">Lista över delningsalternativ.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> flik}other{Se <ph name="TABS_COUNT_MANY" /> flikar}}</translation>
@@ -323,6 +326,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> objekt har tagits bort</translation>
 <translation id="253498598929009420">Innehållet på skärmen blir synligt för webbplatsen</translation>
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
+<translation id="2542548955756682219"><ph name="TAB_TITLE" />, flik</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2547843573592965873">Profillåset skyddar dina uppgifter i bilen, till exempel lösenord och betalningar som sparats i Google-kontot.</translation>
 <translation id="254973855621628293">Lösenorden har sparats på den här enheten</translation>
@@ -357,6 +361,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2666092431469916601">Överst</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
 <translation id="2677748264148917807">Lämna</translation>
+<translation id="2687009626279857299">Slutade fungera på den här enheten</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
 <translation id="2705073298859543115">Skapa översikt</translation>
 <translation id="2708051474374549906">Proaktivt skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på din webbinformation som skickas till Google</translation>
@@ -465,6 +470,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 lösenord och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}other{# lösenord och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
+<translation id="3189635831478931757">Flikgruppen <ph name="GROUP_TITLE" /></translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
@@ -738,6 +744,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4523326818319942067">senaste timmen</translation>
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4532845899244822526">Välj mapp</translation>
+<translation id="4535755320005483982">Delade flikgruppen <ph name="GROUP_TITLE" /></translation>
 <translation id="4543131175509360848">Inget nyckelark</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar, <ph name="TAB_COUNT_INCOGNITO" /> inkognitoflikar}}</translation>
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
@@ -933,6 +940,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tillgängligt</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5433691172869980887">Användarnamnet har kopierats</translation>
+<translation id="5436928407363358055">Synkronisera din historik och dina flikar för att enkelt fortsätta där du slutade</translation>
 <translation id="5438292632479953702">Ladda ned igen</translation>
 <translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
 <translation id="5441137934526263133">Fungerar inte webbplatsen? Cookies från tredje part har blockerats</translation>
@@ -1233,6 +1241,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6756507620369789050">Dela feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Logga in om du vill få innehåll utifrån dina intressen</translation>
+<translation id="6764137532716892442">Delade flikgruppen <ph name="GROUP_TITLE" /> med ny aktivitet</translation>
 <translation id="6767294960381293877">Listan över enheter som fliken kan delas med öppnades och tar upp halva skärmen.</translation>
 <translation id="6785476624617658922">Ytterligare villkor för Chrome och ChromeOS</translation>
 <translation id="6795633245022906657">Öppna en ny flik snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
@@ -1299,6 +1308,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> flik med ny aktivitet i delade flikgrupper}other{Se <ph name="TABS_COUNT_MANY" /> flikar med ny aktivitet i delade flikgrupper}}</translation>
 <translation id="6971862865055170158">Godkänn inte</translation>
+<translation id="6976223255612495095"><ph name="TAB_TITLE" />, ny eller uppdaterad flik</translation>
 <translation id="6978717888677691380">Webbplatser du har blockerat</translation>
 <translation id="6979737339423435258">Sedan start</translation>
 <translation id="6983306615164277634">Du kan också trycka länge på adressfältet om du vill ändra placeringen.</translation>
@@ -1686,6 +1696,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8676276370198826499">Registrera dig för <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifieringar för inloggning</translation>
 <translation id="8683039184091909753">bild</translation>
+<translation id="8688183792442786085"><ph name="TAB_TITLE" />, vald flik</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
@@ -1819,4 +1830,5 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="988091779042748639">Stäng alla inkognitoflikar om du vill radera webbhistoriken i inkognitoläget</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> flikar</translation>
 <translation id="996149300115483134">Menyn med flödeskort är stängd</translation>
+<translation id="99907655649633293"><ph name="TAB_TITLE" />, inkognitoflik</translation>
 </translationbundle>

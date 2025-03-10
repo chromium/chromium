@@ -239,7 +239,7 @@ TEST(ServerPredictionOverridesTest, Json) {
       "12345": {
         "123": [
           { "predictions": ["PASSPORT_NUMBER"] },
-          { "predictions": ["PASSPORT_EXPIRATION_DATE_TAG"], "format_string": "DD/MM/YYYY" }
+          { "predictions": ["PASSPORT_EXPIRATION_DATE"], "format_string": "DD/MM/YYYY" }
         ]
       },
       "67890": {
@@ -272,7 +272,7 @@ TEST(ServerPredictionOverridesTest, Json) {
                                      EqualsPrediction(PASSPORT_NUMBER))),
                                  HasFormatString(std::nullopt)),
                            AllOf(HasPredictions(ElementsAre(EqualsPrediction(
-                                     PASSPORT_EXPIRATION_DATE_TAG))),
+                                     PASSPORT_EXPIRATION_DATE))),
                                  HasFormatString(Eq("DD/MM/YYYY"))))),
           Pair(form_and_field(67890, 123),
                ElementsAre(AllOf(HasPredictions(ElementsAre(
@@ -287,7 +287,7 @@ TEST(ServerPredictionOverridesTest, Json) {
                ElementsAre(
                    AllOf(HasPredictions(ElementsAre(
                              EqualsPrediction(ADDRESS_HOME_COUNTRY),
-                             EqualsPrediction(PASSPORT_ISSUING_COUNTRY_TAG))),
+                             EqualsPrediction(PASSPORT_ISSUING_COUNTRY))),
                          HasFormatString(std::nullopt))))));
 }
 

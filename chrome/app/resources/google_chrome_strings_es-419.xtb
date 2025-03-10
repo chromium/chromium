@@ -415,6 +415,7 @@
 <translation id="6520670145826811516">Para usar la ubicación, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">En el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="6632473616050862500">ChromeOS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
+<translation id="6634299872736643004">Los cambios en este parámetro de configuración se aplicarán una vez que se reinicie Chrome.</translation>
 <translation id="6660596345553328257">¿Quieres acceder a Chrome?</translation>
 <translation id="6664219008737641504">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="SETTINGS_LINK" /> los datos de Chrome de tu cuenta</translation>
 <translation id="6676384891291319759">Acceder a Internet</translation>

@@ -216,7 +216,7 @@ void ExtensionInstalledBubbleView::Init() {
   }
 
   if (model_->show_how_to_manage()) {
-    AddChildView(CreateLabel(
+    AddChildViewRaw(CreateLabel(
         l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_MANAGE_INFO)));
   }
 }

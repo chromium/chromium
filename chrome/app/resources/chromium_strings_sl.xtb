@@ -402,6 +402,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6539122709674868420">Vaša organizacija zapre Chromium, če se ne uporablja <ph name="TIMEOUT_DURATION" />. Podatki brskanja so bili izbrisani. To lahko vključuje zgodovino, samodejno izpolnjene podatke in prenose.</translation>
 <translation id="6542839706527980775">Vsak profil ima svoje podatke v Chromiumu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
 <translation id="6563921047760808519">Preberite več o tem, <ph name="BEGIN_LINK" />kako Chromium zagotavlja zasebnost vaših podatkov<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Spremembe te nastavitve bodo uveljavljene, ko se bo Chromium znova zagnal.</translation>
 <translation id="656935081669708576">Če si želite ogledati gesla v drugem profilu za Chromium, lahko preklopite</translation>
 <translation id="6570579332384693436">Chromium zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v besedilna polja</translation>
 <translation id="6598877126913850652">Odprite nastavitve obvestil v Chromiumu</translation>

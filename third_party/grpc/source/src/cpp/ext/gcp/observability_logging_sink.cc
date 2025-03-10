@@ -16,41 +16,40 @@
 //
 //
 
-#include <grpc/support/port_platform.h>
-
 #include "src/cpp/ext/gcp/observability_logging_sink.h"
 
-#include <algorithm>
-#include <initializer_list>
-#include <map>
-#include <utility>
-
-#include <google/protobuf/timestamp.pb.h>
-
-#include "absl/numeric/int128.h"
-#include "absl/strings/escaping.h"
-#include "absl/strings/match.h"
-#include "absl/strings/str_format.h"
-#include "absl/types/optional.h"
-#include "google/api/monitored_resource.pb.h"
-#include "google/logging/v2/log_entry.pb.h"
-#include "google/logging/v2/logging.grpc.pb.h"
-#include "google/logging/v2/logging.pb.h"
-#include "google/protobuf/text_format.h"
-
-#include <grpc/support/log.h>
+#include <grpc/impl/channel_arg_names.h>
+#include <grpc/support/port_platform.h>
 #include <grpc/support/time.h>
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/security/credentials.h>
 #include <grpcpp/support/channel_arguments.h>
 #include <grpcpp/support/status.h>
 
+#include <algorithm>
+#include <map>
+#include <optional>
+#include <utility>
+
+#include "absl/log/absl_log.h"
+#include "absl/numeric/int128.h"
+#include "absl/strings/escaping.h"
+#include "absl/strings/match.h"
+#include "absl/strings/str_format.h"
+#include "google/api/monitored_resource.pb.h"
+#include "google/logging/v2/log_entry.pb.h"
+#include "google/logging/v2/logging.grpc.pb.h"
+#include "google/logging/v2/logging.pb.h"
+#include "google/protobuf/text_format.h"
 #include "src/core/lib/event_engine/default_event_engine.h"
-#include "src/core/lib/gprpp/env.h"
-#include "src/core/lib/gprpp/time.h"
-#include "src/core/lib/gprpp/uuid_v4.h"
-#include "src/core/lib/json/json.h"
+#include "src/core/util/env.h"
+#include "src/core/util/json/json.h"
+#include "src/core/util/time.h"
+#include "src/core/util/uuid_v4.h"
 #include "src/cpp/ext/filters/census/open_census_call_tracer.h"
+
+// IWYU pragma: no_include "google/protobuf/struct.pb.h"
+// IWYU pragma: no_include "google/protobuf/timestamp.pb.h"
 
 namespace grpc {
 namespace internal {
@@ -68,9 +67,9 @@ ObservabilityLoggingSink::ObservabilityLoggingSink(
   for (auto& server_rpc_event_config : logging_config.server_rpc_events) {
     server_configs_.emplace_back(server_rpc_event_config);
   }
-  absl::optional<std::string> authority_env =
+  std::optional<std::string> authority_env =
       grpc_core::GetEnv("GOOGLE_CLOUD_CPP_LOGGING_SERVICE_V2_ENDPOINT");
-  absl::optional<std::string> endpoint_env =
+  std::optional<std::string> endpoint_env =
       grpc_core::GetEnv("GOOGLE_CLOUD_CPP_LOGGING_SERVICE_V2_ENDPOINT");
   if (authority_env.has_value() && !authority_env->empty()) {
     authority_ = std::move(*endpoint_env);
@@ -118,7 +117,7 @@ std::string EventTypeToString(LoggingSink::Entry::EventType type) {
       return "SERVER_TRAILER";
     case LoggingSink::Entry::EventType::kCancel:
       return "CANCEL";
-    case LoggingSink::Entry::EventType::kUnkown:
+    case LoggingSink::Entry::EventType::kUnknown:
     default:
       return "EVENT_TYPE_UNKNOWN";
   }
@@ -130,7 +129,7 @@ std::string LoggerToString(LoggingSink::Entry::Logger type) {
       return "CLIENT";
     case LoggingSink::Entry::Logger::kServer:
       return "SERVER";
-    case LoggingSink::Entry::Logger::kUnkown:
+    case LoggingSink::Entry::Logger::kUnknown:
     default:
       return "LOGGER_UNKNOWN";
   }
@@ -290,7 +289,7 @@ void ObservabilityLoggingSink::Flush() {
     flush_triggered_ = false;
     if (stub_ == nullptr) {
       std::string endpoint;
-      absl::optional<std::string> endpoint_env =
+      std::optional<std::string> endpoint_env =
           grpc_core::GetEnv("GOOGLE_CLOUD_CPP_LOGGING_SERVICE_V2_ENDPOINT");
       if (endpoint_env.has_value() && !endpoint_env->empty()) {
         endpoint = std::move(*endpoint_env);
@@ -360,22 +359,20 @@ void ObservabilityLoggingSink::FlushEntriesHelper(
       &(call->context), &(call->request), &(call->response),
       [this, call](Status status) {
         if (!status.ok()) {
-          gpr_log(
-              GPR_ERROR,
-              "GCP Observability Logging Error %d: %s. Dumping log entries.",
-              status.error_code(), status.error_message().c_str());
+          ABSL_LOG(ERROR) << "GCP Observability Logging Error "
+                     << status.error_code() << ": " << status.error_message()
+                     << ". Dumping log entries.";
           for (auto& entry : call->request.entries()) {
             std::string output;
             ::google::protobuf::TextFormat::PrintToString(entry.json_payload(),
                                                           &output);
-            gpr_log(
-                GPR_INFO, "Log Entry recorded at time: %s : %s",
-                grpc_core::Timestamp::FromTimespecRoundUp(
-                    gpr_timespec{entry.timestamp().seconds(),
-                                 entry.timestamp().nanos(), GPR_CLOCK_REALTIME})
-                    .ToString()
-                    .c_str(),
-                output.c_str());
+            ABSL_LOG(INFO) << "Log Entry recorded at time: "
+                      << grpc_core::Timestamp::FromTimespecRoundUp(
+                             gpr_timespec{entry.timestamp().seconds(),
+                                          entry.timestamp().nanos(),
+                                          GPR_CLOCK_REALTIME})
+                             .ToString()
+                      << " : " << output;
           }
         }
         delete call;
@@ -414,16 +411,16 @@ void ObservabilityLoggingSink::MaybeTriggerFlushLocked() {
   if (entries_.empty()) return;
   if (entries_.size() > kMaxEntriesBeforeDump ||
       entries_memory_footprint_ > kMaxMemoryFootprintBeforeDump) {
-    // Buffer limits have been reached. Dump entries with gpr_log
-    gpr_log(GPR_INFO, "Buffer limit reached. Dumping log entries.");
+    // Buffer limits have been reached. Dump entries with LOG
+    ABSL_LOG(INFO) << "Buffer limit reached. Dumping log entries.";
     for (auto& entry : entries_) {
       google::protobuf::Struct proto;
       std::string timestamp = entry.timestamp.ToString();
       EntryToJsonStructProto(std::move(entry), &proto);
       std::string output;
       ::google::protobuf::TextFormat::PrintToString(proto, &output);
-      gpr_log(GPR_INFO, "Log Entry recorded at time: %s : %s",
-              timestamp.c_str(), output.c_str());
+      ABSL_LOG(INFO) << "Log Entry recorded at time: " << timestamp << " : "
+                << output;
     }
     entries_.clear();
     entries_memory_footprint_ = 0;

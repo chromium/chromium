@@ -234,6 +234,17 @@ bool IsContentSettingsTypeEnabled(ContentSettingsType type) {
   }
 }
 
+void UpdateTrackingProtectionSettings(Profile* profile) {
+  auto settings =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetSettingsForOneType(ContentSettingsType::TRACKING_PROTECTION);
+  profile->ForEachLoadedStoragePartition(
+      [&](content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()
+            ->SetTrackingProtectionContentSetting(settings);
+      });
+}
+
 void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
   if (!IsContentSettingsTypeEnabled(type)) {
     return;
@@ -1580,6 +1591,9 @@ void ProfileNetworkContextService::OnContentSettingChanged(
   switch (content_type) {
     case ContentSettingsType::ANTI_ABUSE:
       UpdateAntiAbuseSettings(profile_);
+      break;
+    case ContentSettingsType::TRACKING_PROTECTION:
+      UpdateTrackingProtectionSettings(profile_);
       break;
     case ContentSettingsType::DEFAULT:
       UpdateAntiAbuseSettings(profile_);

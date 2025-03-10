@@ -163,7 +163,10 @@ source_set("gbm") {
   }
 
   if (is_chromeos) {
-    deps += [ "//ui/base/ime/ash" ]
+    deps += [
+      "//ash/constants",
+      "//ui/base/ime/ash",
+    ]
   }
 
   if (enable_vulkan) {

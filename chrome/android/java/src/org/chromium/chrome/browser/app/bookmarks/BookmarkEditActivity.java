@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkMoveSnackbarManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
@@ -149,7 +149,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                                 ImageFetcherFactory.createImageFetcher(
                                         ImageFetcherConfig.DISK_CACHE_ONLY,
                                         profile.getProfileKey()),
-                                BookmarkUtils.getRoundedIconGenerator(
+                                BookmarkViewUtils.getRoundedIconGenerator(
                                         this, BookmarkRowDisplayPref.VISUAL)),
                         mModel,
                         mBookmarkUiPrefs,

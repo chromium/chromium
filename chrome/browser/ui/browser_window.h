@@ -230,8 +230,10 @@ class BrowserWindow : public ui::BaseWindow,
   // Propagates to the browser that gesture scrolling has changed state.
   virtual void SetTopControlsGestureScrollInProgress(bool in_progress) = 0;
 
-  // Return the status bubble associated with the frame
-  virtual StatusBubble* GetStatusBubble() = 0;
+  // Return the status bubble(s) associated with the frame. In a split view,
+  // there will be multiple status bubbles with the active one listed first.
+  // It is possible for this to be empty.
+  virtual std::vector<StatusBubble*> GetStatusBubbles() = 0;
 
   // Inform the frame that the selected tab favicon or title has changed. Some
   // frames may need to refresh their title bar.

@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (በራስ ሰር- የተገኘ)</translation>
 <translation id="1232569758102978740">ርዕስ አልባ</translation>
 <translation id="1236081509407217141">ምናባዊ እውነታ ይፈቀድ?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">የእርስዎ የመሣሪያ ስም</translation>
 <translation id="124116460088058876">ተጨማሪ ቋንቋዎች</translation>
 <translation id="1243027604378859286">ደራሲ፦</translation>
@@ -1437,6 +1438,7 @@
 <translation id="3536227077203206203">ለዚህ ጊዜ የሚፈቀድ</translation>
 <translation id="3537165859691846083">ደብዳቤ ፕላስ</translation>
 <translation id="353816159217417898">ማያ ገጽ (ገጽ ያለው)</translation>
+<translation id="3541016556608204104">ተጨማሪ ስለ Chrome Enterprise አገናኞች</translation>
 <translation id="3542628208405253498">የካርድ ምስል</translation>
 <translation id="3542768452570884558">አገናኙን በአዲስ መስኮት ይክፈቱ</translation>
 <translation id="3543935938072367282">በራስ-ሙላ በፍጥነት ግዢ ያጠናቁ</translation>
@@ -1801,6 +1803,7 @@
 <translation id="415440494507469262">ትርን ወደ የንጽጽር ሰንጠረዥ አክል</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>
 <translation id="4165422751765527461">በአዲስ ትር ውስጥ የእገዛ ማዕከል ጽሁፍ ይከፍታል</translation>
+<translation id="4165584779486830267">አሁን Affirm ወይም Zip በመጠቀም በጊዜ ሂደት መክፈል ይችላሉ።</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
 <translation id="4169535189173047238">አትፍቀድ</translation>
 <translation id="4171400957073367226">መጥፎ የማረጋገጫ ፊርማ</translation>
@@ -2765,6 +2768,7 @@
 <translation id="5910140988253729859">ራስ-ሙላን ቀልብስ</translation>
 <translation id="5911020115933784199">ክስተቶች እና ዝርዝሮች</translation>
 <translation id="5911110632211230665">መክፈት ታግዷል</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ይህን ትር አክለዋል</translation>
 <translation id="5915189366813702112">ተለዋዋጭ የሥራ ዝግጅቶች</translation>
 <translation id="59174027418879706">ነቅቷል</translation>
 <translation id="5918373444239520146">መግብሮች እና ተንቀሳቃሽ ኤሌክትሮኒክስ</translation>
@@ -4626,6 +4630,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> የማይጠቀም ፕሮቶኮል ይጠቀማል።</translation>
 <translation id="918454845714257218">በ<ph name="SIDE_OF_CARD" /> ላይ ያለውን ኮድ ይመልከቱ እና እንደገና ይሞክሩ</translation>
 <translation id="9186203289258525843">Chromeን እንደ ነባሪ የአሳሽ አዝራር ያቀናብሩ፣ Chromeን እንደ የሥርዓቱ ነባር አሳሽ ለማቀናበር ያግብሩ</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ይህን ትር ለውጠዋል</translation>
 <translation id="9189789270972826888">ካርዱ ካልተሞላ ለመቅዳት እና ለመለጠፍ የካርድ ዝርዝሮችን ከስር ጠቅ ያድርጉ። <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">ከ4 ሳምንታት በላይ የቆዩ ርዕሶች በራስ-ሰር ይሰረዛሉ</translation>
 <translation id="9191834167571392248">ግራ በኩል ከታች ብሳ</translation>

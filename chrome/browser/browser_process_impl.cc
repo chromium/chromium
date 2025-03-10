@@ -920,18 +920,23 @@ GpuModeManager* BrowserProcessImpl::gpu_mode_manager() {
 void BrowserProcessImpl::CreateDevToolsProtocolHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if !BUILDFLAG(IS_ANDROID)
-  // StartupBrowserCreator::LaunchBrowser can be run multiple times when browser
-  // is started with several profiles or existing browser process is reused.
-  if (!remote_debugging_server_) {
-    if (!local_state_->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+  auto maybe_remote_debugging_server =
+      RemoteDebuggingServer::GetInstance(local_state_.get());
+  if (maybe_remote_debugging_server.has_value()) {
+    remote_debugging_server_ = std::move(*maybe_remote_debugging_server);
+    return;
+  }
+
+  switch (maybe_remote_debugging_server.error()) {
+    case RemoteDebuggingServer::NotStartedReason::kNotRequested:
+      break;
+    case RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy:
       // Follow content/browser/devtools/devtools_http_handler.cc that reports
       // its remote debugging port on stderr for symmetry.
       fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
             stderr);
       fflush(stderr);
-      return;
-    }
-    remote_debugging_server_ = std::make_unique<RemoteDebuggingServer>();
+      break;
   }
 #endif
 }

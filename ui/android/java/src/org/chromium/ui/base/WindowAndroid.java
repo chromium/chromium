@@ -171,6 +171,9 @@ public class WindowAndroid
         /** Called when the activity goes into paused state. */
         default void onActivityPaused() {}
 
+        /** Called when the activity top status is changed. */
+        default void onActivityTopResumedChanged(boolean isTopResumedActivity) {}
+
         /** Called when the activity goes into resumed state. */
         default void onActivityResumed() {}
 
@@ -213,31 +216,50 @@ public class WindowAndroid
     private final ObservableSupplierImpl<Boolean> mOcclusionSupplier =
             new ObservableSupplierImpl<>(false);
 
+    private boolean mIsTopResumedActivity;
+    private final boolean mActivityTopResumedSupported;
+
     /**
      * @param context The application {@link Context}.
      * @param trackOcclusion Whether to track occlusion of the window.
      */
     public WindowAndroid(Context context, boolean trackOcclusion) {
-        this(context, DisplayAndroid.getNonMultiDisplay(context), trackOcclusion);
+        this(
+                context,
+                DisplayAndroid.getNonMultiDisplay(context),
+                /* activityTopResumedSupported= */ false,
+                trackOcclusion);
     }
 
     protected WindowAndroid(
             Context context,
+            boolean activityTopResumedSupported,
             IntentRequestTracker tracker,
             @Nullable InsetObserver insetObserver,
             boolean trackOcclusion) {
-        this(context, DisplayAndroid.getNonMultiDisplay(context), trackOcclusion);
+        this(
+                context,
+                DisplayAndroid.getNonMultiDisplay(context),
+                activityTopResumedSupported,
+                trackOcclusion);
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
     }
 
     /**
      * @param context The application {@link Context}.
+     * @param activityTopResumedSupported If you enable this, you are committed to notify every
+     *     onTopResumedActivityChanged() on the Activity owning the WindowAndroid. If this is not
+     *     enabled, WindowAndroid assumes the activity is in the top when it is resumed.
      * @param display The application {@link DisplayAndroid}.
      * @param trackOcclusion Whether to track occlusion of the window.
      */
     @SuppressLint("UseSparseArrays")
-    protected WindowAndroid(Context context, DisplayAndroid display, boolean trackOcclusion) {
+    protected WindowAndroid(
+            Context context,
+            DisplayAndroid display,
+            boolean activityTopResumedSupported,
+            boolean trackOcclusion) {
         mLifetimeAssert = LifetimeAssert.create(this);
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
@@ -285,6 +307,8 @@ public class WindowAndroid
             }
             decorView.addOnAttachStateChangeListener(this);
         }
+
+        mActivityTopResumedSupported = activityTopResumedSupported;
     }
 
     @Override
@@ -675,11 +699,32 @@ public class WindowAndroid
     }
 
     protected void onActivityPaused() {
-        for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityPaused();
+        if (!mActivityTopResumedSupported) {
+            onActivityTopResumedChanged(false);
+        }
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityPaused();
+        }
+    }
+
+    /**
+     * For window instances associated with an activity, notifies any listeners that the activity's
+     * top resumed state is changed.
+     */
+    public void onActivityTopResumedChanged(boolean isTopResumedActivity) {
+        mIsTopResumedActivity = isTopResumedActivity;
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityTopResumedChanged(isTopResumedActivity);
+        }
     }
 
     protected void onActivityResumed() {
-        for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityResumed();
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityResumed();
+        }
+        if (!mActivityTopResumedSupported) {
+            onActivityTopResumedChanged(true);
+        }
     }
 
     protected void onActivityDestroyed() {
@@ -736,6 +781,10 @@ public class WindowAndroid
         result[3] = config.hairlineHeightPhysical;
         result[4] = config.hairlineColor;
         return result;
+    }
+
+    public boolean isTopResumedActivity() {
+        return mIsTopResumedActivity;
     }
 
     /**

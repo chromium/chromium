@@ -232,8 +232,9 @@ using signin_metrics::PromoAction;
   DCHECK(!self.signinCompletion) << base::SysNSStringToUTF8([self description]);
 }
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+#pragma mark - InterruptibleChromeCoordinator
+
+- (void)interruptAnimated:(BOOL)animated {
 }
 
 #pragma mark - SigninCoordinator

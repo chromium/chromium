@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 178 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 173 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGElement interface: attribute correspondingElement
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
@@ -110,10 +110,6 @@ Found 178 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: wrong type: not a DOMMatrix expected true got false
 [FAIL] SVGTransformList interface: operation createSVGTransformFromMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGElement interface: objects.path must inherit property "correspondingElement" with the proper type
-  assert_inherits: property "correspondingElement" not found in prototype chain
-[FAIL] SVGElement interface: objects.path must inherit property "correspondingUseElement" with the proper type
-  assert_inherits: property "correspondingUseElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.rect must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.rect must inherit property "correspondingUseElement" with the proper type

@@ -29,7 +29,7 @@ Tests that screenshot works with clip and emulation
 {
     id : <number>
     result : {
-        data : iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAASklEQVR4nOzMOxWAMBQE0ck5TwAOkJKUlDiIlOCM4AQn+XjYcqeZ7gYMdOXaY/9JSOoNSqDOokWLFi1atLj6GpL+wknK9UXXfR0TAAD//xV7u3sAAAAGSURBVAMAvq4JS6jlAfwAAAAASUVORK5CYII=
+        data : iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAATElEQVR4nOzVMRHAIBQE0WXmC4iDSIEyZRwgJXEGUnACw2DhytvmutdewERXrj32/glJ/YMSqLNo0aJFixYtcn5W0SjcpFwbut7nWgAAAP//yGBfmAAAAAZJREFUAwC+DwlKB1gGPQAAAABJRU5ErkJggg==
     }
     sessionId : <string>
 }

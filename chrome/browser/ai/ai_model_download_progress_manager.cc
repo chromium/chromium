@@ -12,6 +12,29 @@
 
 namespace on_device_ai {
 
+namespace {
+
+bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
+  switch (item.state) {
+    case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kUpdating:
+    case update_client::ComponentState::kUpToDate:
+    case update_client::ComponentState::kDownloadingDiff:
+    case update_client::ComponentState::kUpdatingDiff:
+      return item.total_bytes >= 0;
+    case update_client::ComponentState::kNew:
+    case update_client::ComponentState::kChecking:
+    case update_client::ComponentState::kCanUpdate:
+    case update_client::ComponentState::kUpdated:
+    case update_client::ComponentState::kUpdateError:
+    case update_client::ComponentState::kRun:
+    case update_client::ComponentState::kLastStatus:
+      return false;
+  }
+}
+
+}  // namespace
+
 AIModelDownloadProgressManager::AIModelDownloadProgressManager() = default;
 AIModelDownloadProgressManager::~AIModelDownloadProgressManager() = default;
 
@@ -49,6 +72,17 @@ AIModelDownloadProgressManager::Reporter::Reporter(
       &AIModelDownloadProgressManager::Reporter::OnRemoteDisconnect,
       weak_ptr_factory_.GetWeakPtr()));
 
+  // If there are no component ids to observe, just send zero and one hundred
+  // percent.
+  if (component_ids_.empty()) {
+    observer_remote_->OnDownloadProgressUpdate(
+        0, AIUtils::kNormalizedDownloadProgressMax);
+    observer_remote_->OnDownloadProgressUpdate(
+        AIUtils::kNormalizedDownloadProgressMax,
+        AIUtils::kNormalizedDownloadProgressMax);
+    return;
+  }
+
   // Watch for progress updates.
   component_updater_observation_.Observe(component_update_service);
 }
@@ -63,9 +97,48 @@ void AIModelDownloadProgressManager::Reporter::OnRemoteDisconnect() {
 
 void AIModelDownloadProgressManager::Reporter::OnEvent(
     const component_updater::CrxUpdateItem& item) {
-  // TODO(crbug.com/391715395): Report actual download progress.
+  if (!IsDownloadEvent(item) || !component_ids_.contains(item.id)) {
+    return;
+  }
+
+  if (!has_previous_progress_event_) {
+    has_previous_progress_event_ = true;
+    last_reported_progress_ = 0;
+    last_progress_time_ = base::TimeTicks::Now();
+
+    // Must always fire the zero progress event first.
+    observer_remote_->OnDownloadProgressUpdate(
+        0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+
+  int64_t bytes_so_far = item.downloaded_bytes;
+  int64_t total_bytes = item.total_bytes;
+
+  CHECK_GE(bytes_so_far, 0);
+  CHECK_LE(bytes_so_far, total_bytes);
+
+  // Only report this event if we're at 100% or if more than 50ms has passed
+  // since the last time we reported a progress event.
+  if (bytes_so_far != total_bytes) {
+    base::TimeTicks current_time = base::TimeTicks::Now();
+    if (current_time - last_progress_time_ <= base::Milliseconds(50)) {
+      return;
+    }
+  }
+
+  int normalized_progress =
+      AIUtils::NormalizeModelDownloadProgress(bytes_so_far, total_bytes);
+
+  // Don't report progress events we've already sent.
+  if (normalized_progress <= last_reported_progress_) {
+    CHECK(normalized_progress == last_reported_progress_);
+    return;
+  }
+  last_reported_progress_ = normalized_progress;
+
+  // Send the progress event to the observer.
   observer_remote_->OnDownloadProgressUpdate(
-      0, AIUtils::kNormalizedDownloadProgressMax);
+      normalized_progress, AIUtils::kNormalizedDownloadProgressMax);
 }
 
 }  // namespace on_device_ai

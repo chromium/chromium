@@ -11,6 +11,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class Browser;
 @protocol SystemIdentity;
@@ -26,7 +27,8 @@ class PrefRegistrySyncable;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
-@interface SigninCoordinator : InterruptibleChromeCoordinator
+@interface SigninCoordinator
+    : ChromeCoordinator <InterruptibleChromeCoordinator>
 
 // Called when the sign-in dialog is interrupted, canceled or successful.
 // This completion needs to be set before calling -[SigninCoordinator start].
@@ -202,17 +204,6 @@ class PrefRegistrySyncable;
                                                      accessPoint
                                      promoAction:(signin_metrics::PromoAction)
                                                      promoAction;
-
-// Interrupts the sign-in flow.
-// `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to
-// be called before `completion()`.
-// When the coordinator is interrupted with `DismissWithoutAnimation` or
-// `DismissWithAnimation`, the view is dismissed first.
-// `signinCompletion()` and then `completion()` are called synchronously.
-//
-// It is still mandatory to call `-[SigninCoordinator stop]` once
-// `signinCompletion()` is called.
-- (void)interruptAnimated:(BOOL)animated completion:(ProceduralBlock)completion;
 
 // ChromeCoordinator.
 - (void)start NS_REQUIRES_SUPER;

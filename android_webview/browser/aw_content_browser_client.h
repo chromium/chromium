@@ -312,6 +312,20 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                  const GURL& url,
                                  const blink::StorageKey& storage_key) override;
   bool AllowNonActivatedCrossOriginPaintHolding() override;
+  bool IsSharedStorageAllowed(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* rfh,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) override;
+
+  bool IsSharedStorageSelectURLAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

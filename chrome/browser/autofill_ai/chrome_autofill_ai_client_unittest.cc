@@ -102,12 +102,6 @@ class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
       std::make_unique<autofill::EntityTable>()};
 };
 
-TEST_F(ChromeAutofillAiClientTest, GetAXTree) {
-  base::MockCallback<autofill_ai::AutofillAiClient::AXTreeCallback> callback;
-  EXPECT_CALL(callback, Run);
-  client().GetAXTree(callback.Get());
-}
-
 TEST_F(ChromeAutofillAiClientTest,
        IsAutofillAiEnabledPrefReturnsTrueIfPrefEnabled) {
   profile()->GetPrefs()->SetBoolean(

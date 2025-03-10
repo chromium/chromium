@@ -40,9 +40,12 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*clamp_input=*/
        {{webnn::OperandDataType::kFloat16}, kMaxRank},
        /*concat_inputs=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
-       /*conv2d_input=*/webnn::SupportedDataTypes::All(),
-       /*conv_transpose2d_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+        kMaxRank},
+       /*conv2d_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+       /*conv2d_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+       /*conv_transpose2d_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+       /*conv_transpose2d_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*cumulative_sum_input=*/
        {webnn::SupportedDataTypes::All(), kMaxRank},
        /*dequantize_linear_input=*/
@@ -245,12 +248,13 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
   webnn::ContextProperties output(
       webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/0,
-      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

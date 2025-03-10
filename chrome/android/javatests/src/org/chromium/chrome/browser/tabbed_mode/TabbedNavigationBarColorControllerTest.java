@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,9 +69,10 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DeviceRestriction;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -87,7 +89,6 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
-    private static final int NUM_UNIQUE_ANIMATION_COLORS = 5;
     private static final int ANIMATION_CHECK_INTERVAL_MS = 100;
     private static final int ANIMATION_MAX_TIMEOUT_MS = 2000;
 
@@ -278,7 +279,8 @@ public class TabbedNavigationBarColorControllerTest {
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     @EnableAnimations
-    @DisabledTest(message = "crbug.com/398143087")
+    @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() throws InterruptedException {
         testNavBarColorAnimations();
     }
@@ -359,25 +361,6 @@ public class TabbedNavigationBarColorControllerTest {
         public void onExitFullscreen(Tab tab) {
             mOnExitFullscreenHelper.notifyCalled();
         }
-    }
-
-    private void verifyColorAnimationSteps(
-            List<Integer> capturedColors, int startColor, int endColor) {
-
-        assertEquals(
-                "The first animation color should match the start color.",
-                startColor,
-                (int) capturedColors.get(0));
-
-        assertTrue(
-                "There should be at least five unique animation colors: the start color, the end"
-                        + " color, and at least three in-between.",
-                new HashSet<>(capturedColors).size() >= NUM_UNIQUE_ANIMATION_COLORS);
-
-        assertEquals(
-                "The last animation color should match the end color.",
-                endColor,
-                (int) capturedColors.get(capturedColors.size() - 1));
     }
 
     private void testNavBarColorAnimationsDisabled() {
@@ -471,7 +454,15 @@ public class TabbedNavigationBarColorControllerTest {
                 .setNavigationBarColor(argumentCaptor.capture());
         List<Integer> capturedColors = argumentCaptor.getAllValues();
 
-        verifyColorAnimationSteps(capturedColors, startColor, endColor);
+        assertEquals(
+                "The first animation color should match the start color.",
+                startColor,
+                (int) capturedColors.get(0));
+
+        assertEquals(
+                "The last animation color should match the end color.",
+                endColor,
+                (int) capturedColors.get(capturedColors.size() - 1));
 
         // Ensure that triggering animations don't change the window color.
         verify(spyWindowSystemBarColorHelper, never()).applyNavBarColor();

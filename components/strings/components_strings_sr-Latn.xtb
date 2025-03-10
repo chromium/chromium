@@ -629,6 +629,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2083256696566019397">Dozvoli pri svakoj poseti</translation>
 <translation id="2085876078937250610">Sačuvaj…</translation>
+<translation id="2090451897496479509">Više informacija potražite od dobavljača</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2093982008204312032">Google Chrome pokušava da isključi Windows Hello za popunjavanje lozinki.</translation>
 <translation id="2094505752054353250">Domeni se ne podudaraju</translation>
@@ -1311,6 +1312,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="33073482541490531">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Menadžer lozinki preporučuje da odmah promenite ovu lozinku.</translation>
 <translation id="3307649904964670439">Dugme Prilagodi Chrome, aktivirajte ga da biste prilagodili izgled pregledača</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
+<translation id="3317077846337994567">Plaćanje na rate trenutno nije dostupno. Probajte ponovo kasnije.</translation>
 <translation id="3318016344440038475">TV komedije</translation>
 <translation id="3324687287337751929">4×6 in</translation>
 <translation id="3324983252691184275">Jarkocrvena</translation>
@@ -1439,6 +1441,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3536227077203206203">Dozvoljeno ovaj put</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Ekran (stranica)</translation>
+<translation id="3541016556608204104">Više o Chrome Enterprise Connectors-ima</translation>
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori link u novom prozoru</translation>
 <translation id="3543935938072367282">Plaćajte brže pomoću automatskog popunjavanja</translation>
@@ -2768,6 +2771,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5910140988253729859">Opozovi automatsko popunjavanje</translation>
 <translation id="5911020115933784199">Događaji i rasporedi</translation>
 <translation id="5911110632211230665">Otvaranje je blokirano</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> je dodao/la ovu karticu</translation>
 <translation id="5915189366813702112">Fleksibilni uslovi rada</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5918373444239520146">Gadžeti i prenosivi elektronski uređaji</translation>
@@ -4628,6 +4632,7 @@ Dodatni detalji:
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> koristi nepodržani protokol.</translation>
 <translation id="918454845714257218">Proverite kôd na <ph name="SIDE_OF_CARD" /> i probajte ponovo</translation>
 <translation id="9186203289258525843">Dugme Podesi Chrome kao podrazumevani pregledač, aktivirajte ga da biste podesili Chrome kao podrazumevani pregledač sistema</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> je promenio/la ovu karticu</translation>
 <translation id="9189789270972826888">Kliknite na podatke o kartici u nastavku da biste ih kopirali i nalepili ako kartica nije popunjena. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Teme starije od 4 nedelje se automatski brišu</translation>
 <translation id="9191834167571392248">Bušenje u donjem levom uglu</translation>

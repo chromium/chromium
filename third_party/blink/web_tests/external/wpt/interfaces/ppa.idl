@@ -10,13 +10,12 @@ partial interface Navigator {
 enum PrivateAttributionProtocol { "dap-12-histogram", "tee-00" };
 
 dictionary PrivateAttributionAggregationService {
-  required USVString url;
   required DOMString protocol;
 };
 
 [SecureContext, Exposed=Window]
 interface PrivateAttributionAggregationServices {
-  readonly setlike<PrivateAttributionAggregationService>;
+  readonly maplike<USVString, PrivateAttributionAggregationService>;
 };
 
 [SecureContext, Exposed=Window]

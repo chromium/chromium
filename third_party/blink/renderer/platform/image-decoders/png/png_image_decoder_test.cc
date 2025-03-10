@@ -22,11 +22,11 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
 // is modified in multiple tests to simulate erroneous PNGs. As a reference,
@@ -1352,7 +1352,7 @@ TEST_P(StaticPNGTests, ColorType2TrnsBeforePlte) {
   // have alpha.
   EXPECT_FALSE(frame->HasAlpha());
   // The background is opaque green.
-  EXPECT_EQ(*frame->GetAddr(1, 1), SkPackARGB32(0xFF, 0, 0xFF, 0));
+  EXPECT_EQ(*frame->GetAddr(1, 1), SkPMColorSetARGB(0xFF, 0, 0xFF, 0));
 #else
   // If PNG_READ_OPT_PLTE_SUPPORTED is not defined, libpng performs only minimum
   // processing of an optional PLTE chunk. In particular, it doesn't check if
@@ -1361,7 +1361,7 @@ TEST_P(StaticPNGTests, ColorType2TrnsBeforePlte) {
   // and the frame should have alpha.
   EXPECT_TRUE(frame->HasAlpha());
   // The background is transparent green.
-  EXPECT_EQ(*frame->GetAddr(1, 1), SkPackARGB32(0, 0, 0xFF, 0));
+  EXPECT_EQ(*frame->GetAddr(1, 1), SkPMColorSetARGB(0, 0, 0xFF, 0));
 #endif
 }
 

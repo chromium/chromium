@@ -153,7 +153,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testFavicon() throws IOException {
-        int bitmapSize = BookmarkUtils.getFaviconDisplaySize(mActivity.getResources());
+        int bitmapSize = BookmarkViewUtils.getFaviconDisplaySize(mActivity.getResources());
         Bitmap bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(Color.GREEN);
         ThreadUtils.runOnUiThreadBlocking(

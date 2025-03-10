@@ -22,7 +22,6 @@ class FastCheckoutTestUtils {
             String phoneNumber) {
         return new FastCheckoutAutofillProfile(
                 guid,
-                /* isLocal= */ true,
                 name,
                 /* companyName= */ "",
                 /* streetAddress= */ streetAddress,

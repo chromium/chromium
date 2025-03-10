@@ -1164,6 +1164,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Stylus"/>
 </enum>
 
+<enum name="InputOnVizStateProcessingResult">
+  <int value="0" label="ProcessedSuccessfully"/>
+  <int value="1" label="CouldNotFindViewForFrameSinkId"/>
+  <int value="2" label="FrameSinkIdCorrespondsToChildView"/>
+</enum>
+
 <enum name="LightTheme">
   <int value="0" label="undefined"/>
   <int value="1" label="no"/>

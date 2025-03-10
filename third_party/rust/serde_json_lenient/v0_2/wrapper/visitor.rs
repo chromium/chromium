@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::{ContextPointer, Functions};
+use crate::{Dict, Functions, List};
 use serde::de::{DeserializeSeed, Deserializer, Error, MapAccess, SeqAccess, Visitor};
 use std::borrow::Cow;
 use std::convert::TryFrom;
@@ -25,9 +25,9 @@ impl RecursionDepthCheck {
 /// What type of aggregate JSON type is being deserialized.
 pub enum DeserializationTarget<'c, 'de> {
     /// Deserialize by appending to a list.
-    List { ctx: Pin<&'c mut ContextPointer> },
+    List { ctx: Pin<&'c mut List> },
     /// Deserialize by setting a dictionary key.
-    Dict { ctx: Pin<&'c mut ContextPointer>, key: Cow<'de, str> },
+    Dict { ctx: Pin<&'c mut Dict>, key: Cow<'de, str> },
 }
 
 // `Cow<T>` has a blanket `Deserialize` impl, but due to the lack of

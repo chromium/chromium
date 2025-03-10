@@ -1008,7 +1008,7 @@ class AutofillPopupControllerImplTestAccessibility
   static constexpr int kAxUniqueId = 123;
 
   AutofillPopupControllerImplTestAccessibility()
-      : accessibility_mode_override_(ui::AXMode::kScreenReader) {}
+      : accessibility_mode_override_(ui::AXMode::kExtendedProperties) {}
   AutofillPopupControllerImplTestAccessibility(
       AutofillPopupControllerImplTestAccessibility&) = delete;
   AutofillPopupControllerImplTestAccessibility& operator=(
@@ -1032,7 +1032,7 @@ class AutofillPopupControllerImplTestAccessibility
 
   void TearDown() override {
     // This needs to bo reset explicit because having the mode set to
-    // `kScreenReader` causes mocked functions to get called  with
+    // `kExtendedProperties` causes mocked functions to get called  with
     // `mock_ax_platform_node_delegate` after it has been destroyed.
     accessibility_mode_override_.ResetMode();
     AutofillPopupControllerImplTestAccessibilityBase::TearDown();

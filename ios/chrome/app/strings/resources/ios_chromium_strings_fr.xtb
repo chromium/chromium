@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Vous pouvez ouvrir Lens ici.</translation>
 <translation id="1042296835509784301">Ouvre le Gestionnaire de mots de passe dans Chromium.</translation>
 <translation id="1047130070405668746">Sélectionnez Chromium</translation>
+<translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1091252999271033193">Cela signifie que Chromium demandera la version pour mobile à chaque fois.</translation>
 <translation id="1115463765356382667">Effectuer les actions suggérées ci-dessous pour exploiter tout le potentiel de Chromium.</translation>
 <translation id="1140315115515116765">Utilisez Chromium par défaut pour obtenir facilement des tendances de prix</translation>
@@ -98,6 +99,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}one{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}other{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minutes. Il peut s'agir de l'historique et de la saisie automatique.}}</translation>
 <translation id="3410395242749598859">Certaines de vos données Chromium n'ont pas encore été enregistrées dans <ph name="EMAIL" />.
 Patientez quelques minutes avant de changer de compte. Si vous changez de compte maintenant, ces données seront supprimées.</translation>
+<translation id="3440830787838130530">Partagez facilement et de manière sécurisée une copie d'un mot de passe avec votre groupe familial dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="3472200483164753384">Non disponible dans Chromium Canary</translation>
 <translation id="347967311580159871">Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chromium, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chromium, puis réessayez.</translation>

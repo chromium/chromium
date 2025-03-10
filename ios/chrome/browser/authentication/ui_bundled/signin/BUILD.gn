@@ -31,10 +31,7 @@ source_set("signin_headers") {
 }
 
 source_set("interruptible_chrome_coordinator") {
-  sources = [
-    "interruptible_chrome_coordinator.h",
-    "interruptible_chrome_coordinator.mm",
-  ]
+  sources = [ "interruptible_chrome_coordinator.h" ]
   deps = [
     "//base",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",

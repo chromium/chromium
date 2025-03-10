@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">ໄອຄອນສີກຸ່ມແຖບ <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">ປິດລາຍຊື່ກຸ່ມແຖບແລ້ວ</translation>
 <translation id="3194464645767632461">ການຈັດອັນດັບ</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{ເພີ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບໃສ່ກຸ່ມ}other{ເພີ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="3328308545011660196">ຄຳແນະນຳ: ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບທີ່ກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="3547352561153509682">ການດຳເນີນການນີ້ຈະລຶບກຸ່ມອອກຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ແຖບໃໝ່}other{<ph name="MANY_ADDED" /> ແຖບໃໝ່}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">ແບ່ງປັນຊື່ ແລະ URL ຂອງແຖບທີ່ເປີດຢູ່ຈາກອຸປະກອນນີ້ດ້ວຍລະບົບປະຕິບັດການ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ)}other{(<ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ)}}</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{ເພີ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກໃສ່ກຸ່ມ}other{ເພີ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກໃສ່ກຸ່ມ}}</translation>
 <translation id="4861611890274104875">ປິດບັດໄວ້.</translation>
 <translation id="4861953997778766866">ທຸກຄົນສາມາດປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນຂອງທ່ານໄດ້</translation>
 <translation id="4870911314065352661">ປິດແຖບທັງໝົດບໍ?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
 <translation id="6271513594716432922">ປິດແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ທັງໝົດ</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="6333260925957816943">ຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="6381032505162537930">ທ່ານຈະເຫັນກຸ່ມແຖບຂອງທ່ານບ່ອນນີ້</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກໄວ້}other{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກໄວ້}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">ກຸ່ມໃໝ່ຈາກອຸປະກອນອື່ນໆຂອງທ່ານ</translation>
 <translation id="8029301326595421733">ເປີດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແບບຄວາມສູງເຕັມແລ້ວ</translation>
 <translation id="8053770993984522566">ລາຍຊື່ກຸ່ມແຖບທີ່ເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜ້າ</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>

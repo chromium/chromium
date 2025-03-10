@@ -25,7 +25,7 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   // Creating context imitates a screen reader enabled, so that all ax nodes
   // are created and attributes/state are updatable.
   auto ax_context = std::make_unique<blink::WebAXContext>(
-      document, ui::AXMode::kScreenReader);
+      document, ui::AXMode::kExtendedProperties);
   ax_context->UpdateAXForAllDocuments();
 
   blink::WebInputElement element =
@@ -35,7 +35,7 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
 
   // kNoSuggestions by default.
   ui::AXNodeData node_data;
-  element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
   EXPECT_FALSE(
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
@@ -46,7 +46,7 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   ax_context->UpdateAXForAllDocuments();
 
   node_data = ui::AXNodeData();
-  element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
   EXPECT_FALSE(
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
@@ -57,7 +57,7 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   ax_context->UpdateAXForAllDocuments();
 
   node_data = ui::AXNodeData();
-  element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
   EXPECT_TRUE(
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
@@ -68,7 +68,7 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   ax_context->UpdateAXForAllDocuments();
 
   node_data = ui::AXNodeData();
-  element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
   EXPECT_FALSE(
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));

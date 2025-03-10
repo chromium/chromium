@@ -1536,17 +1536,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
     return PasswordStoreChangeList();
   }
 
-  // If no rows changed due to this command, it means that there was no row to
-  // update, so there is no point trying to update insecure credentials data or
-  // the notes table.
-  if (db_.GetLastChangeCount() == 0) {
-    if (error) {
-      *error = UpdateCredentialError::kNoUpdatedRecords;
-    }
-    return PasswordStoreChangeList();
-  }
-
-  bool password_changed =
+  const bool login_table_changed = db_.GetLastChangeCount() > 0;
+  const bool password_changed =
       form.password_value != old_primary_key_password.decrypted_password;
 
   PasswordForm form_with_encrypted_password = form;
@@ -1563,8 +1554,17 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   InsecureCredentialsChanged insecure_changed = UpdateInsecureCredentials(
       FormPrimaryKey(old_primary_key_password.primary_key),
       form_with_encrypted_password.password_issues);
-  UpdatePasswordNotes(FormPrimaryKey(old_primary_key_password.primary_key),
-                      form.notes);
+  const bool notes_changed = UpdatePasswordNotes(
+      FormPrimaryKey(old_primary_key_password.primary_key), form.notes);
+
+  // If no rows changed due to the command above and insecure credentials and
+  // notes were not updated, it means that there was no row to update
+  if (!insecure_changed && !login_table_changed && !notes_changed) {
+    if (error) {
+      *error = UpdateCredentialError::kNoUpdatedRecords;
+    }
+    return PasswordStoreChangeList();
+  }
 
   PasswordStoreChangeList list;
   form_with_encrypted_password.in_store = GetStore();
@@ -2524,13 +2524,24 @@ std::vector<PasswordNote> LoginDatabase::GetPasswordNotes(
   return password_notes_table_.GetPasswordNotes(primary_key);
 }
 
-void LoginDatabase::UpdatePasswordNotes(
+bool LoginDatabase::UpdatePasswordNotes(
     FormPrimaryKey primary_key,
     const std::vector<PasswordNote>& notes) {
+  base::flat_set<PasswordNote> existing_notes(
+      password_notes_table_.GetPasswordNotes(primary_key));
+  if (existing_notes.size() == notes.size()) {
+    // Password notes haven't changed. Return early.
+    if (std::ranges::all_of(notes, [&existing_notes](const PasswordNote& note) {
+          return existing_notes.count(note);
+        })) {
+      return false;
+    }
+  }
   password_notes_table_.RemovePasswordNotes(primary_key);
   for (const PasswordNote& note : notes) {
     password_notes_table_.InsertOrReplace(primary_key, note);
   }
+  return true;
 }
 
 void LoginDatabase::TriggerIsEmptyCb() {

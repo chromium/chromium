@@ -573,6 +573,10 @@ bool MixedContentChecker::ShouldBlockFetch(
   //
   // Reference:
   // https://github.com/explainers-by-googlers/local-network-access
+  //
+  // This only checks for mixed content subresources; subframe navigation mixed
+  // content is checked in
+  // content/browser/renderer_host/mixed_content_checker.cc.
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
     // This request is a possible LNA request if one of the following is true:

@@ -6977,7 +6977,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5911545422157959623">Hindi available ang mga bookmark sa guest mode</translation>
 <translation id="5914016309240354769">Kalikasan</translation>
-<translation id="5914465277418006379">Idinagdag ni <ph name="MEMBER_FIRST_NAME" /> ang tab na ito</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> (na) bit):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -8262,6 +8261,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6832218595502288407">I-align sa kaliwa</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Alisin ang Tab at I-delete ang Grupo?}=1{Alisin ang Mga Tab at I-delete ang Grupo?}one{Alisin ang Mga Tab at I-delete ang Mga Grupo?}other{Alisin ang Mga Tab at I-delete ang Mga Grupo?}}</translation>
+<translation id="6833103209700200188">Footer</translation>
 <translation id="6833479554815567477">Inalis ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balanse (inirerekomenda)</translation>
 <translation id="6835762382653651563">Mangyaring kumonekta sa Internet upang ma-update ang iyong <ph name="DEVICE_TYPE" />.</translation>
@@ -11614,7 +11614,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# na app}}</translation>
 <translation id="9186963452600581158">Mag-sign in gamit ang Google Account ng isang bata</translation>
 <translation id="9187967020623675250">Hindi magkatugma ang mga key. Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
-<translation id="9189468832660648522">Binago ni <ph name="MEMBER_FIRST_NAME" /> ang tab na ito</translation>
 <translation id="9192019773545828776">Makarinig ng pasalitang feedback para magamit mo ang iyong device nang hindi tumitingin sa screen. Available ang braille na feedback gamit ang isang nakakonektang device. Gamitin ang Ctrl + Alt + Z para i-on at i-off ang ChromeVox. Gamitin ang Search + Pakaliwang arrow o Pakanang arrow para mag-navigate. Gamitin ang Search + Space para pumili (mag-activate).</translation>
 <translation id="9195969368671142407">Kapag nilimitahan ng iyong organisasyon ang pag-save sa Google Account mo, hindi ka puwedeng mag-share ng o sumali sa mga grupo ng tab</translation>
 <translation id="919686179725692564">Matuto pa tungkol sa pag-back up ng iyong mga app.</translation>

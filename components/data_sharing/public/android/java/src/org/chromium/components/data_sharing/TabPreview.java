@@ -9,10 +9,12 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Preview about a shared tab group. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class TabPreview {
     public final GURL url;
     public final String displayUrl;

@@ -1413,14 +1413,19 @@
     "expiry_milestone": 141
   },
   {
+    "name": "clear-instance-info-when-closed-intentionally",
+    "owners": [
+      "desiatyrikov@google.com",
+      "skavuluru@google.com",
+      "aishwaryarj@google.com",
+      "clank-large-form-factors@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "clear-login-database-for-all-migrated-upm-users",
     "owners": [ "izuzic@google.com", "vsemeniuk@chromium.org" ],
     "expiry_milestone": 133
-  },
-  {
-    "name": "clear-undecryptable-passwords",
-    "owners": [ "sygiet@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 136
   },
   {
     "name": "click-to-call",
@@ -1488,11 +1493,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "compose-polite-nudge",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 134
-  },
-  {
     "name": "compose-proactive-nudge",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
     "expiry_milestone": 136
@@ -1515,21 +1515,6 @@
   {
     "name": "conch",
     "owners": ["pihsun@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-expand-transcription-language",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-gen-ai",
-    "owners": ["hsuanling@google.com"],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "conch-large-model",
-    "owners": ["hsuanling@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -1711,7 +1696,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "cros-mall-managed",
@@ -1719,7 +1704,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "cros-mall-url",
@@ -1727,12 +1712,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "cros-privacy-hub-app-permissions-v2",
-    "owners": [ "cros-privacy-features-dev@google.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "cros-soul",
@@ -4314,11 +4294,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "esb-download-row-promo",
-    "owners": [ "awado@google.com", "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 129
-  },
-  {
     "name": "event-based-log-upload",
     "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
     "expiry_milestone": 140
@@ -5299,7 +5274,7 @@
   {
     "name": "ios-enable-delete-all-saved-credentials",
     "owners": ["mxlg@google.com", "bling-transactions@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "ios-interruptible-coordinator-always-dismissed",
@@ -5470,6 +5445,11 @@
     "name": "ip-protection-proxy-opt-out",
     "owners": [ "awillia@chromium.org", "//chrome/browser/ip_protection/OWNERS" ],
     "expiry_milestone": 148
+  },
+  {
+    "name": "iph-autofill-credit-card-benefit-feature",
+    "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "iph-extensions-menu-feature",
@@ -5795,7 +5775,7 @@
   {
     "name": "mac-loopback-audio-for-screen-share",
     "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "eladalon@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "mac-syscall-sandbox",
@@ -7668,6 +7648,13 @@
     "expiry_milestone": 140
   },
   {
+    "name": "rws-v2-ui",
+    "owners": [
+      "fmacintosh@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "safe-browsing-local-lists-use-sbv5",
     "owners": [
       "thefrog@chromium.org",
@@ -7877,7 +7864,7 @@
   {
     "name": "send-tab-ios-push-notifications",
     "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "send-tab-to-self-v2",

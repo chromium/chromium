@@ -1951,22 +1951,34 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
 
 TEST_F(SellerWorkletTest, ScoreAdTextConversions) {
   RunScoreAdWithReturnValueExpectingResult(
-      R"('encodeUtf8' in browserSignals? 3 : 2)", 2);
-  RunScoreAdWithReturnValueExpectingResult(
-      R"('decodeUtf8' in browserSignals? 3 : 2)", 2);
+      R"('protectedAudience' in globalThis? 3 : 2)", 2);
 }
 
 TEST_F(SellerWorkletTextConversionsTest, ScoreAdTextConversions) {
   RunScoreAdWithReturnValueExpectingResult(
-      R"('encodeUtf8' in browserSignals? 3 : 2)", 3);
+      R"('encodeUtf8' in protectedAudience? 3 : 2)", 3);
   RunScoreAdWithReturnValueExpectingResult(
-      R"('decodeUtf8' in browserSignals? 3 : 2)", 3);
+      R"('decodeUtf8' in protectedAudience? 3 : 2)", 3);
 
-  RunScoreAdWithReturnValueExpectingResult("browserSignals.encodeUtf8('A')[0]",
-                                           65);
   RunScoreAdWithReturnValueExpectingResult(
-      "browserSignals.decodeUtf8(new Uint8Array([65, 68])) === 'AD' ? 3 : 2",
+      "protectedAudience.encodeUtf8('A')[0]", 65);
+  RunScoreAdWithReturnValueExpectingResult(
+      "protectedAudience.decodeUtf8(new Uint8Array([65, 68])) === 'AD' ? 3 : 2",
       3);
+}
+
+TEST_F(SellerWorkletTextConversionsTest, ScoreAdNoGlobalStomp) {
+  const char kScript[] = R"(
+    function protectedAudience() {
+      return 5;
+    }
+
+    function scoreAd() {
+      return protectedAudience();
+    }
+
+  )";
+  RunScoreAdWithJavascriptExpectingResult(kScript, 5);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdBid) {
@@ -3460,24 +3472,36 @@ TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
 
 TEST_F(SellerWorkletTest, ReportResultTextConversions) {
   RunReportResultCreatedScriptExpectingResult(
-      "('encodeUtf8' in browserSignals) ? 2 : 1",
-      /*extra_code=*/std::string(), "1",
-      /*expected_report_url=*/std::nullopt);
-  RunReportResultCreatedScriptExpectingResult(
-      "('decodeUtf8' in browserSignals) ? 2 : 1",
+      "('protectedAudience' in globalThis) ? 2 : 1",
       /*extra_code=*/std::string(), "1",
       /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTextConversionsTest, ReportResultTextConversions) {
   RunReportResultCreatedScriptExpectingResult(
-      "('encodeUtf8' in browserSignals) ? 2 : 1",
+      "('encodeUtf8' in protectedAudience) ? 2 : 1",
       /*extra_code=*/std::string(), "2",
       /*expected_report_url=*/std::nullopt);
   RunReportResultCreatedScriptExpectingResult(
-      "('decodeUtf8' in browserSignals) ? 2 : 1",
+      "('decodeUtf8' in protectedAudience) ? 2 : 1",
       /*extra_code=*/std::string(), "2",
       /*expected_report_url=*/std::nullopt);
+}
+
+TEST_F(SellerWorkletTextConversionsTest, ReportResultNoGlobalStomp) {
+  const char kScript[] = R"(
+    function protectedAudience() {
+      sendReportTo('https://report.test/');
+    }
+
+    function reportResult() {
+      protectedAudience();
+    }
+  )";
+  RunReportResultWithJavascriptExpectingResult(
+      kScript,
+      /*expected_signals_for_winner=*/"null",
+      /*expected_report_url=*/GURL("https://report.test"));
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {

@@ -130,6 +130,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   glicWebClientNotifyPanelActiveChanged(payload: {panelActive: boolean}): void {
     this.host.panelActiveValue.assignAndSignal(payload.panelActive);
   }
+
+  async glicWebClientCheckResponsive(): Promise<void> {
+    return this.webClient.checkResponsive?.();
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -159,10 +163,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     // as it would require reloading the webview page and initializing a new
     // web client very quickly, and in normal operation, the webview does not
     // reload after successful load.
-    this.sender =
-        new PostMessageRequestSender(windowProxy, 'chrome://glic', this.hostId);
-    this.receiver =
-        new PostMessageRequestReceiver('chrome://glic', windowProxy, this);
+    this.sender = new PostMessageRequestSender(
+        windowProxy, 'chrome://glic', this.hostId, 'glic_api_client');
+    this.receiver = new PostMessageRequestReceiver(
+        'chrome://glic', windowProxy, this, 'glic_api_client');
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
     this.metrics = new GlicBrowserHostMetricsImpl(this.sender);
@@ -183,6 +187,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const response = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', undefined);
     const state = response.initialState;
+    this.receiver.setLoggingEnabled(state.loggingEnabled);
     this.panelState.assignAndSignal(state.panelState);
     const focusedTabData =
         convertFocusedTabDataFromPrivate(state.focusedTabData);

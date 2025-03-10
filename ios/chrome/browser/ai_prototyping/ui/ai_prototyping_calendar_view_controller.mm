@@ -177,7 +177,8 @@
 - (void)onSubmitButtonPressed:(UIButton*)button {
   [self disableSubmitButton];
   [self updateResponseField:@""];
-  [_mutator executeEnhancedCalendarQueryWithPrompt:_promptField.text];
+  [_mutator executeEnhancedCalendarQueryWithPrompt:_promptField.text
+                                      selectedText:_selectedTextField.text];
 }
 
 // Disable submit button, and style it accordingly.

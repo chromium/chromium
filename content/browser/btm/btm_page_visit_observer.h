@@ -69,6 +69,7 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
 
   // WebContentsObserver overrides:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
                              blink::mojom::StorageTypeAccessed storage_type,
@@ -90,7 +91,7 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   // Metadata on the currently committed page.
   BtmPageVisitInfo current_page_;
   raw_ref<base::Clock> clock_;
-  std::optional<base::Time> last_page_change_time_;
+  base::Time last_page_change_time_;
   // Past page visits that we are still waiting to see if late cookie accesses
   // are reported for them.
   std::deque<VisitTuple> pending_visits_;

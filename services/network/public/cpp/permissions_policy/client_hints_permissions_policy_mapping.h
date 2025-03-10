@@ -25,12 +25,12 @@ using PolicyFeatureToClientHintMap =
 // Mapping from WebClientHintsType to the corresponding Permissions-Policy (e.g.
 // kDpr => kClientHintsDPR). The order matches the header mapping and the enum
 // order in services/network/public/mojom/web_client_hints_types.mojom
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 const ClientHintToPolicyFeatureMap& GetClientHintToPolicyFeatureMap();
 
 // Mapping from Permissions-Policy to the corresponding WebClientHintsType(s)
 // (e.g. kClientHintsDPR => {kDpr, kDpr_DEPRECATED}).
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 const PolicyFeatureToClientHintMap& GetPolicyFeatureToClientHintMap();
 
 }  // namespace network

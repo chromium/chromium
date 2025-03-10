@@ -10,8 +10,8 @@
 class GURL;
 @class LensOverlayMediator;
 
-/// Delegate for events in LensOverlayMediator.
-@protocol LensOverlayMediatorDelegate <LensOverlayTabChangeResponder>
+/// Delegate for events in `LensOverlayMediator`.
+@protocol LensOverlayMediatorDelegate <NSObject>
 
 /// The lens overlay menu (3-dots) did open.
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator;

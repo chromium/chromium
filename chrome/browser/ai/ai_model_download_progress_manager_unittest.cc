@@ -68,6 +68,15 @@ class FakeMonitor {
     download_progress_run_loop.Run();
   }
 
+  // Same as `ExpectReceivedUpdate` except it normalizes
+  // `expected_downloaded_bytes` and `expected_total_bytes`.
+  void ExpectReceivedNormalizedUpdate(uint64_t expected_downloaded_bytes,
+                                      uint64_t expected_total_bytes) {
+    ExpectReceivedUpdate(AIUtils::NormalizeModelDownloadProgress(
+                             expected_downloaded_bytes, expected_total_bytes),
+                         AIUtils::kNormalizedDownloadProgressMax);
+  }
+
   void ExpectNoUpdate() {
     EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(_, _)).Times(0);
   }
@@ -183,6 +192,221 @@ TEST_F(AIModelDownloadProgressManagerTest, FirstUpdateIsReportedAsZero) {
   // always be `kNormalizedProgressMax` (0x10000).
   SendUpdate(component, ComponentState::kDownloading, 10);
   monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+
+  // No other events should be fired.
+  FastForwardBy(base::Milliseconds(51));
+}
+
+TEST_F(AIModelDownloadProgressManagerTest, ProgressIsNormalized) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", 100);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Should receive the first update.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // The second update should have its downloaded_bytes normalized.
+  uint64_t downloaded_bytes = 15;
+  uint64_t normalized_downloaded_bytes =
+      AIUtils::NormalizeModelDownloadProgress(downloaded_bytes,
+                                              component.total_bytes());
+
+  SendUpdate(component, ComponentState::kDownloading, downloaded_bytes);
+  monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       MaxIsSentWhenDownloadedBytesEqualsTotalBytes) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id",
+                          AIUtils::kNormalizedDownloadProgressMax * 5);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Should receive the zero update.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Sending less than the total bytes should not send the
+  // `kNormalizedDownloadProgressMax`.
+  SendUpdate(component, ComponentState::kDownloading,
+             component.total_bytes() - 1);
+  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax - 1,
+                               AIUtils::kNormalizedDownloadProgressMax);
+
+  // Sending the total bytes should send the `kNormalizedDownloadProgressMax`.
+  SendUpdate(component, ComponentState::kDownloading, component.total_bytes());
+  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       MaxIsSentWhenDownloadedBytesEqualsTotalBytesForFirstUpdate) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id",
+                          AIUtils::kNormalizedDownloadProgressMax * 5);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // If the first update has downloaded bytes equal to total bytes, then both
+  // the the zero and max events should be fired.
+  SendUpdate(component, ComponentState::kDownloading, component.total_bytes());
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       DoesntReceiveUpdatesForNonDownloadEvents) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", 100);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Doesn't receive any update for these event states.
+  for (const auto state : {
+           ComponentState::kNew,
+           ComponentState::kChecking,
+           ComponentState::kCanUpdate,
+           ComponentState::kUpdated,
+           ComponentState::kUpdateError,
+           ComponentState::kRun,
+           ComponentState::kLastStatus,
+       }) {
+    SendUpdate(component, state, 10);
+    monitor.ExpectNoUpdate();
+    FastForwardBy(base::Milliseconds(51));
+  }
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       DoesntReceiveUpdatesForComponentsNotObserving) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component_observed("component_id1", 100);
+  FakeComponent component_not_observed("component_id2", 100);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component_observed.id()});
+
+  // Doesn't receive any update for these event states.
+  SendUpdate(component_not_observed, ComponentState::kDownloading, 10);
+  monitor.ExpectNoUpdate();
+  FastForwardBy(base::Milliseconds(51));
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       ReceiveZeroAndHundredPercentForNoComponents) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {});
+  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesEvery50ms) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", 100);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Should receive the first update.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  // Shouldn't receive this update since it hasn't been 50ms since the last
+  // update.
+  SendUpdate(component, ComponentState::kDownloading, 15);
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Should receive the this since it's been over 50ms since the last update.
+  SendUpdate(component, ComponentState::kDownloading, 20);
+  monitor.ExpectReceivedNormalizedUpdate(20, component.total_bytes());
+}
+
+TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  // Set its total to twice kNormalizedProgressMax so that there are two raw
+  // download progresses that map to every normalized download progress.
+  FakeComponent component("component_id",
+                          AIUtils::kNormalizedDownloadProgressMax * 2);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Should receive the first update as zero.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Should be able to receive this progress event since we haven't seen it
+  // before.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+  monitor.ExpectReceivedNormalizedUpdate(10, component.total_bytes());
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Shouldn't be able to receive this progress event since we've just seen it.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Shouldn't be able to receive this progress event since it normalizes to a
+  // progress we've seen.
+  CHECK_EQ(
+      AIUtils::NormalizeModelDownloadProgress(10, component.total_bytes()),
+      AIUtils::NormalizeModelDownloadProgress(11, component.total_bytes()));
+  SendUpdate(component, ComponentState::kDownloading, 11);
+  FastForwardBy(base::Milliseconds(51));
+}
+
+TEST_F(AIModelDownloadProgressManagerTest, ShouldReceive100percent) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", 100);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Should receive the first update.
+  SendUpdate(component, ComponentState::kDownloading, 10);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  // Should receive the second update since it's 100% even though 50ms haven't
+  // elapsed.
+  SendUpdate(component, ComponentState::kDownloading, component.total_bytes());
+  monitor.ExpectReceivedNormalizedUpdate(component.total_bytes(),
+                                         component.total_bytes());
 
   // No other events should be fired.
   FastForwardBy(base::Milliseconds(51));

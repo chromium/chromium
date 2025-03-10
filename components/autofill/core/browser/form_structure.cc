@@ -108,6 +108,10 @@ std::string ServerTypesToString(const AutofillField& field) {
   return base::StrCat({"[", base::JoinString(server_types, ", "), "]"});
 }
 
+std::string_view ToYesOrNo(bool value) {
+  return value ? "Yes" : "No";
+}
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -928,6 +932,10 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                  " (", url::Origin::Create(form.source_url()).Serialize(),
                  ")"});
   buffer << "\n Target URL:" << form.target_url();
+  if (base::FeatureList::IsEnabled(features::kAutofillAiServerModel)) {
+    buffer << "\n May run AutofillAI model: "
+           << ToYesOrNo(form.may_run_autofill_ai_model());
+  }
   for (size_t i = 0; i < form.field_count(); ++i) {
     buffer << "\n Field " << i << ": ";
     const AutofillField* field = form.field(i);
@@ -991,7 +999,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Label: " << truncated_label;
 
     buffer << "\n  Is empty: "
-           << (field->value(ValueSemantics::kCurrent).empty() ? "Yes" : "No");
+           << ToYesOrNo(field->value(ValueSemantics::kCurrent).empty());
   }
   return buffer;
 }
@@ -1019,6 +1027,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                  " (", url::Origin::Create(form.source_url()).Serialize(),
                  ")"});
   buffer << Tr{} << "Target URL:" << form.target_url();
+  if (base::FeatureList::IsEnabled(features::kAutofillAiServerModel)) {
+    buffer << Tr{} << "May run AutofillAI model: "
+           << ToYesOrNo(form.may_run_autofill_ai_model());
+  }
   for (size_t i = 0; i < form.field_count(); ++i) {
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};
@@ -1093,7 +1105,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Label:" << truncated_label;
 
     buffer << Tr{} << "Is empty:"
-           << (field->value(ValueSemantics::kCurrent).empty() ? "Yes" : "No");
+           << ToYesOrNo(field->value(ValueSemantics::kCurrent).empty());
     buffer << Tr{} << "Is focusable:"
            << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"

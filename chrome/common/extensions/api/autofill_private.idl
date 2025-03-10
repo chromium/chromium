@@ -128,9 +128,9 @@ namespace autofillPrivate {
     IMPROVED_PREDICTION,
     PASSPORT_NAME_TAG,
     PASSPORT_NUMBER,
-    PASSPORT_ISSUING_COUNTRY_TAG,
-    PASSPORT_EXPIRATION_DATE_TAG,
-    PASSPORT_ISSUE_DATE_TAG,
+    PASSPORT_ISSUING_COUNTRY,
+    PASSPORT_EXPIRATION_DATE,
+    PASSPORT_ISSUE_DATE,
     LOYALTY_MEMBERSHIP_PROGRAM,
     LOYALTY_MEMBERSHIP_PROVIDER,
     LOYALTY_MEMBERSHIP_ID,
@@ -142,8 +142,8 @@ namespace autofillPrivate {
     DRIVERS_LICENSE_NAME_TAG,
     DRIVERS_LICENSE_REGION,
     DRIVERS_LICENSE_NUMBER,
-    DRIVERS_LICENSE_EXPIRATION_DATE_TAG,
-    DRIVERS_LICENSE_ISSUE_DATE_TAG,
+    DRIVERS_LICENSE_EXPIRATION_DATE,
+    DRIVERS_LICENSE_ISSUE_DATE,
     MAX_VALID_FIELD_TYPE
   };
 
@@ -580,5 +580,10 @@ namespace autofillPrivate {
         IbanEntry[] ibans,
         PayOverTimeIssuerEntry[] payOverTimeIssuers,
         optional AccountInfo accountInfo);
+
+    // Fired when the entity instances have changed (additions, updates,
+    // removals).
+    static void onEntityInstancesChanged(
+        EntityInstanceWithLabels[] entityInstancesWithLabels);
   };
 };

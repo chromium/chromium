@@ -688,11 +688,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
 #if BUILDFLAG(IS_ANDROID)
     candidate.is_video_in_surface_view =
         resource_provider_->IsBackedBySurfaceView(quad->resource_id);
-    if (quad->is_stream_video) {
-      // StreamVideoDrawQuad used to set the resource_size_in_pixels directly
-      // from the quad rather than from the resource.
-      candidate.resource_size_in_pixels = quad->resource_size_in_pixels();
-    }
 #endif
 
     candidate.has_rounded_display_masks =

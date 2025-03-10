@@ -494,78 +494,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-/// Take a list of suggestions and break it into groups determined by sectionId
-/// field. Use `headerMap` to extract group names.
-- (NSArray<id<AutocompleteSuggestionGroup>>*)
-            groupSuggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
-    usingACResultAsHeaderMap:(const AutocompleteResult&)headerMap {
-  __block NSMutableArray<id<AutocompleteSuggestion>>* currentGroup =
-      [[NSMutableArray alloc] init];
-  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
-      [[NSMutableArray alloc] init];
-
-  if (suggestions.count == 0) {
-    return @[];
-  }
-
-  id<AutocompleteSuggestion> firstSuggestion = suggestions.firstObject;
-
-  __block NSNumber* currentSectionId = firstSuggestion.suggestionSectionId;
-  __block NSNumber* currentGroupId = firstSuggestion.suggestionGroupId;
-
-  [currentGroup addObject:firstSuggestion];
-
-  void (^startNewGroup)() = ^{
-    if (currentGroup.count == 0) {
-      return;
-    }
-
-    NSString* groupTitle =
-        currentGroupId
-            ? base::SysUTF16ToNSString(headerMap.GetHeaderForSuggestionGroup(
-                  static_cast<omnibox::GroupId>([currentGroupId intValue])))
-            : nil;
-    SuggestionGroupDisplayStyle displayStyle =
-        SuggestionGroupDisplayStyleDefault;
-
-    if (base::FeatureList::IsEnabled(
-            omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
-      omnibox::GroupConfig_RenderType renderType =
-          headerMap.GetRenderTypeForSuggestionGroup(
-              static_cast<omnibox::GroupId>([currentGroupId intValue]));
-      displayStyle = (renderType == omnibox::GroupConfig_RenderType_HORIZONTAL)
-                         ? SuggestionGroupDisplayStyleCarousel
-                         : SuggestionGroupDisplayStyleDefault;
-    } else if (currentSectionId &&
-               static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
-                   omnibox::SECTION_MOBILE_MOST_VISITED) {
-      displayStyle = SuggestionGroupDisplayStyleCarousel;
-    }
-
-    [groups addObject:[AutocompleteSuggestionGroupImpl
-                          groupWithTitle:groupTitle
-                             suggestions:currentGroup
-                            displayStyle:displayStyle]];
-    currentGroup = [[NSMutableArray alloc] init];
-  };
-
-  for (NSUInteger i = 1; i < suggestions.count; i++) {
-    id<AutocompleteSuggestion> suggestion = suggestions[i];
-    if ((!suggestion.suggestionSectionId && !currentSectionId) ||
-        [suggestion.suggestionSectionId isEqual:currentSectionId]) {
-      [currentGroup addObject:suggestion];
-    } else {
-      startNewGroup();
-      currentGroupId = suggestion.suggestionGroupId;
-      currentSectionId = suggestion.suggestionSectionId;
-      [currentGroup addObject:suggestion];
-    }
-  }
-  startNewGroup();
-
-  return groups;
-}
-
 /// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
 /// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches:
@@ -577,8 +505,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   NSMutableArray<AutocompleteMatchFormatter*>* allMatches =
       [self.autocompleteMatchWrapper wrapMatchesFromResult:autocompleteResult];
   NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
-      [self groupSuggestions:allMatches
-          usingACResultAsHeaderMap:autocompleteResult];
+      [self.autocompleteMatchWrapper groupSuggestions:allMatches
+                             usingACResultAsHeaderMap:autocompleteResult];
   [groups addObjectsFromArray:allGroups];
 
   // Before inserting pedals above all, back up non-pedal suggestions for

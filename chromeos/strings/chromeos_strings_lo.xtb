@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">ເວີຊັນ SDK:</translation>
 <translation id="2016697457005847575">ກະລຸນາລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາ</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">ເລືອກຮູບແບບສີສັນ ແລະ ຈາກນັ້ນເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບ AI ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="2045814230297767491">ເຄື່ອງໃຊ້ເທິງໂຕະກິນເຂົ້າ</translation>
 <translation id="2047316797244836561">ກະລຸນາເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ ແລະ ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງຕົວພັກໜ້າຈໍ.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">ປັດຈຸບັນລະບົບຍັງບໍ່ຮອງຮັບພາສານີ້</translation>
 <translation id="2787435249130282949">ແປ້ນພິມແຈ້ງຂຶ້ນ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
+<translation id="2822702442014805146">ກຳລັງດາວໂຫຼດໂມເດວສະຫຼຸບ ແລະ ການສ້າງຊື່</translation>
 <translation id="28232023175184696">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ຄລິກເພື່ອລອງໃໝ່.</translation>
 <translation id="2855718259207180827">ຜ້າຂົນສັດ</translation>
 <translation id="2859243502336719778">ອັບເດດວິກິດ</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
 <translation id="4897058166682006107">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຊ້າຍເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">ເປີດໃຊ້ຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
+<translation id="4910853326379896417">ດາວໂຫຼດໂມເດວສະຫຼຸບ ແລະ ການສ້າງຊື່ສຳເລັດແລ້ວ</translation>
 <translation id="4910858703033903787">ປະເພດ APN</translation>
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">ສ້າງຮູບ</translation>
 <translation id="5078711626843651677">ລະບົບຈະຈັດເກັບຮູບແບບສຽງໄວ້ຢູ່ອຸປະກອນຊົ່ວຄາວຈົນກວ່າການຕິດປ້າຍກຳກັບຜູ້ເວົ້າຈະສຳເລັດ. ທ່ານສາມາດປິດການດຳເນີນການນີ້ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.</translation>
 <translation id="5078983345702708852">ລ້ຳສະໄໝ</translation>
+<translation id="5085224064082122501">ບໍ່ສາມາດດາວໂຫຼດໂມເດວສຳລັບສະຫຼຸບ ແລະ ການສ້າງຊື່ໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="5087864757604726239">ກັບ​ຄືນ​</translation>
 <translation id="5088172560898466307">ຊື່ໂຮ​ສເຊີບເວີ</translation>
 <translation id="5089810972385038852">ລັດ</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">ດາວເຄາະດວງອື່ນ</translation>
 <translation id="6359706544163531585">ປິດການນຳໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="6359919876285606596">ການດຳເນີນການນີ້ມີຜົນຖາວອນ ແລະ ບໍ່ສາມາດຍົກເລີກໄດ້</translation>
-<translation id="6368342879959028556">ເມື່ອທ່ານເລືອກ “ສ້າງດ້ວຍ AI”, ໃຫ້ຂຽນ prompt ທີ່ກຳນົດເອງ. ຫຼື ທ່ານສາມາດເລືອກ “ຮູບພື້ນຫຼັງ AI” ເພື່ອເລືອກຮູບແບບສີສັນ ແລ້ວເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບພື້ນຫຼັງ AI ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="6369221585240879141">ບໍ່ສາມາດສ້າງຊື່ການບັນທຶກສຳລັບພາສາຂອງການຖອດຂໍ້ຄວາມຈາກສຽງນີ້ໄດ້</translation>
 <translation id="6373461326814131011">ໜອງປາ</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">ອະນຸຍາດໃຫ້ບໍລິການລະບົບໃຊ້ສະຖານທີ່ຂອງທ່ານບໍ?</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
 <translation id="66621959568103627">ບົວໂຄລໍລ໌</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເລືອກ "ຂໍແຮງບັນດານໃຈໃຫ້ຂ້ອຍແດ່" ເພື່ອຮັບຕົວເລືອກຮູບ AI ທີ່ເປັນເອກະລັກ ແລະ ຫຼາກຫຼາຍຍິ່ງຂຶ້ນ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເມື່ອທ່ານສ້າງດ້ວຍ AI, ລະບົບຈະສົ່ງ prompt ໄປຫາເຊີບເວີ Google AI ເພື່ອສ້າງຮູບ ແລະ ປັບປຸງຜະລິດຕະພັນ, ໂດຍເປັນໄປຕາມ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ສ້າງເນື້ອຫາແມ່ນເວີຊັນທົດລອງ, ທີ່ຢູ່ໃນຊ່ວງການພັດທະນາຂັ້ນຕົ້ນ ແລະ ມີໃຫ້ບໍລິການແບບຈຳກັດໃນຕອນນີ້.</translation>
 <translation id="6673898378497337661">ເພີ່ມຄວາມສະຫວ່າງແປ້ນພິມ</translation>
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6694534975463174713">ລັອກ</translation>
@@ -1432,6 +1423,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ໜ້າຈໍສຳຜັດ USB</translation>
 <translation id="757747079855995705">ຫິນ</translation>
+<translation id="7584853321964440104">ບໍ່ສາມາດດາວໂຫຼດໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="7590883480672980941">ການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ຜູ້ເບິ່ງແຍງລະບົບ <ph name="MANAGER" /> ໄດ້ກຳນົດເວລາທີ່ຈະສາມາດໃຊ້ <ph name="DEVICE_TYPE" /> ເຄື່ອງນີ້ໄດ້.</translation>

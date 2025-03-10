@@ -12550,6 +12550,68 @@ TEST_F(AdAuctionServiceImplBAndATest,
               testing::EndsWith(R"(, "enableSampledDebugReporting": false})"));
 }
 
+// Similar to EncryptsPayloadWithDebugReportSamplingFlag, but
+// enableSampledDebugReporting is true, set by the
+// kFledgeDoSampleDebugReportForTesting feature flag.
+TEST_F(AdAuctionServiceImplBAndATest,
+       EncryptsPayloadWithDebugReportSamplingFlagSetToTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kFledgeEnableSampleDebugReportOnCookieSetting,
+       features::kFledgeDoSampleDebugReportForTesting},
+      {});
+
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/std::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  manager_->RecordDebugReportLockout(
+      base::Time::Now(), blink::features::kFledgeDebugReportLockout.Get());
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> result =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result->request.empty());
+
+  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+                        .value();
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
+                      sizeof(kTestBaPrivateKey)),
+          key_config)
+          .value();
+  EXPECT_EQ(0x00, result->request[0]);
+  auto request = ohttp_gateway.DecryptObliviousHttpRequest(
+      result->request.substr(1), kBiddingAndAuctionEncryptionRequestMediaType);
+  ASSERT_TRUE(request.ok()) << request.status();
+  auto plaintext_data = request->GetPlaintextData();
+
+  EXPECT_EQ(0x02, plaintext_data[0]);
+  size_t request_size = 0;
+  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
+    request_size =
+        (request_size << 8) | static_cast<uint8_t>(plaintext_data[idx + 1]);
+  }
+
+  std::string got_str = cbor::DiagnosticWriter::Write(
+      cbor::Reader::Read(
+          base::as_byte_span(plaintext_data.substr(5, request_size)))
+          .value());
+  EXPECT_THAT(got_str,
+              testing::EndsWith(R"(, "enableSampledDebugReporting": true})"));
+}
+
 TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

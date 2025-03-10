@@ -12,6 +12,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings:ios_strings_grit",

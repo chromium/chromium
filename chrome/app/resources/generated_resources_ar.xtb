@@ -3062,7 +3062,7 @@
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="310979712355504754">حذف الكل</translation>
 <translation id="3112292765614504292">حجم التطبيق: <ph name="APP_SIZE" /></translation>
-<translation id="311347022006935575">تمت إضافة علامة التبويب هذه</translation>
+<translation id="311347022006935575">أضفتُ علامة التبويب هذه</translation>
 <translation id="311394601889664316">عدم السماح للمواقع الإلكترونية بتعديل الملفات أو المجلدات على جهازك</translation>
 <translation id="3113970906450647715">تمّت إزالة تثبيت الزر</translation>
 <translation id="3115147772012638511">في انتظار ذاكرة التخزين المؤقت ...</translation>
@@ -6966,7 +6966,6 @@
 <translation id="5911533659001334206">عارض الاختصارات</translation>
 <translation id="5911545422157959623">الإشارات المرجعية غير متاحة في وضع الضيف.</translation>
 <translation id="5914016309240354769">طبيعة</translation>
-<translation id="5914465277418006379">تمت إضافة علامة التبويب هذه من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="5914724413750400082">المعامل (<ph name="MODULUS_NUM_BITS" /> بت):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -8257,6 +8256,7 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6832218595502288407">محاذاة إلى اليسار</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{هل تريد إزالة علامة التبويب وحذف المجموعة؟}=1{هل تريد إزالة علامة التبويب وحذف المجموعة؟}two{هل تريد إزالة علامتَي التبويب وحذف المجموعتين؟}few{هل تريد إزالة علامات التبويب وحذف المجموعات؟}many{هل تريد إزالة علامات التبويب وحذف المجموعات؟}other{هل تريد إزالة علامات التبويب وحذف المجموعات؟}}</translation>
+<translation id="6833103209700200188">تذييل</translation>
 <translation id="6833479554815567477">تمت إزالة علامة التبويب من المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6833753236242482566">متوازن (خيار مُقترَح)</translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
@@ -11611,7 +11611,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{تطبيق واحد}zero{# تطبيق}two{تطبيقان}few{# تطبيقات}many{# تطبيقًا}other{# تطبيق}}</translation>
 <translation id="9186963452600581158">‏تسجيل الدخول باستخدام حساب طفل على Google</translation>
 <translation id="9187967020623675250">مفاتيح التحكّم غير متطابقة. يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
-<translation id="9189468832660648522">تم تغيير علامة التبويب هذه من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="9192019773545828776">‏يمكنك سماع وصف شفهي للشاشة حتى تتمكّن من استخدام جهازك بدون النظر إلى الشاشة. يتوفّر الوصف الشفهي بلغة برايل عند توصيل جهاز متوافق. اضغط على Ctrl ‏+ Alt ‏+ Z لتفعيل قارئ الشاشة ChromeVox أو إيقافه. واضغط على مفتاح البحث + السهم المتّجه لليسار أو السهم المتّجه لليمين للتنقّل. اضغط على مفتاح البحث + مفتاح المسافة للاختيار (التفعيل).</translation>
 <translation id="9195969368671142407">‏عندما تفرض مؤسستك قيودًا على حفظ المعلومات في حسابك على Google، لن تتمكّن من مشاركة مجموعات علامات التبويب أو الانضمام إليها</translation>
 <translation id="919686179725692564">مزيد من المعلومات عن الاحتفاظ بنسخة احتياطية من بيانات تطبيقاتك</translation>

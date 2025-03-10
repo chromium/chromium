@@ -1958,9 +1958,9 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         render_frame_host, req_state_->relying_party_id,
         options->all_accepted_credentials->user_id,
         options->all_accepted_credentials->all_accepted_credentials_ids);
-    GetWebAuthenticationDelegate()->DeleteUnacceptedPasskeys(
+    GetWebAuthenticationDelegate()->SignalAllAcceptedCredentials(
         WebContents::FromRenderFrameHost(render_frame_host),
-        req_state_->relying_party_id,
+        req_state_->caller_origin, req_state_->relying_party_id,
         options->all_accepted_credentials->user_id,
         options->all_accepted_credentials->all_accepted_credentials_ids);
 #if BUILDFLAG(IS_WIN)

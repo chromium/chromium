@@ -2277,12 +2277,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
   SetUpSampleParagraph(&paragraph_text, ui::AXMode::kNativeAPIs |
                                             ui::AXMode::kWebContents |
-                                            ui::AXMode::kScreenReader);
+                                            ui::AXMode::kExtendedProperties);
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(),
       ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-          ui::AXMode::kScreenReader | ui::AXMode::kInlineTextBoxes,
+          ui::AXMode::kExtendedProperties | ui::AXMode::kInlineTextBoxes,
       ax::mojom::Event::kLoadComplete);
 
   // Calling `get_characterExtents` will enable `ui::AXMode::kInlineTextBoxes`
@@ -6218,7 +6218,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
 
   // Web content accessibility support should now be enabled.
   expected_mode |= ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-                   ui::AXMode::kScreenReader;
+                   ui::AXMode::kExtendedProperties;
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -6244,7 +6244,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
         UIA_LabeledByPropertyId, variant.Receive()));
   }
   // Now check that we have complete accessibility support enabled.
-  expected_mode |= ui::AXMode::kScreenReader;
+  expected_mode |= ui::AXMode::kExtendedProperties;
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
 

@@ -240,23 +240,14 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
         boolean isNewStateForced = isStateForced(constraints);
         if (!mOffsetTagsInfo.hasTags() && !isNewStateForced) {
-            OffsetTag topControlsOffsetTag = null;
             OffsetTag bottomControlsOffsetTag = null;
-
-            if (ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
-                // Create 2 tags so the top controls can move separately from other views so that
-                // renderer+viz can correctly control the visibility of the toolbar hairline without
-                // additional browser frames.
-                topControlsOffsetTag = OffsetTag.createRandom();
-            }
-
             if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
                 bottomControlsOffsetTag = OffsetTag.createRandom();
             }
 
             updateOffsetTags(
                     new BrowserControlsOffsetTagsInfo(
-                            topControlsOffsetTag,
+                            OffsetTag.createRandom(),
                             OffsetTag.createRandom(),
                             bottomControlsOffsetTag),
                     constraints);

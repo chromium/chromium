@@ -118,17 +118,14 @@ class CONTENT_EXPORT PrefetchService {
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
 
-  // Add `PrefetchContainer` under control of `PrefetchService`.
+  // Adds `PrefetchContainer` under control of `PrefetchService` and returns
+  // PrefetchHandle so that the caller can control prefetch resources associated
+  // with this.
   //
-  // `AddPrefetchContainer()` synchronously destruct `prefetch_container` if the
-  // key conflicted to the one already added with migration of some attributes.
-  // See also `MigrateNewlyaAdded()`.
-  //
-  // `AddPrefetchContainerWithHandle()` additionally returns PrefetchHandle so
-  // that the caller can control prefetch resources associated with this.
-  void AddPrefetchContainer(
-      std::unique_ptr<PrefetchContainer> prefetch_container);
-  std::unique_ptr<PrefetchHandle> AddPrefetchContainerWithHandle(
+  // `AddPrefetchContainer*()` synchronously destruct `prefetch_container` if
+  // the key conflicted to the one already added with migration of some
+  // attributes. See also `MigrateNewlyaAdded()`.
+  [[nodiscard]] std::unique_ptr<PrefetchHandle> AddPrefetchContainerWithHandle(
       std::unique_ptr<PrefetchContainer> prefetch_container);
   void AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container);
@@ -302,7 +299,7 @@ class CONTENT_EXPORT PrefetchService {
       PreloadingEligibility eligibility);
 
   // Adds `prefetch_container` to the cache but doesn't initiate prefetching.
-  // Use `AddPrefetchContainer()` for non-test cases.
+  // Use `AddPrefetchContainerWithHandle()` for non-test cases.
   void AddPrefetchContainerWithoutStartingPrefetch(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 

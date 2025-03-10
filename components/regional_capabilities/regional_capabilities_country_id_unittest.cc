@@ -27,8 +27,9 @@ TEST(RegionalCapabilitiesCountryIdTest, GetRestricted) {
 
   CountryIdHolder country_id_holder(country_id);
 
-  CountryId actual_country_id = country_id_holder.GetRestricted(
-      CountryAccessReason::kTemplateURLPrepopulateDataResolution);
+  CountryId actual_country_id =
+      country_id_holder.GetRestricted(CountryAccessKey(
+          CountryAccessReason::kTemplateURLPrepopulateDataResolution));
 
   EXPECT_EQ(actual_country_id, country_id);
 }

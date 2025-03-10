@@ -6959,7 +6959,6 @@
 <translation id="5911533659001334206">ഷോട്ട്കട്ട് വ്യൂവർ</translation>
 <translation id="5911545422157959623">അതിഥി മോഡിൽ ബുക്ക്‌മാർക്കുകൾ ലഭ്യമല്ല</translation>
 <translation id="5914016309240354769">പ്രകൃതി</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />, ഈ ടാബ് ചേർത്തു</translation>
 <translation id="5914724413750400082">മൊഡ്യൂലസ് (<ph name="MODULUS_NUM_BITS" /> ബിറ്റുകൾ):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -8242,6 +8241,7 @@
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6832218595502288407">ഇടതുഭാഗത്ത് അലൈൻ ചെയ്യുക</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?}=1{ടാബുകൾ നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?}other{ടാബുകൾ നീക്കം ചെയ്ത് ഗ്രൂപ്പുകൾ ഇല്ലാതാക്കണോ?}}</translation>
+<translation id="6833103209700200188">അടിക്കുറിപ്പ്</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്തു - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">ബാലൻസ്‌ഡ് (നിർദ്ദേശിക്കുന്നത്)</translation>
 <translation id="6835762382653651563">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുക.</translation>
@@ -11589,7 +11589,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="9186963452600581158">കുട്ടിയുടെ Google Account ഉപയോഗിച്ച് സെെൻ ഇൻ ചെയ്യുക</translation>
 <translation id="9187967020623675250">കീകൾ പൊരുത്തപ്പെടുന്നില്ല. <ph name="RESPONSE" /> ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />, ഈ ടാബ് മാറ്റി</translation>
 <translation id="9192019773545828776">സംഭാഷണ ഫീഡ്‌ബാക്ക് കേൾക്കുക, അതുവഴി നിങ്ങൾക്ക് സ്‌ക്രീനിൽ നോക്കാതെ ഉപകരണം ഉപയോഗിക്കാം. കണക്‌റ്റ് ചെയ്‌ത ഉപകരണത്തിൽ ബ്രെയ്‌ലി ഫീഡ്ബാക്ക് ലഭ്യമാണ്. ChromeVox ഓണാക്കാനും ഓഫാക്കാനും Ctrl + Alt + Z ഉപയോഗിക്കുക. നാവിഗേറ്റ് ചെയ്യാൻ, Search + ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അല്ലെങ്കിൽ വലത്തേയ്ക്കുള്ള അമ്പടയാളം ഉപയോഗിക്കുക. തിരഞ്ഞെടുക്കാൻ Search + Space ഉപയോഗിക്കുക (സജീവമാക്കുക).</translation>
 <translation id="9195969368671142407">നിങ്ങളുടെ Google Account-ലേക്ക് സംരക്ഷിക്കുന്നത് നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തുമ്പോൾ, നിങ്ങൾക്ക് ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ കഴിയില്ല</translation>
 <translation id="919686179725692564">നിങ്ങളുടെ ആപ്പുകൾ ബാക്കപ്പ് ചെയ്യുന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>

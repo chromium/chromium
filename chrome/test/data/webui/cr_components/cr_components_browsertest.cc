@@ -112,7 +112,13 @@ class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, All) {
+// TODO(crbug.com/390550686): Test is flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_All DISABLED_All
+#else
+#define MAYBE_All All
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, MAYBE_All) {
   RunTest("cr_components/history_clusters/history_clusters_test.js",
           "runMochaSuite('HistoryClustersTest')");
 }

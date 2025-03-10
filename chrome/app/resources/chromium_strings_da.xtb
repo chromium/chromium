@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">Din organisation lukker Chromium, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />. Browserdataene blev slettet. Disse data kan omfatte historik, Autofyld og downloads.</translation>
 <translation id="6542839706527980775">Hver profil har sine egne Chromium-oplysninger som f.eks. bogmærker, historik, adgangskoder m.m.</translation>
 <translation id="6563921047760808519">Se, <ph name="BEGIN_LINK" />hvordan Chromium beskytter dine data<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Ændringerne af denne indstilling anvendes, når Chromium genstartes.</translation>
 <translation id="656935081669708576">Du kan skifte for at se adgangskoder fra en anden Chromium-profil</translation>
 <translation id="6570579332384693436">Chromium sender den tekst, du skriver i tekstfelter, til Google for at rette stavefejl</translation>
 <translation id="6598877126913850652">Gå til indstillinger for Chromium-notifikationer</translation>

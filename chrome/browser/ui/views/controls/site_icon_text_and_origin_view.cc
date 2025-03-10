@@ -101,7 +101,7 @@ SiteIconTextAndOriginView::SiteIconTextAndOriginView(
   AddChildView(views::Builder<views::View>().Build());
 
   // TODO(dibyapal): Modify to support full urls for Create Shortcut dialog.
-  AddChildView(
+  AddChildViewRaw(
       web_app::CreateOriginLabelFromStartUrl(url, /*is_primary_text=*/false)
           .release());
   title_field_->SelectAll(true);

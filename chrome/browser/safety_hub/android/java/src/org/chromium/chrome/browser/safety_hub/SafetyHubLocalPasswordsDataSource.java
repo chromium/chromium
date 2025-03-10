@@ -146,7 +146,6 @@ public class SafetyHubLocalPasswordsDataSource
         return mCompromisedPasswordCount;
     }
 
-    // TODO(crbug.com/401045867): Add a timeout for the loading state.
     private boolean canUpdateState() {
         return mSavedPasswordsAvailable && mLocalPasswordCountsAvailable;
     }

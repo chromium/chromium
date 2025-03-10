@@ -110,11 +110,13 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
 
   // Asynchronously fetches data from the SDK.
   void FetchGroupsFromSDK(const std::vector<GroupId>& added_or_updated_groups);
-  void OnGroupsFetchedFromSDK(
+  void OnBatchOfGroupsFetchedFromSDK(
       const std::map<GroupId, VersionToken>& requested_groups_and_versions,
       const base::Time& requested_at_timestamp,
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           read_groups_result);
+  void FetchBatchOfGroupsFromSDK(const std::vector<GroupId>& batch);
+  void HandleBatchCompletion();
 
   void NotifyObserversAboutChangedMembers(const GroupData& old_group_data,
                                           const GroupData& new_group_data);
@@ -132,6 +134,9 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // consecutive fetches (see crrev.com/c/5965993).
   bool has_ongoing_group_fetch_ = false;
   bool has_pending_changes_ = false;
+
+  // Keeps track of the number of ReadGroups requests are currently in-flight.
+  int outstanding_batches_ = 0;
 
   std::vector<GroupEvent> group_events_since_startup_;
 

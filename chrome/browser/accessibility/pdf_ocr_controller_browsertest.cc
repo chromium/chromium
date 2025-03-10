@@ -115,7 +115,7 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
       scoped_accessibility_override_.reset();
     } else if (!scoped_accessibility_override_) {
       scoped_accessibility_override_.emplace(ui::AXMode::kWebContents |
-                                             ui::AXMode::kScreenReader);
+                                             ui::AXMode::kExtendedProperties);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/interest_group/ad_auction_headers_util.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"

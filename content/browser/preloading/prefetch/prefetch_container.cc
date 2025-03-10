@@ -441,6 +441,7 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override)
     : PrefetchContainer(
@@ -456,8 +457,7 @@ PrefetchContainer::PrefetchContainer(
           /*prefetch_document_manager=*/nullptr,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           ukm::kInvalidSourceId,
-          PreloadPipelineInfo::Create(
-              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+          std::move(preload_pipeline_info),
           std::move(attempt),
           holdback_status_override,
           /*initiator_devtools_navigation_token=*/std::nullopt,
@@ -1068,8 +1068,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 
 bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
   return referring_origin_.has_value() &&
-         net::SchemefulSite(referring_origin_.value()) !=
-             net::SchemefulSite(origin);
+         !net::SchemefulSite::IsSameSite(referring_origin_.value(), origin);
 }
 
 bool PrefetchContainer::IsCrossOriginRequest(const url::Origin& origin) const {
@@ -1868,11 +1867,12 @@ void PrefetchContainer::MakeResourceRequest(
           return net::RequestPriority::IDLE;
       }
     } else {
-      // TODO(crbug.com/40946257): Revisit and update after each embedder
-      // trigger is introduced, as the appropriate value may differ based on its
-      // property and triggering condition. For now, it is set to IDLE as a safe
-      // default value.
-      return net::RequestPriority::IDLE;
+      if (base::FeatureList::IsEnabled(
+              features::kPrefetchNetworkPriorityForEmbedders)) {
+        return net::RequestPriority::MEDIUM;
+      } else {
+        return net::RequestPriority::IDLE;
+      }
     }
   }();
 

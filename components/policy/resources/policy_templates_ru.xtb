@@ -7160,27 +7160,6 @@ https://drafts.csswg.org/css-viewport/#zoom-property
 
           Это правило не влияет на работу виртуальной сенсорной клавиатуры. Например, даже если для этого правила установлено значение False, виртуальная сенсорная клавиатура будет по-прежнему показываться на планшете.</translation>
 <translation id="6254498834449523938">Запретить игнорировать предупреждения от сервиса "Безопасный просмотр"</translation>
-<translation id="6255650184729209673">Это бета-версия функции, которая находится в процессе разработки и тестирования. Ее работа может измениться.
-
-Это правило позволяет администраторам настроить корпоративный поисковый агрегатор, который активируется определенным ключевым словом и показывает подсказки и результаты поиска в адресной строке. Чтобы начать поиск, нужно ввести в адресной строке слово, указанное в поле <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, с префиксом "@" или без него (например, "<ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />"), а затем нажать Пробел или Tab.
-
-Следующие поля обязательны: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> и <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-В поле <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указывается название поисковой системы, которое пользователь видит в адресной строке.
-
-В поле <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> добавляется ключевое слово, которое нужно ввести, чтобы активировать поиск. В качестве ключевого слова можно использовать обычные слова и символы. Оно не должно начинаться с "@" или содержать пробелы. Все ключевые слова должны быть уникальными.
-
-В поле <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указывается URL поисковой системы. Введите в нем веб-адрес страницы с результатами поиска, а вместо запроса подставьте <ph name="SEARCH_TERM_MARKER" />.
-
-В поле <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> добавляется URL поставщика подсказок при поиске. Если в поле <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> содержится строка <ph name="SEARCH_TERM_MARKER" />, Chrome получает подсказки через GET-запрос к URL, подставляя вместо <ph name="SEARCH_TERM_MARKER" /> поисковый запрос пользователя. В остальных случаях отправляется запрос POST и поисковый запрос пользователя передается в параметрах запроса POST в ключе <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-В поле <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указывается URL изображения, которое используется в подсказках при поиске. Если значение в поле не задано, показывается значок по умолчанию. Рекомендуем использовать значок сайта (например, <ph name="ICON_URL_EXAMPLE" />).
-
-В поле <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указывается, нужно ли в адресной строке ключевое слово "<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />", чтобы видеть подсказки. Если значение не задано, то слово "<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />" не требуется.
-
-В <ph name="MS_WIN_NAME" /> это правило можно настроить только на устройствах, которые входят в домен <ph name="MS_AD_NAME" />, добавлены в <ph name="MS_AAD_NAME" /> или зарегистрированы в <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-В <ph name="MAC_OS_NAME" /> правило доступно только на устройствах, которые контролируются с помощью ПО для управления мобильными устройствами, добавлены в домен через MCX или зарегистрированы в <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="625580680776945310">Режим высокой эффективности будет включен</translation>
 <translation id="6258314216623064461">Настройки генератора текстов</translation>
 <translation id="6258502079038650092">Правило определяет, можно ли пользоваться Chrome для тестирования.

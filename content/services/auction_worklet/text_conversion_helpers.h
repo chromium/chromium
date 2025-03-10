@@ -22,9 +22,6 @@ class CONTENT_EXPORT TextConversionHelpers : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  void ReInitialize(v8::Local<v8::Context> context,
-                    v8::Local<v8::Object> object);
-
  private:
   static void EncodeUtf8(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void DecodeUtf8(const v8::FunctionCallbackInfo<v8::Value>& args);

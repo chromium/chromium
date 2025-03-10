@@ -69,18 +69,20 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
     return g_forced_profile_for_launch_;
   }
 
-  // If there is an active glic window open, use that profile
-  if (active_glic_) {
-    return active_glic_->profile();
+  // If the glic window is currently showing detached use that profile.
+  if (last_active_glic_ && last_active_glic_->IsWindowDetached()) {
+    return last_active_glic_->profile();
   }
 
-  // Look for a profile to use for glic based on order of activation
+  // Look for a profile to based on most recently used browser windows
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (GlicEnabling::IsEnabledAndConsentForProfile(browser->profile())) {
       return browser->profile();
     }
   }
 
+  // TODO(https://crbug.com/379165457) Remove loaded profile look up once the
+  // pinned profile is implemented.
   // Look at the list of loaded profiles to use for glic
   if (g_browser_process->profile_manager()) {
     for (Profile* profile :
@@ -96,10 +98,10 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
 }
 
 void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
-  if (active_glic_ && active_glic_.get() != glic) {
-    active_glic_->ClosePanel();
+  if (last_active_glic_ && last_active_glic_.get() != glic) {
+    last_active_glic_->ClosePanel();
   }
-  active_glic_ = glic->GetWeakPtr();
+  last_active_glic_ = glic->GetWeakPtr();
 }
 
 bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
@@ -146,8 +148,8 @@ void GlicProfileManager::ShowProfilePicker() {
   base::OnceCallback<void(Profile*)> callback = base::BindOnce(
       &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   // If the panel is not closed it will be on top of the profile picker.
-  if (active_glic_) {
-    active_glic_->ClosePanel();
+  if (last_active_glic_) {
+    last_active_glic_->ClosePanel();
   }
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));

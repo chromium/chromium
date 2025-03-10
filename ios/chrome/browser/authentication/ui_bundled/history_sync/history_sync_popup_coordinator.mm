@@ -111,13 +111,9 @@
 
 #pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   [_navigationController dismissViewControllerAnimated:animated completion:nil];
   [self viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
-  if (completion) {
-    completion();
-  }
 }
 
 #pragma mark - Private

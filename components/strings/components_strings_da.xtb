@@ -138,6 +138,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatisk registreret)</translation>
 <translation id="1232569758102978740">Unavngivet</translation>
 <translation id="1236081509407217141">Vil du tillade VR?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Navnet på din enhed</translation>
 <translation id="124116460088058876">Flere sprog</translation>
 <translation id="1243027604378859286">Forfatter:</translation>
@@ -628,6 +629,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Tillad ved hvert besøg</translation>
 <translation id="2085876078937250610">Gem…</translation>
+<translation id="2090451897496479509">Kontakt udbyderen for at få flere oplysninger</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2093982008204312032">Google Chrome forsøger at deaktivere udfyldning af adgangskoder via Windows Hello.</translation>
 <translation id="2094505752054353250">Uoverensstemmelse mellem domæner</translation>
@@ -1310,6 +1312,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="33073482541490531">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. Adgangs­kode­admin­istrator anbefaler, at du ændrer denne adgangskode nu.</translation>
 <translation id="3307649904964670439">Knappen Tilpas Chrome, aktivér for at tilpasse din browsers udseende</translation>
 <translation id="3308006649705061278">Organisationsenhed (OU)</translation>
+<translation id="3317077846337994567">Afbetaling er ikke tilgængelig lige nu. Prøv igen senere.</translation>
 <translation id="3318016344440038475">Tv-komedier</translation>
 <translation id="3324687287337751929">4 x 6 tommer</translation>
 <translation id="3324983252691184275">Højrød</translation>
@@ -1438,6 +1441,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3536227077203206203">Der er givet adgang denne gang</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Skærm (side)</translation>
+<translation id="3541016556608204104">Flere oplysninger om Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Kortbillede</translation>
 <translation id="3542768452570884558">Åbn link i nyt vindue</translation>
 <translation id="3543935938072367282">Betal hurtigere med autofyld</translation>
@@ -1802,6 +1806,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="415440494507469262">Føj fane til sammenligningstabel</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4165422751765527461">Åbner en artikel i Hjælp på en ny fane</translation>
+<translation id="4165584779486830267">Nu kan du betale på afbetaling med Affirm eller Zip.</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4171400957073367226">Ugyldig verifikationssignatur</translation>
@@ -2766,6 +2771,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5910140988253729859">Fortryd autofyld</translation>
 <translation id="5911020115933784199">Arrangementer, aktiviteter og oversigter</translation>
 <translation id="5911110632211230665">Åbning er ikke tilladt</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> har tilføjet denne fane</translation>
 <translation id="5915189366813702112">Fleksibelt arbejde</translation>
 <translation id="59174027418879706">Aktiveret</translation>
 <translation id="5918373444239520146">Gadgets og bærbare elektroniske enheder</translation>
@@ -4627,6 +4633,7 @@ Yderligere oplysninger:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> anvender en ikke-understøttet protokol.</translation>
 <translation id="918454845714257218">Tjek koden på <ph name="SIDE_OF_CARD" />, og prøv igen</translation>
 <translation id="9186203289258525843">Knappen Angiv Chrome som standardbrowser, aktivér for at angive Chrome som systemets standardbrowser</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> har ændret denne fane</translation>
 <translation id="9189789270972826888">Klik på kortoplysningerne nedenfor for at kopiere og indsætte, hvis kortet ikke blev udfyldt. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Emner, der er mere end 4 uger gamle, slettes automatisk</translation>
 <translation id="9191834167571392248">Hul nederst til venstre</translation>

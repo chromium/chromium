@@ -73,9 +73,9 @@ speedometer3-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,ht
 speedometer3-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
 speedometer3-predictable,"rasikan@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
-system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
+system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2025,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
 system_health.common_mobile,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
-system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
+system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2025,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
 system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org",Mobile>WebView>Perf,,2016
 tint_benchmark,"jrprice@google.com, dsinclair@chromium.org",Dawn>Tint,https://dawn.googlesource.com/dawn/+/HEAD/docs/tint/benchmark.md,

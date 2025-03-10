@@ -18,7 +18,9 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -377,11 +379,11 @@ void TabsEventRouter::OnFaviconUpdated(
   }
 }
 
-void TabsEventRouter::OnTabLifecycleStateChange(
-    content::WebContents* contents,
+void TabsEventRouter::OnLifecycleUnitStateChanged(
+    resource_coordinator::LifecycleUnit* lifecycle_unit,
     ::mojom::LifecycleUnitState previous_state,
-    ::mojom::LifecycleUnitState new_state,
-    std::optional<LifecycleUnitDiscardReason> discard_reason) {
+    ::mojom::LifecycleUnitStateChangeReason reason) {
+  const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   auto previous_or_new_state_is = [&](::mojom::LifecycleUnitState state) {
     return previous_state == state || new_state == state;
   };
@@ -403,7 +405,9 @@ void TabsEventRouter::OnTabLifecycleStateChange(
   }
 
   if (!changed_property_names.empty()) {
-    DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+    DispatchTabUpdatedEvent(
+        lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
+        std::move(changed_property_names));
   }
 }
 

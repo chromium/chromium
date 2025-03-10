@@ -397,6 +397,7 @@
 <translation id="6539122709674868420"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chromium kuruluşunuz tarafından kapatılır. Tarama verileri silindi. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.</translation>
 <translation id="6542839706527980775">Her profil; yer işaretleri, geçmiş, şifreler ve benzeri gibi kendi Chromium bilgilerini içerir</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilgi edinin</translation>
+<translation id="6564039629497156115">Bu ayarda yapılan değişiklikler, Chromium yeniden başlatıldığında uygulanır.</translation>
 <translation id="656935081669708576">Başka bir Chromium profilindeki şifreleri görmek için profil değiştirebilirsiniz</translation>
 <translation id="6570579332384693436">Yazım hatalarını düzeltmek için Chromium, metin alanlarına yazdığınız metinleri Google'a gönderir</translation>
 <translation id="6598877126913850652">Chromium bildirim ayarlarına git</translation>

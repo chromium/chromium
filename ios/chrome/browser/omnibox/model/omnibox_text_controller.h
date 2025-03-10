@@ -5,4 +5,32 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_
 
+#import <UIKit/UIKit.h>
+
+@class OmniboxAutocompleteController;
+class OmniboxController;
+@protocol OmniboxTextControllerDelegate;
+class OmniboxViewIOS;
+
+/// Controller of the omnibox text.
+@interface OmniboxTextController : NSObject
+
+/// Delegate of the omnibox text controller.
+@property(nonatomic, weak) id<OmniboxTextControllerDelegate> delegate;
+
+/// Controller of autocomplete.
+@property(nonatomic, weak)
+    OmniboxAutocompleteController* omniboxAutocompleteController;
+
+/// Temporary initializer, used during the refactoring. crbug.com/390409559
+- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
+                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+/// Removes all C++ references.
+- (void)disconnect;
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_

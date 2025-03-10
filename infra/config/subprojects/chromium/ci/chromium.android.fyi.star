@@ -570,7 +570,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_11_emulator_gtests",
+            "android_11_emulator_fyi_gtests",
         ],
         mixins = [
             "11-x86-emulator",

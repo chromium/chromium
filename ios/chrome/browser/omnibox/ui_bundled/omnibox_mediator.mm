@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_consumer.h"
@@ -142,6 +143,10 @@ using base::UserMetricsAction;
   self.currentDefaultSearchEngineFavicon = nil;
   [self updateConsumerEmptyTextImage];
 }
+
+#pragma mark - OmniboxMutator
+
+#pragma mark - OmniboxTextControllerDelegate
 
 #pragma mark - PopupMatchPreviewDelegate
 

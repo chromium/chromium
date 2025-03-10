@@ -4,47 +4,52 @@
 
 package org.chromium.components.data_sharing.configs;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Holds runtime information needed for updating flows after they started.
  *
  * <p>Only one type of data can be set at once.
  */
+@NullMarked
 public class DataSharingRuntimeDataConfig {
-    private final String mSessionId;
-    private final DataSharingPreviewDataConfig mDataSharingPreviewDataConfig;
-    private final DataSharingPreviewDetailsConfig mDataSharingPreviewDetailsConfig;
+    private final @Nullable String mSessionId;
+    private final @Nullable DataSharingPreviewDataConfig mDataSharingPreviewDataConfig;
+    private final @Nullable DataSharingPreviewDetailsConfig mDataSharingPreviewDetailsConfig;
 
     public DataSharingRuntimeDataConfig(
-            String sessionId, DataSharingPreviewDataConfig dataSharingPreviewDataConfig) {
+            @Nullable String sessionId, DataSharingPreviewDataConfig dataSharingPreviewDataConfig) {
         this.mSessionId = sessionId;
         this.mDataSharingPreviewDataConfig = dataSharingPreviewDataConfig;
         this.mDataSharingPreviewDetailsConfig = null;
     }
 
     public DataSharingRuntimeDataConfig(
-            String sessionId, DataSharingPreviewDetailsConfig dataSharingPreviewDetailsConfig) {
+            @Nullable String sessionId,
+            DataSharingPreviewDetailsConfig dataSharingPreviewDetailsConfig) {
         this.mSessionId = sessionId;
         this.mDataSharingPreviewDataConfig = null;
         this.mDataSharingPreviewDetailsConfig = dataSharingPreviewDetailsConfig;
     }
 
-    public String getSessionId() {
+    public @Nullable String getSessionId() {
         return mSessionId;
     }
 
-    public DataSharingPreviewDataConfig getDataSharingPreviewDataConfig() {
+    public @Nullable DataSharingPreviewDataConfig getDataSharingPreviewDataConfig() {
         return mDataSharingPreviewDataConfig;
     }
 
-    public DataSharingPreviewDetailsConfig getDataSharingPreviewDetailsConfig() {
+    public @Nullable DataSharingPreviewDetailsConfig getDataSharingPreviewDetailsConfig() {
         return mDataSharingPreviewDetailsConfig;
     }
 
     // Builder class
     public static class Builder {
-        private String mSessionId;
-        private DataSharingPreviewDataConfig mDataSharingPreviewDataConfig;
-        private DataSharingPreviewDetailsConfig mDataSharingPreviewDetailsConfig;
+        private @Nullable String mSessionId;
+        private @Nullable DataSharingPreviewDataConfig mDataSharingPreviewDataConfig;
+        private @Nullable DataSharingPreviewDetailsConfig mDataSharingPreviewDetailsConfig;
         private boolean mRuntimeDataSet;
 
         /** Session ID to set the preview to, given when showXFlow API is called */
@@ -71,7 +76,7 @@ public class DataSharingRuntimeDataConfig {
             return this;
         }
 
-        public DataSharingRuntimeDataConfig build() {
+        public @Nullable DataSharingRuntimeDataConfig build() {
             if (mDataSharingPreviewDataConfig != null) {
                 return new DataSharingRuntimeDataConfig(mSessionId, mDataSharingPreviewDataConfig);
             } else if (mDataSharingPreviewDetailsConfig != null) {

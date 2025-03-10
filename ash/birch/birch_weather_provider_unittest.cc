@@ -526,12 +526,9 @@ TEST_F(BirchWeatherProviderTest, WeatherManagedUser) {
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
 
   // Add and switch to a managed user account.
-  const AccountId& account_id = AccountId::FromUserEmail("primary@test");
-  TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession({.display_email = "primary@test",
-                           .is_new_profile = true,
-                           .is_account_managed = true});
-  session->SwitchActiveUser(account_id);
+  SimulateUserLogin({.display_email = "primary@test",
+                     .is_new_profile = true,
+                     .is_account_managed = true});
 
   // Weather should not be fetched when the active account is managed.
   provider.RequestBirchDataFetch();

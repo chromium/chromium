@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Du kan åpne Lens her.</translation>
 <translation id="1042296835509784301">Åpner Passordlagring i Chromium.</translation>
 <translation id="1047130070405668746">Velg Chromium</translation>
+<translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1091252999271033193">Dette betyr at Chromium kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="1115463765356382667">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chromium.</translation>
 <translation id="1140315115515116765">Bruk Chromium som standard for å få prisstatistikk enkelt</translation>
@@ -98,6 +99,7 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt. Dette kan omfatte loggen og autofyll.}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter. Dette kan omfatte loggen og autofyll.}}</translation>
 <translation id="3410395242749598859">Noen av Chromium-dataene dine er ikke lagret i <ph name="EMAIL" /> ennå.
 Prøv å vente i noen minutter før du bytter konto. Hvis du bytter konto nå, blir disse dataene slettet.</translation>
+<translation id="3440830787838130530">Del kopier av passordene dine med familiegruppen din på en enkel og sikker måte i Google Passordlagring</translation>
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
 <translation id="347967311580159871">For å se flere innstillinger som bruker data for å forbedre Chromium-opplevelsen, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Passordet ble ikke delt. Sjekk internettilkoblingen din, og kontroller at du er logget på Chromium. Prøv deretter på nytt.</translation>
