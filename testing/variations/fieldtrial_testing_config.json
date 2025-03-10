@@ -10624,6 +10624,14 @@
             "experiments": [
                 {
                     "name": "GlicEnabled",
+                    "params": {
+                        "BackoffMultiplierBase": "2.0",
+                        "MinPageCountBetweenNudges": "3",
+                        "NudgeCapCount": "10",
+                        "NudgeCapCountPerDomain": "3",
+                        "NudgeCapTime": "8h",
+                        "NudgeCapTimePerDomain": "8h"
+                    },
                     "enable_features": [
                         "ContextualCueing",
                         "Glic"
