@@ -582,6 +582,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info,
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           /*profile_creation_required_by_policy=*/false,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/
@@ -596,6 +597,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info,
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           /*profile_creation_required_by_policy=*/true,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/

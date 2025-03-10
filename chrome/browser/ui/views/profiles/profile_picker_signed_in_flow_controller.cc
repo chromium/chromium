@@ -238,6 +238,7 @@ void ProfilePickerSignedInFlowController::
               ->FindExtendedAccountInfoByEmailAddress(email_),
           /*is_oidc_account=*/type ==
               ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC,
+          /*turn_sync_on_signed_profile=*/false,
           /*profile_creation_required_by_policy=*/false,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/

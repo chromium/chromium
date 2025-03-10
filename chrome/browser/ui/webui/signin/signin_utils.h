@@ -78,6 +78,7 @@ struct EnterpriseProfileCreationDialogParams {
   EnterpriseProfileCreationDialogParams(
       AccountInfo account_info,
       bool is_oidc_account,
+      bool turn_sync_on_signed_profile,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
       SigninChoiceCallbackVariant process_user_choice_callback,
@@ -91,6 +92,11 @@ struct EnterpriseProfileCreationDialogParams {
 
   AccountInfo account_info;
   bool is_oidc_account;
+  bool turn_sync_on_signed_profile;
+  // True if the user was already signed in before
+  // starting the sync flow. Used by UIs to decide whether the signin
+  // proposition value should be shown, and what state should the user be in if
+  // they cancel.
   bool profile_creation_required_by_policy;
   bool show_link_data_option;
   SigninChoiceCallbackVariant process_user_choice_callback;

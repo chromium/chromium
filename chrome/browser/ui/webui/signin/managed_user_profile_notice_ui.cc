@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_statistics.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -30,8 +31,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -250,8 +253,16 @@ void ManagedUserProfileNoticeUI::Initialize(
 
     update_data.Set("showLinkDataCheckbox",
                     create_param->show_link_data_option);
-    update_data.Set("initialState",
-                    ManagedUserProfileNoticeHandler::State::kValueProposition);
+    // If the user is already signed in and is trying to turn sync on, we can
+    // skip the value proposition screen since they are already signed in.
+    if (create_param->turn_sync_on_signed_profile) {
+      update_data.Set("initialState",
+                      ManagedUserProfileNoticeHandler::State::kDisclosure);
+    } else {
+      update_data.Set(
+          "initialState",
+          ManagedUserProfileNoticeHandler::State::kValueProposition);
+    }
     update_data.Set("enforcedByPolicy",
                     create_param->profile_creation_required_by_policy);
   } else if (type == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
@@ -290,6 +301,40 @@ void ManagedUserProfileNoticeUI::Initialize(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE));
+  } else if (create_param->turn_sync_on_signed_profile) {
+    update_data.Set(
+        "separateBrowsingDataTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_TITLE));
+    update_data.Set(
+        "profileDisclosureTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_TITLE));
+    update_data.Set(
+        "profileDisclosureSubtitle",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_SUBTITLE,
+            base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(
+                create_param->account_info.email))));
+    update_data.Set(
+        "mergeBrowsingDataChoiceTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_TURN_SYNC_ON_CHOICE));
+    update_data.Set(
+        "separateBrowsingDataChoiceTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_CHOICE));
+    update_data.Set(
+        "separateBrowsingDataChoiceDetails",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_TURN_SYNC_ON_DETAILS,
+            base::UTF8ToUTF16(create_param->account_info.email)));
+    // Canceling when profile separation is enabled forces the user to signout.
+    if (create_param->profile_creation_required_by_policy) {
+      update_data.Set(
+          "cancelLabel",
+          l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON));
+    }
   } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",
                     l10n_util::GetStringUTF16(

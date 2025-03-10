@@ -403,6 +403,10 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                               existing_account_promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
+  bool turn_sync_on_signed_profile =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
+      account.account_id;
+
   // The Turn On Sync flow might fail before setting an account as primary. If
   // enabling Sync is optional, do not rely on its result to sign the web-only
   // account in the profile.
@@ -414,7 +418,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 
   GetSigninUiDelegate()->ShowTurnSyncOnUI(
       profile, access_point, existing_account_promo_action, account.account_id,
-      signin_aborted_mode, is_sync_promo);
+      signin_aborted_mode, is_sync_promo, turn_sync_on_signed_profile);
 #else
   DUMP_WILL_BE_NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -135,6 +135,7 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
                signin_metrics::PromoAction,
                const CoreAccountId&,
                TurnSyncOnHelper::SigninAbortedMode,
+               bool,
                bool),
               (override));
 
@@ -792,7 +793,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
                   signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                   account_info_.account_id,
                   TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                  /*is_sync_promo=*/true));
+                  /*is_sync_promo=*/true,
+                  /*is_sync_promo=*/false));
   ClickSigninButton();
 }
 

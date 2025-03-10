@@ -111,6 +111,7 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
                signin_metrics::PromoAction,
                const CoreAccountId&,
                TurnSyncOnHelper::SigninAbortedMode,
+               bool,
                bool),
               (override));
 

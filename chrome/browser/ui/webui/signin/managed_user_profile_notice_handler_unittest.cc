@@ -177,6 +177,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info(),
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           GetParam().profile_creation_required_by_policy,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/
@@ -202,6 +203,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info(),
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           GetParam().profile_creation_required_by_policy,
           /*show_link_data_option=*/true,
           /*process_user_choice_callback=*/
@@ -242,6 +244,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info(),
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           GetParam().profile_creation_required_by_policy,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/
@@ -280,6 +283,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info(),
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           GetParam().profile_creation_required_by_policy,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/
@@ -327,6 +331,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info(),
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           GetParam().profile_creation_required_by_policy,
           /*show_link_data_option=*/false,
           /*process_user_choice_callback=*/
@@ -580,6 +585,7 @@ TEST_F(ManagedUserProfileNoticeHandleCancelTest, HandleCancelNoUseAfterFree) {
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info(),
           /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
           /*profile_creation_required_by_policy=*/true,
           /*show_link_data_option=*/true,
           /*process_user_choice_callback=*/
