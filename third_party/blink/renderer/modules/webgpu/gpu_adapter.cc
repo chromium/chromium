@@ -27,56 +27,6 @@ namespace blink {
 
 namespace {
 
-std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
-  switch (f) {
-    case wgpu::FeatureName::Depth32FloatStencil8:
-      return V8GPUFeatureName::Enum::kDepth32FloatStencil8;
-    case wgpu::FeatureName::TimestampQuery:
-      return V8GPUFeatureName::Enum::kTimestampQuery;
-    case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
-      return V8GPUFeatureName::Enum::
-          kChromiumExperimentalTimestampQueryInsidePasses;
-    case wgpu::FeatureName::TextureCompressionBC:
-      return V8GPUFeatureName::Enum::kTextureCompressionBc;
-    case wgpu::FeatureName::TextureCompressionETC2:
-      return V8GPUFeatureName::Enum::kTextureCompressionEtc2;
-    case wgpu::FeatureName::TextureCompressionASTC:
-      return V8GPUFeatureName::Enum::kTextureCompressionAstc;
-    case wgpu::FeatureName::IndirectFirstInstance:
-      return V8GPUFeatureName::Enum::kIndirectFirstInstance;
-    case wgpu::FeatureName::DepthClipControl:
-      return V8GPUFeatureName::Enum::kDepthClipControl;
-    case wgpu::FeatureName::RG11B10UfloatRenderable:
-      return V8GPUFeatureName::Enum::kRg11B10UfloatRenderable;
-    case wgpu::FeatureName::BGRA8UnormStorage:
-      return V8GPUFeatureName::Enum::kBgra8UnormStorage;
-    case wgpu::FeatureName::ShaderF16:
-      return V8GPUFeatureName::Enum::kShaderF16;
-    case wgpu::FeatureName::Float32Filterable:
-      return V8GPUFeatureName::Enum::kFloat32Filterable;
-    case wgpu::FeatureName::Float32Blendable:
-      return V8GPUFeatureName::Enum::kFloat32Blendable;
-    case wgpu::FeatureName::DualSourceBlending:
-      return V8GPUFeatureName::Enum::kDualSourceBlending;
-    case wgpu::FeatureName::Subgroups:
-      return V8GPUFeatureName::Enum::kSubgroups;
-    case wgpu::FeatureName::ClipDistances:
-      return V8GPUFeatureName::Enum::kClipDistances;
-    case wgpu::FeatureName::MultiDrawIndirect:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
-    case wgpu::FeatureName::Unorm16TextureFormats:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats;
-    case wgpu::FeatureName::Snorm16TextureFormats:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
-    default:
-      return std::nullopt;
-  }
-}
-
-}  // anonymous namespace
-
-namespace {
-
 // TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter,
                                          ExecutionContext* execution_context) {
@@ -89,7 +39,8 @@ GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter,
   const auto features_span = UNSAFE_BUFFERS(base::span<const wgpu::FeatureName>(
       supported_features.features, supported_features.featureCount));
   for (const auto& f : features_span) {
-    auto feature_name_enum_optional = ToV8FeatureNameEnum(f);
+    auto feature_name_enum_optional =
+        GPUSupportedFeatures::ToV8FeatureNameEnum(f);
     if (feature_name_enum_optional) {
       V8GPUFeatureName::Enum feature_name_enum =
           feature_name_enum_optional.value();

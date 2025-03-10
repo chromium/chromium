@@ -161,8 +161,11 @@ void GPUDevice::Initialize(wgpu::Device handle,
                            const GPUDeviceDescriptor* descriptor,
                            GPUDeviceLostInfo* lost_info) {
   SetHandle(std::move(handle));
-  features_ = MakeGarbageCollected<GPUSupportedFeatures>(
-      descriptor->requiredFeatures());
+
+  wgpu::SupportedFeatures features;
+  GetHandle().GetFeatures(&features);
+  features_ = MakeGarbageCollected<GPUSupportedFeatures>(features);
+
   queue_ = MakeGarbageCollected<GPUQueue>(this, GetHandle().GetQueue(),
                                           descriptor->defaultQueue()->label());
 
