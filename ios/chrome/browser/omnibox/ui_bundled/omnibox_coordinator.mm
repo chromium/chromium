@@ -167,6 +167,7 @@
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.viewController.pasteDelegate = self.mediator;
+  self.viewController.mutator = self.mediator;
 
   DCHECK(_client.get());
 
@@ -219,7 +220,10 @@
   _omniboxTextController.delegate = self.mediator;
   _omniboxTextController.omniboxAutocompleteController =
       _omniboxAutocompleteController;
+  _omniboxTextController.textField = self.textField;
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
+
+  self.mediator.omniboxTextController = _omniboxTextController;
 
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
   [self.popupCoordinator start];

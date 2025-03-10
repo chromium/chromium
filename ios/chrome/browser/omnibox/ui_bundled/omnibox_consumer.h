@@ -38,6 +38,10 @@
 // remove additional text.
 - (void)updateAdditionalText:(NSAttributedString*)additionalText;
 
+/// Sets the thumbnail image used for image search. Set to`nil` to hide the
+/// thumbnail.
+- (void)setThumbnailImage:(UIImage*)image;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_CONSUMER_H_

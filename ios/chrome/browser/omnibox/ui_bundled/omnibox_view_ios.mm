@@ -642,25 +642,3 @@ void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
     popup_provider_->SetHasThumbnail(image != nil);
   }
 }
-
-void OmniboxViewIOS::RemoveThumbnail() {
-  base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
-  // Update the client state.
-  if (OmniboxClient* client = controller()->client()) {
-    client->OnThumbnailRemoved();
-  }
-  // Update the UI.
-  [consumer_ setThumbnailImage:nil];
-  if (popup_provider_) {
-    popup_provider_->SetHasThumbnail(false);
-  }
-  // Generate new results.
-  if (model()) {
-    if (field_.userText.length) {
-      model()->UpdateInput(/*has_selected_text=*/false,
-                           /*prevent_inline_autocomplete=*/true);
-    } else {
-      CloseOmniboxPopup();
-    }
-  }
-}

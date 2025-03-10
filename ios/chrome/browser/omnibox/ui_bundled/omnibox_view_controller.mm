@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_keyboard_delegate.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mutator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -747,13 +748,11 @@ using base::UserMetricsAction;
   if (!self.view.thumbnailButton.selected) {
     self.view.thumbnailButton.selected = YES;
   } else {
-    if (_textChangeDelegate) {
-      _textChangeDelegate->RemoveThumbnail();
-      // Clear the selection once it's no longer needed. This prevents it from
-      // reappearing unexpectedly as the user navigates back through previous
-      // results.
-      self.view.thumbnailButton.selected = NO;
-    }
+    [self.mutator removeThumbnail];
+    // Clear the selection once it's no longer needed. This prevents it from
+    // reappearing unexpectedly as the user navigates back through previous
+    // results.
+    self.view.thumbnailButton.selected = NO;
   }
 }
 
