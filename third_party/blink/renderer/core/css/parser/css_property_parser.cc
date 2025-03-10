@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -256,11 +252,11 @@ static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
                                             unsigned length,
                                             char* dst) {
   for (unsigned i = 0; i < length; ++i) {
-    UChar c = src[i];
+    UChar c = UNSAFE_TODO(src[i]);
     if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
     }
-    dst[i] = ToASCIILower(c);
+    UNSAFE_TODO(dst[i]) = ToASCIILower(c);
   }
   return true;
 }
@@ -284,13 +280,13 @@ static inline bool QuasiLowercaseIntoBuffer(const LChar* src,
   unsigned i;
   for (i = 0; i < (length & ~3); i += 4) {
     uint32_t x;
-    memcpy(&x, src + i, sizeof(x));
+    UNSAFE_TODO(memcpy(&x, src + i, sizeof(x)));
     x |= (x & 0x40404040) >> 1;
-    memcpy(dst + i, &x, sizeof(x));
+    UNSAFE_TODO(memcpy(dst + i, &x, sizeof(x)));
   }
   for (; i < length; ++i) {
-    LChar c = src[i];
-    dst[i] = c | ((c & 0x40) >> 1);
+    LChar c = UNSAFE_TODO(src[i]);
+    UNSAFE_TODO(dst[i]) = c | ((c & 0x40) >> 1);
   }
   return true;
 }
@@ -331,7 +327,8 @@ static CSSPropertyID UnresolvedCSSPropertyID(
   if (length == 0) {
     return CSSPropertyID::kInvalid;
   }
-  if (length >= 3 && property_name[0] == '-' && property_name[1] == '-') {
+  if (length >= 3 && property_name[0] == '-' &&
+      UNSAFE_TODO(property_name[1]) == '-') {
     return CSSPropertyID::kVariable;
   }
   if (length > kMaxCSSPropertyNameLength) {
@@ -348,7 +345,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    buffer[i] = ToASCIILower(property_name[i]);
+    UNSAFE_TODO(buffer[i] = ToASCIILower(property_name[i]));
   }
   DCHECK_EQ(hash_table_entry, FindProperty(buffer, length));
 #endif
@@ -393,7 +390,7 @@ static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    buffer[i] = ToASCIILower(value_keyword[i]);
+    UNSAFE_TODO(buffer[i] = ToASCIILower(value_keyword[i]));
   }
   DCHECK_EQ(hash_table_entry, FindValue(buffer, length));
 #endif
