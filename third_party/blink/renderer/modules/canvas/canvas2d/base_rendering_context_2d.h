@@ -205,7 +205,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
 
   virtual UniqueFontSelector* GetFontSelector() const;
 
-  void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;
   virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
@@ -228,7 +227,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
   virtual void DispatchContextRestoredEvent(TimerBase*);
   virtual void TryRestoreContextEvent(TimerBase*) {}
 
-  static const char kDefaultFont[];
   static const char kInheritString[];
 
   // Override to prematurely disable acceleration because of a readback.
@@ -262,6 +260,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
                     const gfx::Rect& source_rect,
                     const gfx::Vector2d& dest_offset);
   virtual bool IsCanvas2DBufferValid() const { NOTREACHED(); }
+
+  void WillUseCurrentFont() const;
 
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;

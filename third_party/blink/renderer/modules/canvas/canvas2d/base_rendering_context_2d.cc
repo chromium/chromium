@@ -103,7 +103,7 @@
 
 namespace blink {
 
-const char BaseRenderingContext2D::kDefaultFont[] = "10px sans-serif";
+constexpr char kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritString[] = "inherit";
 
 // After context lost, it waits |kTryRestoreContextInterval| before start the
