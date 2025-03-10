@@ -588,6 +588,11 @@ const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented with a "
     "shorter manual fill menu.";
 
+const char kIOSOneTapMiniMapRestrictionsName[] =
+    "Revalidate detected addresses for one tap Mini Map.";
+const char kIOSOneTapMiniMapRestrictionsDescription[] =
+    "Different restrictions to block false positive for one tap Mini Map.";
+
 const char kIOSPasskeysM2Name[] = "Enable the passkey syncing follow-ups";
 const char kIOSPasskeysM2Description[] =
     "When enabled, the passkey syncing-related features will be available in "

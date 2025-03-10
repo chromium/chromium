@@ -5330,6 +5330,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-one-tap-mini-map-restrictions",
+    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ios-page-info-last-visited",
     "owners": [
       "fsenra@google.com",
