@@ -1785,7 +1785,8 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     // be applied so SameSite=None cookies are included in requests from this
     // context. See
     // https://github.com/explainers-by-googlers/csp-sandbox-allow-same-site-none-cookies
-    if (IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
+    if (frame.HasPolicyContainerHost() &&
+        IsOriginSandboxedWithAllowSameSiteNoneCookiesValue(
             frame.active_sandbox_flags()) &&
         frame.AncestorsAllowSameSiteNoneCookiesOverride(result.origin())) {
       result.cookie_setting_overrides_.Put(
