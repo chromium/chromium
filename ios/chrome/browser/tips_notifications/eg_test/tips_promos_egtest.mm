@@ -19,15 +19,15 @@
 
 // Taps the primary action button on a PromoStyleViewController.
 - (void)tapPrimaryActionButton {
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::PromoStylePrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 }
 
 // Taps the secondary action button on a PromoStyleViewController.
 - (void)tapSecondaryActionButton {
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 }
 

@@ -380,14 +380,6 @@ id<GREYMatcher> FakeAddAccountScreenCancelButton() {
   return [ChromeMatchersAppInterface fakeFakeAddAccountScreenCancelButton];
 }
 
-id<GREYMatcher> PromoScreenPrimaryButtonMatcher() {
-  return [ChromeMatchersAppInterface promoScreenPrimaryButtonMatcher];
-}
-
-id<GREYMatcher> PromoScreenSecondaryButtonMatcher() {
-  return [ChromeMatchersAppInterface promoScreenSecondaryButtonMatcher];
-}
-
 id<GREYMatcher> SettingsAccountButton() {
   return [ChromeMatchersAppInterface settingsAccountButton];
 }
@@ -906,12 +898,12 @@ id<GREYMatcher> SettingsActionButton() {
 
 #pragma mark - Promo style view controller
 
-id<GREYMatcher> PromoStylePrimaryActionButtonMatcher() {
-  return [ChromeMatchersAppInterface promoStylePrimaryActionButtonMatcher];
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenPrimaryButtonMatcher];
 }
 
-id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher() {
-  return [ChromeMatchersAppInterface promoStyleSecondaryActionButtonMatcher];
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenSecondaryButtonMatcher];
 }
 
 #pragma mark - Incognito Interstitial
