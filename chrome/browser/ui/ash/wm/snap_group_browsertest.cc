@@ -179,18 +179,14 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
 
 class SnapGroupBrowserTest : public InProcessBrowserTest {
  public:
-  SnapGroupBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kForestFeature,
-                              ash::features::kSavedDeskUiRevamp},
-        /*disabled_features=*/{});
-  }
+  SnapGroupBrowserTest() = default;
   SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;
   SnapGroupBrowserTest& operator=(const SnapGroupBrowserTest&) = delete;
   ~SnapGroupBrowserTest() override = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kForestFeature};
 };
 
 // Tests that creating a snap group in a rotated display works correctly.

@@ -36,10 +36,7 @@ namespace ash {
 // established benchmarks.
 class SnapGroupPixelTest : public AshTestBase {
  public:
-  SnapGroupPixelTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kSavedDeskUiRevamp}, {});
-  }
+  SnapGroupPixelTest() = default;
   SnapGroupPixelTest(const SnapGroupPixelTest&) = delete;
   SnapGroupPixelTest& operator=(const SnapGroupPixelTest&) = delete;
   ~SnapGroupPixelTest() override = default;
@@ -51,7 +48,7 @@ class SnapGroupPixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 // -----------------------------------------------------------------------------

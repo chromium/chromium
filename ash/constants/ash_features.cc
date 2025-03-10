@@ -2463,10 +2463,6 @@ BASE_FEATURE(kReadaheadForLogin,
              "ReadaheadForLogin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSavedDeskUiRevamp,
-             "SavedDeskUiRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kQuickAppAccessTestUI,
              "QuickAppAccessTestUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4325,11 +4321,6 @@ bool IsResetShortcutCustomizationsEnabled() {
 
 bool IsSameAppWindowCycleEnabled() {
   return base::FeatureList::IsEnabled(kSameAppWindowCycle);
-}
-
-bool IsSavedDeskUiRevampEnabled() {
-  return IsForestFeatureEnabled() &&
-         base::FeatureList::IsEnabled(kSavedDeskUiRevamp);
 }
 
 bool IsScalableIphEnabled() {

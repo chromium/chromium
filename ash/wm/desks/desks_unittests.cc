@@ -1442,7 +1442,7 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   TestDeskObserver desk_1_observer;
   desk_1->AddObserver(&desk_1_observer);
 
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     views::MenuItemView* menu_item =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
             Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
@@ -1548,7 +1548,7 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   TestDeskObserver desk_2_observer;
   desk_2->AddObserver(&desk_2_observer);
 
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     views::MenuItemView* menu_item =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
             Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
@@ -8345,7 +8345,7 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
 
   DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
   auto* event_generator = GetEventGenerator();
-  if (!features::IsSavedDeskUiRevampEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     // We need to hover over the desk preview to properly check the combine
     // desks button's visibility.
     event_generator->MoveMouseTo(
@@ -8371,7 +8371,7 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
 
-  if (!features::IsSavedDeskUiRevampEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     event_generator->MoveMouseTo(
         mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
     EXPECT_TRUE(
@@ -8379,7 +8379,7 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   }
   OpenContextMenuForMiniView(0);
 
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     // The saved desk is part of the context menu with this feature on, although
     // it may be disabled.
     EXPECT_EQ(3u, DesksTestApi::GetContextMenuModelForDesk(
@@ -8578,7 +8578,7 @@ TEST_P(DesksCloseAllTest, DeskPreviewHighlightShowsWhenContextMenuIsOpen) {
 // Checks that the combine desks tooltip's validity is maintained whenever the
 // user adds a desk, closes a desk, moves a desk, or changes the name of a desk.
 TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     GTEST_SKIP()
         << "Save desk buttons have been moved to the desk context menu. The "
            "associated context menu item has text so it doesn't need a tooltip";
@@ -9380,7 +9380,7 @@ class DeskBarTest
   void CombineDeskWithMenu(size_t index,
                            aura::Window* root,
                            DeskBarViewBase::Type bar_type) {
-    CHECK(features::IsSavedDeskUiRevampEnabled());
+    CHECK(features::IsForestFeatureEnabled());
 
     // Get the menu option to save the desk as a template and click it.
     views::MenuItemView* menu_item =
@@ -9687,7 +9687,7 @@ TEST_P(DeskBarTest, HoverBasic) {
     event_generator->MoveMouseTo(
         mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
 
-    if (features::IsSavedDeskUiRevampEnabled()) {
+    if (features::IsForestFeatureEnabled()) {
       EXPECT_TRUE(mini_view->desk_action_view()->context_menu_button());
       EXPECT_TRUE(
           mini_view->desk_action_view()->context_menu_button()->GetVisible());
@@ -10216,7 +10216,7 @@ TEST_P(DeskBarTest, ForwardTabbing) {
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB);
 
-      if (features::IsSavedDeskUiRevampEnabled()) {
+      if (features::IsForestFeatureEnabled()) {
         ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
         ASSERT_TRUE(
             mini_view->desk_action_view()->context_menu_button()->HasFocus());
@@ -10302,7 +10302,7 @@ TEST_P(DeskBarTest, ReverseTabbing) {
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
 
-      if (features::IsSavedDeskUiRevampEnabled()) {
+      if (features::IsForestFeatureEnabled()) {
         ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
         ASSERT_TRUE(
             mini_view->desk_action_view()->context_menu_button()->HasFocus());
@@ -10565,7 +10565,7 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
 
   // Combine desks.
   auto* root_window = Shell::Get()->GetPrimaryRootWindow();
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
   } else {
     CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
@@ -10635,7 +10635,7 @@ TEST_P(DeskBarTest, DeskBarSwitchMetrics) {
   OpenDeskBar();
 
   // Combine desks.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
   } else {
     CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
@@ -10683,13 +10683,13 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
 
   // Long press doesn't register if there have been touch events on the desk bar
   // prior to trying to long press. Close and reopen the desk bar.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     CloseDeskBar();
   }
   OpenDeskBar();
 
   // Combine desks.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
   } else {
     CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
@@ -10841,7 +10841,7 @@ TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
   views::test::RunScheduledLayout(desk_bar_view);
   auto* desk_action_view = desk_bar_view->mini_views()[1]->desk_action_view();
 
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     EXPECT_TRUE(desk_action_view->context_menu_button());
     EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
                 u"Open context menu");
@@ -10860,7 +10860,7 @@ TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
   PressAndReleaseKey(ui::VKEY_RETURN);
   views::test::RunScheduledLayout(desk_bar_view);
 
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     EXPECT_TRUE(desk_action_view->context_menu_button());
     EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
                 u"Open context menu");
