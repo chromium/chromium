@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -24,7 +25,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
  public:
   // Reads out the data from |source| and write into |dest|.
   SourceStreamToDataPipe(std::unique_ptr<net::SourceStream> source,
-                         mojo::ScopedDataPipeProducerHandle dest);
+                         mojo::ScopedDataPipeProducerHandle dest,
+                         scoped_refptr<base::SequencedTaskRunner> task_runner =
+                             base::SequencedTaskRunner::GetCurrentDefault());
   ~SourceStreamToDataPipe();
 
   // Start reading the source.
@@ -44,6 +47,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
   base::OnceCallback<void(int)> completion_callback_;
   int64_t transferred_bytes_ = 0;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   mojo::SimpleWatcher writable_handle_watcher_;
 

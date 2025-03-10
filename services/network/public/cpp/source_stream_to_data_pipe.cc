@@ -14,12 +14,14 @@ namespace network {
 
 SourceStreamToDataPipe::SourceStreamToDataPipe(
     std::unique_ptr<net::SourceStream> source,
-    mojo::ScopedDataPipeProducerHandle dest)
+    mojo::ScopedDataPipeProducerHandle dest,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : source_(std::move(source)),
       dest_(std::move(dest)),
+      task_runner_(std::move(task_runner)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                               base::SequencedTaskRunner::GetCurrentDefault()) {
+                               task_runner_) {
   writable_handle_watcher_.Watch(
       dest_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       base::BindRepeating(&SourceStreamToDataPipe::OnDataPipeWritable,
@@ -84,9 +86,9 @@ void SourceStreamToDataPipe::DidRead(int result) {
 
   pending_write_ = nullptr;
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&SourceStreamToDataPipe::ReadMore,
-                                weak_factory_.GetWeakPtr()));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&SourceStreamToDataPipe::ReadMore,
+                                        weak_factory_.GetWeakPtr()));
 }
 
 void SourceStreamToDataPipe::OnDataPipeWritable(MojoResult result) {

@@ -17,12 +17,13 @@
 namespace network {
 
 DataPipeToSourceStream::DataPipeToSourceStream(
-    mojo::ScopedDataPipeConsumerHandle body)
+    mojo::ScopedDataPipeConsumerHandle body,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : net::SourceStream(net::SourceStreamType::kNone),
       body_(std::move(body)),
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunner::GetCurrentDefault()) {
+                      std::move(task_runner)) {
   handle_watcher_.Watch(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(&DataPipeToSourceStream::OnReadable,
