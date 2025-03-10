@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 
 namespace blink {
@@ -42,8 +43,24 @@ void PlainTextPainter::DrawWithoutBidi(const TextRun& run,
                                        const gfx::PointF& location,
                                        const cc::PaintFlags& flags,
                                        Font::DrawType draw_type) {
-  // TODO(crbug.com/389726691): Implement this without Font::DrawText().
-  font.DrawText(&canvas, run, location, flags, draw_type);
+  // Don't draw anything while we are using custom fonts that are in the process
+  // of loading.
+  if (font.ShouldSkipDrawing()) {
+    return;
+  }
+
+  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
+  gfx::PointF point = location;
+  for (const auto& item : node.ItemList()) {
+    ShapeResultBloberizer::FillGlyphsNG bloberizer(
+        font.GetFontDescription(), item.Text(), 0, item.Length(),
+        item.EnsureView(),
+        draw_type == Font::DrawType::kGlyphsOnly
+            ? ShapeResultBloberizer::Type::kNormal
+            : ShapeResultBloberizer::Type::kEmitText);
+    DrawTextBlobs(bloberizer.Blobs(), canvas, point, flags, cc::kInvalidNodeId);
+    point.Offset(bloberizer.Advance(), 0);
+  }
 }
 
 bool PlainTextPainter::DrawWithBidiReorder(
