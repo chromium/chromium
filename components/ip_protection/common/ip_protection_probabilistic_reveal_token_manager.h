@@ -28,10 +28,10 @@ class IpProtectionProbabilisticRevealTokenManager {
   // Constructs manager and tries to fetch tokens immediately (async).
   explicit IpProtectionProbabilisticRevealTokenManager(
       std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher);
-  ~IpProtectionProbabilisticRevealTokenManager();
+  virtual ~IpProtectionProbabilisticRevealTokenManager();
 
   // Returns true if there are tokens in cache.
-  bool IsTokenAvailable();
+  virtual bool IsTokenAvailable();
 
   // Get a PRT for a given first and third party pair.
   // `top_level` and `third_party` are eTLD + 1.
@@ -45,9 +45,12 @@ class IpProtectionProbabilisticRevealTokenManager {
   // * Else, seeing the first party for the first time, pick a
   //   token stored in crypter randomly, and randomize it,
   //   and return it.
-  std::optional<ProbabilisticRevealToken> GetToken(
+  virtual std::optional<ProbabilisticRevealToken> GetToken(
       const std::string& top_level,
       const std::string& third_party);
+
+  // Request new batch of tokens.
+  virtual void RequestTokens();
 
  private:
   // Passed to fetcher as a callback. Stores token fetch result in internal
@@ -64,9 +67,6 @@ class IpProtectionProbabilisticRevealTokenManager {
 
   // Calls `ClearTokens()` if current batch is expired.
   void ClearTokensIfExpired();
-
-  // Request new batch of tokens.
-  void RequestTokens();
 
   // True the first time GetToken() is called, false otherwise.
   bool is_initial_get_token_call_ = true;

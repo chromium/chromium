@@ -27,7 +27,6 @@ IpProtectionProbabilisticRevealTokenManager::
         std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
     : fetcher_(std::move(fetcher)), expiration_(base::Time::UnixEpoch()) {
   DCHECK(fetcher_);
-  RequestTokens();
 }
 
 IpProtectionProbabilisticRevealTokenManager::

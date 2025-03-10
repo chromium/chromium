@@ -24,6 +24,7 @@ class NetworkAnonymizationKey;
 namespace ip_protection {
 
 struct BlindSignedAuthToken;
+struct ProbabilisticRevealToken;
 
 // Core business logic for IP Protection.
 class IpProtectionCore {
@@ -59,6 +60,14 @@ class IpProtectionCore {
   // `IsAuthTokenAvailable()` recently returned `true`.
   virtual std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) = 0;
+
+  // Get a probabilistic reveal token if one is available.
+  //
+  // Returns `nullopt` if no token is available, whether for a transient or
+  // permanent reason.
+  virtual std::optional<ProbabilisticRevealToken> GetProbabilisticRevealToken(
+      const std::string& top_level,
+      const std::string& third_party) = 0;
 
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
