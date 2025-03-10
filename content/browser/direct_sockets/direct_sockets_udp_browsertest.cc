@@ -215,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSendError) {
   ConnectJsSocket();
 
   const std::string async_read = "readWriteUdpOnError(socket);";
-  auto future = GetAsyncJsRunner()->RunScript(async_read);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_read);
 
   // Next attempt to write to the socket will result in ERR_UNEXPECTED and close
   // the writable stream.
@@ -231,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSendError) {
           },
           &mock_network_context));
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("readWriteUdpOnError succeeded"));
 }
 
@@ -255,9 +256,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSocketError) {
           &mock_network_context));
 
   const std::string script = "readWriteUdpOnError(socket)";
-  auto future = GetAsyncJsRunner()->RunScript(script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(script);
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("readWriteUdpOnError succeeded"));
 }
 

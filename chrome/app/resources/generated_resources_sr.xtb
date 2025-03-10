@@ -2288,6 +2288,7 @@
 <translation id="256517381556987641">Синхронизација фајлова је до сада пронашла <ph name="ITEMS_FOUND" /> фајл(ов)а, али још увек проверава меморијски простор. Пробајте поново да укључите синхронизацију фајлова за пар минута.</translation>
 <translation id="2565214867520763227">Укључите читач екрана</translation>
 <translation id="2566146433999774844">Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још особа (<ph name="NUM_OTHER_MEMBERS" />)</translation>
+<translation id="256726287944589768">Прикажи подножје на страници нове картице</translation>
 <translation id="2568694057933302218">Када сте у режиму без архивирања, сајтови не могу да користе колачиће да би видели ваше активности прегледања на сајтовима. Активности прегледања се не користе за ствари као што је персонализовање огласа. Функције на неким сајтовима могу да не раде.</translation>
 <translation id="2568774940984945469">Контејнер траке са информацијама</translation>
 <translation id="2569972178052279830">Назив продавца</translation>
@@ -2796,6 +2797,7 @@
 <translation id="2921081876747860777">Направите лозинку да бисте заштитили локалне податке.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> ће се сада закључати.
 <ph name="DOMAIN" /> захтева да паметна картица остане уметнута.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Други задаци (<ph name="OTHER_TASK_NUM" />) у истој групи задатака: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Други задаци (<ph name="OTHER_TASK_NUM" />) у истој групи задатака: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Други задаци (<ph name="OTHER_TASK_NUM" />) у истој групи задатака: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Уклони овај налог</translation>
 <translation id="2923644930701689793">Приступајте садржају са телефона</translation>
 <translation id="292371311537977079">Подешавања Chrome-а</translation>
@@ -8047,7 +8049,6 @@
 <translation id="6702859741546259407">Да бисте користили <ph name="FEATURE_NAME" />, укључите Bluetooth и WiFi</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="6703254819490889819">Врати резервну копију</translation>
-<translation id="6703613667804166784">Овај фајл може да нашкоди личним налозима и налозима на друштвеним мрежама, укључујући <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Покретање ChromeOS дијагностичких тестова</translation>
 <translation id="6707389671160270963">Сертификат SSL клијента</translation>
 <translation id="6707671917294473995">Веб-сајтовима није дозвољено да користе камеру</translation>

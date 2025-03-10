@@ -59,7 +59,7 @@ namespace blink {
 
 namespace {
 
-using CursorSet = HeapHashSet<WeakMember<IDBCursor>>;
+using CursorSet = GCedHeapHashSet<WeakMember<IDBCursor>>;
 
 CursorSet& GetGlobalCursorSet() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CursorSet>>,

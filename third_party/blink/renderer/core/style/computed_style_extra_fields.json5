@@ -621,7 +621,7 @@
     {
       name: "DocumentRulesSelectors",
       field_template: "external",
-      type_name: "HeapHashSet<WeakMember<StyleRule>>",
+      type_name: "GCedHeapHashSet<WeakMember<StyleRule>>",
       wrapper_pointer_name: "Member",
       field_group: "*",
       default_value: "nullptr",

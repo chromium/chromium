@@ -32,7 +32,7 @@ ContentSettingPatternSource CreateSetting(
   return ContentSettingPatternSource(
       ContentSettingsPattern::FromString(primary_pattern),
       ContentSettingsPattern::FromString(secondary_pattern),
-      base::Value(setting), source, false /* incognito */, metadata);
+      base::Value(setting), source, false /* incognito */, std::move(metadata));
 }
 
 ContentSettingsForOneType ToVector(const HostIndexedContentSettings& index) {
@@ -42,7 +42,7 @@ ContentSettingsForOneType ToVector(const HostIndexedContentSettings& index) {
     source.primary_pattern = entry.first.primary_pattern;
     source.secondary_pattern = entry.first.secondary_pattern;
     source.setting_value = entry.second.value.Clone();
-    source.metadata = entry.second.metadata;
+    source.metadata = entry.second.metadata.Clone();
     source.source = index.source();
     v.push_back(std::move(source));
   }

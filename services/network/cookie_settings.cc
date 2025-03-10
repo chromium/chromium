@@ -190,10 +190,10 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
   for (const auto& index :
        GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
     for (const auto& entry : index) {
-      settings.emplace_back(entry.first.primary_pattern,
-                            entry.first.secondary_pattern,
-                            entry.second.value.Clone(), index.source(),
-                            *index.off_the_record(), entry.second.metadata);
+      settings.emplace_back(
+          entry.first.primary_pattern, entry.first.secondary_pattern,
+          entry.second.value.Clone(), index.source(), *index.off_the_record(),
+          entry.second.metadata.Clone());
     }
   }
 

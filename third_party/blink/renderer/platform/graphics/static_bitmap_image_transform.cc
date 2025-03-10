@@ -361,20 +361,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
 }
 
 scoped_refptr<StaticBitmapImage>
-StaticBitmapImageTransform::GetWithAlphaPremultiplied(
-    FlushReason flush_reason,
-    scoped_refptr<StaticBitmapImage> source) {
-  if (!source) {
-    return nullptr;
-  }
-  StaticBitmapImageTransform::Params options;
-  options.source_rect = gfx::Rect(GetSourceSize(source, options));
-  options.dest_size = GetSourceSize(source, options);
-  options.premultiply_alpha = true;
-  return Apply(flush_reason, source, options);
-}
-
-scoped_refptr<StaticBitmapImage>
 StaticBitmapImageTransform::ConvertToColorSpace(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,

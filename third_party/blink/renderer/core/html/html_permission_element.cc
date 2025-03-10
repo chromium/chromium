@@ -1084,8 +1084,9 @@ void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
 
   // Always keep `clicking_enabled_state_` up-to-date
   clicking_enabled_state_ = state;
-  DispatchEvent(*Event::CreateCancelableBubble(
-      event_type_names::kValidationstatuschange));
+  EnqueueEvent(
+      *Event::CreateCancelableBubble(event_type_names::kValidationstatuschange),
+      TaskType::kDOMManipulation);
 }
 
 void HTMLPermissionElement::UpdateSnapshot() {

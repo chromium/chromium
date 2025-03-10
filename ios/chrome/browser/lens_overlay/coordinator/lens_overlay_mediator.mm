@@ -228,6 +228,12 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
         !CGRectEqualToRect(lensOverlay.selectionRect, CGRectZero);
     BOOL noSelectionInTranslate = !hasUserSelection && willUseTranslate;
 
+    // Navigation in between modes are not supported. Reset the navigation
+    // stack.
+    if (switchToTranslate || switchToSelection) {
+      [self resetNavigation];
+    }
+
     if (switchToTranslate) {
       // The translation filter needs the selection area reset as well as the
       // bottom sheet hidden, as no auto selection happens at this stage.
@@ -376,6 +382,11 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 }
 
 #pragma mark - Private
+
+- (void)resetNavigation {
+  _navigationManager = std::make_unique<LensOverlayNavigationManager>(self);
+  [self.toolbarConsumer setCanGoBack:NO];
+}
 
 /// Updates the UI for lens `result`.
 - (void)updateForLensResult:(id<ChromeLensOverlayResult>)result {

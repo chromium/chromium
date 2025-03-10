@@ -173,6 +173,8 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 @implementation PushNotificationDelegate {
   __weak AppState* _appState;
+  // Stores blocks to execute once the app has reached init stage "final".
+  NSMutableArray<ProceduralBlock>* _runAfterInit;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState {
@@ -188,15 +190,16 @@ void SendNAUFConfigurationForProfileWithSettings(
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
-  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
-                                 kNotificationInteraction];
   // This method is invoked by iOS to process the user's response to a delivered
   // notification.
-  auto* clientManager = GetApplicationContext()
-                            ->GetPushNotificationService()
-                            ->GetPushNotificationClientManager();
-  DCHECK(clientManager);
-  clientManager->HandleNotificationInteraction(response);
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationInteraction];
+  __weak __typeof(self) weakSelf = self;
+  [self executeWhenInitStageFinal:^{
+    [weakSelf handleNotificationResponse:response];
+  }];
+  // TODO(crbug.com/401537165): Consider changing when completionHandler is
+  // called.
   if (completionHandler) {
     completionHandler();
   }
@@ -328,6 +331,16 @@ void SendNAUFConfigurationForProfileWithSettings(
 }
 
 #pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage == AppInitStage::kFinal && _runAfterInit) {
+    for (ProceduralBlock block in _runAfterInit) {
+      block();
+    }
+    _runAfterInit = nil;
+  }
+}
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
@@ -516,6 +529,32 @@ void SendNAUFConfigurationForProfileWithSettings(
                                          withAuthService:authService
                                    deviceInfoSyncService:deviceInfoSyncService];
   }
+}
+
+// Runs the given `block` immediately if the app's `initStage` is already
+// final, otherwise stores it to be called when the `initStage is final.
+- (void)executeWhenInitStageFinal:(ProceduralBlock)block {
+  if (_appState.initStage == AppInitStage::kFinal) {
+    block();
+    return;
+  }
+
+  if (!_runAfterInit) {
+    _runAfterInit = [[NSMutableArray alloc] init];
+  }
+  [_runAfterInit addObject:block];
+}
+
+// Handles a notification response by sending it to the push notification
+// client manager.
+- (void)handleNotificationResponse:(UNNotificationResponse*)response {
+  DCHECK_GE(_appState.initStage,
+            AppInitStage::kBrowserObjectsForBackgroundHandlers);
+  PushNotificationClientManager* clientManager =
+      GetApplicationContext()
+          ->GetPushNotificationService()
+          ->GetPushNotificationClientManager();
+  clientManager->HandleNotificationInteraction(response);
 }
 
 @end

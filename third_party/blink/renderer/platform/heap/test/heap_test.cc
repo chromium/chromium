@@ -925,11 +925,11 @@ TEST_F(HeapTest, HeapCollectionTypes) {
   typedef HeapHashMap<Member<IntWrapper>, int> MemberPrimitive;
   typedef HeapHashMap<int, Member<IntWrapper>> PrimitiveMember;
 
-  typedef HeapHashSet<Member<IntWrapper>> MemberSet;
+  using MemberSet = GCedHeapHashSet<Member<IntWrapper>>;
   using MemberCountedSet = GCedHeapHashCountedSet<Member<IntWrapper>>;
 
   typedef HeapVector<Member<IntWrapper>, 2> MemberVector;
-  typedef GCedHeapDeque<Member<IntWrapper>> MemberDeque;
+  using MemberDeque = GCedHeapDeque<Member<IntWrapper>>;
 
   typedef HeapVector<PairWrappedUnwrapped, 2> VectorWU;
   typedef HeapVector<PairUnwrappedWrapped, 2> VectorUW;
@@ -1060,8 +1060,8 @@ TEST_F(HeapTest, HeapCollectionTypes) {
       deque->Swap(c_deque);
 
       // Swap set and set2 in a roundabout way.
-      MemberSet& cset1 = container->set;
-      MemberSet& cset2 = container->set2;
+      auto& cset1 = container->set;
+      auto& cset2 = container->set2;
       set->swap(cset1);
       set2->swap(cset2);
       set->swap(cset2);
@@ -1439,7 +1439,7 @@ TEST_F(HeapTest, HeapWeakCollectionSimple) {
   typedef HeapHashMap<WeakMember<IntWrapper>, Member<IntWrapper>> WeakStrong;
   typedef HeapHashMap<Member<IntWrapper>, WeakMember<IntWrapper>> StrongWeak;
   typedef HeapHashMap<WeakMember<IntWrapper>, WeakMember<IntWrapper>> WeakWeak;
-  typedef HeapHashSet<WeakMember<IntWrapper>> WeakSet;
+  using WeakSet = GCedHeapHashSet<WeakMember<IntWrapper>>;
   using WeakCountedSet = GCedHeapHashCountedSet<WeakMember<IntWrapper>>;
 
   Persistent<WeakStrong> weak_strong = MakeGarbageCollected<WeakStrong>();
@@ -1830,7 +1830,7 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
   typedef HeapHashMap<WeakMember<IntWrapper>, Member<IntWrapper>> WeakStrong;
   typedef HeapHashMap<Member<IntWrapper>, WeakMember<IntWrapper>> StrongWeak;
   typedef HeapHashMap<WeakMember<IntWrapper>, WeakMember<IntWrapper>> WeakWeak;
-  typedef HeapHashSet<WeakMember<IntWrapper>> WeakSet;
+  using WeakSet = GCedHeapHashSet<WeakMember<IntWrapper>>;
   using WeakOrderedSet = GCedHeapLinkedHashSet<WeakMember<IntWrapper>>;
 
   ClearOutOldGarbage();
@@ -2199,7 +2199,7 @@ TEST_F(HeapTest, CollectionNesting2) {
   ClearOutOldGarbage();
   void* key = &IntWrapper::destructor_calls_;
   IntWrapper::destructor_calls_ = 0;
-  typedef HeapHashSet<Member<IntWrapper>> IntSet;
+  using IntSet = GCedHeapHashSet<Member<IntWrapper>>;
   HeapHashMap<void*, Member<IntSet>>* map =
       MakeGarbageCollected<HeapHashMap<void*, Member<IntSet>>>();
 
@@ -2765,7 +2765,7 @@ TEST_F(HeapTest, EphemeronsPointToEphemerons) {
 }
 
 TEST_F(HeapTest, Ephemeron) {
-  typedef HeapHashSet<WeakMember<IntWrapper>> Set;
+  using Set = GCedHeapHashSet<WeakMember<IntWrapper>>;
 
   Persistent<Set> set = MakeGarbageCollected<Set>();
 
@@ -3041,11 +3041,11 @@ class ThreadedClearOnShutdownTester : public ThreadedTesterBase {
   class HeapObject;
   friend class HeapObject;
 
-  using WeakHeapObjectSet = HeapHashSet<WeakMember<HeapObject>>;
+  using WeakHeapObjectSet = GCedHeapHashSet<WeakMember<HeapObject>>;
 
   static WeakHeapObjectSet& GetWeakHeapObjectSet();
 
-  using HeapObjectSet = HeapHashSet<Member<HeapObject>>;
+  using HeapObjectSet = GCedHeapHashSet<Member<HeapObject>>;
   static HeapObjectSet& GetHeapObjectSet();
 
   static IntWrapper& ThreadSpecificIntWrapper() {

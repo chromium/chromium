@@ -51,15 +51,9 @@ enum SourceImageStatus {
 
 class CORE_EXPORT CanvasImageSource {
  public:
-  enum AlphaDisposition {
-    kPremultiplyAlpha,
-    kDontChangeAlpha,
-  };
-  virtual scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) = 0;
+  virtual scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                                       SourceImageStatus*,
+                                                       const gfx::SizeF&) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is
   // already tainted because this function may be used to determine whether

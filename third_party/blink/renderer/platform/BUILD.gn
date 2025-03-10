@@ -845,6 +845,7 @@ component("platform") {
     "geometry/length_functions.h",
     "geometry/length_point.h",
     "geometry/length_size.h",
+    "geometry/logical_direction.h",
     "geometry/math_functions.h",
     "geometry/path.cc",
     "geometry/path.h",
@@ -2111,9 +2112,6 @@ test("blink_platform_unittests") {
       # Required because of an indirect dependency on //media/base/android via
       # platform/media:unit_tests.
       "//media/base/android:media_java",
-
-      # Required to disable broken tests.
-      "//testing/buildbot/filters:blink_platform_unittests",
     ]
   }
   if (is_ios) {
@@ -2589,7 +2587,10 @@ group("blink_platform_unittests_data") {
     "//third_party/blink/web_tests/third_party/",
   ]
 
-  data_deps = [ "//third_party/hyphenation-patterns:test_data" ]
+  data_deps = [
+    "//testing/buildbot/filters:blink_platform_unittests",
+    "//third_party/hyphenation-patterns:test_data",
+  ]
 }
 
 if (current_cpu == "x86" || current_cpu == "x64") {

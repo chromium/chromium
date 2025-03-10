@@ -298,20 +298,19 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
         bookmark_model_.get());
   }
 
-  std::unique_ptr<base::test::TestFuture<
-      std::unique_ptr<syncer::DataTypeActivationResponse>>>
+  base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
   SimulateOnSyncStartingNoWait(const std::string& cache_guid = kCacheGuid) {
     syncer::DataTypeActivationRequest request;
     request.cache_guid = cache_guid;
     request.error_handler = error_handler_.Get();
-    auto response = std::make_unique<base::test::TestFuture<
-        std::unique_ptr<syncer::DataTypeActivationResponse>>>();
-    processor_->OnSyncStarting(request, response->GetCallback());
+    base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
+        response;
+    processor_->OnSyncStarting(request, response.GetCallback());
     return response;
   }
 
   void SimulateOnSyncStarting(const std::string& cache_guid = kCacheGuid) {
-    std::ignore = SimulateOnSyncStartingNoWait(cache_guid)->Wait();
+    std::ignore = SimulateOnSyncStartingNoWait(cache_guid).Wait();
   }
 
   void SimulateConnectSync() {
@@ -768,11 +767,10 @@ TEST_F(BookmarkDataTypeProcessorTest,
 
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldIgnoreMetadataIfCacheGuidMismatchUponEarlySyncStartup) {
-  std::unique_ptr<base::test::TestFuture<
-      std::unique_ptr<syncer::DataTypeActivationResponse>>>
+  base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
       start_response = SimulateOnSyncStartingNoWait("unexpected_cache_guid");
   SimulateModelReadyToSyncWithInitialSyncDone();
-  std::ignore = start_response->Wait();
+  std::ignore = start_response.Wait();
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
@@ -896,15 +894,14 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
 
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportNoCountersWhenModelIsNotLoaded) {
-  std::unique_ptr<base::test::TestFuture<
-      std::unique_ptr<syncer::DataTypeActivationResponse>>>
+  base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
       start_response = SimulateOnSyncStartingNoWait();
 
   // Process any pending tasks, in case that would incorrectly lead to
   // completion of the start procedure.
   RunUntilIdle();
 
-  ASSERT_FALSE(start_response->IsReady());
+  ASSERT_FALSE(start_response.IsReady());
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   syncer::TypeEntitiesCount count(syncer::BOOKMARKS);

@@ -10,6 +10,7 @@
 @class OmniboxAutocompleteController;
 class OmniboxController;
 @protocol OmniboxTextControllerDelegate;
+@class OmniboxTextFieldIOS;
 class OmniboxViewIOS;
 
 /// Controller of the omnibox text.
@@ -22,6 +23,9 @@ class OmniboxViewIOS;
 @property(nonatomic, weak)
     OmniboxAutocompleteController* omniboxAutocompleteController;
 
+/// Omnibox textfield.
+@property(nonatomic, weak) OmniboxTextFieldIOS* textField;
+
 /// Temporary initializer, used during the refactoring. crbug.com/390409559
 - (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
                            omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
@@ -30,6 +34,11 @@ class OmniboxViewIOS;
 
 /// Removes all C++ references.
 - (void)disconnect;
+
+#pragma mark - Omnibox text event
+
+/// Called when the thumbnail has been removed.
+- (void)onThumbnailRemoved;
 
 @end
 

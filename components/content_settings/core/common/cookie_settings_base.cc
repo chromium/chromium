@@ -492,7 +492,7 @@ CookieSettingsBase::IsAllowedBy3pcdMetadataGrantsSettings(
       IsAllowed(GetContentSetting(url, first_party_url,
                                   ContentSettingsType::TPCD_METADATA_GRANTS,
                                   &info));
-  return {allowed, info};
+  return {allowed, std::move(info)};
 }
 
 CookieSettingsBase::IsAllowedWithMetadata
@@ -506,7 +506,7 @@ CookieSettingsBase::IsAllowedByTrackingProtectionSetting(
       GetContentSetting(url, first_party_url,
                         ContentSettingsType::TRACKING_PROTECTION,
                         &info) == CONTENT_SETTING_ALLOW;
-  return {allowed, info};
+  return {allowed, std::move(info)};
 }
 
 bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
@@ -743,7 +743,7 @@ CookieSettingsBase::GetCookieSettingInternal(
           source.has_value()) {
         setting_info.source = *source;
       }
-      *info = setting_info;
+      *info = std::move(setting_info);
     }
     const CookieSettingWithMetadata out{
         cookie_setting,
@@ -766,7 +766,7 @@ CookieSettingsBase::GetCookieSettingInternal(
     FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
 
     if (info) {
-      *info = setting_info;
+      *info = std::move(setting_info);
     }
     const CookieSettingWithMetadata out{
         CONTENT_SETTING_BLOCK,
@@ -785,7 +785,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
 
   if (info) {
-    *info = setting_info;
+    *info = std::move(setting_info);
   }
   const CookieSettingWithMetadata out{
       CONTENT_SETTING_BLOCK,

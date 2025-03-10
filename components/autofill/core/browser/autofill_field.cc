@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -605,6 +606,21 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {
 
 void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {
   password_requirements_ = std::move(spec);
+}
+
+base::optional_ref<const std::u16string> AutofillField::format_string() const {
+  if (form_control_type() == FormControlType::kInputDate) {
+    static const base::NoDestructor<std::u16string> kFormat(u"YYYY-MM-DD");
+    return *kFormat;
+  }
+  if (form_control_type() == FormControlType::kInputMonth) {
+    static const base::NoDestructor<std::u16string> kFormat(u"YYYY-MM");
+    return *kFormat;
+  }
+  if (format_string_source_ == FormatStringSource::kUnset) {
+    return std::nullopt;
+  }
+  return format_string_;
 }
 
 bool AutofillField::IsCreditCardPrediction() const {

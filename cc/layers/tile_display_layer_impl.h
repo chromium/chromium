@@ -162,9 +162,6 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   std::vector<viz::TransferableResource> discarded_resources_;
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;
-  viz::ResourceId resource_id_;
-  gfx::Size texture_size_;
-  gfx::SizeF uv_size_;
 };
 
 }  // namespace cc

@@ -72,14 +72,46 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationClient {
     }
 
     @Override
-    public void onPageDeleted(AwPage page) {}
+    public void onPageDeleted(AwPage page) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
+            return;
+        }
+        mImpl.onPageDeleted(
+                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibWebViewPageAdapter(page)));
+    }
 
     @Override
-    public void onPageLoadEventFired(AwPage page) {}
+    public void onPageLoadEventFired(AwPage page) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
+            return;
+        }
+        mImpl.onPageLoadEventFired(
+                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibWebViewPageAdapter(page)));
+    }
 
     @Override
-    public void onPageDOMContentLoadedEventFired(AwPage page) {}
+    public void onPageDOMContentLoadedEventFired(AwPage page) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
+            return;
+        }
+        mImpl.onPageDOMContentLoadedEventFired(
+                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibWebViewPageAdapter(page)));
+    }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page) {}
+    public void onFirstContentfulPaint(AwPage page) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
+            return;
+        }
+        mImpl.onFirstContentfulPaint(
+                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibWebViewPageAdapter(page)));
+    }
 }

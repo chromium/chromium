@@ -244,7 +244,7 @@ suite('PasswordsAndForms', function() {
   // The Autofill AI button is visible if the user has data saved, but is not
   // eligible.
   test('AutofillAIVisibleIfUserHasDataSaved', async function() {
-    entityDataManager.setloadEntityInstancesResponse([testEntityWithLabels]);
+    entityDataManager.setLoadEntityInstancesResponse([testEntityWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: true,
       userEligibleForAutofillAi: false,

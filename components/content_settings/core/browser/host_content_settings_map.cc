@@ -960,7 +960,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     }
     settings->emplace_back(rule->primary_pattern, rule->secondary_pattern,
                            std::move(value), provider_type, incognito,
-                           rule->metadata);
+                           std::move(rule->metadata));
   }
 }
 

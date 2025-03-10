@@ -1749,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                   GURL(kSecondaryUrl)),  // https://[*.]testsite.com
               content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
               content_settings::ProviderType::kPrefProvider,
-              /*incognito=*/false, expected_metadata)));
+              /*incognito=*/false, expected_metadata.Clone())));
   EXPECT_THAT(
       settings_map->GetSettingsForOneType(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
@@ -1762,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                   GURL(kSecondaryUrl)),
               content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
               content_settings::ProviderType::kPrefProvider,
-              /*incognito=*/false, expected_metadata)));
+              /*incognito=*/false, expected_metadata.Clone())));
 
   // Remove Related Website Sets storage grants.
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =

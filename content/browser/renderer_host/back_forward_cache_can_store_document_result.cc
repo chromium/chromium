@@ -17,6 +17,7 @@
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom.h"
 
 namespace content {
 
@@ -31,15 +32,6 @@ std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
     features.push_back(blink::scheduler::FeatureToHumanReadableString(feature));
   }
   return base::JoinString(features, ", ");
-}
-
-std::vector<std::string> FeaturesToStringVector(
-    BlockListedFeatures blocklisted_features) {
-  std::vector<std::string> features;
-  for (WebSchedulerTrackedFeature feature : blocklisted_features) {
-    features.push_back(blink::scheduler::FeatureToShortString(feature));
-  }
-  return features;
 }
 
 const char* BrowsingInstanceSwapResultToString(
@@ -241,6 +233,17 @@ bool BackForwardCacheCanStoreDocumentResult::HasNotRestoredReason(
 void BackForwardCacheCanStoreDocumentResult::AddNotRestoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   not_restored_reasons_.Put(reason);
+
+  // `NoDueToFeatures()` will update the map if it's `kBlocklistedFeatures`.
+  if (reason !=
+      BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
+    std::string nrr_report_str = NotRestoredReasonToReportString(reason);
+    if (!reason_to_source_map_.contains(nrr_report_str)) {
+      // Initialize a vector to indicate the reason doesn't have source
+      // location.
+      reason_to_source_map_[nrr_report_str];
+    }
+  }
 }
 
 bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
@@ -317,25 +320,6 @@ std::string BackForwardCacheCanStoreDocumentResult::ToString() const {
     reason_strs.push_back(NotRestoredReasonToString(reason));
   }
   return "No: " + base::JoinString(reason_strs, ", ");
-}
-
-std::unordered_set<std::string>
-BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
-  // Use unordered_set to avoid duplicate items.
-  std::unordered_set<std::string> reason_strs;
-  for (BackForwardCacheMetrics::NotRestoredReason reason :
-       not_restored_reasons_) {
-    switch (reason) {
-      case Reason::kBlocklistedFeatures:
-        for (auto feature : FeaturesToStringVector(blocklisted_features())) {
-          reason_strs.insert(feature);
-        }
-        break;
-      default:
-        reason_strs.insert(NotRestoredReasonToReportString(reason));
-    }
-  }
-  return reason_strs;
 }
 
 std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
@@ -608,15 +592,29 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
   AddNotRestoredReason(
       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
   for (const auto& [k, v] : map) {
-    if (blocking_details_map_.contains(k)) {
-      for (auto& details : map[k]) {
-        blocking_details_map_[k].push_back(std::move(details));
+    // Populate `blocking_details_map_`.
+    for (auto& details : map[k]) {
+      blocking_details_map_[k].push_back(details.Clone());
+    }
+
+    // Populate `reason_to_source_map_`.
+    std::string nrr_report_str = blink::scheduler::FeatureToShortString(k);
+    for (auto& details : map[k]) {
+      if (details->source) {
+        CHECK_GT(details->source->line_number, 0U);
+        CHECK_GT(details->source->column_number, 0U);
+        reason_to_source_map_[nrr_report_str].push_back(
+            blink::mojom::ScriptSourceLocation::New(
+                details->source->url, details->source->function_name,
+                details->source->line_number, details->source->column_number));
+      } else {
+        // Initialize empty vector to indicate the reason doesn't involve source
+        // location.
+        reason_to_source_map_[nrr_report_str];
       }
-    } else {
-      blocking_details_map_[k] = std::move(map[k]);
+    }
     }
   }
-}
 
 void BackForwardCacheCanStoreDocumentResult::
     NoDueToDisableForRenderFrameHostCalled(
@@ -666,6 +664,16 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
       blocking_details_map_[k].push_back(details.Clone());
     }
   }
+  for (const auto& [k, v] : other.reason_to_source_map()) {
+    if (v.empty()) {
+      // Initialize empty vector.
+      reason_to_source_map_[k];
+    } else {
+      for (const auto& source : v) {
+        reason_to_source_map_[k].push_back(source.Clone());
+      }
+    }
+  }
   for (const auto& reason : other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
@@ -682,18 +690,8 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
 BackForwardCacheCanStoreDocumentResult::
     BackForwardCacheCanStoreDocumentResult() = default;
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
-    BackForwardCacheCanStoreDocumentResult& other)
-    : not_restored_reasons_(other.not_restored_reasons_),
-      disabled_reasons_(other.disabled_reasons_),
-      browsing_instance_swap_result_(other.browsing_instance_swap_result_),
-      disallow_activation_reasons_(other.disallow_activation_reasons_),
-      ax_events_(other.ax_events_) {
-  // Manually copy `blocking_details_map_`.
-  for (const auto& [k, v] : other.blocking_details_map()) {
-    for (const auto& details : v) {
-      blocking_details_map_[k].push_back(details.Clone());
-    }
-  }
+    BackForwardCacheCanStoreDocumentResult& other) {
+  AddReasonsFrom(other);
 }
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
     BackForwardCacheCanStoreDocumentResult&&) = default;

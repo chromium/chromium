@@ -35,6 +35,18 @@ bool CSSVariableParser::IsValidVariableName(StringView string) {
   return string.length() >= 3 && string[0] == '-' && string[1] == '-';
 }
 
+bool CSSVariableParser::StartsCustomPropertyDeclaration(
+    CSSParserTokenStream& stream) {
+  if (!CSSVariableParser::IsValidVariableName(stream.Peek())) {
+    return false;
+  }
+  CSSParserTokenStream::State state = stream.Save();
+  stream.ConsumeIncludingWhitespace();  // <ident>
+  bool result = stream.Peek().GetType() == kColonToken;
+  stream.Restore(state);
+  return result;
+}
+
 const CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
     CSSParserTokenStream& stream,
     bool is_animation_tainted,
@@ -343,6 +355,13 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
         return false;
       }
     } else {
+      // Arguments that look like custom property declarations are reserved
+      // for named arguments.
+      //
+      // https://github.com/w3c/csswg-drafts/issues/11749
+      if (CSSVariableParser::StartsCustomPropertyDeclaration(stream)) {
+        return false;
+      }
       // Passing restricted_value=true effectively disallows "{}".
       if (!ConsumeUnparsedValue(stream, /*restricted_value=*/true,
                                 /*comma_ends_declaration=*/true, has_references,

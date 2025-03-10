@@ -45,7 +45,8 @@ enum class SystemFeature : int {
   kGoogleChat = 22,           // The Google Chat app on ChromeOS.
   kYoutube = 23,              // The Youtube app on ChromeOS.
   kGoogleMaps = 24,           // The Google Maps app on ChromeOS.
-  kMaxValue = kGoogleMaps
+  kCalculator = 25,           // The Calculator app on ChromeOS.
+  kMaxValue = kCalculator
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -80,6 +81,7 @@ extern const char kGoogleCalendarFeature[];
 extern const char kGoogleChatFeature[];
 extern const char kYoutubeFeature[];
 extern const char kGoogleMapsFeature[];
+extern const char kCalculatorFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];

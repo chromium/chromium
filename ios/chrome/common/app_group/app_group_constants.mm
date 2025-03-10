@@ -97,6 +97,8 @@ NSString* const kEmail = @"email";
 
 NSString* const kYoutubeBundleID = @"com.google.youtube";
 
+NSString* const kPrimaryAccount = @"ios.primary_account";
+
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];
 }

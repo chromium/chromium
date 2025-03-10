@@ -1205,11 +1205,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
 
   Element* AccessibilityAnchor() const;
-  const HeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const;
+  const GCedHeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const;
   void NotifyContainingDisplayLocksForAnchorPositioning(
-      const HeapHashSet<Member<Element>>*
+      const GCedHeapHashSet<Member<Element>>*
           past_display_locks_affected_by_anchors,
-      const HeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
+      const GCedHeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
       const;
   bool NeedsAnchorPositionScrollAdjustmentInX() const;
   bool NeedsAnchorPositionScrollAdjustmentInY() const;

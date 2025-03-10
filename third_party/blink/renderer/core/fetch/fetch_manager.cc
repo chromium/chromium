@@ -523,12 +523,16 @@ class FetchManager::Loader final
           return;
       }
 
+      String error_message;
       finished_ = true;
       if (result == Result::kDone) {
         bool integrity_failed = false;
         if (unencoded_digest_.has_value() &&
             !unencoded_digest_->DoesMatch(&buffer_)) {
           integrity_failed = true;
+          error_message =
+              "The resource's `unencoded-digest` header asserted "
+              "a digest which does not match the resource's body.";
         }
         if (!integrity_failed && !integrity_metadata_.empty()) {
           IntegrityReport integrity_report;
@@ -546,6 +550,7 @@ class FetchManager::Loader final
               metadata_set, &buffer_, url_, type, raw_headers,
               loader_->GetExecutionContext(), integrity_report);
           integrity_report.SendReports(loader_->GetExecutionContext());
+          error_message = "SRI's integrity checks failed.";
         }
         if (!integrity_failed) {
           updater_->Update(
@@ -555,8 +560,6 @@ class FetchManager::Loader final
           return;
         }
       }
-      String error_message =
-          "Unknown error occurred while trying to verify integrity.";
       if (updater_) {
         updater_->Update(
             BytesConsumer::CreateErrored(BytesConsumer::Error(error_message)));

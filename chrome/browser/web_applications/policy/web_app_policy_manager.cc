@@ -879,6 +879,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kGoogleMaps:
         disabled_web_apps_.insert(ash::kGoogleMapsAppId);
         break;
+      case policy::SystemFeature::kCalculator:
+        disabled_web_apps_.insert(ash::kCalculatorAppId);
+        break;
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
       case policy::SystemFeature::kWebStore:

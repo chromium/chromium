@@ -677,7 +677,7 @@ public class LoadUrlTest extends AwParameterizedTest {
         HistoryUtils.goBackSync(
                 InstrumentationRegistry.getInstrumentation(),
                 awContents.getWebContents(),
-                contentsClient.getOnPageStartedHelper());
+                contentsClient.getOnPageFinishedHelper());
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
     }
 

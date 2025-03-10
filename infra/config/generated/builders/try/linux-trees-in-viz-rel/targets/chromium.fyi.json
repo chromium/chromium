@@ -4,7 +4,8 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--enable-features=TreesInViz"
+          "--enable-features=TreesInViz",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

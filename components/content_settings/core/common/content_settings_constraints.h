@@ -6,6 +6,7 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_CONSTRAINTS_H_
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom.h"
 
 namespace content_settings {
@@ -21,14 +22,17 @@ class ContentSettingConstraints {
   explicit ContentSettingConstraints(base::Time now);
 
   ContentSettingConstraints(ContentSettingConstraints&& other);
-  ContentSettingConstraints(const ContentSettingConstraints& other);
+  ContentSettingConstraints(const ContentSettingConstraints& other) = delete;
   ContentSettingConstraints& operator=(ContentSettingConstraints&& other);
-  ContentSettingConstraints& operator=(const ContentSettingConstraints& other);
+  ContentSettingConstraints& operator=(const ContentSettingConstraints& other) =
+      delete;
 
   ~ContentSettingConstraints();
 
   bool operator==(const ContentSettingConstraints& other) const;
   bool operator!=(const ContentSettingConstraints& other) const;
+
+  ContentSettingConstraints Clone() const;
 
   base::Time expiration() const {
     if (lifetime_.is_zero()) {
@@ -63,6 +67,10 @@ class ContentSettingConstraints {
     decided_by_related_website_sets_ = granted_by_related_website_sets;
   }
 
+  void set_options(base::Value options) { options_ = std::move(options); }
+
+  const base::Value& options() const { return options_; }
+
  private:
   // Tracks the base::Time that this instance was constructed. Copies and moves
   // reuse this time.
@@ -89,6 +97,8 @@ class ContentSettingConstraints {
 
   // Set to true if the storage access was decided by a Related Website Set.
   bool decided_by_related_website_sets_ = false;
+
+  base::Value options_;
 };
 
 }  // namespace content_settings

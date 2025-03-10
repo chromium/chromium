@@ -200,6 +200,12 @@ BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
       permanent_folder_to_tracker_(CreatePermanentFolderToTrackerMap(model)),
       dummy_empty_node_(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL()) {
   CHECK(model_);
+
+  // TODO(crbug.com/393047033): Load from disk.
+  for (const auto& folder_to_tracker : permanent_folder_to_tracker_) {
+    folder_to_tracker.second->Init(/*in_order_node_ids=*/{});
+  }
+
   // `PermanentFolderOrderingTracker` must precede this class in observing the
   // `BookmarkModel` to ensure changes are reflected in the tracker before
   // `this` notifies its observers.

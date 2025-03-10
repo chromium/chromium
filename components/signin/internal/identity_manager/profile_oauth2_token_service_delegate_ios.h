@@ -82,8 +82,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
   friend class ProfileOAuth2TokenServiceIOSDelegateTest;
 
   // ProfileOAuth2TokenServiceDelegate implementation:
-  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                               bool is_syncing) override;
+  void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) override;
   // This method should not be called when using shared authentication.
   void UpdateCredentialsInternal(const CoreAccountId& account_id,
                                  const std::string& refresh_token) override;

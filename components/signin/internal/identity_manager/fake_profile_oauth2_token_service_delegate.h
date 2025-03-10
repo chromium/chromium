@@ -95,8 +95,8 @@ class FakeProfileOAuth2TokenServiceDelegate
   // ProfileOAuth2TokenServiceDelegate implementation:
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;
-  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                               bool is_syncing) override;
+  void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) override;
   void UpdateCredentialsInternal(const CoreAccountId& account_id,
                                  const std::string& refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

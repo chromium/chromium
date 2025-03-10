@@ -62,7 +62,7 @@ const CSSValue* CSSProperty::CSSValueFromComputedStyle(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   const CSSProperty& resolved_property =
-      ResolveDirectionAwareProperty(style.GetWritingDirection());
+      ToPhysical(style.GetWritingDirection());
   return resolved_property.CSSValueFromComputedStyleInternal(
       style, layout_object, allow_visited_style, value_phase);
 }

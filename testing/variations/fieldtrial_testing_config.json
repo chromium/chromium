@@ -1595,7 +1595,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillAiWithDataSchema"
+                        "AutofillAiWithDataSchema",
+                        "AutofillExtractInputDate"
                     ]
                 }
             ]
@@ -2944,6 +2945,29 @@
                     "enable_features": [
                         "BFCachePerformanceManagerPolicy",
                         "BackForwardCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
+    "BackForwardCacheForPageWithCacheControlNotStoredHeader": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240129",
+                    "params": {
+                        "level": "restore-unless-cookie-change",
+                        "ttl": "3m"
+                    },
+                    "enable_features": [
+                        "CacheControlNoStoreEnterBackForwardCache"
                     ]
                 }
             ]
