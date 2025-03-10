@@ -9,10 +9,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/gpu/content_gpu_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace arc {
 class ProtectedBufferManager;
 }  // namespace arc
@@ -43,7 +42,7 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
   void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<arc::ProtectedBufferManager> GetProtectedBufferManager();
 #endif
 
@@ -51,7 +50,7 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
   // Used to profile main thread startup.
   std::unique_ptr<sampling_profiler::ThreadProfiler> main_thread_profiler_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
 #endif
 };
