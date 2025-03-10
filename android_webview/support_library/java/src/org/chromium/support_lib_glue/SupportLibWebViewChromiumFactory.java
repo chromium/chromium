@@ -109,7 +109,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEB_STORAGE_DELETE_BROWSING_DATA,
                 Features.SPECULATIVE_LOADING_CONFIG,
                 Features.SAVE_STATE + Features.DEV_SUFFIX,
-                Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE + Features.DEV_SUFFIX,
+                Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE,
                 Features.ASYNC_SHOULD_INTERCEPT_REQUEST + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
