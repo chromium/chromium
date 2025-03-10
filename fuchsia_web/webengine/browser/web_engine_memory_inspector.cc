@@ -6,7 +6,9 @@
 
 #include <lib/fpromise/promise.h>
 #include <lib/inspect/cpp/inspector.h>
+
 #include <sstream>
+#include <string_view>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -178,30 +180,30 @@ void WebEngineMemoryInspector::OnMemoryDumpComplete(
     // Include details of each process' role in the web instance.
     std::ostringstream type;
     type << process_dump->process_type;
-    static const inspect::StringReference kTypeNodeName("type");
+    static constexpr std::string_view kTypeNodeName("type");
     node.CreateString(kTypeNodeName, type.str(), dump_results_.get());
 
     const auto service_name = process_dump->service_name;
     if (service_name) {
-      static const inspect::StringReference kServiceNodeName("service");
+      static constexpr std::string_view kServiceNodeName("service");
       node.CreateString(kServiceNodeName, *service_name, dump_results_.get());
     }
 
     // Include the summary of the process' memory usage.
     const auto& os_dump = process_dump->os_dump;
-    static const inspect::StringReference kResidentKbNodeName("resident_kb");
+    static constexpr std::string_view kResidentKbNodeName("resident_kb");
     node.CreateUint(kResidentKbNodeName, os_dump->resident_set_kb,
                     dump_results_.get());
-    static const inspect::StringReference kPrivateKbNodeName("private_kb");
+    static constexpr std::string_view kPrivateKbNodeName("private_kb");
     node.CreateUint(kPrivateKbNodeName, os_dump->private_footprint_kb,
                     dump_results_.get());
-    static const inspect::StringReference kSharedKbNodeName("shared_kb");
+    static constexpr std::string_view kSharedKbNodeName("shared_kb");
     node.CreateUint(kSharedKbNodeName, os_dump->shared_footprint_kb,
                     dump_results_.get());
 
     // If provided, include detail from individual allocators.
     if (!process_dump->chrome_allocator_dumps.empty()) {
-      static const inspect::StringReference kAllocatorDumpNodeName(
+      static constexpr std::string_view kAllocatorDumpNodeName(
           "allocator_dump");
       auto detail_node = node.CreateChild(kAllocatorDumpNodeName);
 
