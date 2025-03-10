@@ -113,8 +113,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   auto layer_state = pending_layer.GetPropertyTreeState();
-  gfx::Size layer_bounds = pending_layer.LayerBounds();
-  gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
+  auto [layer_offset, layer_bounds] = pending_layer.Bounds();
   gfx::Size old_layer_bounds = raster_invalidator_->LayerBounds();
 
   bool is_mask_layer = layer_state.Effect().BlendMode() == SkBlendMode::kDstIn;
@@ -204,8 +203,8 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
       // pixels during rasterization.
       cc_picture_layer_->background_color() != SkColors::kTransparent &&
       pending_layer.RectKnownToBeOpaque().Contains(
-          gfx::RectF(gfx::PointAtOffsetFromOrigin(pending_layer.LayerOffset()),
-                     gfx::SizeF(pending_layer.LayerBounds())));
+          gfx::RectF(gfx::PointAtOffsetFromOrigin(layer_offset),
+                     gfx::SizeF(layer_bounds)));
   cc_picture_layer_->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_picture_layer_->SetContentsOpaqueForText(
