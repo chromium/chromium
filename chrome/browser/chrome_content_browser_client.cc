@@ -4648,22 +4648,14 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   // If the pref is not set, the default value (true) will be used:
   web_prefs->webxr_immersive_ar_allowed =
       prefs->GetBoolean(prefs::kWebXRImmersiveArEnabled);
-
-  // Only set `databases_enabled` if disabled, otherwise check blink::feature
-  // settings.
-  web_prefs->databases_enabled =
-      !web_prefs->databases_enabled
-          ? false
-          : base::FeatureList::IsEnabled(blink::features::kWebSQLAccess);
-#else
-  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-  // WebView.
-  web_prefs->databases_enabled = false;
 #endif
 
   for (auto& parts : extra_parts_) {
     parts->OverrideWebPreferences(web_contents, main_frame_site, web_prefs);
   }
+
+  // TODO(crbug.com/395838064): Cleanup WebSQL WebPreference.
+  web_prefs->databases_enabled = false;
 
   web_prefs->prefers_default_scrollbar_styles =
       prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);

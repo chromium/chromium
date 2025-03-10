@@ -1039,9 +1039,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.STANDARDIZED_TIMER_CLAMPING,
                 "Clamp nested timers according to the spec."),
         Flag.baseFeature(
-                BlinkFeatures.WEB_SQL_WEBVIEW_ACCESS,
-                "If false, prevents access to WebSQL on webview."),
-        Flag.baseFeature(
                 MediaFeatures.MEDIA_CODEC_BLOCK_MODEL,
                 "Controls use of MediaCodec's LinearBlock mode."),
         Flag.baseFeature(
