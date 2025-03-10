@@ -36,7 +36,7 @@
 // Once this is called the animator will ensure it is kept alive until the
 // ProfileState reach the stage or is deallocated.
 - (void)waitForSceneState:(SceneState*)sceneState
-         toInitReachStage:(ProfileInitStage)initStage
+         toReachInitStage:(ProfileInitStage)initStage
              continuation:(ChangeProfileContinuation)continuation;
 
 @end
