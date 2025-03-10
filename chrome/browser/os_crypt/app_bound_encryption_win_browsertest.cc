@@ -35,6 +35,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -100,10 +101,21 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
 
  protected:
   void SetUp() override {
-    if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY)
-      GTEST_SKIP() << "Elevation is required for this test.";
-    maybe_uninstall_service_ = InstallService(log_grabber_);
-    EXPECT_TRUE(maybe_uninstall_service_.has_value());
+    if (should_install_service_) {
+      if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
+        GTEST_SKIP() << "Elevation is required for this test.";
+      }
+      maybe_uninstall_service_ = InstallService(log_grabber_);
+      EXPECT_TRUE(maybe_uninstall_service_.has_value());
+    }
+    // Browser tests use a custom user data dir, which would normally result in
+    // App-Bound encryption being disabled with
+    // `SupportLevel::kNotUsingDefaultUserDataDir`, so this call forces the
+    // non-standard testing data dir to be considered a default one, except if
+    // a test is explicitly requesting to use a non-standard one see
+    // `AppBoundEncryptionWinTestWithUserDataDir`.
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(
+        set_default_user_data_dir_);
     InProcessBrowserTest::SetUp();
   }
 
@@ -133,6 +145,8 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
   ScopedLogGrabber log_grabber_;
+  bool set_default_user_data_dir_ = true;
+  bool should_install_service_ = true;
 
  private:
   install_static::ScopedInstallDetails scoped_install_details_;
@@ -338,17 +352,9 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestWithPolicy,
 class AppBoundEncryptionWinDecryptionNotAvailableTest
     : public AppBoundEncryptionWinTest {
   void SetUp() override {
-    if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
-      GTEST_SKIP() << "Elevation is required for this test.";
-    }
-
     // Install the service only for the pre-test part.
-    if (IsPreTest()) {
-      maybe_uninstall_service_ = InstallService(log_grabber_);
-      EXPECT_TRUE(maybe_uninstall_service_.has_value());
-    }
-    // Note: intentionally do not call AppBoundEncryptionWinTest::SetUp here.
-    InProcessBrowserTest::SetUp();
+    should_install_service_ = IsPreTest();
+    AppBoundEncryptionWinTest::SetUp();
   }
 };
 
@@ -495,9 +501,9 @@ class AppBoundEncryptionWinReencryptTest
     maybe_uninstall_service_ =
         InstallService(log_grabber_, std::get<0>(GetParam()));
     EXPECT_TRUE(maybe_uninstall_service_.has_value());
-    // Note do not call SetUp from AppBoundEncryptionWinTest, call to
-    // InProcessBrowserTest.
-    InProcessBrowserTest::SetUp();
+    // Service already installed, do not try installing again.
+    should_install_service_ = false;
+    AppBoundEncryptionWinTest::SetUp();
   }
 
  private:
@@ -793,13 +799,9 @@ class AppBoundEncryptionWinTestWithUserDataDir
       public testing::WithParamInterface<AppBoundTestCase> {
  public:
   void SetUp() override {
-    if (IsPreTest()) {
-      os_crypt::SetNonStandardUserDataDirSupportedForTesting(
-          /*supported=*/GetParam().allow_non_standard_udd_in_pre);
-    } else {
-      os_crypt::SetNonStandardUserDataDirSupportedForTesting(
-          /*supported=*/GetParam().allow_non_standard_udd_in_main);
-    }
+    set_default_user_data_dir_ =
+        IsPreTest() ? GetParam().allow_non_standard_udd_in_pre
+                    : GetParam().allow_non_standard_udd_in_main;
     AppBoundEncryptionWinTest::SetUp();
   }
 };

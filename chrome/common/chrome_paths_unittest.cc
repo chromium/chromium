@@ -121,4 +121,14 @@ TEST(ChromePaths, UserMediaDirectories) {
 }
 #endif
 
+TEST(ChromePaths, DefaultUserDataDirectory) {
+  EXPECT_TRUE(IsUsingDefaultDataDirectory().value());
+
+  SetUsingDefaultUserDataDirectoryForTesting(false);
+  EXPECT_FALSE(IsUsingDefaultDataDirectory().value());
+
+  SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
+  EXPECT_TRUE(IsUsingDefaultDataDirectory().value());
+}
+
 }  // namespace chrome
