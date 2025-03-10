@@ -171,8 +171,8 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
   // forms mode must be removed.
   if (mode.has_mode(ui::AXMode::kInlineTextBoxes) ||
       mode.has_mode(ui::AXMode::kExtendedProperties)) {
-    return ui::AXMode(mode.flags(), mode.experimental_flags() &
-                                        ~ui::AXMode::kExperimentalFormControls);
+    return ui::AXMode(mode.flags(),
+                      mode.filter_flags() & ~ui::AXMode::kFormsAndLabelsOnly);
   }
 
   return mode;
