@@ -108,6 +108,7 @@ run_jsbundler("copied_files") {
   ]
   sources = [
     "background.html",
+    "gdocs_script.js",
     "icons/back.svg",
     "icons/copy.svg",
     "icons/cut.svg",
