@@ -16,6 +16,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
@@ -489,8 +490,9 @@ void FrameNodeImpl::SetViewportIntersection(
   bool is_intersecting_viewport = [&]() {
     switch (frame_visibility) {
       case blink::mojom::FrameVisibility::kNotRendered:
-      case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
         return false;
+      case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+        return features::kRenderedOutOfViewIsNotVisible.Get();
       case blink::mojom::FrameVisibility::kRenderedInViewport:
         // Since we don't know if this frame is intersecting with a large area
         // of the viewport, it'll be inherited from the parent.

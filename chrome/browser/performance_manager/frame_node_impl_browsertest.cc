@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
@@ -38,10 +39,23 @@ void SimulateKeyPress(content::WebContents* web_contents) {
                             /*shift=*/false, /*alt=*/false, /*command=*/false);
 }
 
-class FrameNodeImplBrowserTest : public InProcessBrowserTest {
+using FrameNodeImplBrowserTest = InProcessBrowserTest;
+
+class ParameterizedFrameNodeImplBrowserTest
+    : public FrameNodeImplBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  FrameNodeImplBrowserTest() = default;
-  ~FrameNodeImplBrowserTest() override = default;
+  ParameterizedFrameNodeImplBrowserTest() {
+    base::FieldTrialParams params = {
+        {features::kRenderedOutOfViewIsNotVisible.name,
+         GetParam() ? "true" : "false"}};
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPMProcessPriorityPolicy, params);
+  }
+  ~ParameterizedFrameNodeImplBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Templated PassToGraph helper that also returns a pointer to the object.
@@ -102,7 +116,7 @@ class ViewportIntersectionStateChangedObserver : public GraphOwned,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ParameterizedFrameNodeImplBrowserTest,
                        ViewportIntersection_OutOfView) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -120,8 +134,10 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       });
   base::RunLoop run_loop;
   PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
-      std::move(frame_node_matcher), false, run_loop.QuitClosure()));
-
+      std::move(frame_node_matcher),
+      performance_manager::features::kRenderedOutOfViewIsNotVisible.Get(),
+      run_loop.QuitClosure()));
+  //
   // Navigate.
   const GURL main_frame_url(
       embedded_test_server()->GetURL("/iframe_out_of_view.html"));
@@ -131,6 +147,10 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
                      /*navigation_handle_callback=*/{});
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ParameterizedFrameNodeImplBrowserTest,
+                         testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Hidden) {
   ASSERT_TRUE(embedded_test_server()->Start());

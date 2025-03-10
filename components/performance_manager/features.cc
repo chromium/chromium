@@ -73,6 +73,9 @@ BASE_FEATURE(kPMProcessPriorityPolicy,
 const base::FeatureParam<bool> kInheritParentPriority{
     &kPMProcessPriorityPolicy, "inherit_parent_priority", true};
 
+const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible{
+    &kPMProcessPriorityPolicy, "rendered_out_of_view_is_not_visible", false};
+
 BASE_FEATURE(kPMLoadingPageVoter,
              "PMLoadingPageVoter",
              base::FEATURE_DISABLED_BY_DEFAULT);
