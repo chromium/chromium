@@ -9527,6 +9527,10 @@ domain Page
   command setInterceptFileChooserDialog
     parameters
       boolean enabled
+      # If true, cancels the dialog by emitting relevant events (if any)
+      # in addition to not showing it if the interception is enabled
+      # (default: false).
+      experimental optional boolean cancel
 
   event domContentEventFired
     parameters

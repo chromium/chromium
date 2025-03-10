@@ -191,10 +191,14 @@ void FileInputType::OpenPopupView() {
   HTMLInputElement& input = GetElement();
   Document& document = input.GetDocument();
 
-  bool intercepted = false;
+  bool suppressed = false;
+  bool canceled = false;
   probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
-                           &intercepted);
-  if (intercepted) {
+                           &suppressed, &canceled);
+  if (suppressed) {
+    if (canceled) {
+      SetFilesAndDispatchEvents(nullptr);
+    }
     return;
   }
 
