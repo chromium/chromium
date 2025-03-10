@@ -211,29 +211,9 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
   }
 }
 
-void RecordWasBlockedUntilHeadWhenServingHistogram(
-    const PrefetchType& prefetch_type,
-    bool blocked_until_head) {
-  CHECK(!UseNewWaitLoop());
-
-  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
-    base::UmaHistogramBoolean(
-        base::StrCat(
-            {"PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.",
-             GetPrefetchEagernessHistogramSuffix(
-                 prefetch_type.GetEagerness())}),
-        blocked_until_head);
-  } else {
-    // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
-    // embedder triggers.
-  }
-}
-
 void RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
     const PrefetchType& prefetch_type,
     bool blocked_until_head) {
-  CHECK(UseNewWaitLoop());
-
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramBoolean(
         base::StrCat({"PrefetchProxy.AfterClick."
@@ -247,31 +227,10 @@ void RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(
   }
 }
 
-void RecordBlockUntilHeadDurationHistogram(
-    const PrefetchType& prefetch_type,
-    const base::TimeDelta& blocked_duration,
-    bool served) {
-  CHECK(!UseNewWaitLoop());
-
-  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
-    base::UmaHistogramTimes(
-        base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration.",
-                      served ? "Served." : "NotServed.",
-                      GetPrefetchEagernessHistogramSuffix(
-                          prefetch_type.GetEagerness())}),
-        blocked_duration);
-  } else {
-    // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
-    // embedder triggers.
-  }
-}
-
 void MaybeRecordBlockUntilHeadDuration2Histogram(
     const PrefetchType& prefetch_type,
     const std::optional<base::TimeDelta>& blocked_duration,
     bool served) {
-  CHECK(UseNewWaitLoop());
-
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     base::UmaHistogramTimes(
         base::StrCat({"PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.",
@@ -597,9 +556,7 @@ PrefetchContainer::~PrefetchContainer() {
   // https://chromium-review.googlesource.com/c/chromium/src/+/5657659/comments/0cfb14c0_3050963e
   //
   // TODO(crbug.com/356314759): Do it.
-  if (UseNewWaitLoop()) {
-    OnWillBeDestroyed();
-  }
+  OnWillBeDestroyed();
 
   CancelStreamingURLLoaderIfNotServing();
 
@@ -634,15 +591,9 @@ PrefetchContainer::~PrefetchContainer() {
   if (prefetch_document_manager_) {
     prefetch_document_manager_->PrefetchWillBeDestroyed(this);
   }
-
-  if (!UseNewWaitLoop()) {
-    UnblockPrefetchMatchResolver();
-  }
 }
 
 void PrefetchContainer::OnWillBeDestroyed() {
-  CHECK(UseNewWaitLoop());
-
   for (auto& observer : observers_) {
     observer.OnWillBeDestroyed(*this);
   }
@@ -1330,39 +1281,7 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
   }
 }
 
-void PrefetchContainer::StartBlockUntilHead(
-    base::OnceCallback<void(PrefetchContainer&)>
-        on_maybe_determined_head_callback,
-    base::TimeDelta timeout) {
-  CHECK(!UseNewWaitLoop());
-
-  on_maybe_determined_head_callback_ =
-      std::move(on_maybe_determined_head_callback);
-
-  if (timeout.is_positive()) {
-    // TODO(crbug.com/40274818): See the comment on
-    // `OnGetPrefetchToServe()`.
-    block_until_head_timer_ = std::make_unique<base::OneShotTimer>();
-    block_until_head_timer_->Start(
-        FROM_HERE, timeout,
-        base::BindOnce(&PrefetchContainer::UnblockPrefetchMatchResolver,
-                       GetWeakPtr()));
-  }
-}
-
-void PrefetchContainer::OnDeterminedHead() {
-  CHECK(!UseNewWaitLoop());
-
-  // Propagates the header to `no_vary_search_data_` if a non-redirect response
-  // header is got.
-  MaybeSetNoVarySearchData();
-
-  UnblockPrefetchMatchResolver();
-}
-
 void PrefetchContainer::OnDeterminedHead2() {
-  CHECK(UseNewWaitLoop());
-
   // Propagates the header to `no_vary_search_data_` if a non-redirect response
   // header is got.
   MaybeSetNoVarySearchData();
@@ -1385,16 +1304,6 @@ void PrefetchContainer::MaybeSetNoVarySearchData() {
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
   no_vary_search_data_ = no_vary_search::ProcessHead(
       *GetNonRedirectHead(), GetURL(), rfhi_can_be_null);
-}
-
-void PrefetchContainer::UnblockPrefetchMatchResolver() {
-  CHECK(!UseNewWaitLoop());
-
-  block_until_head_timer_.reset();
-
-  if (on_maybe_determined_head_callback_) {
-    std::move(on_maybe_determined_head_callback_).Run(*this);
-  }
 }
 
 void PrefetchContainer::StartTimeoutTimerIfNeeded(
@@ -1662,8 +1571,6 @@ void PrefetchContainer::OnDetectedCookiesChange() {
 void PrefetchContainer::OnDetectedCookiesChange2(
     std::optional<bool>
         is_unblock_for_cookies_changed_triggered_by_this_prefetch_container) {
-  CHECK(UseNewWaitLoop());
-
   // If `kPrefetchNewWaitLoop` is enabled, multiple `PrefetchMatchResolver2` can
   // wait the same `PrefetchContainer`. So, `OnDetectedCookiesChange2()` can be
   // called multiple times, unlike `OnDetectedCookiesChange()`.
@@ -1704,69 +1611,6 @@ void PrefetchContainer::OnDetectedCookiesChange2(
 
 void PrefetchContainer::OnPrefetchStarted() {
   SetLoadState(PrefetchContainer::LoadState::kStarted);
-}
-
-// TODO(crbug.com/40274818): We might be waiting on PrefetchContainer's head
-// from multiple navigations.
-// E.g. We might wait from one navigation but not use the prefetch, and
-// then we can use the prefetch in a separate navigation without waiting
-// for the head. We need to keep track of blocked_until_head_start_time_ per
-// each navigation for this PrefetchContainer.
-void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
-  CHECK(!UseNewWaitLoop());
-
-  // OnGetPrefetchToServe is called before we start waiting for head, and
-  // when the prefetch is used from `prefetches_ready_to_serve_`.
-  // If the prefetch had to wait for head, `blocked_until_head_start_time_`
-  // will already be set. Only record in the histogram when the
-  // `blocked_until_head_start_time_` is not set yet.
-  if (!blocked_until_head_start_time_) {
-    RecordWasBlockedUntilHeadWhenServingHistogram(prefetch_type_,
-                                                  blocked_until_head);
-  }
-  if (blocked_until_head) {
-    blocked_until_head_start_time_ = base::TimeTicks::Now();
-  }
-}
-
-void PrefetchContainer::OnReturnPrefetchToServe(bool served,
-                                                const GURL& navigated_url) {
-  CHECK(!UseNewWaitLoop());
-
-  if (served) {
-    RecordAfterClickRedirectChainSize(redirect_chain_.size());
-    navigated_to_ = true;
-  }
-
-  if (blocked_until_head_start_time_.has_value()) {
-    RecordBlockUntilHeadDurationHistogram(
-        prefetch_type_,
-        base::TimeTicks::Now() - blocked_until_head_start_time_.value(),
-        served);
-  }
-
-  // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
-  // prefetch in
-  //
-  // - A. `PreloadingDataImpl::DidStartNavigation()`
-  // - B. Here
-  //
-  // A covers prefetches that satisfy `bool(GetNonRedirectHead())` at that
-  // timing. B covers almost all ones that were once potentially matching to the
-  // navigation, including that was `kBlockUntilHead` state.
-  //
-  // Note that multiple calls are safe and set a correct value.
-  //
-  // Historical note: Before No-Vary-Search hint, the decision to use a
-  // prefetched response was made at A. With No-Vary-Search hint the decision to
-  // use an in-flight prefetched response is delayed until the headers are
-  // received from the server. This happens after `DidStartNavigation()`. At
-  // this point in the code we have already decided we are going to use the
-  // prefetch, so we can safely call `SetIsAccurateTriggering()`.
-  if (auto attempt = preloading_attempt()) {
-    static_cast<PreloadingAttemptImpl*>(attempt.get())
-        ->SetIsAccurateTriggering(navigated_url);
-  }
 }
 
 bool PrefetchContainer::HasSameReferringURLForMetrics(
@@ -2089,14 +1933,10 @@ void PrefetchContainer::OnInitialPrefetchFailedIneligible(
 }
 
 void PrefetchContainer::AddObserver(Observer* observer) {
-  CHECK(UseNewWaitLoop());
-
   observers_.AddObserver(observer);
 }
 
 void PrefetchContainer::RemoveObserver(Observer* observer) {
-  CHECK(UseNewWaitLoop());
-
   observers_.RemoveObserver(observer);
 }
 
@@ -2127,8 +1967,6 @@ void PrefetchContainer::OnUnregisterCandidate(
   // TODO(crbug.com/356314759): Avoid calling this with `is_in_dtor_`
   // true.
 
-  CHECK(UseNewWaitLoop());
-
   if (is_served) {
     navigated_to_ = true;
     RecordAfterClickRedirectChainSize(redirect_chain_.size());
@@ -2140,7 +1978,24 @@ void PrefetchContainer::OnUnregisterCandidate(
   MaybeRecordBlockUntilHeadDuration2Histogram(prefetch_type_, blocked_duration,
                                               is_served);
 
-  // See the comment in `PrefetchContainer::OnReturnPrefetchToServe()`.
+  // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
+  // prefetch in
+  //
+  // - A. `PreloadingDataImpl::DidStartNavigation()`
+  // - B. Here
+  //
+  // A covers prefetches that satisfy `bool(GetNonRedirectHead())` at that
+  // timing. B covers almost all ones that were once potentially matching to the
+  // navigation, including that was `kBlockUntilHead` state.
+  //
+  // Note that multiple calls are safe and set a correct value.
+  //
+  // Historical note: Before No-Vary-Search hint, the decision to use a
+  // prefetched response was made at A. With No-Vary-Search hint the decision to
+  // use an in-flight prefetched response is delayed until the headers are
+  // received from the server. This happens after `DidStartNavigation()`. At
+  // this point in the code we have already decided we are going to use the
+  // prefetch, so we can safely call `SetIsAccurateTriggering()`.
   if (auto attempt = preloading_attempt()) {
     static_cast<PreloadingAttemptImpl*>(attempt.get())
         ->SetIsAccurateTriggering(navigated_url);
