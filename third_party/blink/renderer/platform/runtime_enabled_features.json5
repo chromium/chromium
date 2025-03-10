@@ -4392,11 +4392,6 @@
       status: "stable",
     },
     {
-      // crbug.com/359420112
-      name: "TextEmphasisNoPunctuation",
-      status: "stable",
-    },
-    {
       // crbug.com/368657256
       name: "TextEmphasisPositionAuto",
       status: "experimental",
