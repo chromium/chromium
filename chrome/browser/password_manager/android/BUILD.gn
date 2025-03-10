@@ -253,6 +253,7 @@ android_library("utils_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/CustomTabIntentHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/HelpUrlLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
@@ -267,6 +268,7 @@ android_library("utils_java") {
   deps = [
     ":java_resources",
     "$google_play_services_package:google_play_services_base_java",
+    "//base:base_java",
     "//base:resetters_java",
     "//base:tasks_java",
     "//chrome/browser/preferences:java",
@@ -282,6 +284,7 @@ android_library("utils_java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
@@ -321,6 +324,7 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessorFactoryImplTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackendTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncherTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/HelpUrlLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/LoginDbDeprecationUtilBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialogTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
