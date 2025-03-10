@@ -371,9 +371,7 @@
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
-  if (_editView) {
-    _editView->SetThumbnailImage(image);
-  }
+  [self.mediator setThumbnailImage:image];
 }
 
 #pragma mark Scribble
