@@ -542,6 +542,7 @@ TEST(SessionInclusionRulesTest, ToFromProto) {
   ASSERT_TRUE(restored_inclusion_rules != nullptr);
   EXPECT_EQ(*restored_inclusion_rules, inclusion_rules);
 }
+#undef ASSERT_DOMAIN_AND_REGISTRY
 
 TEST(SessionInclusionRulesTest, FailCreateFromInvalidProto) {
   // Empty proto.

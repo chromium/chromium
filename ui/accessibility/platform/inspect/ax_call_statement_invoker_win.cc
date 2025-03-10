@@ -358,6 +358,7 @@ AXOptionalObject AXCallStatementInvokerWin::QueryInterface(
   return AXOptionalObject::Error("Unsupported " + interface_name +
                                  " interface");
 }
+#undef DEFINE_IA2_QI_ENTRY
 
 AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
   LONG role = 0;
@@ -436,6 +437,8 @@ AXOptionalObject AXCallStatementInvokerWin::SetSelections(
 
   return AXOptionalObject::Error();
 }
+#undef CHECK_ARGS_1
+#undef CHECK_ARGS_N
 
 bool AXCallStatementInvokerWin::IsIAccessibleAndNotNull(
     const Target& target) const {
