@@ -64,6 +64,21 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace {
+
+bool IsFloatingSsoEnabled(Profile* profile) {
+  if (!ash::features::IsFloatingSsoAllowed()) {
+    return false;
+  }
+  ash::floating_sso::FloatingSsoService* floating_sso_service =
+      ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile);
+  if (!floating_sso_service) {
+    return false;
+  }
+  return floating_sso_service->IsFloatingSsoEnabled();
+}
+}  // namespace
+
 namespace ash {
 
 constexpr char kNotificationForNoNetworkConnection[] =
@@ -289,8 +304,8 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       break;
     }
     case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
-      if (!first_uptodate_download_timeticks_.has_value()) {
-        first_uptodate_download_timeticks_ = base::TimeTicks::Now();
+      if (!first_sync_data_downloaded_timeticks_.has_value()) {
+        first_sync_data_downloaded_timeticks_ = base::TimeTicks::Now();
       }
       if (ShouldWaitForCookies()) {
         // We can hit this code path repeatedly while waiting for cookies to be
@@ -326,12 +341,7 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
 }
 
 bool FloatingWorkspaceService::ShouldWaitForCookies() {
-  if (!ash::features::IsFloatingSsoAllowed()) {
-    return false;
-  }
-  ash::floating_sso::FloatingSsoService* floating_sso_service =
-      ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile_);
-  if (!floating_sso_service || !floating_sso_service->IsFloatingSsoEnabled()) {
+  if (!IsFloatingSsoEnabled(profile_)) {
     return false;
   }
   syncer::SyncService::DataTypeDownloadStatus cookies_download_status =
@@ -341,6 +351,8 @@ bool FloatingWorkspaceService::ShouldWaitForCookies() {
       return true;
     }
     case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
+      ash::floating_sso::FloatingSsoService* floating_sso_service =
+          ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile_);
       // Even when Sync status is "up to date", cookies might still be in the
       // process of being applied to the cookie jar in the browser. Schedule a
       // callback to restore the workspace once it's done. This call is cheap
@@ -915,8 +927,8 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // If it successfully captured desk, remove old entry and record new uuid only
   // if the user was active from when the sync cycle is finished to now.
   if (!IsCurrentDeskSameAsPrevious(desk_template.get()) &&
-      (first_uptodate_download_timeticks_.has_value() &&
-       first_uptodate_download_timeticks_.value() <=
+      (first_sync_data_downloaded_timeticks_.has_value() &&
+       first_sync_data_downloaded_timeticks_.value() <=
            ui::UserActivityDetector::Get()->last_activity_time())) {
     UploadFloatingWorkspaceTemplateToDeskModel(std::move(desk_template));
   }
@@ -1367,6 +1379,29 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   // just start capturing.
   if (!should_run_restore_) {
     StartCaptureAndUploadActiveDesk();
+    return;
   }
+  SetCallbacksToLaunchOnFirstSync();
+}
+
+void FloatingWorkspaceService::SetCallbacksToLaunchOnFirstSync() {
+  if (IsFloatingSsoEnabled(profile_)) {
+    ash::floating_sso::FloatingSsoService* floating_sso_service =
+        ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile_);
+    floating_sso_service->RunWhenCookiesAreReadyOnFirstSync(base::BindOnce(
+        &FloatingWorkspaceService::LaunchWhenDeskTemplatesAreReadyOnFirstSync,
+        weak_pointer_factory_.GetWeakPtr()));
+  } else {
+    LaunchWhenDeskTemplatesAreReadyOnFirstSync();
+  }
+}
+
+void FloatingWorkspaceService::LaunchWhenDeskTemplatesAreReadyOnFirstSync() {
+  if (!first_sync_data_downloaded_timeticks_.has_value()) {
+    first_sync_data_downloaded_timeticks_ = base::TimeTicks::Now();
+  }
+  desk_sync_service_->RunWhenDesksTemplatesAreReadyOnFirstSync(
+      base::BindOnce(&FloatingWorkspaceService::LaunchWhenAppCacheIsReady,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 }  // namespace ash

@@ -402,6 +402,22 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  // TODO(crbug.com/400730387): add proper variations to all tests in this file
+  // to account for differences between first and consequent sync scenarios. On
+  // the first sync `FloatingWorkspaceService` can open the desk once we get
+  // Sync data via `MergeFullSyncData` method of the bridge. On consequent syncs
+  // we are waiting for `UpToDate` signal from the sync server instead. Tests in
+  // this file were written when we could only rely on `UpToDate` signal. In
+  // these tests we don't mock the `MergeFullSyncData` method and by default our
+  // fake desk sync service executes the launch callback as soon as it is set
+  // from `FloatingWorkspaceService`. `SkipOnFirstSyncCallback` is a temporary
+  // workaround which allows to skip the execution of this callback in selected
+  // tests. It is mostly needed for tests which imitate different delay
+  // scenarios.
+  void SkipOnFirstSyncCallback() {
+    fake_desk_sync_service()->skip_on_first_sync_callback_ = true;
+  }
+
   void CreateFloatingWorkspaceServiceForTesting(TestingProfile* profile) {
     FloatingWorkspaceServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile, base::BindRepeating([](content::BrowserContext* context)
@@ -788,6 +804,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkForFloatingWorkspaceTemplate) {
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        NoNetworkForFloatingWorkspaceTemplateAfterLongDelay) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -881,6 +898,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        NoNetworkNotificationLogicWhenSyncIsInactiveAndOnceSyncIsActiveAgain) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -900,6 +918,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateRestoreAfterTimeOut) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -944,6 +963,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateDiscardAfterTimeOut) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -1021,6 +1041,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLoadMetric) {
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLaunchTimeout) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   base::HistogramTester histogram_tester;
 
@@ -1391,6 +1412,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, PerformGarbageCollectionOnStaleEntries) {
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateHasProgressStatus) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1412,6 +1434,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateProgressStatusGoneAfterTimeOut) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1433,6 +1456,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateProgressStatusGoneAfterSyncError) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1454,6 +1478,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateRestoreAfterTimeOutWithNewCapture) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -2042,6 +2067,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        DoNotShowTimeOutNotificationAfterRestoreTimeoutFromSuspend) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
