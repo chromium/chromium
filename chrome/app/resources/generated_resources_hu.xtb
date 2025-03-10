@@ -4315,6 +4315,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3977886311744775419">A rendszer nem tölt le automatikus frissítéseket ilyen hálózattípusnál, de manuálisan kereshet frissítéseket.</translation>
 <translation id="3978325380690188371">A beragadó billentyűk nem használhatók, ha be van kapcsolva a ChromeVox</translation>
 <translation id="3978732922947854545">A Chrome még jobban használhatóvá teszi a PDF-eket</translation>
+<translation id="3979093622823535817">Csatlakozás a következő megbeszéléshez: <ph name="MEETING_TITLE" /></translation>
 <translation id="3979395879372752341">Új bővítmény hozzáadva (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> engedélyezése</translation>
 <translation id="398095528354975981">Ezeknek a lapoknak az elrejtése</translation>
