@@ -639,9 +639,11 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
       "Actions.PinnedToolbarButtonActivation");
   EXPECT_EQ(1U, pinnable_action_suffixes.size());
 #if BUILDFLAG(IS_CHROMEOS)
-  // Downloads action item does not exist for ChromeOS.
-  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size() - 1);
+  // Downloads action item does not exist for ChromeOS. Only one of history
+  // or history clusters should be pinnable.
+  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size() - 2);
 #else
-  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size());
+  // Only one of history or history clusters should be pinnable.
+  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size() - 1);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

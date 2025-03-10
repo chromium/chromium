@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
+#include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
@@ -40,8 +41,16 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
       ->CreateAndRegisterEntry(window_registry);
 
   // Add history clusters.
-  if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
+  if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile()) &&
+      !HistorySidePanelCoordinator::IsSupported()) {
     HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(window_registry);
+  }
+
+  // Add history.
+  if (HistorySidePanelCoordinator::IsSupported()) {
+    browser->browser_window_features()
+        ->history_side_panel_coordinator()
         ->CreateAndRegisterEntry(window_registry);
   }
 }
