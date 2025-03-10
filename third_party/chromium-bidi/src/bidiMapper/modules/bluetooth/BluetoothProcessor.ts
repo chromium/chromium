@@ -65,6 +65,7 @@ export class BluetoothProcessor {
       'BluetoothEmulation.enable',
       {
         state: params.state,
+        leSupported: params.leSupported ?? true,
       },
     );
     return {};
