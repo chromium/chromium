@@ -4636,6 +4636,10 @@
       status: "stable",
     },
     {
+      name: "UseShadowHostStyleCheckEditable",
+      status: "stable",
+    },
+    {
       name: "UseUndoStepElementDispatchBeforeInput",
       status: "stable",
     },
