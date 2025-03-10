@@ -322,6 +322,10 @@ inline constexpr char kChromeUICustomizeChromeSidePanelHost[] =
     "customize-chrome-side-panel.top-chrome";
 inline constexpr char kChromeUICustomizeChromeSidePanelURL[] =
     "chrome://customize-chrome-side-panel.top-chrome";
+inline constexpr char kChromeUIHistorySidePanelHost[] =
+    "history-side-panel.top-chrome";
+inline constexpr char kChromeUIHistorySidePanelURL[] =
+    "chrome://history-side-panel.top-chrome/";
 inline constexpr char kChromeUIHistoryClustersSidePanelHost[] =
     "history-clusters-side-panel.top-chrome";
 inline constexpr char kChromeUIHistoryClustersSidePanelURL[] =

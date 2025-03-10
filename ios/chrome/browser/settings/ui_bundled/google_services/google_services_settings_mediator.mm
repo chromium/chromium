@@ -15,8 +15,6 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/supervised_user/core/browser/family_link_user_capabilities.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
@@ -567,16 +565,9 @@ bool GetStatusForSigninPolicy() {
 #pragma mark - Private
 
 - (BOOL)isSubjectToParentalControls {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
-    return self.identityManager &&
-           supervised_user::IsPrimaryAccountSubjectToParentalControls(
-               self.identityManager) == signin::Tribool::kTrue;
-  } else {
-    return self.userPrefService &&
-           supervised_user::IsSubjectToParentalControls(*self.userPrefService);
-  }
+  return self.identityManager &&
+         supervised_user::IsPrimaryAccountSubjectToParentalControls(
+             self.identityManager) == signin::Tribool::kTrue;
 }
 
 @end

@@ -4,18 +4,21 @@
 
 package org.chromium.components.media_router;
 
-import androidx.annotation.Nullable;
 import androidx.mediarouter.media.MediaRouter;
 import androidx.mediarouter.media.MediaRouter.RouteInfo;
 
 import com.google.android.gms.cast.CastDevice;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A common descriptor of a device that can present some URI. */
+@NullMarked
 public class MediaSink {
     private static final String CAST_SINK_URN_PREFIX = "urn:x-org.chromium:media:sink:cast-";
     private final String mId;
     private final String mName;
-    private final CastDevice mDevice;
+    private final @Nullable CastDevice mDevice;
 
     /**
      * Constructor.
@@ -23,7 +26,7 @@ public class MediaSink {
      * @param name A user friendly name of the sink.
      * @param device {@link CastDevice} corresponding to this sink.
      */
-    public MediaSink(String id, String name, CastDevice device) {
+    public MediaSink(String id, String name, @Nullable CastDevice device) {
         mId = id;
         mName = name;
         mDevice = device;
@@ -44,7 +47,7 @@ public class MediaSink {
         return CAST_SINK_URN_PREFIX + getId();
     }
 
-    public CastDevice getDevice() {
+    public @Nullable CastDevice getDevice() {
         return mDevice;
     }
 
@@ -87,8 +90,7 @@ public class MediaSink {
      * @return A {@link MediaSink} corresponding to the {@link RouteInfo} with the specified id if
      * found, null otherwise.
      */
-    @Nullable
-    public static MediaSink fromSinkId(String sinkId, MediaRouter router) {
+    public static @Nullable MediaSink fromSinkId(String sinkId, MediaRouter router) {
         for (MediaRouter.RouteInfo route : router.getRoutes()) {
             MediaSink sink = MediaSink.fromRoute(route);
             if (sink.getId().equals(sinkId)) return sink;

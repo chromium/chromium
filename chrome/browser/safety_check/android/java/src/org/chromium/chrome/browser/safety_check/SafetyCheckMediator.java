@@ -228,8 +228,8 @@ class SafetyCheckMediator {
                 new Handler(),
                 passwordStoreBridge,
                 new PasswordCheckControllerFactory(),
-                passwordManagerHelper);
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+                passwordManagerHelper,
+                modalDialogManagerSupplier);
         mCustomTabIntentHelper = customTabIntentHelper;
     }
 
@@ -262,11 +262,11 @@ class SafetyCheckMediator {
                 handler,
                 passwordStoreBridge,
                 passwordCheckControllerFactory,
-                passwordManagerHelper);
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+                passwordManagerHelper,
+                modalDialogManagerSupplier);
     }
 
-    SafetyCheckMediator(
+    private SafetyCheckMediator(
             Profile profile,
             PropertyModel safetyCheckModel,
             PropertyModel passwordsCheckAccountModel,
@@ -279,7 +279,8 @@ class SafetyCheckMediator {
             Handler handler,
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory,
-            PasswordManagerHelper passwordManagerHelper) {
+            PasswordManagerHelper passwordManagerHelper,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mProfile = profile;
         mSafetyCheckModel = safetyCheckModel;
         mPasswordsCheckAccountStorageModel = passwordsCheckAccountModel;
@@ -294,6 +295,7 @@ class SafetyCheckMediator {
                 passwordCheckControllerFactory.create(
                         syncService, prefService, passwordStoreBridge, passwordManagerHelper);
         mPasswordManagerHelper = passwordManagerHelper;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         // Set the listener for clicking the updates element.
         mSafetyCheckModel.set(
                 SafetyCheckProperties.UPDATES_CLICK_LISTENER,

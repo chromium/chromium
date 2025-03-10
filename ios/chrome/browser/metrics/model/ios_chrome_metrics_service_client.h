@@ -104,6 +104,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
+  bool ShouldStartUpFast() const override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;

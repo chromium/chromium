@@ -1776,6 +1776,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Fullscreen.TimeSpentScrollingToTheBottom" units="ms"
+    expires_after="2026-03-05">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>scottyoder@chromium.org</owner>
+  <summary>
+    The metric captures the elapsed time between the first scroll event on a new
+    page and the final scroll event that reaches the page's bottom. This
+    measurement, which can span multiple scroll events, is only captured if the
+    bottom of the page is successfully reached. Pages where toolbars can not be
+    collapsed due to size constraints are omitted.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
     enum="Boolean" expires_after="2025-08-11">
   <owner>adamta@google.com</owner>
@@ -2749,15 +2762,6 @@ chromium-metrics-reviews@google.com.
     {MXVersion}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
-</histogram>
-
-<histogram name="IOS.Minimap.AddressValidation.Outcome"
-    enum="IOSAddressValidationOutcome" expires_after="2026-03-07">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-squid-squad@google.com</owner>
-  <summary>
-    The result of the revalidation of the address to avoid false positives.
-  </summary>
 </histogram>
 
 <histogram name="IOS.MiniMap.ConsentOutcome" enum="IOSMiniMapConsentOutcome"

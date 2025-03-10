@@ -4,10 +4,13 @@
 
 package org.chromium.components.media_router;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Generic interface used to control the playback of media content.
  * Changes to the media content status will be propagated via the MediaStatusObserver interface.
  */
+@NullMarked
 public interface MediaController {
     /**
      * Start playing the media if it is paused. Is a no-op if not supported by the media or the

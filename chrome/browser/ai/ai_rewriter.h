@@ -46,7 +46,7 @@ class AIRewriter : public AIContextBoundObject,
   void DidGetExecutionInputSize(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::proto::WritingAssistanceApiRequest request,
-      uint32_t number_of_tokens);
+      std::optional<uint32_t> result);
 
   void ModelExecutionCallback(
       mojo::RemoteSetElementId responder_id,

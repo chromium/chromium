@@ -3334,6 +3334,9 @@ extern const char kLinkCrossDeviceInternalsDescription[];
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 
+extern const char kAllowUserInstalledChromeAppsName[];
+extern const char kAllowUserInstalledChromeAppsDescription[];
+
 extern const char kAltClickAndSixPackCustomizationName[];
 extern const char kAltClickAndSixPackCustomizationDescription[];
 extern const char kAlwaysEnableHdcpName[];

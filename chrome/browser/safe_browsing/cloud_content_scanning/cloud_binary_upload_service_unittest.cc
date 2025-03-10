@@ -996,7 +996,8 @@ TEST_F(CloudBinaryUploadServiceTest, RequestQueue) {
     malware_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     malware_result->set_tag("malware");
-    ReceiveMessageForRequest(request->id(), simulated_response);
+    ReceiveResponseFromUpload(request->id(), true,
+                              simulated_response.SerializeAsString());
   }
   content::RunAllTasksUntilIdle();
 

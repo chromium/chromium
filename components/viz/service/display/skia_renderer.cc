@@ -125,6 +125,10 @@ BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
 BASE_FEATURE(kBufferQueue, "BufferQueue", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kFixAndroidToneMapping,
+             "FixAndroidToneMapping",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -2657,11 +2661,21 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // compositing.
   std::optional<gfx::ColorSpace> overlay_color_space;
 #if BUILDFLAG(IS_ANDROID)
-  if (quad->is_stream_video) {
+  if (base::FeatureList::IsEnabled(kFixAndroidToneMapping)) {
     // If overlay processor would override color space, override it here to to
     // avoid color changes during promotion.
-    overlay_color_space =
-        OverlayProcessorSurfaceControl::GetOverrideColorSpace();
+    if (resource_provider()->IsOverlayCandidate(quad->resource_id)) {
+      overlay_color_space =
+          OverlayProcessorSurfaceControl::GetOverrideColorSpace();
+    }
+  } else {
+    // If overlay processor would override color space, override it here to to
+    // avoid color changes during promotion. Historically this was done only for
+    // stream_video.
+    if (quad->is_stream_video) {
+      overlay_color_space =
+          OverlayProcessorSurfaceControl::GetOverrideColorSpace();
+    }
   }
 #endif
 
@@ -2677,8 +2691,10 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
-      // Don't do color conversions for stream video.
-      !quad->is_stream_video;
+      // Don't do color conversions for stream video unless
+      // FixAndroidToneMapping is enabled.
+      (!quad->is_stream_video ||
+       base::FeatureList::IsEnabled(kFixAndroidToneMapping));
 
   sk_sp<SkColorSpace> override_color_space;
   if (needs_color_conversion_filter) {

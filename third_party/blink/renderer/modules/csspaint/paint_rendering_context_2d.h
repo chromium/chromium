@@ -7,7 +7,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_rendering_context_2d_settings.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -26,7 +26,7 @@ class Color;
 // PaintRenderingContext2D operates on CSS pixels rather than physical pixels.
 class MODULES_EXPORT PaintRenderingContext2D
     : public ScriptWrappable,
-      public BaseRenderingContext2D,
+      public Canvas2DRecorderContext,
       public MemoryManagedPaintRecorder::Client {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -45,7 +45,7 @@ class MODULES_EXPORT PaintRenderingContext2D
     visitor->Trace(context_settings_);
     visitor->Trace(global_scope_);
     ScriptWrappable::Trace(visitor);
-    BaseRenderingContext2D::Trace(visitor);
+    Canvas2DRecorderContext::Trace(visitor);
   }
 
   // PaintRenderingContext2D doesn't have any pixel readback so the origin
@@ -59,8 +59,8 @@ class MODULES_EXPORT PaintRenderingContext2D
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
-  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const
-                                                 // overload.
+  using Canvas2DRecorderContext::GetPaintCanvas;  // Pull the non-const
+                                                  // overload.
   const cc::PaintCanvas* GetPaintCanvas() const final;
   const MemoryManagedPaintRecorder* Recorder() const override {
     return &paint_recorder_;
@@ -84,10 +84,6 @@ class MODULES_EXPORT PaintRenderingContext2D
   // PaintRenderingContext2D cannot lose it's context.
   bool isContextLost() const final { return false; }
 
-  // PaintRenderingContext2D uses a recording canvas, so it should never
-  // allocate a pixel buffer and is not accelerated.
-  bool CanCreateCanvas2dResourceProvider() const final { return false; }
-
   // CSS Paint doesn't have any notion of image orientation.
   RespectImageOrientationEnum RespectImageOrientation() const final {
     return kRespectImageOrientation;
@@ -110,9 +106,6 @@ class MODULES_EXPORT PaintRenderingContext2D
  protected:
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final;
   bool IsPaint2D() const override { return true; }
-
-  // PaintRenderingContext2D is unable to resolve fonts.
-  bool ResolveFont(const String& new_font) final { return false; }
 
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;

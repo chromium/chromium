@@ -335,9 +335,9 @@ void MlAnswerer::StartAndAddSession(
                      std::move(session_started)));
 
   const auto make_model_input = [](std::string text, size_t index,
-                                   uint32_t token_count) {
+                                   std::optional<uint32_t> token_count) {
     VLOG(3) << "Created model input for " << index;
-    return ModelInput{text, index, token_count};
+    return ModelInput{text, index, token_count.value_or(0)};
   };
 
   // Get token count for query, always assign index 0 to query to make a

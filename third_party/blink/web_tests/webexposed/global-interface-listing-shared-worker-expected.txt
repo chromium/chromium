@@ -1943,8 +1943,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter align
 [Worker]     getter baseline
-[Worker]     getter begin
 [Worker]     getter end
+[Worker]     getter start
 [Worker]     getter x
 [Worker]     getter y
 [Worker]     method constructor

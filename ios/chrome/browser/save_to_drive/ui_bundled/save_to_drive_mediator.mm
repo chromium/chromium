@@ -137,13 +137,13 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       _prefService->ClearPref(prefs::kIosSaveToDriveDefaultGaiaId);
       // If the selected file destination is Files, start the download
       // immediately and hide the account picker.
+      [_accountPickerHandler hideAccountPickerAnimated:YES];
       DownloadManagerTabHelper* downloadManagerTabHelper =
           DownloadManagerTabHelper::FromWebState(_webState);
       downloadManagerTabHelper->StartDownload(_downloadTask);
       base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
                                     SaveToDriveOutcome::kSuccessSelectedFiles);
       [self recordCommonHistogramsWithSuffix:".SuccessSelectedFiles"];
-      [_accountPickerHandler hideAccountPickerAnimated:YES];
       break;
     }
     case FileDestination::kDrive: {

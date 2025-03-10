@@ -4,9 +4,8 @@
 
 package org.chromium.components.collaboration.messaging;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 
@@ -18,6 +17,7 @@ import java.util.Optional;
  * //components/collaboration/public/messaging/messaging_backend_service.h. Used for accessing and
  * listening to messages related to collaboration and groups that need to be reflected in the UI.
  */
+@NullMarked
 public interface MessagingBackendService {
     /** An observer to be notified of persistent indicators that need to be shown in the UI. */
     interface PersistentMessageObserver {
@@ -77,7 +77,6 @@ public interface MessagingBackendService {
      * @param type The type of message to query to. Pass Optional.empty() to return all message
      *     types.
      */
-    @NonNull
     List<PersistentMessage> getMessagesForTab(
             EitherTabId tabId, Optional</* @PersistentNotificationType */ Integer> type);
 
@@ -92,7 +91,6 @@ public interface MessagingBackendService {
      * @param groupId The ID of the group to scope messages to.
      * @param type The message type to query for. Pass Optional.empty() to return all message types.
      */
-    @NonNull
     List<PersistentMessage> getMessagesForGroup(
             EitherGroupId groupId, Optional</* @PersistentNotificationType */ Integer> type);
 
@@ -105,7 +103,6 @@ public interface MessagingBackendService {
      *
      * @param type The message type to query for. Pass Optional.empty() to return all message types.
      */
-    @NonNull
     List<PersistentMessage> getMessages(Optional</* @PersistentNotificationType */ Integer> type);
 
     /**
@@ -116,7 +113,6 @@ public interface MessagingBackendService {
      *
      * @param params The query params (e.g. collaboration ID).
      */
-    @NonNull
     List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params);
 
     /**

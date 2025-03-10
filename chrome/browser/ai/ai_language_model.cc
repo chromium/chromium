@@ -305,11 +305,8 @@ void AILanguageModel::SetInitialPrompts(
 void AILanguageModel::InitializeContextWithInitialPrompts(
     Context::ContextItem initial_prompts,
     CreateLanguageModelCallback callback,
-    uint32_t size) {
-  // If the on device model service fails to get the size, it will be 0.
-  // TODO(crbug.com/351935691): make sure the error is explicitly returned and
-  // handled accordingly.
-  if (!size) {
+    std::optional<uint32_t> result) {
+  if (!result.has_value()) {
     std::move(callback).Run(
         base::unexpected(blink::mojom::AIManagerCreateClientError::
                              kUnableToCalculateTokenSize),
@@ -317,6 +314,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
     return;
   }
 
+  uint32_t size = result.value();
   uint32_t max_token = context_->max_tokens();
   if (size > max_token) {
     // The session cannot be created if the system prompt contains more tokens
@@ -403,7 +401,7 @@ void AILanguageModel::ModelExecutionCallback(
 void AILanguageModel::PromptGetInputSizeCompletion(
     mojo::RemoteSetElementId responder_id,
     Context::ContextItem current_item,
-    uint32_t number_of_tokens) {
+    std::optional<uint32_t> result) {
   if (!session_) {
     // If the session is destroyed before this callback is invoked, we should
     // not do anything further.
@@ -418,14 +416,21 @@ void AILanguageModel::PromptGetInputSizeCompletion(
     return;
   }
 
-  auto result = context_->ReserveSpace(number_of_tokens);
-  if (result == Context::SpaceReservationResult::kInsufficientSpace) {
+  if (!result.has_value()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+    return;
+  }
+
+  uint32_t number_of_tokens = result.value();
+  auto space_reserved = context_->ReserveSpace(number_of_tokens);
+  if (space_reserved == Context::SpaceReservationResult::kInsufficientSpace) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
     return;
   }
 
-  if (result == Context::SpaceReservationResult::kSpaceMadeAvailable) {
+  if (space_reserved == Context::SpaceReservationResult::kSpaceMadeAvailable) {
     responder->OnContextOverflow();
   }
   current_item.tokens = number_of_tokens;
@@ -648,8 +653,11 @@ void AILanguageModel::CountPromptTokens(
       base::BindOnce(
           [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
                  client_remote,
-             uint32_t number_of_tokens) {
-            client_remote->OnResult(number_of_tokens);
+             std::optional<uint32_t> result) {
+            // TODO(crbug.com/351935691): Explicitly return an error. Consider
+            // introducing a callback instead of remote client, as it's done
+            // for Writing Assistance APIs.
+            client_remote->OnResult(result.value_or(0));
           },
           mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>(
               std::move(client))));

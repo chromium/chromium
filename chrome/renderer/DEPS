@@ -76,7 +76,7 @@ include_rules = [
   "+components/strings/grit",
   "+components/subresource_filter/content/common",
   "+components/subresource_filter/content/renderer",
-  "+components/subresource_filter/core/common/common_features.h",
+  "+components/subresource_filter/core/common",
   "+components/supervised_user/core/common",
   "+components/sync/base/features.h",
   "+components/translate/content/common",

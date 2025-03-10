@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(WebUIUrlHashesBrowserTest, UrlsInHistogram) {
   }
   EXPECT_TRUE(missing_entries.empty())
       << "Please add this line to enum WebUIUrlHashes in "
-         "//tools/metrics/histograms/enums.xml:"
+         "//tools/metrics/histograms/metadata/ui/enums.xml:"
       << std::endl
       << base::JoinString(missing_entries, "\n");
 }

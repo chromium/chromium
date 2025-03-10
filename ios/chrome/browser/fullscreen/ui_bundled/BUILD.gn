@@ -45,6 +45,8 @@ source_set("internal") {
   sources = [
     "fullscreen_browser_observer.h",
     "fullscreen_browser_observer.mm",
+    "fullscreen_constants.h",
+    "fullscreen_constants.mm",
     "fullscreen_content_adjustment_util.h",
     "fullscreen_content_adjustment_util.mm",
     "fullscreen_controller_impl.h",

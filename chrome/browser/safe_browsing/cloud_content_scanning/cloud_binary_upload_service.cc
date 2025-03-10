@@ -469,6 +469,12 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
       IsConsumerScanRequest(*request) ? "ConsumerUpload" : "EnterpriseUpload";
   auto callback = base::BindOnce(&CloudBinaryUploadService::OnUploadComplete,
                                  weakptr_factory_.GetWeakPtr(), request_id);
+  auto verdict_received_callback =
+      base::BindOnce(&CloudBinaryUploadService::OnGetContentAnalysisResponse,
+                     weakptr_factory_.GetWeakPtr(), request_id);
+  auto content_uploaded_callback =
+      base::BindOnce(&CloudBinaryUploadService::OnContentUploaded,
+                     weakptr_factory_.GetWeakPtr(), request_id);
   std::unique_ptr<ConnectorUploadRequest> upload_request;
   if (request->IsAuthRequest() || !data.contents.empty()) {
     upload_request = MultipartUploadRequest::CreateStringRequest(
@@ -480,7 +486,9 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
             ? ResumableUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, result, data.path,
                   data.size, data.is_obfuscated, histogram_suffix,
-                  std::move(traffic_annotation), std::move(callback))
+                  std::move(traffic_annotation),
+                  std::move(verdict_received_callback),
+                  std::move(content_uploaded_callback))
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, data.path, data.size,
                   data.is_obfuscated, histogram_suffix,
@@ -492,7 +500,9 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
             ? ResumableUploadRequest::CreatePageRequest(
                   url_loader_factory_, url, metadata, result,
                   std::move(data.page), histogram_suffix,
-                  std::move(traffic_annotation), std::move(callback))
+                  std::move(traffic_annotation),
+                  std::move(verdict_received_callback),
+                  std::move(content_uploaded_callback))
             : MultipartUploadRequest::CreatePageRequest(
                   url_loader_factory_, url, metadata, std::move(data.page),
                   histogram_suffix, std::move(traffic_annotation),
@@ -518,33 +528,48 @@ void CloudBinaryUploadService::OnUploadComplete(
     bool success,
     int http_status,
     const std::string& response_data) {
+  OnGetContentAnalysisResponse(request_id, success, http_status, response_data);
+  OnContentUploaded(request_id);
+}
+
+void CloudBinaryUploadService::OnContentUploaded(Request::Id request_id) {
+  if (Request* request = GetRequest(request_id); request) {
+    CleanupRequest(request);
+  }
+}
+
+void CloudBinaryUploadService::OnGetContentAnalysisResponse(
+    Request::Id request_id,
+    bool success,
+    int http_status,
+    const std::string& response_data) {
   Request* request = GetRequest(request_id);
   if (!request) {
     return;
   }
 
   if (http_status == net::HTTP_UNAUTHORIZED) {
-    FinishAndCleanupRequest(request, Result::UNAUTHORIZED,
-                            enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(request, Result::UNAUTHORIZED,
+                  enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (http_status == net::HTTP_TOO_MANY_REQUESTS) {
-    FinishAndCleanupRequest(request, Result::TOO_MANY_REQUESTS,
-                            enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(request, Result::TOO_MANY_REQUESTS,
+                  enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (!success) {
-    FinishAndCleanupRequest(request, Result::UPLOAD_FAILURE,
-                            enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(request, Result::UPLOAD_FAILURE,
+                  enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   enterprise_connectors::ContentAnalysisResponse response;
   if (!response.ParseFromString(response_data)) {
-    FinishAndCleanupRequest(request, Result::UPLOAD_FAILURE,
-                            enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(request, Result::UPLOAD_FAILURE,
+                  enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
@@ -595,7 +620,7 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
   // response.
   Result result =
       response_is_complete ? Result::SUCCESS : Result::INCOMPLETE_RESPONSE;
-  FinishAndCleanupRequest(request, result, std::move(response));
+  FinishRequest(request, result, std::move(response));
 }
 
 void CloudBinaryUploadService::FinishIfActive(

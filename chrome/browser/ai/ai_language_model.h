@@ -189,7 +189,7 @@ class AILanguageModel : public AIContextBoundObject,
  private:
   void PromptGetInputSizeCompletion(mojo::RemoteSetElementId responder_id,
                                     Context::ContextItem current_item,
-                                    uint32_t number_of_tokens);
+                                    std::optional<uint32_t> result);
   void ModelExecutionCallback(
       const Context::ContextItem& current_item,
       mojo::RemoteSetElementId responder_id,
@@ -198,7 +198,7 @@ class AILanguageModel : public AIContextBoundObject,
 
   void InitializeContextWithInitialPrompts(Context::ContextItem initial_prompts,
                                            CreateLanguageModelCallback callback,
-                                           uint32_t size);
+                                           std::optional<uint32_t> result);
 
   // Returns the copy of `expected_input_languages_` for the
   // `AILanguageModelInstanceInfo` or cloning.

@@ -57,7 +57,7 @@ class String;
 
 namespace blink {
 
-class BaseRenderingContext2D;
+class Canvas2DRecorderContext;
 class CSSValue;
 class CanvasFilter;
 class CanvasGradient;
@@ -162,7 +162,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
                                gfx::Size canvas_size,
                                CanvasRenderingContext2D*);
   sk_sp<PaintFilter> GetFilterForOffscreenCanvas(gfx::Size canvas_size,
-                                                 BaseRenderingContext2D*);
+                                                 Canvas2DRecorderContext*);
   ALWAYS_INLINE bool IsFilterUnresolved() const {
     return filter_state_ == FilterState::kUnresolved;
   }

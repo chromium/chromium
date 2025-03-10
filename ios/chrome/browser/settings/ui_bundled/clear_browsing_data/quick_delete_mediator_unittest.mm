@@ -11,6 +11,7 @@
 #import "components/browsing_data/core/counters/history_counter.h"
 #import "components/browsing_data/core/counters/passwords_counter.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
@@ -84,6 +86,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
         BrowsingDataRemoverFactory::GetForProfile(profile_.get());
     DiscoverFeedService* discover_feed_service =
         DiscoverFeedServiceFactory::GetForProfile(profile_.get());
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get());
 
     mediator_ =
         [[QuickDeleteMediator alloc] initWithPrefs:profile_.get()->GetPrefs()
@@ -93,7 +97,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
                                browsingDataRemover:browsing_data_remover
                                discoverFeedService:discover_feed_service
                     canPerformTabsClosureAnimation:NO
-                                   uiBlockerTarget:scene_state_];
+                                   uiBlockerTarget:scene_state_
+                          featureEngagementTracker:tracker];
   }
 
   ~QuickDeleteMediatorTest() override {

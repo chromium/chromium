@@ -132,7 +132,7 @@ void AISummarizer::Summarize(
 void AISummarizer::DidGetExecutionInputSize(
     mojo::RemoteSetElementId responder_id,
     optimization_guide::proto::SummarizeRequest request,
-    uint32_t number_of_tokens) {
+    std::optional<uint32_t> result) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
@@ -147,7 +147,13 @@ void AISummarizer::DidGetExecutionInputSize(
     return;
   }
 
-  if (number_of_tokens > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
+  if (!result.has_value()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+    return;
+  }
+
+  if (result.value() > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
     return;

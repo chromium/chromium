@@ -2467,15 +2467,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testSetTabGroupSyncId() {
-        String prefKey = String.valueOf(TAB2_ROOT_ID);
-        mTabGroupModelFilter.setTabGroupSyncId(TAB2_ROOT_ID, "Foo");
-        verify(mEditor).putString(eq(prefKey), eq("Foo"));
-        mTabGroupModelFilter.getTabGroupSyncId(TAB2_ROOT_ID);
-        verify(mSharedPreferencesSyncId).getString(eq(prefKey), eq(null));
-    }
-
-    @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseGroup_Hiding_Undone() {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);

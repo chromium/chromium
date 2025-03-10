@@ -102,6 +102,7 @@ UIView* CreateIconContainer() {
         [UIColor colorNamed:kGrey600Color], [UIColor colorNamed:kGrey200Color]
       ]);
   self.customDismissBarButtonImage = xmarkSymbol;
+  self.actionHandler = self;
   [super viewDidLoad];
   [self layoutAlertScreen];
 }

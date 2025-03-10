@@ -28,47 +28,46 @@ class FingerprintingProtectionFilterAndroidBrowserTest
         /*disabled_features=*/{});
   }
 
-  void SetUpOnMainThread() override {
-    FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
-    // Reset the source directory for sample files.
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterAndroidBrowserTest,
                        MainFrameActivation) {
-  // TODO(crbug.com/386089639): Use GetTestUrl() when localhost subresource
-  // requests are no longer ignored.
-  GURL url = embedded_test_server()->GetURL("a.example",
-                                            "/frame_with_included_script.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a = GetTestUrl("/frame_with_included_script.html");
+  GURL url_b = GetCrossSiteTestUrl("/included_script.js");
 
-  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
+  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(NavigateToDestination(url_a));
+  UpdateIncludedScriptSource(url_b);
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
-  // Navigate to about:blank first to avoid reusing the current ruleset for the
-  // next check.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+  // Use frame_with_no_subresources.html so the only version of
+  // "/included_script.js" navigated to is on domain cross-origin.test.
+  ASSERT_TRUE(
+      NavigateToDestination(GetTestUrl("/frame_with_no_subresources.html")));
+  UpdateIncludedScriptSource(url_b);
 
   ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
-  // Navigate to about:blank first to avoid reusing the current ruleset for the
-  // next check.
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(NavigateToDestination(url_a));
 
   // The root frame document should never be filtered.
-  SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
+  UpdateIncludedScriptSource(url_b);
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }

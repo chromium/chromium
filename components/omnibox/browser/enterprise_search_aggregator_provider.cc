@@ -193,6 +193,7 @@ MatchType GetWordMatchType(std::u16string word,
 // Returns 0 if the match should be filtered out.
 int CalculateRelevance(
     std::set<std::u16string> input_words,
+    bool in_keyword_mode,
     AutocompleteMatch::EnterpriseSearchAggregatorType suggestion_type,
     const std::string& description,
     const std::string& contents,
@@ -227,7 +228,7 @@ int CalculateRelevance(
   }
 
   // Skip if there aren't at least 1 strong match or 2 weak matches.
-  if (strong_matches == 0 && weak_matches < 2) {
+  if (!in_keyword_mode && strong_matches == 0 && weak_matches < 2) {
     return 0;
   }
 
@@ -570,9 +571,9 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     auto additional_scoring_fields =
         GetAdditionalScoringFields(result, suggestion_type);
-    int relevance =
-        CalculateRelevance(input_words, suggestion_type, description, contents,
-                           additional_scoring_fields);
+    int relevance = CalculateRelevance(
+        input_words, adjusted_input_.InKeywordMode(), suggestion_type,
+        description, contents, additional_scoring_fields);
     if (!relevance) {
       continue;
     }

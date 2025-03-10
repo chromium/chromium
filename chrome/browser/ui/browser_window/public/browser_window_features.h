@@ -21,6 +21,7 @@ class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
+class HistorySidePanelCoordinator;
 class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
@@ -119,6 +120,10 @@ class BrowserWindowFeatures {
 
   media_router::CastBrowserController* cast_browser_controller() {
     return cast_browser_controller_.get();
+  }
+
+  HistorySidePanelCoordinator* history_side_panel_coordinator() {
+    return history_side_panel_coordinator_.get();
   }
 
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
@@ -223,6 +228,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<MemorySaverOptInIPHController>
       memory_saver_opt_in_iph_controller_;
+
+  std::unique_ptr<HistorySidePanelCoordinator> history_side_panel_coordinator_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 

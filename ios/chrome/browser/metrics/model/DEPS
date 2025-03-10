@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/parcel_tracking",
+  "+ios/chrome/browser/first_run/ui_bundled",
 ]
 
 specific_include_rules = {
