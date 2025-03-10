@@ -26,6 +26,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -40,7 +41,12 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 

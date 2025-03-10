@@ -32,6 +32,7 @@
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
