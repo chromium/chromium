@@ -451,7 +451,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   content_settings::ContentSettingConstraints constraints;
   manager.UndoRegrantPermissionForOriginIfNecessary(
-      GURL(url1), abusive_permission_types, constraints);
+      GURL(url1), abusive_permission_types, std::move(constraints));
   EXPECT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       2u);

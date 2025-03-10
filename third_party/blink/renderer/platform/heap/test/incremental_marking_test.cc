@@ -569,23 +569,14 @@ void Swap() {
   container2->insert(obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  std::swap(*container1, *container2);
-  driver.FinishGC();
-  EXPECT_TRUE(obj1);
-  EXPECT_TRUE(obj2);
-}
-
-template <typename Container>
-void SwapExplicit() {
-  WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
-  WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  Container* container1 = MakeGarbageCollected<Container>();
-  container1->insert(obj1.Get());
-  Container* container2 = MakeGarbageCollected<Container>();
-  container2->insert(obj2.Get());
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.StartGC();
-  container1->Swap(*container2);
+  if constexpr (requires(Container& c) { c.swap(c); }) {
+    container1->swap(*container2);
+  } else if constexpr (requires(Container& c) { c.Swap(c); }) {
+    container1->Swap(*container2);
+  } else {
+    // Container should support either Swap() or swap().
+    static_assert(false);
+  }
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_TRUE(obj2);
@@ -594,27 +585,27 @@ void SwapExplicit() {
 }  // namespace
 
 TEST_F(IncrementalMarkingTest, HeapHashSetInsert) {
-  Insert<HeapHashSet<Member<LinkedObject>>>();
+  Insert<GCedHeapHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Insert<HeapHashSet<WeakMember<LinkedObject>>>();
+  Insert<GCedHeapHashSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapHashSetCopy) {
-  Copy<HeapHashSet<Member<LinkedObject>>>();
+  Copy<GCedHeapHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Copy<HeapHashSet<WeakMember<LinkedObject>>>();
+  Copy<GCedHeapHashSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapHashSetMove) {
-  Move<HeapHashSet<Member<LinkedObject>>>();
+  Move<GCedHeapHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Move<HeapHashSet<WeakMember<LinkedObject>>>();
+  Move<GCedHeapHashSet<WeakMember<LinkedObject>>>();
 }
 
 TEST_F(IncrementalMarkingTest, HeapHashSetSwap) {
-  Swap<HeapHashSet<Member<LinkedObject>>>();
+  Swap<GCedHeapHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  Swap<HeapHashSet<WeakMember<LinkedObject>>>();
+  Swap<GCedHeapHashSet<WeakMember<LinkedObject>>>();
 }
 
 // =============================================================================
@@ -640,9 +631,9 @@ TEST_F(IncrementalMarkingTest, HeapLinkedHashSetMove) {
 }
 
 TEST_F(IncrementalMarkingTest, HeapLinkedHashSetSwap) {
-  SwapExplicit<GCedHeapLinkedHashSet<Member<LinkedObject>>>();
+  Swap<GCedHeapLinkedHashSet<Member<LinkedObject>>>();
   // Weak references are strongified for the current cycle.
-  SwapExplicit<GCedHeapLinkedHashSet<WeakMember<LinkedObject>>>();
+  Swap<GCedHeapLinkedHashSet<WeakMember<LinkedObject>>>();
 }
 
 // =============================================================================

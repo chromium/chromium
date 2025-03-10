@@ -114,6 +114,7 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
   if (feature != std::end(kFeatures) && feature->name == name) {
     return feature->GetFunction();
   } else {
+    // TODO(jarhar) This will get hit for features controlled by origin trials.
     NOTREACHED() << " RuntimeEnabledFeature not recognized: " << name;
   }
 }

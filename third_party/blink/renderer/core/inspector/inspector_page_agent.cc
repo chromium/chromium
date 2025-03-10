@@ -493,7 +493,8 @@ InspectorPageAgent::InspectorPageAgent(
       inspector_resource_content_loader_(resource_content_loader),
       resource_content_loader_client_id_(
           resource_content_loader->CreateClientId()),
-      intercept_file_chooser_(&agent_state_, false),
+      suppress_file_chooser_(&agent_state_, false),
+      cancel_file_chooser_(&agent_state_, false),
       enabled_(&agent_state_, /*default_value=*/false),
       enable_file_chooser_opened_event_(&agent_state_,
                                         /*default_value=*/false),
@@ -1965,11 +1966,11 @@ void InspectorPageAgent::DidProduceCompilationCache(
 void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
                                            HTMLInputElement* element,
                                            bool multiple,
-                                           bool* intercepted) {
-  *intercepted |= intercept_file_chooser_.Get();
-  if (intercept_file_chooser_.Get() ||
-      enable_file_chooser_opened_event_.Get()) {
-    // Emit event if interception or only event is enabled.
+                                           bool* suppressed,
+                                           bool* canceled) {
+  *suppressed |= suppress_file_chooser_.Get();
+  *canceled |= cancel_file_chooser_.Get();
+  if (suppress_file_chooser_.Get() || enable_file_chooser_opened_event_.Get()) {
     GetFrontend()->fileChooserOpened(
         IdentifiersFactory::FrameId(frame),
         multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
@@ -2013,8 +2014,11 @@ protocol::Response InspectorPageAgent::waitForDebugger() {
 }
 
 protocol::Response InspectorPageAgent::setInterceptFileChooserDialog(
-    bool enabled) {
-  intercept_file_chooser_.Set(enabled);
+    bool enabled,
+    std::optional<bool> cancel) {
+  suppress_file_chooser_.Set(enabled);
+  // Cancel file chooser only if interception is enabled.
+  cancel_file_chooser_.Set(enabled && cancel.value_or(false));
   return protocol::Response::Success();
 }
 

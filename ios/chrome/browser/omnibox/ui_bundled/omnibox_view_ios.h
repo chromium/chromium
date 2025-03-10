@@ -103,7 +103,6 @@ class OmniboxViewIOS : public OmniboxView,
   void OnDeleteBackward() override;
   void OnAcceptAutocomplete() override;
   void OnRemoveAdditionalText() override;
-  void RemoveThumbnail() override;
 
   // OmniboxTextAcceptDelegate methods
   void OnAccept() override;

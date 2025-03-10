@@ -56,7 +56,6 @@ FUZZERS_WITH_CORPORA = [
     'comfort_noise_decoder_fuzzer',
     'command_line_fuzzer',
     'compact_enc_det_fuzzer',
-    'compositor_frame_fuzzer',
     'content_security_policy_conversion_util_fuzzer',
     'content_security_policy_util_fuzzer',
     'content_sms_parser_fuzzer',

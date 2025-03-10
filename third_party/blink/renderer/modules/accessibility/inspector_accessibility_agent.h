@@ -164,7 +164,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   HashSet<AXID> nodes_requested_;
   // The collected dirty AXObjects that should be refreshed in the AX tree view
   // in DevTools.
-  HeapHashMap<WeakMember<Document>, Member<HeapHashSet<WeakMember<AXObject>>>>
+  HeapHashMap<WeakMember<Document>,
+              Member<GCedHeapHashSet<WeakMember<AXObject>>>>
       dirty_nodes_;
   // Time when every document was synced.
   HeapHashMap<WeakMember<Document>, base::Time> last_sync_times_;

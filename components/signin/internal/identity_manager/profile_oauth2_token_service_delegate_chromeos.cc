@@ -223,8 +223,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentialsInternal(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
+    const CoreAccountId& primary_account_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (load_credentials_state() !=

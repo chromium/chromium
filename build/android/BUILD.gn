@@ -115,6 +115,9 @@ if (defined(sanitizer_arch)) {
       "--output",
       rebase_path(outputs[0], root_build_dir),
     ]
+    if (is_hwasan) {
+      args += [ "--is_hwasan" ]
+    }
   }
 }
 

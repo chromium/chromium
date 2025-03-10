@@ -424,6 +424,8 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "contenteditable";
     case FormControlType::kInputCheckbox:
       return "checkbox";
+    case FormControlType::kInputDate:
+      return "date";
     case FormControlType::kInputEmail:
       return "email";
     case FormControlType::kInputMonth:

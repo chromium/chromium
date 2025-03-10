@@ -46,7 +46,7 @@ class FileSystemObservationCollection final
   // for as long as there are active observations. As such, it is a Member of
   // the HeapHashMap.
   HeapHashMap<Member<FileSystemObserver>,
-              Member<HeapHashSet<Member<FileSystemObservation>>>>
+              Member<GCedHeapHashSet<Member<FileSystemObservation>>>>
       observation_map_;
 };
 

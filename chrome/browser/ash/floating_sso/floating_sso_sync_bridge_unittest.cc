@@ -271,6 +271,13 @@ TEST_F(FloatingSsoSyncBridgeTest, ServerAsksToDeleteNonPresentCookie) {
 
 TEST_F(FloatingSsoSyncBridgeTest, MergeFullSyncData) {
   auto initial_entries_copy = bridge().CookieSpecificsInStore();
+
+  // This test future is used to check that `MergeFullSyncData` triggers the
+  // callback set via `SetOnMergeFullSyncDataCallback`.
+  base::test::TestFuture<void> merge_full_sync_data_future;
+  bridge().SetOnMergeFullSyncDataCallback(
+      merge_full_sync_data_future.GetCallback());
+
   // This should make us prefer the local version of the cookie with the given
   // key during conflict resolution in
   // `FloatingSsoSyncBridge::MergeFullSyncData`;
@@ -333,6 +340,28 @@ TEST_F(FloatingSsoSyncBridgeTest, MergeFullSyncData) {
                   base::test::EqualsProto(initial_entries_copy.at(key)));
     }
   }
+  EXPECT_TRUE(merge_full_sync_data_future.Wait());
+}
+
+TEST_F(FloatingSsoSyncBridgeTest, MergeFullSyncDataCallbackSetLate) {
+  syncer::EntityChangeList remote_entities;
+  // Some cookie - this test doesn't care about specific cookie values.
+  sync_pb::CookieSpecifics new_remote_cookie = CreateCookieSpecificsForTest(
+      kNewUniqueKey, kNewName, /*creation_time=*/base::Time::Now());
+  remote_entities.push_back(syncer::EntityChange::CreateAdd(
+      new_remote_cookie.unique_key(),
+      CreateEntityDataForTest(new_remote_cookie)));
+
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(remote_entities));
+
+  // Check that the callback set via `SetOnMergeFullSyncDataCallback` will be
+  // called even when we set the callback after `MergeFullSyncData` was already
+  // executed.
+  base::test::TestFuture<void> merge_full_sync_data_future;
+  bridge().SetOnMergeFullSyncDataCallback(
+      merge_full_sync_data_future.GetCallback());
+  EXPECT_TRUE(merge_full_sync_data_future.Wait());
 }
 
 TEST_F(FloatingSsoSyncBridgeTest, AddOrUpdateCookie) {

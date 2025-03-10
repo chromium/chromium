@@ -1,0 +1,14 @@
+# TODO(crbug.com/401453195): Diagnose and fix these failures.
+-All/PaintArtifactCompositorTest.DirectlySetScrollOffset/0
+-All/PaintArtifactCompositorTest.DirectlySetScrollOffset/1
+-All/PaintArtifactCompositorTest.DirectlySetScrollOffset/2
+-All/PaintArtifactCompositorTest.DirectlySetScrollOffset/3
+-All/PaintArtifactCompositorTest.NoCommitRequestForUnchangedScroll/0
+-All/PaintArtifactCompositorTest.NoCommitRequestForUnchangedScroll/1
+-All/PaintArtifactCompositorTest.NoCommitRequestForUnchangedScroll/2
+-All/PaintArtifactCompositorTest.NoCommitRequestForUnchangedScroll/3
+-All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/0
+-All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/1
+-All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/2
+-All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/3
+-VideoFrameCompositorTest.SetIsSurfaceVisible

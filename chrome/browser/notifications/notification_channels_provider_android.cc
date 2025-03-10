@@ -133,7 +133,7 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
             ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
             ContentSettingsPattern::Wildcard(),
             base::Value(ChannelStatusToContentSetting(channel.status)),
-            metadata);
+            std::move(metadata));
     index_++;
     return rule;
   }
@@ -360,7 +360,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   InitCachedChannels(base::BindOnce(
       &NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl,
       weak_factory_.GetWeakPtr(), primary_pattern, secondary_pattern,
-      content_type, setting, constraints));
+      content_type, setting, constraints.Clone()));
 
   if (setting == CONTENT_SETTING_DEFAULT) {
     return false;

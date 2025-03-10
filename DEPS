@@ -298,7 +298,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '6c2737be88ac40f63a258c30e6a68d29feca0b1f',
+  'angle_revision': '2d03d7a18f1434fdb2b0268759b25e9efe8921e1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -382,7 +382,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '3ac28bbc212dc5b01e63b2ac63de8d6b4ac03aa8',
+  'devtools_frontend_revision': 'f86595a027c38f0c949dc58b01edf5f62ae32d9a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -410,7 +410,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': 'bec5f35a4e7f2fd3e4be85b912d80701d9915a81',
+  'quiche_revision': '54ca2983f38a2629e3ba250c4826c2c233b9f60d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
@@ -490,7 +490,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libunwind_revision':    '62e217a12ee1133833d9890b2f7adde900e4efbd',
+  'libunwind_revision':    'e2e6f2a67e9420e770b014ce9bba476fa2ab9874',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1470,7 +1470,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'a1d41c4ae3fea37cfae85c8ae22595159ae135b9',
+    '85a08b4c0b2dcaf86265692d71c8d147f0122c37',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2690,7 +2690,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'gGadR6V7o2SmjHbzW1l6XTqevp9W46BjXFPojfAxGucC',
+              'version': 'BGYNB46xHask4pPhdBew2BvSMbUQQoEBFTm2BwOW0s0C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3000,7 +3000,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'dzPU_m9IxhqBnbEc30IaFFcmC7pWmrX3XgpkwJSIvesC',
+        'version': 'uk8oZcYjsEQuyVqpGKu1YgZ2FlL5eYPC0n6H-7YeoZgC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3055,7 +3055,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'mkzekdJtAjeL60kOYYzqz5YPypsJ7wSBb5yjuysbY7QC',
+        'version': 'wYwV2GszE53DvjbcF90id6Ejw1odmMwKqm2RyuJ9bp4C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4548,7 +4548,7 @@ deps = {
 
   'src/components/autofill/core/browser/form_parsing/internal_resources': {
       'url': Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
-        'e14c4405af5784723e2866e56f73f8d6717b5e23',
+        'b8f9e66152145efa553fdec319412b3fe46135aa',
       'condition': 'checkout_src_internal',
   },
 
@@ -4637,7 +4637,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '132439a2be6b4cd56a89b91d5a0129b8eb283f20',
+        '2e7007aae759728cdbae54bc4b3ae0dec4a7a6ba',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

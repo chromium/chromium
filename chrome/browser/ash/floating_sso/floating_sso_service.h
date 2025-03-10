@@ -62,6 +62,11 @@ class FloatingSsoService : public KeyedService,
   // progress. This can be called repeatedly but only the latest callback will
   // be executed.
   void RunWhenCookiesAreReady(base::OnceClosure callback);
+  // `callback` will be run once the bridge executes `MergeFullSyncData` method
+  // (which can only happen when Sync is being enabled for the first time on
+  // this client) and once conditions for `RunWhenCookiesAreReady` are also
+  // satisfied.
+  void RunWhenCookiesAreReadyOnFirstSync(base::OnceClosure callback);
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
   // Signal that this cookie shouldn't be overridden with remote

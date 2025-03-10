@@ -945,13 +945,13 @@ void InspectorCSSAgent::SetActiveStyleSheets(
     Document* document,
     const HeapVector<Member<CSSStyleSheet>>& all_sheets_vector) {
   auto it = document_to_css_style_sheets_.find(document);
-  HeapHashSet<Member<CSSStyleSheet>>* document_css_style_sheets = nullptr;
+  GCedHeapHashSet<Member<CSSStyleSheet>>* document_css_style_sheets = nullptr;
 
   if (it != document_to_css_style_sheets_.end()) {
     document_css_style_sheets = it->value;
   } else {
     document_css_style_sheets =
-        MakeGarbageCollected<HeapHashSet<Member<CSSStyleSheet>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<CSSStyleSheet>>>();
     document_to_css_style_sheets_.Set(document, document_css_style_sheets);
   }
 

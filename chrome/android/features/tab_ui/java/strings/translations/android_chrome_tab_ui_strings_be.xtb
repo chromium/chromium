@@ -31,6 +31,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="1909810060368225529">Апавяшчэнне. Усе карыстальнікі бачаць змяненні, унесеныя ў гэту абагуленую групу ўкладак. Кожны карыстальнік можа ўносіць змяненні ў вашы абагуленыя групы ўкладак</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Дадаць у закладкі <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
+<translation id="2055057176188061528">Выберыце групу ўкладак або стварыце новую</translation>
 <translation id="2118649612461486615">Звесткі пра краму</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – укладка ў рэжыме інкогніта.}one{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладка ў рэжыме інкогніта.}few{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}many{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладак у рэжыме інкогніта.}other{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}}</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
@@ -67,6 +68,7 @@
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="3547352561153509682">Група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая ўкладка}one{<ph name="MANY_ADDED" /> новая ўкладка}few{<ph name="MANY_ADDED" /> новыя ўкладкі}many{<ph name="MANY_ADDED" /> новых укладак}other{<ph name="MANY_ADDED" /> новай укладкі}}</translation>
 <translation id="3613492231657284463">Схаваць дыялогавае акно "Неактыўныя ўкладкі"</translation>
 <translation id="3619255692378312441">Кіраванне доступам</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="381219490185664296">Разгрупаваць групу ўкладак?</translation>
 <translation id="3940195383040445971">Адсочванне цэн на ўкладках</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая ўкладка; закрыта: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> новая ўкладка; закрыта: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> новыя ўкладкі; закрыта: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> новых укладак; закрыта: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> новай укладкі; закрыта: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Дадаць укладку ў групу}one{Згрупаваць укладкі}few{Згрупаваць укладкі}many{Згрупаваць укладкі}other{Згрупаваць укладкі}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактыўная ўкладка}one{<ph name="TABS_COUNT_MANY" /> неактыўная ўкладка}few{<ph name="TABS_COUNT_MANY" /> неактыўныя ўкладкі}many{<ph name="TABS_COUNT_MANY" /> неактыўных укладак}other{<ph name="TABS_COUNT_MANY" /> неактыўнай укладкі}}</translation>
 <translation id="3969565576924904454">Адкрыць групу "<ph name="TITLE_OF_GROUP" />"</translation>

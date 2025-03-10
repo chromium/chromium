@@ -79,6 +79,10 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // `callback` will be run immediately if `MergeFullSyncData` was already
+  // called.
+  void SetOnMergeFullSyncDataCallback(base::OnceClosure callback);
+
   // Cookie corresponding to `storage_key` will not be overridden by remote
   // cookie on initial merge of Sync data.
   void AddToLocallyPreferredCookies(const std::string& storage_key);
@@ -99,12 +103,18 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   void OnStoreCommit(const std::optional<syncer::ModelError>& error);
   void CommitToStore(std::unique_ptr<StoreWithCache::WriteBatch> batch);
   bool IsCookieInStore(const std::string& storage_key) const;
+  void OnMergeFullSyncDataFinished();
 
   // Whether we finished reading data and metadata from disk on initial bridge
   // creation.
   bool is_initial_data_read_finished_ = false;
 
   base::RepeatingClosure on_store_commit_callback_for_test_;
+
+  // Whether `MergeFullSyncData()` was executed.
+  bool merge_full_sync_data_finished_ = false;
+
+  base::OnceClosure on_merge_full_sync_data_callback_;
 
   // Reads and writes data from/to disk, maintains an in-memory copy of the
   // data.

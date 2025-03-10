@@ -163,6 +163,16 @@ EmbeddedPermissionPrompt::GetPromptPosition() const {
   return std::nullopt;
 }
 
+std::optional<gfx::Rect> EmbeddedPermissionPrompt::GetViewBoundsInScreen()
+    const {
+  if (prompt_view_tracker_.view()) {
+    // This is a modal prompt, the view bounds will cover the whole content
+    // view.
+    return web_contents()->GetContainerBounds();
+  }
+  return std::nullopt;
+}
+
 void EmbeddedPermissionPrompt::Allow() {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(

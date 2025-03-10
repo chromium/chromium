@@ -1174,7 +1174,7 @@
   {
     "name": "canvas-2d-hibernation",
     "owners": [ "lizeb@chromium.org", "clank-performance-team@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 138
   },
   {
     "name": "canvas-2d-layers",
@@ -5328,6 +5328,11 @@
     "name": "ios-new-share-extension",
     "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 140
+  },
+  {
+    "name": "ios-one-tap-mini-map-restrictions",
+    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 145
   },
   {
     "name": "ios-page-info-last-visited",

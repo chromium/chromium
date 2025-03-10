@@ -58,7 +58,6 @@ using ::blink::WebString;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
-using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
@@ -200,6 +199,12 @@ auto HasRendererIdOf(const WebFormControlElement& e) {
                   GetFieldRendererId(e));
 }
 
+auto FormControlTypesAre(auto&&... form_control_types) {
+  return ElementsAre(Property("form_control_type",
+                              &FormFieldData::form_control_type,
+                              form_control_types)...);
+}
+
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
                             const ButtonTitlesCache& actual_cache) {
@@ -254,6 +259,62 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   scoped_refptr<FieldDataManager> field_data_manager_ =
       base::MakeRefCounted<FieldDataManager>();
 };
+
+// Tests that some form control types are extracted by ExtractFormData() and
+// others are not.
+TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillExtractInputDate};
+  LoadHTML(R"(
+    <form id=form-id>
+      <!-- These form controls are not extracted. -->
+      <div contenteditable></div>
+      <button type=kButtonButton>Foo</button>
+      <button type=kButtonSubmit>Foo</button>
+      <button type=kButtonReset>Foo</button>
+      <button type=kButtonPopover>Foo</button>
+      <fieldset></fieldset>
+      <input type=button>
+      <input type=color>
+      <input type=datetime-local>
+      <input type=file>
+      <input type=hidden>
+      <input type=image>
+      <input type=range>
+      <input type=reset>
+      <input type=submit>
+      <input type=time>
+      <input type=week>
+      <output>Foo</output>
+      <select multiple><option>Foo</option><option>Bar</option></select>
+
+      <!-- These form controls are extracted. -->
+      <input>
+      <input type=checkbox>
+      <input type=email>
+      <input type=month>
+      <input type=number>
+      <input type=password>
+      <input type=radio>
+      <input type=search>
+      <input type=tel>
+      <input type=text>
+      <input type=url>
+      <input type=date>
+      <select><option>Foo</option><option>Bar</option></select>
+      <textarea>Foo</textarea>
+    </form>
+  )");
+  FormData form_data =
+      *ExtractFormData(GetFormElementById(GetDocument(), "form-id"));
+  using enum FormControlType;
+  EXPECT_THAT(
+      form_data.fields(),
+      FormControlTypesAre(kInputText, kInputCheckbox, kInputEmail, kInputMonth,
+                          kInputNumber, kInputPassword, kInputRadio,
+                          kInputSearch, kInputTelephone, kInputText, kInputUrl,
+                          kInputDate, kSelectOne, kTextArea));
+}
 
 // Tests that WebFormElementToFormData() sets the
 // Form[Field]Data::{name,id_attribute,name_attribute} correctly.

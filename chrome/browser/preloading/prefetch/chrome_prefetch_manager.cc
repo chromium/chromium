@@ -69,6 +69,7 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
       GetWebContents().StartPrefetch(
           prefetch_url, use_prefetch_proxy, blink::mojom::Referrer(),
           referring_origin,
+          /*no_vary_search_hint=*/std::nullopt,
           content::PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/content::PreloadingType::
                   kPrefetch),

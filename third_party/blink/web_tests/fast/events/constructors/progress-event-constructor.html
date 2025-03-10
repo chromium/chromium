@@ -28,40 +28,50 @@ shouldBe("new ProgressEvent('eventType', { lengthComputable: false }).lengthComp
 shouldBe("new ProgressEvent('eventType', { lengthComputable: true }).lengthComputable", "true");
 
 // loaded or total is passed.
+// https://webidl.spec.whatwg.org/#js-double
 ["loaded", "total"].forEach(function (attr) {
-    // [0, 2^53 - 1]. A value that is in the unsigned long long range and can be exactly represented as a double.
+    // [0, 2^53 - 1]. A value that can be exactly represented as a double.
     shouldBe("new ProgressEvent('eventType', { " + attr + ": 0 })." + attr, "0");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": 1 })." + attr, "1");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": 9007199254740990 })." + attr, "9007199254740990");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": 9007199254740991 })." + attr, "9007199254740991");
 
     // [2^53, 2^64 - 1]. A value that is in the unsigned long long range but cannot be represented as a double.
-    // Spec: http://www.w3.org/TR/WebIDL/#es-unsigned-long-long
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": 18446744073709551615 })." + attr, "0");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": 18446744073709551615 })." + attr, "18446744073709552000");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": 12345678901234567890 })." + attr, "12345678901234567890");
 
-    // A negative number.
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": -1 })." + attr, "18446744073709551615");
+    // [2^64, Infinity). A value that is beyond the unsigned long long range but it's not Infinity.
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": 18446744073709551616 })." + attr, "18446744073709552000");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": 1234567890123456789012345678901234567890 })." + attr, "1.2345678901234568e+39");
 
-    // NaN.
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": NaN })." + attr, "0");
+    // NaN and Infinity
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": NaN })." + attr);
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": Infinity })." + attr);
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": -Infinity })." + attr);
 
     // A double.
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": 123.45 })." + attr, "123");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": 123.45 })." + attr, "123.45");
+
+    // A negative number.
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": -1 })." + attr, "-1");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": -1.5 })." + attr, "-1.5");
 
     // Non-numeric values.
     shouldBe("new ProgressEvent('eventType', { " + attr + ": undefined })." + attr, "0");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": null })." + attr, "0");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": '' })." + attr, "0");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": '12345' })." + attr, "12345");
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": '12345a' })." + attr, "0");
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": 'abc' })." + attr, "0");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": '12345.678' })." + attr, "12345.678");
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": '12345a' })." + attr);
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": 'abc' })." + attr);
     shouldBe("new ProgressEvent('eventType', { " + attr + ": [] })." + attr, "0");
     shouldBe("new ProgressEvent('eventType', { " + attr + ": [12345] })." + attr, "12345");
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": [12345, 67890] })." + attr, "0");
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": {} })." + attr, "0");
-    shouldBe("new ProgressEvent('eventType', { " + attr + ": {moe: 12345} })." + attr, "0");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": [12345.678] })." + attr, "12345.678");
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": [12345, 67890] })." + attr);
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": {} })." + attr);
+    shouldThrow("new ProgressEvent('eventType', { " + attr + ": {moe: 12345} })." + attr);
     shouldBe("new ProgressEvent('eventType', { " + attr + ": {valueOf: function () { return 12345; }} })." + attr, "12345");
+    shouldBe("new ProgressEvent('eventType', { " + attr + ": {valueOf: function () { return 12345.678; }} })." + attr, "12345.678");
 });
 
 // All initializers are passed.

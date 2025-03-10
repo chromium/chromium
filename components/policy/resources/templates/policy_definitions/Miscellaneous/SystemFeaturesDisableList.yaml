@@ -92,6 +92,9 @@ items:
 - caption: Google Maps (supported since version 135)
   name: google_maps
   value: google_maps
+- caption: Calculator (supported since version 136)
+  name: calculator
+  value: calculator
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
@@ -122,6 +125,7 @@ schema:
     - google_chat
     - youtube
     - google_maps
+    - calculator
     type: string
   type: array
 supported_on:

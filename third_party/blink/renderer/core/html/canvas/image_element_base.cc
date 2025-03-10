@@ -58,8 +58,7 @@ bool ImageElementBase::IsImageElement() const {
 scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
-    const gfx::SizeF& default_object_size,
-    const AlphaDisposition alpha_disposition) {
+    const gfx::SizeF& default_object_size) {
   ImageResourceContent* image_content = CachedImage();
   if (!GetImageLoader().ImageComplete() || !image_content) {
     *status = kIncompleteSourceImageStatus;

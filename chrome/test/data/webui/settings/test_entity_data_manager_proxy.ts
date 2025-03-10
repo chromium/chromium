@@ -33,7 +33,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     ]);
   }
 
-  setloadEntityInstancesResponse(
+  setLoadEntityInstancesResponse(
       entityInstancesWithLabels: EntityInstanceWithLabels[]): void {
     this.entityInstancesWithLabels_ = entityInstancesWithLabels;
   }

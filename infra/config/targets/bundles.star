@@ -6340,6 +6340,11 @@ targets.bundle(
                 "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
             ],
         ),
+        "blink_platform_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
+            ],
+        ),
         "cc_unittests": targets.mixin(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",

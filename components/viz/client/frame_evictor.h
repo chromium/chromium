@@ -28,9 +28,6 @@ class VIZ_CLIENT_EXPORT FrameEvictorClient {
     // `embedded_ids` contains a list of SurfaceIds embedded by the UI
     // compositor.
     std::vector<SurfaceId> embedded_ids;
-    // `ui_compositor_id`, if valid, is the SurfaceId of the UI compositor root
-    // surface to evict.
-    SurfaceId ui_compositor_id;
   };
 
   virtual ~FrameEvictorClient() = default;

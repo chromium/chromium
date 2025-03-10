@@ -114,6 +114,7 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
@@ -2067,6 +2068,60 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testAllowNotifications() {
+        new TwoStatePermissionTestCase(
+                        "Notifications",
+                        SiteSettingsCategory.Type.NOTIFICATIONS,
+                        ContentSettingsType.NOTIFICATIONS,
+                        true)
+                .withExpectedPrefKeys(SingleCategorySettings.NOTIFICATIONS_TRI_STATE_PREF_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testBlockNotifications() {
+        new TwoStatePermissionTestCase(
+                        "Notifications",
+                        SiteSettingsCategory.Type.NOTIFICATIONS,
+                        ContentSettingsType.NOTIFICATIONS,
+                        false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testAllowGeolocation() {
+        new TwoStatePermissionTestCase(
+                        "Geolocation",
+                        SiteSettingsCategory.Type.DEVICE_LOCATION,
+                        ContentSettingsType.GEOLOCATION,
+                        true)
+                .withExpectedPrefKeys(SingleCategorySettings.LOCATION_TRI_STATE_PREF_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testBlockGeolocation() {
+        new TwoStatePermissionTestCase(
+                        "Geolocation",
+                        SiteSettingsCategory.Type.DEVICE_LOCATION,
+                        ContentSettingsType.GEOLOCATION,
+                        false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     public void testAllowUsb() {
         new TwoStatePermissionTestCase(
                         "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, true)
@@ -3227,7 +3282,13 @@ public class SiteSettingsTest {
                 String testName, int siteSettingsType, int contentSettingsType, boolean enabled) {
             super(testName, siteSettingsType, contentSettingsType, enabled);
 
-            mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                    && siteSettingsType != SiteSettingsCategory.Type.ANTI_ABUSE) {
+                mExpectedPreferenceKeys.add(SingleCategorySettings.INFO_TEXT_KEY);
+                mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+            } else {
+                mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            }
         }
 
         @Override
@@ -3252,50 +3313,86 @@ public class SiteSettingsTest {
                             + mSiteSettingsType
                             + ">.";
 
-            ChromeSwitchPreference toggle =
-                    singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
-            assertNotNull("Toggle should not be null.", toggle);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                BinaryStatePermissionPreference radioButton =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                assertNotNull("Toggle should not be null.", radioButton);
 
-            singleCategorySettings.onPreferenceChange(toggle, mIsCategoryEnabled);
-            Assert.assertEquals(
-                    exceptionString,
-                    mIsCategoryEnabled,
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), mContentSettingsType));
+                singleCategorySettings.onPreferenceChange(radioButton, mIsCategoryEnabled);
+                Assert.assertEquals(
+                        exceptionString,
+                        mIsCategoryEnabled,
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                getBrowserContextHandle(), mContentSettingsType));
+            } else {
+                ChromeSwitchPreference toggle =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_TOGGLE_KEY);
+                assertNotNull("Toggle should not be null.", toggle);
+
+                singleCategorySettings.onPreferenceChange(toggle, mIsCategoryEnabled);
+                Assert.assertEquals(
+                        exceptionString,
+                        mIsCategoryEnabled,
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                getBrowserContextHandle(), mContentSettingsType));
+            }
         }
 
         /** Verfiy {@link ContentSettingsResources} is set correctly. */
         private void assertToggleTitleAndSummary(SingleCategorySettings singleCategorySettings) {
-            ChromeSwitchPreference toggle =
-                    singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
-            assert toggle != null;
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                BinaryStatePermissionPreference radio_button =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                assert radio_button != null;
 
-            Assert.assertEquals(
-                    "Preference title is not set correctly.",
-                    singleCategorySettings
-                            .getResources()
-                            .getString(ContentSettingsResources.getTitle(mContentSettingsType)),
-                    toggle.getTitle());
-            assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
-            assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
+                Assert.assertEquals(
+                        "Preference text is not set correctly.",
+                        ContentSettingsResources.getBinaryStateSettingDescriptionIDs(
+                                mContentSettingsType)[0],
+                        radio_button.getDescriptionIds()[0]);
+                Assert.assertEquals(
+                        "Preference text is not set correctly.",
+                        ContentSettingsResources.getBinaryStateSettingDescriptionIDs(
+                                mContentSettingsType)[1],
+                        radio_button.getDescriptionIds()[1]);
+            } else {
+                ChromeSwitchPreference toggle =
+                        singleCategorySettings.findPreference(
+                                SingleCategorySettings.BINARY_TOGGLE_KEY);
+                assert toggle != null;
 
-            String summary =
-                    mIsCategoryEnabled
-                            ? toggle.getSummaryOn().toString()
-                            : toggle.getSummaryOff().toString();
-            String expected =
-                    singleCategorySettings
-                            .getResources()
-                            .getString(
-                                    mIsCategoryEnabled
-                                            ? ContentSettingsResources.getEnabledSummary(
-                                                    mContentSettingsType)
-                                            : ContentSettingsResources.getDisabledSummary(
-                                                    mContentSettingsType));
-            Assert.assertEquals(
-                    "Summary text in state <" + mIsCategoryEnabled + "> does not match.",
-                    expected,
-                    summary);
+                Assert.assertEquals(
+                        "Preference title is not set correctly.",
+                        singleCategorySettings
+                                .getResources()
+                                .getString(ContentSettingsResources.getTitle(mContentSettingsType)),
+                        toggle.getTitle());
+                assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
+                assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
+
+                String summary =
+                        mIsCategoryEnabled
+                                ? toggle.getSummaryOn().toString()
+                                : toggle.getSummaryOff().toString();
+                String expected =
+                        singleCategorySettings
+                                .getResources()
+                                .getString(
+                                        mIsCategoryEnabled
+                                                ? ContentSettingsResources.getEnabledSummary(
+                                                        mContentSettingsType)
+                                                : ContentSettingsResources.getDisabledSummary(
+                                                        mContentSettingsType));
+                Assert.assertEquals(
+                        "Summary text in state <" + mIsCategoryEnabled + "> does not match.",
+                        expected,
+                        summary);
+            }
         }
     }
 }

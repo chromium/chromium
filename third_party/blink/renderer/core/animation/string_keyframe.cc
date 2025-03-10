@@ -21,8 +21,8 @@ namespace {
 
 bool IsLogicalProperty(CSSPropertyID property_id) {
   const CSSProperty& property = CSSProperty::Get(property_id);
-  const CSSProperty& resolved_property = property.ResolveDirectionAwareProperty(
-      {WritingMode::kHorizontalTb, TextDirection::kLtr});
+  const CSSProperty& resolved_property =
+      property.ToPhysical({WritingMode::kHorizontalTb, TextDirection::kLtr});
   return resolved_property.PropertyID() != property_id;
 }
 
@@ -456,8 +456,7 @@ void PropertyResolver::SetProperty(
     const CSSValue& value,
     WritingDirectionMode writing_direction) {
   const CSSProperty& physical_property =
-      CSSProperty::Get(property_id)
-          .ResolveDirectionAwareProperty(writing_direction);
+      CSSProperty::Get(property_id).ToPhysical(writing_direction);
   property_value_set->SetProperty(physical_property.PropertyID(), value);
 }
 

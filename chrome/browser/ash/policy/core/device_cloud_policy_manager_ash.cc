@@ -343,8 +343,6 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 }
 
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
-  // TODO(b/181140445): If we had a separate state keys upload request to DM
-  // Server we should call it here.
   if (client()) {
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }

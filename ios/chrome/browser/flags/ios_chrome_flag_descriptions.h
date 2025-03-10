@@ -336,6 +336,9 @@ extern const char kIOSKeyboardAccessoryUpgradeForIPadDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
 
+extern const char kIOSOneTapMiniMapRestrictionsName[];
+extern const char kIOSOneTapMiniMapRestrictionsDescription[];
+
 extern const char kIOSPasskeysM2Name[];
 extern const char kIOSPasskeysM2Description[];
 

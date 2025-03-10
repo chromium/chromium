@@ -499,4 +499,119 @@ TEST_F(CSSPropertyTest, AnchorSizeInsetsMarginsDisabled) {
   EXPECT_EQ(Parse("margin-inline-end", anchor_size_value), nullptr);
 }
 
+struct DirectionAwarePropertyData {
+  CSSPropertyID physical;
+  CSSPropertyID logical;
+  WritingDirectionMode writing_mode;
+};
+
+const DirectionAwarePropertyData DirectionAwareConverterTestData[] = {
+    {CSSPropertyID::kMarginRight,
+     CSSPropertyID::kMarginBlockEnd,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kMarginTop,
+     CSSPropertyID::kMarginBlockStart,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kMarginTop,
+     CSSPropertyID::kMarginBlockStart,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kPaddingLeft,
+     CSSPropertyID::kPaddingInlineStart,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kPaddingTop,
+     CSSPropertyID::kPaddingInlineEnd,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kPaddingBottom,
+     CSSPropertyID::kPaddingBlockEnd,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kPaddingRight,
+     CSSPropertyID::kPaddingBlockStart,
+     {WritingMode::kSidewaysRl, TextDirection::kLtr}},
+    {CSSPropertyID::kPaddingLeft,
+     CSSPropertyID::kPaddingBlockEnd,
+     {WritingMode::kSidewaysRl, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kBlockSize,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalRl, TextDirection::kLtr}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalRl, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kHeight,
+     CSSPropertyID::kInlineSize,
+     {WritingMode::kSidewaysRl, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderStartStartRadius,
+     {WritingMode::kHorizontalTb, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderStartEndRadius,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderEndStartRadius,
+     {WritingMode::kVerticalRl, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderTopLeftRadius,
+     CSSPropertyID::kBorderEndEndRadius,
+     {WritingMode::kSidewaysRl, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderTopRightRadius,
+     CSSPropertyID::kBorderStartStartRadius,
+     {WritingMode::kSidewaysRl, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderBottomLeftRadius,
+     CSSPropertyID::kBorderStartEndRadius,
+     {WritingMode::kVerticalLr, TextDirection::kLtr}},
+    {CSSPropertyID::kBorderBottomLeftRadius,
+     CSSPropertyID::kBorderStartStartRadius,
+     {WritingMode::kVerticalLr, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderBottomLeftRadius,
+     CSSPropertyID::kBorderEndEndRadius,
+     {WritingMode::kHorizontalTb, TextDirection::kRtl}},
+    {CSSPropertyID::kBorderBottomRightRadius,
+     CSSPropertyID::kBorderEndEndRadius,
+     {WritingMode::kSidewaysLr, TextDirection::kRtl}},
+};
+
+class DirectionAwareConverterTest
+    : public CSSPropertyTest,
+      public testing::WithParamInterface<DirectionAwarePropertyData> {};
+
+INSTANTIATE_TEST_SUITE_P(CSSPropertyTest,
+                         DirectionAwareConverterTest,
+                         testing::ValuesIn(DirectionAwareConverterTestData));
+
+TEST_P(DirectionAwareConverterTest, ToPhysical) {
+  DirectionAwarePropertyData property_data = GetParam();
+
+  const CSSProperty& property = CSSProperty::Get(property_data.logical);
+  EXPECT_EQ(static_cast<int>(
+                property.ToPhysical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(property_data.physical));
+}
+
+TEST_P(DirectionAwareConverterTest, TestToLogical) {
+  DirectionAwarePropertyData property_data = GetParam();
+  const CSSProperty& property = CSSProperty::Get(property_data.physical);
+  EXPECT_EQ(static_cast<int>(
+                property.ToLogical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(property_data.logical));
+}
+
+TEST_P(DirectionAwareConverterTest, TestConvertsEquality) {
+  DirectionAwarePropertyData property_data = GetParam();
+  const CSSProperty& physical = CSSProperty::Get(property_data.physical);
+  const CSSProperty& logical = CSSProperty::Get(property_data.logical);
+  EXPECT_EQ(static_cast<int>(
+                physical.ToLogical(property_data.writing_mode).PropertyID()),
+            static_cast<int>(logical.PropertyID()));
+  EXPECT_EQ(static_cast<int>(physical.PropertyID()),
+            static_cast<int>(
+                logical.ToPhysical(property_data.writing_mode).PropertyID()));
+}
+
 }  // namespace blink

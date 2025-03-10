@@ -28,7 +28,7 @@ class StyleRuleUsageTracker : public GarbageCollected<StyleRuleUsageTracker> {
   bool InsertToUsedRulesMap(const CSSStyleSheet*, const StyleRule*);
 
   HeapHashMap<Member<const CSSStyleSheet>,
-              Member<HeapHashSet<Member<const StyleRule>>>>
+              Member<GCedHeapHashSet<Member<const StyleRule>>>>
       used_rules_;
   RuleListByStyleSheet used_rules_delta_;
 };

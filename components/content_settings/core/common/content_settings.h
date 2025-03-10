@@ -127,6 +127,14 @@ enum class SettingSource {
 // contains the source of a value. |primary_pattern| and |secondary_pattern|
 // contains the patterns of the appling rule.
 struct SettingInfo {
+  SettingInfo();
+  SettingInfo(SettingInfo&& other);
+  SettingInfo(SettingInfo& other) = delete;
+  SettingInfo& operator=(SettingInfo&& other);
+  SettingInfo& operator=(const SettingInfo& other) = delete;
+
+  SettingInfo Clone() const;
+
   SettingSource source = SettingSource::kNone;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
@@ -135,12 +143,12 @@ struct SettingInfo {
   void SetAttributes(const content_settings::RuleEntry& rule_entry) {
     primary_pattern = rule_entry.first.primary_pattern;
     secondary_pattern = rule_entry.first.secondary_pattern;
-    metadata = rule_entry.second.metadata;
+    metadata = rule_entry.second.metadata.Clone();
   }
   void SetAttributes(const ContentSettingPatternSource& content_setting) {
     primary_pattern = content_setting.primary_pattern;
     secondary_pattern = content_setting.secondary_pattern;
-    metadata = content_setting.metadata;
+    metadata = content_setting.metadata.Clone();
   }
 };
 

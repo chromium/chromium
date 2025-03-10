@@ -922,15 +922,15 @@ void UpdateNoticeStorage(
       break;
     }
     case PromptAction::kConsentAccepted: {
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name, privacy_sandbox::NoticeActionTaken::kOptIn,
-          base::Time::Now());
+      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
+                                           privacy_sandbox::NoticeEvent::kOptIn,
+                                           base::Time::Now());
       break;
     }
     case PromptAction::kConsentDeclined: {
       notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name,
-          privacy_sandbox::NoticeActionTaken::kOptOut, base::Time::Now());
+          pref_service, notice_name, privacy_sandbox::NoticeEvent::kOptOut,
+          base::Time::Now());
       break;
     }
     case PromptAction::kConsentMoreInfoOpened: {
@@ -943,15 +943,15 @@ void UpdateNoticeStorage(
       break;
     }
     case PromptAction::kNoticeAcknowledge: {
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name, privacy_sandbox::NoticeActionTaken::kAck,
-          base::Time::Now());
+      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
+                                           privacy_sandbox::NoticeEvent::kAck,
+                                           base::Time::Now());
       break;
     }
     case PromptAction::kNoticeOpenSettings: {
       notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name,
-          privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
+          pref_service, notice_name, privacy_sandbox::NoticeEvent::kSettings,
+          base::Time::Now());
       break;
     }
     case PromptAction::kNoticeMoreInfoOpened:
@@ -969,16 +969,16 @@ void UpdateNoticeStorage(
     }
     case PromptAction::kRestrictedNoticeAcknowledge: {
       DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name, privacy_sandbox::NoticeActionTaken::kAck,
-          base::Time::Now());
+      notice_storage->SetNoticeActionTaken(pref_service, notice_name,
+                                           privacy_sandbox::NoticeEvent::kAck,
+                                           base::Time::Now());
       break;
     }
     case PromptAction::kRestrictedNoticeOpenSettings: {
       DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
       notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name,
-          privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
+          pref_service, notice_name, privacy_sandbox::NoticeEvent::kSettings,
+          base::Time::Now());
       break;
     }
     default:

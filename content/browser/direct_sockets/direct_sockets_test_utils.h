@@ -123,8 +123,7 @@ class MockNetworkContext : public network::TestNetworkContextWithHostResolver {
 
 // A wrapper class that allows running javascript asynchronously.
 //
-//    * RunScript(...) returns a unique pointer to
-//      base::test::TestFuture<std::string>. Call
+//    * RunScript(...) returns a base::test::TestFuture<std::string>. Call
 //      Get(...) on the future pointer to wait for
 //      the script to complete.
 //    * Note that the observer expects exactly one message per script
@@ -155,8 +154,7 @@ class AsyncJsRunner : public WebContentsObserver {
   explicit AsyncJsRunner(content::WebContents* web_contents);
   ~AsyncJsRunner() override;
 
-  std::unique_ptr<base::test::TestFuture<std::string>> RunScript(
-      const std::string& script);
+  base::test::TestFuture<std::string> RunScript(const std::string& script);
 
   // WebContentsObserver:
   void DomOperationResponse(RenderFrameHost* render_frame_host,

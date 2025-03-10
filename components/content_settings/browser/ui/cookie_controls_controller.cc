@@ -300,7 +300,7 @@ CookieControlsEnforcement
 CookieControlsController::GetEnforcementForThirdPartyCookieBlocking(
     CookieBlocking3pcdStatus status,
     const GURL url,
-    SettingInfo info,
+    const SettingInfo& info,
     bool cookies_allowed) {
   const bool is_default_setting =
       info.primary_pattern == ContentSettingsPattern::Wildcard() &&

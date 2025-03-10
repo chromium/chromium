@@ -91,10 +91,10 @@ const CSSProperty* {{class_name}}::SurrogateFor(WritingDirectionMode) const {
     {% if group.is_logical %}
 const CSSProperty* {{class_name}}::SurrogateFor(
     WritingDirectionMode writing_direction) const {
-  return &ResolveDirectionAwarePropertyInternal(writing_direction);
+  return &ToPhysicalInternal(writing_direction);
 }
 
-const CSSProperty& {{class_name}}::ResolveDirectionAwarePropertyInternal(
+const CSSProperty& {{class_name}}::ToPhysicalInternal(
     WritingDirectionMode writing_direction) const {
   return CSSDirectionAwareResolver::Resolve{{resolver_name}}(writing_direction,
       CSSDirectionAwareResolver::Physical{{group_name}}Mapping());
@@ -108,6 +108,11 @@ bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
 bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
     CSSPropertyID id) const {
   return CSSDirectionAwareResolver::Logical{{group_name}}Mapping().Contains(id);
+}
+const CSSProperty& {{class_name}}::ToLogicalInternal(
+    WritingDirectionMode writing_direction) const {
+  return CSSDirectionAwareResolver::Resolve{{resolver_name}}(writing_direction,
+      CSSDirectionAwareResolver::Logical{{group_name}}Mapping());
 }
     {% endif %}
   {% endif %}

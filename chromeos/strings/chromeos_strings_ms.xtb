@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animasi penyelamat skrin</translation>
 <translation id="152892567002884378">Tambah kelantangan</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Pilih tema, kemudian pilih perkataan bergaris untuk memeribadikan imej AI anda.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pilih "Beri saya inspirasi" untuk mendapatkan lebih banyak pilihan imej AI yang unik dan berbeza-beza.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Apabila anda mencipta dengan AI, gesaan akan dihantar kepada pelayan Google AI untuk menjana imej dan meningkatkan produk, tertakluk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Dasar Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI generatif ialah ciri percubaan dan dalam pembangunan awal dengan ketersediaan terhad pada masa ini.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1561927818299383735">warna cahaya belakang</translation>
@@ -1553,6 +1562,16 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pantai</translation>
 <translation id="819278132617411009">Gunakan Google AI untuk menjadi lebih produktif</translation>
+<translation id="82003371436638355">Apabila anda memilih “Buat hiasan latar anda sendiri”, tulis gesaan tersuai. Anda juga boleh memilih “Pilih tema”, kemudian memilih perkataan bergaris untuk memeribadikan hiasan latar AI anda.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pilih "Beri saya inspirasi" untuk mendapatkan lebih banyak pilihan imej AI yang unik dan berbeza-beza.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Apabila anda membuat hiasan latar anda sendiri, gesaan akan dihantar kepada pelayan Google untuk menjana imej dan meningkatkan produk, tertakluk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Syarat Perkhidmatan dan Dasar Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Jangan sertakan sebarang maklumat yang bersifat peribadi, sensitif atau sulit.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI generatif boleh membuat kesilapan, termasuk tentang orang, maka semak semula respons. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Ketahui lebih lanjut<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Kelebihan</translation>
@@ -1574,6 +1593,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8312330582793120272">mainkan media</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
 <translation id="8320910311642849813">hutan</translation>
+<translation id="8322464149031882595">Klik untuk maju</translation>
 <translation id="8329018942023753850">apl kalkulator</translation>
 <translation id="8336739000755212683">Tukar imej akaun peranti</translation>
 <translation id="8339024191194156249">Ketahui lebih lanjut tentang autolancar</translation>
@@ -1720,6 +1740,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8961025972867871808">penguin</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>
 <translation id="8970109610781093811">Jalankan sekali lagi</translation>
+<translation id="8972061581514441296">Klik untuk kembali</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Imbas}=1{Imbas halaman {NUMBER_OF_PAGES}}other{Imbas halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">kampung</translation>

@@ -815,7 +815,7 @@ void LayoutView::LayoutRoot() {
   if (is_resizing_initial_containing_block) {
     InvalidateSvgRootsWithRelativeLengthDescendents();
     initial_containing_block_resize_handled_list_ =
-        MakeGarbageCollected<HeapHashSet<Member<const LayoutObject>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<const LayoutObject>>>();
   }
 
   const auto& style = StyleRef();

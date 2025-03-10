@@ -4,9 +4,11 @@
 
 #include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
+#include <optional>
 #include <string>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
@@ -62,10 +64,9 @@ std::string SerializeOpaqueLocalData(const PasswordForm& password_form) {
       SerializeSignatureRelevantMembersInFormData(password_form.form_data);
   local_data_json.Set(kFormDataKey, std::move(serialized_form_data));
 
-  std::string serialized_local_data;
-  JSONStringValueSerializer serializer(&serialized_local_data);
-  serializer.Serialize(local_data_json);
-  return serialized_local_data;
+  std::optional<std::string> serialized_local_data =
+      base::WriteJson(local_data_json);
+  return serialized_local_data.value_or(std::string());
 }
 
 std::optional<FormData> DeserializeFormData(
@@ -113,16 +114,14 @@ std::optional<FormData> DeserializeFormData(
 
 void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
                                 PasswordForm& password_form) {
-  JSONStringValueDeserializer json_deserializer(opaque_metadata);
-  std::unique_ptr<base::Value> root(
-      json_deserializer.Deserialize(nullptr, nullptr));
-  if (!root.get() || !root->is_dict()) {
+  std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(opaque_metadata);
+  if (!root) {
     return;
   }
 
-  base::Value::Dict serialized_data(std::move(*root).TakeDict());
-  auto skip_zero_click = serialized_data.FindBool(kSkipZeroClickKey);
-  auto* serialized_form_data = serialized_data.FindDict(kFormDataKey);
+  auto skip_zero_click = root->FindBool(kSkipZeroClickKey);
+  auto* serialized_form_data = root->FindDict(kFormDataKey);
   if (!skip_zero_click.has_value() || !serialized_form_data) {
     return;
   }

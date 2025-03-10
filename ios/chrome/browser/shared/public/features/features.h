@@ -1075,4 +1075,28 @@ BASE_DECLARE_FEATURE(kNonModalSignInPromo);
 // Returns whether the non-modal sign-in promo is enabled.
 bool IsNonModalSignInPromoEnabled();
 
+// Feature flags for enhanced One Tap Minimap experiment
+// The main feature that controls of these restrictions. Different parameters
+// control the different available restrictions.
+BASE_DECLARE_FEATURE(kIOSOneTapMiniMapRestrictions);
+// A parameter that requires revalidating the address using NSDataDetector.
+extern const base::FeatureParam<bool>
+    kIOSOneTapMiniMapRestrictionCrossValidateParam;
+// A parameter that requires a higher confidence.
+extern const base::FeatureParam<double>
+    kIOSOneTapMiniMapRestrictionThreshholdParam;
+// A parameter that requires a minimum length for the address.
+extern const base::FeatureParam<int> kIOSOneTapMiniMapRestrictionMinCharsParam;
+// A parameter that requires a maximum number of sections for the address.
+extern const base::FeatureParam<int>
+    kIOSOneTapMiniMapRestrictionMaxSectionsParam;
+// A parameter that the address contains a word (separated by spaces) of at
+// least that number of characters.
+extern const base::FeatureParam<int>
+    kIOSOneTapMiniMapRestrictionLongestWordMinCharsParam;
+// A parameter that requires having a higher proportion of alphanumerical
+// characters.
+extern const base::FeatureParam<double>
+    kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam;
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -114,14 +114,14 @@ AsyncJsRunner::AsyncJsRunner(content::WebContents* web_contents)
 
 AsyncJsRunner::~AsyncJsRunner() = default;
 
-std::unique_ptr<base::test::TestFuture<std::string>> AsyncJsRunner::RunScript(
+base::test::TestFuture<std::string> AsyncJsRunner::RunScript(
     const std::string& async_script) {
   // Do not leave behind hanging futures from previous invocations.
   DCHECK(!future_callback_);
-  auto future = std::make_unique<base::test::TestFuture<std::string>>();
+  base::test::TestFuture<std::string> future;
 
   token_ = base::Token::CreateRandom();
-  future_callback_ = future->GetCallback();
+  future_callback_ = future.GetCallback();
   const std::string wrapped_script =
       MakeScriptSendResultToDomQueue(async_script);
   ExecuteScriptAsync(web_contents(), wrapped_script);

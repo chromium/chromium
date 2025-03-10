@@ -10,6 +10,9 @@
 /// Mutator for the omnibox.
 @protocol OmniboxMutator <NSObject>
 
+/// Removes the thumbnail.
+- (void)removeThumbnail;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_MUTATOR_H_

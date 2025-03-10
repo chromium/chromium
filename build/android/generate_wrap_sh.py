@@ -7,7 +7,24 @@ import argparse
 import pathlib
 
 
-def _generate(arch):
+def _generate(arch, is_hwasan):
+  if is_hwasan:
+    return """\
+#!/system/bin/sh
+# https://developer.android.com/ndk/guides/hwasan#wrapsh
+
+# import options file
+_HWASAN_OPTIONS=$(cat /data/local/tmp/hwasan.options 2> /dev/null || true)
+
+log -t cr_wrap.sh -- "Launching with HWASAN enabled."
+log -t cr_wrap.sh -- "HWASAN_OPTIONS=$_HWASAN_OPTIONS"
+log -t cr_wrap.sh -- "LD_HWASAN=1"
+log -t cr_wrap.sh -- "Command: $0 $@"
+
+export HWASAN_OPTIONS=$_HWASAN_OPTIONS
+export LD_HWASAN=1
+exec "$@"
+"""
   return f"""\
 #!/system/bin/sh
 # See: https://github.com/google/sanitizers/wiki/AddressSanitizerOnAndroid/\
@@ -34,9 +51,10 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--arch', required=True)
   parser.add_argument('--output', required=True)
+  parser.add_argument('--is_hwasan', action='store_true', default=False)
   args = parser.parse_args()
 
-  pathlib.Path(args.output).write_text(_generate(args.arch))
+  pathlib.Path(args.output).write_text(_generate(args.arch, args.is_hwasan))
 
 
 if __name__ == '__main__':

@@ -31,6 +31,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="1909810060368225529">注意：对此共享标签页分组所做的更改对所有人均可见。所有人都可以更改您的共享标签页分组</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页添加书签}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页添加书签}}</translation>
+<translation id="2055057176188061528">选择标签页分组或创建新的标签页分组</translation>
 <translation id="2118649612461486615">商店信息</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开已关闭的无痕式标签页。}other{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
@@ -67,6 +68,7 @@
 <translation id="3194464645767632461">评分</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3547352561153509682">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 个新标签页}other{<ph name="MANY_ADDED" /> 个新标签页}}</translation>
 <translation id="3613492231657284463">“隐藏闲置标签页”对话框</translation>
 <translation id="3619255692378312441">管理访问权限</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="381219490185664296">要取消标签页分组吗？</translation>
 <translation id="3940195383040445971">跟踪标签页上的价格</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 个新标签页，<ph name="ANY_CLOSED" /> 个已关闭}other{<ph name="MANY_ADDED" /> 个新标签页，<ph name="ANY_CLOSED" /> 个已关闭}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{为标签页建组}other{为标签页建组}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个闲置标签页}other{<ph name="TABS_COUNT_MANY" /> 个闲置标签页}}</translation>
 <translation id="3969565576924904454">打开“<ph name="TITLE_OF_GROUP" />”</translation>

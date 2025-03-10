@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -624,10 +625,11 @@ void SVGElement::RemoveInstance(SVGElement* instance) {
 }
 
 static HeapHashSet<WeakMember<SVGElement>>& EmptyInstances() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapHashSet<WeakMember<SVGElement>>>, empty_instances,
-      (MakeGarbageCollected<HeapHashSet<WeakMember<SVGElement>>>()));
-  return *empty_instances;
+  using EmptyInstanceHolder =
+      DisallowNewWrapper<HeapHashSet<WeakMember<SVGElement>>>;
+  DEFINE_STATIC_LOCAL(Persistent<EmptyInstanceHolder>, empty_instances,
+                      (MakeGarbageCollected<EmptyInstanceHolder>()));
+  return empty_instances->Value();
 }
 
 const HeapHashSet<WeakMember<SVGElement>>& SVGElement::InstancesForElement()
@@ -1401,9 +1403,11 @@ void SVGElement::AddReferenceTo(SVGElement* target_element) {
 SVGElementSet& SVGElement::GetDependencyTraversalVisitedSet() {
   // This strong reference is safe, as it is guaranteed that this set will be
   // emptied at the end of recursion in NotifyIncomingReferences.
-  DEFINE_STATIC_LOCAL(Persistent<SVGElementSet>, invalidating_dependencies,
-                      (MakeGarbageCollected<SVGElementSet>()));
-  return *invalidating_dependencies;
+  using SVGElementSetHolder = DisallowNewWrapper<SVGElementSet>;
+  DEFINE_STATIC_LOCAL(Persistent<SVGElementSetHolder>,
+                      invalidating_dependencies,
+                      (MakeGarbageCollected<SVGElementSetHolder>()));
+  return invalidating_dependencies->Value();
 }
 
 void SVGElement::RemoveAllIncomingReferences() {

@@ -30,13 +30,13 @@ bool InsertValue(Rules& rules,
                  const ContentSettingsPattern& primary_pattern,
                  const ContentSettingsPattern& secondary_pattern,
                  base::Value value,
-                 const RuleMetaData& metadata) {
+                 RuleMetaData metadata) {
   ValueEntry& entry = rules[{primary_pattern, secondary_pattern}];
   if (entry.value == value && entry.metadata == metadata) {
     return false;
   }
   entry.value = std::move(value);
-  entry.metadata = metadata;
+  entry.metadata = std::move(metadata);
   return true;
 }
 
@@ -278,7 +278,8 @@ std::vector<HostIndexedContentSettings> HostIndexedContentSettings::Create(
                            return_expired_settings);
     }
     indices.back().SetValue(entry.primary_pattern, entry.secondary_pattern,
-                            entry.setting_value.Clone(), entry.metadata);
+                            entry.setting_value.Clone(),
+                            entry.metadata.Clone());
   }
   return indices;
 }
@@ -315,20 +316,22 @@ bool HostIndexedContentSettings::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value value,
-    const RuleMetaData& metadata) {
+    RuleMetaData metadata) {
   DCHECK_EQ(iterating_, 0);
   const std::string& primary_host = primary_pattern.GetHost();
   if (!primary_host.empty()) {
     return InsertValue(primary_host_indexed_[primary_host], primary_pattern,
-                       secondary_pattern, std::move(value), metadata);
+                       secondary_pattern, std::move(value),
+                       std::move(metadata));
   }
   const std::string& secondary_host = secondary_pattern.GetHost();
   if (!secondary_host.empty()) {
     return InsertValue(secondary_host_indexed_[secondary_host], primary_pattern,
-                       secondary_pattern, std::move(value), metadata);
+                       secondary_pattern, std::move(value),
+                       std::move(metadata));
   }
   return InsertValue(wildcard_settings_, primary_pattern, secondary_pattern,
-                     std::move(value), metadata);
+                     std::move(value), std::move(metadata));
 }
 
 bool HostIndexedContentSettings::DeleteValue(

@@ -105,7 +105,6 @@ class CSSDirectionAwareResolver {
 
   // These resolvers expect a LogicalMapping with box sides, in the following
   // order: block-start, block-end, inline-start, inline-end.
-  // TODO(layout-dev): Implement them, if needed.
   static const CSSProperty& ResolveTop(WritingDirectionMode,
                                        const LogicalMapping<4>&);
   static const CSSProperty& ResolveBottom(WritingDirectionMode,
@@ -124,7 +123,6 @@ class CSSDirectionAwareResolver {
 
   // These resolvers expect a LogicalMapping with dimensions, in the following
   // order: block, inline.
-  // TODO(layout-dev): Implement them, if needed.
   static const CSSProperty& ResolveHorizontal(WritingDirectionMode,
                                               const LogicalMapping<2>&);
   static const CSSProperty& ResolveVertical(WritingDirectionMode,
@@ -143,7 +141,6 @@ class CSSDirectionAwareResolver {
 
   // These resolvers expect a a LogicalMapping with box corners, in the
   // following order: start-start, start-end, end-start, end-end.
-  // TODO(layout-dev): Implement them, if needed.
   static const CSSProperty& ResolveTopLeft(WritingDirectionMode,
                                            const LogicalMapping<4>&);
   static const CSSProperty& ResolveTopRight(WritingDirectionMode,

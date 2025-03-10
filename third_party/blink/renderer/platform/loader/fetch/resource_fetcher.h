@@ -321,7 +321,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // counting.
   void PrepareForLeakDetection();
 
-  using ResourceFetcherSet = HeapHashSet<WeakMember<ResourceFetcher>>;
+  using ResourceFetcherSet = GCedHeapHashSet<WeakMember<ResourceFetcher>>;
   static const ResourceFetcherSet& MainThreadFetchers();
 
   mojom::blink::BlobRegistry* GetBlobRegistry();

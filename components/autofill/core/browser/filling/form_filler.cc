@@ -970,10 +970,12 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
           },
           [&](const EntityInstance* entity)
               -> std::pair<std::u16string, std::optional<FieldType>> {
-            return GetFillValueAndTypeForEntity(
-                CHECK_DEREF(entity), autofill_field, action_persistence,
-                manager_->client().GetAppLocale(),
-                manager_->client().GetAddressNormalizer());
+            // TODO(crbug.com/397620383): Which type should we return here?
+            return {GetFillValueForEntity(
+                        CHECK_DEREF(entity), autofill_field, action_persistence,
+                        manager_->client().GetAppLocale(),
+                        manager_->client().GetAddressNormalizer()),
+                    std::nullopt};
           }},
       filling_payload);
   return {value_to_fill, filling_type, /*value_is_an_override=*/false};

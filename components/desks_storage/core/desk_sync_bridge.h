@@ -92,6 +92,10 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
 
   std::string GetCacheGuid() override;
 
+  // `callback` will be run immediately if `MergeFullSyncData` was already
+  // called.
+  void SetOnMergeFullSyncDataCallback(base::OnceClosure callback);
+
   // Other helper methods.
   bool HasUuid(const base::Uuid& uuid) const;
   const ash::DeskTemplate* GetUserEntryByUUID(const base::Uuid& uuid) const;
@@ -136,12 +140,19 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
   // Returns true if `templates_` contains a desk template with `name`.
   bool HasUserTemplateWithName(const std::u16string& name);
 
+  void OnMergeFullSyncDataFinished();
+
   // `desk_template_entries_` is keyed by UUIDs.
   DeskEntries desk_template_entries_;
 
   // Whether local data and metadata have finished loading and this sync bridge
   // is ready to be accessed.
   bool is_ready_;
+
+  // Whether `MergeFullSyncData()` was executed.
+  bool merge_full_sync_data_finished_ = false;
+
+  base::OnceClosure on_merge_full_sync_data_callback_;
 
   // In charge of actually persisting changes to disk, or loading previous
   // data.

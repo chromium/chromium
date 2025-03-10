@@ -4341,8 +4341,8 @@ Element* LayoutBox::AccessibilityAnchor() const {
   return layout_results.front()->AccessibilityAnchor();
 }
 
-const HeapHashSet<Member<Element>>* LayoutBox::DisplayLocksAffectedByAnchors()
-    const {
+const GCedHeapHashSet<Member<Element>>*
+LayoutBox::DisplayLocksAffectedByAnchors() const {
   NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
@@ -4352,12 +4352,13 @@ const HeapHashSet<Member<Element>>* LayoutBox::DisplayLocksAffectedByAnchors()
 }
 
 void LayoutBox::NotifyContainingDisplayLocksForAnchorPositioning(
-    const HeapHashSet<Member<Element>>* past_display_locks_affected_by_anchors,
-    const HeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
+    const GCedHeapHashSet<Member<Element>>*
+        past_display_locks_affected_by_anchors,
+    const GCedHeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
     const {
   NOT_DESTROYED();
   auto notify_display_locks =
-      [](const HeapHashSet<Member<Element>>* display_locks) {
+      [](const GCedHeapHashSet<Member<Element>>* display_locks) {
         if (!display_locks) {
           return;
         }

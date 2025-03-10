@@ -146,6 +146,13 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxMutator
 
+- (void)removeThumbnail {
+  base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
+  // Update the UI.
+  [self.consumer setThumbnailImage:nil];
+  [self.omniboxTextController onThumbnailRemoved];
+}
+
 #pragma mark - OmniboxTextControllerDelegate
 
 #pragma mark - PopupMatchPreviewDelegate

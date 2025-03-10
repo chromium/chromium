@@ -209,6 +209,12 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
              "AutofillEnableLoyaltyCardsFilling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, extracts <input type=date>, which may be filled by Autofill AI.
+// TODO(crbug.com/396325496): Clean up when launched.
+BASE_FEATURE(kAutofillExtractInputDate,
+             "AutofillExtractInputDate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
 // "Extracted" means that FormFieldData::child_frames is populated, which is

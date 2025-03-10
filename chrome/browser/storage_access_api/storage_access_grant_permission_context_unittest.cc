@@ -156,19 +156,18 @@ class StorageAccessGrantPermissionContextTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  std::unique_ptr<base::test::TestFuture<ContentSetting>> DecidePermission(
-      bool user_gesture) {
-    auto future = std::make_unique<base::test::TestFuture<ContentSetting>>();
+  base::test::TestFuture<ContentSetting> DecidePermission(bool user_gesture) {
+    base::test::TestFuture<ContentSetting> future;
     permission_context_->DecidePermissionForTesting(
         permissions::PermissionRequestData(permission_context(), CreateFakeID(),
                                            user_gesture, GetRequesterURL(),
                                            GetTopLevelURL()),
-        future->GetCallback());
+        future.GetCallback());
     return future;
   }
 
   ContentSetting DecidePermissionSync(bool user_gesture) {
-    return DecidePermission(user_gesture)->Get();
+    return DecidePermission(user_gesture).Get();
   }
 
   ContentSetting RequestPermissionSync() {
@@ -284,7 +283,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
   // Accept the prompt and validate we get the expected setting back in our
   // callback.
   request_manager()->Accept();
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future->Get());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
 
   histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,
                                         /*sample=*/false, 1);
@@ -318,7 +317,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, PermissionDecided) {
   EXPECT_EQ(GetTopLevelURL(), request_manager()->GetEmbeddingOrigin());
 
   request_manager()->Dismiss();
-  EXPECT_EQ(CONTENT_SETTING_ASK, future->Get());
+  EXPECT_EQ(CONTENT_SETTING_ASK, future.Get());
   histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
                                         RequestOutcome::kDismissedByUser, 1);
   // Expect no pscs entry for dismissed permissions.
@@ -488,7 +487,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
     // Close the prompt and validate we get the expected setting back in our
     // callback.
     request_manager()->Dismiss();
-    EXPECT_EQ(CONTENT_SETTING_ASK, future->Get());
+    EXPECT_EQ(CONTENT_SETTING_ASK, future.Get());
   }
   EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
                                               RequestOutcome::kDismissedByUser),
@@ -572,7 +571,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantDenial) {
   // Deny the prompt and validate we get the expected setting back in our
   // callback.
   request_manager()->Deny();
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future->Get());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
 
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
   histogram_tester().ExpectUniqueSample(
@@ -602,7 +601,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
   auto future = DecidePermission(/*user_gesture=*/true);
   // Ensure the prompt is not shown.
   ASSERT_FALSE(request_manager()->IsRequestInProgress());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future->Get());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
 
   // However, ensure that the user's denial is not exposed when querying the
   // permission, per the spec.
@@ -627,7 +626,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantAccept) {
   // Accept the prompt and validate we get the expected setting back in our
   // callback.
   request_manager()->Accept();
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future->Get());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
 
   histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,
                                         /*sample=*/false, 1);
@@ -743,7 +742,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
   auto future = DecidePermission(/*user_gesture=*/false);
   // Ensure no prompt is shown.
   ASSERT_FALSE(request_manager()->IsRequestInProgress());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future->Get());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
 
   histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
                                         RequestOutcome::kAllowedByFedCM, 1);

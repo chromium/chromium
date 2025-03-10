@@ -1003,8 +1003,8 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 
     if (!source_image) {
       SourceImageStatus status;
-      source_image = GetSourceImageForCanvasInternal(FlushReason::kDrawListener,
-                                                     &status, kDontChangeAlpha);
+      source_image =
+          GetSourceImageForCanvasInternal(FlushReason::kDrawListener, &status);
       if (status != kNormalSourceImageStatus)
         continue;
     }
@@ -1770,16 +1770,13 @@ bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {
 scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
     FlushReason reason,
     SourceImageStatus* status,
-    const gfx::SizeF&,
-    const AlphaDisposition alpha_disposition) {
-  return GetSourceImageForCanvasInternal(reason, status, alpha_disposition);
+    const gfx::SizeF&) {
+  return GetSourceImageForCanvasInternal(reason, status);
 }
 
 scoped_refptr<StaticBitmapImage>
-HTMLCanvasElement::GetSourceImageForCanvasInternal(
-    FlushReason reason,
-    SourceImageStatus* status,
-    const AlphaDisposition alpha_disposition) {
+HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
+                                                   SourceImageStatus* status) {
   if (ContextHasOpenLayers(context_)) {
     *status = kLayersOpenInCanvasSource;
     return nullptr;
@@ -1832,14 +1829,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
   }
 
   *status = kNormalSourceImageStatus;
-
-  if (alpha_disposition == kDontChangeAlpha) {
-    return image;
-  }
-  // If the alpha_disposition is already correct, or the image is opaque, this
-  // is a no-op.
-  return StaticBitmapImageTransform::GetWithAlphaPremultiplied(
-      reason, std::move(image));
+  return image;
 }
 
 bool HTMLCanvasElement::WouldTaintOrigin() const {

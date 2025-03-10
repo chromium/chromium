@@ -31,6 +31,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="1909810060368225529">નોટિસ: શેર કરેલા ટૅબના આ ગ્રૂપમાં કરવામાં આવેલા ફેરફારો દરેક વ્યક્તિ જોઈ શકે છે. દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબના ગ્રૂપમાં ફેરફારો કરી શકે છે</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બુકમાર્ક કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}}</translation>
+<translation id="2055057176188061528">ટૅબનું ગ્રૂપ પસંદ કરો અથવા ટૅબનું નવું ગ્રૂપ બનાવો</translation>
 <translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}one{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું # છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}other{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારા # છૂપા ટૅબ ઉપલબ્ધ રહેશે નહીં.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
@@ -67,6 +68,7 @@
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3547352561153509682">આનાથી <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ થઈ જશે</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> નવું ટૅબ}one{<ph name="MANY_ADDED" /> નવું ટૅબ}other{<ph name="MANY_ADDED" /> નવા ટૅબ}}</translation>
 <translation id="3613492231657284463">નિષ્ક્રિય ટૅબ સંવાદ છુપાવો</translation>
 <translation id="3619255692378312441">ઍક્સેસ મેનેજ કરો</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="381219490185664296">શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?</translation>
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> નવું ટૅબ, <ph name="ANY_CLOSED" /> બંધ કર્યું}one{<ph name="MANY_ADDED" /> નવું ટૅબ, <ph name="ANY_CLOSED" /> બંધ કર્યું}other{<ph name="MANY_ADDED" /> નવા ટૅબ, <ph name="ANY_CLOSED" /> બંધ કર્યા}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ટૅબનું ગ્રૂપ બનાવો}one{ટૅબનું ગ્રૂપ બનાવો}other{ટૅબનું ગ્રૂપ બનાવો}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> નિષ્ક્રિય ટૅબ}one{<ph name="TABS_COUNT_MANY" /> નિષ્ક્રિય ટૅબ}other{<ph name="TABS_COUNT_MANY" /> નિષ્ક્રિય ટૅબ}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> ખોલો</translation>

@@ -204,7 +204,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         ContentSettingsPattern::Wildcard(),
         ContentSettingsPattern::FromString(first_party_url),
         base::Value(setting), content_settings::ProviderType::kNone,
-        /*incognito=*/true, metadata)};
+        /*incognito=*/true, std::move(metadata))};
   }
 
   base::HistogramTester histogram_tester_;

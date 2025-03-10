@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Hreyfimynd skjávara</translation>
 <translation id="152892567002884378">Hækka hljóð</translation>
 <translation id="1539864135338521185">asúrsteinn</translation>
+<translation id="1548555207631326346">Veldu þema og síðan undirstrikuðu orðin til að sérsníða gervigreindarmyndirnar þínar.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Veldu „Fá innblástur“ til að fá einstakari og fjölbreyttari valkosti fyrir gervigreindarmyndir.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Þegar þú býrð til efni með aðstoð gervigreindar er skipunin þín send til gervigreindarþjóna Google til að búa til myndir og bæta vöruna í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Skapandi gervigreind er á tilraunastigi, á fyrstu stigum þróunar og stendur ekki öllum til boða eins og er.</translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="155865706765934889">Snertiflötur</translation>
 <translation id="1561927818299383735">baklýstur litur</translation>
@@ -556,7 +565,7 @@
 <translation id="3628462041319107639">Sæki líkan textauppskriftar …</translation>
 <translation id="3632040286124154621">Góð tillaga</translation>
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
-<translation id="3634941468757842845">Veldu þema</translation>
+<translation id="3634941468757842845">Velja þema</translation>
 <translation id="3639873154908477486">Heiti (A til Ö)</translation>
 <translation id="3644695927181369554">Slæm tillaga</translation>
 <translation id="3651050199673793219">Velja mælieiningu hitastigs</translation>
@@ -1553,6 +1562,16 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strönd</translation>
 <translation id="819278132617411009">Notaðu gervigreind Google til að koma fleiru í verk</translation>
+<translation id="82003371436638355">When you select “Create your own,” write a custom prompt. Að öðrum kosti geturðu valið „Velja þema“ og síðan undirstrikuðu orðin til að sérsníða gervigreindarveggfóðrið þitt.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Veldu „Fá innblástur“ til að fá einstakari og fjölbreyttari valkosti fyrir gervigreindarmyndir.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Þegar þú býrð til þitt eigið veggfóður er skipunin þín send til þjóna Google til að búa til myndir og bæta vöruna í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />þjónustuskilmála og persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ekki slá inn persónulegar upplýsingar, viðkvæmar upplýsingar eða trúnaðarupplýsingar.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Skapandi gervigreind getur gert mistök, þar á meðal varðandi fólk, svo að þú skalt gæta þess að fara yfir öll svör sem þú færð. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Nánar<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
@@ -1574,6 +1593,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8312330582793120272">spila efni</translation>
 <translation id="8318753676953949627">Engar myndir</translation>
 <translation id="8320910311642849813">skógi</translation>
+<translation id="8322464149031882595">Smelltu til að halda áfram</translation>
 <translation id="8329018942023753850">reiknivélarforrit</translation>
 <translation id="8336739000755212683">Breyta reikningsmynd í tækinu</translation>
 <translation id="8339024191194156249">Nánar um sjálfvirka ræsingu</translation>
@@ -1720,6 +1740,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8961025972867871808">mörgæsir</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
 <translation id="8970109610781093811">Keyra aftur</translation>
+<translation id="8972061581514441296">Smelltu til að fara til baka</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanna}=1{Skanna síðu {NUMBER_OF_PAGES}}one{Skanna síðu {NUMBER_OF_PAGES}}other{Skanna síðu {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">þorpi</translation>

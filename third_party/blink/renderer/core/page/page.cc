@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -176,15 +177,17 @@ void ResetPluginCache(bool reload_pages) {
 // Set of all live pages; includes internal Page objects that are
 // not observable from scripts.
 static Page::PageSet& AllPages() {
-  DEFINE_STATIC_LOCAL(Persistent<Page::PageSet>, pages,
-                      (MakeGarbageCollected<Page::PageSet>()));
-  return *pages;
+  using PageSetHolder = DisallowNewWrapper<Page::PageSet>;
+  DEFINE_STATIC_LOCAL(Persistent<PageSetHolder>, pages,
+                      (MakeGarbageCollected<PageSetHolder>()));
+  return pages->Value();
 }
 
 Page::PageSet& Page::OrdinaryPages() {
-  DEFINE_STATIC_LOCAL(Persistent<Page::PageSet>, pages,
-                      (MakeGarbageCollected<Page::PageSet>()));
-  return *pages;
+  using PageSetHolder = DisallowNewWrapper<Page::PageSet>;
+  DEFINE_STATIC_LOCAL(Persistent<PageSetHolder>, pages,
+                      (MakeGarbageCollected<PageSetHolder>()));
+  return pages->Value();
 }
 
 void Page::InsertOrdinaryPageForTesting(Page* page) {

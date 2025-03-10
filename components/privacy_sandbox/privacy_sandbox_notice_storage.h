@@ -39,8 +39,9 @@ enum class NoticeStartupState {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeStartupState)
 
-// Different notice actions. These values are persisted to logs. Entries should
-// not be renumbered and numeric values should never be reused.
+// TODO(crbug.com/392088228): Remove this once all values are migrated and
+// histograms are migrated to use UA. This is deprecated and should only be used
+// for histograms.
 // LINT.IfChange(NoticeActionTaken)
 enum class NoticeActionTaken {
   // No Ack action set.
@@ -119,18 +120,18 @@ class PrivacySandboxNoticeData {
 
   // Gets the timestamp when the notice was first shown. If the notice was never
   // shown, the default timestamp will be returned.
-  std::optional<base::Time> GetNoticeFirstShownFromEvents();
+  std::optional<base::Time> GetNoticeFirstShownFromEvents() const;
 
   // Gets the timestamp when the notice was last shown. If the notice was never
   // shown, the default timestamp will be returned.
-  std::optional<base::Time> GetNoticeLastShownFromEvents();
+  std::optional<base::Time> GetNoticeLastShownFromEvents() const;
 
   // Gets the notice action taken and when it was taken the first time the
   // notice was shown. If the notice hasn't been shown for the first time, or
   // there was no action associated, no value is returned. If there are multiple
   // actions associated, only the last action is returned.
   std::optional<std::pair<NoticeEvent, base::Time>>
-  GetNoticeActionTakenForFirstShownFromEvents();
+  GetNoticeActionTakenForFirstShownFromEvents() const;
 
   // TODO(crbug.com/392088228): Remove other actions once the new event fields
   // are written to. Stores information about profile interactions on a notice.
@@ -177,7 +178,7 @@ class PrivacySandboxNoticeStorage {
   // Sets the pref and histogram controlling the action taken on the notice.
   void SetNoticeActionTaken(PrefService* pref_service,
                             std::string_view notice,
-                            NoticeActionTaken notice_action_taken,
+                            NoticeEvent notice_action_taken,
                             base::Time notice_action_taken_time);
 
   // Updates the pref and histogram controlling whether the notice has been
@@ -201,13 +202,8 @@ class PrivacySandboxNoticeStorage {
   static std::optional<NoticeEvent> NoticeActionToNoticeEvent(
       NoticeActionTaken action);
 
-  // Functionality should only be used to migrate pre-notice storage prefs.
-  // TODO(crbug.com/333406690): Remove this once the old privacy sandbox prefs
-  // are migrated to the new data model.
-  void MigratePrivacySandboxNoticeData(
-      PrefService* pref_service,
-      const PrivacySandboxNoticeData& notice_data,
-      std::string_view notice);
+  // Gets the string used for histogram naming from NoticeEvent.
+  static std::string GetNoticeActionStringFromEvent(NoticeEvent event);
 
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
