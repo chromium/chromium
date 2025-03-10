@@ -723,6 +723,12 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="0" label="STORAGE_PRESENT"/>
 </enum>
 
+<enum name="MantisServiceImageGenerationType">
+  <int value="0" label="Inpainting"/>
+  <int value="1" label="Generative Fill"/>
+  <int value="2" label="Outpainting"/>
+</enum>
+
 <enum name="MiniDiagResultType">
   <int value="0" label="Passed"/>
   <int value="1" label="Error"/>
