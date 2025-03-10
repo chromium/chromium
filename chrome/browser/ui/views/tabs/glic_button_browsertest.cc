@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
