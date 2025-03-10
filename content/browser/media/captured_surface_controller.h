@@ -61,9 +61,9 @@ class CONTENT_EXPORT CapturedSurfaceController {
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 
-  // Set the zoom level of the captured tab.
-  virtual void SetZoomLevel(
-      int zoom_level,
+  // Updates the zoom level of the captured tab.
+  virtual void UpdateZoomLevel(
+      blink::mojom::ZoomLevelAction action,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 
   virtual void RequestPermission(
@@ -156,7 +156,6 @@ class CONTENT_EXPORT CapturedSurfaceController {
       zoom_level_subscription_;
   int subscription_version_ = 0;
 
-  std::optional<int> current_zoom_level_;
   const base::RepeatingCallback<void(int)> on_zoom_level_change_callback_;
 
   base::WeakPtrFactory<CapturedSurfaceController> weak_factory_{this};

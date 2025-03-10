@@ -1462,10 +1462,12 @@ interface CaptureController : EventTarget
     getter oncapturedzoomlevelchange
     method captureWheel
     method constructor
+    method decreaseZoomLevel
     method getZoomLevel
+    method increaseZoomLevel
+    method resetZoomLevel
     method sendWheel
     method setFocusBehavior
-    method setZoomLevel
     setter oncapturedmousechange
     setter oncapturedzoomlevelchange
 interface CapturedMouseEvent : Event

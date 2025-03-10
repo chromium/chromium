@@ -129,13 +129,12 @@ class TabSharingInfoBarDelegateTest
   MockTabSharingUIViews mock_ui;
 };
 
-// Templatize test on:
-// 1. Whether Captured Surface Control is considered "active". That is,
-// sendWheel() or setZoomLevel() were called.
-// 2. Whether a favicon is expected.
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabSharingInfoBarDelegateTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TabSharingInfoBarDelegateTest,
+    testing::Combine(
+        /*captured_surface_control_active=*/testing::Bool(),
+        /*favicons_used_for_switch_to_tab_button=*/testing::Bool()));
 
 TEST_P(TabSharingInfoBarDelegateTest, StartSharingOnCancel) {
   AddTab(browser(), GURL("about:blank"));

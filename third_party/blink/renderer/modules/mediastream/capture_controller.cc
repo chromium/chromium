@@ -189,6 +189,14 @@ DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "Capturing application not focused.");
+    case CapturedSurfaceControlResult::kMinZoomLevel:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Cannot decrease zoom level beyond the minimum value.");
+    case CapturedSurfaceControlResult::kMaxZoomLevel:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Cannot increase zoom level beyond the maximum value.");
   }
   NOTREACHED();
 }
@@ -462,47 +470,21 @@ int CaptureController::getZoomLevel(ExceptionState& exception_state) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-ScriptPromise<IDLUndefined> CaptureController::setZoomLevel(
-    ScriptState* script_state,
-    int zoom_level) {
-  DCHECK(IsMainThread());
+ScriptPromise<IDLUndefined> CaptureController::increaseZoomLevel(
+    ScriptState* script_state) {
+  return UpdateZoomLevel(script_state,
+                         mojom::blink::ZoomLevelAction::kIncrease);
+}
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+ScriptPromise<IDLUndefined> CaptureController::decreaseZoomLevel(
+    ScriptState* script_state) {
+  return UpdateZoomLevel(script_state,
+                         mojom::blink::ZoomLevelAction::kDecrease);
+}
 
-  const auto promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Unsupported.");
-  return promise;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->RejectWithDOMException(validation_result.code,
-                                     validation_result.message);
-    return promise;
-  }
-
-  if (!getSupportedZoomLevels().Contains(zoom_level)) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Only values returned by getSupportedZoomLevels() are valid.");
-    return promise;
-  }
-
-  const std::optional<base::UnguessableToken>& session_id =
-      GetCaptureSessionId(video_track_);
-  if (!session_id.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
-                                     "Invalid capture");
-    return promise;
-  }
-
-  GetMediaStreamDispatcherHost()->SetZoomLevel(
-      session_id.value(), zoom_level,
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
-  return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+ScriptPromise<IDLUndefined> CaptureController::resetZoomLevel(
+    ScriptState* script_state) {
+  return UpdateZoomLevel(script_state, mojom::blink::ZoomLevelAction::kReset);
 }
 
 void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
@@ -669,6 +651,42 @@ CaptureController::ValidateCapturedSurfaceControlCall() const {
                             "Action only supported for tab-capture.");
   }
   return ValidationResult(DOMExceptionCode::kNoError, "");
+}
+
+ScriptPromise<IDLUndefined> CaptureController::UpdateZoomLevel(
+    ScriptState* script_state,
+    mojom::blink::ZoomLevelAction action) {
+  DCHECK(IsMainThread());
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+
+  const auto promise = resolver->Promise();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
+  return promise;
+#else
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
+    return promise;
+  }
+
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Invalid capture");
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->UpdateZoomLevel(
+      session_id.value(), action,
+      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+  return promise;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 }  // namespace blink
