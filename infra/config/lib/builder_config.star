@@ -729,7 +729,7 @@ def _set_builder_config_property(ctx):
 
     bc_state = _bc_state()
     needs_mega_cq_mode = set()
-    ungardened_builders_mirrored_in_cq = {}
+    trybot_ungardened_mirrors = {}
 
     for bucket in cfg.buckets:
         if not proto.has(bucket, "swarming"):
@@ -879,9 +879,9 @@ def _set_builder_config_property(ctx):
                             bucket_name,
                             builder.name,
                         )
-                        if cq_identifier not in ungardened_builders_mirrored_in_cq:
-                            ungardened_builders_mirrored_in_cq[cq_identifier] = set()
-                        ungardened_builders_mirrored_in_cq[cq_identifier] = ungardened_builders_mirrored_in_cq[cq_identifier].union([mirror])
+                        if cq_identifier not in trybot_ungardened_mirrors:
+                            trybot_ungardened_mirrors[cq_identifier] = set()
+                        trybot_ungardened_mirrors[cq_identifier] = trybot_ungardened_mirrors[cq_identifier].union([mirror])
 
             if (bucket_name == "try" and not mirrors and
                 builder_properties.get("builder_group") not in standalone_trybot_excluded_builder_groups and
@@ -937,8 +937,8 @@ def _set_builder_config_property(ctx):
         if cq_group.name != "cq":
             continue
         for b in cq_group.verifiers.tryjob.builders:
-            if b.name in ungardened_builders_mirrored_in_cq and not b.includable_only and b.experiment_percentage == 0:
-                fail("{} is being added to the CQ but it is mirroring an ungardened and unexempted builder(s): {}".format(b.name, ", ".join(ungardened_builders_mirrored_in_cq[b.name])))
+            if b.name in trybot_ungardened_mirrors and not b.includable_only and b.experiment_percentage == 0:
+                fail("{} is being added to the CQ but it is mirroring an ungardened and unexempted builder(s): {}".format(b.name, ", ".join(trybot_ungardened_mirrors[b.name])))
         for b in cq_group.verifiers.tryjob.builders:
             if b.name not in needs_mega_cq_mode:
                 continue
