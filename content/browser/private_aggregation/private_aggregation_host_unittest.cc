@@ -3216,7 +3216,7 @@ TEST_F(
           /*bucket=*/9, /*value=*/10, /*filtering_id=*/11));
   remote->ContributeToHistogramOnEvent(
       blink::mojom::PrivateAggregationErrorEvent::
-          kAlreadyTriggeredNonInternalError,
+          kAlreadyTriggeredExternalError,
       std::move(already_triggered_contributions));
 
   // Should not get a PrivateAggregationPendingContributions until after the
@@ -3252,7 +3252,7 @@ TEST_F(
                       /*bucket=*/3, /*value=*/4, /*filtering_id=*/5))),
           testing::Pair(
               blink::mojom::PrivateAggregationErrorEvent::
-                  kAlreadyTriggeredNonInternalError,
+                  kAlreadyTriggeredExternalError,
               testing::UnorderedElementsAre(
                   blink::mojom::AggregatableReportHistogramContribution(
                       /*bucket=*/9, /*value=*/10, /*filtering_id=*/11)))));
