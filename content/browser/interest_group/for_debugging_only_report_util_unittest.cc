@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -50,6 +51,17 @@ TEST_F(ForDebuggingOnlyReportUtilTest, EnableFilteringInFutureTime) {
   base::Time now = base::Time::Now();
   EXPECT_FALSE(IsInDebugReportLockout(
       DebugReportLockout(now, /*duration=*/base::Days(90)), now));
+}
+
+TEST_F(ForDebuggingOnlyReportUtilTest, ShouldSampleDebugReport) {
+  EXPECT_FALSE(ShouldSampleDebugReport());
+}
+
+TEST_F(ForDebuggingOnlyReportUtilTest, DoSampleDebugReportForTesting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kFledgeDoSampleDebugReportForTesting);
+  EXPECT_TRUE(ShouldSampleDebugReport());
 }
 
 }  // namespace content

@@ -98,59 +98,6 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
   return result;
 }
 
-void AttachGaiaIdToProfile(
-    ProfileAttributesStorageIOS* profile_attributes_storage,
-    std::string_view profile_name,
-    const GaiaId& gaia_id,
-    bool* updating_profile_attributes_storage) {
-  base::AutoReset<bool> updating_attributes(updating_profile_attributes_storage,
-                                            true);
-
-  if (!profile_attributes_storage) {
-    CHECK_IS_TEST();
-    return;
-  }
-  if (profile_name.empty()) {
-    CHECK_IS_TEST();
-    return;
-  }
-  if (!profile_attributes_storage->HasProfileWithName(profile_name)) {
-    CHECK_IS_TEST();
-    return;
-  }
-  profile_attributes_storage->UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce(
-                        [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
-                          auto gaia_ids = attr.GetAttachedGaiaIds();
-                          gaia_ids.insert(gaia_id);
-                          attr.SetAttachedGaiaIds(gaia_ids);
-                        },
-                        gaia_id));
-}
-
-void DetachGaiaIdFromProfile(
-    ProfileAttributesStorageIOS* profile_attributes_storage,
-    std::string_view profile_name,
-    const GaiaId& gaia_id,
-    bool* updating_profile_attributes_storage) {
-  base::AutoReset<bool> updating_attributes(updating_profile_attributes_storage,
-                                            true);
-
-  if (!profile_attributes_storage ||
-      !profile_attributes_storage->HasProfileWithName(profile_name)) {
-    CHECK_IS_TEST();
-    return;
-  }
-  profile_attributes_storage->UpdateAttributesForProfileWithName(
-      profile_name, base::BindOnce(
-                        [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
-                          auto gaia_ids = attr.GetAttachedGaiaIds();
-                          gaia_ids.erase(gaia_id);
-                          attr.SetAttachedGaiaIds(gaia_ids);
-                        },
-                        gaia_id));
-}
-
 }  // namespace
 
 // Helper class that handles assignment of accounts to profiles. Specifically,
@@ -216,7 +163,17 @@ class AccountProfileMapper::Assigner
   // tests where no ProfileManager exists.
   ProfileAttributesStorageIOS* GetProfileAttributesStorage();
 
-  // Helper to delete a profile given its name.
+  // Helpers for managing the mapping of accounts to profiles. Before calling
+  // these, the caller must have set `is_updating_profile_attributes_storage_`
+  // to true.
+  void AttachGaiaIdToProfile(std::string_view profile_name,
+                             const GaiaId& gaia_id);
+  void DetachGaiaIdFromProfile(std::string_view profile_name,
+                               const GaiaId& gaia_id);
+
+  // Helper to delete a profile given its name. Before calling this, the caller
+  // must have set `is_updating_profile_attributes_storage_` to true (since
+  // deleting the profile also triggers an attributes-changed notification).
   void DeleteProfileNamed(std::string_view name);
 
   // Iterates over all identities and, if necessary, assigns them to profiles.
@@ -381,49 +338,52 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
   CHECK(!IsProfileForGaiaIDFullyInitialized(managed_gaia_id));
   CHECK(profile_manager_);
 
-  ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
-  CHECK(storage);
+  {
+    base::AutoReset<bool> updating_attributes(
+        &is_updating_profile_attributes_storage_, true);
 
-  const std::string previous_personal_profile_name = GetPersonalProfileName();
-  const std::optional<std::string> abandoned_managed_profile_name =
-      FindProfileNameForGaiaID(managed_gaia_id);
+    const std::string previous_personal_profile_name = GetPersonalProfileName();
+    const std::optional<std::string> abandoned_managed_profile_name =
+        FindProfileNameForGaiaID(managed_gaia_id);
 
-  const std::set<GaiaId, std::less<>> personal_gaia_ids =
-      profile_to_gaia_ids_[previous_personal_profile_name];
+    const std::set<GaiaId, std::less<>> personal_gaia_ids =
+        profile_to_gaia_ids_[previous_personal_profile_name];
 
-  // Detach all Gaia IDs from the old personal profile.
-  for (const GaiaId& gaia_id : personal_gaia_ids) {
-    DetachGaiaIdFromProfile(storage, previous_personal_profile_name, gaia_id,
-                            &is_updating_profile_attributes_storage_);
+    // Detach all Gaia IDs from the old personal profile.
+    for (const GaiaId& gaia_id : personal_gaia_ids) {
+      DetachGaiaIdFromProfile(previous_personal_profile_name, gaia_id);
+    }
+
+    ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
+    CHECK(storage);
+
+    // Delete the old managed profile (if it exists).
+    if (abandoned_managed_profile_name) {
+      // The old managed profile must not have been initialized, so that no
+      // actual user data gets deleted here.
+      CHECK(!storage
+                 ->GetAttributesForProfileWithName(
+                     *abandoned_managed_profile_name)
+                 .IsFullyInitialized());
+
+      DeleteProfileNamed(*abandoned_managed_profile_name);
+    }
+
+    // Register a new personal profile.
+    const std::string new_personal_profile_name =
+        profile_manager_->ReserveNewProfileName();
+    storage->SetPersonalProfileName(new_personal_profile_name);
+
+    // ..and re-interpret the previous personal profile as a managed profile.
+    const std::string& new_managed_profile_name =
+        previous_personal_profile_name;
+
+    // Re-attach all relevant Gaia IDs to their new profiles.
+    for (const GaiaId& gaia_id : personal_gaia_ids) {
+      AttachGaiaIdToProfile(new_personal_profile_name, gaia_id);
+    }
+    AttachGaiaIdToProfile(new_managed_profile_name, managed_gaia_id);
   }
-
-  // Delete the old managed profile (if it exists).
-  if (abandoned_managed_profile_name) {
-    // The old managed profile must not have been initialized, so that no actual
-    // user data gets deleted here.
-    CHECK(
-        !storage
-             ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
-             .IsFullyInitialized());
-
-    DeleteProfileNamed(*abandoned_managed_profile_name);
-  }
-
-  // Register a new personal profile.
-  const std::string new_personal_profile_name =
-      profile_manager_->ReserveNewProfileName();
-  storage->SetPersonalProfileName(new_personal_profile_name);
-
-  // ..and re-interpret the previous personal profile as a managed profile.
-  const std::string& new_managed_profile_name = previous_personal_profile_name;
-
-  // Re-attach all relevant Gaia IDs to their new profiles.
-  for (const GaiaId& gaia_id : personal_gaia_ids) {
-    AttachGaiaIdToProfile(storage, new_personal_profile_name, gaia_id,
-                          &is_updating_profile_attributes_storage_);
-  }
-  AttachGaiaIdToProfile(storage, new_managed_profile_name, managed_gaia_id,
-                        &is_updating_profile_attributes_storage_);
 
   // Let observers know about the changes.
   MaybeUpdateCachedMappingAndNotify();
@@ -444,29 +404,34 @@ void AccountProfileMapper::Assigner::UpdateIdentityProfileMappings() {
       &Assigner::ProcessIdentityForAssignmentToProfile, base::Unretained(this),
       std::ref(processed_gaia_ids)));
 
-  // Check if any of the previously-assigned Gaia IDs have been removed.
-  ProfileAttributesStorageIOS* attributes_storage =
-      GetProfileAttributesStorage();
-  if (AreSeparateProfilesForManagedAccountsEnabled() && attributes_storage) {
-    for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
-      for (const GaiaId& gaia_id : gaia_ids) {
-        if (processed_gaia_ids.contains(gaia_id)) {
-          // `gaia_id` still exists, nothing to be done.
-          continue;
-        }
-        // `gaia_id` was removed from the device. Handle the removal, depending
-        // on whether it was in the personal or in a managed profile.
-        if (profile_name == attributes_storage->GetPersonalProfileName()) {
-          // A personal identity was removed; clean it up from the mapping.
-          DetachGaiaIdFromProfile(attributes_storage, profile_name, gaia_id,
-                                  &is_updating_profile_attributes_storage_);
-        } else {
-          // A managed identity was removed, so its corresponding profile
-          // should be deleted.
-          DeleteProfileNamed(profile_name);
-        }
+  {
+    base::AutoReset<bool> updating_attributes(
+        &is_updating_profile_attributes_storage_, true);
 
-        [gaia_ids_failed_fetching_ removeObject:gaia_id.ToNSString()];
+    // Check if any of the previously-assigned Gaia IDs have been removed.
+    ProfileAttributesStorageIOS* attributes_storage =
+        GetProfileAttributesStorage();
+    if (AreSeparateProfilesForManagedAccountsEnabled() && attributes_storage) {
+      for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
+        for (const GaiaId& gaia_id : gaia_ids) {
+          if (processed_gaia_ids.contains(gaia_id)) {
+            // `gaia_id` still exists, nothing to be done.
+            continue;
+          }
+          // `gaia_id` was removed from the device. Handle the removal,
+          // depending on whether it was in the personal or in a managed
+          // profile.
+          if (profile_name == attributes_storage->GetPersonalProfileName()) {
+            // A personal identity was removed; clean it up from the mapping.
+            DetachGaiaIdFromProfile(profile_name, gaia_id);
+          } else {
+            // A managed identity was removed, so its corresponding profile
+            // should be deleted.
+            DeleteProfileNamed(profile_name);
+          }
+
+          [gaia_ids_failed_fetching_ removeObject:gaia_id.ToNSString()];
+        }
       }
     }
   }
@@ -521,7 +486,60 @@ AccountProfileMapper::Assigner::GetProfileAttributesStorage() {
                           : nullptr;
 }
 
+void AccountProfileMapper::Assigner::AttachGaiaIdToProfile(
+    std::string_view profile_name,
+    const GaiaId& gaia_id) {
+  CHECK(is_updating_profile_attributes_storage_);
+
+  ProfileAttributesStorageIOS* profile_attributes_storage =
+      GetProfileAttributesStorage();
+  if (!profile_attributes_storage) {
+    CHECK_IS_TEST();
+    return;
+  }
+  if (profile_name.empty()) {
+    CHECK_IS_TEST();
+    return;
+  }
+  if (!profile_attributes_storage->HasProfileWithName(profile_name)) {
+    CHECK_IS_TEST();
+    return;
+  }
+  profile_attributes_storage->UpdateAttributesForProfileWithName(
+      profile_name, base::BindOnce(
+                        [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
+                          auto gaia_ids = attr.GetAttachedGaiaIds();
+                          gaia_ids.insert(gaia_id);
+                          attr.SetAttachedGaiaIds(gaia_ids);
+                        },
+                        gaia_id));
+}
+
+void AccountProfileMapper::Assigner::DetachGaiaIdFromProfile(
+    std::string_view profile_name,
+    const GaiaId& gaia_id) {
+  CHECK(is_updating_profile_attributes_storage_);
+
+  ProfileAttributesStorageIOS* profile_attributes_storage =
+      GetProfileAttributesStorage();
+  if (!profile_attributes_storage ||
+      !profile_attributes_storage->HasProfileWithName(profile_name)) {
+    CHECK_IS_TEST();
+    return;
+  }
+  profile_attributes_storage->UpdateAttributesForProfileWithName(
+      profile_name, base::BindOnce(
+                        [](const GaiaId& gaia_id, ProfileAttributesIOS& attr) {
+                          auto gaia_ids = attr.GetAttachedGaiaIds();
+                          gaia_ids.erase(gaia_id);
+                          attr.SetAttachedGaiaIds(gaia_ids);
+                        },
+                        gaia_id));
+}
+
 void AccountProfileMapper::Assigner::DeleteProfileNamed(std::string_view name) {
+  CHECK(is_updating_profile_attributes_storage_);
+
   if (handler_) {
     [handler_ deleteProfile:name completion:base::DoNothing()];
     return;
@@ -665,6 +683,9 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     bool is_managed_account) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
+  base::AutoReset<bool> updating_attributes(
+      &is_updating_profile_attributes_storage_, true);
+
   const GaiaId gaia_id(identity.gaiaID);
 
   // Check whether the identity is already assigned to a profile.
@@ -699,8 +720,7 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
       return;
     }
     // It's not the primary account, so allow re-assignment.
-    DetachGaiaIdFromProfile(GetProfileAttributesStorage(), profile_name,
-                            gaia_id, &is_updating_profile_attributes_storage_);
+    DetachGaiaIdFromProfile(profile_name, gaia_id);
   }
 
   // The account needs to be assigned (or re-assigned) to a profile.
@@ -721,11 +741,12 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     // supported. In that case, leave the account in the personal profile.
   }
 
-  AttachGaiaIdToProfile(GetProfileAttributesStorage(), assigned_profile_name,
-                        gaia_id, &is_updating_profile_attributes_storage_);
+  AttachGaiaIdToProfile(assigned_profile_name, gaia_id);
 }
 
 void AccountProfileMapper::Assigner::MaybeUpdateCachedMappingAndNotify() {
+  CHECK(!is_updating_profile_attributes_storage_);
+
   // Get the new mapping as persisted in profile attributes.
   ProfileNameToGaiaIds new_mapping = GetMappingFromProfileAttributes(
       system_identity_manager_, GetProfileAttributesStorage());

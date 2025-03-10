@@ -252,25 +252,39 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     };
 
     enum Ownership {
-      // Default. Creator is not responsible for managing the lifetime of the
-      // Widget, it is destroyed when the corresponding NativeWidget is
-      // destroyed.
+      // The client (caller) manages the lifetime of the Widget, typically via
+      // std::unique_ptr<Widget>. This is the preferred ownership mode.
+      //
+      // If you encounter problems with this ownership mode, please file a bug.
+      //
+      // - The Widget remains valid even after the platform window
+      //   (HWND, NSWindow, etc.) is closed.
+      // - Widget API calls are safe after the platform window closes, but
+      //   most will become no-ops (e.g., Show() will do nothing).
+      // - The NativeWidget is destroyed when the platform window closes.
+      // - When the client destroys the Widget, a close request is sent to the
+      //   platform window (if it's still open).
+      CLIENT_OWNS_WIDGET,
+
+      // The NativeWidget manages the lifetime of the Widget. The Widget is
+      // destroyed when the corresponding NativeWidget is destroyed.
+      //
+      // DEPRECATED: Prone to memory issues. A Widget* can be invalidated
+      // at any time, leading to dangling pointers.  This does not fit typical
+      // C++ memory management idioms.
       NATIVE_WIDGET_OWNS_WIDGET,
-      // Used when the Widget is owned by someone other than the NativeWidget,
-      // e.g. a scoped_ptr in tests. Production use is discouraged because the
-      // Widget API might become unsafe after the platform window is closed.
+
+      // The Widget owns the NativeWidget. The NativeWidget is destroyed when
+      // the corresponding Widget is destroyed.
+      //
+      // DEPRECATED: Causes problems with platform window shutdown. The OS
+      // usually does not expect the NativeWidget to be destroyed immediately
+      // when the platform window is closed. For example, if the platform window
+      // has a close animation, it must remain valid until the animation
+      // finishes to avoid prematurely destroying the compositor and its layer.
+      // This would also cause other platform-specific issues
+      // (e.g., crbug.com/40619853).
       WIDGET_OWNS_NATIVE_WIDGET,
-      // Preferred Ownership mode. This is intended to be a safe replacement for
-      // WIDGET_OWNS_NATIVE_WIDGET. The NativeWidget will be closed along with
-      // the platform window.
-      // The above "default" reflects the behavior of various platforms in which
-      // the NativeWidget is effectively "owned" by the platform itself. It is
-      // possible that the NativeWidget is destroyed at the behest of the plat-
-      // form, leaving the associated Widget reference dangling.
-      // Using this ownership mode allows for the Widget being resilient to the
-      // NativeWidget being destroyed out from under the Widget while being
-      // able to manage the Widget independently.
-      CLIENT_OWNS_WIDGET
     };
 
     enum class ShadowType {
@@ -281,11 +295,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       kDrop,     // Draw a drop shadow that emphasizes Z-order
                  // relationship to other windows.
     };
-
-    // TODO(crbug.com/339619005): Remove this constructor once call sites
-    //                            have been migrated to always specifying
-    //                            the ownership mode as well as the type.
-    explicit InitParams(Type type);
 
     // The preferred constructor. Must specify the ownership mode. The ownership
     // mode will eventually go away and will implicitly be CLIENT_OWNS_WIDGET.

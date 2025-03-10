@@ -629,6 +629,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Toestaan bij elk bezoek</translation>
 <translation id="2085876078937250610">Opslaan…</translation>
+<translation id="2090451897496479509">Neem voor meer informatie contact op met de provider</translation>
 <translation id="2091887806945687916">Geluid</translation>
 <translation id="2093982008204312032">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
 <translation id="2094505752054353250">Domeinen komen niet overeen</translation>
@@ -1308,6 +1309,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="33073482541490531">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="3307649904964670439">Knop Chrome aanpassen. Activeer deze om het uiterlijk van je browser aan te passen.</translation>
 <translation id="3308006649705061278">Organisatie-eenheid (OU)</translation>
+<translation id="3317077846337994567">Gespreid betalen is nu niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="3318016344440038475">Tv-comedy's</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3324983252691184275">Karmozijnrood</translation>
@@ -2763,6 +2765,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5910140988253729859">Automatisch invullen ongedaan maken</translation>
 <translation id="5911020115933784199">Evenementenladders</translation>
 <translation id="5911110632211230665">Openen geblokkeerd</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> heeft dit tabblad toegevoegd</translation>
 <translation id="5915189366813702112">Flexibele werkopties</translation>
 <translation id="59174027418879706">Aangezet</translation>
 <translation id="5918373444239520146">Gadgets en draagbare elektronica</translation>
@@ -4621,6 +4624,7 @@ Aanvullende informatie:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> gebruikt een niet-ondersteund protocol.</translation>
 <translation id="918454845714257218">Check de code op de <ph name="SIDE_OF_CARD" /> en probeer het opnieuw</translation>
 <translation id="9186203289258525843">Knop Chrome instellen als standaardbrowser. Activeer deze om Chrome in te stellen als de standaardbrowser van het systeem.</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> heeft dit tabblad gewijzigd</translation>
 <translation id="9189789270972826888">Klik op de kaartgegevens hieronder om ze te kopiëren en te plakken als de kaart niet is ingevuld. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Onderwerpen ouder dan 4 weken worden automatisch verwijderd</translation>
 <translation id="9191834167571392248">Perforatie linksonder</translation>

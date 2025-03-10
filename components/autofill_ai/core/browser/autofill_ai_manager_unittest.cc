@@ -615,7 +615,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 TEST_F(AutofillAiManagerImportFormTest,
        EntityDoesNotContainRequiredAttributes_DoNotShowPrompt) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {autofill::PASSPORT_ISSUING_COUNTRY_TAG, autofill::PASSPORT_NAME_TAG});
+      {autofill::PASSPORT_ISSUING_COUNTRY, autofill::PASSPORT_NAME_TAG});
   // Set the filled values to be the same as the ones already stored.
   form->field(0)->set_value(u"Germany");
   form->field(1)->set_value(u"1234321");
@@ -696,10 +696,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   // The submitted form will have issue date info.
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
-       autofill::PASSPORT_ISSUE_DATE_TAG,
-       autofill::PASSPORT_EXPIRATION_DATE_TAG,
-       autofill::PASSPORT_EXPIRATION_DATE_TAG,
-       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+       autofill::PASSPORT_ISSUE_DATE, autofill::PASSPORT_EXPIRATION_DATE,
+       autofill::PASSPORT_EXPIRATION_DATE, autofill::PASSPORT_EXPIRATION_DATE});
 
   // The current entity however does not.
   EntityInstance existing_entity_without_issue_and_expiry_dates =

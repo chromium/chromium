@@ -66,14 +66,9 @@ void LifecycleUnitBase::SetState(LifecycleUnitState state,
   LifecycleUnitState last_state = state_;
   state_ = state;
   state_change_time_ = NowTicks();
-  OnLifecycleUnitStateChanged(last_state, reason);
   for (auto& observer : observers_)
     observer.OnLifecycleUnitStateChanged(this, last_state, reason);
 }
-
-void LifecycleUnitBase::OnLifecycleUnitStateChanged(
-    LifecycleUnitState last_state,
-    LifecycleUnitStateChangeReason reason) {}
 
 void LifecycleUnitBase::OnLifecycleUnitDestroyed() {
   for (auto& observer : observers_)

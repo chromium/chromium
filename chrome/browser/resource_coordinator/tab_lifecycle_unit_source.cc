@@ -15,6 +15,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -140,19 +141,20 @@ void TabLifecycleUnitSource::Start() {
 TabLifecycleUnitExternal* TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
     content::WebContents* web_contents) {
   auto* lu = GetTabLifecycleUnit(web_contents);
-  if (!lu)
+  if (!lu) {
     return nullptr;
+  }
   return lu->AsTabLifecycleUnitExternal();
 }
 
-void TabLifecycleUnitSource::AddTabLifecycleObserver(
-    TabLifecycleObserver* observer) {
-  tab_lifecycle_observers_.AddObserver(observer);
+void TabLifecycleUnitSource::AddLifecycleObserver(
+    LifecycleUnitObserver* observer) {
+  lifecycle_unit_observers_.AddObserver(observer);
 }
 
-void TabLifecycleUnitSource::RemoveTabLifecycleObserver(
-    TabLifecycleObserver* observer) {
-  tab_lifecycle_observers_.RemoveObserver(observer);
+void TabLifecycleUnitSource::RemoveLifecycleObserver(
+    LifecycleUnitObserver* observer) {
+  lifecycle_unit_observers_.RemoveObserver(observer);
 }
 
 void TabLifecycleUnitSource::SetFocusedTabStripModelForTesting(
@@ -227,9 +229,10 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
     // A tab was created.
     TabLifecycleUnitHolder::CreateForWebContents(contents);
     auto* holder = TabLifecycleUnitHolder::FromWebContents(contents);
-    holder->set_lifecycle_unit(std::make_unique<TabLifecycleUnit>(
-        this, &tab_lifecycle_observers_, contents, tab_strip_model));
+    holder->set_lifecycle_unit(
+        std::make_unique<TabLifecycleUnit>(this, contents, tab_strip_model));
     lifecycle_unit = holder->lifecycle_unit();
+    lifecycle_unit_observations_.AddObservation(lifecycle_unit);
     if (GetFocusedTabStripModel() == tab_strip_model && foreground)
       UpdateFocusedTabTo(lifecycle_unit);
 
@@ -323,6 +326,22 @@ void TabLifecycleUnitSource::OnBrowserSetLastActive(Browser* browser) {
 
 void TabLifecycleUnitSource::OnBrowserNoLongerActive(Browser* browser) {
   UpdateFocusedTab();
+}
+
+void TabLifecycleUnitSource::OnLifecycleUnitStateChanged(
+    LifecycleUnit* lifecycle_unit,
+    LifecycleUnitState last_state,
+    LifecycleUnitStateChangeReason reason) {
+  lifecycle_unit_observers_.Notify(
+      &LifecycleUnitObserver::OnLifecycleUnitStateChanged, lifecycle_unit,
+      last_state, reason);
+}
+
+void TabLifecycleUnitSource::OnLifecycleUnitDestroyed(
+    LifecycleUnit* lifecycle_unit) {
+  lifecycle_unit_observers_.Notify(
+      &LifecycleUnitObserver::OnLifecycleUnitDestroyed, lifecycle_unit);
+  lifecycle_unit_observations_.RemoveObservation(lifecycle_unit);
 }
 
 // static

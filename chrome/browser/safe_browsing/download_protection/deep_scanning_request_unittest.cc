@@ -36,6 +36,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
@@ -337,7 +338,12 @@ class DeepScanningRequestTest : public testing::Test {
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
 
   std::optional<enterprise_connectors::AnalysisSettings> settings() {
-    return DeepScanningRequest::ShouldUploadBinary(&item_);
+    std::unique_ptr<DeepScanningMetadata> metadata = CreateMetadata();
+    return DeepScanningRequest::ShouldUploadBinary(*metadata);
+  }
+
+  std::unique_ptr<DeepScanningMetadata> CreateMetadata() {
+    return std::make_unique<DownloadItemMetadata>(&item_);
   }
 
   TestingProfile* profile() { return profile_; }
@@ -404,7 +410,8 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -436,7 +443,8 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, VerifyBlockingSet) {
 
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -466,7 +474,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
         kScanForDlpAndMalware);
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -517,7 +526,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
         profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
         kScanForMalware);
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -550,7 +560,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
         profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
         kScanForDlp);
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -585,7 +596,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
     analysis_settings.block_until_verdict =
         enterprise_connectors::BlockUntilVerdict::kBlock;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -617,7 +629,8 @@ TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
   settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](base::RepeatingClosure closure, DownloadCheckResult result) {
@@ -702,7 +715,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -778,7 +792,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -854,7 +869,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -920,7 +936,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -986,7 +1003,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -1056,7 +1074,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -1116,7 +1135,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -1177,7 +1197,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     base::RunLoop run_loop;
     // The DownloadCheckResult passed below should be used if scanning fails.
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::DANGEROUS,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -1242,7 +1263,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
@@ -1283,7 +1305,8 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
 TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
@@ -1327,7 +1350,8 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
 TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
@@ -1402,7 +1426,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        &item_, DownloadCheckResult::SAFE,
+        CreateMetadata(), DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1471,7 +1495,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        &item_, DownloadCheckResult::SAFE,
+        CreateMetadata(), DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1569,7 +1593,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        &item_, DownloadCheckResult::SAFE,
+        CreateMetadata(), DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1636,7 +1660,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
 TEST_F(DeepScanningReportingTest, Timeout) {
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
@@ -1731,7 +1756,8 @@ TEST_P(DeepScanningDownloadFailClosedTest, HandlesDefaultActionCorrectly) {
 
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
       DownloadCheckResult::SAFE,
       base::BindLambdaForTesting([this, quit_closure = run_loop.QuitClosure()](
                                      DownloadCheckResult result) {
@@ -1829,7 +1855,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     base::RunLoop run_loop;
 
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -1893,7 +1920,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     base::RunLoop run_loop;
 
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -1958,7 +1986,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -2020,7 +2049,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         .WillRepeatedly(Return(download::DownloadDangerType::
                                    DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
     DeepScanningRequest request(
-        &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::DANGEROUS,
         base::BindRepeating(
             [](DeepScanningRequestTest* test,
@@ -2146,7 +2176,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
 
   base::RunLoop run_loop;
   DeepScanningRequest request(
-      &item_, DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
       DownloadCheckResult::SAFE,
       base::BindRepeating(
           [](base::RepeatingClosure closure, DownloadCheckResult result) {

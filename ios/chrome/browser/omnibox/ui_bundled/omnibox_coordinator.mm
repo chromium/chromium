@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -98,6 +99,8 @@
   OmniboxAutocompleteController* _omniboxAutocompleteController;
   /// Controller for the omnibox popup.
   OmniboxPopupController* _omniboxPopupController;
+  /// Controller for the omnibox text.
+  OmniboxTextController* _omniboxTextController;
 
   /// Object handling interactions in the keyboard accessory view.
   OmniboxAssistiveKeyboardMediator* _keyboardMediator;
@@ -210,6 +213,14 @@
   _omniboxAutocompleteController.omniboxPopupController =
       _omniboxPopupController;
 
+  _omniboxTextController = [[OmniboxTextController alloc]
+      initWithOmniboxController:_editView->controller()
+                 omniboxViewIOS:_editView.get()];
+  _omniboxTextController.delegate = self.mediator;
+  _omniboxTextController.omniboxAutocompleteController =
+      _omniboxAutocompleteController;
+  _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
+
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
   [self.popupCoordinator start];
 }
@@ -217,6 +228,8 @@
 - (void)stop {
   [_omniboxAutocompleteController disconnect];
   _omniboxAutocompleteController = nil;
+  [_omniboxTextController disconnect];
+  _omniboxTextController = nil;
   _omniboxPopupController = nil;
 
   [self.popupCoordinator stop];

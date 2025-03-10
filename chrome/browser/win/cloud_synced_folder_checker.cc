@@ -1,0 +1,75 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/win/cloud_synced_folder_checker.h"
+
+#include <shlobj.h>
+// NOTE: MUST be included below shlobj.h
+#include <propkey.h>
+#include <windows.storage.h>
+#include <wrl/client.h>
+#include <wrl/implements.h>
+
+#include "base/base_paths_win.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+
+namespace cloud_synced_folder_checker {
+
+CloudSyncStatus EvaluateOneDriveSyncStatus() {
+  CloudSyncStatus status;
+
+  base::FilePath one_drive_file_path;
+  if (!base::PathService::Get(base::DIR_ONE_DRIVE, &one_drive_file_path) ||
+      !IsCloudStorageSynced(one_drive_file_path)) {
+    return status;
+  }
+
+  // OneDrive folder is synced.
+  status.synced = true;
+
+  one_drive_file_path = base::MakeAbsoluteFilePath(one_drive_file_path);
+
+  base::FilePath desktop_file_path;
+  if (base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_file_path)) {
+    desktop_file_path = base::MakeAbsoluteFilePath(desktop_file_path);
+    if (one_drive_file_path == desktop_file_path ||
+        one_drive_file_path.IsParent(desktop_file_path)) {
+      status.desktop_synced = true;
+    }
+  }
+
+  return status;
+}
+
+bool IsCloudStorageSynced(const base::FilePath& file_path) {
+  Microsoft::WRL::ComPtr<IShellItem2> shell_item;
+  HRESULT hr = SHCreateItemFromParsingName(file_path.value().c_str(), nullptr,
+                                           IID_PPV_ARGS(&shell_item));
+  if (FAILED(hr) || !shell_item) {
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<IPropertyStore> property_store;
+  hr = shell_item->GetPropertyStore(GPS_DEFAULT, IID_PPV_ARGS(&property_store));
+  if (FAILED(hr) || !property_store) {
+    return false;
+  }
+
+  PROPVARIANT prop_value;
+  PropVariantInit(&prop_value);
+
+  // Retrieve the PKEY_StorageProviderState property which will indicate that
+  // `file_path` is managed.
+  hr = property_store->GetValue(PKEY_StorageProviderState, &prop_value);
+  if (SUCCEEDED(hr) && prop_value.vt == VT_UI4) {
+    return true;
+  }
+
+  PropVariantClear(&prop_value);
+  return false;
+}
+
+}  // namespace cloud_synced_folder_checker

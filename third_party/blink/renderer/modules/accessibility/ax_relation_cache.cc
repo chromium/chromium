@@ -331,7 +331,7 @@ void AXRelationCache::GetExplicitlySetElementsForAttr(
     const QualifiedName& attr_name,
     HeapVector<Member<Element>>& target_elements) {
   if (source.HasExplicitlySetAttrAssociatedElements(attr_name)) {
-    HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
+    GCedHeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
         source.GetExplicitlySetElementsForAttr(attr_name);
     for (const WeakMember<Element>& element : *explicitly_set_elements) {
       target_elements.push_back(element);

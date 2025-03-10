@@ -11,7 +11,17 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/browsing_data_migration_view_controller.h"
 
+class ChromeAccountManagerService;
+
 @protocol ManagedProfileCreationConsumer;
+
+@protocol ManagedProfileCreationMediatorDelegate <NSObject>
+
+// Called when the identity is removed from the device while the dialog is
+// opened.
+- (void)identityRemovedFromDevice;
+
+@end
 
 namespace signin {
 class IdentityManager;
@@ -24,16 +34,24 @@ class IdentityManager;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<ManagedProfileCreationConsumer> consumer;
 
+@property(nonatomic, weak) id<ManagedProfileCreationMediatorDelegate> delegate;
+
 @property(nonatomic, assign) BOOL keepBrowsingDataSeparate;
 
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager
+                    accountManagerService:
+                        (ChromeAccountManagerService*)accountManagerService
                 skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
     browsingDataMigrationDisabledByPolicy:
-        (BOOL)browsingDataMigrationDisabledByPolicy NS_DESIGNATED_INITIALIZER;
+        (BOOL)browsingDataMigrationDisabledByPolicy
+                                   gaiaID:(NSString*)gaiaID
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (void)disconnect;
 
 @end
 

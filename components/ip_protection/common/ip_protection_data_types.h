@@ -154,6 +154,7 @@ struct ProbabilisticRevealToken {
 };
 
 // Declares possible return status for TryGetProbabilisticRevealTokens().
+// LINT.IfChange(TryGetProbabilisticRevealTokensStatus)
 enum class TryGetProbabilisticRevealTokensStatus {
   kSuccess = 0,
   kNetNotOk = 1,
@@ -172,6 +173,7 @@ enum class TryGetProbabilisticRevealTokensStatus {
   kNoGoogleChromeBranding = 14,
   kMaxValue = kNoGoogleChromeBranding,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:ProbabilisticRevealTokensResult)
 
 // Stores return status of TryGetProbabilisticRevealTokens() together with
 // NetError() returned by url loader.

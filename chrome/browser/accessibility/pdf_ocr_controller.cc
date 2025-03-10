@@ -124,7 +124,8 @@ bool IsAccessibilityEnabled(Profile* profile) {
   // `SetUpPdfObserver()`. So if any of them have screen reader mode enabled,
   // return true.
   for (auto* contents : GetAllPdfWebContents(profile)) {
-    if (contents->GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader)) {
+    if (contents->GetAccessibilityMode().has_mode(
+            ui::AXMode::kExtendedProperties)) {
       return true;
     }
   }
@@ -282,7 +283,7 @@ void PdfOcrController::Activate() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void PdfOcrController::OnAXModeAdded(ui::AXMode mode) {
-  if (mode.has_mode(ui::AXMode::kScreenReader)) {
+  if (mode.has_mode(ui::AXMode::kExtendedProperties)) {
     OnActivationChanged();
   }
 }

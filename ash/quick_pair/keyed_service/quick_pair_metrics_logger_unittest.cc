@@ -169,9 +169,8 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     RegisterUserProfilePrefs(user_prefs_->registry(), /*country=*/"",
                              /*for_test=*/true);
 
-    session_controller->AddUserSession({kUserEmail},
-                                       /*account_id=*/std::nullopt,
-                                       std::move(user_prefs));
+    SimulateUserLogin({kUserEmail},
+                      /*account_id=*/std::nullopt, std::move(user_prefs));
 
     user_prefs_->registry()->RegisterBooleanPref(
         ash::prefs::kUserPairedWithFastPair,

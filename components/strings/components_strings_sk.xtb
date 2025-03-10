@@ -138,6 +138,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automaticky rozpoznané)</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
 <translation id="1236081509407217141">Chcete povoliť VR?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Názov vášho zariadenia</translation>
 <translation id="124116460088058876">Ďalšie jazyky</translation>
 <translation id="1243027604378859286">Autor:</translation>
@@ -812,7 +813,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2385809941344967209">Aktualizovať Chrome v jeho nastaveniach</translation>
 <translation id="2386255080630008482">Certifikát servera bol zrušený.</translation>
 <translation id="2388828676877700238">Príprava a plánovanie daní</translation>
-<translation id="239203817277685015">Generovať podrobnejšiu verziu</translation>
+<translation id="239203817277685015">Rozviesť</translation>
 <translation id="239293030466334554">Kabriolety</translation>
 <translation id="2392959068659972793">Zobraziť pravidlá bez nastavenej hodnoty</translation>
 <translation id="239429038616798445">Tento spôsob dodania nie je k dispozícii. Skúste inú možnosť.</translation>
@@ -1088,7 +1089,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2938225289965773019">Otvárať odkazy protokolu <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Obálka 228,6 mm × 304,8 mm</translation>
 <translation id="2941952326391522266">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, jej bezpečnostný certifikát pochádza z domény <ph name="DOMAIN2" />. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
-<translation id="2942492342931589800">Jednoduché</translation>
+<translation id="2942492342931589800">Neformálny</translation>
 <translation id="2942515540157583425">Práca v oblasti IT a techniky</translation>
 <translation id="2943895734390379394">Čas nahrania:</translation>
 <translation id="2947281105969315778">Ak chcete zdieľať skupiny kariet alebo sa k nejakej z nich pripojiť, musíte mať možnosť prihlásiť sa do Chromu</translation>
@@ -1799,6 +1800,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="415440494507469262">Pridať kartu do porovnávacej tabuľky</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4165422751765527461">Otvorí sa článok v centre pomoci na novej karte</translation>
+<translation id="4165584779486830267">Teraz môžete platiť na splátky pomocou služieb Affirm alebo Zip.</translation>
 <translation id="4165986682804962316">Nastavenia webov</translation>
 <translation id="4169535189173047238">Nepovoliť</translation>
 <translation id="4171400957073367226">Nesprávny overovací podpis</translation>
@@ -2763,6 +2765,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5910140988253729859">Vrátiť späť automaticky doplnené údaje</translation>
 <translation id="5911020115933784199">Podujatia a záznamy</translation>
 <translation id="5911110632211230665">Otváranie je blokované</translation>
+<translation id="5914465277418006379">Používateľ <ph name="MEMBER_FIRST_NAME" /> pridal túto kartu</translation>
 <translation id="5915189366813702112">Práca s flexibilným pracovným časom</translation>
 <translation id="59174027418879706">Povolené</translation>
 <translation id="5918373444239520146">Prístroje a prenosná elektronika</translation>
@@ -4622,6 +4625,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9183425211371246419">Web <ph name="HOST_NAME" /> využíva nepodporovaný protokol.</translation>
 <translation id="918454845714257218">Skontrolujte kód na <ph name="SIDE_OF_CARD" /> a skúste to znova</translation>
 <translation id="9186203289258525843">Tlačidlo Nastaviť Chrome ako predvolený prehliadač, ktorého aktivovaním nastavíte Chrome ako predvolený prehliadač systému</translation>
+<translation id="9189468832660648522">Používateľ <ph name="MEMBER_FIRST_NAME" /> zmenil túto kartu</translation>
 <translation id="9189789270972826888">Ak sa karta nevyplnila, kliknutím skopírujte a prilepte nižšie uvedené údaje karty. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Témy staršie ako štyri týždne sa automaticky odstraňujú</translation>
 <translation id="9191834167571392248">Prederaviť vľavo dolu</translation>

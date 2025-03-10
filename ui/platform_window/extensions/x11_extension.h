@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   virtual bool IsWmTiling() const = 0;
 
   // Handles CompleteSwapAfterResize event coming from the compositor observer.
-  virtual void OnCompleteSwapAfterResize() = 0;
+  virtual void OnCompleteSwapAfterResize(const gfx::Size& new_size) = 0;
 
   // Returns the current bounds in terms of the X11 Root Window including the
   // borders provided by the window manager (if any).
@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   virtual bool CanResetOverrideRedirect() const = 0;
 
   virtual void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) = 0;
+
+  // Indicates whether a WmSync is pending. Should only be used for testing.
+  virtual bool IsWmSyncActiveForTest() = 0;
 
  protected:
   virtual ~X11Extension();

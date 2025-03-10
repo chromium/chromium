@@ -277,16 +277,11 @@ TEST_P(AddAccountSigninManagerTest, Interrupted) {
                                  SigninAddAccountToDeviceResult::kInterrupted
                                                               identity:nil
                                                                  error:nil]);
-  __block BOOL completionCalled = NO;
-  [add_account_signin_manager() interruptAnimated:YES
-                                       completion:^{
-                                         completionCalled = YES;
-                                       }];
+  [add_account_signin_manager() interruptAnimated:YES];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
         return !fake_interaction_manager().isActivityViewPresented;
       }));
-  EXPECT_TRUE(completionCalled);
   histogram_tester.ExpectUniqueSample(
       "Signin.AddAccountToDevice.Result",
       SigninAddAccountToDeviceResult::kInterrupted, 1);

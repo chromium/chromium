@@ -510,7 +510,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
   }
 
   loading_primary_account_id_ = primary_account_id;
-  loading_is_syncing_ = is_syncing;
   web_data_service_request_ = token_web_data_->GetAllTokens(this);
 }
 
@@ -569,7 +568,6 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 #endif
 
   loading_primary_account_id_ = CoreAccountId();
-  loading_is_syncing_ = false;
   FinishLoadingCredentials();
 }
 
@@ -616,8 +614,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
           // With Uno, tokens are not revoked when clearing cookies if the user
           // is signed in non-syncing.
-          revoke_token =
-              loading_primary_account_id_.empty() || loading_is_syncing_;
+          revoke_token = loading_primary_account_id_.empty();
         } else {
           revoke_token = true;
         }
@@ -813,7 +810,6 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
     // then the tokens should be revoked on load.
     revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
     loading_primary_account_id_ = CoreAccountId();
-    loading_is_syncing_ = false;
   }
 
   // Make a temporary copy of the account ids.

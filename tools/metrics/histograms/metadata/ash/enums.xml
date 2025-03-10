@@ -867,10 +867,14 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="921600" label="1280 x 720"/>
   <int value="927658" label="761 x 1219"/>
   <int value="927659" label="1219 x 761"/>
+  <int value="929446" label="787 x 1181"/>
+  <int value="929447" label="1181 x 787"/>
   <int value="940103" label="792 x 1187"/>
   <int value="940104" label="1187 x 792"/>
   <int value="941290" label="793 x 1187 (deprecated)"/>
   <int value="941291" label="1187 x 793 (deprecated)"/>
+  <int value="944639" label="768 x 1230"/>
+  <int value="944640" label="1230 x 768"/>
   <int value="948999" label="730 x 1300"/>
   <int value="949000" label="1300 x 730"/>
   <int value="950299" label="731 x 1300 (deprecated)"/>
@@ -901,6 +905,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1087762" label="1391 x 782"/>
   <int value="1087999" label="850 x 1280"/>
   <int value="1088000" label="1280 x 850"/>
+  <int value="1091839" label="853 x 1280"/>
+  <int value="1091840" label="1280 x 853"/>
   <int value="1095859" label="785 x 1396"/>
   <int value="1095860" label="1396 x 785"/>
   <int value="1110388" label="833 x 1333"/>
@@ -933,6 +939,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1187918" label="1454 x 817"/>
   <int value="1189371" label="818 x 1454 (deprecated)"/>
   <int value="1189372" label="1454 x 818 (deprecated)"/>
+  <int value="1208778" label="869 x 1391"/>
+  <int value="1208779" label="1391 x 869"/>
   <int value="1214999" label="900 x 1350 (deprecated)"/>
   <int value="1215000" label="1350 x 900 (deprecated)"/>
   <int value="1217311" label="872 x 1396"/>
@@ -957,6 +965,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1294001" label="1517 x 853 (deprecated)"/>
   <int value="1295999" label="900 x 1440"/>
   <int value="1296000" label="1440 x 900"/>
+  <int value="1298279" label="930 x 1396"/>
+  <int value="1298280" label="1396 x 930"/>
   <int value="1303687" label="856 x 1523"/>
   <int value="1303688" label="1523 x 856"/>
   <int value="1305210" label="857 x 1523 (deprecated)"/>
@@ -995,6 +1005,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1565522" label="1669 x 938"/>
   <int value="1567190" label="939 x 1669 (deprecated)"/>
   <int value="1567191" label="1669 x 939 (deprecated)"/>
+  <int value="1572863" label="1024 x 1536"/>
+  <int value="1572864" label="1536 x 1024"/>
   <int value="1585175" label="1028 x 1542 (deprecated)"/>
   <int value="1585176" label="1542 x 1028 (deprecated)"/>
   <int value="1599999" label="1000 x 1600"/>
@@ -1021,6 +1033,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1711845" label="1745 x 981"/>
   <int value="1724117" label="1038 x 1661"/>
   <int value="1724118" label="1661 x 1038"/>
+  <int value="1740431" label="1077 x 1616"/>
+  <int value="1740432" label="1616 x 1077"/>
   <int value="1740766" label="1043 x 1669"/>
   <int value="1740767" label="1669 x 1043"/>
   <int value="1775222" label="999 x 1777"/>
@@ -1043,8 +1057,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1879184" label="1828 x 1028"/>
   <int value="1902049" label="1090 x 1745"/>
   <int value="1902050" label="1745 x 1090"/>
+  <int value="1939721" label="1137 x 1706"/>
+  <int value="1939722" label="1706 x 1137"/>
   <int value="1957387" label="1142 x 1714"/>
   <int value="1957388" label="1714 x 1142"/>
+  <int value="1972469" label="1110 x 1777"/>
+  <int value="1972470" label="1777 x 1110"/>
   <int value="2040102" label="1129 x 1807"/>
   <int value="2040103" label="1807 x 1129"/>
   <int value="2068587" label="1174 x 1762"/>
@@ -1055,10 +1073,14 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2073600" label="1920 x 1080"/>
   <int value="2159999" label="1200 x 1800 (deprecated)"/>
   <int value="2160000" label="1800 x 1200 (deprecated)"/>
+  <int value="2175627" label="1204 x 1807"/>
+  <int value="2175628" label="1807 x 1204"/>
   <int value="2181973" label="1279 x 1706"/>
   <int value="2181974" label="1706 x 1279"/>
   <int value="2183679" label="1280 x 1706 (deprecated)"/>
   <int value="2183680" label="1706 x 1280 (deprecated)"/>
+  <int value="2213231" label="1176 x 1882"/>
+  <int value="2213232" label="1882 x 1176"/>
   <int value="2217363" label="1213 x 1828"/>
   <int value="2217364" label="1828 x 1213"/>
   <int value="2219191" label="1214 x 1828 (deprecated)"/>
@@ -1073,6 +1095,10 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2355640" label="1880 x 1253"/>
   <int value="2411735" label="1268 x 1902"/>
   <int value="2411736" label="1902 x 1268"/>
+  <int value="2457599" label="1280 x 1920"/>
+  <int value="2457600" label="1920 x 1280"/>
+  <int value="2499999" label="1250 x 2000"/>
+  <int value="2500000" label="2000 x 1250"/>
   <int value="2557466" label="1199 x 2133"/>
   <int value="2557467" label="2133 x 1199"/>
   <int value="2559599" label="1200 x 2133 (deprecated)"/>
@@ -1083,6 +1109,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2702788" label="2014 x 1342"/>
   <int value="2707395" label="1234 x 2194"/>
   <int value="2707396" label="2194 x 1234"/>
+  <int value="2843288" label="1333 x 2133"/>
+  <int value="2843289" label="2133 x 1333"/>
   <int value="2936224" label="1285 x 2285"/>
   <int value="2936225" label="2285 x 1285"/>
   <int value="3007973" label="1371 x 2194"/>
@@ -1093,8 +1121,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3110400" label="2160 x 1440"/>
   <int value="3145727" label="1536 x 2048"/>
   <int value="3145728" label="2048 x 1536"/>
+  <int value="3207627" label="1462 x 2194"/>
+  <int value="3207628" label="2194 x 1462"/>
   <int value="3239999" label="1350 x 2400"/>
   <int value="3240000" label="2400 x 1350"/>
+  <int value="3262979" label="1428 x 2285"/>
+  <int value="3262980" label="2285 x 1428"/>
   <int value="3285599" label="1480 x 2220"/>
   <int value="3285600" label="2220 x 1480"/>
   <int value="3393023" label="1504 x 2256"/>
@@ -1107,6 +1139,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3996334" label="2666 x 1499"/>
   <int value="3998999" label="1500 x 2666 (deprecated)"/>
   <int value="3999000" label="2666 x 1500 (deprecated)"/>
+  <int value="4095999" label="1600 x 2560"/>
+  <int value="4096000" label="2560 x 1600"/>
   <int value="4351999" label="1700 x 2560"/>
   <int value="4352000" label="2560 x 1700"/>
   <int value="4665599" label="1620 x 2880"/>

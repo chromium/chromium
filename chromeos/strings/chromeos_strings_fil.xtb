@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Bersyon ng SDK:</translation>
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong mga imaheng gawa ng AI.</translation>
 <translation id="2045814230297767491">kubyertos</translation>
 <translation id="2047316797244836561">Kumonekta sa network at i-reload ang page para makita ang screen saver.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">ibang planeta</translation>
 <translation id="6359706544163531585">I-disable ang maliwanag na tema</translation>
 <translation id="6359919876285606596">Permanente na ang aksyong ito at hindi ito maa-undo</translation>
-<translation id="6368342879959028556">Kapag pinili mo ang “Gumawa gamit ang AI,” magsulat ng custom na prompt. O puwede mong piliin ang “Mga AI wallpaper,” para pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong AI wallpaper.</translation>
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
 <translation id="6369221585240879141">Hindi makagawa ng mga pangalan ng recording para sa wikang ito ng transcript</translation>
 <translation id="6373461326814131011">pond</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Payagan ang mga serbisyo ng system na gamitin ang iyong lokasyon?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="66621959568103627">coral pink</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Piliin ang "I-inspire ako" para makakuha ng higit pang natatangi at iba't ibang opsyon para sa mga imaheng gawa ng AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kapag gumawa ka gamit ang AI, ipinapadala ang prompt sa mga server ng Google AI para bumuo ng mga imahe at pahusayin ang produkto, nang napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ang Generative AI ay pang-eksperimento, na nasa unang yugto ng pag-develop, at kasalukuyang may limitadong availability.</translation>
 <translation id="6673898378497337661">taasan ang liwanag ng keyboard</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6694534975463174713">lock</translation>

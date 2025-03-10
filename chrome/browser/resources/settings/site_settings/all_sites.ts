@@ -467,9 +467,18 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filteredList_.length > 0;
   }
 
-  private shouldShowRwsLearnMore_(): boolean {
+  private hasFilteredRwsSites_(): boolean {
     return this.isRwsFiltered_() && this.filteredList_ &&
         this.filteredList_.length > 0;
+  }
+
+  private shouldShowRwsV2Descrption_(): boolean {
+    return this.isRelatedWebsiteSetsV2UiEnabled_ && this.hasFilteredRwsSites_();
+  }
+
+  private shouldShowRwsV1LearnMore_(): boolean {
+    return !this.isRelatedWebsiteSetsV2UiEnabled_ &&
+        this.hasFilteredRwsSites_();
   }
 
   private onShowRelatedSites_() {
@@ -588,6 +597,14 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filter.startsWith(RWS_RELATED_SEARCH_PREFIX);
   }
 
+  /**
+   * Checks if the RWS V2 UI is enabled and an RWS filter is applied.
+   * @return True if the RWS V2 UI is enabled and `isRwsFiltered_` is true.
+   */
+  private isRwsV2Filtered_(): boolean {
+    return this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered_();
+  }
+
   private getRwsLearnMoreLabel_() {
     const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
     return loadTimeData.getStringF(
@@ -606,7 +623,7 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearDataButtonString_(): string {
-    const buttonStringId = this.isFiltered_() ?
+    const buttonStringId = this.isFiltered_() && !this.isRwsV2Filtered_() ?
         'siteSettingsDeleteDisplayedStorageLabel' :
         'siteSettingsDeleteAllStorageLabel';
     return this.i18n(buttonStringId);
@@ -619,9 +636,12 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearStorageDescription_(): string {
-    const descriptionId = this.isFiltered_() ?
-        'siteSettingsClearDisplayedStorageDescription' :
-        'siteSettingsClearAllStorageDescription';
+    let descriptionId = 'siteSettingsClearAllStorageDescription';
+    if (this.isRwsV2Filtered_()) {
+      descriptionId = 'allSitesRwsFilterViewStorageDescription';
+    } else if (this.isFiltered_()) {
+      descriptionId = 'siteSettingsClearDisplayedStorageDescription';
+    }
     return loadTimeData.substituteString(
         this.i18n(descriptionId), this.totalUsage_);
   }

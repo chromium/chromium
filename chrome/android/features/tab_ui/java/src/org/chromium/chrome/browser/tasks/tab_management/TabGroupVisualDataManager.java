@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -47,18 +48,22 @@ public class TabGroupVisualDataManager {
                         if (tabs.isEmpty()) return;
 
                         TabGroupModelFilter filter = filterFromTab(tabs.get(0));
-                        LazyOneshotSupplier<Set<Integer>> remainingRootIds =
-                                filter.getLazyAllRootIds(tabs, /* includePendingClosures= */ true);
-                        Set<Integer> processedRootIds = new HashSet<>();
+                        LazyOneshotSupplier<Set<Token>> remainingTabGroupIds =
+                                filter.getLazyAllTabGroupIds(
+                                        tabs, /* includePendingClosures= */ true);
+                        Set<Token> processedTabGroupIds = new HashSet<>();
                         for (Tab tab : tabs) {
-                            int rootId = tab.getRootId();
-                            boolean wasAdded = processedRootIds.add(rootId);
+                            @Nullable Token tabGroupId = tab.getTabGroupId();
+                            if (tabGroupId == null) continue;
+
+                            boolean wasAdded = processedTabGroupIds.add(tabGroupId);
                             if (!wasAdded) continue;
 
                             // If any related tab still exist keep the data as size 1 groups are
                             // valid.
-                            if (remainingRootIds.get().contains(rootId)) continue;
+                            if (remainingTabGroupIds.get().contains(tabGroupId)) continue;
 
+                            int rootId = tab.getRootId();
                             Runnable deleteTask =
                                     () -> {
                                         filter.deleteTabGroupTitle(rootId);
@@ -67,7 +72,7 @@ public class TabGroupVisualDataManager {
                                             filter.deleteTabGroupCollapsed(rootId);
                                         }
                                     };
-                            if (filter.isTabGroupHiding(tab.getTabGroupId())) {
+                            if (filter.isTabGroupHiding(tabGroupId)) {
                                 // Post this work because if the closure is non-undoable, but the
                                 // tab group is hiding we don't want sync to pick up this deletion
                                 // and we should post so all the observers are notified before we do

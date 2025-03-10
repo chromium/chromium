@@ -873,6 +873,16 @@ BASE_FEATURE_PARAM(std::string,
                    "FledgeBiddingAndAuctionKeyConfig",
                    "");
 
+// See https://github.com/WICG/turtledove/issues/1334
+BASE_FEATURE(kFledgeOriginScopedKeys,
+             "FledgeOriginScopedKeys",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kFledgeOriginScopedKeyConfig,
+                   &kFledgeOriginScopedKeys,
+                   "FledgeOriginScopedKeyConfig",
+                   "");
+
 // See in the header.
 BASE_FEATURE(kFledgeConsiderKAnonymity,
              "FledgeConsiderKAnonymity",
@@ -1820,6 +1830,10 @@ BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNoThrowForCSPBlockedWorker,
+             "NoThrowForCSPBlockedWorker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,
              "OpenAllUrlsOrFilesOnDrop",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1983,10 +1997,6 @@ const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
 BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
              "Prerender2EarlyDocumentLifecycleUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrerender2NoVarySearch,
-             "Prerender2NoVarySearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrerender2WarmUpCompositor,
              "Prerender2WarmUpCompositor",
@@ -2432,6 +2442,12 @@ BASE_FEATURE(kThreadedBodyLoader,
 BASE_FEATURE(kThreadedPreloadScanner,
              "ThreadedPreloadScanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kThrottleFrameRateOnInitialization,
+                   &features::kRenderBlockingFullFrameRate,
+                   "throttle-frame-rate-on-initialization",
+                   false);
 
 // Enable throttling of fetch() requests from service workers in the
 // installing state.  The limit of 3 was chosen to match the limit

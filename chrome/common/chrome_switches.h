@@ -162,6 +162,7 @@ extern const char kProxyServer[];
 extern const char kRemoteDebuggingTargets[];
 extern const char kRestart[];
 extern const char kRestoreLastSession[];
+extern const char kSameTab[];
 extern const char kScreenCaptureAudioDefaultUnchecked[];
 extern const char kSilentDebuggerExtensionAPI[];
 extern const char kSilentLaunch[];
@@ -284,6 +285,7 @@ extern const char kGlicFreURL[];
 extern const char kGlicOpenOnStartup[];
 extern const char kGlicAllowedOrigins[];
 extern const char kGlicDev[];
+extern const char kGlicHostLogging[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

@@ -302,6 +302,11 @@ class ClientSideDetectionService
   // updated to match the state
   void OnPrefsUpdated();
 
+  // Unsubscribes to model subscriptions. Currently we unsubscribe to the image
+  // embedding model as well as the on device model depending on user
+  // preferences.
+  void UnsubscribeToModelSubscription();
+
   // Starts sending the request to the client-side detection frontends.
   // This method takes ownership of both pointers.
   void StartClientReportPhishingRequest(

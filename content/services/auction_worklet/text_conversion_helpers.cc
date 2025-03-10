@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-exception.h"
@@ -21,14 +22,10 @@ TextConversionHelpers::TextConversionHelpers(AuctionV8Helper* v8_helper)
     : v8_helper_(v8_helper) {}
 
 void TextConversionHelpers::AttachToContext(v8::Local<v8::Context> context) {
-  // We do everything in ReInitialize, since we attach to an object and not
-  // globally.
-}
+  if (!base::FeatureList::IsEnabled(features::kFledgeTextConversionHelpers)) {
+    return;
+  }
 
-void TextConversionHelpers::Reset() {}
-
-void TextConversionHelpers::ReInitialize(v8::Local<v8::Context> context,
-                                         v8::Local<v8::Object> object) {
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
   v8::Local<v8::Function> encode =
@@ -37,13 +34,20 @@ void TextConversionHelpers::ReInitialize(v8::Local<v8::Context> context,
   v8::Local<v8::Function> decode =
       v8::Function::New(context, &TextConversionHelpers::DecodeUtf8, v8_this)
           .ToLocalChecked();
-  object
+  v8::Local<v8::Object> pa_object = v8::Object::New(v8_helper_->isolate());
+  context->Global()
+      ->Set(context, v8_helper_->CreateStringFromLiteral("protectedAudience"),
+            pa_object)
+      .Check();
+  pa_object
       ->Set(context, v8_helper_->CreateStringFromLiteral("encodeUtf8"), encode)
       .Check();
-  object
+  pa_object
       ->Set(context, v8_helper_->CreateStringFromLiteral("decodeUtf8"), decode)
       .Check();
 }
+
+void TextConversionHelpers::Reset() {}
 
 void TextConversionHelpers::EncodeUtf8(
     const v8::FunctionCallbackInfo<v8::Value>& args) {

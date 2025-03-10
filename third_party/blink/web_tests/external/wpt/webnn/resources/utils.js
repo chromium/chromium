@@ -294,29 +294,7 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
     if (actual[i] === expected[i]) {
       continue;
     } else {
-      // measure the ULP distance
-      if (dataType === 'float32') {
-        actualBitwise = getBitwise(actual[i], dataType);
-        expectedBitwise = getBitwise(expected[i], dataType);
-      } else if (dataType === 'float16') {
-        actualBitwise = actual[i];
-        // convert expected data of Float16 to Uint16
-        expectedBitwise = toHalf(expected[i]);
-      } else if (dataType === 'int64') {
-        actualBitwise = actual[i];
-        expectedBitwise = BigInt(expected[i]);
-      } else if (dataType === 'uint64') {
-        actualBitwise = actual[i];
-        expectedBitwise = BigUint64Array(expected[i]);
-      } else if (
-          dataType === 'int8' || dataType === 'uint8' || dataType === 'int32' ||
-          dataType === 'uint32' || dataType === 'int4' ||
-          dataType === 'uint4') {
-        actualBitwise = actual[i];
-        expectedBitwise = expected[i];
-      }
-      distance = actualBitwise - expectedBitwise;
-      distance = distance >= 0 ? distance : -distance;
+      distance = ulpDistance(actual[i], expected[i], dataType);
 
       // if true, invoke assert_true() in failure case
       // if false, it's expected, not invoke assert_true() in success case to
@@ -331,6 +309,40 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       }
     }
   }
+};
+
+/**
+ * Compute the ULP distance between ``a`` and ``b`` for the given ``dataType``.
+ *
+ * @param {(Number|BigInt)} a - First value.
+ * @param {(Number|BigInt)} b - Second value.
+ * @param {String} dataType - A data type string, value: "float32",
+ *     more types, please see:
+ *     https://www.w3.org/TR/webnn/#enumdef-mloperanddatatype
+ */
+const ulpDistance = (a, b, dataType) => {
+  let aBitwise, bBitwise;
+  // measure the ULP distance
+  if (dataType === 'float32') {
+    aBitwise = getBitwise(a, dataType);
+    bBitwise = getBitwise(b, dataType);
+  } else if (dataType === 'float16') {
+    aBitwise = a;
+    // convert b data of Float16 to Uint16
+    bBitwise = toHalf(b);
+  } else if (dataType === 'int64' || dataType === 'uint64') {
+    aBitwise = BigInt(a);
+    bBitwise = BigInt(b);
+  } else if (
+      dataType === 'int8' || dataType === 'uint8' || dataType === 'int32' ||
+      dataType === 'uint32' || dataType === 'int4' || dataType === 'uint4') {
+    aBitwise = a;
+    bBitwise = b;
+  } else {
+    throw new AssertionError(`Data type ${dataType} is not supported`);
+  }
+  const distance = aBitwise - bBitwise;
+  return distance >= 0 ? distance : -distance;
 };
 
 /**

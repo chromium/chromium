@@ -16,6 +16,7 @@
 //
 //
 
+#include <grpc/support/atm.h>
 #include <grpc/support/port_platform.h>
 
 #include "src/core/lib/iomgr/port.h"
@@ -23,6 +24,8 @@
 #ifdef GRPC_POSIX_SOCKET_TCP_SERVER_UTILS_COMMON
 
 #include <errno.h>
+#include <grpc/support/alloc.h>
+#include <grpc/support/sync.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -30,18 +33,16 @@
 
 #include <string>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
-
-#include <grpc/support/alloc.h>
-#include <grpc/support/log.h>
-#include <grpc/support/sync.h>
-
 #include "src/core/lib/address_utils/sockaddr_utils.h"
-#include "src/core/lib/gprpp/crash.h"
 #include "src/core/lib/iomgr/error.h"
 #include "src/core/lib/iomgr/sockaddr.h"
 #include "src/core/lib/iomgr/tcp_server_utils_posix.h"
 #include "src/core/lib/iomgr/unix_sockets_posix.h"
+#include "src/core/lib/iomgr/vsock.h"
+#include "src/core/util/crash.h"
 
 #define MIN_SAFE_ACCEPT_QUEUE_SIZE 100
 
@@ -69,16 +70,32 @@ static void init_max_accept_queue_size(void) {
   s_max_accept_queue_size = n;
 
   if (s_max_accept_queue_size < MIN_SAFE_ACCEPT_QUEUE_SIZE) {
-    gpr_log(GPR_INFO,
-            "Suspiciously small accept queue (%d) will probably lead to "
-            "connection drops",
-            s_max_accept_queue_size);
+    ABSL_LOG(INFO) << "Suspiciously small accept queue (" << s_max_accept_queue_size
+              << ") will probably lead to connection drops";
   }
 }
 
 static int get_max_accept_queue_size(void) {
   gpr_once_init(&s_init_max_accept_queue_size, init_max_accept_queue_size);
   return s_max_accept_queue_size;
+}
+
+static void listener_retry_timer_cb(void* arg, grpc_error_handle err) {
+  // Do nothing if cancelled.
+  if (!err.ok()) return;
+  grpc_tcp_listener* listener = static_cast<grpc_tcp_listener*>(arg);
+  gpr_atm_no_barrier_store(&listener->retry_timer_armed, false);
+  if (!grpc_fd_is_shutdown(listener->emfd)) {
+    grpc_fd_set_readable(listener->emfd);
+  }
+}
+
+void grpc_tcp_server_listener_initialize_retry_timer(
+    grpc_tcp_listener* listener) {
+  gpr_atm_no_barrier_store(&listener->retry_timer_armed, false);
+  grpc_timer_init_unset(&listener->retry_timer);
+  GRPC_CLOSURE_INIT(&listener->retry_closure, listener_retry_timer_cb, listener,
+                    grpc_schedule_on_exec_ctx);
 }
 
 static grpc_error_handle add_socket_to_server(grpc_tcp_server* s, int fd,
@@ -92,7 +109,7 @@ static grpc_error_handle add_socket_to_server(grpc_tcp_server* s, int fd,
   grpc_error_handle err =
       grpc_tcp_server_prepare_socket(s, fd, addr, s->so_reuseport, &port);
   if (!err.ok()) return err;
-  GPR_ASSERT(port > 0);
+  ABSL_CHECK_GT(port, 0);
   absl::StatusOr<std::string> addr_str = grpc_sockaddr_to_string(addr, true);
   if (!addr_str.ok()) {
     return GRPC_ERROR_CREATE(addr_str.status().ToString());
@@ -112,6 +129,7 @@ static grpc_error_handle add_socket_to_server(grpc_tcp_server* s, int fd,
   sp->server = s;
   sp->fd = fd;
   sp->emfd = grpc_fd_create(fd, name.c_str(), true);
+  grpc_tcp_server_listener_initialize_retry_timer(sp);
 
   // Check and set fd as prellocated
   if (grpc_tcp_server_pre_allocated_fd(s) == fd) {
@@ -124,7 +142,7 @@ static grpc_error_handle add_socket_to_server(grpc_tcp_server* s, int fd,
   sp->fd_index = fd_index;
   sp->is_sibling = 0;
   sp->sibling = nullptr;
-  GPR_ASSERT(sp->emfd);
+  ABSL_CHECK(sp->emfd);
   gpr_mu_unlock(&s->mu);
 
   *listener = sp;
@@ -188,9 +206,9 @@ grpc_error_handle grpc_tcp_server_prepare_socket(
   grpc_resolved_address sockname_temp;
   grpc_error_handle err;
 
-  GPR_ASSERT(fd >= 0);
+  ABSL_CHECK_GE(fd, 0);
 
-  if (so_reuseport && !grpc_is_unix_socket(addr)) {
+  if (so_reuseport && !grpc_is_unix_socket(addr) && !grpc_is_vsock(addr)) {
     err = grpc_set_socket_reuse_port(fd, 1);
     if (!err.ok()) goto error;
   }
@@ -199,17 +217,19 @@ grpc_error_handle grpc_tcp_server_prepare_socket(
   err = grpc_set_socket_zerocopy(fd);
   if (!err.ok()) {
     // it's not fatal, so just log it.
-    gpr_log(GPR_DEBUG, "Node does not support SO_ZEROCOPY, continuing.");
+    ABSL_VLOG(2) << "Node does not support SO_ZEROCOPY, continuing.";
   }
 #endif
   err = grpc_set_socket_nonblocking(fd, 1);
   if (!err.ok()) goto error;
   err = grpc_set_socket_cloexec(fd, 1);
   if (!err.ok()) goto error;
-  if (!grpc_is_unix_socket(addr)) {
+  if (!grpc_is_unix_socket(addr) && !grpc_is_vsock(addr)) {
     err = grpc_set_socket_low_latency(fd, 1);
     if (!err.ok()) goto error;
     err = grpc_set_socket_reuse_addr(fd, 1);
+    if (!err.ok()) goto error;
+    err = grpc_set_socket_dscp(fd, s->options.dscp);
     if (!err.ok()) goto error;
     err =
         grpc_set_socket_tcp_user_timeout(fd, s->options, false /* is_client */);
@@ -249,7 +269,7 @@ grpc_error_handle grpc_tcp_server_prepare_socket(
   return absl::OkStatus();
 
 error:
-  GPR_ASSERT(!err.ok());
+  ABSL_CHECK(!err.ok());
   if (fd >= 0) {
     close(fd);
   }

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -192,6 +193,11 @@ class BocaSessionManager
     return session_duration_timer_;
   }
 
+  void set_on_app_status_toggled_cb_for_test(
+      base::OnceCallback<void(bool)> on_app_status_toggled_cb) {
+    on_app_status_toggled_cb_for_test_ = std::move(on_app_status_toggled_cb);
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -262,6 +268,7 @@ class BocaSessionManager
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   bool is_local_caption_enabled_ = false;
+  base::OnceCallback<void(bool)> on_app_status_toggled_cb_for_test_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca

@@ -73,7 +73,7 @@ builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "base_config",
             apply_configs = [
                 "dcheck",
                 "mb",
@@ -115,7 +115,7 @@ builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "base_config",
             apply_configs = [
                 "dcheck",
                 "mb",
@@ -148,7 +148,7 @@ builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "base_config",
             apply_configs = [
                 "dcheck",
                 "mb",
@@ -183,7 +183,7 @@ builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "base_config",
             apply_configs = [
                 "dcheck",
                 "mb",
@@ -227,7 +227,7 @@ builder(
             apply_configs = ["android"],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "base_config",
             apply_configs = [
                 "dcheck",
                 "mb",

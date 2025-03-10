@@ -79,7 +79,7 @@ bool ShouldIgnorePermissionRequest(
   }
 
   LocationBarView* location_bar = GetLocationBarView(browser);
-  bool cant_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
+  bool can_display_prompt = !(location_bar && location_bar->IsEditingOrEmpty());
 
   LensOverlayController* lens_overlay_controller =
       browser->tab_strip_model()
@@ -89,13 +89,13 @@ bool ShouldIgnorePermissionRequest(
   // Don't show prompt if Lens Overlay is showing
   // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
   if (lens_overlay_controller && lens_overlay_controller->IsOverlayShowing()) {
-    cant_display_prompt = true;
+    can_display_prompt = false;
   }
 
   permissions::PermissionUmaUtil::RecordPermissionPromptAttempt(
-      delegate->Requests(), cant_display_prompt);
+      delegate->Requests(), can_display_prompt);
 
-  return cant_display_prompt;
+  return !can_display_prompt;
 }
 
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
@@ -227,7 +227,6 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     return nullptr;
   }
 
-  // Auto-ignore the permission request if a user is typing into location bar.
   if (ShouldIgnorePermissionRequest(web_contents, browser, delegate)) {
     return nullptr;
   }

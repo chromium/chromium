@@ -13,17 +13,17 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.5/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.5/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.5/src/macro_impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.5/src/zero_from.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/macro_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerofrom-0.1.6/src/zero_from.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.5"
+  cargo_pkg_version = "0.1.6"
   cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "zerofrom"
   cargo_pkg_description = "ZeroFrom trait for constructing"

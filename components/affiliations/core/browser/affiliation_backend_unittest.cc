@@ -20,13 +20,13 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_database.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler_delegate.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager.h"
 #include "components/affiliations/core/browser/fake_affiliation_api.h"
-#include "components/affiliations/core/browser/mock_affiliation_consumer.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -40,85 +40,6 @@ namespace affiliations {
 namespace {
 
 using StrategyOnCacheMiss = AffiliationBackend::StrategyOnCacheMiss;
-
-// Mock fetch throttler that has some extra logic to accurately portray the real
-// AffiliationFetchThrottler in how it ignores SignalNetworkRequestNeeded()
-// requests when a request is already known to be needed or one is already in
-// flight, and in how it goes back to the idle state afterwards.
-class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
- public:
-  explicit MockAffiliationFetchThrottler(
-      AffiliationFetchThrottlerDelegate* delegate)
-      : AffiliationFetchThrottler(
-            delegate,
-            nullptr,
-            network::TestNetworkConnectionTracker::GetInstance(),
-            nullptr) {
-    EXPECT_CALL(*this, OnInformOfNetworkRequestComplete(testing::_)).Times(0);
-  }
-
-  MockAffiliationFetchThrottler(const MockAffiliationFetchThrottler&) = delete;
-  MockAffiliationFetchThrottler& operator=(
-      const MockAffiliationFetchThrottler&) = delete;
-
-  ~MockAffiliationFetchThrottler() override {
-    EXPECT_FALSE(signaled_network_request_needed_);
-  }
-
-  // Expects that InformOfNetworkRequestComplete() will be called to indicate
-  // either success or failure, depending on |expected_success|.
-  void ExpectInformOfNetworkRequestComplete(bool expected_success) {
-    EXPECT_CALL(*this, OnInformOfNetworkRequestComplete(expected_success));
-  }
-
-  // Informs the |delegate_| that it can send the needed network request.
-  // Returns true if the |delegate_| reported that it actually ended up issuing
-  // a request.
-  bool LetNetworkRequestBeSent() {
-    EXPECT_TRUE(has_signaled_network_request_needed());
-    if (!delegate_->OnCanSendNetworkRequest()) {
-      reset_signaled_network_request_needed();
-      return false;
-    }
-    return true;
-  }
-
-  // Whether or not the throttler is 'signaled', meaning that the real throttler
-  // would eventually call OnCanSendNetworkRequest() on the |delegate_|.
-  bool has_signaled_network_request_needed() const {
-    return signaled_network_request_needed_;
-  }
-
-  // Forces the mock throttler back to 'non-signaled' state. Normally, this does
-  // not need to be manually called, as this is done by the mock automatically.
-  void reset_signaled_network_request_needed() {
-    signaled_network_request_needed_ = false;
-  }
-
-  void SetInternetConnectivity(bool has_connection) {
-    has_network_connectivity_ = has_connection;
-  }
-
- private:
-  MOCK_METHOD1(OnInformOfNetworkRequestComplete, void(bool));
-
-  // AffiliationFetchThrottler:
-  void SignalNetworkRequestNeeded() override {
-    signaled_network_request_needed_ = true;
-  }
-
-  bool HasInternetConnection() const override {
-    return has_network_connectivity_;
-  }
-
-  void InformOfNetworkRequestComplete(bool success) override {
-    OnInformOfNetworkRequestComplete(success);
-    reset_signaled_network_request_needed();
-  }
-
-  bool signaled_network_request_needed_ = false;
-  bool has_network_connectivity_ = true;
-};
 
 const char kTestFacetURIAlpha1[] = "https://one.alpha.example.com";
 const char kTestFacetURIAlpha2[] = "https://two.alpha.example.com";
@@ -202,14 +123,6 @@ class AffiliationBackendTest : public testing::Test {
   AffiliationBackendTest& operator=(const AffiliationBackendTest&) = delete;
 
  protected:
-  void GetAffiliationsAndBranding(MockAffiliationConsumer* consumer,
-                                  const FacetURI& facet_uri,
-                                  StrategyOnCacheMiss cache_miss_strategy) {
-    backend_->GetAffiliationsAndBranding(facet_uri, cache_miss_strategy,
-                                         consumer->GetResultCallback(),
-                                         consumer_task_runner());
-  }
-
   void Prefetch(const FacetURI& facet_uri, base::Time keep_fresh_until) {
     backend_->Prefetch(facet_uri, keep_fresh_until);
   }
@@ -218,21 +131,13 @@ class AffiliationBackendTest : public testing::Test {
     backend_->CancelPrefetch(facet_uri, keep_fresh_until);
   }
 
-  void ExpectNeedForFetchAndLetItBeSent() {
-    ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
-    ASSERT_TRUE(mock_fetch_throttler()->has_signaled_network_request_needed());
-    ASSERT_TRUE(mock_fetch_throttler()->LetNetworkRequestBeSent());
-  }
-
   void ExpectAndCompleteFetch(
       const std::vector<FacetURI>& expected_requested_facet_uris) {
     ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
     EXPECT_THAT(
         fake_affiliation_api()->GetNextRequestedFacets(),
         testing::UnorderedElementsAreArray(expected_requested_facet_uris));
-    mock_fetch_throttler()->ExpectInformOfNetworkRequestComplete(true);
     fake_affiliation_api()->ServeNextRequest();
-    testing::Mock::VerifyAndClearExpectations(mock_fetch_throttler());
   }
 
   void ExpectAndCompleteFetch(const FacetURI& expected_requested_facet_uri) {
@@ -245,44 +150,42 @@ class AffiliationBackendTest : public testing::Test {
     ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
     EXPECT_THAT(fake_affiliation_api()->GetNextRequestedFacets(),
                 testing::UnorderedElementsAre(expected_requested_facet_uri));
-    mock_fetch_throttler()->ExpectInformOfNetworkRequestComplete(false);
     fake_affiliation_api()->FailNextRequest();
-    testing::Mock::VerifyAndClearExpectations(mock_fetch_throttler());
   }
 
   void ExpectNoFetchNeeded() {
     ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
-    ASSERT_FALSE(mock_fetch_throttler()->has_signaled_network_request_needed());
-  }
-
-  void ExpectFailureWithoutFetch(MockAffiliationConsumer* consumer) {
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-    consumer->ExpectFailure();
-    consumer_task_runner_->RunUntilIdle();
-    testing::Mock::VerifyAndClearExpectations(consumer);
   }
 
   void GetAffiliationsAndBrandingAndExpectFetchAndThenResult(
       const FacetURI& facet_uri,
       const AffiliatedFacets& expected_result) {
-    GetAffiliationsAndBranding(mock_consumer(), facet_uri,
-                               StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-    ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+    base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+        expected_result_callback;
+
+    backend_->GetAffiliationsAndBranding(
+        facet_uri, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        expected_result_callback.Get(), consumer_task_runner_);
+    backend_task_runner_->RunUntilIdle();
+
     ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facet_uri));
-    mock_consumer()->ExpectSuccessWithResult(expected_result);
+    EXPECT_CALL(expected_result_callback, Run(expected_result, true));
     consumer_task_runner_->RunUntilIdle();
-    testing::Mock::VerifyAndClearExpectations(mock_consumer());
   }
 
   void GetAffiliationsAndBrandingAndExpectResultWithoutFetch(
       const FacetURI& facet_uri,
       StrategyOnCacheMiss cache_miss_strategy,
       const AffiliatedFacets& expected_result) {
-    GetAffiliationsAndBranding(mock_consumer(), facet_uri, cache_miss_strategy);
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-    mock_consumer()->ExpectSuccessWithResult(expected_result);
+    base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+        expected_result_callback;
+
+    backend_->GetAffiliationsAndBranding(facet_uri, cache_miss_strategy,
+                                         expected_result_callback.Get(),
+                                         consumer_task_runner_);
+
+    EXPECT_CALL(expected_result_callback, Run(expected_result, true));
     consumer_task_runner_->RunUntilIdle();
-    testing::Mock::VerifyAndClearExpectations(mock_consumer());
   }
 
   // TODO(engedy): Within this test fixture, the word "failure" refers to GTest
@@ -290,15 +193,22 @@ class AffiliationBackendTest : public testing::Test {
   // failure callbacks. Make this less ambiguous.
   void GetAffiliationsAndBrandingAndExpectFailureWithoutFetch(
       const FacetURI& facet_uri) {
-    GetAffiliationsAndBranding(mock_consumer(), facet_uri,
-                               StrategyOnCacheMiss::FAIL);
-    ASSERT_NO_FATAL_FAILURE(ExpectFailureWithoutFetch(mock_consumer()));
+    base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+        expected_result_callback;
+
+    backend_->GetAffiliationsAndBranding(facet_uri, StrategyOnCacheMiss::FAIL,
+                                         expected_result_callback.Get(),
+                                         consumer_task_runner_);
+
+    EXPECT_CALL(expected_result_callback, Run(AffiliatedFacets(), false));
+    consumer_task_runner_->RunUntilIdle();
   }
 
   void PrefetchAndExpectFetch(const FacetURI& facet_uri,
                               base::Time keep_fresh_until) {
     Prefetch(facet_uri, keep_fresh_until);
-    ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+
+    backend_task_runner_->RunUntilIdle();
     ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facet_uri));
   }
 
@@ -319,7 +229,6 @@ class AffiliationBackendTest : public testing::Test {
   }
 
   void DestroyBackend() {
-    mock_fetch_throttler_ = nullptr;
     // `backend_` owns the fetcher factory to which `fake_affiliation_api_`
     // keeps a raw pointer, so this raw pointer needs to be reset prior to
     // destroying `backend_`.
@@ -329,6 +238,12 @@ class AffiliationBackendTest : public testing::Test {
 
   void AdvanceTime(base::TimeDelta delta) {
     backend_task_runner_->FastForwardBy(delta);
+  }
+
+  bool FacetIsCached(const FacetURI& facet_uri) const {
+    const auto& database = backend_->GetAffiliationDatabaseForTesting();
+    AffiliatedFacetsWithUpdateTime unused;
+    return database.GetAffiliationsAndBrandingForFacetURI(facet_uri, &unused);
   }
 
   // Returns the number of equivalence classes in the backend's database.
@@ -369,10 +284,14 @@ class AffiliationBackendTest : public testing::Test {
 
   FakeAffiliationAPI* fake_affiliation_api() { return &fake_affiliation_api_; }
 
-  MockAffiliationConsumer* mock_consumer() { return &mock_consumer_; }
+  void TurnOnInternetConnection() {
+    network_connection_tracker_->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  }
 
-  MockAffiliationFetchThrottler* mock_fetch_throttler() {
-    return mock_fetch_throttler_;
+  void TurnOffInternetConnection() {
+    network_connection_tracker_->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_NONE);
   }
 
  private:
@@ -385,13 +304,12 @@ class AffiliationBackendTest : public testing::Test {
     auto test_shared_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+    network_connection_tracker_->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
     backend_->Initialize(test_shared_loader_factory->Clone(),
-                         network::TestNetworkConnectionTracker::GetInstance(),
-                         db_path());
-    auto mock_fetch_throttler =
-        std::make_unique<MockAffiliationFetchThrottler>(backend_.get());
-    mock_fetch_throttler_ = mock_fetch_throttler.get();
-    backend_->SetThrottlerForTesting(std::move(mock_fetch_throttler));
+                         network_connection_tracker_.get(), db_path_);
     auto fake_fetcher_factory =
         std::make_unique<FakeAffiliationFetcherFactory>();
     fake_affiliation_api_.SetFetcherFactory(fake_fetcher_factory.get());
@@ -416,12 +334,11 @@ class AffiliationBackendTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   base::FilePath db_path_;
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   std::unique_ptr<AffiliationBackend> backend_;
   FakeAffiliationAPI fake_affiliation_api_;
-  MockAffiliationConsumer mock_consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  // Owned by |backend_|.
-  raw_ptr<MockAffiliationFetchThrottler> mock_fetch_throttler_ = nullptr;
 };
 
 TEST_F(AffiliationBackendTest, OnDemandRequestSucceedsWithFetch) {
@@ -472,28 +389,31 @@ TEST_F(AffiliationBackendTest, ConcurrentUnrelatedRequests) {
   FacetURI facet_uri_alpha(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
   FacetURI facet_uri_beta(FacetURI::FromCanonicalSpec(kTestFacetURIBeta1));
   FacetURI facet_uri_gamma(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1));
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_1;
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_2;
 
-  // Pretend the fetch is already away when the two other requests come in.
-  MockAffiliationConsumer second_consumer;
-  GetAffiliationsAndBranding(mock_consumer(), facet_uri_alpha,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
-  GetAffiliationsAndBranding(&second_consumer, facet_uri_beta,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
+  backend()->GetAffiliationsAndBranding(
+      facet_uri_alpha, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_1.Get(), consumer_task_runner());
+  backend_task_runner()->RunUntilIdle();
+  backend()->GetAffiliationsAndBranding(
+      facet_uri_beta, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_2.Get(), consumer_task_runner());
   Prefetch(facet_uri_gamma, base::Time::Max());
 
   std::vector<FacetURI> second_fetch_uris;
   second_fetch_uris.push_back(facet_uri_beta);
   second_fetch_uris.push_back(facet_uri_gamma);
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facet_uri_alpha));
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(second_fetch_uris));
-
-  mock_consumer()->ExpectSuccessWithResult(GetTestEquivalenceClassAlpha());
-  second_consumer.ExpectSuccessWithResult(GetTestEquivalenceClassBeta());
+  EXPECT_CALL(expected_result_callback_1,
+              Run(GetTestEquivalenceClassAlpha(), true));
+  EXPECT_CALL(expected_result_callback_2,
+              Run(GetTestEquivalenceClassBeta(), true));
   consumer_task_runner()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
-
   // Now that the two GetAffiliation() requests have been completed, the first
   // two FacetManagers should be discarded. The third FacetManager corresponding
   // to the prefetched facet should be kept.
@@ -507,27 +427,31 @@ TEST_F(AffiliationBackendTest, ConcurrentUnrelatedRequests2) {
   FacetURI facet_uri_alpha(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
   FacetURI facet_uri_beta(FacetURI::FromCanonicalSpec(kTestFacetURIBeta1));
   FacetURI facet_uri_gamma(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1));
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_1;
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_2;
 
-  MockAffiliationConsumer second_consumer;
-  GetAffiliationsAndBranding(mock_consumer(), facet_uri_alpha,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  GetAffiliationsAndBranding(&second_consumer, facet_uri_beta,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
+  backend()->GetAffiliationsAndBranding(
+      facet_uri_alpha, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_1.Get(), consumer_task_runner());
+  backend()->GetAffiliationsAndBranding(
+      facet_uri_beta, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_2.Get(), consumer_task_runner());
   Prefetch(facet_uri_gamma, base::Time::Max());
 
   std::vector<FacetURI> fetched_uris;
   fetched_uris.push_back(facet_uri_alpha);
   fetched_uris.push_back(facet_uri_beta);
   fetched_uris.push_back(facet_uri_gamma);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-  mock_consumer()->ExpectSuccessWithResult(GetTestEquivalenceClassAlpha());
-  second_consumer.ExpectSuccessWithResult(GetTestEquivalenceClassBeta());
+  EXPECT_CALL(expected_result_callback_1,
+              Run(GetTestEquivalenceClassAlpha(), true));
+  EXPECT_CALL(expected_result_callback_2,
+              Run(GetTestEquivalenceClassBeta(), true));
   consumer_task_runner()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
-
   // Now that the two GetAffiliation() requests have been completed, the first
   // two FacetManagers should be discarded. The third FacetManager corresponding
   // to the prefetched facet should be kept.
@@ -536,36 +460,37 @@ TEST_F(AffiliationBackendTest, ConcurrentUnrelatedRequests2) {
 
 TEST_F(AffiliationBackendTest, RetryIsMadeOnFailedFetch) {
   FacetURI facet_uri(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback;
 
-  GetAffiliationsAndBranding(mock_consumer(), facet_uri,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend()->GetAffiliationsAndBranding(
+      facet_uri, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback.Get(), consumer_task_runner());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndFailFetch(facet_uri));
   EXPECT_EQ(1u, backend_facet_manager_count());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  // Wait for the delay issued by the throttler.
+  AdvanceTime(base::Seconds(10));
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facet_uri));
 
-  mock_consumer()->ExpectSuccessWithResult(GetTestEquivalenceClassAlpha());
+  EXPECT_CALL(expected_result_callback,
+              Run(GetTestEquivalenceClassAlpha(), true));
   consumer_task_runner()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
-
   EXPECT_EQ(0u, backend_facet_manager_count());
 }
 
 // The Prefetch() request expires before fetching corresponding affiliation
 // information would be allowed. The fetch should be abandoned.
 TEST_F(AffiliationBackendTest, FetchIsNoLongerNeededOnceAllowed) {
-  Prefetch(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
-           backend_task_runner()->Now() + GetShortTestPeriod());
-  ASSERT_TRUE(mock_fetch_throttler()->has_signaled_network_request_needed());
-  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+  FacetURI facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  TurnOffInternetConnection();
 
+  Prefetch(facet, backend_task_runner()->Now() + GetShortTestPeriod());
   AdvanceTime(GetShortTestPeriod() + Epsilon());
+  TurnOnInternetConnection();
 
-  bool did_send_request = mock_fetch_throttler()->LetNetworkRequestBeSent();
-  EXPECT_FALSE(did_send_request);
-  ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+  EXPECT_FALSE(FacetIsCached(facet));
   EXPECT_EQ(0u, backend_facet_manager_count());
 }
 
@@ -628,26 +553,33 @@ TEST_F(AffiliationBackendTest,
        CacheServesConcurrentRequestsForAffiliatedFacets) {
   FacetURI facet_uri1(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
   FacetURI facet_uri2(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2));
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_1;
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_2;
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback_3;
 
-  MockAffiliationConsumer second_consumer;
-  MockAffiliationConsumer third_consumer;
-  GetAffiliationsAndBranding(mock_consumer(), facet_uri1,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
-  GetAffiliationsAndBranding(&second_consumer, facet_uri1,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  GetAffiliationsAndBranding(&third_consumer, facet_uri2,
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
+  backend()->GetAffiliationsAndBranding(
+      facet_uri1, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_1.Get(), consumer_task_runner());
+  backend_task_runner()->RunUntilIdle();
+  backend()->GetAffiliationsAndBranding(
+      facet_uri1, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_2.Get(), consumer_task_runner());
+  backend()->GetAffiliationsAndBranding(
+      facet_uri2, StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      expected_result_callback_3.Get(), consumer_task_runner());
 
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facet_uri1));
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-  mock_consumer()->ExpectSuccessWithResult(GetTestEquivalenceClassAlpha());
-  second_consumer.ExpectSuccessWithResult(GetTestEquivalenceClassAlpha());
-  third_consumer.ExpectSuccessWithResult(GetTestEquivalenceClassAlpha());
+  EXPECT_CALL(expected_result_callback_1,
+              Run(GetTestEquivalenceClassAlpha(), true));
+  EXPECT_CALL(expected_result_callback_2,
+              Run(GetTestEquivalenceClassAlpha(), true));
+  EXPECT_CALL(expected_result_callback_3,
+              Run(GetTestEquivalenceClassAlpha(), true));
   consumer_task_runner()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
-
   EXPECT_EQ(0u, backend_facet_manager_count());
 }
 
@@ -663,7 +595,7 @@ TEST_F(AffiliationBackendTest,
   FacetURI facet_uri2(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2));
 
   Prefetch(facet_uri1, base::Time::Max());
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   Prefetch(facet_uri1, base::Time::Max());
   Prefetch(facet_uri2, base::Time::Max());
 
@@ -725,7 +657,7 @@ TEST_F(AffiliationBackendTest,
 
   EXPECT_TRUE(IsCachedDataNearStaleForFacetURI(
       FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)));
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(
       ExpectAndCompleteFetch(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)));
 
@@ -784,7 +716,7 @@ TEST_F(AffiliationBackendTest, PrefetchTriggersPeriodicRefetch) {
 
     EXPECT_TRUE(IsCachedDataNearStaleForFacetURI(
         FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)));
-    ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+    backend_task_runner()->RunUntilIdle();
     ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(
         FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)));
     ASSERT_NO_FATAL_FAILURE(ExpectThatEquivalenceClassIsServedFromCache(
@@ -853,7 +785,7 @@ TEST_F(AffiliationBackendTest, CancelDuplicatePrefetch) {
   EXPECT_EQ(1u, backend_facet_manager_count());
   EXPECT_TRUE(IsCachedDataNearStaleForFacetURI(
       FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)));
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(
       ExpectAndCompleteFetch(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)));
 
@@ -904,28 +836,35 @@ TEST_F(AffiliationBackendTest,
 }
 
 TEST_F(AffiliationBackendTest, NothingExplodesWhenShutDownDuringFetch) {
-  GetAffiliationsAndBranding(mock_consumer(),
-                             FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2),
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_TRUE(mock_fetch_throttler()->has_signaled_network_request_needed());
-  mock_fetch_throttler()->reset_signaled_network_request_needed();
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback;
+
+  backend()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2),
+      StrategyOnCacheMiss::FETCH_OVER_NETWORK, expected_result_callback.Get(),
+      consumer_task_runner());
+
+  TurnOffInternetConnection();
   DestroyBackend();
 }
 
 TEST_F(AffiliationBackendTest,
        FailureCallbacksAreCalledIfBackendIsDestroyedWithPendingRequest) {
-  GetAffiliationsAndBranding(mock_consumer(),
-                             FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2),
-                             StrategyOnCacheMiss::FETCH_OVER_NETWORK);
+  base::MockOnceCallback<void(const AffiliatedFacets&, bool)>
+      expected_result_callback;
+
+  backend()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2),
+      StrategyOnCacheMiss::FETCH_OVER_NETWORK, expected_result_callback.Get(),
+      consumer_task_runner());
+
   // Currently, a GetAffiliationsAndBranding() request can only be blocked due
   // to fetch in flight -- so emulate this condition when destroying the
   // backend.
-  ASSERT_TRUE(mock_fetch_throttler()->has_signaled_network_request_needed());
-  mock_fetch_throttler()->reset_signaled_network_request_needed();
+  TurnOffInternetConnection();
   DestroyBackend();
-  mock_consumer()->ExpectFailure();
+  EXPECT_CALL(expected_result_callback, Run(AffiliatedFacets(), false));
   consumer_task_runner()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
 
 TEST_F(AffiliationBackendTest, DeleteCache) {
@@ -951,14 +890,13 @@ TEST_F(AffiliationBackendTest, KeepPrefetchForFacets) {
   backend()->KeepPrefetchForFacets(
       {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
        FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)});
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(
       ExpectAndCompleteFetch(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)));
   EXPECT_EQ(2u, backend_facet_manager_count());
   EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
 
   consumer_task_runner()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
 
 TEST_F(AffiliationBackendTest, GetGroupingWith) {
@@ -968,7 +906,7 @@ TEST_F(AffiliationBackendTest, GetGroupingWith) {
   fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1));
 
   backend()->KeepPrefetchForFacets(fetched_uris);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
 
   EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),
@@ -982,7 +920,7 @@ TEST_F(AffiliationBackendTest, SingleGroupForAffiliatedFacets) {
   fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2));
 
   backend()->KeepPrefetchForFacets(fetched_uris);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
 
   EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),
@@ -990,7 +928,6 @@ TEST_F(AffiliationBackendTest, SingleGroupForAffiliatedFacets) {
 }
 
 TEST_F(AffiliationBackendTest, UpdateAffiliationsAndBrandingClearsOldCache) {
-  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/true);
   ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
       FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1), base::Time::Max()));
   ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
@@ -1001,63 +938,56 @@ TEST_F(AffiliationBackendTest, UpdateAffiliationsAndBrandingClearsOldCache) {
       {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
        FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)},
       base::DoNothing());
+  backend_task_runner()->RunUntilIdle();
+
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
 }
 
 TEST_F(AffiliationBackendTest, UpdateAffiliationsAndBrandingSuccess) {
-  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/true);
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
-
   std::vector<FacetURI> facets = {
       FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
       FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)};
-
   base::MockOnceClosure completion_callback;
 
   backend()->UpdateAffiliationsAndBranding(facets, completion_callback.Get());
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(facets));
 
   // Expect completion callback.
   EXPECT_CALL(completion_callback, Run);
   backend_task_runner()->RunUntilIdle();
-
   EXPECT_GE(2u, backend_facet_manager_count());
   EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
 }
 
 TEST_F(AffiliationBackendTest, UpdateAffiliationsAndBrandingFailure) {
-  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/true);
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
-
   FacetURI facet = FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1);
   base::MockOnceClosure completion_callback;
 
   backend()->UpdateAffiliationsAndBranding({facet}, completion_callback.Get());
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndFailFetch(facet));
 
   // Still expect completion callback.
   EXPECT_CALL(completion_callback, Run);
   backend_task_runner()->RunUntilIdle();
-
   EXPECT_GE(1u, backend_facet_manager_count());
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
 }
 
 TEST_F(AffiliationBackendTest, UpdateAffiliationsAndBrandingFailsIfNoInternet) {
-  mock_fetch_throttler()->SetInternetConnectivity(/*has_connection=*/false);
+  TurnOffInternetConnection();
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
-
   FacetURI facet = FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1);
   base::MockOnceClosure completion_callback;
 
   // Expect call to completion callback right away.
   EXPECT_CALL(completion_callback, Run);
   backend()->UpdateAffiliationsAndBranding({facet}, completion_callback.Get());
-  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
-  ASSERT_FALSE(mock_fetch_throttler()->has_signaled_network_request_needed());
 
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
   EXPECT_GE(0u, backend_facet_manager_count());
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
 }
@@ -1105,8 +1035,7 @@ TEST_F(AffiliationBackendTest, GetGroupingInfoForInvalidFacet) {
 
 TEST_F(AffiliationBackendTest,
        UpdateAffiliationsAndBrandingSkipsInvalidFacets) {
-  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
-
+  ASSERT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
   // Http schema is not supported by the affiliation service.
   FacetURI facet = FacetURI::FromPotentiallyInvalidSpec("http://example.com");
   base::MockOnceClosure completion_callback;
@@ -1115,7 +1044,6 @@ TEST_F(AffiliationBackendTest,
   EXPECT_CALL(completion_callback, Run);
   backend()->UpdateAffiliationsAndBranding({facet}, completion_callback.Get());
   ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
-  ASSERT_FALSE(mock_fetch_throttler()->has_signaled_network_request_needed());
 
   EXPECT_GE(0u, backend_facet_manager_count());
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
@@ -1134,9 +1062,8 @@ TEST_F(AffiliationBackendTest, GroupsUpdatedByMainDomain) {
   fake_affiliation_api()->AddTestGrouping(group);
 
   backend()->KeepPrefetchForFacets(fetched_uris);
-  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  backend_task_runner()->RunUntilIdle();
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
-
   auto expected_group = GetTestGropingAlpha();
   expected_group.facets.emplace_back(fetched_uris.back());
   EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),

@@ -11676,6 +11676,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     bool use_prefetch_proxy,
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override) {
   if (!base::FeatureList::IsEnabled(
@@ -11693,8 +11694,8 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
                              use_prefetch_proxy);
   auto container = std::make_unique<PrefetchContainer>(
       *this, prefetch_url, prefetch_type, referrer, referring_origin,
-      /*no_vary_search_hint=*/std::nullopt, std::move(attempt),
-      holdback_status_override);
+      /*no_vary_search_hint=*/std::nullopt, std::move(preload_pipeline_info),
+      std::move(attempt), holdback_status_override);
 
   return prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }
@@ -11709,6 +11710,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
     PreloadingHoldbackStatus holdback_status_override,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     PreloadingAttempt* preloading_attempt,
     base::RepeatingCallback<bool(const GURL&,
                                  const std::optional<UrlMatchType>&)>
@@ -11723,8 +11725,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
-      PreloadPipelineInfoImpl::Create(
-          /*planned_max_preloading_type=*/PreloadingType::kPrerender));
+      base::WrapRefCounted(
+          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get())));
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);
 #else

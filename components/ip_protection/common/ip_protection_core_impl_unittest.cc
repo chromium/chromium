@@ -43,7 +43,7 @@ using ::masked_domain_list::ResourceOwner;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
 
 constexpr char kEmptyTokenCacheHistogram[] =
-    "NetworkService.IpProtection.EmptyTokenCache";
+    "NetworkService.IpProtection.EmptyTokenCache2";
 constexpr char kMdlMatchesTimeHistogram[] =
     "NetworkService.MaskedDomainList.MatchesTime";
 
@@ -330,23 +330,20 @@ TEST_F(IpProtectionCoreImplTest, GetAuthTokenFromManagerForProxyB) {
   ASSERT_TRUE(ip_protection_core->GetAuthToken(1));
 }
 
-// If a required token is missing from one of the token caches, the availability
-// is set to false.
-TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
+TEST_F(IpProtectionCoreImplTest,
+       AreAuthTokensAvailable_OneTokenCacheNeverFilled_ReturnsFalse) {
   auto ipp_proxy_config_manager =
       std::make_unique<MockIpProtectionProxyConfigManager>();
   ipp_proxy_config_manager->SetProxyList({MakeChain({"a-proxy"})});
   ipp_proxy_config_manager->SetCurrentGeo(kMountainViewGeoId);
 
-  BlindSignedAuthToken exp_token;
-  exp_token.token = "a-token";
-  exp_token.geo_hint =
-      GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
-  auto ipp_token_manager = std::make_unique<MockIpProtectionTokenManager>();
-  ipp_token_manager->SetAuthToken(std::move(exp_token));
+  auto token_manager = std::make_unique<MockIpProtectionTokenManager>();
+  token_manager->SetAuthToken(BlindSignedAuthToken{
+      .token = "secret-token",
+      .geo_hint = GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
 
   std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
-  managers.insert({ProxyLayer::kProxyA, std::move(ipp_token_manager)});
+  managers.insert({ProxyLayer::kProxyA, std::move(token_manager)});
   managers.insert(
       {ProxyLayer::kProxyB, std::make_unique<MockIpProtectionTokenManager>()});
   auto ip_protection_core =
@@ -354,9 +351,42 @@ TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
 
   ASSERT_FALSE(ip_protection_core->WereTokenCachesEverFilled());
   ASSERT_FALSE(ip_protection_core->AreAuthTokensAvailable());
+  // The empty token cache metric should not be emitted since the cache was
+  // never filled.
+  histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 0);
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       AreAuthTokensAvailable_OneTokenCacheExhausted_ReturnsFalse) {
+  auto ipp_proxy_config_manager =
+      std::make_unique<MockIpProtectionProxyConfigManager>();
+  ipp_proxy_config_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_config_manager->SetCurrentGeo(kMountainViewGeoId);
+
+  // Create two token managers, both with one token.
+  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
+  for (auto proxy_layer : {ProxyLayer::kProxyA, ProxyLayer::kProxyB}) {
+    auto token_manager = std::make_unique<MockIpProtectionTokenManager>();
+    token_manager->SetAuthToken(BlindSignedAuthToken{
+        .token = "secret-token",
+        .geo_hint = GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
+    managers.insert({proxy_layer, std::move(token_manager)});
+  }
+
+  auto ip_protection_core =
+      MakeCore(std::move(ipp_proxy_config_manager), std::move(managers));
+
+  // Exhaust the token for ProxyA.
+  ASSERT_TRUE(ip_protection_core->GetAuthToken(0));
+
+  ASSERT_TRUE(ip_protection_core->WereTokenCachesEverFilled());
+
+  // The token for ProxyA is exhausted, so `AreAuthTokensAvailable()` should
+  // return false.
+  ASSERT_FALSE(ip_protection_core->AreAuthTokensAvailable());
   histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 1);
   histogram_tester_.ExpectBucketCount(kEmptyTokenCacheHistogram,
-                                      ProxyLayer::kProxyB, 1);
+                                      ProxyLayer::kProxyA, 1);
 }
 
 // GetAuthToken for where proxy list manager's geo is different than the current

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -134,8 +129,7 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
   }
 
   DOMArrayPiece array_piece(message->data());
-  base::span<const uint8_t> data{array_piece.Bytes(), array_piece.ByteLength()};
-
+  base::span<const uint8_t> data = array_piece.ByteSpan();
   if (data.empty()) {
     exception_state.ThrowTypeError(
         "UDPMessage: 'data' field must not be empty.");
@@ -177,7 +171,8 @@ void UDPWritableStreamWrapper::CloseStream() {
   SetState(State::kClosed);
   DCHECK(!write_promise_resolver_);
 
-  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -209,7 +204,7 @@ void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
                         ScriptValue(script_state->GetIsolate(), exception));
   }
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 }  // namespace blink

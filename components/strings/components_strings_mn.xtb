@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматаар илрүүлсэн)</translation>
 <translation id="1232569758102978740">Гарчиггүй</translation>
 <translation id="1236081509407217141">Виртуал Орчин (VR)-ыг зөвшөөрөх үү?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Таны төхөөрөмжийн нэр</translation>
 <translation id="124116460088058876">Бусад хэл</translation>
 <translation id="1243027604378859286">Зохиогч:</translation>
@@ -146,7 +147,7 @@
 <translation id="1253846494229886276">Дэлгэцийн агшныг хадгалж байна</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синк хийсэн)</translation>
 <translation id="1255086252236620440">Хүнсний холигчид</translation>
-<translation id="1256368399071562588">&lt;p&gt;Хэрэв та вебсайтад зочлохоор оролдох үед нээгдэхгүй байвал эдгээр асуудал шийдэх алхмыг дагаж алдааг засахаар оролдоно уу:&lt;/p&gt;
+<translation id="1256368399071562588">&lt;p&gt;Хэрэв та вебсайтад зочлохоор оролдох үед нээгдэхгүй байвал асуудал шийдэх эдгээр алхмыг дагаж алдааг засахаар оролдоно уу:&lt;/p&gt;
     &lt;ol&gt;
     &lt;li&gt;Вебийн хаягийг буруу бичсэн эсэхийг шалгана уу.&lt;/li&gt;
     &lt;li&gt;Таны интернет холболт хэвийн ажиллаж байгаа эсэхийг шалгана уу.&lt;/li&gt;
@@ -1439,6 +1440,7 @@
 <translation id="3536227077203206203">Энэ удаад зөвшөөрсөн</translation>
 <translation id="3537165859691846083">Том захидал</translation>
 <translation id="353816159217417898">Хаалт (салсан)</translation>
+<translation id="3541016556608204104">Chrome Enterprise Connectors-н талаарх нэмэлт мэдээлэл</translation>
 <translation id="3542628208405253498">Картын зураг</translation>
 <translation id="3542768452570884558">Холбоосыг шинэ цонхонд нээх</translation>
 <translation id="3543935938072367282">Автоматаар бөглөж илүү хурдан тооцоо хийгээрэй</translation>
@@ -1803,6 +1805,7 @@
 <translation id="415440494507469262">Харьцуулалтын хүснэгтэд таб нэмэх</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="4165422751765527461">Тусламжийн төвийн нийтлэлийг шинэ табд нээнэ</translation>
+<translation id="4165584779486830267">Одоо та Affirm, Zip-г ашиглан цагийн явцад төлж болно.</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
 <translation id="4169535189173047238">Зөвшөөрөхгүй</translation>
 <translation id="4171400957073367226">Баталгаажуулалт хийхэд ашигласан гарын үсэг хангалтгүй байна</translation>
@@ -2767,6 +2770,7 @@
 <translation id="5910140988253729859">Автоматаар бөглөх хэсгийг болих</translation>
 <translation id="5911020115933784199">Арга хэмжээ болон жагсаалтууд</translation>
 <translation id="5911110632211230665">Нээхийг блоклосон</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> энэ табыг нэмсэн</translation>
 <translation id="5915189366813702112">Уян хатан ажлын цаг</translation>
 <translation id="59174027418879706">Идэвхжсэн</translation>
 <translation id="5918373444239520146">Гаджет болон зөөврийн цахилгаан багаж</translation>
@@ -4625,6 +4629,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> нь дэмжигдээгүй протоколыг ашигладаг.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> дээрх кодыг шалгаад, дахин оролдоно уу</translation>
 <translation id="9186203289258525843">Chrome-г өгөгдмөл хөтөч болгон тохируулах товчлуур, Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд идэвхжүүлнэ үү</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> энэ табыг өөрчилсөн</translation>
 <translation id="9189789270972826888">Хэрэв картыг бөглөөгүй бол доорх картын дэлгэрэнгүй мэдээллийг товшиж, хуулаад буулгана уу. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 долоо хоногоос дээш болсон сэдвүүдийг автоматаар устгадаг</translation>
 <translation id="9191834167571392248">Зүүн доод буланд нэг нүх цоолох</translation>

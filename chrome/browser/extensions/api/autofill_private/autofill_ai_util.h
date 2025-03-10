@@ -38,12 +38,12 @@ api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const autofill::EntityInstance& entity_instance,
     const std::string& app_locale);
 
-// Converts an `autofill::EntityInstance` object to an
-// `api::autofill_private::EntityInstanceWithLabels` object, according to a
-// given `app_locale`.
-api::autofill_private::EntityInstanceWithLabels
-EntityInstanceToPrivateApiEntityInstanceWithLabels(
-    const autofill::EntityInstance& entity_instance,
+// Converts `autofill::EntityInstance`s to
+// `api::autofill_private::EntityInstanceWithLabels`s according to a given
+// `app_locale`.
+std::vector<api::autofill_private::EntityInstanceWithLabels>
+EntityInstancesToPrivateApiEntityInstancesWithLabels(
+    base::span<const autofill::EntityInstance> entity_instances,
     const std::string& app_locale);
 
 }  // namespace extensions::autofill_ai_util

@@ -23,6 +23,7 @@ class SessionManager:
         self.cookie_has_no_attributes = False
         self.scope_origin = None
         self.registration_sends_challenge = False
+        self.cookie_name_and_value = "auth_cookie=abcdef0123"
 
     def create_new_session(self):
         session_id = str(len(self.session_to_key_map))
@@ -66,6 +67,10 @@ class SessionManager:
         if registration_sends_challenge is not None:
             self.registration_sends_challenge = registration_sends_challenge
 
+        cookie_name_and_value = configuration.get("cookieNameAndValue")
+        if cookie_name_and_value is not None:
+            self.cookie_name_and_value = cookie_name_and_value
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -82,7 +87,7 @@ class SessionManager:
         self.registration_sends_challenge = False
 
     def get_session_instructions_response(self, session_id, request):
-        cookie_parts = ["auth_cookie=abcdef0123"]
+        cookie_parts = [self.cookie_name_and_value]
         cookie_attributes = ""
         if not self.cookie_has_no_attributes:
             cookie_attributes = "Domain=" + request.url_parts.hostname + "; Path=/device-bound-session-credentials"
@@ -106,7 +111,7 @@ class SessionManager:
             },
             "credentials": [{
                 "type": "cookie",
-                "name": "auth_cookie",
+                "name": self.cookie_name_and_value.split("=")[0],
                 "attributes": cookie_attributes
             }]
         }
@@ -115,4 +120,5 @@ class SessionManager:
             ("Cache-Control", "no-store"),
             ("Set-Cookie", value_of_set_cookie)
         ]
+
         return (200, headers, json.dumps(response_body))

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
@@ -127,12 +128,15 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type);
 
-// Returns a suggestion list with a BNPL suggestion added at the end (but
-// before footer items) of the given suggestion list `current_suggestions`,
-// and true if a BNPL suggestion is inserted successfully.
+// Returns a suggestion list with a BNPL suggestion, initialized with
+// `bnpl_issuers` and the BNPL amount `extracted_amount_in_micros`, added at the
+// end (but before footer items) of the given suggestion list
+// `current_suggestions`. `BnplSuggestionUpdateResult::is_bnpl_suggestion_added`
+// is true if a BNPL suggestion is inserted successfully.
 BnplSuggestionUpdateResult MaybeUpdateSuggestionsWithBnpl(
     const base::span<const Suggestion>& current_suggestions,
-    const std::vector<BnplIssuer>& bnpl_issuers);
+    const std::vector<BnplIssuer>& bnpl_issuers,
+    uint64_t extracted_amount_in_micros);
 
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and

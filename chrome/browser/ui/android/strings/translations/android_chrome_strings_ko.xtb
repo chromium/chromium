@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
+<translation id="1052842760770519282">일부 비밀번호에 액세스할 수 없습니다</translation>
 <translation id="1058669287135776095">현재 오프라인 상태입니다. 인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
@@ -70,6 +71,7 @@
 <translation id="1269129608791067105">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> 차단</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
+<translation id="1289129165308566697">다른 기기에서의 방문 기록 보기</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1298077576058087471">데이터 최대 60% 절약 및 오늘의 뉴스 읽기</translation>
 <translation id="1303339473099049190">비밀번호를 찾을 수 없습니다. 철자를 확인하고 다시 시도해 주세요.</translation>
@@ -359,6 +361,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2666092431469916601">맨 위</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2677748264148917807">나가기</translation>
+<translation id="2687009626279857299">이 기기에서 작동이 중지되었습니다</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2705073298859543115">요약 만들기</translation>
 <translation id="2708051474374549906">Google로 전송되는 인터넷 사용 기록을 토대로 위험한 사이트, 다운로드 항목, 확장 프로그램에 대한 실시간 선제적 보호 조치를 적용합니다.</translation>
@@ -936,6 +939,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB 사용 가능</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5433691172869980887">사용자 이름 복사됨</translation>
+<translation id="5436928407363358055">중단한 부분부터 손쉽게 이어 가려면 방문 기록과 탭을 동기화하세요.</translation>
 <translation id="5438292632479953702">다시 다운로드</translation>
 <translation id="5439191312780166229">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
 <translation id="5441137934526263133">사이트가 작동하지 않나요? 서드 파티 쿠키가 차단되었습니다.</translation>

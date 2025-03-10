@@ -1151,8 +1151,7 @@ bool ShouldAddInitialStorageAccessApiOverride(
   StorageAccessNetRequestKind kind = kCrossSite;
   if (request_initiator->IsSameOriginWith(origin)) {
     kind = kSameOrigin;
-  } else if (SchemefulSite(request_initiator.value()) ==
-             SchemefulSite(origin)) {
+  } else if (SchemefulSite::IsSameSite(request_initiator.value(), origin)) {
     kind = kCrossOriginSameSite;
   }
   if (emit_metrics) {

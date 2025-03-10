@@ -13,10 +13,6 @@
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace optimization_guide::proto {
-class AXTreeUpdate;
-}
-
 namespace autofill_ai {
 
 class AutofillAiModelExecutor;
@@ -52,10 +48,6 @@ class AutofillAiClient {
   using SaveOrUpdatePromptResultCallback =
       base::OnceCallback<void(SaveOrUpdatePromptResult result)>;
 
-  // The callback to extract the accessibility tree snapshot.
-  using AXTreeCallback =
-      base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
-
   virtual ~AutofillAiClient() = default;
 
   // Returns the AutofillClient that is scoped to the same object (e.g., tab) as
@@ -65,9 +57,6 @@ class AutofillAiClient {
     return const_cast<const autofill::AutofillClient&>(
         const_cast<AutofillAiClient*>(this)->GetAutofillClient());
   }
-
-  // Calls `callback` with the accessibility tree snapshot.
-  virtual void GetAXTree(AXTreeCallback callback) = 0;
 
   // Returns the `AutofillAiManager` associated with this
   // client.

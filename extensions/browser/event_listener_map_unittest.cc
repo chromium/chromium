@@ -96,7 +96,7 @@ class EventListenerMapTest : public ExtensionsTest {
     return std::make_unique<Event>(
         events::FOR_TEST, event_name, base::Value::List(), nullptr,
         /*restrict_to_context_type=*/std::nullopt, GURL(),
-        EventRouter::USER_GESTURE_UNKNOWN, std::move(info));
+        EventRouter::UserGestureState::kUnknown, std::move(info));
   }
 
   std::unique_ptr<EventListener> CreateLazyListener(

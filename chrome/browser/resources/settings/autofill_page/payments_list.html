@@ -31,6 +31,15 @@
           </settings-iban-list-entry>
         </template>
       </div>
+      <div class="list-separator" hidden$="[[!showIbanPayOverTimeIssuerSeparator_]]">
+      </div>
+      <div class="vertical-list list-with-header" role="rowgroup">
+        <template is="dom-repeat" items="[[payOverTimeIssuers]]">
+          <settings-pay-over-time-issuer-list-entry class="payment-method"
+              pay-over-time-issuer="[[item]]">
+          </settings-pay-over-time-issuer-list-entry>
+        </template>
+      </div>
     </div>
     <div id="noPaymentMethodsLabel" class="list-item"
         hidden$="[[showAnyPaymentMethods_]]">

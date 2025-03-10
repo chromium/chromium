@@ -127,7 +127,10 @@ bool IpProtectionCoreImpl::AreAuthTokensAvailable() {
   for (const auto& manager : ipp_token_managers_) {
     if (!manager.second->IsAuthTokenAvailable(
             ipp_proxy_config_manager_->CurrentGeo())) {
-      Telemetry().EmptyTokenCache(manager.first);
+      // Only emit metric if the cache was ever filled.
+      if (manager.second->WasTokenCacheEverFilled()) {
+        Telemetry().EmptyTokenCache(manager.first);
+      }
       all_caches_have_tokens = false;
     }
   }

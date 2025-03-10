@@ -331,7 +331,7 @@ public class AuxiliarySearchDonor {
         for (T entry : entries) {
             Bitmap favicon = entryToFaviconMap.get(entry);
             if (favicon != null) {
-                docs.add(buildDocument(entry, favicon));
+                docs.add(buildDocument(entry, favicon, /* counts= */ null));
             }
         }
 
@@ -342,11 +342,11 @@ public class AuxiliarySearchDonor {
 
     /** Donates a list of data entries. */
     @VisibleForTesting
-    public <T> void donateEntries(List<T> entries, Callback<Boolean> callback) {
+    public <T> void donateEntries(List<T> entries, int[] counts, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<>();
 
         for (T entry : entries) {
-            docs.add(buildDocument(entry, /* favicon= */ null));
+            docs.add(buildDocument(entry, /* favicon= */ null, counts));
         }
 
         donateTabsImpl(docs, callback);
@@ -362,16 +362,19 @@ public class AuxiliarySearchDonor {
         List<WebPage> docs = new ArrayList<>();
 
         for (Map.Entry<T, Bitmap> entry : entryToFaviconMap.entrySet()) {
-            docs.add(buildDocument(entry.getKey(), entry.getValue()));
+            docs.add(buildDocument(entry.getKey(), entry.getValue(), /* counts= */ null));
         }
         donateTabsImpl(docs, callback);
     }
 
     /** Creates a document for the given entry and favicon. */
     @VisibleForTesting
-    <T> WebPage buildDocument(T entry, @Nullable Bitmap favicon) {
+    <T> WebPage buildDocument(T entry, @Nullable Bitmap favicon, @Nullable int[] counts) {
         if (entry instanceof Tab tab) {
             String documentId = getDocumentId(AuxiliarySearchEntryType.TAB, tab.getId());
+            if (counts != null) {
+                counts[AuxiliarySearchEntryType.TAB] += 1;
+            }
             WebPage.Builder builder = new WebPage.Builder(mNamespace, documentId);
             return buildDocumentImpl(
                     builder,
@@ -385,6 +388,9 @@ public class AuxiliarySearchDonor {
         if (entry instanceof AuxiliarySearchEntry auxiliarySearchEntry) {
             String documentId =
                     getDocumentId(AuxiliarySearchEntryType.TAB, auxiliarySearchEntry.getId());
+            if (counts != null) {
+                counts[AuxiliarySearchEntryType.TAB] += 1;
+            }
             WebPage.Builder builder = new WebPage.Builder(mNamespace, documentId);
             return buildDocumentImpl(
                     builder,
@@ -401,6 +407,9 @@ public class AuxiliarySearchDonor {
                         ? dataEntry.tabId
                         : dataEntry.visitId;
         String documentId = getDocumentId(dataEntry.type, entryId);
+        if (counts != null) {
+            counts[dataEntry.type] += 1;
+        }
         // TODO(https://397457989): Creates a builder based on entry's type.
         WebPage.Builder builder = new WebPage.Builder(mNamespace, documentId);
         return buildDocumentImpl(

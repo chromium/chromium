@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Puwede mong buksan ang Lens dito.</translation>
 <translation id="1042296835509784301">Bubuksan ang Password Manager sa Chromium.</translation>
 <translation id="1047130070405668746">Piliin ang Chromium</translation>
+<translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1091252999271033193">Nangangahulugan itong hihilingin ng Chromium ang pang-mobile na site sa lahat ng pagkakataon.</translation>
 <translation id="1115463765356382667">Kumpletuhin ang mga iminumungkahing pagkilos na ito sa ibaba para masulit ang Chromium.</translation>
 <translation id="1140315115515116765">Gamitin ang Chromium bilang default para madaling makakuha ng mga insight sa presyo</translation>
@@ -98,6 +99,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Posibleng kasama rito ang history at autofill.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Posibleng kasama rito ang history at autofill.}}</translation>
 <translation id="3410395242749598859">Hindi pa nase-save sa <ph name="EMAIL" /> ang ilan sa iyong data sa Chromium.
 Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng account ngayon, made-delete ang data na ito.</translation>
+<translation id="3440830787838130530">Madali at secure na makapag-share ng kopya ng password sa iyong grupo ng pamilya sa Google Password Manager</translation>
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
 <translation id="347967311580159871">Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chromium, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Hindi na-share ang password mo. Suriin ang iyong koneksyon sa internet at tiyaking naka-sign in ka sa Chromium. Pagkatapos ay subukan ulit.</translation>

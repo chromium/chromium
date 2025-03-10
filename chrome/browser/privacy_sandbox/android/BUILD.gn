@@ -204,6 +204,7 @@ android_library("test_support_java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/privacy_sandbox_eea_consent_logo.xml",
     "java/res/drawable-night/privacy_sandbox_interests_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_notice_eea_illustration.xml",
     "java/res/drawable/fade_bottom.xml",
@@ -218,6 +219,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_filter_list_24dp.xml",
     "java/res/drawable/ic_interests_24dp.xml",
     "java/res/drawable/ic_privacy_screen_24dp.xml",
+    "java/res/drawable/privacy_sandbox_eea_consent_logo.xml",
     "java/res/drawable/privacy_sandbox_interests_illustration.xml",
     "java/res/drawable/privacy_sandbox_notice_eea_illustration.xml",
     "java/res/drawable/topic_taxonomy_1_id_1.xml",

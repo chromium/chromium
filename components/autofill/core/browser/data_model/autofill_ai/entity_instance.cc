@@ -37,13 +37,15 @@ AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
     case AttributeTypeName::kDriversLicenseIssueDate:
       info_ = DateInfo();
       break;
+    case AttributeTypeName::kDriversLicenseRegion:
+      info_ = StateInfo();
+      break;
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kVehicleOwner:
     case AttributeTypeName::kVehicleLicensePlate:
     case AttributeTypeName::kVehicleVin:
     case AttributeTypeName::kVehicleMake:
     case AttributeTypeName::kVehicleModel:
-    case AttributeTypeName::kDriversLicenseRegion:
     case AttributeTypeName::kDriversLicenseNumber:
       info_ = u"";
       break;
@@ -65,24 +67,23 @@ std::u16string AttributeInstance::GetInfo(
   if (type == UNKNOWN_TYPE) {
     return u"";
   }
+  CHECK(GetSupportedTypes().contains(type));
   return absl::visit(
-      base::Overloaded{[&](const CountryInfo& country) {
-                         CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
-                         return country.GetCountryName(app_locale);
-                       },
-                       [&](const DateInfo& date) {
-                         // TODO(crbug.com/396325496): Consider falling back
-                         // to a locale-specific format by relying on
-                         // `app_locale`.
-                         return date.GetDate(format_string ? *format_string
-                                                           : u"YYYY-MM-DD");
-                       },
-                       [&](const NameInfo& name) {
-                         return GetRawInfo(/*pass_key=*/{}, type);
-                       },
-                       [&](const std::u16string& value) {
-                         return GetRawInfo(/*pass_key=*/{}, type);
-                       }},
+      base::Overloaded{
+          [&](const CountryInfo& country) {
+            return country.GetCountryName(app_locale);
+          },
+          [&](const DateInfo& date) {
+            // TODO(crbug.com/396325496): Consider falling back
+            // to a locale-specific format by relying on
+            // `app_locale`.
+            return date.GetDate(format_string ? *format_string : u"YYYY-MM-DD");
+          },
+          [&](const NameInfo&) { return GetRawInfo(/*pass_key=*/{}, type); },
+          [&](const StateInfo&) { return GetRawInfo(/*pass_key=*/{}, type); },
+          [&](const std::u16string&) {
+            return GetRawInfo(/*pass_key=*/{}, type);
+          }},
       info_);
 }
 
@@ -92,21 +93,16 @@ std::u16string AttributeInstance::GetRawInfo(GetRawInfoPassKey,
   if (type == UNKNOWN_TYPE) {
     return u"";
   }
+  CHECK(GetSupportedTypes().contains(type));
   return absl::visit(
       base::Overloaded{
           [&](const CountryInfo& country) {
-            CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
             return base::UTF8ToUTF16(country.GetCountryCode());
           },
-          [&](const DateInfo& date) {
-            CHECK(IsDateFieldType(type));
-            return date.GetDate(u"YYYY-MM-DD");
-          },
+          [&](const DateInfo& date) { return date.GetDate(u"YYYY-MM-DD"); },
           [&](const NameInfo& name) { return name.GetRawInfo(type); },
-          [&](const std::u16string& value) {
-            CHECK_EQ(type, type_.field_type());
-            return value;
-          }},
+          [&](const StateInfo& state) { return state.value(); },
+          [&](const std::u16string& value) { return value; }},
       info_);
 }
 
@@ -116,22 +112,17 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
   if (type == UNKNOWN_TYPE) {
     return VerificationStatus::kNoStatus;
   }
-  return absl::visit(base::Overloaded{[&](const CountryInfo& country) {
-                                        CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
-                                        return VerificationStatus::kNoStatus;
-                                      },
-                                      [&](const DateInfo& date) {
-                                        CHECK(IsDateFieldType(type));
-                                        return VerificationStatus::kNoStatus;
-                                      },
-                                      [&](const NameInfo& name) {
-                                        return name.GetVerificationStatus(type);
-                                      },
-                                      [&](const std::u16string& value) {
-                                        CHECK_EQ(type, type_.field_type());
-                                        return VerificationStatus::kNoStatus;
-                                      }},
-                     info_);
+  CHECK(GetSupportedTypes().contains(type));
+  return absl::visit(
+      base::Overloaded{
+          [&](const CountryInfo&) { return VerificationStatus::kNoStatus; },
+          [&](const DateInfo&) { return VerificationStatus::kNoStatus; },
+          [&](const NameInfo& name) {
+            return name.GetVerificationStatus(type);
+          },
+          [&](const StateInfo&) { return VerificationStatus::kNoStatus; },
+          [&](const std::u16string&) { return VerificationStatus::kNoStatus; }},
+      info_);
 }
 
 void AttributeInstance::SetInfo(FieldType type,
@@ -143,9 +134,9 @@ void AttributeInstance::SetInfo(FieldType type,
   if (type == UNKNOWN_TYPE) {
     return;
   }
+  CHECK(GetSupportedTypes().contains(type));
   absl::visit(base::Overloaded{
                   [&](CountryInfo& country) {
-                    CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
                     // We assume that the given `value` is either a valid
                     // country code or a valid country name localized to the
                     // provided `app_locale`.
@@ -157,17 +148,13 @@ void AttributeInstance::SetInfo(FieldType type,
                       country = CountryInfo();
                     }
                   },
-                  [&](DateInfo& date) {
-                    CHECK(IsDateFieldType(type));
-                    date.SetDate(value, format_string);
-                  },
+                  [&](DateInfo& date) { date.SetDate(value, format_string); },
                   [&](NameInfo& name) {
                     name.SetInfoWithVerificationStatus(type, value, app_locale,
                                                        status);
                   },
-                  [&](std::u16string& old_value) {
-                    SetRawInfo(type, value, status);
-                  }},
+                  [&](const StateInfo&) { SetRawInfo(type, value, status); },
+                  [&](std::u16string&) { SetRawInfo(type, value, status); }},
               info_);
 }
 
@@ -178,9 +165,9 @@ void AttributeInstance::SetRawInfo(FieldType type,
   if (type == UNKNOWN_TYPE) {
     return;
   }
+  CHECK(GetSupportedTypes().contains(type));
   absl::visit(base::Overloaded{
                   [&](CountryInfo& country) {
-                    CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
                     if (!country.SetCountryFromCountryCode(value)) {
                       // In case `value` isn't a valid country
                       // code, we reset the country value to
@@ -188,17 +175,12 @@ void AttributeInstance::SetRawInfo(FieldType type,
                       country = CountryInfo();
                     }
                   },
-                  [&](DateInfo& date) {
-                    CHECK(IsDateFieldType(type));
-                    date.SetDate(value, u"YYYY-MM-DD");
-                  },
+                  [&](DateInfo& date) { date.SetDate(value, u"YYYY-MM-DD"); },
                   [&](NameInfo& name) {
                     name.SetRawInfoWithVerificationStatus(type, value, status);
                   },
-                  [&](std::u16string& old_value) {
-                    CHECK_EQ(type, type_.field_type());
-                    old_value = value;
-                  }},
+                  [&](StateInfo& state) { state = StateInfo(value); },
+                  [&](std::u16string& old_value) { old_value = value; }},
               info_);
 }
 
@@ -208,10 +190,9 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
           [&](const CountryInfo&) {
             return FieldTypeSet{ADDRESS_HOME_COUNTRY};
           },
-          [&](const DateInfo& date) {
-            return FieldTypeSet{type_.field_type()};
-          },
+          [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo& name) { return name.GetSupportedTypes(); },
+          [&](const StateInfo&) { return FieldTypeSet{ADDRESS_HOME_STATE}; },
           [&](const std::u16string&) {
             return FieldTypeSet{type_.field_type()};
           }},
@@ -226,6 +207,7 @@ FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
           },
           [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo&) { return NameInfo::kDatabaseStoredTypes; },
+          [&](const StateInfo&) { return FieldTypeSet{ADDRESS_HOME_STATE}; },
           [&](const std::u16string&) {
             return FieldTypeSet{type_.field_type()};
           }},
@@ -245,8 +227,9 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
     return absl::visit(
         base::Overloaded{
             [&](const CountryInfo&) { return ADDRESS_HOME_COUNTRY; },
-            [&](const DateInfo& date) { return type().field_type(); },
+            [&](const DateInfo&) { return type().field_type(); },
             [&](const NameInfo&) { return NAME_FULL; },
+            [&](const StateInfo&) { return ADDRESS_HOME_STATE; },
             [&](const std::u16string&) { return type().field_type(); }},
         info_);
   }
@@ -258,10 +241,9 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
 
 void AttributeInstance::FinalizeInfo() {
   absl::visit(
-      base::Overloaded{[&](const CountryInfo& country) {},
-                       [&](const DateInfo& date) {},
+      base::Overloaded{[&](const CountryInfo&) {}, [&](const DateInfo&) {},
                        [&](NameInfo& name) { name.FinalizeAfterImport(); },
-                       [&](const std::u16string&) {}},
+                       [&](const StateInfo&) {}, [&](const std::u16string&) {}},
       info_);
 }
 

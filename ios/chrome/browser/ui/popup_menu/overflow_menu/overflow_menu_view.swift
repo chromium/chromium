@@ -10,7 +10,7 @@ struct OverflowMenuView: View {
   var uiConfiguration: OverflowMenuUIConfiguration
 
   /// Sync'ed with pref OverflowMenuDestinationList.HighlightedDestinationBounds
-  @State private var highlightedDestinatonBounds: Anchor<CGRect>?
+  @State private var highlightedDestinationBounds: Anchor<CGRect>?
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
@@ -45,11 +45,11 @@ struct OverflowMenuView: View {
       }
       .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
       .onPreferenceChange(OverflowMenuDestinationList.HighlightedDestinationBounds.self) { pref in
-        highlightedDestinatonBounds = pref
+          highlightedDestinationBounds = pref
       }
       .onGeometryChange(for: CGRect?.self) { proxy in
-        if let highlightedDestinatonBounds = highlightedDestinatonBounds {
-          return proxy[highlightedDestinatonBounds]
+        if let highlightedDestinationBounds = highlightedDestinationBounds {
+          return proxy[highlightedDestinationBounds]
         }
         return nil
       } action: { frame in

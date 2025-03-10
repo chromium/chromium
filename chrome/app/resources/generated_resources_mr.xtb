@@ -6973,7 +6973,6 @@
 <translation id="5911533659001334206">शॉर्टकट दर्शक</translation>
 <translation id="5911545422157959623">अतिथी मोडमध्ये बुकमार्क उपलब्ध नाहीत</translation>
 <translation id="5914016309240354769">निसर्ग</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> यांनी हा टॅब जोडला आहे</translation>
 <translation id="5914724413750400082">मॉड्यूलस (<ph name="MODULUS_NUM_BITS" /> बिट):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -8259,6 +8258,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6832218595502288407">डावीकडे अलाइन करा</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Remove Tab and Delete Group?}=1{टॅब काढून टाकून गट हटवायचा आहे का?}other{टॅब काढून टाकून गट हटवायचे आहेत का?}}</translation>
+<translation id="6833103209700200188">तळटीप</translation>
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
 <translation id="6833753236242482566">संतुलित (शिफारस केलेली)</translation>
 <translation id="6835762382653651563">कृपया तुमचे <ph name="DEVICE_TYPE" /> अपडेट करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
@@ -11607,7 +11607,6 @@ I feel - विटांची इमारत</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ॲप}other{# अ‍ॅप्स}}</translation>
 <translation id="9186963452600581158">लहान मुलाचे Google खाते वापरून साइन इन करा</translation>
 <translation id="9187967020623675250">की जुळत नाही. <ph name="RESPONSE" /> साठी कोणतीही की प्रेस करा.</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> यांनी हा टॅब बदलला आहे</translation>
 <translation id="9192019773545828776">वाचिक फीडबॅक ऐका, जेणेकरून तुम्हाला स्क्रीनकडे न पाहता तुमचे डिव्हाइस वापरता येईल. कनेक्ट केलेल्या डिव्हाइससह ब्रेल फीडबॅक उपलब्ध आहे. ChromeVox सुरू आणि बंद करण्यासाठी Ctrl + Alt + Z वापरा. नेव्हिगेट करण्यासाठी Search + लेफ्ट अ‍ॅरो किंवा राइट अ‍ॅरो वापरा. निवडण्यासाठी (अ‍ॅक्टिव्हेट करण्यासाठी) Search + Space प्रेस करा.</translation>
 <translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
 <translation id="919686179725692564">तुमच्या अ‍ॅप्सचा बॅकअप घेण्याबद्दल अधिक जाणून घ्या</translation>

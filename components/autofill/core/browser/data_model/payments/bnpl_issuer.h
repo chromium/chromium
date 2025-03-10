@@ -52,6 +52,7 @@ class BnplIssuer {
     uint64_t price_upper_bound;
   };
 
+  BnplIssuer();
   // `instrument_id` is present for linked issuers, and nullopt for unlinked
   // issuers. `issuer_id` is the unique identifier of this specfiic issuer.
   // `eligible_price_ranges` is a list of currencies mapped to their price

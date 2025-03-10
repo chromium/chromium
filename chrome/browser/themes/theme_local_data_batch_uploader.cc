@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
@@ -64,16 +65,22 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> callback) {
   syncer::LocalDataDescription desc;
   desc.type = syncer::THEMES;
+  if (!base::FeatureList::IsEnabled(syncer::kThemesBatchUpload)) {
+    std::move(callback).Run(desc);
+    return;
+  }
   // Avoid offering batch upload for local default theme.
-  if (std::optional<sync_pb::ThemeSpecifics> specifics =
-          GetNonDefaultSavedLocalTheme();
-      base::FeatureList::IsEnabled(syncer::kThemesBatchUpload) && specifics) {
+  std::optional<sync_pb::ThemeSpecifics> specifics =
+      GetNonDefaultSavedLocalTheme();
+  base::UmaHistogramBoolean("Theme.BatchUpload.HasLocalTheme",
+                            specifics.has_value());
+  if (specifics.has_value()) {
     syncer::LocalDataItemModel item;
     item.id = kThemesLocalDataItemModelId;
     item.title = BuildTitle(*specifics);
     desc.local_data_models.push_back(std::move(item));
   }
-  std::move(callback).Run(desc);
+  std::move(callback).Run(std::move(desc));
 }
 
 void ThemeLocalDataBatchUploader::TriggerLocalDataMigration() {
@@ -81,6 +88,8 @@ void ThemeLocalDataBatchUploader::TriggerLocalDataMigration() {
   // Avoid migrating local default theme.
   if (GetNonDefaultSavedLocalTheme()) {
     delegate_->ApplySavedLocalThemeIfExistsAndClear();
+    base::UmaHistogramBoolean("Theme.BatchUpload.LocalThemeMigrationTriggered",
+                              true);
   }
 }
 

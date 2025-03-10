@@ -899,8 +899,7 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
     for (const auto& origin_to_purge : origins_to_purge_on_shutdown_) {
       if (key_origin == origin_to_purge ||
           (storage_key.IsThirdPartyContext() &&
-           net::SchemefulSite(origin_to_purge) ==
-               storage_key.top_level_site())) {
+           storage_key.top_level_site().IsSameSiteWith(origin_to_purge))) {
         storage_keys_to_delete.push_back(storage_key);
         break;
       }

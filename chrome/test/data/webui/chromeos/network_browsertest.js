@@ -30,7 +30,7 @@ var NetworkDebugUIBrowserTest = class extends testing.Test {
   get extraLibraries() {
     return [
       '//third_party/node/node_modules/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
+      '//chrome/test/data/webui/chromeos/mocha_adapter.js',
     ];
   }
 };

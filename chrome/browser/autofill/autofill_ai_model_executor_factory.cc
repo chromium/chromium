@@ -5,9 +5,11 @@
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -35,6 +37,7 @@ AutofillAiModelExecutorFactory::AutofillAiModelExecutorFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(AutofillAiModelCacheFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
@@ -46,14 +49,17 @@ AutofillAiModelExecutorFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(features::kAutofillAiServerModel)) {
     return nullptr;
   }
+
   Profile* profile = Profile::FromBrowserContext(context);
+  AutofillAiModelCache* model_cache =
+      AutofillAiModelCacheFactory::GetForProfile(profile);
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide) {
+  if (!model_cache || !optimization_guide) {
     return nullptr;
   }
   return std::make_unique<AutofillAiModelExecutorImpl>(
-      optimization_guide,
+      model_cache, optimization_guide,
       optimization_guide->GetModelQualityLogsUploaderService());
 }
 

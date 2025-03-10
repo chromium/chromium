@@ -199,7 +199,6 @@ using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::DoAll;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Return;
 using ::testing::Truly;
@@ -891,13 +890,12 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
                   return item.state == ComponentState::kUpdateError &&
                          item.id == "abagagagagagagagagagagagagagagag";
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10004, item.error_code);
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
 
   std::vector<CrxUpdateItem> items;
@@ -1467,13 +1465,12 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(1, static_cast<int>(item.error_category));
           EXPECT_EQ(-118, item.error_code);
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
   {
     InSequence seq;
@@ -3232,14 +3229,14 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
                          item.state == ComponentState::kUpdated;
                 })))
 
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           ASSERT_TRUE(item.component);
           const auto* test_installer =
               static_cast<TestInstaller*>(item.component->installer.get());
           EXPECT_EQ("UpdaterSetup.exe", test_installer->install_params()->run);
           EXPECT_EQ("--arg1 --arg2",
                     test_installer->install_params()->arguments);
-        }));
+        });
   }
 
   std::vector<CrxUpdateItem> items;
@@ -3342,7 +3339,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
                          item.state == ComponentState::kUpdateError;
                 })))
 
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           // Tests that the state of the component when the CrxComponent data
           // is not provided. In this case, the optional |item.component|
           // instance is not present.
@@ -3352,7 +3349,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
           EXPECT_EQ(ErrorCategory::kService, item.error_category);
           EXPECT_EQ(static_cast<int>(Error::CRX_NOT_FOUND), item.error_code);
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
 
   std::vector<CrxUpdateItem> items;
@@ -4794,13 +4791,12 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(1, static_cast<int>(item.error_category));
           EXPECT_EQ(200, item.error_code);
           EXPECT_EQ(-2147012894, item.extra_code1);
-        }));
+        });
   }
 
   std::vector<CrxUpdateItem> items;
@@ -4907,13 +4903,12 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-1, item.error_code);
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
 
   std::vector<CrxUpdateItem> items;
@@ -5066,13 +5061,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10006, item.error_code);  // UNKNOWN_APPPLICATION.
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
   {
     InSequence seq;
@@ -5084,13 +5078,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
                   return item.id == "abagagagagagagagagagagagagagagag" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10007, item.error_code);  // RESTRICTED_APPLICATION.
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
   {
     InSequence seq;
@@ -5102,13 +5095,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10008, item.error_code);  // INVALID_APPID.
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
   {
     InSequence seq;
@@ -5120,13 +5112,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
                   return item.id == "gjpmebpgbhcamgdgjcmnjfhggjpgcimm" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-
-        .WillOnce(Invoke([](const CrxUpdateItem& item) {
+        .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
           EXPECT_EQ(-10004, item.error_code);  // UPDATE_RESPONSE_NOT_FOUND.
           EXPECT_EQ(0, item.extra_code1);
-        }));
+        });
   }
 
   const std::vector<std::string> ids = {
@@ -5561,13 +5552,13 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 
   MockObserver observer(update_client);
   EXPECT_CALL(observer, OnEvent(_))
-      .WillRepeatedly(Invoke([](const CrxUpdateItem& item) {
+      .WillRepeatedly([](const CrxUpdateItem& item) {
         if (item.state == ComponentState::kUpToDate) {
           ASSERT_TRUE(item.custom_updatecheck_data.contains("_example"));
           EXPECT_EQ("example_value",
                     item.custom_updatecheck_data.at("_example"));
         }
-      }));
+      });
 
   update_client->Update({"jebgalgnebhfojomionfpkfelancnnkf"},
                         base::BindOnce(&DataCallbackMock::Callback), {}, true,
@@ -5901,7 +5892,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
                          item.state == ComponentState::kDownloading;
                 })))
         .Times(AtLeast(1))
-        .WillRepeatedly(Invoke([&cancel] { cancel.Run(); }));
+        .WillRepeatedly([&cancel] { cancel.Run(); });
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
@@ -6071,8 +6062,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
                 })))
-
-        .WillOnce(Invoke([&cancel] { cancel.Run(); }));
+        .WillOnce([&cancel] { cancel.Run(); });
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;

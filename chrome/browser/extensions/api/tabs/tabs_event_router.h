@@ -13,7 +13,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
@@ -30,7 +30,7 @@ class WebContents;
 }
 
 namespace resource_coordinator {
-class TabManager;
+class TabLifecycleUnitSource;
 }
 
 namespace extensions {
@@ -45,7 +45,7 @@ class TabsEventRouter
       public BrowserListObserver,
       public favicon::FaviconDriverObserver,
       public zoom::ZoomObserver,
-      public resource_coordinator::TabLifecycleObserver,
+      public resource_coordinator::LifecycleUnitObserver,
       public performance_manager::PageLiveStateObserverDefaultImpl {
  public:
   explicit TabsEventRouter(Profile* profile);
@@ -78,6 +78,7 @@ class TabsEventRouter
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabInterface* tab,
                               int index) override;
+  void OnTabGroupChanged(const TabGroupChange& change) override;
 
   // ZoomObserver:
   void OnZoomControllerDestroyed(
@@ -92,12 +93,11 @@ class TabsEventRouter
                         bool icon_url_changed,
                         const gfx::Image& image) override;
 
-  // resource_coordinator::TabLifecycleObserver:
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
+  // resource_coordinator::LifecycleUnitObserver:
+  void OnLifecycleUnitStateChanged(
+      resource_coordinator::LifecycleUnit* lifecycle_unit,
       ::mojom::LifecycleUnitState previous_state,
-      ::mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override;
+      ::mojom::LifecycleUnitStateChangeReason reason) override;
 
   // performance_manager::PageLiveStateObserverDefaultImpl:
   void OnIsAutoDiscardableChanged(
@@ -230,9 +230,9 @@ class TabsEventRouter
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
-  base::ScopedObservation<resource_coordinator::TabManager,
-                          resource_coordinator::TabLifecycleObserver>
-      tab_manager_scoped_observation_{this};
+  base::ScopedObservation<resource_coordinator::TabLifecycleUnitSource,
+                          resource_coordinator::LifecycleUnitObserver>
+      tab_source_scoped_observation_{this};
 };
 
 }  // namespace extensions

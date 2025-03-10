@@ -12,7 +12,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "chrome/browser/glic/glic_widget.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -33,6 +32,10 @@
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/widget/native_widget.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_widget.h"
+#endif
 
 namespace {
 
@@ -108,7 +111,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 
       // Move the tab strip to the `tab_overlay_widget`, the host of the
       // `tab_overlay_view`.
-      browser_view_->tab_overlay_view()->AddChildView(
+      browser_view_->tab_overlay_view()->AddChildViewRaw(
           browser_view_->tab_strip_region_view());
 
       browser_view_->tab_strip_region_view()->SetBorder(

@@ -317,7 +317,6 @@
         "accent-color",
         "background",
         "background-color",
-        "background-current-color",
         "blend-mode",
         "border-image",
         "border-outline-visited-color",
@@ -329,6 +328,7 @@
         "color",
         "compositing",
         "corner-shape",
+        "currentcolor",
         "filter-data",
         "has-transform",
         "inset",
@@ -658,15 +658,6 @@
     //
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
     valid_for_highlight: {
-      default: false,
-      valid_type: "bool",
-    },
-
-    // Valid @page properties and descriptors when PageMarginBoxes aren't
-    // enabled. This is limited to the set of descriptors and properties
-    // that have an effect when this feature is disabled (essentially page
-    // size, margins and orientation).
-    valid_for_limited_page_context: {
       default: false,
       valid_type: "bool",
     },
@@ -1222,7 +1213,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["accent-color", "background-current-color", "border-visual", "color", "outline"],
+      invalidate: ["accent-color", "border-visual", "color", "currentcolor", "outline"],
     },
     {
       name: "direction",
@@ -2603,7 +2594,6 @@
       keywords: ["slice", "clone"],
       default_value: "slice",
       invalidate: ["layout", "paint"],
-      runtime_flag: "BoxDecorationBreak",
     },
     {
       name: "box-shadow",
@@ -3830,7 +3820,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
@@ -3855,7 +3844,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
@@ -3880,7 +3868,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
@@ -3905,7 +3892,6 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
@@ -4295,7 +4281,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       compositable: true,
-      field_group: "*",
+      field_group: "svg",  // Not SVG, but frequently used with it.
       field_template: "primitive",
       default_value: "1.0",
       type_name: "float",
@@ -4688,7 +4674,6 @@
       default_value: "PageOrientation::kUpright",
       include_paths: ["third_party/blink/public/common/css/page_orientation.h"],
       computable: false,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -4861,7 +4846,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order"],
+      keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order", "source-order"],
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout"],
@@ -5408,7 +5393,6 @@
       property_methods: ["ParseSingleValue"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       computable: false,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -6005,7 +5989,7 @@
       interpolable: true,
       compositable: true,
       layout_dependent: true,
-      field_group: "*",
+      field_group: "svg",  // Not SVG, but frequently used with it.
       field_template: "external",
       include_paths: ["third_party/blink/renderer/platform/transforms/transform_operations.h"],
       keywords: ["none"],
@@ -7341,7 +7325,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7357,7 +7340,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7373,7 +7355,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -7389,7 +7370,6 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8488,7 +8468,6 @@
       layout_dependent: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8497,7 +8476,6 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       valid_for_position_try: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8506,7 +8484,6 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       valid_for_position_try: true,
-      valid_for_limited_page_context: true,
       valid_for_page_context: true,
     },
     {
@@ -8769,7 +8746,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
-      invalidate: ["background-current-color", "border-visual", "color"],
+      invalidate: ["border-visual", "color", "currentcolor"],
     },
     {
       name: "-internal-visited-caret-color",

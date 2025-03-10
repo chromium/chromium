@@ -466,6 +466,7 @@ component("cpp") {
     "//components/language/core/browser:browser",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/search_engines",
     "//components/sync/model",
     "//components/sync_device_info",
     "//components/tab_groups",

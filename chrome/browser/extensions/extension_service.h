@@ -180,6 +180,7 @@ class ExtensionService : public ExtensionServiceInterface,
                    const base::FilePath& unpacked_install_directory,
                    ExtensionPrefs* extension_prefs,
                    Blocklist* blocklist,
+                   ExtensionErrorController* error_controller,
                    bool autoupdate_enabled,
                    bool extensions_enabled,
                    base::OneShotEvent* ready);
@@ -690,8 +691,8 @@ class ExtensionService : public ExtensionServiceInterface,
   bool block_extensions_ = false;
 
   // The controller for the UI that alerts the user about any blocklisted
-  // extensions.
-  std::unique_ptr<ExtensionErrorController> error_controller_;
+  // extensions. Not owned.
+  raw_ptr<ExtensionErrorController> error_controller_ = nullptr;
 
   // The manager for extensions that were externally installed that is
   // responsible for prompting the user about suspicious extensions.

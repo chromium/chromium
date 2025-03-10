@@ -43402,6 +43402,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroupParity.BottomSheetRowSelection">
+  <owner>mfiaz@google.com</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Record when the user attempts to group tabs through the
+    TabGroupListBottomSheet.
+  </description>
+</action>
+
+<action name="TabGroupParity.TabListEditorMenuActions">
+  <owner>mfiaz@google.com</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Record when the user attempts to group tabs through the
+    TabListEditorAddToGroupAction.
+  </description>
+</action>
+
 <action name="TabGroups.Shared.SwitchGroupedTab">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -48764,6 +48784,20 @@ should be able to be added at any place in this file.
   <affected-action name="MerchantTrust.SidePanelClosedOnSameTabNavigation"/>
   <affected-action name="MerchantTrust.SidePanelOpened"/>
   <affected-action name="MerchantTrust.SidePanelOpenedOnSameTabNavigation"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="ExistingGroup" label="Added to existing tab group."/>
+  <suffix name="NewGroup" label="New tab group created."/>
+  <affected-action name="TabGroupParity.BottomSheetRowSelection"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="GroupsExist"
+      label="Recorded when tab groups exist when clicked."/>
+  <suffix name="NoGroupsExist"
+      label="Recorded when no tab groups exist when clicked."/>
+  <affected-action name="TabGroupParity.TabListEditorMenuActions"/>
 </action-suffix>
 
 </actions>

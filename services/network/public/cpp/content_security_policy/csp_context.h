@@ -18,7 +18,7 @@ namespace network {
 // checked. One must define via its virtual methods how to report violations
 // and what is the set of scheme that bypass the CSP. Its main implementation
 // is in content/browser/renderer_host/render_frame_host_impl.h
-class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
+class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) CSPContext {
  public:
   // This enum represents what set of policies should be checked by
   // IsAllowedByCsp().

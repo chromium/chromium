@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
-#include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -45,7 +44,6 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -94,67 +92,6 @@ bool Font::operator==(const Font& other) const {
          font_description_ == other.font_description_;
 }
 
-namespace {
-
-void DrawBlobs(cc::PaintCanvas* canvas,
-               const cc::PaintFlags& flags,
-               const ShapeResultBloberizer::BlobBuffer& blobs,
-               const gfx::PointF& point,
-               cc::NodeId node_id = cc::kInvalidNodeId) {
-  for (const auto& blob_info : blobs) {
-    DCHECK(blob_info.blob);
-    cc::PaintCanvasAutoRestore auto_restore(canvas, false);
-    switch (blob_info.rotation) {
-      case CanvasRotationInVertical::kRegular:
-        break;
-      case CanvasRotationInVertical::kRotateCanvasUpright: {
-        canvas->save();
-
-        SkMatrix m;
-        m.setSinCos(-1, 0, point.x(), point.y());
-        canvas->concat(SkM44(m));
-        break;
-      }
-      case CanvasRotationInVertical::kRotateCanvasUprightOblique: {
-        canvas->save();
-
-        SkMatrix m;
-        m.setSinCos(-1, 0, point.x(), point.y());
-        // TODO(yosin): We should use angle specified in CSS instead of
-        // constant value -15deg.
-        // Note: We draw glyph in right-top corner upper.
-        // See CSS "transform: skew(0, -15deg)"
-        SkMatrix skewY;
-        constexpr SkScalar kSkewY = -0.2679491924311227;  // tan(-15deg)
-        skewY.setSkew(0, kSkewY, point.x(), point.y());
-        m.preConcat(skewY);
-        canvas->concat(SkM44(m));
-        break;
-      }
-      case CanvasRotationInVertical::kOblique: {
-        // TODO(yosin): We should use angle specified in CSS instead of
-        // constant value 15deg.
-        // Note: We draw glyph in right-top corner upper.
-        // See CSS "transform: skew(0, -15deg)"
-        canvas->save();
-        SkMatrix skewX;
-        constexpr SkScalar kSkewX = 0.2679491924311227;  // tan(15deg)
-        skewX.setSkew(kSkewX, 0, point.x(), point.y());
-        canvas->concat(SkM44(skewX));
-        break;
-      }
-    }
-    if (node_id != cc::kInvalidNodeId) {
-      canvas->drawTextBlob(blob_info.blob, point.x(), point.y(), node_id,
-                           flags);
-    } else {
-      canvas->drawTextBlob(blob_info.blob, point.x(), point.y(), flags);
-    }
-  }
-}
-
-}  // anonymous ns
-
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextRun& run,
                     const gfx::PointF& point,
@@ -183,7 +120,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
@@ -203,7 +140,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
 }
 
 bool Font::DrawBidiText(cc::PaintCanvas* canvas,
@@ -286,7 +223,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
       // Align the subrun with the point given.
       curr_point.Offset(-range.start, 0);
     }
-    DrawBlobs(canvas, flags, bloberizer.Blobs(), curr_point);
+    DrawTextBlobs(bloberizer.Blobs(), *canvas, curr_point, flags);
 
     if (is_sub_run) [[unlikely]] {
       curr_point.Offset(range.Width(), 0);
@@ -318,7 +255,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   TextRunPaintInfo run_info(run);
   ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
       GetFontDescription(), run_info, buffer, emphasis_glyph_data);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags);
 }
 
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
@@ -337,7 +274,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   ShapeResultBloberizer::FillTextEmphasisGlyphsNG bloberizer(
       GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, emphasis_glyph_data);
-  DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
+  DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags);
 }
 
 gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {

@@ -3364,10 +3364,6 @@ are declared in tools/grit/grit_args.gni.
                desc="Subpage summary for cookie theft warning.">
         This file can harm your personal and social network accounts
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT"
-               desc="Subpage summary for cookie theft warning with account info.">
-        This file can harm your personal and social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_ARCHIVE_MALWARE"
                desc="Subpage summary text for a download item when the downloaded archive file may hide malware.">
         This archive file includes other files that may hide malware
@@ -12370,12 +12366,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- /Delete Last Tab Dialog -->
 
       <!-- Recent Activity -->
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB" desc="A description of the user adding the current tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added this tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB" desc="A description of the user changing the current tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed this tab
-        </message>
         <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_NO_UPDATES" desc="A description of the user changing the current tab for the recent activity dialog.">
           No updates to this group
         </message>

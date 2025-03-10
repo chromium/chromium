@@ -20,7 +20,16 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.List;
 import java.util.Objects;
 
-/** A wrapper for {@link SharedGroupObserver} that supports changing the observed tab group id. */
+/**
+ * A wrapper for {@link SharedGroupObserver} that supports changing the observed tab group id while
+ * continuing to observe a single set of {@link ObservableSupplier} for updates. If only a single
+ * tab group is of interest, prefer {@link SharedGroupObserver}.
+ *
+ * <p>This class abstracts away the record keeping that would otherwise be required to register and
+ * unregister observers and create a new {@link SharedGroupObserver} whenever a different tab group
+ * id needs to be observed. See {@link TransitiveObservableSupplier} for details on how the
+ * underlying observer chaining works.
+ */
 public class TransitiveSharedGroupObserver implements Destroyable {
     private final ObservableSupplierImpl<SharedGroupObserver> mCurrentSharedGroupObserverSupplier =
             new ObservableSupplierImpl<>();

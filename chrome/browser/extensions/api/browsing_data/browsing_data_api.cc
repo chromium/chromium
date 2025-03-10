@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -96,13 +95,6 @@ bool IsRemovalPermitted(uint64_t removal_mask, PrefService* prefs) {
   return true;
 }
 
-// Returns true if Sync is currently running (i.e. enabled and not in error).
-bool IsSyncRunning(Profile* profile) {
-  if (profile->IsOffTheRecord()) {
-    return false;
-  }
-  return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
-}
 }  // namespace
 
 bool BrowsingDataSettingsFunction::isDataTypeSelected(
@@ -229,7 +221,6 @@ void BrowsingDataRemoverFunction::OnTaskFinished() {
   DCHECK_GT(pending_tasks_, 0);
   if (--pending_tasks_ > 0)
     return;
-  synced_data_deletion_.reset();
   observation_.Reset();
   Respond(NoArguments());
   Release();  // Balanced in StartRemoving.
@@ -316,13 +307,6 @@ void BrowsingDataRemoverFunction::StartRemoving() {
 
   // Add a ref (Balanced in OnTaskFinished)
   AddRef();
-
-  // Prevent Sync from being paused, if required.
-  DCHECK(!synced_data_deletion_);
-  if (!IsPauseSyncAllowed() && IsSyncRunning(profile)) {
-    synced_data_deletion_ = AccountReconcilorFactory::GetForProfile(profile)
-                                ->GetScopedSyncDataDeletion();
-  }
 
   // Create a BrowsingDataRemover, set the current object as an observer (so
   // that we're notified after removal) and call remove() with the arguments

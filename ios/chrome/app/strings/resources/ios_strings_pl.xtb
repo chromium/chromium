@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Przechodząc dalej, akceptujesz <ph name="BEGIN_LINK" />Warunki korzystania z usługi<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nigdy nie zapisane</translation>
 <translation id="1062138828266376352">Twój kod PIN nie został zmieniony. Sprawdź połączenie z internetem i spróbuj ponownie</translation>
+<translation id="1072476005125066234">Opinie na podstawie Twoich zainteresowań</translation>
 <translation id="1074827084851510304">Nastąpi usunięcie {password_count} haseł oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} karta}few{{count} karty}many{{count} kart}other{{count} karty}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386">Na <ph name="COUNT" /> kontach masz to samo hasło</translation>
 <translation id="2059166748188874810">Gmina</translation>
 <translation id="2060114494785549741">Usuń za miesiąc</translation>
+<translation id="2060638295449304809">Ten adres został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Selektor typu jednostki</translation>
 <translation id="2067852168641682340">Zawsze zapisuj na tym koncie</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 karta}few{{count} karty}many{{count} kart}other{{count} karty}}</translation>
@@ -888,6 +890,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4824480232751123840">Objętość</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i jeszcze 1}few{{domain} i jeszcze {count}}many{{domain} i jeszcze {count}}other{{domain} i jeszcze {count}}}</translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
+<translation id="4828431027673677473">Produkty na podstawie Twoich zainteresowań</translation>
 <translation id="4833786495304741580">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="483689884442613745">Zapisz…</translation>
 <translation id="4840495572919996524">Twoje zakładki, historia, hasła i inne ustawienia przestaną być synchronizowane z Twoim kontem Google.</translation>
@@ -1724,6 +1727,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="828291969289324795">{count,plural, =1{Dodaj kartę do nowej grupy}few{Dodaj karty do nowej grupy}many{Dodaj karty do nowej grupy}other{Dodaj karty do nowej grupy}}</translation>
 <translation id="8283172974887967105">Ustaw…</translation>
 <translation id="8289930144142009940">Powiadomienia funkcji <ph name="FEATURE_NAME" /> zostały wyłączone</translation>
+<translation id="8290077367744012649">Śledź ceny na kartach</translation>
 <translation id="8299417921174340354">Aby użyć haseł, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="8307481894409578819">Nie udało się przesłać tego pliku</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>

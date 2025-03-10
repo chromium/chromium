@@ -229,6 +229,9 @@ class COMPONENT_EXPORT(URL) Origin {
   // are exact matches. Two opaque origins are same-origin only if their
   // internal nonce values match. A non-opaque origin is never same-origin with
   // an opaque origin.
+  //
+  // If you are looking for a same _site_ check between origins, see
+  // net::SchemefulSite::IsSameSite.
   bool IsSameOriginWith(const Origin& other) const;
 
   // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and

@@ -1,0 +1,129 @@
+From d5b3fa3438738a44a9caaaf6f2420b1817744868 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Mon, 17 Feb 2025 13:56:18 +0000
+Subject: [PATCH] fucshia: Drop CreateDirectoryReloaderCrlProvider()
+
+The API depends on MakeDirectoryReader(), which is currently
+implemented for Windows and Posix but not Fuchsia. #ifdef it
+out in Fuchsia.
+
+---
+ .../grpc/source/include/grpc/grpc_crl_provider.h       |  2 ++
+ .../security/credentials/tls/grpc_tls_crl_provider.cc  | 10 +++++++++-
+ .../security/credentials/tls/grpc_tls_crl_provider.h   | 10 ++++++++--
+ 3 files changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/grpc/source/include/grpc/grpc_crl_provider.h b/third_party/grpc/source/include/grpc/grpc_crl_provider.h
+index e9a6db95cd9f0..83c7dcf38743f 100644
+--- a/third_party/grpc/source/include/grpc/grpc_crl_provider.h
++++ b/third_party/grpc/source/include/grpc/grpc_crl_provider.h
+@@ -68,6 +68,7 @@ class CrlProvider {
+ absl::StatusOr<std::shared_ptr<CrlProvider>> CreateStaticCrlProvider(
+     absl::Span<const std::string> crls);
+ 
++#if !defined(__Fuchsia__)
+ // Creates a CRL Provider that periodically and asynchronously reloads a
+ // directory. The refresh_duration minimum is 60 seconds. The
+ // reload_error_callback provides a way for the user to specifically log or
+@@ -78,6 +79,7 @@ absl::StatusOr<std::shared_ptr<CrlProvider>> CreateStaticCrlProvider(
+ absl::StatusOr<std::shared_ptr<CrlProvider>> CreateDirectoryReloaderCrlProvider(
+     absl::string_view directory, std::chrono::seconds refresh_duration,
+     std::function<void(absl::Status)> reload_error_callback);
++#endif  // !defined(__Fuchsia__)
+ 
+ }  // namespace experimental
+ }  // namespace grpc_core
+diff --git a/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.cc b/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.cc
+index 4fec5db6fbd5a..b3bff3eeb3cd9 100644
+--- a/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.cc
++++ b/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.cc
+@@ -43,9 +43,12 @@
+ #include "src/core/lib/event_engine/default_event_engine.h"
+ #include "src/core/lib/iomgr/exec_ctx.h"
+ #include "src/core/lib/slice/slice.h"
+-#include "src/core/util/directory_reader.h"
+ #include "src/core/util/load_file.h"
+ 
++#if !defined(__Fuchsia__)
++#include "src/core/util/directory_reader.h"
++#endif  // !defined(__Fuchsia__)
++
+ namespace grpc_core {
+ namespace experimental {
+ 
+@@ -70,6 +73,7 @@ absl::StatusOr<std::string> IssuerFromCrl(X509_CRL* crl) {
+   return ret;
+ }
+ 
++#if !defined(__Fuchsia__)
+ absl::StatusOr<std::shared_ptr<Crl>> ReadCrlFromFile(
+     const std::string& crl_path) {
+   absl::StatusOr<Slice> crl_slice = LoadFile(crl_path, false);
+@@ -83,6 +87,7 @@ absl::StatusOr<std::shared_ptr<Crl>> ReadCrlFromFile(
+   }
+   return crl;
+ }
++#endif  // !defined(__Fuchsia__)
+ 
+ }  // namespace
+ 
+@@ -144,6 +149,7 @@ std::shared_ptr<Crl> StaticCrlProvider::GetCrl(
+   return it->second;
+ }
+ 
++#if !defined(__Fuchsia__)
+ absl::StatusOr<std::shared_ptr<CrlProvider>> CreateDirectoryReloaderCrlProvider(
+     absl::string_view directory, std::chrono::seconds refresh_duration,
+     std::function<void(absl::Status)> reload_error_callback) {
+@@ -253,6 +259,8 @@ std::shared_ptr<Crl> DirectoryReloaderCrlProvider::GetCrl(
+   }
+   return it->second;
+ }
++#endif  // !defined(__Fuchsia__)
++
+ 
+ }  // namespace experimental
+ }  // namespace grpc_core
+diff --git a/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.h b/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.h
+index cd89301de81a9..a6382507cacbb 100644
+--- a/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.h
++++ b/third_party/grpc/source/src/core/lib/security/credentials/tls/grpc_tls_crl_provider.h
+@@ -36,10 +36,14 @@
+ #include "absl/status/status.h"
+ #include "absl/status/statusor.h"
+ #include "absl/strings/string_view.h"
+-#include "src/core/util/directory_reader.h"
+ #include "src/core/util/sync.h"
+ #include "src/core/util/time.h"
+ 
++#if !defined(__Fuchsia__)
++#include "src/core/util/directory_reader.h"
++#endif  // !defined(__Fuchsia__)
++
++
+ namespace grpc_core {
+ namespace experimental {
+ 
+@@ -88,6 +92,7 @@ class CertificateInfoImpl : public CertificateInfo {
+   const std::string authority_key_identifier_;
+ };
+ 
++#if !defined(__Fuchsia__)
+ // Defining this here lets us hide implementation details (and includes) from
+ // the header in include
+ class DirectoryReloaderCrlProvider
+@@ -122,8 +127,9 @@ class DirectoryReloaderCrlProvider
+   std::optional<grpc_event_engine::experimental::EventEngine::TaskHandle>
+       refresh_handle_;
+ };
++#endif  // !defined(__Fuchsia__)
+ 
+ }  // namespace experimental
+ }  // namespace grpc_core
+ 
+-#endif  // GRPC_SRC_CORE_LIB_SECURITY_CREDENTIALS_TLS_GRPC_TLS_CRL_PROVIDER_H
+\ No newline at end of file
++#endif  // GRPC_SRC_CORE_LIB_SECURITY_CREDENTIALS_TLS_GRPC_TLS_CRL_PROVIDER_H
+-- 
+2.48.1.601.g30ceb7b040-goog
+

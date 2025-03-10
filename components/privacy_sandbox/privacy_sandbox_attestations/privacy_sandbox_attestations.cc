@@ -74,7 +74,7 @@ bool IsOverriddenByFlags(const net::SchemefulSite& site) {
       continue;
     }
 
-    if (net::SchemefulSite(override_url) == site) {
+    if (site.IsSameSiteWith(override_url)) {
       return true;
     }
   }

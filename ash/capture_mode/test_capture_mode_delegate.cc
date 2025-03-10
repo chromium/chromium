@@ -245,6 +245,13 @@ void TestCaptureModeDelegate::GetPrimaryAccountAccessToken(
   std::move(callback).Run("TEST");
 }
 
+GURL TestCaptureModeDelegate::GetBaseSearchURLAndPostContent(
+    const gfx::Image& image,
+    gfx::Size image_original_size,
+    TemplateURLRef::PostContent* post_content) {
+  return GURL("https://lens.google.com/v3/upload");
+}
+
 void TestCaptureModeDelegate::SendRegionSearch(
     const SkBitmap& image,
     const gfx::Rect& region,

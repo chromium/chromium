@@ -101,8 +101,8 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
           request_url.Resolve(unescaped_path);
       if (candidate_registration_endpoint.is_valid() &&
           IsSecure(candidate_registration_endpoint) &&
-          net::SchemefulSite(candidate_registration_endpoint) ==
-              net::SchemefulSite(request_url)) {
+          net::SchemefulSite::IsSameSite(candidate_registration_endpoint,
+                                         request_url)) {
         registration_endpoint = std::move(candidate_registration_endpoint);
       }
     } else if (key == kChallengeParamKey && value.is_string()) {

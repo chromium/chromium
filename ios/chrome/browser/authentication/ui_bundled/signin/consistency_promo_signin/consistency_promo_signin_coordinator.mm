@@ -102,22 +102,20 @@
                      accessPoint:accessPoint];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - InterruptibleChromeCoordinator
 
-- (void)interruptAnimated:(BOOL)animated
-               completion:(ProceduralBlock)completion {
+- (void)interruptAnimated:(BOOL)animated {
   [self stopAlertCoordinator];
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock consistencyCompletion = ^() {
-    [weakSelf finalizeInterruptAnimated:animated completion:completion];
-  };
-  if (self.addAccountCoordinator) {
-    [self.addAccountCoordinator interruptAnimated:animated
-                                       completion:consistencyCompletion];
-  } else {
-    consistencyCompletion();
-  }
+  [self.addAccountCoordinator interruptAnimated:animated];
+  DCHECK(!self.addAccountCoordinator);
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:nil];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                   completionIdentity:nil];
 }
+
+#pragma mark - SigninCoordinator
 
 - (void)start {
   [super start];
@@ -236,23 +234,6 @@
   self.addAccountCoordinator = nil;
 }
 
-// Finishes the interrupt process. This method needs to be called once all
-// other dialogs on top of ConsistencyPromoSigninCoordinator are properly
-// dismissed.
-- (void)finalizeInterruptAnimated:(BOOL)animated
-                       completion:(ProceduralBlock)interruptCompletion {
-  DCHECK(!self.alertCoordinator);
-  DCHECK(!self.addAccountCoordinator);
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:nil];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
-  if (interruptCompletion) {
-    interruptCompletion();
-  }
-}
-
 // Does cleanup (metrics and remove coordinator) once the add-account flow is
 // finished. If `hasAccounts == NO` and `signinResult` is successful , the
 // function immediately signs in to Chrome with the identity acquired from the
@@ -361,11 +342,14 @@
     userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount,
                                 skipCounter);
   }
+  __weak __typeof(self) weakSelf = self;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:nil];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
-                   completionIdentity:nil];
+                         completion:^() {
+                           [weakSelf runCompletionWithSigninResult:
+                                         SigninCoordinatorResultCanceledByUser
+                                                completionIdentity:nil];
+                         }];
 }
 
 - (void)consistencyDefaultAccountCoordinatorOpenIdentityChooser:
@@ -472,11 +456,15 @@
                                     withIdentity:(id<SystemIdentity>)identity {
   DCHECK([identity isEqual:self.selectedIdentity]);
   id<SystemIdentity> completionIdentity = identity;
+  __weak __typeof(self) weakSelf = self;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:nil];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
-                   completionIdentity:completionIdentity];
+                         completion:^() {
+                           [weakSelf runCompletionWithSigninResult:
+                                         SigninCoordinatorResultSuccess
+                                                completionIdentity:
+                                                    completionIdentity];
+                         }];
 }
 
 - (void)consistencyPromoSigninMediatorSignInCancelled:

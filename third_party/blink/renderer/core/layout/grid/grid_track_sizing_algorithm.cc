@@ -22,7 +22,7 @@ constexpr float kFloatEpsilon = std::numeric_limits<float>::epsilon();
 
 // static
 void GridTrackSizingAlgorithm::CacheGridItemsProperties(
-    const GridSizingTrackCollection& track_collection,
+    const GridLayoutTrackCollection& track_collection,
     GridItems* grid_items) {
   DCHECK(grid_items);
 

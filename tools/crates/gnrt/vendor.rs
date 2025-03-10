@@ -31,21 +31,14 @@ pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<(
 
 fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config_file_path = paths.third_party_config_file;
-    let config_file_contents = std::fs::read_to_string(config_file_path).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(config_file_path)?;
 
-    let readme_template_path = paths
-        .third_party_config_file
-        .parent()
-        .unwrap()
-        .join(&config.gn_config.readme_file_template);
+    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
+    // no parent.
+    let third_party_dir = paths.third_party_config_file.parent().unwrap();
+    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
     let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
-
-    let vet_template_path = paths //
-        .third_party_config_file
-        .parent()
-        .unwrap()
-        .join(&config.vet_config.config_template);
+    let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
     let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
 
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());

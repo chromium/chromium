@@ -311,19 +311,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo"
-    enum="BooleanValid" expires_after="2025-07-06">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether Chrome can find a valid email to be added in the tailored
-    warning string. Logged each time Safe Browsing asks Chrome to show the
-    account info in the warining. Ideally invalid email should be rare, because
-    Safe Browsing should take the user's signed-in status into account when
-    generating tailored verdicts.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.TailoredWarningType"
     enum="TailoredWarningType" expires_after="2025-07-13">
   <owner>xinghuilu@chromium.org</owner>

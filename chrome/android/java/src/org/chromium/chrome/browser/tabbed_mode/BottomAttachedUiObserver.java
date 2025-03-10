@@ -109,6 +109,7 @@ public class BottomAttachedUiObserver
     private AccessorySheetVisualStateProvider mAccessorySheetVisualStateProvider;
     private boolean mAccessorySheetVisible;
     private @Nullable @ColorInt Integer mAccessorySheetColor;
+    private boolean mNonBottomChinBottomControlsVisible;
 
     /**
      * Build the observer that listens to changes in the UI bordering the bottom.
@@ -292,7 +293,8 @@ public class BottomAttachedUiObserver
         // across the entire width, it looks nicer to match the color of other components behind /
         // to the side of the bottom sheet.
         if (mBottomSheetVisible
-                && (mBottomSheetController.isFullWidth() || !EdgeToEdgeUtils.isEnabled())) {
+                && (mBottomSheetController.isFullWidth()
+                        || !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled())) {
             // This can cause a null return intentionally to indicate that a bottom sheet is showing
             // a page preview / web content.
             return mBottomSheetColor;
@@ -316,7 +318,8 @@ public class BottomAttachedUiObserver
     /** The divider should be visible for partial width bottom-attached UI. */
     private boolean shouldShowDivider() {
         if (mBottomSheetVisible) {
-            return !mBottomSheetController.isFullWidth() && !EdgeToEdgeUtils.isEnabled();
+            return !mBottomSheetController.isFullWidth()
+                    && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled();
         }
         if (mOverlayPanelVisible && !EdgeToEdgeUtils.isEnabled()) {
             return !mOverlayPanelStateProvider.isFullWidthSizePanel();
@@ -331,7 +334,55 @@ public class BottomAttachedUiObserver
     private boolean shouldDisableAnimation() {
         // The accessory sheet shows after the keyboard has already covered over the bottom UI -
         // animation here would look odd since the previous color is outdated.
-        return mAccessorySheetVisible;
+        if (mAccessorySheetVisible) {
+            return true;
+        }
+
+        //  For bottom-anchored UI, we should disable animations on appearance and enable
+        // animations on disappearance.
+        if (ChromeFeatureList.sNavBarColorAnimation.isEnabled()) {
+            // Checks for bottom controls such as bottom tab group tool bar and read aloud mini
+            // player.
+            boolean nonBottomChinBottomControlsVisible =
+                    mBottomControlsHeight > 1
+                            && mBottomControlsStacker.hasVisibleLayersOtherThan(
+                                    BottomControlsStacker.LayerType.BOTTOM_CHIN);
+
+            // Disable animations on tab group toolbar appearance (toolbar visible false -> true).
+            // Enable animations on tab group toolbar disappearance (toolbar visible true -> false).
+            // We still want to enable animations when scrolling on/off (toolbar visible false
+            // -> false or true -> true).
+            boolean disableAnimationsTabGroupToolbar =
+                    !mNonBottomChinBottomControlsVisible && nonBottomChinBottomControlsVisible;
+            mNonBottomChinBottomControlsVisible = nonBottomChinBottomControlsVisible;
+
+            if (disableAnimationsTabGroupToolbar) {
+                return true;
+            }
+
+            boolean isBottomToolbarVisible =
+                    mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
+                            && !BrowserControlsUtils.areBrowserControlsOffScreen(
+                                    mBrowserControlsStateProvider);
+
+            if (isBottomToolbarVisible) {
+                return true;
+            }
+
+            if (mBottomSheetVisible) {
+                return true;
+            }
+
+            if (mOverlayPanelVisible) {
+                return true;
+            }
+
+            if (mSnackbarVisible) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Browser Controls (Tab group UI, Read Aloud)

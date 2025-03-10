@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">আপনি এখান থেকে Lens খুলতে পারবেন।</translation>
 <translation id="1042296835509784301">Chromium-এ Password Manager খোলে।</translation>
 <translation id="1047130070405668746">Chromium বেছে নিন</translation>
+<translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
 <translation id="1091252999271033193">এর মানে Chromium প্রতিবার মোবাইল সাইটের অনুরোধ করবে।</translation>
 <translation id="1115463765356382667">Chromium ব্যবহার করার সবচেয়ে ভালো সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
 <translation id="1140315115515116765">সহজেই দামের ইনসাইট পেতে ডিফল্ট হিসেবে Chromium ব্যবহার করুন</translation>
@@ -98,6 +99,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}one{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}other{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}}</translation>
 <translation id="3410395242749598859">আপনার Chromium ডেটার কিছুটা এখনও <ph name="EMAIL" />-এ সেভ করা হয়নি।
 অ্যাকাউন্ট পাল্টানোর আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই অ্যাকাউন্ট পাল্টালে, এই ডেটা মুছে যাবে।</translation>
+<translation id="3440830787838130530">Google Password Manager-এ আপনার ফ্যামিলি গ্রুপের সাথে নিরাপদে ও সহজে পাসওয়ার্ডের কপি শেয়ার করুন</translation>
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
 <translation id="347967311580159871">আপনার Chromium ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="3512168799938877162">আপনার পাসওয়ার্ড শেয়ার করা হয়নি। আপনার ইন্টারনেট কানেকশন চেক করুন এবং Chromium-এ সাইন-ইন করে আছেন কিনা তা ভালোভাবে দেখে নিন। তারপর, আবার চেষ্টা করুন।</translation>

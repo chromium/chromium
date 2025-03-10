@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">เวอร์ชันของ SDK:</translation>
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">เลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนรูปภาพ AI ในแบบของคุณ</translation>
 <translation id="2045814230297767491">เครื่องใช้บนโต๊ะอาหาร</translation>
 <translation id="2047316797244836561">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">ดาวเคราะห์ดวงอื่น</translation>
 <translation id="6359706544163531585">ปิดใช้ธีมสว่าง</translation>
 <translation id="6359919876285606596">การดำเนินการนี้มีผลถาวรและเลิกทำไม่ได้</translation>
-<translation id="6368342879959028556">เมื่อเลือก "สร้างด้วย AI" ให้เขียนพรอมต์ที่กำหนดเอง หรือเลือก "วอลเปเปอร์ AI" เพื่อเลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณ</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="6369221585240879141">สร้างชื่อการบันทึกสําหรับภาษาของข้อความถอดเสียงนี้ไม่ได้</translation>
 <translation id="6373461326814131011">หนองน้ำ</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">อนุญาตให้บริการของระบบใช้ตำแหน่งของคุณไหม</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="66621959568103627">ชมพูคอรัล</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          เมื่อสร้างด้วย AI ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI เป็นเวอร์ชันทดลองที่อยู่ในช่วงการพัฒนาขั้นต้น และมีให้บริการจํากัดในขณะนี้</translation>
 <translation id="6673898378497337661">เพิ่มความสว่างของแป้นพิมพ์</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6694534975463174713">ล็อก</translation>

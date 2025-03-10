@@ -62,7 +62,6 @@
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
-#include "content/services/auction_worklet/text_conversion_helpers.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
@@ -943,11 +942,6 @@ bool BidderWorklet::V8State::SetBrowserSignals(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(features::kFledgeTextConversionHelpers)) {
-    context_recycler.text_conversion_helpers()->ReInitialize(context,
-                                                             browser_signals);
-  }
-
   if (!context_recycler.report_win_lazy_filler()->FillInObject(
           browser_signal_modeling_signals, browser_signal_join_count,
           !is_for_additional_bid
@@ -1132,6 +1126,10 @@ void BidderWorklet::V8State::ReportWin(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
+  // We want this before RunScript, both because it's meant to be visible
+  // to globals, and because we don't want to overwrite existing globals.
+  context_recycler.AddTextConversionHelpers();
+
   v8::LocalVector<v8::Value> args(isolate);
   if (!AppendJsonValueOrNull(v8_helper_.get(), context,
                              base::OptionalToPtr(auction_signals_json),
@@ -1176,7 +1174,6 @@ void BidderWorklet::V8State::ReportWin(
   }
 
   context_recycler.AddReportWinBrowserSignalsLazyFiller();
-  context_recycler.AddTextConversionHelpers();
 
   DeprecatedUrlLazyFiller deprecated_render_url(
       v8_helper_.get(), &v8_logger, &browser_signal_render_url,
@@ -1929,10 +1926,6 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
-  if (base::FeatureList::IsEnabled(features::kFledgeTextConversionHelpers)) {
-    context_recycler->text_conversion_helpers()->ReInitialize(context,
-                                                              browser_signals);
-  }
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
   if (!browser_signals_dict.Set("topWindowHostname",
@@ -2166,6 +2159,10 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "get_bidder_context", trace_id);
 
+  // We want this before RunScript, both because it's meant to be visible
+  // to globals, and because we don't want to overwrite existing globals.
+  context_recycler->AddTextConversionHelpers();
+
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(v8_helper_->isolate());
 
@@ -2203,7 +2200,6 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddSetBidBindings();
   context_recycler->AddSetPriorityBindings();
   context_recycler->AddSetPrioritySignalsOverrideBindings();
-  context_recycler->AddTextConversionHelpers();
   context_recycler->AddInterestGroupLazyFiller();
   context_recycler->AddBiddingBrowserSignalsLazyFiller();
 

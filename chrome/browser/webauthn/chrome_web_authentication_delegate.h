@@ -43,9 +43,12 @@ class ChromeWebAuthenticationDelegate final
   //
   // LINT.IfChange(SignalAllAcceptedCredentialsResult)
   enum class SignalAllAcceptedCredentialsResult {
-    kNoPasskeyRemoved = 0,
+    kNoPasskeyChanged = 0,
     kPasskeyRemoved = 1,
-    kMaxValue = kPasskeyRemoved,
+    kPasskeyHidden = 2,
+    kPasskeyRestored = 3,
+    kQuotaExceeded = 4,
+    kMaxValue = kQuotaExceeded,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalAllAcceptedCredentialsResultEnum)
 
@@ -97,11 +100,12 @@ class ChromeWebAuthenticationDelegate final
                            const url::Origin& origin,
                            const std::vector<uint8_t>& passkey_credential_id,
                            const std::string& relying_party_id) override;
-  void DeleteUnacceptedPasskeys(content::WebContents* web_contents,
-                                const std::string& relying_party_id,
-                                const std::vector<uint8_t>& user_id,
-                                const std::vector<std::vector<uint8_t>>&
-                                    all_accepted_credentials_ids) override;
+  void SignalAllAcceptedCredentials(content::WebContents* web_contents,
+                                    const url::Origin& origin,
+                                    const std::string& relying_party_id,
+                                    const std::vector<uint8_t>& user_id,
+                                    const std::vector<std::vector<uint8_t>>&
+                                        all_accepted_credentials_ids) override;
   void UpdateUserPasskeys(content::WebContents* web_contents,
                           const url::Origin& origin,
                           const std::string& relying_party_id,

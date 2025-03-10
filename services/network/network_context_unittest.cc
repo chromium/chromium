@@ -5113,6 +5113,51 @@ TEST_F(NetworkContextActivateDohProbesTest, NotPrimaryContext) {
   EXPECT_FALSE(state->IsDohProbeRunning());
 }
 
+TEST_F(NetworkContextTest,
+       NetworkContextUpdatesIpProtectionCoreTrackingProtectionExceptions) {
+  const std::string url = "http://foo.com";
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{net::features::kEnableIpProtectionProxy,
+        {{"IpPrivacyAlwaysCreateCore", "true"}}},
+       {network::features::kMaskedDomainList, {}}},
+      {});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  content_settings::RuleMetaData metadata;
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+  // Verify with a TRACKING_PROTECTION exception.
+  {
+    network_context->SetTrackingProtectionContentSetting(
+        {ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(url),
+                                     base::Value(CONTENT_SETTING_ALLOW),
+                                     content_settings::ProviderType::kNone,
+                                     /*incognito=*/true, metadata)});
+
+    EXPECT_TRUE(
+        network_context->ip_protection_core()->HasTrackingProtectionException(
+            GURL(url)));
+  }
+
+  // Verify without a TRACKING_PROTECTION exception.
+  {
+    network_context->SetTrackingProtectionContentSetting(
+        {ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::FromString(url),
+                                     base::Value(CONTENT_SETTING_BLOCK),
+                                     content_settings::ProviderType::kNone,
+                                     /*incognito=*/true, metadata)});
+
+    EXPECT_FALSE(
+        network_context->ip_protection_core()->HasTrackingProtectionException(
+            GURL(url)));
+  }
+}
+
 TEST_F(NetworkContextTest, PrivacyModeDisabledByDefault) {
   const GURL kURL("http://foo.com");
   const GURL kOtherURL("http://other.com");

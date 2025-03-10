@@ -2606,12 +2606,18 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/401111779 [ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
+crbug.com/401111779 [ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
+[ Mac14-arm64 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Timeout ]
+crbug.com/401430860 external/wpt/html/rendering/widgets/field-sizing-textarea-relayout.html [ Failure ]
+[ Mac14 ] external/wpt/urlpattern/urlpattern.https.any.serviceworker.html [ Crash Failure ]
+external/wpt/webvtt/rendering/cues-with-video/processing-model/portrait.tentative.html [ Failure ]
+external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/fontsize_smaller_than_container.tentative.html [ Failure ]
 crbug.com/400781219 [ Win11-arm64 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400781219 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400504661 [ Mac ] external/wpt/editing/plaintext-only/nested-with-contenteditable-true.html [ Failure ]
 crbug.com/399763756 [ Mac ] external/wpt/editing/whitespaces/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
 crbug.com/399769591 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Failure Timeout ]
-crbug.com/399763757 [ Mac14-arm64 ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Timeout ]
 crbug.com/399711134 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/root-and-nested-element-transition.html [ Failure ]
 crbug.com/399711134 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/root-and-nested-element-transition.html [ Failure ]
 crbug.com/398879934 [ Mac15-arm64 ] external/wpt/webrtc/legacy/simplecall_callbacks.optional.https.html [ Crash ]
@@ -8982,7 +8988,6 @@ crbug.com/394919517 [ Mac ] external/wpt/css/css-pseudo/selection-background-pai
 crbug.com/383946052 [ Android ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Fuchsia ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Linux ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
-crbug.com/383946052 [ Mac ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 
 # Also failing on WebKit Linux ASAN
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Failure Timeout ]
@@ -9032,3 +9037,15 @@ crbug.com/387938119 external/wpt/html/semantics/embedded-content/the-object-elem
 crbug.com/401227377 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html [ Failure Pass ]
 crbug.com/400726001 [ Win ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
 crbug.com/400726001 [ Mac14 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
+crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Pass Timeout ]
+
+# Gardener 2025-03-07
+crbug.com/400818436 virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Pass Timeout ]
+crbug.com/400818436 virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Pass Timeout ]
+crbug.com/398165466 [ Mac12 ] http/tests/inspector-protocol/tracing/screenshots.js [ Pass Timeout ]
+crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
+crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
+crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py [ Failure ]
+crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure ]
+crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Failure Pass ]
+crbug.com/401515601 [ Linux ] external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Failure ]

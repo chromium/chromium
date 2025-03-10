@@ -239,6 +239,7 @@ inline constexpr gfx::Size k4K_UHD{3840, 2160};
 inline constexpr gfx::Size k4K_WUHD(5120, 2160);
 inline constexpr gfx::Size k8k_UHD(7680, 4320);
 inline constexpr gfx::Size kQHD{2560, 1440};
+inline constexpr gfx::Size kWQXGA{2560, 1600};
 
 // Dru
 inline constexpr gfx::Size kQXGA_P{1536, 2048};
@@ -266,6 +267,11 @@ struct DisplayData {
   const bool bad_range;
   const SizeErrorCheckType screenshot_size_error;
 };
+
+// List of known ChromeOS display. Any new [diagonal size, resolution] entries
+// should also be added to the display list used for the ui.DisplayValidation
+// tast test.
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/displayvalidation/utils.go
 inline constexpr DisplayData lcd_display_configs[] = {
     // clang-format off
     // inch, resolution, DSF,        size in DP,  Bad range, size error
@@ -296,6 +302,7 @@ inline constexpr DisplayData lcd_display_configs[] = {
     {14.f,   kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
     {14.f,   kFHD,       1.25f,      {1536, 864}, false,     kExact},
     {14.f,   kWUXGA,     1.25f,      {1536, 960}, false,     kExact},
+    {14.f,   kWQXGA,     1.6f,       {1600, 1000},true,      kExact},
     {14.f,   k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
     {15.6f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
     {15.6f,  kWUXGA,     1.f,        kWUXGA,      false,     kExact},

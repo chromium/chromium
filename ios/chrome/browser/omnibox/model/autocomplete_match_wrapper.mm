@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_classification.h"
@@ -11,6 +12,7 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -59,6 +61,76 @@
   }
 
   return wrappedMatches;
+}
+
+- (NSArray<id<AutocompleteSuggestionGroup>>*)
+            groupSuggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+    usingACResultAsHeaderMap:(const AutocompleteResult&)headerMap {
+  __block NSMutableArray<id<AutocompleteSuggestion>>* currentGroup =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
+      [[NSMutableArray alloc] init];
+
+  if (suggestions.count == 0) {
+    return @[];
+  }
+
+  id<AutocompleteSuggestion> firstSuggestion = suggestions.firstObject;
+
+  __block NSNumber* currentSectionId = firstSuggestion.suggestionSectionId;
+  __block NSNumber* currentGroupId = firstSuggestion.suggestionGroupId;
+
+  [currentGroup addObject:firstSuggestion];
+
+  void (^startNewGroup)() = ^{
+    if (currentGroup.count == 0) {
+      return;
+    }
+
+    NSString* groupTitle =
+        currentGroupId
+            ? base::SysUTF16ToNSString(headerMap.GetHeaderForSuggestionGroup(
+                  static_cast<omnibox::GroupId>([currentGroupId intValue])))
+            : nil;
+    SuggestionGroupDisplayStyle displayStyle =
+        SuggestionGroupDisplayStyleDefault;
+
+    if (base::FeatureList::IsEnabled(
+            omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
+      omnibox::GroupConfig_RenderType renderType =
+          headerMap.GetRenderTypeForSuggestionGroup(
+              static_cast<omnibox::GroupId>([currentGroupId intValue]));
+      displayStyle = (renderType == omnibox::GroupConfig_RenderType_HORIZONTAL)
+                         ? SuggestionGroupDisplayStyleCarousel
+                         : SuggestionGroupDisplayStyleDefault;
+    } else if (currentSectionId &&
+               static_cast<omnibox::GroupSection>(currentSectionId.intValue) ==
+                   omnibox::SECTION_MOBILE_MOST_VISITED) {
+      displayStyle = SuggestionGroupDisplayStyleCarousel;
+    }
+
+    [groups addObject:[AutocompleteSuggestionGroupImpl
+                          groupWithTitle:groupTitle
+                             suggestions:currentGroup
+                            displayStyle:displayStyle]];
+    currentGroup = [[NSMutableArray alloc] init];
+  };
+
+  for (NSUInteger i = 1; i < suggestions.count; i++) {
+    id<AutocompleteSuggestion> suggestion = suggestions[i];
+    if ((!suggestion.suggestionSectionId && !currentSectionId) ||
+        [suggestion.suggestionSectionId isEqual:currentSectionId]) {
+      [currentGroup addObject:suggestion];
+    } else {
+      startNewGroup();
+      currentGroupId = suggestion.suggestionGroupId;
+      currentSectionId = suggestion.suggestionSectionId;
+      [currentGroup addObject:suggestion];
+    }
+  }
+  startNewGroup();
+
+  return groups;
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {

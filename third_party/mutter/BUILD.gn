@@ -1,0 +1,1540 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/pkg_config.gni")
+import("//build/config/ui.gni")
+import("//third_party/wayland/wayland_protocol.gni")
+
+assert(is_linux)
+
+pkg_config("atk") {
+  packages = [ "atk" ]
+  extra_args = [
+    "-v",
+    "glib",
+    "-v",
+    "gobject",
+  ]
+}
+
+pkg_config("cairo") {
+  packages = [ "cairo" ]
+  extra_args = [
+    "-v",
+    "glib",
+  ]
+}
+
+pkg_config("colord") {
+  packages = [ "colord" ]
+  extra_args = [
+    "-v",
+    "glib",
+    "-v",
+    "gobject",
+    "-v",
+    "gio",
+  ]
+}
+
+pkg_config("gbm") {
+  packages = [ "gbm" ]
+}
+
+pkg_config("gdk_pixbuf") {
+  packages = [ "gdk-pixbuf-2.0" ]
+  extra_args = [
+    "-v",
+    "glib",
+    "-v",
+    "gobject",
+  ]
+}
+
+pkg_config("graphene") {
+  packages = [ "graphene-gobject-1.0" ]
+  extra_args = [
+    "-v",
+    "glib",
+    "-v",
+    "gobject",
+  ]
+}
+
+pkg_config("lcms2") {
+  packages = [ "lcms2" ]
+}
+
+pkg_config("libsystemd") {
+  packages = [ "libsystemd" ]
+}
+
+pkg_config("pixman") {
+  packages = [ "pixman-1" ]
+}
+
+pkg_config("xkbcommon") {
+  packages = [ "xkbcommon" ]
+}
+
+wayland_protocol("color_management_protocol") {
+  sources = [ "src/src/wayland/protocol/color-management-v1.xml" ]
+}
+
+# TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
+wayland_protocol("gtk_shell_protocol") {
+  sources = [ "src/src/wayland/protocol/gtk-shell.xml" ]
+}
+
+# TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
+wayland_protocol("linux_dmabuf_protocol") {
+  sources = [ "wayland_protocols/linux-dmabuf-v1.xml" ]
+}
+
+# TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
+wayland_protocol("commit_timing_protocol") {
+  sources = [ "wayland_protocols/commit-timing-v1.xml" ]
+}
+
+# TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
+wayland_protocol("fifo_protocol") {
+  sources = [ "wayland_protocols/fifo-v1.xml" ]
+}
+
+wayland_protocol("session_management_protocol") {
+  sources = [ "src/src/wayland/protocol/session-management-v1.xml" ]
+}
+
+# TODO(crbug.com/396647882) Remove once wayland-protocols is rolled
+wayland_protocol("xdg_system_bell_protocol") {
+  sources = [ "wayland_protocols/xdg-system-bell-v1.xml" ]
+}
+
+config("mtk_public_config") {
+  include_dirs = [
+    "include",
+    "src/mtk",
+  ]
+
+  configs = [ ":graphene" ]
+
+  defines = [
+    "asm=__asm__",
+    "_GNU_SOURCE=1",
+    "G_DISABLE_ASSERT=1",
+    "G_DISABLE_CAST_CHECKS=1",
+  ]
+
+  cflags = [
+    # cflags as per upstream toplevel meson.build:
+    "-Wno-incompatible-pointer-types-discards-qualifiers",
+    "-fno-omit-frame-pointer",
+    "-mno-omit-leaf-frame-pointer",
+    "-fno-strict-aliasing",
+    "-Wpointer-arith",
+    "-Wmissing-declarations",
+    "-Wformat=2",
+    "-Wstrict-prototypes",
+    "-Wmissing-prototypes",
+    "-Wnested-externs",
+    "-Wold-style-definition",
+    "-Wundef",
+
+    # "-Wunused", # Causes error in clutter
+    # "-Wcast-align", # Causes error in cogl
+    # "-Wmissing-noreturn", # Causes error in cogl
+    "-Wmissing-format-attribute",
+    "-Wmissing-include-dirs",
+
+    # "-Wlogical-op",  # Not supported by clang
+    "-Wignored-qualifiers",
+    "-Werror=redundant-decls",
+    "-Werror=implicit",
+    "-Werror=nonnull",
+    "-Werror=init-self",
+    "-Werror=main",
+    "-Werror=missing-braces",
+    "-Werror=sequence-point",
+    "-Werror=return-type",
+    "-Werror=trigraphs",
+    "-Werror=array-bounds",
+    "-Werror=write-strings",
+    "-Werror=address",
+    "-Werror=int-to-pointer-cast",
+    "-Werror=pointer-to-int-cast",
+    "-Werror=empty-body",
+    "-Werror=write-strings",
+    "-Werror=strict-aliasing",
+    "-Wno-sign-compare",
+    "-Wno-cast-function-type",
+    "-Wno-unused-parameter",
+    "-Wno-missing-field-initializers",
+    "-Wno-type-limits",
+    "-Wshadow",
+    "-Wno-single-bit-bitfield-constant-conversion",
+
+    # "-Wfloat-conversion", # Causes error in clutter
+  ]
+}
+
+source_set("mtk") {
+  testonly = true
+
+  defines = [
+    "MTK_COMPILATION=1",
+    "G_LOG_DOMAIN=\"Mtk\"",
+  ]
+
+  sources = [
+    "src/mtk/mtk/mtk-macros.h",
+    "src/mtk/mtk/mtk-monitor-transform.c",
+    "src/mtk/mtk/mtk-monitor-transform.h",
+    "src/mtk/mtk/mtk-rectangle.c",
+    "src/mtk/mtk/mtk-rectangle.h",
+    "src/mtk/mtk/mtk-region.c",
+    "src/mtk/mtk/mtk-region.h",
+    "src/mtk/mtk/mtk-utils.c",
+    "src/mtk/mtk/mtk-utils.h",
+    "src/mtk/mtk/mtk.h",
+  ]
+
+  configs += [ ":pixman" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":mtk_public_config" ]
+
+  public_deps = [
+    "//third_party/glib:glib",
+    "//third_party/glib:gobject",
+  ]
+}
+
+config("cogl_public_config") {
+  include_dirs = [ "src/cogl" ]
+}
+
+source_set("cogl") {
+  testonly = true
+
+  defines = [
+    "COGL_COMPILATION=1",
+    "COGL_GL_LIBNAME=\"libGL.so.1\"",
+    "COGL_GLES2_LIBNAME=\"libGLESv2.so.2\"",
+  ]
+
+  include_dirs = [ "src/cogl/cogl" ]
+
+  sources = [
+    # generated cogl enum types
+    "cogl/cogl-enum-types.c",
+    "include/cogl/cogl-enum-types.h",
+
+    # cogl_deprecated_headers
+    "src/cogl/cogl/deprecated/cogl-program.h",
+    "src/cogl/cogl/deprecated/cogl-shader.h",
+
+    # cogl_headers
+    "src/cogl/cogl/cogl-atlas-texture.h",
+    "src/cogl/cogl/cogl-atlas.h",
+    "src/cogl/cogl/cogl-attribute-buffer.h",
+    "src/cogl/cogl/cogl-attribute.h",
+    "src/cogl/cogl/cogl-bitmap.h",
+    "src/cogl/cogl/cogl-color.h",
+    "src/cogl/cogl/cogl-context.h",
+    "src/cogl/cogl/cogl-depth-state.h",
+    "src/cogl/cogl/cogl-display.h",
+    "src/cogl/cogl/cogl-dma-buf-handle.h",
+    "src/cogl/cogl/cogl-frame-info.h",
+    "src/cogl/cogl/cogl-framebuffer.h",
+    "src/cogl/cogl/cogl-glib-source.h",
+    "src/cogl/cogl/cogl-graphene.h",
+    "src/cogl/cogl/cogl-index-buffer.h",
+    "src/cogl/cogl/cogl-indices.h",
+    "src/cogl/cogl/cogl-macros.h",
+    "src/cogl/cogl/cogl-matrix-stack.h",
+    "src/cogl/cogl/cogl-meta-texture.h",
+    "src/cogl/cogl/cogl-offscreen.h",
+    "src/cogl/cogl/cogl-onscreen.h",
+    "src/cogl/cogl/cogl-pipeline-layer-state.h",
+    "src/cogl/cogl/cogl-pipeline-state.h",
+    "src/cogl/cogl/cogl-pipeline.h",
+    "src/cogl/cogl/cogl-pixel-buffer.h",
+    "src/cogl/cogl/cogl-primitive.h",
+    "src/cogl/cogl/cogl-renderer.h",
+    "src/cogl/cogl/cogl-scanout.h",
+    "src/cogl/cogl/cogl-snippet.h",
+    "src/cogl/cogl/cogl-sub-texture.h",
+    "src/cogl/cogl/cogl-texture-2d-sliced.h",
+    "src/cogl/cogl/cogl-texture-2d.h",
+    "src/cogl/cogl/cogl-texture.h",
+    "src/cogl/cogl/cogl-trace.h",
+    "src/cogl/cogl/cogl.h",
+
+    # cogl_noop_driver_sources
+    "src/cogl/cogl/driver/nop/cogl-driver-nop-private.h",
+    "src/cogl/cogl/driver/nop/cogl-driver-nop.c",
+
+    # cogl_gl_prototype_headers
+    "src/cogl/cogl/gl-prototypes/cogl-core-functions.h",
+    "src/cogl/cogl/gl-prototypes/cogl-gles2-functions.h",
+    "src/cogl/cogl/gl-prototypes/cogl-glsl-functions.h",
+    "src/cogl/cogl/gl-prototypes/cogl-in-gles-core-functions.h",
+    "src/cogl/cogl/gl-prototypes/cogl-in-gles2-core-functions.h",
+
+    # cogl_common_driver_sources
+    "src/cogl/cogl/driver/gl/cogl-attribute-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-attribute-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-bitmap-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-bitmap-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-buffer-impl-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-buffer-impl-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-clip-stack-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-clip-stack-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-driver-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-driver-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-framebuffer-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-framebuffer-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-gl-framebuffer-back.c",
+    "src/cogl/cogl/driver/gl/cogl-gl-framebuffer-back.h",
+    "src/cogl/cogl/driver/gl/cogl-gl-framebuffer-fbo.c",
+    "src/cogl/cogl/driver/gl/cogl-gl-framebuffer-fbo.h",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-fragend-glsl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-fragend-glsl.c",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-progend-glsl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-progend-glsl.c",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-vertend-glsl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-pipeline-vertend-glsl.c",
+    "src/cogl/cogl/driver/gl/cogl-texture-2d-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-texture-2d-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-texture-driver-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-texture-driver-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-texture-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-texture-gl.c",
+    "src/cogl/cogl/driver/gl/cogl-util-gl-private.h",
+    "src/cogl/cogl/driver/gl/cogl-util-gl.c",
+
+    # gl_driver_sources
+    "src/cogl/cogl/driver/gl/gl3/cogl-driver-gl3-private.h",
+    "src/cogl/cogl/driver/gl/gl3/cogl-driver-gl3.c",
+    "src/cogl/cogl/driver/gl/gl3/cogl-texture-driver-gl3-private.h",
+    "src/cogl/cogl/driver/gl/gl3/cogl-texture-driver-gl3.c",
+
+    # gles_driver_sources
+    "src/cogl/cogl/driver/gl/gles2/cogl-driver-gles2-private.h",
+    "src/cogl/cogl/driver/gl/gles2/cogl-driver-gles2.c",
+    "src/cogl/cogl/driver/gl/gles2/cogl-texture-driver-gles2-private.h",
+    "src/cogl/cogl/driver/gl/gles2/cogl-texture-driver-gles2.c",
+
+    # cogl_sources
+    "src/cogl/cogl/cogl-atlas-private.h",
+    "src/cogl/cogl/cogl-atlas-texture-private.h",
+    "src/cogl/cogl/cogl-atlas-texture.c",
+    "src/cogl/cogl/cogl-atlas.c",
+    "src/cogl/cogl/cogl-attribute-buffer-private.h",
+    "src/cogl/cogl/cogl-attribute-buffer.c",
+    "src/cogl/cogl/cogl-attribute-private.h",
+    "src/cogl/cogl/cogl-attribute.c",
+    "src/cogl/cogl/cogl-bitmap-conversion.c",
+    "src/cogl/cogl/cogl-bitmap-packing.h",
+    "src/cogl/cogl/cogl-bitmap-private.h",
+    "src/cogl/cogl/cogl-bitmap.c",
+    "src/cogl/cogl/cogl-bitmask.c",
+    "src/cogl/cogl/cogl-bitmask.h",
+    "src/cogl/cogl/cogl-blend-string.c",
+    "src/cogl/cogl/cogl-blend-string.h",
+    "src/cogl/cogl/cogl-blit.c",
+    "src/cogl/cogl/cogl-blit.h",
+    "src/cogl/cogl/cogl-boxed-value.c",
+    "src/cogl/cogl/cogl-boxed-value.h",
+    "src/cogl/cogl/cogl-buffer-impl.c",
+    "src/cogl/cogl/cogl-buffer-private.h",
+    "src/cogl/cogl/cogl-buffer.c",
+    "src/cogl/cogl/cogl-clip-stack.c",
+    "src/cogl/cogl/cogl-clip-stack.h",
+    "src/cogl/cogl/cogl-closure-list-private.h",
+    "src/cogl/cogl/cogl-closure-list.c",
+    "src/cogl/cogl/cogl-color.c",
+    "src/cogl/cogl/cogl-context-private.h",
+    "src/cogl/cogl/cogl-context.c",
+    "src/cogl/cogl/cogl-cpu-caps.c",
+    "src/cogl/cogl/cogl-cpu-caps.h",
+    "src/cogl/cogl/cogl-debug-options.h",
+    "src/cogl/cogl/cogl-debug.c",
+    "src/cogl/cogl/cogl-debug.h",
+    "src/cogl/cogl/cogl-depth-state-private.h",
+    "src/cogl/cogl/cogl-depth-state.c",
+    "src/cogl/cogl/cogl-display-private.h",
+    "src/cogl/cogl/cogl-display.c",
+    "src/cogl/cogl/cogl-display.h",
+    "src/cogl/cogl/cogl-dma-buf-handle.c",
+    "src/cogl/cogl/cogl-driver-private.h",
+    "src/cogl/cogl/cogl-driver.c",
+    "src/cogl/cogl/cogl-feature-private.c",
+    "src/cogl/cogl/cogl-feature-private.h",
+    "src/cogl/cogl/cogl-flags.h",
+    "src/cogl/cogl/cogl-frame-info-private.h",
+    "src/cogl/cogl/cogl-frame-info.c",
+    "src/cogl/cogl/cogl-framebuffer-driver.c",
+    "src/cogl/cogl/cogl-framebuffer-driver.h",
+    "src/cogl/cogl/cogl-framebuffer-private.h",
+    "src/cogl/cogl/cogl-framebuffer.c",
+    "src/cogl/cogl/cogl-gl-header.h",
+    "src/cogl/cogl/cogl-glib-source.c",
+    "src/cogl/cogl/cogl-glsl-shader-boilerplate.h",
+    "src/cogl/cogl/cogl-graphene.c",
+    "src/cogl/cogl/cogl-half-float.c",
+    "src/cogl/cogl/cogl-half-float.h",
+    "src/cogl/cogl/cogl-index-buffer-private.h",
+    "src/cogl/cogl/cogl-index-buffer.c",
+    "src/cogl/cogl/cogl-indices-private.h",
+    "src/cogl/cogl/cogl-indices.c",
+    "src/cogl/cogl/cogl-journal-private.h",
+    "src/cogl/cogl/cogl-journal.c",
+    "src/cogl/cogl/cogl-list.c",
+    "src/cogl/cogl/cogl-list.h",
+    "src/cogl/cogl/cogl-magazine-private.h",
+    "src/cogl/cogl/cogl-magazine.c",
+    "src/cogl/cogl/cogl-matrix-stack-private.h",
+    "src/cogl/cogl/cogl-matrix-stack.c",
+    "src/cogl/cogl/cogl-memory-stack-private.h",
+    "src/cogl/cogl/cogl-memory-stack.c",
+    "src/cogl/cogl/cogl-meta-texture.c",
+    "src/cogl/cogl/cogl-mutter.h",
+    "src/cogl/cogl/cogl-offscreen-private.h",
+    "src/cogl/cogl/cogl-offscreen.c",
+    "src/cogl/cogl/cogl-onscreen-private.h",
+    "src/cogl/cogl/cogl-onscreen.c",
+    "src/cogl/cogl/cogl-pipeline-cache-private.h",
+    "src/cogl/cogl/cogl-pipeline-cache.c",
+    "src/cogl/cogl/cogl-pipeline-cache.h",
+    "src/cogl/cogl/cogl-pipeline-debug.c",
+    "src/cogl/cogl/cogl-pipeline-hash-table.c",
+    "src/cogl/cogl/cogl-pipeline-hash-table.h",
+    "src/cogl/cogl/cogl-pipeline-layer-private.h",
+    "src/cogl/cogl/cogl-pipeline-layer-state-private.h",
+    "src/cogl/cogl/cogl-pipeline-layer-state.c",
+    "src/cogl/cogl/cogl-pipeline-layer.c",
+    "src/cogl/cogl/cogl-pipeline-private.h",
+    "src/cogl/cogl/cogl-pipeline-snippet-private.h",
+    "src/cogl/cogl/cogl-pipeline-snippet.c",
+    "src/cogl/cogl/cogl-pipeline-state-private.h",
+    "src/cogl/cogl/cogl-pipeline-state.c",
+    "src/cogl/cogl/cogl-pipeline.c",
+    "src/cogl/cogl/cogl-pixel-buffer-private.h",
+    "src/cogl/cogl/cogl-pixel-buffer.c",
+    "src/cogl/cogl/cogl-pixel-format.c",
+    "src/cogl/cogl/cogl-point-in-poly-private.h",
+    "src/cogl/cogl/cogl-point-in-poly.c",
+    "src/cogl/cogl/cogl-primitive.c",
+    "src/cogl/cogl/cogl-primitives-private.h",
+    "src/cogl/cogl/cogl-primitives.c",
+    "src/cogl/cogl/cogl-private.h",
+    "src/cogl/cogl/cogl-profile.c",
+    "src/cogl/cogl/cogl-profile.h",
+    "src/cogl/cogl/cogl-rectangle-map.c",
+    "src/cogl/cogl/cogl-rectangle-map.h",
+    "src/cogl/cogl/cogl-renderer-private.h",
+    "src/cogl/cogl/cogl-renderer.c",
+    "src/cogl/cogl/cogl-renderer.h",
+    "src/cogl/cogl/cogl-sampler-cache-private.h",
+    "src/cogl/cogl/cogl-sampler-cache.c",
+    "src/cogl/cogl/cogl-scanout.c",
+    "src/cogl/cogl/cogl-snippet-private.h",
+    "src/cogl/cogl/cogl-snippet.c",
+    "src/cogl/cogl/cogl-soft-float.c",
+    "src/cogl/cogl/cogl-soft-float.h",
+    "src/cogl/cogl/cogl-spans.c",
+    "src/cogl/cogl/cogl-spans.h",
+    "src/cogl/cogl/cogl-sub-texture-private.h",
+    "src/cogl/cogl/cogl-sub-texture.c",
+    "src/cogl/cogl/cogl-texture-2d-private.h",
+    "src/cogl/cogl/cogl-texture-2d-sliced-private.h",
+    "src/cogl/cogl/cogl-texture-2d-sliced.c",
+    "src/cogl/cogl/cogl-texture-2d.c",
+    "src/cogl/cogl/cogl-texture-driver.c",
+    "src/cogl/cogl/cogl-texture-driver.h",
+    "src/cogl/cogl/cogl-texture-private.h",
+    "src/cogl/cogl/cogl-texture.c",
+    "src/cogl/cogl/cogl-trace.c",
+    "src/cogl/cogl/cogl-util.h",
+    "src/cogl/cogl/cogl.c",
+    "src/cogl/cogl/deprecated/cogl-program-private.h",
+    "src/cogl/cogl/deprecated/cogl-program.c",
+    "src/cogl/cogl/deprecated/cogl-shader-private.h",
+    "src/cogl/cogl/deprecated/cogl-shader.c",
+    "src/cogl/cogl/gl-prototypes/cogl-all-functions.h",
+    "src/cogl/cogl/winsys/cogl-winsys-private.h",
+    "src/cogl/cogl/winsys/cogl-winsys.c",
+
+    # have_egl sources
+    "src/cogl/cogl/winsys/cogl-onscreen-egl.c",
+    "src/cogl/cogl/winsys/cogl-onscreen-egl.h",
+    "src/cogl/cogl/winsys/cogl-winsys-egl-feature-functions.h",
+    "src/cogl/cogl/winsys/cogl-winsys-egl-private.h",
+    "src/cogl/cogl/winsys/cogl-winsys-egl.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":cogl_public_config" ]
+
+  public_deps = [
+    ":mtk",
+    "//third_party/glib:gio",
+    "//third_party/glib:gmodule",
+  ]
+
+  libs = [
+    "EGL",
+    "GLESv2",
+  ]
+}
+
+config("clutter_public_config") {
+  include_dirs = [ "src/clutter" ]
+
+  configs = [
+    ":atk",
+    ":cairo",
+  ]
+}
+
+source_set("clutter") {
+  testonly = true
+
+  defines = [
+    "CLUTTER_COMPILATION=1",
+    "COGL_ENABLE_MUTTER_API=1",
+    "G_LOG_DOMAIN=\"Clutter\"",
+  ]
+
+  # non-literal string used in clutter-main.c:651
+  cflags_c = [ "-Wno-format-nonliteral" ]
+
+  include_dirs = [ "include/clutter" ]
+
+  sources = [
+    # generated clutter enum types
+    "clutter/clutter-enum-types.c",
+    "include/clutter/clutter-enum-types.h",
+
+    # generated clutter marshallers
+    "clutter/clutter-marshal.c",
+    "include/clutter/clutter-marshal.h",
+
+    # clutter_headers
+    "src/clutter/clutter/clutter-action.h",
+    "src/clutter/clutter/clutter-actor-accessible.h",
+    "src/clutter/clutter/clutter-actor-meta.h",
+    "src/clutter/clutter/clutter-actor.h",
+    "src/clutter/clutter/clutter-align-constraint.h",
+    "src/clutter/clutter/clutter-animatable.h",
+    "src/clutter/clutter/clutter-backend.h",
+    "src/clutter/clutter/clutter-bin-layout.h",
+    "src/clutter/clutter/clutter-bind-constraint.h",
+    "src/clutter/clutter/clutter-binding-pool.h",
+    "src/clutter/clutter/clutter-blur-effect.h",
+    "src/clutter/clutter/clutter-box-layout.h",
+    "src/clutter/clutter/clutter-brightness-contrast-effect.h",
+    "src/clutter/clutter/clutter-click-action.h",
+    "src/clutter/clutter/clutter-clone.h",
+    "src/clutter/clutter/clutter-color-manager.h",
+    "src/clutter/clutter/clutter-color-state-params.h",
+    "src/clutter/clutter/clutter-color-state.h",
+    "src/clutter/clutter/clutter-colorize-effect.h",
+    "src/clutter/clutter/clutter-constraint.h",
+    "src/clutter/clutter/clutter-content.h",
+    "src/clutter/clutter/clutter-context.h",
+    "src/clutter/clutter/clutter-deform-effect.h",
+    "src/clutter/clutter/clutter-desaturate-effect.h",
+    "src/clutter/clutter/clutter-effect.h",
+    "src/clutter/clutter/clutter-enums.h",
+    "src/clutter/clutter/clutter-event.h",
+    "src/clutter/clutter/clutter-fixed-layout.h",
+    "src/clutter/clutter/clutter-flow-layout.h",
+    "src/clutter/clutter/clutter-frame-clock.h",
+    "src/clutter/clutter/clutter-frame.h",
+    "src/clutter/clutter/clutter-gesture-action.h",
+    "src/clutter/clutter/clutter-gesture.h",
+    "src/clutter/clutter/clutter-grab.h",
+    "src/clutter/clutter/clutter-grid-layout.h",
+    "src/clutter/clutter/clutter-input-device-tool.h",
+    "src/clutter/clutter/clutter-input-device.h",
+    "src/clutter/clutter/clutter-input-focus.h",
+    "src/clutter/clutter/clutter-input-method.h",
+    "src/clutter/clutter/clutter-interval.h",
+    "src/clutter/clutter/clutter-keyframe-transition.h",
+    "src/clutter/clutter/clutter-keymap.h",
+    "src/clutter/clutter/clutter-keysyms.h",
+    "src/clutter/clutter/clutter-keyval.h",
+    "src/clutter/clutter/clutter-layout-manager.h",
+    "src/clutter/clutter/clutter-layout-meta.h",
+    "src/clutter/clutter/clutter-macros.h",
+    "src/clutter/clutter/clutter-main.h",
+    "src/clutter/clutter/clutter-offscreen-effect.h",
+    "src/clutter/clutter/clutter-page-turn-effect.h",
+    "src/clutter/clutter/clutter-paint-context.h",
+    "src/clutter/clutter/clutter-paint-node.h",
+    "src/clutter/clutter/clutter-paint-nodes.h",
+    "src/clutter/clutter/clutter-pan-action.h",
+    "src/clutter/clutter/clutter-pick-context.h",
+    "src/clutter/clutter/clutter-pipeline-cache.h",
+    "src/clutter/clutter/clutter-property-transition.h",
+    "src/clutter/clutter/clutter-rotate-action.h",
+    "src/clutter/clutter/clutter-seat.h",
+    "src/clutter/clutter/clutter-settings.h",
+    "src/clutter/clutter/clutter-shader-effect.h",
+    "src/clutter/clutter/clutter-shader-types.h",
+    "src/clutter/clutter/clutter-snap-constraint.h",
+    "src/clutter/clutter/clutter-stage-view.h",
+    "src/clutter/clutter/clutter-stage.h",
+    "src/clutter/clutter/clutter-swipe-action.h",
+    "src/clutter/clutter/clutter-tap-action.h",
+    "src/clutter/clutter/clutter-texture-content.h",
+    "src/clutter/clutter/clutter-timeline.h",
+    "src/clutter/clutter/clutter-transition-group.h",
+    "src/clutter/clutter/clutter-transition.h",
+    "src/clutter/clutter/clutter-types.h",
+    "src/clutter/clutter/clutter-virtual-input-device.h",
+    "src/clutter/clutter/clutter-zoom-action.h",
+    "src/clutter/clutter/clutter.h",
+
+    # clutter_sources
+    "src/clutter/clutter/clutter-accessibility.c",
+    "src/clutter/clutter/clutter-action.c",
+    "src/clutter/clutter/clutter-actor-accessible.c",
+    "src/clutter/clutter/clutter-actor-box.c",
+    "src/clutter/clutter/clutter-actor-meta.c",
+    "src/clutter/clutter/clutter-actor.c",
+    "src/clutter/clutter/clutter-align-constraint.c",
+    "src/clutter/clutter/clutter-animatable.c",
+    "src/clutter/clutter/clutter-backend.c",
+    "src/clutter/clutter/clutter-base-types.c",
+    "src/clutter/clutter/clutter-bin-layout.c",
+    "src/clutter/clutter/clutter-bind-constraint.c",
+    "src/clutter/clutter/clutter-binding-pool.c",
+    "src/clutter/clutter/clutter-blur-effect.c",
+    "src/clutter/clutter/clutter-blur.c",
+    "src/clutter/clutter/clutter-box-layout.c",
+    "src/clutter/clutter/clutter-brightness-contrast-effect.c",
+    "src/clutter/clutter/clutter-click-action.c",
+    "src/clutter/clutter/clutter-clone.c",
+    "src/clutter/clutter/clutter-color-manager.c",
+    "src/clutter/clutter/clutter-color-state-params.c",
+    "src/clutter/clutter/clutter-color-state.c",
+    "src/clutter/clutter/clutter-colorize-effect.c",
+    "src/clutter/clutter/clutter-constraint.c",
+    "src/clutter/clutter/clutter-content.c",
+    "src/clutter/clutter/clutter-context.c",
+    "src/clutter/clutter/clutter-damage-history.c",
+    "src/clutter/clutter/clutter-deform-effect.c",
+    "src/clutter/clutter/clutter-desaturate-effect.c",
+    "src/clutter/clutter/clutter-effect.c",
+    "src/clutter/clutter/clutter-event.c",
+    "src/clutter/clutter/clutter-fixed-layout.c",
+    "src/clutter/clutter/clutter-flatten-effect.c",
+    "src/clutter/clutter/clutter-flow-layout.c",
+    "src/clutter/clutter/clutter-frame-clock.c",
+    "src/clutter/clutter/clutter-frame.c",
+    "src/clutter/clutter/clutter-gesture-action.c",
+    "src/clutter/clutter/clutter-gesture.c",
+    "src/clutter/clutter/clutter-grab.c",
+    "src/clutter/clutter/clutter-grid-layout.c",
+    "src/clutter/clutter/clutter-input-device-tool.c",
+    "src/clutter/clutter/clutter-input-device.c",
+    "src/clutter/clutter/clutter-input-focus.c",
+    "src/clutter/clutter/clutter-input-method.c",
+    "src/clutter/clutter/clutter-input-only-action.c",
+    "src/clutter/clutter/clutter-input-only-actor.c",
+    "src/clutter/clutter/clutter-input-pointer-a11y.c",
+    "src/clutter/clutter/clutter-interval-progress.c",
+    "src/clutter/clutter/clutter-interval.c",
+    "src/clutter/clutter/clutter-keyframe-transition.c",
+    "src/clutter/clutter/clutter-keymap.c",
+    "src/clutter/clutter/clutter-keysyms-table.c",
+    "src/clutter/clutter/clutter-keyval.c",
+    "src/clutter/clutter/clutter-layout-manager.c",
+    "src/clutter/clutter/clutter-layout-meta.c",
+    "src/clutter/clutter/clutter-main.c",
+    "src/clutter/clutter/clutter-offscreen-effect.c",
+    "src/clutter/clutter/clutter-page-turn-effect.c",
+    "src/clutter/clutter/clutter-paint-context.c",
+    "src/clutter/clutter/clutter-paint-node.c",
+    "src/clutter/clutter/clutter-paint-nodes.c",
+    "src/clutter/clutter/clutter-paint-volume.c",
+    "src/clutter/clutter/clutter-pan-action.c",
+    "src/clutter/clutter/clutter-pick-context.c",
+    "src/clutter/clutter/clutter-pick-stack.c",
+    "src/clutter/clutter/clutter-pipeline-cache.c",
+    "src/clutter/clutter/clutter-property-transition.c",
+    "src/clutter/clutter/clutter-rotate-action.c",
+    "src/clutter/clutter/clutter-seat.c",
+    "src/clutter/clutter/clutter-settings.c",
+    "src/clutter/clutter/clutter-shader-effect.c",
+    "src/clutter/clutter/clutter-shader-types.c",
+    "src/clutter/clutter/clutter-snap-constraint.c",
+    "src/clutter/clutter/clutter-stage-accessible.c",
+    "src/clutter/clutter/clutter-stage-manager-accessible.c",
+    "src/clutter/clutter/clutter-stage-manager.c",
+    "src/clutter/clutter/clutter-stage-view.c",
+    "src/clutter/clutter/clutter-stage-window.c",
+    "src/clutter/clutter/clutter-stage.c",
+    "src/clutter/clutter/clutter-swipe-action.c",
+    "src/clutter/clutter/clutter-tap-action.c",
+    "src/clutter/clutter/clutter-texture-content.c",
+    "src/clutter/clutter/clutter-timeline.c",
+    "src/clutter/clutter/clutter-transition-group.c",
+    "src/clutter/clutter/clutter-transition.c",
+    "src/clutter/clutter/clutter-util.c",
+    "src/clutter/clutter/clutter-virtual-input-device.c",
+    "src/clutter/clutter/clutter-zoom-action.c",
+
+    # clutter_private_headers
+    "src/clutter/clutter/clutter-accessibility-private.h",
+    "src/clutter/clutter/clutter-actor-meta-private.h",
+    "src/clutter/clutter/clutter-actor-private.h",
+    "src/clutter/clutter/clutter-backend-private.h",
+    "src/clutter/clutter/clutter-blur-private.h",
+    "src/clutter/clutter/clutter-constraint-private.h",
+    "src/clutter/clutter/clutter-content-private.h",
+    "src/clutter/clutter/clutter-context-private.h",
+    "src/clutter/clutter/clutter-damage-history.h",
+    "src/clutter/clutter/clutter-debug.h",
+    "src/clutter/clutter/clutter-easing.h",
+    "src/clutter/clutter/clutter-effect-private.h",
+    "src/clutter/clutter/clutter-event-private.h",
+    "src/clutter/clutter/clutter-flatten-effect.h",
+    "src/clutter/clutter/clutter-frame-private.h",
+    "src/clutter/clutter/clutter-input-device-private.h",
+    "src/clutter/clutter/clutter-input-focus-private.h",
+    "src/clutter/clutter/clutter-input-method-private.h",
+    "src/clutter/clutter/clutter-input-only-action.h",
+    "src/clutter/clutter/clutter-input-only-actor.h",
+    "src/clutter/clutter/clutter-input-pointer-a11y-private.h",
+    "src/clutter/clutter/clutter-keymap-private.h",
+    "src/clutter/clutter/clutter-mutter.h",
+    "src/clutter/clutter/clutter-paint-context-private.h",
+    "src/clutter/clutter/clutter-paint-node-private.h",
+    "src/clutter/clutter/clutter-paint-volume-private.h",
+    "src/clutter/clutter/clutter-private.h",
+    "src/clutter/clutter/clutter-settings-private.h",
+    "src/clutter/clutter/clutter-stage-accessible-private.h",
+    "src/clutter/clutter/clutter-stage-manager-accessible-private.h",
+    "src/clutter/clutter/clutter-stage-manager-private.h",
+    "src/clutter/clutter/clutter-stage-private.h",
+    "src/clutter/clutter/clutter-stage-view-private.h",
+    "src/clutter/clutter/clutter-stage-window.h",
+    "src/clutter/clutter/clutter-timeline-private.h",
+
+    # clutter_nonintrospected_sources
+    "src/clutter/clutter/clutter-easing.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":clutter_public_config" ]
+
+  public_deps = [ ":cogl" ]
+}
+
+config("libmutter_config") {
+  defines = [
+    "COGL_ENABLE_MUTTER_API=1",
+    "SN_API_NOT_YET_FROZEN=1",
+    "GETTEXT_PACKAGE=\"mutter\"",
+    "WITH_VERBOSE_MODE=1",
+  ]
+
+  include_dirs = [
+    "src",
+    "src/src",
+    "data",
+    "src/clutter/clutter",
+    "//third_party/libei/cipd/include/libei-1.0",
+  ]
+
+  configs = [
+    ":colord",
+    ":gdk_pixbuf",
+    ":lcms2",
+    ":libsystemd",
+    ":xkbcommon",
+  ]
+}
+
+# Still needed because xcursor dependency is not cleanly decoupled from non-x11
+# client build in mutter.
+source_set("xcursor") {
+  testonly = true
+
+  sources = [
+    "src/src/third_party/xcursor/xcursor.c",
+    "src/src/third_party/xcursor/xcursor.h",
+  ]
+
+  public_deps = [ "//third_party/glib" ]
+
+  configs += [ ":libmutter_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("libmutter") {
+  testonly = true
+
+  defines = [
+    "G_LOG_DOMAIN=\"libmutter\"",
+
+    # TODO(crbug.com/396647882) change the upstream usage
+    # in src/backends/meta-monitor-manager-dummy.c ?
+    "typeof(x)=__typeof__(x)",
+    "EGL_DRM_RENDER_NODE_FILE_EXT=0x3377",
+  ]
+
+  cflags_c = [
+    # Self assignments done in src/core/place.c
+    "-Wno-self-assign",
+
+    # implicit conversion from int to float in meta-window-wayland.c:492
+    "-Wno-implicit-const-int-float-conversion",
+
+    # EGL_DEFAULT_DISPLAY (=0) is passed as void pointer parameter in
+    # meta-render-device-surfaceless.c:54
+    "-Wno-non-literal-null-conversion",
+
+    # TODO(crbug.com/396647882) remove this temporary measure to build with
+    # missing gbm functions in sysroot gbm package.
+    "-Wno-int-conversion",
+    "-Wno-implicit-function-declaration",
+  ]
+
+  sources = [
+    # generated meta enum types
+    "include/meta/meta-enum-types.h",
+    "meta/meta-enum-types.c",
+
+    # generated private enum types
+    "include/meta-private-enum-types.h",
+    "meta-private-enum-types.c",
+
+    # generated dbus sources
+    "data/meta-dbus-debug-control.c",
+    "data/meta-dbus-debug-control.h",
+    "data/meta-dbus-display-config.c",
+    "data/meta-dbus-display-config.h",
+    "data/meta-dbus-gsd-color.c",
+    "data/meta-dbus-gsd-color.h",
+    "data/meta-dbus-gsd-power-screen.c",
+    "data/meta-dbus-gsd-power-screen.h",
+    "data/meta-dbus-idle-monitor.c",
+    "data/meta-dbus-idle-monitor.h",
+    "data/meta-dbus-input-capture.c",
+    "data/meta-dbus-input-capture.h",
+    "data/meta-dbus-input-mapping.c",
+    "data/meta-dbus-input-mapping.h",
+    "data/meta-dbus-login1.c",
+    "data/meta-dbus-login1.h",
+    "data/meta-dbus-rtkit1.c",
+    "data/meta-dbus-rtkit1.h",
+    "data/meta-dbus-service-channel.c",
+    "data/meta-dbus-service-channel.h",
+
+    # meta headers
+    "src/src/meta/barrier.h",
+    "src/src/meta/boxes.h",
+    "src/src/meta/common.h",
+    "src/src/meta/compositor.h",
+    "src/src/meta/display.h",
+    "src/src/meta/keybindings.h",
+    "src/src/meta/main.h",
+    "src/src/meta/meta-backend.h",
+    "src/src/meta/meta-background-actor.h",
+    "src/src/meta/meta-background-content.h",
+    "src/src/meta/meta-background-group.h",
+    "src/src/meta/meta-background-image.h",
+    "src/src/meta/meta-background.h",
+    "src/src/meta/meta-base.h",
+    "src/src/meta/meta-close-dialog.h",
+    "src/src/meta/meta-context.h",
+    "src/src/meta/meta-cursor-tracker.h",
+    "src/src/meta/meta-debug-control.h",
+    "src/src/meta/meta-debug.h",
+    "src/src/meta/meta-dnd.h",
+    "src/src/meta/meta-enums.h",
+    "src/src/meta/meta-idle-monitor.h",
+    "src/src/meta/meta-inhibit-shortcuts-dialog.h",
+    "src/src/meta/meta-later.h",
+    "src/src/meta/meta-launch-context.h",
+    "src/src/meta/meta-monitor-manager.h",
+    "src/src/meta/meta-multi-texture-format.h",
+    "src/src/meta/meta-multi-texture.h",
+    "src/src/meta/meta-orientation-manager.h",
+    "src/src/meta/meta-plugin.h",
+    "src/src/meta/meta-remote-access-controller.h",
+    "src/src/meta/meta-selection-source-memory.h",
+    "src/src/meta/meta-selection-source.h",
+    "src/src/meta/meta-selection.h",
+    "src/src/meta/meta-settings.h",
+    "src/src/meta/meta-shaped-texture.h",
+    "src/src/meta/meta-sound-player.h",
+    "src/src/meta/meta-stage.h",
+    "src/src/meta/meta-startup-notification.h",
+    "src/src/meta/meta-wayland-client.h",
+    "src/src/meta/meta-wayland-compositor.h",
+    "src/src/meta/meta-wayland-surface.h",
+    "src/src/meta/meta-window-actor.h",
+    "src/src/meta/meta-window-config.h",
+    "src/src/meta/meta-window-group.h",
+    "src/src/meta/meta-workspace-manager.h",
+    "src/src/meta/prefs.h",
+    "src/src/meta/types.h",
+    "src/src/meta/util.h",
+    "src/src/meta/window.h",
+    "src/src/meta/workspace.h",
+
+    # mutter_sources
+    "src/src/backends/edid-parse.c",
+    "src/src/backends/edid.h",
+    "src/src/backends/gsm-inhibitor-flag.h",
+    "src/src/backends/meta-backend-private.h",
+    "src/src/backends/meta-backend.c",
+    "src/src/backends/meta-barrier-private.h",
+    "src/src/backends/meta-barrier.c",
+    "src/src/backends/meta-color-device.c",
+    "src/src/backends/meta-color-device.h",
+    "src/src/backends/meta-color-manager-private.h",
+    "src/src/backends/meta-color-manager.c",
+    "src/src/backends/meta-color-manager.h",
+    "src/src/backends/meta-color-profile.c",
+    "src/src/backends/meta-color-profile.h",
+    "src/src/backends/meta-color-store.c",
+    "src/src/backends/meta-color-store.h",
+    "src/src/backends/meta-crtc-mode.c",
+    "src/src/backends/meta-crtc-mode.h",
+    "src/src/backends/meta-crtc.c",
+    "src/src/backends/meta-crtc.h",
+    "src/src/backends/meta-cursor-renderer.c",
+    "src/src/backends/meta-cursor-renderer.h",
+    "src/src/backends/meta-cursor-sprite-xcursor.c",
+    "src/src/backends/meta-cursor-sprite-xcursor.h",
+    "src/src/backends/meta-cursor-tracker-private.h",
+    "src/src/backends/meta-cursor-tracker.c",
+    "src/src/backends/meta-cursor.c",
+    "src/src/backends/meta-cursor.h",
+    "src/src/backends/meta-dbus-session-manager.c",
+    "src/src/backends/meta-dbus-session-manager.h",
+    "src/src/backends/meta-dbus-session-watcher.c",
+    "src/src/backends/meta-dbus-session-watcher.h",
+    "src/src/backends/meta-dbus-utils.c",
+    "src/src/backends/meta-dbus-utils.h",
+    "src/src/backends/meta-display-config-shared.h",
+    "src/src/backends/meta-dnd-private.h",
+    "src/src/backends/meta-fd-source.c",
+    "src/src/backends/meta-fd-source.h",
+    "src/src/backends/meta-gpu.c",
+    "src/src/backends/meta-gpu.h",
+    "src/src/backends/meta-idle-manager.c",
+    "src/src/backends/meta-idle-manager.h",
+    "src/src/backends/meta-idle-monitor-private.h",
+    "src/src/backends/meta-idle-monitor.c",
+    "src/src/backends/meta-input-capture-session.c",
+    "src/src/backends/meta-input-capture-session.h",
+    "src/src/backends/meta-input-capture.c",
+    "src/src/backends/meta-input-capture.h",
+    "src/src/backends/meta-input-device.c",
+    "src/src/backends/meta-input-mapper-private.h",
+    "src/src/backends/meta-input-mapper.c",
+    "src/src/backends/meta-input-settings-dummy.c",
+    "src/src/backends/meta-input-settings-dummy.h",
+    "src/src/backends/meta-input-settings-private.h",
+    "src/src/backends/meta-input-settings.c",
+    "src/src/backends/meta-keymap-utils.c",
+    "src/src/backends/meta-keymap-utils.h",
+    "src/src/backends/meta-launcher.c",
+    "src/src/backends/meta-launcher.h",
+    "src/src/backends/meta-logical-monitor.c",
+    "src/src/backends/meta-logical-monitor.h",
+    "src/src/backends/meta-monitor-config-manager.c",
+    "src/src/backends/meta-monitor-config-manager.h",
+    "src/src/backends/meta-monitor-config-store.c",
+    "src/src/backends/meta-monitor-config-store.h",
+    "src/src/backends/meta-monitor-config-utils.c",
+    "src/src/backends/meta-monitor-config-utils.h",
+    "src/src/backends/meta-monitor-manager-dummy.c",
+    "src/src/backends/meta-monitor-manager-dummy.h",
+    "src/src/backends/meta-monitor-manager-private.h",
+    "src/src/backends/meta-monitor-manager.c",
+    "src/src/backends/meta-monitor.c",
+    "src/src/backends/meta-monitor.h",
+    "src/src/backends/meta-orientation-manager.c",
+    "src/src/backends/meta-output.c",
+    "src/src/backends/meta-output.h",
+    "src/src/backends/meta-pointer-constraint.c",
+    "src/src/backends/meta-pointer-constraint.h",
+    "src/src/backends/meta-remote-access-controller-private.h",
+    "src/src/backends/meta-remote-access-controller.c",
+    "src/src/backends/meta-renderdoc.c",
+    "src/src/backends/meta-renderdoc.h",
+    "src/src/backends/meta-renderer-view.c",
+    "src/src/backends/meta-renderer-view.h",
+    "src/src/backends/meta-renderer.c",
+    "src/src/backends/meta-renderer.h",
+    "src/src/backends/meta-screen-cast-window.c",
+    "src/src/backends/meta-screen-cast-window.h",
+    "src/src/backends/meta-settings-private.h",
+    "src/src/backends/meta-settings.c",
+    "src/src/backends/meta-stage-impl-private.h",
+    "src/src/backends/meta-stage-impl.c",
+    "src/src/backends/meta-stage-private.h",
+    "src/src/backends/meta-stage-view-private.h",
+    "src/src/backends/meta-stage-view.c",
+    "src/src/backends/meta-stage.c",
+    "src/src/backends/meta-viewport-info.c",
+    "src/src/backends/meta-viewport-info.h",
+    "src/src/backends/meta-virtual-monitor.c",
+    "src/src/backends/meta-virtual-monitor.h",
+    "src/src/compositor/clutter-utils.c",
+    "src/src/compositor/clutter-utils.h",
+    "src/src/compositor/cogl-utils.c",
+    "src/src/compositor/cogl-utils.h",
+    "src/src/compositor/compositor-private.h",
+    "src/src/compositor/compositor.c",
+    "src/src/compositor/edge-resistance.c",
+    "src/src/compositor/edge-resistance.h",
+    "src/src/compositor/meta-background-actor.c",
+    "src/src/compositor/meta-background-content-private.h",
+    "src/src/compositor/meta-background-content.c",
+    "src/src/compositor/meta-background-group.c",
+    "src/src/compositor/meta-background-image.c",
+    "src/src/compositor/meta-background-private.h",
+    "src/src/compositor/meta-background.c",
+    "src/src/compositor/meta-compositor-server.c",
+    "src/src/compositor/meta-compositor-server.h",
+    "src/src/compositor/meta-compositor-view.c",
+    "src/src/compositor/meta-compositor-view.h",
+    "src/src/compositor/meta-cullable.c",
+    "src/src/compositor/meta-cullable.h",
+    "src/src/compositor/meta-dnd-actor-private.h",
+    "src/src/compositor/meta-dnd-actor.c",
+    "src/src/compositor/meta-dnd.c",
+    "src/src/compositor/meta-feedback-actor-private.h",
+    "src/src/compositor/meta-feedback-actor.c",
+    "src/src/compositor/meta-later.c",
+    "src/src/compositor/meta-module.c",
+    "src/src/compositor/meta-module.h",
+    "src/src/compositor/meta-multi-texture-format-private.h",
+    "src/src/compositor/meta-multi-texture-format.c",
+    "src/src/compositor/meta-multi-texture.c",
+    "src/src/compositor/meta-plugin-manager.c",
+    "src/src/compositor/meta-plugin-manager.h",
+    "src/src/compositor/meta-plugin.c",
+    "src/src/compositor/meta-shaped-texture-private.h",
+    "src/src/compositor/meta-shaped-texture.c",
+    "src/src/compositor/meta-surface-actor.c",
+    "src/src/compositor/meta-surface-actor.h",
+    "src/src/compositor/meta-texture-mipmap.c",
+    "src/src/compositor/meta-texture-mipmap.h",
+    "src/src/compositor/meta-window-actor-private.h",
+    "src/src/compositor/meta-window-actor.c",
+    "src/src/compositor/meta-window-drag.c",
+    "src/src/compositor/meta-window-drag.h",
+    "src/src/compositor/meta-window-group-private.h",
+    "src/src/compositor/meta-window-group.c",
+    "src/src/core/bell.c",
+    "src/src/core/bell.h",
+    "src/src/core/boxes-private.h",
+    "src/src/core/boxes.c",
+    "src/src/core/constraints.c",
+    "src/src/core/constraints.h",
+    "src/src/core/delete.c",
+    "src/src/core/display-private.h",
+    "src/src/core/display.c",
+    "src/src/core/events.c",
+    "src/src/core/events.h",
+    "src/src/core/keybindings-private.h",
+    "src/src/core/keybindings.c",
+    "src/src/core/meta-accel-parse.c",
+    "src/src/core/meta-accel-parse.h",
+    "src/src/core/meta-anonymous-file.c",
+    "src/src/core/meta-anonymous-file.h",
+    "src/src/core/meta-border.c",
+    "src/src/core/meta-border.h",
+    "src/src/core/meta-clipboard-manager.c",
+    "src/src/core/meta-clipboard-manager.h",
+    "src/src/core/meta-close-dialog.c",
+    "src/src/core/meta-context-main.c",
+    "src/src/core/meta-context-main.h",
+    "src/src/core/meta-context-private.h",
+    "src/src/core/meta-context.c",
+    "src/src/core/meta-debug-control-private.h",
+    "src/src/core/meta-debug-control.c",
+    "src/src/core/meta-fraction.c",
+    "src/src/core/meta-fraction.h",
+    "src/src/core/meta-gesture-tracker-private.h",
+    "src/src/core/meta-gesture-tracker.c",
+    "src/src/core/meta-inhibit-shortcuts-dialog-default-private.h",
+    "src/src/core/meta-inhibit-shortcuts-dialog-default.c",
+    "src/src/core/meta-inhibit-shortcuts-dialog.c",
+    "src/src/core/meta-launch-context.c",
+    "src/src/core/meta-pad-action-mapper.c",
+    "src/src/core/meta-private-enums.h",
+    "src/src/core/meta-selection-source-memory.c",
+    "src/src/core/meta-selection-source.c",
+    "src/src/core/meta-selection.c",
+    "src/src/core/meta-session-manager.c",
+    "src/src/core/meta-session-state.c",
+    "src/src/core/meta-sound-player.c",
+    "src/src/core/meta-tablet-action-mapper.c",
+    "src/src/core/meta-tool-action-mapper.c",
+    "src/src/core/meta-window-config-private.h",
+    "src/src/core/meta-window-config.c",
+    "src/src/core/meta-workspace-manager-private.h",
+    "src/src/core/meta-workspace-manager.c",
+    "src/src/core/place.c",
+    "src/src/core/place.h",
+    "src/src/core/prefs-private.h",
+    "src/src/core/prefs.c",
+    "src/src/core/restart.c",
+    "src/src/core/stack-tracker.c",
+    "src/src/core/stack-tracker.h",
+    "src/src/core/stack.c",
+    "src/src/core/stack.h",
+    "src/src/core/startup-notification-private.h",
+    "src/src/core/startup-notification.c",
+    "src/src/core/util-private.h",
+    "src/src/core/util.c",
+    "src/src/core/window-private.h",
+    "src/src/core/window.c",
+    "src/src/core/workspace-private.h",
+    "src/src/core/workspace.c",
+
+    # have_egl
+    "src/src/backends/meta-egl-ext.h",
+    "src/src/backends/meta-egl.c",
+    "src/src/backends/meta-egl.h",
+
+    # have_gles2
+    "src/src/backends/meta-gles3-table.h",
+    "src/src/backends/meta-gles3.c",
+    "src/src/backends/meta-gles3.h",
+
+    # have_wayland
+    "src/src/compositor/meta-surface-actor-wayland.c",
+    "src/src/compositor/meta-surface-actor-wayland.h",
+    "src/src/compositor/meta-window-actor-wayland.c",
+    "src/src/compositor/meta-window-actor-wayland.h",
+    "src/src/core/meta-service-channel.c",
+    "src/src/core/meta-service-channel.h",
+    "src/src/wayland/meta-cursor-sprite-wayland.c",
+    "src/src/wayland/meta-cursor-sprite-wayland.h",
+    "src/src/wayland/meta-pointer-confinement-wayland.c",
+    "src/src/wayland/meta-pointer-confinement-wayland.h",
+    "src/src/wayland/meta-pointer-lock-wayland.c",
+    "src/src/wayland/meta-pointer-lock-wayland.h",
+    "src/src/wayland/meta-selection-source-wayland-private.h",
+    "src/src/wayland/meta-selection-source-wayland.c",
+    "src/src/wayland/meta-wayland-activation.c",
+    "src/src/wayland/meta-wayland-activation.h",
+    "src/src/wayland/meta-wayland-actor-surface.c",
+    "src/src/wayland/meta-wayland-actor-surface.h",
+    "src/src/wayland/meta-wayland-buffer.c",
+    "src/src/wayland/meta-wayland-buffer.h",
+    "src/src/wayland/meta-wayland-client-private.h",
+    "src/src/wayland/meta-wayland-client.c",
+    "src/src/wayland/meta-wayland-color-management.c",
+    "src/src/wayland/meta-wayland-color-management.h",
+    "src/src/wayland/meta-wayland-commit-timing.c",
+    "src/src/wayland/meta-wayland-cursor-surface.c",
+    "src/src/wayland/meta-wayland-cursor-surface.h",
+    "src/src/wayland/meta-wayland-data-device-primary.c",
+    "src/src/wayland/meta-wayland-data-device-primary.h",
+    "src/src/wayland/meta-wayland-data-device.c",
+    "src/src/wayland/meta-wayland-data-device.h",
+    "src/src/wayland/meta-wayland-data-offer-primary.c",
+    "src/src/wayland/meta-wayland-data-offer-primary.h",
+    "src/src/wayland/meta-wayland-data-offer.c",
+    "src/src/wayland/meta-wayland-data-offer.h",
+    "src/src/wayland/meta-wayland-data-source-primary.c",
+    "src/src/wayland/meta-wayland-data-source-primary.h",
+    "src/src/wayland/meta-wayland-data-source.c",
+    "src/src/wayland/meta-wayland-data-source.h",
+    "src/src/wayland/meta-wayland-dma-buf.c",
+    "src/src/wayland/meta-wayland-dma-buf.h",
+    "src/src/wayland/meta-wayland-dnd-surface.c",
+    "src/src/wayland/meta-wayland-dnd-surface.h",
+    "src/src/wayland/meta-wayland-fifo.c",
+    "src/src/wayland/meta-wayland-filter-manager.c",
+    "src/src/wayland/meta-wayland-filter-manager.h",
+    "src/src/wayland/meta-wayland-fractional-scale.c",
+    "src/src/wayland/meta-wayland-fractional-scale.h",
+    "src/src/wayland/meta-wayland-gtk-shell.c",
+    "src/src/wayland/meta-wayland-gtk-shell.h",
+    "src/src/wayland/meta-wayland-idle-inhibit.c",
+    "src/src/wayland/meta-wayland-idle-inhibit.h",
+    "src/src/wayland/meta-wayland-inhibit-shortcuts-dialog.c",
+    "src/src/wayland/meta-wayland-inhibit-shortcuts-dialog.h",
+    "src/src/wayland/meta-wayland-inhibit-shortcuts.c",
+    "src/src/wayland/meta-wayland-inhibit-shortcuts.h",
+    "src/src/wayland/meta-wayland-input-device.c",
+    "src/src/wayland/meta-wayland-input-device.h",
+    "src/src/wayland/meta-wayland-input.c",
+    "src/src/wayland/meta-wayland-input.h",
+    "src/src/wayland/meta-wayland-keyboard.c",
+    "src/src/wayland/meta-wayland-keyboard.h",
+    "src/src/wayland/meta-wayland-legacy-xdg-foreign.c",
+    "src/src/wayland/meta-wayland-legacy-xdg-foreign.h",
+    "src/src/wayland/meta-wayland-linux-drm-syncobj.c",
+    "src/src/wayland/meta-wayland-linux-drm-syncobj.h",
+    "src/src/wayland/meta-wayland-outputs.c",
+    "src/src/wayland/meta-wayland-outputs.h",
+    "src/src/wayland/meta-wayland-pointer-constraints.c",
+    "src/src/wayland/meta-wayland-pointer-constraints.h",
+    "src/src/wayland/meta-wayland-pointer-gesture-hold.c",
+    "src/src/wayland/meta-wayland-pointer-gesture-hold.h",
+    "src/src/wayland/meta-wayland-pointer-gesture-pinch.c",
+    "src/src/wayland/meta-wayland-pointer-gesture-pinch.h",
+    "src/src/wayland/meta-wayland-pointer-gesture-swipe.c",
+    "src/src/wayland/meta-wayland-pointer-gesture-swipe.h",
+    "src/src/wayland/meta-wayland-pointer-gestures.c",
+    "src/src/wayland/meta-wayland-pointer-gestures.h",
+    "src/src/wayland/meta-wayland-pointer.c",
+    "src/src/wayland/meta-wayland-pointer.h",
+    "src/src/wayland/meta-wayland-popup.c",
+    "src/src/wayland/meta-wayland-popup.h",
+    "src/src/wayland/meta-wayland-presentation-time-private.h",
+    "src/src/wayland/meta-wayland-presentation-time.c",
+    "src/src/wayland/meta-wayland-private.h",
+    "src/src/wayland/meta-wayland-region.c",
+    "src/src/wayland/meta-wayland-region.h",
+    "src/src/wayland/meta-wayland-seat.c",
+    "src/src/wayland/meta-wayland-seat.h",
+    "src/src/wayland/meta-wayland-shell-surface.c",
+    "src/src/wayland/meta-wayland-shell-surface.h",
+    "src/src/wayland/meta-wayland-single-pixel-buffer.c",
+    "src/src/wayland/meta-wayland-single-pixel-buffer.h",
+    "src/src/wayland/meta-wayland-subsurface.c",
+    "src/src/wayland/meta-wayland-subsurface.h",
+    "src/src/wayland/meta-wayland-surface-private.h",
+    "src/src/wayland/meta-wayland-surface.c",
+    "src/src/wayland/meta-wayland-system-bell.c",
+    "src/src/wayland/meta-wayland-system-bell.h",
+    "src/src/wayland/meta-wayland-tablet-cursor-surface.c",
+    "src/src/wayland/meta-wayland-tablet-cursor-surface.h",
+    "src/src/wayland/meta-wayland-tablet-manager.c",
+    "src/src/wayland/meta-wayland-tablet-manager.h",
+    "src/src/wayland/meta-wayland-tablet-pad-group.c",
+    "src/src/wayland/meta-wayland-tablet-pad-group.h",
+    "src/src/wayland/meta-wayland-tablet-pad-ring.c",
+    "src/src/wayland/meta-wayland-tablet-pad-ring.h",
+    "src/src/wayland/meta-wayland-tablet-pad-strip.c",
+    "src/src/wayland/meta-wayland-tablet-pad-strip.h",
+    "src/src/wayland/meta-wayland-tablet-pad.c",
+    "src/src/wayland/meta-wayland-tablet-pad.h",
+    "src/src/wayland/meta-wayland-tablet-seat.c",
+    "src/src/wayland/meta-wayland-tablet-seat.h",
+    "src/src/wayland/meta-wayland-tablet-tool.c",
+    "src/src/wayland/meta-wayland-tablet-tool.h",
+    "src/src/wayland/meta-wayland-tablet.c",
+    "src/src/wayland/meta-wayland-tablet.h",
+    "src/src/wayland/meta-wayland-text-input.c",
+    "src/src/wayland/meta-wayland-text-input.h",
+    "src/src/wayland/meta-wayland-toplevel-drag.c",
+    "src/src/wayland/meta-wayland-toplevel-drag.h",
+    "src/src/wayland/meta-wayland-touch.c",
+    "src/src/wayland/meta-wayland-touch.h",
+    "src/src/wayland/meta-wayland-transaction.c",
+    "src/src/wayland/meta-wayland-transaction.h",
+    "src/src/wayland/meta-wayland-types.h",
+    "src/src/wayland/meta-wayland-ui-controls.c",
+    "src/src/wayland/meta-wayland-ui-controls.h",
+    "src/src/wayland/meta-wayland-versions.h",
+    "src/src/wayland/meta-wayland-viewporter.c",
+    "src/src/wayland/meta-wayland-viewporter.h",
+    "src/src/wayland/meta-wayland-window-configuration.c",
+    "src/src/wayland/meta-wayland-window-configuration.h",
+    "src/src/wayland/meta-wayland-xdg-dialog.c",
+    "src/src/wayland/meta-wayland-xdg-dialog.h",
+    "src/src/wayland/meta-wayland-xdg-foreign-private.h",
+    "src/src/wayland/meta-wayland-xdg-foreign.c",
+    "src/src/wayland/meta-wayland-xdg-foreign.h",
+    "src/src/wayland/meta-wayland-xdg-session-manager.c",
+    "src/src/wayland/meta-wayland-xdg-session-manager.h",
+    "src/src/wayland/meta-wayland-xdg-session-state.c",
+    "src/src/wayland/meta-wayland-xdg-session-state.h",
+    "src/src/wayland/meta-wayland-xdg-session.c",
+    "src/src/wayland/meta-wayland-xdg-session.h",
+    "src/src/wayland/meta-wayland-xdg-shell.c",
+    "src/src/wayland/meta-wayland-xdg-shell.h",
+    "src/src/wayland/meta-wayland.c",
+    "src/src/wayland/meta-wayland.h",
+    "src/src/wayland/meta-window-wayland.c",
+    "src/src/wayland/meta-window-wayland.h",
+
+    # have_wayland and have_native_backend
+    "src/src/wayland/meta-wayland-drm-lease.c",
+    "src/src/wayland/meta-wayland-drm-lease.h",
+
+    # have_native_backend
+    "src/src/backends/native/meta-backend-native-private.h",
+    "src/src/backends/native/meta-backend-native-types.h",
+    "src/src/backends/native/meta-backend-native.c",
+    "src/src/backends/native/meta-backend-native.h",
+    "src/src/backends/native/meta-barrier-native.c",
+    "src/src/backends/native/meta-barrier-native.h",
+    "src/src/backends/native/meta-bezier.c",
+    "src/src/backends/native/meta-bezier.h",
+    "src/src/backends/native/meta-clutter-backend-native.c",
+    "src/src/backends/native/meta-clutter-backend-native.h",
+    "src/src/backends/native/meta-crtc-kms.c",
+    "src/src/backends/native/meta-crtc-kms.h",
+    "src/src/backends/native/meta-crtc-mode-kms.c",
+    "src/src/backends/native/meta-crtc-mode-kms.h",
+    "src/src/backends/native/meta-crtc-mode-virtual.c",
+    "src/src/backends/native/meta-crtc-mode-virtual.h",
+    "src/src/backends/native/meta-crtc-native.c",
+    "src/src/backends/native/meta-crtc-native.h",
+    "src/src/backends/native/meta-crtc-virtual.c",
+    "src/src/backends/native/meta-crtc-virtual.h",
+    "src/src/backends/native/meta-cursor-renderer-native.c",
+    "src/src/backends/native/meta-cursor-renderer-native.h",
+    "src/src/backends/native/meta-device-pool-private.h",
+    "src/src/backends/native/meta-device-pool.c",
+    "src/src/backends/native/meta-device-pool.h",
+    "src/src/backends/native/meta-drm-buffer-dumb.c",
+    "src/src/backends/native/meta-drm-buffer-dumb.h",
+    "src/src/backends/native/meta-drm-buffer-gbm.c",
+    "src/src/backends/native/meta-drm-buffer-gbm.h",
+    "src/src/backends/native/meta-drm-buffer-import.c",
+    "src/src/backends/native/meta-drm-buffer-import.h",
+    "src/src/backends/native/meta-drm-buffer-private.h",
+    "src/src/backends/native/meta-drm-buffer.c",
+    "src/src/backends/native/meta-drm-buffer.h",
+    "src/src/backends/native/meta-drm-lease.c",
+    "src/src/backends/native/meta-drm-lease.h",
+    "src/src/backends/native/meta-egl-gbm.c",
+    "src/src/backends/native/meta-egl-gbm.h",
+    "src/src/backends/native/meta-frame-native.c",
+    "src/src/backends/native/meta-frame-native.h",
+    "src/src/backends/native/meta-gpu-kms.c",
+    "src/src/backends/native/meta-gpu-kms.h",
+    "src/src/backends/native/meta-input-device-native.c",
+    "src/src/backends/native/meta-input-device-native.h",
+    "src/src/backends/native/meta-input-device-tool-native.c",
+    "src/src/backends/native/meta-input-device-tool-native.h",
+    "src/src/backends/native/meta-input-settings-native.c",
+    "src/src/backends/native/meta-input-settings-native.h",
+    "src/src/backends/native/meta-keymap-native.c",
+    "src/src/backends/native/meta-keymap-native.h",
+    "src/src/backends/native/meta-kms-connector-private.h",
+    "src/src/backends/native/meta-kms-connector.c",
+    "src/src/backends/native/meta-kms-connector.h",
+    "src/src/backends/native/meta-kms-crtc-private.h",
+    "src/src/backends/native/meta-kms-crtc.c",
+    "src/src/backends/native/meta-kms-crtc.h",
+    "src/src/backends/native/meta-kms-cursor-manager.c",
+    "src/src/backends/native/meta-kms-cursor-manager.h",
+    "src/src/backends/native/meta-kms-device-private.h",
+    "src/src/backends/native/meta-kms-device.c",
+    "src/src/backends/native/meta-kms-device.h",
+    "src/src/backends/native/meta-kms-impl-device-atomic.c",
+    "src/src/backends/native/meta-kms-impl-device-atomic.h",
+    "src/src/backends/native/meta-kms-impl-device-dummy.c",
+    "src/src/backends/native/meta-kms-impl-device-dummy.h",
+    "src/src/backends/native/meta-kms-impl-device-simple.c",
+    "src/src/backends/native/meta-kms-impl-device-simple.h",
+    "src/src/backends/native/meta-kms-impl-device.c",
+    "src/src/backends/native/meta-kms-impl-device.h",
+    "src/src/backends/native/meta-kms-impl.c",
+    "src/src/backends/native/meta-kms-impl.h",
+    "src/src/backends/native/meta-kms-mode.c",
+    "src/src/backends/native/meta-kms-mode.h",
+    "src/src/backends/native/meta-kms-page-flip-private.h",
+    "src/src/backends/native/meta-kms-page-flip.c",
+    "src/src/backends/native/meta-kms-plane-private.h",
+    "src/src/backends/native/meta-kms-plane.c",
+    "src/src/backends/native/meta-kms-plane.h",
+    "src/src/backends/native/meta-kms-private.h",
+    "src/src/backends/native/meta-kms-types-private.h",
+    "src/src/backends/native/meta-kms-types.h",
+    "src/src/backends/native/meta-kms-update-private.h",
+    "src/src/backends/native/meta-kms-update.c",
+    "src/src/backends/native/meta-kms-update.h",
+    "src/src/backends/native/meta-kms-utils.c",
+    "src/src/backends/native/meta-kms-utils.h",
+    "src/src/backends/native/meta-kms.c",
+    "src/src/backends/native/meta-kms.h",
+    "src/src/backends/native/meta-monitor-manager-native.c",
+    "src/src/backends/native/meta-monitor-manager-native.h",
+    "src/src/backends/native/meta-onscreen-native.c",
+    "src/src/backends/native/meta-onscreen-native.h",
+    "src/src/backends/native/meta-output-kms.c",
+    "src/src/backends/native/meta-output-kms.h",
+    "src/src/backends/native/meta-output-native.c",
+    "src/src/backends/native/meta-output-native.h",
+    "src/src/backends/native/meta-output-virtual.c",
+    "src/src/backends/native/meta-output-virtual.h",
+    "src/src/backends/native/meta-pointer-constraint-native.c",
+    "src/src/backends/native/meta-pointer-constraint-native.h",
+    "src/src/backends/native/meta-render-device-gbm.c",
+    "src/src/backends/native/meta-render-device-gbm.h",
+    "src/src/backends/native/meta-render-device-private.h",
+    "src/src/backends/native/meta-render-device-surfaceless.c",
+    "src/src/backends/native/meta-render-device-surfaceless.h",
+    "src/src/backends/native/meta-render-device.c",
+    "src/src/backends/native/meta-render-device.h",
+    "src/src/backends/native/meta-renderer-native-gles3.c",
+    "src/src/backends/native/meta-renderer-native-gles3.h",
+    "src/src/backends/native/meta-renderer-native-private.h",
+    "src/src/backends/native/meta-renderer-native.c",
+    "src/src/backends/native/meta-renderer-native.h",
+    "src/src/backends/native/meta-renderer-view-native.c",
+    "src/src/backends/native/meta-renderer-view-native.h",
+    "src/src/backends/native/meta-seat-impl.c",
+    "src/src/backends/native/meta-seat-impl.h",
+    "src/src/backends/native/meta-seat-native.c",
+    "src/src/backends/native/meta-seat-native.h",
+    "src/src/backends/native/meta-stage-native.c",
+    "src/src/backends/native/meta-stage-native.h",
+    "src/src/backends/native/meta-thread-impl.c",
+    "src/src/backends/native/meta-thread-impl.h",
+    "src/src/backends/native/meta-thread-private.h",
+    "src/src/backends/native/meta-thread-private.h",
+    "src/src/backends/native/meta-thread.c",
+    "src/src/backends/native/meta-thread.h",
+    "src/src/backends/native/meta-virtual-input-device-native.c",
+    "src/src/backends/native/meta-virtual-input-device-native.h",
+    "src/src/backends/native/meta-virtual-monitor-native.c",
+    "src/src/backends/native/meta-virtual-monitor-native.h",
+    "src/src/backends/native/meta-xkb-utils.c",
+    "src/src/backends/native/meta-xkb-utils.h",
+    "src/src/compositor/meta-compositor-native.c",
+    "src/src/compositor/meta-compositor-native.h",
+    "src/src/compositor/meta-compositor-view-native.c",
+    "src/src/compositor/meta-compositor-view-native.h",
+
+    # have_wayland or have_native_backend
+    "src/src/common/meta-cogl-drm-formats.c",
+    "src/src/common/meta-cogl-drm-formats.h",
+    "src/src/common/meta-drm-format-helpers.c",
+    "src/src/common/meta-drm-format-helpers.h",
+    "src/src/common/meta-drm-timeline.c",
+    "src/src/common/meta-drm-timeline.h",
+
+    # have_wayland or have_native_backend
+    "src/src/backends/meta-udev.c",
+    "src/src/backends/meta-udev.h",
+  ]
+
+  configs += [
+    ":libmutter_config",
+    ":gbm",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = [
+    ":clutter",
+    ":color_management_protocol",  # Remove once wayland-protocols is rolled
+    ":commit_timing_protocol",
+    ":fifo_protocol",
+    ":gtk_shell_protocol",  # Remove once wayland-protocols is rolled
+    ":linux_dmabuf_protocol",  # Remove once wayland-protocols is rolled
+    ":session_management_protocol",
+    ":xcursor",
+    ":xdg_system_bell_protocol",  # Remove once wayland-protocols is rolled
+    "//build/config/linux/libdrm",
+    "//third_party/gvdb",
+    "//third_party/libdisplay-info:libdisplay_info",
+    "//third_party/libgudev",
+    "//third_party/libinput",
+    "//third_party/wayland:wayland_server_lib",
+    "//third_party/wayland-protocols:drm_lease_protocol",
+    "//third_party/wayland-protocols:fractional_scale_protocol",
+    "//third_party/wayland-protocols:idle_inhibit_protocol",
+    "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
+    "//third_party/wayland-protocols:linux_drm_syncobj_protocol",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
+    "//third_party/wayland-protocols:pointer_gestures_protocol",
+    "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:primary_selection_protocol",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    "//third_party/wayland-protocols:single_pixel_buffer",
+    "//third_party/wayland-protocols:tablet_protocol",
+    "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:ui_controls_protocol",
+    "//third_party/wayland-protocols:viewporter_protocol",
+    "//third_party/wayland-protocols:xdg_activation",
+    "//third_party/wayland-protocols:xdg_dialog_protocol",
+    "//third_party/wayland-protocols:xdg_foreign",
+    "//third_party/wayland-protocols:xdg_output_protocol",
+    "//third_party/wayland-protocols:xdg_shell_protocol",
+    "//third_party/wayland-protocols:xdg_toplevel_drag_protocol",
+  ]
+
+  libs = [ "//third_party/libei/cipd/lib64/libeis.a" ]
+}
+
+shared_library("libdefault") {
+  testonly = true
+
+  defines = [ "G_LOG_DOMAIN=\"mutter\"" ]
+
+  sources = [ "src/src/compositor/plugins/default.c" ]
+
+  configs += [
+    ":mtk_public_config",
+    ":libmutter_config",
+  ]
+
+  deps = [
+    ":clutter",
+    ":libmutter",
+  ]
+
+  ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
+
+  # TODO(crbug.com/396647882) remove this temporary measure to build with
+  # missing gbm functions in sysroot gbm package.
+  configs -= [ "//build/config/compiler:no_unresolved_symbols" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+executable("mutter") {
+  testonly = true
+
+  defines = [ "G_LOG_DOMAIN=\"mutter\"" ]
+
+  sources = [ "src/src/core/mutter.c" ]
+
+  configs += [
+    ":mtk_public_config",
+    ":libmutter_config",
+  ]
+
+  deps = [
+    ":clutter",
+    ":libmutter",
+  ]
+
+  data_deps = [ ":libdefault" ]
+
+  ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
+
+  # TODO(crbug.com/396647882) remove this temporary measure to build with
+  # missing gbm functions in sysroot gbm package.
+  configs -= [ "//build/config/compiler:no_unresolved_symbols" ]
+  ldflags += [ "-Wl,--unresolved-symbols=ignore-in-object-files" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}

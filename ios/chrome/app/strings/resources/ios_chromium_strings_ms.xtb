@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Anda boleh membuka Lens di sini.</translation>
 <translation id="1042296835509784301">Buka Password Manager dalam Chromium.</translation>
 <translation id="1047130070405668746">Pilih Chromium</translation>
+<translation id="1086486568852410168">Cari dengan Google Lens</translation>
 <translation id="1091252999271033193">Ini bermakna Chromium akan meminta laman mudah alih setiap masa.</translation>
 <translation id="1115463765356382667">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chromium sepenuhnya.</translation>
 <translation id="1140315115515116765">Gunakan Chromium secara lalai untuk mendapatkan cerapan harga dengan mudah</translation>
@@ -98,6 +99,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Hal ini mungkin termasuk sejarah dan autolengkap.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Hal ini mungkin termasuk sejarah dan autolengkap.}}</translation>
 <translation id="3410395242749598859">Sesetengah data Chromium anda belum disimpan dalam <ph name="EMAIL" />.
 Tunggu beberapa minit sebelum menukar akaun. Jika anda menukar akaun sekarang, data ini akan dipadamkan.</translation>
+<translation id="3440830787838130530">Kongsi salinan kata laluan dengan kumpulan keluarga anda melalui cara yang mudah dan selamat dalam Google Password Manager</translation>
 <translation id="3472200483164753384">Tidak disokong pada Chromium Canary</translation>
 <translation id="347967311580159871">Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan pengalaman Chromium anda, akses <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Kata laluan anda tidak dikongsi. Semak sambungan Internet anda dan pastikan anda dilog masuk ke Chromium. Kemudian cuba lagi.</translation>

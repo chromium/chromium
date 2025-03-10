@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Έκδοση SDK:</translation>
 <translation id="2016697457005847575">Δοκιμή βημάτων αντιμετώπισης προβλημάτων</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Για να εξατομικεύσετε τις εικόνες AI, επιλέξτε ένα θέμα και έπειτα τις υπογραμμισμένες λέξεις.</translation>
 <translation id="2045814230297767491">μαχαιροπίρουνα</translation>
 <translation id="2047316797244836561">Συνδεθείτε σε ένα δίκτυο και επαναλάβετε τη φόρτωση της σελίδας για να δείτε την προφύλαξη οθόνης.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">Αυτή η γλώσσα δεν υποστηρίζεται προς το παρόν</translation>
 <translation id="2787435249130282949">πιο φωτεινό πληκτρολόγιο</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
+<translation id="2822702442014805146">Λήψη μοντέλου δημιουργίας σύνοψης και ονόματος σε εξέλιξη</translation>
 <translation id="28232023175184696">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο. Κάντε κλικ για να δοκιμάσετε ξανά.</translation>
 <translation id="2855718259207180827">μαλλί</translation>
 <translation id="2859243502336719778">Σημαντική ενημέρωση</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">Καταπόνηση</translation>
 <translation id="4897058166682006107">Η μπαταρία αριστερού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Ενεργοποιήστε τη λειτουργία για να ορίσετε επιλογές για την προφύλαξη οθόνης</translation>
+<translation id="4910853326379896417">Η λήψη μοντέλου δημιουργίας σύνοψης και ονόματος ολοκληρώθηκε</translation>
 <translation id="4910858703033903787">Τύποι APN</translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">Δημιουργία εικόνας</translation>
 <translation id="5078711626843651677">Τα φωνητικά μοντέλα αποθηκεύονται προσωρινά στη συσκευή μέχρι να ολοκληρωθεί η προσθήκη ετικετών ομιλητών. Μπορείτε να απενεργοποιήσετε αυτή τη λειτουργία ανά πάσα στιγμή στις Ρυθμίσεις.</translation>
 <translation id="5078983345702708852">φουτουριστικό</translation>
+<translation id="5085224064082122501">Δεν είναι δυνατή η λήψη μοντέλου δημιουργίας σύνοψης και ονόματος. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="5087864757604726239">πίσω</translation>
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">διαφορετικός πλανήτης</translation>
 <translation id="6359706544163531585">Απενεργοποίηση φωτεινού θέματος</translation>
 <translation id="6359919876285606596">Αυτή η ενέργεια είναι οριστική και δεν μπορεί να αναιρεθεί</translation>
-<translation id="6368342879959028556">Όταν επιλέξετε Δημιουργία με AI, γράψτε μια προσαρμοσμένη οδηγία. Εναλλακτικά, μπορείτε να επιλέξετε "Ταπετσαρίες AI", για να επιλέξετε ένα θέμα και, έπειτα, τις υπογραμμισμένες λέξεις, για να εξατομικεύσετε την ταπετσαρία AI.</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="6369221585240879141">Δεν είναι δυνατή η δημιουργία ονομάτων εγγραφών για αυτή τη γλώσσα μεταγραφής</translation>
 <translation id="6373461326814131011">λιμνούλα</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">Να επιτρέπεται στις υπηρεσίες συστήματος να χρησιμοποιούν την τοποθεσία σας;</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="66621959568103627">ροζ κοραλί</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Επιλέξτε Δώσε μου έμπνευση, για να λάβετε περισσότερες μοναδικές και διαφορετικές επιλογές εικόνων AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Όταν δημιουργείτε περιεχόμενο με AI, η οδηγία αποστέλλεται στους διακομιστές Google AI για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Το generative AI είναι πειραματικό και βρίσκεται σε πρώιμο στάδιο ανάπτυξης. Προς το παρόν, η διαθεσιμότητά του είναι περιορισμένη.</translation>
 <translation id="6673898378497337661">αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6694534975463174713">κλειδαριά</translation>
@@ -1431,6 +1422,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
 <translation id="757747079855995705">πέτρα</translation>
+<translation id="7584853321964440104">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί η συσκευή <ph name="DEVICE_TYPE" />.</translation>

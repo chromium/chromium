@@ -21,7 +21,9 @@
 
 // IWYU pragma: private
 
-#define GRPC_OPEN_SOURCE_PROTO
+// #define GRPC_OPEN_SOURCE_PROTO
+
+#define GRPC_PROTOBUF_CORD_SUPPORT_ENABLED
 
 #ifndef GRPC_CUSTOM_MESSAGE
 #ifdef GRPC_USE_PROTO_LITE
@@ -38,8 +40,14 @@
 #ifndef GRPC_CUSTOM_DESCRIPTOR
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
+#if !defined(GOOGLE_PROTOBUF_VERSION) || GOOGLE_PROTOBUF_VERSION >= 4025000
+#define GRPC_PROTOBUF_EDITION_SUPPORT
+#endif
 #define GRPC_CUSTOM_DESCRIPTOR ::google::protobuf::Descriptor
 #define GRPC_CUSTOM_DESCRIPTORPOOL ::google::protobuf::DescriptorPool
+#ifdef GRPC_PROTOBUF_EDITION_SUPPORT
+#define GRPC_CUSTOM_EDITION ::google::protobuf::Edition
+#endif
 #define GRPC_CUSTOM_FIELDDESCRIPTOR ::google::protobuf::FieldDescriptor
 #define GRPC_CUSTOM_FILEDESCRIPTOR ::google::protobuf::FileDescriptor
 #define GRPC_CUSTOM_FILEDESCRIPTORPROTO ::google::protobuf::FileDescriptorProto
@@ -63,13 +71,16 @@
 #define GRPC_CUSTOM_ZEROCOPYINPUTSTREAM \
   ::google::protobuf::io::ZeroCopyInputStream
 #define GRPC_CUSTOM_CODEDINPUTSTREAM ::google::protobuf::io::CodedInputStream
+#define GRPC_CUSTOM_CODEDOUTPUTSTREAM ::google::protobuf::io::CodedOutputStream
 #endif
 
 #ifndef GRPC_CUSTOM_JSONUTIL
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/type_resolver_util.h>
+
+#include "absl/status/status.h"
 #define GRPC_CUSTOM_JSONUTIL ::google::protobuf::util
-#define GRPC_CUSTOM_UTIL_STATUS ::google::protobuf::util::Status
+#define GRPC_CUSTOM_UTIL_STATUS ::absl::Status
 #endif
 
 namespace grpc {
@@ -81,6 +92,9 @@ typedef GRPC_CUSTOM_MESSAGELITE MessageLite;
 typedef GRPC_CUSTOM_DESCRIPTOR Descriptor;
 typedef GRPC_CUSTOM_DESCRIPTORPOOL DescriptorPool;
 typedef GRPC_CUSTOM_DESCRIPTORDATABASE DescriptorDatabase;
+#ifdef GRPC_PROTOBUF_EDITION_SUPPORT
+typedef GRPC_CUSTOM_EDITION Edition;
+#endif
 typedef GRPC_CUSTOM_FIELDDESCRIPTOR FieldDescriptor;
 typedef GRPC_CUSTOM_FILEDESCRIPTOR FileDescriptor;
 typedef GRPC_CUSTOM_FILEDESCRIPTORPROTO FileDescriptorProto;
@@ -100,6 +114,7 @@ namespace io {
 typedef GRPC_CUSTOM_ZEROCOPYOUTPUTSTREAM ZeroCopyOutputStream;
 typedef GRPC_CUSTOM_ZEROCOPYINPUTSTREAM ZeroCopyInputStream;
 typedef GRPC_CUSTOM_CODEDINPUTSTREAM CodedInputStream;
+typedef GRPC_CUSTOM_CODEDOUTPUTSTREAM CodedOutputStream;
 }  // namespace io
 
 }  // namespace protobuf

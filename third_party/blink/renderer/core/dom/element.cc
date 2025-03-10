@@ -639,6 +639,13 @@ int Element::DefaultTabIndex() const {
   return -1;
 }
 
+int Element::ReadingOrderValue() const {
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    return style->ReadingOrder();
+  }
+  return 0;
+}
+
 bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // TODO(vmpstr): Note that this may be called by accessibility during layout
   // tree attachment, at which point we might not have cleared all of the dirty
@@ -872,7 +879,7 @@ bool Element::HasExplicitlySetAttrAssociatedElements(
   return GetExplicitlySetElementsForAttr(name);
 }
 
-HeapLinkedHashSet<WeakMember<Element>>*
+GCedHeapLinkedHashSet<WeakMember<Element>>*
 Element::GetExplicitlySetElementsForAttr(const QualifiedName& name) const {
   ExplicitlySetAttrElementsMap* element_attribute_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
@@ -912,7 +919,7 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   auto result = explicitly_set_attr_elements_map->insert(name, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
-        MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
+        MakeGarbageCollected<GCedHeapLinkedHashSet<WeakMember<Element>>>();
   } else {
     result.stored_value->value->clear();
   }
@@ -930,9 +937,11 @@ Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
           GetExecutionContext())) {
     return nullptr;
   }
-
-  // TODO (crbug.com/353750122): Disallow aria-owns from participating in
-  // ReferenceTarget.
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetAriaOwnsEnabled(
+          GetExecutionContext()) &&
+      name == html_names::kAriaOwnsAttr) {
+    return nullptr;
+  }
 
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
     if (Element* target = shadow_root->referenceTargetElement()) {
@@ -948,6 +957,11 @@ Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
 Element* Element::GetShadowReferenceTargetOrSelf(const QualifiedName& name) {
   if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
           GetExecutionContext())) {
+    return this;
+  }
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetAriaOwnsEnabled(
+          GetExecutionContext()) &&
+      name == html_names::kAriaOwnsAttr) {
     return this;
   }
   ShadowRoot* shadow_root = GetShadowRoot();
@@ -989,7 +1003,7 @@ Element* Element::getElementByIdIncludingDisconnected(
 }
 
 Element* Element::GetElementAttribute(const QualifiedName& name) const {
-  HeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
+  GCedHeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
       GetExplicitlySetElementsForAttr(name);
   if (element_attribute_vector) {
     DCHECK_EQ(element_attribute_vector->size(), 1u);
@@ -1032,7 +1046,7 @@ HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
   // 1. Let elements be an empty list.
   HeapVector<Member<Element>>* result_elements =
       MakeGarbageCollected<HeapVector<Member<Element>>>();
-  HeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
+  GCedHeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
       GetExplicitlySetElementsForAttr(name);
   if (explicitly_set_elements) {
     // 3. If reflectedTarget's explicitly set attr-elements is not null:
@@ -1164,11 +1178,11 @@ void Element::SetElementArrayAttribute(
   // the previous value if necessary to get an empty list, and then populating
   // the list.
   auto it = element_attribute_map->find(name);
-  HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
+  GCedHeapLinkedHashSet<WeakMember<Element>>* stored_elements =
       it != element_attribute_map->end() ? it->value : nullptr;
   if (!stored_elements) {
     stored_elements =
-        MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
+        MakeGarbageCollected<GCedHeapLinkedHashSet<WeakMember<Element>>>();
     element_attribute_map->Set(name, stored_elements);
   } else {
     stored_elements->clear();
@@ -8700,6 +8714,11 @@ PseudoElement* Element::GetPseudoElement(
     return data->GetPseudoElement(pseudo_id, view_transition_name);
   }
   return nullptr;
+}
+
+bool Element::HasViewTransitionGroupChildren() const {
+  ElementRareDataVector* data = GetElementRareData();
+  return data && data->HasViewTransitionGroupPseudoElement();
 }
 
 Element* Element::GetStyledPseudoElement(

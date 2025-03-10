@@ -40,10 +40,8 @@ constexpr net::registry_controlled_domains::PrivateRegistryFilter
 bool IsSameSiteWithAncestors(const url::Origin& origin,
                              RenderFrameHost* render_frame_host) {
   while (render_frame_host) {
-    // Many cases are same-origin, so check that first to speed up the cases
-    // where the check passes, as IsSameSite() is slower.
-    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin()) &&
-        !IsSameSite(origin, render_frame_host->GetLastCommittedOrigin())) {
+    if (!net::SchemefulSite::IsSameSite(
+            origin, render_frame_host->GetLastCommittedOrigin())) {
       return false;
     }
     render_frame_host = render_frame_host->GetParent();
@@ -117,10 +115,6 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
                           const GURL& endpoint_url) {
   return url::Origin::Create(identity_provider_config_url)
       .IsSameOriginWith(endpoint_url);
-}
-
-bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
-  return net::SchemefulSite(origin1) == net::SchemefulSite(origin2);
 }
 
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
@@ -464,7 +458,7 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
   if (!rfh.GetParent()) {
     return FedCmRequesterFrameType::kMainFrame;
   }
-  return IsSameSite(requester, embedder)
+  return net::SchemefulSite::IsSameSite(requester, embedder)
              ? FedCmRequesterFrameType::kSameSiteIframe
              : FedCmRequesterFrameType::kCrossSiteIframe;
 }

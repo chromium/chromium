@@ -106,6 +106,12 @@
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_ADDED" desc="Text on a recent activity bottom sheet row that says user added a tab.">
     <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> added a tab
   </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB" desc="A description of the user adding the current tab for the recent activity dialog. Only for Desktop.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added this tab
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB" desc="A description of the user changing the current tab for the recent activity dialog. Only for Desktop.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed this tab
+  </message>
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_REMOVED" desc="Text on a recent activity bottom sheet row that says user removed a tab.">
     <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> removed a tab
   </message>

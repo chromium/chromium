@@ -7,12 +7,20 @@ package org.chromium.chrome.browser.safety_hub;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.CallbackController;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Mediator for the Safety Hub local password module. Populates the {@link
@@ -22,6 +30,31 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class SafetyHubLocalPasswordsModuleMediator
         implements SafetyHubModuleMediator, SafetyHubLocalPasswordsDataSource.Observer {
+
+    /**
+     * State machine for the loading indicator.
+     *
+     * <p>On idle, no indicator is being shown. On showing indicator, the loading indicator is being
+     * shown and cannot be removed from the UI, to avoid flashing. On waiting for results, the
+     * loading indicator is being shown but can be removed as soon as a state change occurs.
+     */
+    @IntDef({
+        IndicatorState.IDLE,
+        IndicatorState.SHOWING_INDICATOR,
+        IndicatorState.WAITING_FOR_RESULTS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IndicatorState {
+        int IDLE = 0;
+        int SHOWING_INDICATOR = 1;
+        int WAITING_FOR_RESULTS = 2;
+    }
+
+    private static final int LOADING_MIN_TIME_MS = 1000;
+    private static final int DEFAULT_LOADING_MAX_TIME_MS = 10000;
+    private static final String LOADING_MAX_TIME_PARAM_NAME =
+            "safety-hub-local-passwords-module-loading-timeout-ms";
+
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final SafetyHubModuleDelegate mModuleDelegate;
@@ -29,6 +62,15 @@ public class SafetyHubLocalPasswordsModuleMediator
     private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
     private SafetyHubModuleHelper mModuleHelper;
     private PropertyModel mModel;
+
+    private @IndicatorState int mIndicatorState = IndicatorState.IDLE;
+    // Callback when the minimum time showing the loading indicator has elapsed.
+    private CallbackController mMinLoadingCallbackController;
+    // Callback when the maximum time showing the loading indicator has elapsed.
+    private CallbackController mMaxLoadingCallbackController;
+
+    private boolean mStateChangedCalled;
+    private boolean mOrderUpdated;
 
     SafetyHubLocalPasswordsModuleMediator(
             SafetyHubExpandablePreference preference,
@@ -56,13 +98,37 @@ public class SafetyHubLocalPasswordsModuleMediator
         mLocalPasswordsDataSource.setUp();
 
         if (mLocalPasswordsDataSource.maybeTriggerPasswordCheckup()) {
+            mIndicatorState = IndicatorState.SHOWING_INDICATOR;
             mModuleHelper =
                     new SafetyHubLocalPasswordsCheckingModuleHelper(mPreference.getContext());
+
+            mMinLoadingCallbackController = new CallbackController();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mMinLoadingCallbackController.makeCancelable(this::onMinimumLoadingTimeElapsed),
+                    LOADING_MIN_TIME_MS);
+
+            mMaxLoadingCallbackController = new CallbackController();
+            int loading_max_time_ms =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+                            LOADING_MAX_TIME_PARAM_NAME,
+                            DEFAULT_LOADING_MAX_TIME_MS);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mMaxLoadingCallbackController.makeCancelable(this::onMaxLoadingTimeElapsed),
+                    loading_max_time_ms);
         }
     }
 
     @Override
     public void destroy() {
+        if (mMinLoadingCallbackController != null) {
+            mMinLoadingCallbackController.destroy();
+            mMinLoadingCallbackController = null;
+        }
+        maybeCancelMaxLoadingCallback();
+
         if (mLocalPasswordsDataSource != null) {
             mLocalPasswordsDataSource.destroy();
             mLocalPasswordsDataSource = null;
@@ -76,6 +142,30 @@ public class SafetyHubLocalPasswordsModuleMediator
         } else {
             mLocalPasswordsDataSource.updateState();
         }
+    }
+
+    private void maybeCancelMaxLoadingCallback() {
+        if (mMaxLoadingCallbackController != null) {
+            mMaxLoadingCallbackController.destroy();
+            mMaxLoadingCallbackController = null;
+        }
+    }
+
+    private void onMinimumLoadingTimeElapsed() {
+        mIndicatorState = IndicatorState.WAITING_FOR_RESULTS;
+        if (mStateChangedCalled) {
+            mLocalPasswordsDataSource.updateState();
+        }
+    }
+
+    private void onMaxLoadingTimeElapsed() {
+        // The callback that triggers this method is canceled if any result is returned. As such,
+        // the UI will always be in the loading state when this method is ran.
+        assert isLoading();
+
+        // As the max loading time has elapsed, then show the user that no checkup is possible to be
+        // performed at this time.
+        stateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
     }
 
     private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
@@ -133,9 +223,14 @@ public class SafetyHubLocalPasswordsModuleMediator
             overridePreferenceForManaged();
         }
 
-        mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
         mModel.set(SafetyHubModuleProperties.ICON, getIcon(mPreference.getContext()));
         mModel.set(SafetyHubModuleProperties.HAS_PROGRESS_BAR, isLoading());
+
+        // Only update the order one time to avoid the module jumping.
+        if (!mOrderUpdated) {
+            mOrderUpdated = true;
+            mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
+        }
     }
 
     @Override
@@ -168,6 +263,19 @@ public class SafetyHubLocalPasswordsModuleMediator
 
     @Override
     public void stateChanged(@ModuleType int moduleType) {
+        mStateChangedCalled = true;
+
+        // As a result is available, cancel the callback for when the maximum time showing the
+        // loading indicator has elapsed.
+        maybeCancelMaxLoadingCallback();
+
+        // Loading indicator has not been shown long enough, delay showing the results until a later
+        // date.
+        if (mIndicatorState == IndicatorState.SHOWING_INDICATOR) {
+            return;
+        }
+        mIndicatorState = IndicatorState.IDLE;
+
         updateModule(moduleType);
         mMediatorDelegate.onUpdateNeeded();
     }

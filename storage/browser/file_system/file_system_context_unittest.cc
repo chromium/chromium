@@ -18,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -130,7 +129,7 @@ class FileSystemContextTest : public testing::Test {
 
 // It is not valid to pass nullptr ExternalMountPoints to FileSystemContext on
 // ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(FileSystemContextTest, NullExternalMountPoints) {
   scoped_refptr<FileSystemContext> file_system_context =
       CreateFileSystemContextForTest(/*external_mount_points=*/nullptr);

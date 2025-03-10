@@ -5,15 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_H_
 
-#include <optional>
-
-#include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
-
-namespace optimization_guide::proto {
-class AXTreeUpdate;
-}  // namespace optimization_guide::proto
 
 namespace autofill {
 
@@ -23,17 +15,11 @@ class FormData;
 // optimization guide infrastructure.
 class AutofillAiModelExecutor : public KeyedService {
  public:
-  using Predictions = optimization_guide::proto::AutofillAiTypeResponse;
-  using PredictionCallback =
-      base::OnceCallback<void(std::optional<Predictions>)>;
-
-  // Retrieves predictions for `form_data` with context of `ax_tree_update`.
-  // Invokes `callback` when done. If the model encountered an error, the
-  // callback's is called with `std::nullopt`.
-  virtual void GetPredictions(
-      FormData form_data,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
-      PredictionCallback callback) = 0;
+  // Retrieves predictions for `form_data` and writes them into the cache once
+  // the model execution completes. Errors during model execution also lead to
+  // cache writes, but with empty values. If there is already an ongoing cache
+  // request for a form of the same signature, the model is not run.
+  virtual void GetPredictions(FormData form_data) = 0;
 };
 
 }  // namespace autofill

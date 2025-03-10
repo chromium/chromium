@@ -25,6 +25,7 @@
 
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
+#include "content/common/features.h"
 #include "sandbox/policy/features.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -228,12 +229,25 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   auto ac_sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox_params.lpac_capability_name});
 
+  static constexpr DWORD kAccessMask =
+      GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE | DELETE;
+  static constexpr DWORD kInheritance =
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
+
+  if (base::FeatureList::IsEnabled(
+          features::kSkipGrantAccessToDataPathIfAlreadySet)) {
+    // If LPAC capability already has access to the directory then avoid
+    // granting access again. This is a performance optimization.
+    if (HasAccessToPath(directory->path(), ac_sids, kAccessMask,
+                        kInheritance)) {
+      return true;
+    }
+  }
+
   // Grant recursive access to directory. This also means new files in the
   // directory will inherit the ACE.
-  return base::win::GrantAccessToPath(
-      directory->path(), ac_sids,
-      GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
-      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE, /*recursive=*/true);
+  return base::win::GrantAccessToPath(directory->path(), ac_sids, kAccessMask,
+                                      kInheritance, /*recursive=*/true);
 #else
   if (directory->IsOpenForTransferRequired()) {
     directory->OpenForTransfer();

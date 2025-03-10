@@ -33,7 +33,7 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta>
     kAutofillAiServerModelExecutionTimeout;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<bool> kAutofillAiServerModelSendPageTitleAndUrl;
+extern const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiWithDataSchema);
 COMPONENT_EXPORT(AUTOFILL)
@@ -174,8 +174,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillStructuredFieldsDisableAddressLines);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kComposePopupAnnouncePolitely);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillEnableAblationStudy);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>

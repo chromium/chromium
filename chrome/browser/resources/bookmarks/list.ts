@@ -83,6 +83,25 @@ export class BookmarksListElement extends BookmarksListElementBase {
         changedPrivateProperties.has('selectedFolder_')) {
       this.scrollTop = 0;
     }
+
+    if (changedPrivateProperties.has('displayedIds_')) {
+      // Get the last selection from the previous value of selectedItems_ if
+      // selectedItems_ also changed, and was not previously undefined (as
+      // is the case at initialization). Otherwise, get the last selection from
+      // the current value of selectedItems_, since it is the same as the prior
+      // value.
+      let lastSelectedItems: Set<string> = this.selectedItems_;
+      if (changedPrivateProperties.has('selectedItems_') &&
+          changedPrivateProperties.get('selectedItems_') !== undefined) {
+        lastSelectedItems =
+            changedPrivateProperties.get('selectedItems_') as Set<string>;
+      }
+      const lastSelection =
+          lastSelectedItems.size > 0 ? Array.from(lastSelectedItems)[0]! : null;
+      this.onDisplayedIdsChanged_(
+          changedPrivateProperties.get('displayedIds_') as string[],
+          lastSelection);
+    }
   }
 
   override connectedCallback() {
@@ -105,25 +124,26 @@ export class BookmarksListElement extends BookmarksListElementBase {
   }
 
   override onStateChanged(state: BookmarksPageState) {
-    // Grab the last set of values before updating them.
-    const previousDisplayedIds = this.displayedIds_;
-    const lastSelected = Array.from(this.selectedItems_)[0];
     this.displayedIds_ = getDisplayedList(state);
     this.searchTerm_ = state.search.term;
     this.selectedFolder_ = state.selectedFolder;
     this.selectedItems_ = state.selection.items;
-    this.onDisplayedIdsChanged_(previousDisplayedIds, lastSelected);
   }
 
   getDropTarget(): HTMLElement {
     return this.$.message;
   }
 
-  private onDisplayedIdsChanged_(previous: string[], lastSelected?: string) {
+  private onDisplayedIdsChanged_(
+      previous: string[], lastSelected: string|null) {
+    // Clear any previous 'items-rendered' listener when the list changes, as
+    // the |selectIndex| from last time may no longer be valid.
+    this.eventTracker_.remove(this.$.list, 'items-rendered');
+
     let selectIndex = -1;
     let skipFocus = false;
     if (this.matches(':focus-within')) {
-      if (lastSelected !== undefined) {
+      if (lastSelected !== null) {
         skipFocus = this.displayedIds_.some(id => lastSelected === id);
         selectIndex =
             previous ? previous.findIndex(id => lastSelected === id) : -1;
@@ -136,24 +156,17 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
 
     if (selectIndex > -1) {
-      // Wait for updateComplete so that it is safe to access this.$.list.
-      this.updateComplete.then(() => {
-        // Ensure we only add one of these at a time. This method can be
-        // called any time the state changes.
-        this.eventTracker_.remove(this.$.list, 'items-rendered');
-
-        if (skipFocus) {
-          // Mimic iron-list by blurring the item in this case.
-          const active = this.shadowRoot.activeElement;
-          if (active) {
-            (active as HTMLElement).blur();
-          }
-        } else {
-          this.eventTracker_.add(
-              this.$.list, 'items-rendered',
-              () => this.focusMenuButton_(selectIndex));
+      if (skipFocus) {
+        // Mimic iron-list by blurring the item in this case.
+        const active = this.shadowRoot.activeElement;
+        if (active) {
+          (active as HTMLElement).blur();
         }
-      });
+      } else {
+        this.eventTracker_.add(
+            this.$.list, 'items-rendered',
+            () => this.focusMenuButton_(selectIndex));
+      }
     }
 
     PluralStringProxyImpl.getInstance()

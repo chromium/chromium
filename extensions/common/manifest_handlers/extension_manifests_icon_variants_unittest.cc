@@ -13,22 +13,24 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
-using IconVariantsFeatureFreeManifestTest = ManifestTest;
+// Don't enable the icon variants feature. Warn if the key is used, but don't
+// create an error.
+using NoIconVariantsFeatureManifestTest = ManifestTest;
 
-// Test that icon_variants doesn't create an error when the feature isn't
-// enabled, even in the event of warnings.
-TEST_F(IconVariantsFeatureFreeManifestTest, Warnings) {
+TEST_F(NoIconVariantsFeatureManifestTest, Warnings) {
   LoadAndExpectWarnings("icon_variants.json",
                         {"'icon_variants' requires canary channel or newer, "
                          "but this is the stable channel."});
 }
 
+// Enable the icon variants feature.
 class IconVariantsManifestTest : public ManifestTest {
  public:
   IconVariantsManifestTest() {
@@ -159,8 +161,10 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
   }
 }
 
-// Cases that cause errors and prevent the extension from loading.
-TEST_F(IconVariantsManifestTest, Errors) {
+// Cases that would otherwise cause errors and prevent the extension from
+// loading. However, `icon_variants` aims to avoid causing errors preventing
+// extensions from loading. That makes the key more flexible for later changes.
+TEST_F(IconVariantsManifestTest, WarnOnUnrecognizedIconVariants) {
   static constexpr struct {
     const char* title;
     const char* icon_variants;
@@ -176,8 +180,23 @@ TEST_F(IconVariantsManifestTest, Errors) {
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
-    LoadAndExpectError(GetManifestData(test_case.icon_variants),
-                       "Error: 'icon_variants' is not valid.");
+    scoped_refptr<extensions::Extension> extension =
+        LoadAndExpectSuccess(GetManifestData(test_case.icon_variants));
+    ASSERT_FALSE(IconVariantsInfo::HasIconVariants(extension.get()));
+
+    // Verify that the case where `icon_variants` is invalid generates a warning
+    // and not an error. There could be other warnings, so find any instance
+    // of this one to succeed. This warning indicates that there aren't any icon
+    // variants populated in C++.
+    bool has_error = false;
+    static constexpr char expected[] = "'icon_variants' is not valid.";
+    for (const auto& warning : extension->install_warnings()) {
+      if (warning.message != expected) {
+        has_error = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(has_error);
   }
 }
 
@@ -331,6 +350,23 @@ TEST_F(IconVariantsManifestTest, ColorSchemesKeyValid) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess(manifest_data));
   ASSERT_TRUE(extension->install_warnings().empty());
+}
+
+// Warn, don't error, if manifest.json has an empty action.icon_variants.
+// Similar to ExtensionAction*Test, but specifically related to IconVariants.
+TEST_F(IconVariantsManifestTest, Action) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+      "name": "Test",
+      "version": "1",
+      "manifest_version": 3,
+      "action": {"icon_variants": {}}
+    })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  EXPECT_EQ(1u, extension->install_warnings().size());
+  EXPECT_EQ("Unrecognized manifest key 'action'.",
+            extension->install_warnings()[0].message);
 }
 
 }  // namespace extensions

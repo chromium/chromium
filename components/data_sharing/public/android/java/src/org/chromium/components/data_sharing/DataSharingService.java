@@ -6,6 +6,7 @@ package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * DataSharingService is the core class for managing data sharing. It represents a native
  * DataSharingService object in Java.
  */
+@NullMarked
 public interface DataSharingService {
     /** Result that contains group data and an outcome of the action that was requested. */
     class GroupDataOrFailureOutcome {

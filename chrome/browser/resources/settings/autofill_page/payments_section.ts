@@ -262,7 +262,9 @@ export class SettingsPaymentsSectionElement extends
         (_addressList, cardList, ibanList, payOverTimeIssuerList) => {
           this.creditCards = cardList;
           this.ibans = ibanList;
-          this.payOverTimeIssuers = payOverTimeIssuerList;
+          if (this.shouldShowPayOverTimeSettings_) {
+            this.payOverTimeIssuers = payOverTimeIssuerList;
+          }
         };
 
     const setIbansListener = (ibanList: chrome.autofillPrivate.IbanEntry[]) => {

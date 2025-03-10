@@ -87,6 +87,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewWaitLoop);
 // (https://crbug.com/379076354).
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix);
 
+// Enabling this will apply net::RequestPriority::MEDIUM for prefetch
+// requests triggered by embedders. See crbug.com/353628437 to track this issue.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNetworkPriorityForEmbedders);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

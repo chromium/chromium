@@ -31,6 +31,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="1909810060368225529">Paunawa: Nakikita ng lahat ang mga pagbabago sa naka-share na Grupo ng Tab na ito. Makakagawa ang lahat ng mga pagbabago sa iyong mga naka-share na grupo ng tab</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{I-bookmark ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-bookmark ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-bookmark ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
+<translation id="2055057176188061528">Pumili ng grupo ng tab o gumawa ng bagong grupo ng tab</translation>
 <translation id="2118649612461486615">Impormasyon ng store</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong tab na Incognito.}one{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # tab na Incognito.}other{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="3194464645767632461">rating</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3547352561153509682">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> bagong tab}one{<ph name="MANY_ADDED" /> bagong tab}other{<ph name="MANY_ADDED" /> na bagong tab}}</translation>
 <translation id="3613492231657284463">I-hide ang dialog ng mga hindi aktibong tab</translation>
 <translation id="3619255692378312441">Pamahalaan ang access</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="381219490185664296">I-ungroup ang grupo ng tab?</translation>
 <translation id="3940195383040445971">Subaybayan ang mga presyo sa mga tab</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> bagong tab, isinara ang <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> bagong tab, isinara ang <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> na bagong tab, isinara ang <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Igrupo ang tab}one{Igrupo ang mga tab}other{Igrupo ang mga tab}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> hindi aktibong tab}one{<ph name="TABS_COUNT_MANY" /> hindi aktibong tab}other{<ph name="TABS_COUNT_MANY" /> na hindi aktibong tab}}</translation>
 <translation id="3969565576924904454">Buksan ang <ph name="TITLE_OF_GROUP" /></translation>

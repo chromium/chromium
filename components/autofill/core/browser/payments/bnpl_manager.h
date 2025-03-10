@@ -54,8 +54,9 @@ class BnplManager {
   // micros). `on_bnpl_vcn_fetched_callback` is the callback that should be run
   // if the flow is completed successfully, to fill the form with the VCN that
   // will facilitate the BNPL transaction.
-  void InitBnplFlow(uint64_t final_checkout_amount,
-                    OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
+  virtual void InitBnplFlow(
+      uint64_t final_checkout_amount,
+      OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
   // Notifies the BNPL manager that suggestion generation has been requested
   // with the given `trigger_source`. This must be called before

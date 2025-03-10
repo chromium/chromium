@@ -201,7 +201,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
         Map<T, Bitmap> entriesToFaviconMap = new HashMap<>();
         for (T entry : entries) {
-            GURL entryUrl = null;
+            GURL entryUrl;
             if (entry instanceof AuxiliarySearchEntry tab) {
                 entryUrl = new GURL(tab.getUrl());
             } else {

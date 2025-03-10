@@ -3,7 +3,7 @@
       'Tests that Bluetooth.simulateCentral sets Bluetooth availability');
   const bp = testRunner.browserP();
 
-  await bp.BluetoothEmulation.enable({state: 'powered-on'});
+  await bp.BluetoothEmulation.enable({state: 'powered-on', leSupported: true});
   testRunner.log(await session.evaluateAsync(
     () => navigator.bluetooth.getAvailability()
   ));

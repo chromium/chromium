@@ -800,8 +800,8 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence(base::TimeTicks start_time) {
     if (!delete_bucket && bucket_locator.storage_key.IsThirdPartyContext()) {
       delete_bucket = std::ranges::any_of(
           origins_to_purge_on_shutdown_, [&](const url::Origin& origin) {
-            return net::SchemefulSite(origin) ==
-                   bucket_locator.storage_key.top_level_site();
+            return bucket_locator.storage_key.top_level_site().IsSameSiteWith(
+                origin);
           });
     }
 

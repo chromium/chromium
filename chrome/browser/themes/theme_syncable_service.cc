@@ -432,7 +432,9 @@ void ThemeSyncableService::StopSyncing(syncer::DataType type) {
       base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
     // It is possible that saved local theme was cleared by the batch uploader.
     // In such a case, apply the default theme.
-    if (!ApplySavedLocalThemeIfExistsAndClear()) {
+    const bool result = ApplySavedLocalThemeIfExistsAndClear();
+    base::UmaHistogramBoolean("Theme.RestoredLocalThemeUponSignout", result);
+    if (!result) {
       theme_service_->UseDefaultTheme();
     }
   }

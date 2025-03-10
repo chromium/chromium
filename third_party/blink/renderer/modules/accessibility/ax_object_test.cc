@@ -1914,6 +1914,52 @@ TEST_F(AccessibilityTest, ScrollMarkerPseudoElement) {
   ASSERT_GT(scroller->scrollTop(), 0);
 }
 
+TEST_F(AccessibilityTest, ScrollToMakeScrollerVisible) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #parent-scroller {
+      overflow: auto;
+      position: relative;
+      height: 300px;
+    }
+    #scroller {
+      overflow: auto;
+      position: absolute;
+      scroll-padding: 10px;
+      /* Scrolling is necessary to see this scroller. */
+      top: 2000px;
+      width: 400px;
+      height: 300px;
+    }
+    .spacer {
+      width: 1600px;
+    }
+    </style>
+    <div id="parent-scroller">
+      <div id="scroller">
+        <div class="spacer"></div>
+      </div>
+    </div>
+  )HTML");
+  Element* parent_scroller = GetElementById("parent-scroller");
+  Element* scroller = GetElementById("scroller");
+  // Scroll to 800px.
+  scroller->scrollTo(800, 0);
+  ASSERT_EQ(scroller->scrollLeft(), 800);
+
+  // Scrolling to make the scrolling element visible shouldn't scroll
+  // that scrolling element itself - no amount of scrolling itself
+  // changes its position on screen. If part of its scrolling content was
+  // being targeted, the inner AXObject would be used.
+  WebAXObject scrollerAXObject = WebAXObject::FromWebNode(scroller);
+  scrollerAXObject.ScrollToMakeVisibleWithSubFocus(gfx::Rect());
+  ASSERT_EQ(scroller->scrollLeft(), 800);
+
+  // But it still should have scrolled the ancestor scroller down
+  // to make the scroller visible.
+  ASSERT_GT(parent_scroller->scrollTop(), 1700);
+}
+
 TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
   SetBodyInnerHTML(R"HTML(M<img usemap="#map"><map name="map"><hr><progress>
     <div><input type="range">M)HTML");
@@ -2010,11 +2056,11 @@ TEST_F(AccessibilityTest, StitchChildTree) {
   ScopedFreezeAXCache freeze(GetAXObjectCache());
 
   ui::AXNodeData div_node_data;
-  div->Serialize(&div_node_data, ui::AXMode::kScreenReader);
+  div->Serialize(&div_node_data, ui::AXMode::kExtendedProperties);
   ui::AXNodeData button_node_data;
-  button->Serialize(&button_node_data, ui::AXMode::kScreenReader);
+  button->Serialize(&button_node_data, ui::AXMode::kExtendedProperties);
   ui::AXNodeData canvas_node_data;
-  canvas->Serialize(&canvas_node_data, ui::AXMode::kScreenReader);
+  canvas->Serialize(&canvas_node_data, ui::AXMode::kExtendedProperties);
 
   EXPECT_EQ(div_child_tree_id.ToString(),
             div_node_data.GetStringAttribute(

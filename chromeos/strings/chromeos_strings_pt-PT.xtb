@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">Versão do SDK:</translation>
 <translation id="2016697457005847575">Experimente passos de resolução de problemas</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Escolha um tema e, em seguida, selecione as palavras sublinhadas para personalizar as suas imagens de IA.</translation>
 <translation id="2045814230297767491">talheres</translation>
 <translation id="2047316797244836561">Estabeleça ligação a uma rede e atualize a página para ver a proteção de ecrã.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">De momento, este idioma não é suportado</translation>
 <translation id="2787435249130282949">teclado mais claro</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2822702442014805146">Transferência do modelo de criação de resumos e nomes em curso</translation>
 <translation id="28232023175184696">Não é possível estabelecer ligação à Internet. Clique para tentar novamente.</translation>
 <translation id="2855718259207180827">lã</translation>
 <translation id="2859243502336719778">Atualização crítica</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">Tensão</translation>
 <translation id="4897058166682006107">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular esquerdo.</translation>
 <translation id="4905998861748258752">Ative a funcionalidade para selecionar opções de proteção de ecrã</translation>
+<translation id="4910853326379896417">A transferência do modelo de criação de resumos e nomes foi concluída</translation>
 <translation id="4910858703033903787">Tipos de APN (Nome do Ponto de Acesso)</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">Criar imagem</translation>
 <translation id="5078711626843651677">Os modelos de voz são armazenados temporariamente no dispositivo até que a etiquetagem dos interlocutores esteja concluída. Pode desativar esta funcionalidade em qualquer altura nas Definições.</translation>
 <translation id="5078983345702708852">futurista</translation>
+<translation id="5085224064082122501">Não é possível transferir o modelo para a criação de resumos e nomes. Tente novamente ou reinicie o Chromebook.</translation>
 <translation id="5087864757604726239">anterior</translation>
 <translation id="5088172560898466307">Nome do anfitrião do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Desativar tema claro</translation>
 <translation id="6359919876285606596">Esta ação é permanente e não pode ser anulada</translation>
-<translation id="6368342879959028556">Quando selecionar "Criar com IA", escreva um comando personalizado. Em alternativa, pode selecionar "Fundos de IA" para escolher um tema e, em seguida, selecionar as palavras sublinhadas para personalizar o seu fundo de IA.</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
 <translation id="6369221585240879141">Não é possível criar nomes das gravações para este idioma da transcrição</translation>
 <translation id="6373461326814131011">lago</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">Permitir que os serviços do sistema usem a sua localização?</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="66621959568103627">rosa coral</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Selecione "Inspirar-me" para ver mais opções de imagens de IA únicas e variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quando cria com IA, o comando é enviado para os servidores de IA da Google para gerar imagens e melhorar o produto, sujeito à <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidade da Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A IA generativa é experimental, está em desenvolvimento inicial e tem atualmente disponibilidade limitada.</translation>
 <translation id="6673898378497337661">aumentar o brilho do teclado</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6694534975463174713">fechadura</translation>
@@ -1431,6 +1422,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecrã tátil USB</translation>
 <translation id="757747079855995705">pedra</translation>
+<translation id="7584853321964440104">Não é possível fazer a transferência. Tente novamente ou reinicie o Chromebook.</translation>
 <translation id="7590883480672980941">Definições de introdução</translation>
 <translation id="7595982850646262331">Falta(m) <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">O administrador de <ph name="MANAGER" /> definiu quando é possível usar este dispositivo <ph name="DEVICE_TYPE" />.</translation>

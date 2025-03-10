@@ -116,6 +116,22 @@ private boolean isParamNonNull(@Nullable String foo) {
 }
 ```
 
+### Field Annotations
+
+```java
+// Starts as null, but may not be assigned a nullable value.
+private @MonotonicNonNull String mSomeValue;
+
+public void doThing(String value) {
+    // Emits a warning since mSomeValue is nullable:
+    helper(mSomeValue);
+
+    mSomeValue = value;
+    // No warning about mSomeValue being nullable, even though it's used in a lambda.
+    PostTask.postTask(TaskTraits.USER_BLOCKING, () -> helper(mSomeValue));
+}
+```
+
 ### "assert", "assumeNonNull()", and "requireNonNull()"
 
 ```java

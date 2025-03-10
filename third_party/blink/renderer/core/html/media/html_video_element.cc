@@ -717,6 +717,23 @@ bool HTMLVideoElement::IsInAutoPIP() const {
   return is_auto_picture_in_picture_;
 }
 
+void HTMLVideoElement::DidPlayerMediaPositionStateChange(
+    double playback_rate,
+    base::TimeDelta duration,
+    base::TimeDelta position,
+    bool end_of_media) {
+  HTMLMediaElement::DidPlayerMediaPositionStateChange(playback_rate, duration,
+                                                      position, end_of_media);
+
+  if (PictureInPictureController::IsElementInPictureInPicture(this)) {
+    PictureInPictureController::From(GetDocument())
+        .OnMediaPositionStateChanged(
+            media_session::mojom::blink::MediaPosition::New(
+                playback_rate, duration, position, base::TimeTicks::Now(),
+                end_of_media));
+  }
+}
+
 void HTMLVideoElement::OnPictureInPictureStateChange() {
   if (GetDisplayType() != DisplayType::kVideoPictureInPicture ||
       IsInAutoPIP()) {

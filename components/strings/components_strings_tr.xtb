@@ -138,6 +138,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1230244617745022071"><ph name="SOURCE" /> (autootomatik algılandı)</translation>
 <translation id="1232569758102978740">Adsız</translation>
 <translation id="1236081509407217141">VR'ye izin verilsin mi?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Cihazınızın adı</translation>
 <translation id="124116460088058876">Diğer diller</translation>
 <translation id="1243027604378859286">Yazar:</translation>
@@ -1438,6 +1439,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3536227077203206203">Şu anda izin veriliyor</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Şablon (Sayfalandırılmış)</translation>
+<translation id="3541016556608204104">Chrome Enterprise Connectors hakkında daha fazla bilgi</translation>
 <translation id="3542628208405253498">Kart resmi</translation>
 <translation id="3542768452570884558">Bağlantıyı Yeni Pencerede Aç</translation>
 <translation id="3543935938072367282">Otomatik doldurma özelliğiyle daha hızlı ödeme yapın</translation>
@@ -1802,6 +1804,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="415440494507469262">Karşılaştırma Tablosuna Sekme Ekle</translation>
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4165422751765527461">Yardım Merkezi makalesini yeni bir sekmede açar</translation>
+<translation id="4165584779486830267">Artık Affirm veya Zip kullanarak taksitle ödeme yapabilirsiniz.</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
 <translation id="4169535189173047238">İzin verme</translation>
 <translation id="4171400957073367226">Geçersiz doğrulama imzası</translation>
@@ -2766,6 +2769,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5910140988253729859">Otomatik doldurmayı geri al</translation>
 <translation id="5911020115933784199">Etkinlikler ve Etkinlik İlanları</translation>
 <translation id="5911110632211230665">Açma işlemi engellendi</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> bu sekmeyi ekledi</translation>
 <translation id="5915189366813702112">Esnek Çalışma Düzenlemeleri</translation>
 <translation id="59174027418879706">Etkin</translation>
 <translation id="5918373444239520146">Taşınabilir Elektronik Cihazlar</translation>
@@ -4626,6 +4630,7 @@ Ek ayrıntılar:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> desteklenmeyen bir protokol kullanıyor.</translation>
 <translation id="918454845714257218">Kodu (<ph name="SIDE_OF_CARD" /> yer alan) kontrol edip tekrar deneyin</translation>
 <translation id="9186203289258525843">Chrome'u varsayılan tarayıcı olarak ayarla düğmesi, Chrome'u sistemin varsayılan tarayıcısı olarak ayarlamak için etkinleştirin</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> bu sekmeyi değiştirdi</translation>
 <translation id="9189789270972826888">Kart doldurulmamışsa kopyalayıp yapıştırmak için aşağıdaki kart ayrıntılarını tıklayın. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 haftadan eski konular otomatik olarak silinir</translation>
 <translation id="9191834167571392248">Sol altta delik</translation>

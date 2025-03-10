@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Ovde možete da otvorite Objektiv.</translation>
 <translation id="1042296835509784301">Otvara Menadžer lozinki u Chromium-u.</translation>
 <translation id="1047130070405668746">Izaberite Chromium</translation>
+<translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
 <translation id="1091252999271033193">To znači da će Chromium svaki put zahtevati mobilni sajt.</translation>
 <translation id="1115463765356382667">Obavite ove predložene radnje u nastavku da biste iskoristili Chromium na najbolji način.</translation>
 <translation id="1140315115515116765">Podrazumevano koristite Chromium da biste lako dobijali uvid u cene</translation>
@@ -98,6 +99,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a po
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. To može da obuhvata istoriju i automatsko popunjavanje.}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. To može da obuhvata istoriju i automatsko popunjavanje.}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. To može da obuhvata istoriju i automatsko popunjavanje.}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. To može da obuhvata istoriju i automatsko popunjavanje.}}</translation>
 <translation id="3410395242749598859">Neki Chromium podaci još nisu sačuvani na nalogu <ph name="EMAIL" />.
 Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nalog, ovi podaci će se izbrisati.</translation>
+<translation id="3440830787838130530">Lako i bezbedno delite kopiju lozinke sa grupom za porodicu u Google menadžeru lozinki</translation>
 <translation id="3472200483164753384">Nije podržano u verziji Chromium Canary</translation>
 <translation id="347967311580159871">Više podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Lozinka se ne deli. Proverite internet vezu i uverite se da ste prijavljeni u Chromium. Onda probajte ponovo.</translation>

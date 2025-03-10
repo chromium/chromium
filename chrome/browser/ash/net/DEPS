@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/certificate_provider",
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/net",
@@ -52,5 +51,6 @@ specific_include_rules = {
   # Allow accessing g_browser_process from browser tests.
   ".*_browsertest\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
   ],
 }

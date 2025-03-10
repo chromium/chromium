@@ -63,7 +63,7 @@ class AutocompleteMatchWrapperTest : public PlatformTest {
   FakeAutocompleteMatchWrapperDelegate* _fake_autocomplete_wrapper_delegate;
 };
 
-// Test wrapping a search match.
+// Tests wrapping a search match.
 TEST_F(AutocompleteMatchWrapperTest,
        testWrapMatchesFromResultWithStarredMatch) {
   AutocompleteMatch match = CreateSearchMatch(u"search");
@@ -91,7 +91,7 @@ TEST_F(AutocompleteMatchWrapperTest,
   _fake_autocomplete_wrapper_delegate.isStarred = NO;
 }
 
-// Test wrapping matches form a given autocomplete result.
+// Tests wrapping matches form a given autocomplete result.
 TEST_F(AutocompleteMatchWrapperTest, testWrapMatchesFromResult) {
   AutocompleteResult result;
 
@@ -124,7 +124,7 @@ TEST_F(AutocompleteMatchWrapperTest, testWrapMatchesFromResult) {
   EXPECT_EQ(wrappedMatches[1].actionsInSuggest.count, 0u);
 }
 
-// Test wrapping a search match after changing the default search engine.
+// Tests wrapping a search match after changing the default search engine.
 TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
   AutocompleteResult result;
 
@@ -176,4 +176,26 @@ TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
   // Change the default search provider back to Google.
   template_url_service->SetUserSelectedDefaultSearchProvider(
       const_cast<TemplateURL*>(google_provider));
+}
+
+// Tests grouping suggestions.
+TEST_F(AutocompleteMatchWrapperTest, testGroupResultSuggestions) {
+  AutocompleteResult result;
+  AutocompleteMatch match1 = CreatePersonalizedZeroPrefixMatch("search1", 100);
+  AutocompleteMatch match2 = CreatePersonalizedZeroPrefixMatch("search2", 101);
+  AutocompleteMatch match3 = CreateSearchMatch(u"search3");
+  AutocompleteMatch match4 = CreateSearchMatch(u"search4");
+
+  result.AppendMatches({match1, match2, match3, match4});
+
+  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
+      [wrapper_ wrapMatchesFromResult:result];
+
+  EXPECT_EQ(wrappedMatches.count, 4u);
+
+  NSArray<id<AutocompleteSuggestionGroup>>* groups =
+      [wrapper_ groupSuggestions:wrappedMatches
+          usingACResultAsHeaderMap:result];
+
+  EXPECT_EQ(groups.count, 2u);
 }

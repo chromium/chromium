@@ -17,11 +17,13 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "components/country_codes/country_codes.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/regional_capabilities/access/country_access_reason.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/variations/service/variations_service.h"
@@ -29,20 +31,23 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "skia/ext/skia_utils_base.h"
 
-namespace {
+using regional_capabilities::CountryIdHolder;
 
-std::string CountryIdToDebugString(std::optional<int> country_id) {
+// static
+std::string ProfileInternalsHandler::CountryIdToDebugString(
+    std::optional<CountryIdHolder> country_id) {
   if (!country_id.has_value()) {
     return "not available";
   }
-  if (country_id.value() == country_codes::kCountryIDUnknown) {
+  if (country_id.value() == CountryIdHolder(country_codes::kCountryIDUnknown)) {
     return "unknown";
   }
 
-  return country_codes::CountryIDToCountryString(country_id.value());
+  return country_codes::CountryIDToCountryString(
+      country_id->GetRestricted(regional_capabilities::CountryAccessKey(
+          regional_capabilities::CountryAccessReason::
+              kProfileInternalsDisplayInDebugUi)));
 }
-
-}  // namespace
 
 // static
 base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
@@ -113,14 +118,15 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
       loaded_profile &&
           loaded_profile->GetAllOffTheRecordProfiles().size() > 0);
 
-  std::optional<int> profile_country;
-  std::optional<int> initial_keywords_db_country;
-  std::optional<int> updated_keywords_db_country;
+  std::optional<CountryIdHolder> profile_country;
+  std::optional<CountryIdHolder> initial_keywords_db_country;
+  std::optional<CountryIdHolder> updated_keywords_db_country;
+
   if (loaded_profile) {
     profile_country =
-        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-            loaded_profile)
-            ->GetCountryId();
+        regional_capabilities::RegionalCapabilitiesServiceFactory::
+            GetForProfile(loaded_profile)
+                ->GetCountryId();
 
     auto* template_url_service =
         TemplateURLServiceFactory::GetForProfile(loaded_profile);

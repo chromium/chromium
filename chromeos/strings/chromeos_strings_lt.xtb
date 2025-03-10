@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK versija:</translation>
 <translation id="2016697457005847575">Išbandykite trikčių šalinimo veiksmus</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Pasirinkite temą, tada – pabrauktus žodžius, kad suasmenintumėte DI vaizdus.</translation>
 <translation id="2045814230297767491">stalo įrankiai</translation>
 <translation id="2047316797244836561">Jei norite peržiūrėti ekrano užsklandą, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
@@ -1142,7 +1141,6 @@
 <translation id="6352210854422428614">kita planeta</translation>
 <translation id="6359706544163531585">Išjungti šviesiąją temą</translation>
 <translation id="6359919876285606596">Šis veiksmas atliekamas visam laikui ir jo anuliuoti negalima</translation>
-<translation id="6368342879959028556">Jei pasirinkote „Kurti naudojant DI“, parašykite tinkintą raginimą. Arba pasirinkite „DI ekrano fonai“, tada pasirinkite temą ir pabrauktus žodžius, kad suasmenintumėte DI ekrano foną.</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="6369221585240879141">Negalima sukurti šio transkribuoto teksto kalbos įrašų pavadinimų</translation>
 <translation id="6373461326814131011">tvenkinys</translation>
@@ -1215,16 +1213,6 @@
 <translation id="6657240842932274095">Leisti sistemos paslaugoms naudoti jūsų vietovės informaciją?</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="66621959568103627">koralinės rožinės spalvos</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pasirinkite „Įkvėpk mane“, kad gautumėte unikalesnių ir įvairesnių DI vaizdų.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kai kuriate naudodami DI, užklausa siunčiama į „Google“ DI serverius, kad būtų galima generuoti vaizdus ir tobulinti produktą, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatyvinis DI yra eksperimentinis, jis dar kuriamas ir šiuo metu jo pasiekiamumas ribotas.</translation>
 <translation id="6673898378497337661">padidinti klaviatūros šviesumą</translation>
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
 <translation id="6694534975463174713">užrakinti</translation>

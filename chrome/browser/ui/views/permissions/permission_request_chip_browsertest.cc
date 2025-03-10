@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(
-      "Permissions.Prompt.AudioCapture.Gesture.Attempt", true, 1);
+      "Permissions.Prompt.AudioCapture.Gesture.Attempt", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,

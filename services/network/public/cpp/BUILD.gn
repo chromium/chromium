@@ -62,24 +62,12 @@ component("cpp") {
     "avail_language_header_parser.h",
     "browsing_topics_parser.cc",
     "browsing_topics_parser.h",
-    "client_hints.cc",
-    "client_hints.h",
     "constants.cc",
     "constants.h",
     "content_language_parser.cc",
     "content_language_parser.h",
-    "content_security_policy/content_security_policy.cc",
-    "content_security_policy/content_security_policy.h",
-    "content_security_policy/csp_context.cc",
-    "content_security_policy/csp_context.h",
-    "content_security_policy/csp_source.cc",
-    "content_security_policy/csp_source.h",
-    "content_security_policy/csp_source_list.cc",
-    "content_security_policy/csp_source_list.h",
     "cors/cors.cc",
     "cors/cors.h",
-    "cors/origin_access_entry.cc",
-    "cors/origin_access_entry.h",
     "cors/origin_access_list.cc",
     "cors/origin_access_list.h",
     "cross_origin_embedder_policy_parser.cc",
@@ -98,8 +86,6 @@ component("cpp") {
     "document_isolation_policy_parser.h",
     "empty_url_loader_client.cc",
     "empty_url_loader_client.h",
-    "features.cc",
-    "features.h",
     "fence_event_reporting_parser.cc",
     "fence_event_reporting_parser.h",
     "header_util.cc",
@@ -108,8 +94,6 @@ component("cpp") {
     "initiator_lock_compatibility.h",
     "ip_address_space_util.cc",
     "ip_address_space_util.h",
-    "is_potentially_trustworthy.cc",
-    "is_potentially_trustworthy.h",
     "link_header_parser.cc",
     "link_header_parser.h",
     "loading_params.cc",
@@ -121,8 +105,6 @@ component("cpp") {
     "network_context_getter.h",
     "network_quality_tracker.cc",
     "network_quality_tracker.h",
-    "network_switches.cc",
-    "network_switches.h",
     "no_vary_search_header_parser.cc",
     "no_vary_search_header_parser.h",
     "not_implemented_url_loader_factory.cc",
@@ -132,22 +114,6 @@ component("cpp") {
     "origin_agent_cluster_parser.h",
     "parsed_headers.cc",
     "parsed_headers.h",
-    "permissions_policy/client_hints_permissions_policy_mapping.cc",
-    "permissions_policy/client_hints_permissions_policy_mapping.h",
-    "permissions_policy/fenced_frame_permissions_policies.h",
-    "permissions_policy/origin_with_possible_wildcards.cc",
-    "permissions_policy/origin_with_possible_wildcards.h",
-    "permissions_policy/permissions_policy.cc",
-    "permissions_policy/permissions_policy.h",
-    "permissions_policy/permissions_policy_declaration.cc",
-    "permissions_policy/permissions_policy_declaration.h",
-    "permissions_policy/permissions_policy_features.cc",
-    "permissions_policy/permissions_policy_features.h",
-    "permissions_policy/permissions_policy_features_generated.h",
-    "permissions_policy/permissions_policy_features_internal.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_mojom_traits.cc",
-    "permissions_policy/permissions_policy_mojom_traits.h",
     "private_network_access_check_result.cc",
     "private_network_access_check_result.h",
     "record_ontransfersizeupdate_utils.h",
@@ -187,25 +153,21 @@ component("cpp") {
     "url_util.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
-    "web_sandbox_flags.cc",
-    "web_sandbox_flags.h",
     "wrapper_shared_url_loader_factory.cc",
     "wrapper_shared_url_loader_factory.h",
     "x_frame_options_parser.cc",
     "x_frame_options_parser.h",
   ]
 
-  sources += get_target_outputs(":make_generated_permissions_policy_features")
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",
     ":cpp_base",
-    ":make_generated_permissions_policy_features",
+    ":flags_and_switches",
+    ":is_potentially_trustworthy",
     "//net",
     "//services/network/public/mojom",
-    "//services/network/public/mojom:mojom_permissions_policy_shared",
     "//services/network/public/mojom:url_loader_base",
     "//url",
     "//url/ipc:url_ipc",
@@ -332,6 +294,89 @@ component("structured_headers_mojom_support") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_STRUCTURED_HEADERS_IMPL" ]
+}
+
+component("flags_and_switches") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "network_switches.cc",
+    "network_switches.h",
+    "web_sandbox_flags.cc",
+    "web_sandbox_flags.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//services/network/public/mojom:mojom_web_sandbox_flags",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_FLAGS_AND_SWITCHES_IMPL" ]
+}
+
+component("is_potentially_trustworthy") {
+  sources = [
+    "is_potentially_trustworthy.cc",
+    "is_potentially_trustworthy.h",
+  ]
+  public_deps = [
+    ":flags_and_switches",
+    "//base",
+    "//net",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_IS_POTENTIALLY_TRUSTWORTHY_IMPL" ]
+}
+
+component("web_platform") {
+  sources = [
+    "client_hints.cc",
+    "client_hints.h",
+    "content_security_policy/content_security_policy.cc",
+    "content_security_policy/content_security_policy.h",
+    "content_security_policy/csp_context.cc",
+    "content_security_policy/csp_context.h",
+    "content_security_policy/csp_source.cc",
+    "content_security_policy/csp_source.h",
+    "content_security_policy/csp_source_list.cc",
+    "content_security_policy/csp_source_list.h",
+    "cors/origin_access_entry.cc",
+    "cors/origin_access_entry.h",
+    "permissions_policy/client_hints_permissions_policy_mapping.cc",
+    "permissions_policy/client_hints_permissions_policy_mapping.h",
+    "permissions_policy/fenced_frame_permissions_policies.h",
+    "permissions_policy/origin_with_possible_wildcards.cc",
+    "permissions_policy/origin_with_possible_wildcards.h",
+    "permissions_policy/permissions_policy.cc",
+    "permissions_policy/permissions_policy.h",
+    "permissions_policy/permissions_policy_declaration.cc",
+    "permissions_policy/permissions_policy_declaration.h",
+    "permissions_policy/permissions_policy_features.cc",
+    "permissions_policy/permissions_policy_features.h",
+    "permissions_policy/permissions_policy_features_bitset.cc",
+    "permissions_policy/permissions_policy_features_bitset.h",
+    "permissions_policy/permissions_policy_features_generated.h",
+    "permissions_policy/permissions_policy_features_internal.cc",
+    "permissions_policy/permissions_policy_features_internal.h",
+    "permissions_policy/permissions_policy_mojom_traits.cc",
+    "permissions_policy/permissions_policy_mojom_traits.h",
+  ]
+  sources += get_target_outputs(":make_generated_permissions_policy_features")
+  public_deps = [
+    ":flags_and_switches",
+    ":is_potentially_trustworthy",
+    ":make_generated_permissions_policy_features",
+    "//net",
+    "//services/network/public/mojom:mojom_content_security_policy",
+    "//services/network/public/mojom:mojom_cors_origin_pattern",
+    "//services/network/public/mojom:mojom_permissions_policy_shared",
+    "//services/network/public/mojom:url_loader_base_shared",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_WEB_PLATFORM_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -535,6 +580,7 @@ component("cpp_base") {
     ":shared_storage_support",
     ":storage_access_api_mojom_support",
     ":structured_headers_mojom_support",
+    ":web_platform",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
@@ -662,6 +708,8 @@ source_set("tests") {
     "parsed_request_cookie_mojom_traits_unittest.cc",
     "permissions_policy/origin_with_possible_wildcards_unittest.cc",
     "permissions_policy/permissions_policy_declaration_unittest.cc",
+    "permissions_policy/permissions_policy_features_bitset_unittest.cc",
+    "permissions_policy/permissions_policy_mojom_traits_unittest.cc",
     "permissions_policy/permissions_policy_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
     "request_destination_unittest.cc",

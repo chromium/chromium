@@ -103,10 +103,9 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
-  if (v8::Isolate::TryGetCurrent()) {
-    // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
-    // is running.
-    OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
+  auto source_location = CaptureSourceLocation();
+  if (source_location && !source_location->IsUnknown()) {
+    OnStartedUsingStickyFeature(feature, policy, std::move(source_location));
   } else {
     OnStartedUsingStickyFeature(feature, policy, nullptr);
   }

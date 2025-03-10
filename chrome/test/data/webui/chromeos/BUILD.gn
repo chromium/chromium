@@ -134,6 +134,7 @@ build_webui_tests("build") {
     "fake_passpoint_service_mojom.ts",
     "internet_config_dialog_test.ts",
     "internet_detail_dialog_test.ts",
+    "mocha_adapter.js",
     "mock_controller.js",
     "mock_controller.m.js",
     "mojo_webui_test_support.ts",

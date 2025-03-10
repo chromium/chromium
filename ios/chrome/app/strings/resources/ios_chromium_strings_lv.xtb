@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Šeit varat atvērt funkciju Lens.</translation>
 <translation id="1042296835509784301">Atver paroļu pārvaldnieku pārlūkā Chromium</translation>
 <translation id="1047130070405668746">Atlasiet Chromium</translation>
+<translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
 <translation id="1091252999271033193">Tas nozīmē, ka Chromium katru reizi pieprasīs mobilajām ierīcēm paredzēto vietni.</translation>
 <translation id="1115463765356382667">Pilnvērtīgai Chromium izmantošanai veiciet tālāk ieteiktās darbības.</translation>
 <translation id="1140315115515116765">Pārlūka Chromium izmantošana pēc noklusējuma, lai ērti gūtu cenu ieskatus</translation>
@@ -98,6 +99,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}}</translation>
 <translation id="3410395242749598859">Noteikti jūsu Chromium dati vēl nav saglabāti kontā <ph name="EMAIL" />.
 Pirms kontu pārslēgšanas uzgaidiet dažas minūtes. Ja pārslēgsiet kontus tūlīt, šie dati tiks dzēsti.</translation>
+<translation id="3440830787838130530">Ērti un droši kopīgojiet paroles kopiju ar savu ģimenes grupu Google paroļu pārvaldniekā.</translation>
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
 <translation id="347967311580159871">Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas iespēju uzlabošanai, pārejiet uz sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Parole netika kopīgota. Pārbaudiet interneta savienojumu un pierakstieties pārlūkā Chromium. Pēc tam mēģiniet vēlreiz.</translation>

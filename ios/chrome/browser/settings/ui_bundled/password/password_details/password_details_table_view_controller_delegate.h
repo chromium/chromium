@@ -21,13 +21,7 @@
 
 // Called when we finish treating all the passwords changes in the password
 // details view.
-- (void)didFinishEditingPasswordDetails;
-
-// Called when user finished adding a new password credential.
-- (void)passwordDetailsViewController:
-            (PasswordDetailsTableViewController*)viewController
-                didAddPasswordDetails:(NSString*)username
-                             password:(NSString*)password;
+- (void)didFinishEditingCredentialDetails;
 
 // Checks if the username is reused for the same domain.
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain;

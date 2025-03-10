@@ -52,7 +52,7 @@ export class FakeReadingMode {
   isWebUIToolbarVisible: boolean = true;
 
   // Whether the Read Aloud feature flag is enabled.
-  isReadAloudEnabled: boolean = false;
+  isReadAloudEnabled: boolean = true;
 
   // Returns true if the webpage corresponds to a Google Doc.
   isGoogleDocs: boolean = false;

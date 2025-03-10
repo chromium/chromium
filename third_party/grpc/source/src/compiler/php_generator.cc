@@ -16,9 +16,9 @@
  *
  */
 
-#include <map>
-
 #include <google/protobuf/compiler/php/php_generator.h>
+
+#include <map>
 
 #include "src/compiler/config.h"
 #include "src/compiler/generator_helpers.h"
@@ -50,7 +50,7 @@ std::string PackageName(const FileDescriptor* file) {
   if (file->options().has_php_namespace()) {
     return file->options().php_namespace();
   } else {
-    return ConvertToPhpNamespace(file->package());
+    return ConvertToPhpNamespace(std::string(file->package()));
   }
 }
 
@@ -77,6 +77,9 @@ void PrintMethod(const MethodDescriptor* method, Printer* out) {
       GeneratedClassName(output_type), output_type->file());
 
   out->Print("/**\n");
+  if (method->options().deprecated()) {
+    out->Print(" * @deprecated\n");
+  }
   out->Print(GetPHPComments(method, " *").c_str());
   if (method->client_streaming()) {
     if (method->server_streaming()) {
@@ -144,6 +147,9 @@ void PrintServerMethod(const MethodDescriptor* method, Printer* out) {
       GeneratedClassName(output_type), output_type->file());
 
   out->Print("/**\n");
+  if (method->options().deprecated()) {
+    out->Print(" * @deprecated\n");
+  }
   out->Print(GetPHPComments(method, " *").c_str());
 
   const char* method_template;
@@ -170,7 +176,7 @@ void PrintServerMethod(const MethodDescriptor* method, Printer* out) {
         "of \\$input_type_id$\n"
         " * @param \\Grpc\\ServerContext $$context server request context\n"
         " * @return \\$output_type_id$ for response data, null if if error "
-        "occured\n"
+        "occurred\n"
         " *     initial metadata (if any) and status (if not ok) should be set "
         "to $$context\n"
         " */\n"
@@ -202,7 +208,7 @@ void PrintServerMethod(const MethodDescriptor* method, Printer* out) {
         " * @param \\$input_type_id$ $$request client request\n"
         " * @param \\Grpc\\ServerContext $$context server request context\n"
         " * @return \\$output_type_id$ for response data, null if if error "
-        "occured\n"
+        "occurred\n"
         " *     initial metadata (if any) and status (if not ok) should be set "
         "to $$context\n"
         " */\n"
@@ -222,8 +228,11 @@ void PrintServerMethodDescriptors(const ServiceDescriptor* service,
   map<std::string, std::string> vars;
   vars["service_name"] = service->full_name();
 
+  out->Print("/**\n");
+  if (service->options().deprecated()) {
+    out->Print(" * @deprecated\n");
+  }
   out->Print(
-      "/**\n"
       " * Get the method descriptors of the service for server registration\n"
       " *\n"
       " * @return array of \\Grpc\\MethodDescriptor for the service methods\n"
@@ -272,6 +281,9 @@ void PrintService(const ServiceDescriptor* service,
                   Printer* out) {
   map<std::string, std::string> vars;
   out->Print("/**\n");
+  if (service->options().deprecated()) {
+    out->Print(" * @deprecated\n");
+  }
   out->Print(GetPHPComments(service, " *").c_str());
   out->Print(" */\n");
   vars["name"] = GetPHPServiceClassname(service, class_suffix, is_server);

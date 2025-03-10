@@ -250,6 +250,9 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   if (change_type == TabChangeType::kAll) {
     RefreshUrlBlocklist();
   }
+  if (on_task_pod_controller_) {
+    on_task_pod_controller_->OnPageNavigationContextChanged();
+  }
 
   if (browser_ && browser_->tab_strip_model()->active_index() == index) {
     // Only fire for active tab.
@@ -279,6 +282,9 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
     RefreshUrlBlocklist();
+    if (on_task_pod_controller_) {
+      on_task_pod_controller_->OnPageNavigationContextChanged();
+    }
     if (selection.new_contents) {
       for (auto& observer : observers_) {
         observer.OnActiveTabChanged(selection.new_contents->GetTitle());

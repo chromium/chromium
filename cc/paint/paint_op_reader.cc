@@ -1407,7 +1407,8 @@ void PaintOpReader::ReadRecordPaintFilter(
 
   ReadSimple(&record_bounds);
   ReadSimple(&raster_scale);
-  if (raster_scale.width() <= 0.f || raster_scale.height() <= 0.f) {
+  if (!std::isfinite(raster_scale.width()) || raster_scale.width() <= 0.f ||
+      !std::isfinite(raster_scale.height()) || raster_scale.height() <= 0.f) {
     SetInvalid(DeserializationError::kInvalidRasterScale);
     return;
   }

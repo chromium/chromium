@@ -667,9 +667,8 @@ std::string HttpCache::GenerateCacheKey(
     if (initiator.has_value() && is_mainframe_navigation &&
         base::FeatureList::IsEnabled(
             net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean)) {
-      const auto initiator_site = net::SchemefulSite(*initiator);
       const bool is_initiator_cross_site =
-          initiator_site != net::SchemefulSite(url);
+          !net::SchemefulSite::IsSameSite(*initiator, url::Origin::Create(url));
       if (is_initiator_cross_site) {
         is_cross_site_main_frame_navigation_prefix =
             kCrossSiteMainFrameNavigationPrefix;

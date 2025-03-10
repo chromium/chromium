@@ -253,7 +253,6 @@
 <translation id="2011174342667534258">SDK ဗားရှင်း-</translation>
 <translation id="2016697457005847575">ပြဿနာရှာဖွေဖြေရှင်းခြင်း အဆင့်များ စမ်းကြည့်ရန်</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">သင့် AI ပုံများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် အပြင်အဆင်ရွေးပြီး မျဉ်းသားထားသော စာလုံးများကို ရွေးပါ။</translation>
 <translation id="2045814230297767491">ဇွန်း၊ ခက်ရင်း၊ ဓား</translation>
 <translation id="2047316797244836561">စကရင်နားချိန်ပုံကို ကြည့်ရန် ကွန်ရက်ချိတ်ဆက်ပြီး စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -406,6 +405,7 @@
 <translation id="2787237339470862294">ဤဘာသာစကားကို လောလောဆယ် မပံ့ပိုးပါ</translation>
 <translation id="2787435249130282949">ကီးဘုတ် ပိုလင်း</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
+<translation id="2822702442014805146">အနှစ်ချုပ်နှင့် အမည်ပေးခြင်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="28232023175184696">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ရန် နှိပ်ပါ။</translation>
 <translation id="2855718259207180827">သိုးမွေး</translation>
 <translation id="2859243502336719778">အရေးကြီးသည့် အပ်ဒိတ်</translation>
@@ -827,6 +827,7 @@
 <translation id="4891842000192098784">ဖိအား</translation>
 <translation id="4897058166682006107">ဘယ်နားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="4905998861748258752">စကရင်နားချိန်ပုံ ရွေးရန် ဝန်ဆောင်မှု ဖွင့်ပါ</translation>
+<translation id="4910853326379896417">အနှစ်ချုပ်နှင့် အမည်ပေးခြင်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="4910858703033903787">APN အမျိုးအစားများ</translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
@@ -864,6 +865,7 @@
 <translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="5078711626843651677">ပြောသူအညွှန်း တပ်ပြီးသည်အထိ အသံ နမူနာများကို စက်ထဲတွင် ယာယီသိမ်းထားသည်။ ၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="5078983345702708852">ခေတ်လွန်</translation>
+<translation id="5085224064082122501">အနှစ်ချုပ်နှင့် အမည်ပေးခြင်းအတွက် မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="5087864757604726239">နောက်သို့</translation>
 <translation id="5088172560898466307">ဆာဗာပင်ရင်းအမည်−</translation>
 <translation id="5089810972385038852">ပြည်နယ်</translation>
@@ -1139,7 +1141,6 @@
 <translation id="6352210854422428614">အခြားဂြိုဟ်</translation>
 <translation id="6359706544163531585">လင်းသည့် အပြင်အဆင် ပိတ်ရန်</translation>
 <translation id="6359919876285606596">ဤလုပ်ဆောင်ချက်သည် အတည်ဖြစ်ပြီး ၎င်းကို ပြန်ပြင်၍မရပါ</translation>
-<translation id="6368342879959028556">“AI ဖြင့် ဖန်တီးရန်” ကို ရွေးသည့်အခါ စိတ်ကြိုက်တိုက်တွန်းချက် ရေးပါ။ သို့မဟုတ် အပြင်အဆင်ကို ရွေးရန် “AI နောက်ခံများ” ကို ရွေးနိုင်သည်။ ထို့နောက် သင့် AI နောက်ခံကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် မျဉ်းသားထားသော စာလုံးများ ရွေးနိုင်သည်။</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
 <translation id="6369221585240879141">ဤစာသားမှတ်တမ်း ဘာသာစကားအတွက် အသံဖိုင်အမည်များကို ပြုလုပ်၍မရပါ</translation>
 <translation id="6373461326814131011">ရေကန်</translation>
@@ -1212,16 +1213,6 @@
 <translation id="6657240842932274095">သင့်တည်နေရာသုံးရန် စနစ်ဝန်ဆောင်မှုများကို ခွင့်ပြုမလား။</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="66621959568103627">သန္တာပန်းရောင်</translation>
-<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ပိုမို၍ တစ်မူထူးခြားပြီး စုံလင်သော AI ပုံရွေးစရာများ ရရန် “စိတ်ကူးစိတ်သန်းရစေရန် လှုံ့ဆော်ပါ” ကို ရွေးပါ။
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ဖြင့် ပြုလုပ်သောအခါ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ၏ ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> နှင့်အညီ ပုံများထုတ်လုပ်ပြီး ထုတ်ကုန်မွမ်းမံရန်အတွက် တိုက်တွန်းချက်ကို Google AI ဆာဗာများသို့ ပို့သည်။
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ထုတ်လုပ်မှု AI ကို ကနဦးစမ်းသပ်ရေးဆွဲနေဆဲဖြစ်ပြီး လောလောဆယ်တွင် ရနိုင်မှုကို ကန့်သတ်ထားသည်။</translation>
 <translation id="6673898378497337661">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
 <translation id="6692996468359469499">သင့်ရွေးချယ်မှုနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရယူခြင်း</translation>
 <translation id="6694534975463174713">လော့ခ် သင်္ကေတ</translation>
@@ -1431,6 +1422,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB တို့ထိမျက်နှာပြင်</translation>
 <translation id="757747079855995705">ကျောက်တုံး</translation>
+<translation id="7584853321964440104">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ကျန်သည်</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> စီမံခန့်ခွဲသူက ဤ <ph name="DEVICE_TYPE" /> ကို သုံးနိုင်သည့်အချိန် သတ်မှတ်ထားသည်။</translation>

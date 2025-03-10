@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -99,6 +100,9 @@ class MODULES_EXPORT TCPSocket final
   // ExecutionContextLifecycleStateObserver:
   void ContextDestroyed() override;
 
+  // Socket:
+  void SetState(State state) override;
+
  private:
   void FinishOpenOrAccept(
       mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>,
@@ -123,7 +127,7 @@ class MODULES_EXPORT TCPSocket final
 
   // Invoked when one of the streams (readable or writable) closes.
   // `exception` is non-empty iff the stream closed with an error.
-  void OnStreamClosed(v8::Local<v8::Value> exception);
+  void OnStreamClosed(v8::Local<v8::Value> exception, int net_error);
   void OnBothStreamsClosed();
 
   HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
@@ -141,6 +145,11 @@ class MODULES_EXPORT TCPSocket final
   // Stores the first encountered stream error to be reported after both streams
   // close.
   TraceWrapperV8Reference<v8::Value> stream_error_;
+  // Stores the net error when the socket is aborted
+  int abort_net_error_;
+
+  // Unique id for devtools inspector_network_agent.
+  uint64_t inspector_id_ = CreateUniqueIdentifier();
 
   FRIEND_TEST_ALL_PREFIXES(TCPSocketTest, OnSocketObserverConnectionError);
   FRIEND_TEST_ALL_PREFIXES(TCPSocketCloseTest, OnErrorOrClose);

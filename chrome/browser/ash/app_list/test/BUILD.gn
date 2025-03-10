@@ -32,7 +32,6 @@ static_library("test_support") {
   deps = [
     "//ash/constants",
     "//chrome/browser",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/extensions",
     "//chrome/test:test_support",

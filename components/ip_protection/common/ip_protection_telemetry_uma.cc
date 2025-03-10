@@ -97,7 +97,7 @@ void IpProtectionTelemetryUma::ProxyChainFallback(int proxy_chain_id) {
 }
 
 void IpProtectionTelemetryUma::EmptyTokenCache(ProxyLayer value) {
-  base::UmaHistogramEnumeration("NetworkService.IpProtection.EmptyTokenCache",
+  base::UmaHistogramEnumeration("NetworkService.IpProtection.EmptyTokenCache2",
                                 value);
 }
 
@@ -284,6 +284,35 @@ void IpProtectionTelemetryUma::MdlFirstUpdateTime(base::TimeDelta duration) {
 void IpProtectionTelemetryUma::MdlMatchesTime(base::TimeDelta duration) {
   base::UmaHistogramMicrosecondsTimes(
       "NetworkService.MaskedDomainList.MatchesTime", duration);
+}
+
+void IpProtectionTelemetryUma::GetProbabilisticRevealTokensComplete(
+    TryGetProbabilisticRevealTokensStatus status,
+    base::TimeDelta duration) {
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.GetProbabilisticRevealTokensResult", status);
+
+  if (status == TryGetProbabilisticRevealTokensStatus::kSuccess) {
+    base::UmaHistogramTimes(
+        "NetworkService.IpProtection.ProbabilisticRevealTokensRequestTime",
+        duration);
+  }
+}
+
+void IpProtectionTelemetryUma::IsProbabilisticRevealTokenAvailable(
+    bool is_initial_request,
+    bool is_token_available) {
+  if (is_initial_request) {
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection."
+        "IsProbabilisticRevealTokenAvailableOnInitialRequest",
+        is_token_available);
+  } else {
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection."
+        "IsProbabilisticRevealTokenAvailableOnSubsequentRequest",
+        is_token_available);
+  }
 }
 
 }  // namespace ip_protection

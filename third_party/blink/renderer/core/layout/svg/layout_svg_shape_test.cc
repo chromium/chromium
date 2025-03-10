@@ -39,7 +39,7 @@ TEST_F(LayoutSVGShapeTest, RectBasedHitTest_CircleEllipse) {
 
   {
     // Touching all the shapes.
-    auto results = RectBasedHitTest(PhysicalRect(100, 100, 200, 200));
+    auto& results = RectBasedHitTest(PhysicalRect(100, 100, 200, 200));
     EXPECT_EQ(4u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled));
@@ -48,27 +48,27 @@ TEST_F(LayoutSVGShapeTest, RectBasedHitTest_CircleEllipse) {
   }
   {
     // Inside #stroked.
-    auto results = RectBasedHitTest(PhysicalRect(70, 70, 60, 60));
+    auto& results = RectBasedHitTest(PhysicalRect(70, 70, 60, 60));
     EXPECT_EQ(1u, results.size());
     EXPECT_TRUE(results.Contains(svg));
   }
   {
     // Covering #stroked.
-    auto results = RectBasedHitTest(PhysicalRect(44, 44, 112, 112));
+    auto& results = RectBasedHitTest(PhysicalRect(44, 44, 112, 112));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(stroked));
   }
   {
     // Covering #filled-xfrm.
-    auto results = RectBasedHitTest(PhysicalRect(30, 230, 140, 145));
+    auto& results = RectBasedHitTest(PhysicalRect(30, 230, 140, 145));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled_xfrm));
   }
   {
     // Overlapping #stroked's bounding box but not intersecting.
-    auto results = RectBasedHitTest(PhysicalRect(30, 30, 30, 30));
+    auto& results = RectBasedHitTest(PhysicalRect(30, 30, 30, 30));
     EXPECT_EQ(1u, results.size());
     EXPECT_TRUE(results.Contains(svg));
   }
@@ -97,7 +97,7 @@ TEST_F(LayoutSVGShapeTest, RectBasedHitTest_Rect) {
 
   {
     // Touching all the shapes.
-    auto results = RectBasedHitTest(PhysicalRect(50, 50, 100, 100));
+    auto& results = RectBasedHitTest(PhysicalRect(50, 50, 100, 100));
     EXPECT_EQ(5u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled));
@@ -107,28 +107,28 @@ TEST_F(LayoutSVGShapeTest, RectBasedHitTest_Rect) {
   }
   {
     // Inside #stroked-xfrm.
-    auto results = RectBasedHitTest(PhysicalRect(40, 140, 20, 20));
+    auto& results = RectBasedHitTest(PhysicalRect(40, 140, 20, 20));
     EXPECT_EQ(1u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_FALSE(results.Contains(stroked_xfrm));
   }
   {
     // Covering #filled-xfrm.
-    auto results = RectBasedHitTest(PhysicalRect(100, 0, 100, 100));
+    auto& results = RectBasedHitTest(PhysicalRect(100, 0, 100, 100));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled_xfrm));
   }
   {
     // Covering #stroked.
-    auto results = RectBasedHitTest(PhysicalRect(104, 119, 92, 62));
+    auto& results = RectBasedHitTest(PhysicalRect(104, 119, 92, 62));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(stroked));
   }
   {
     // Outside all shapes.
-    auto results = RectBasedHitTest(PhysicalRect(75, 77, 50, 40));
+    auto& results = RectBasedHitTest(PhysicalRect(75, 77, 50, 40));
     EXPECT_EQ(1u, results.size());
     EXPECT_TRUE(results.Contains(svg));
   }
@@ -152,7 +152,7 @@ TEST_F(LayoutSVGShapeTest, RectBasedHitTest_Path) {
 
   {
     // Touching all the shapes.
-    auto results = RectBasedHitTest(PhysicalRect(50, 50, 100, 100));
+    auto& results = RectBasedHitTest(PhysicalRect(50, 50, 100, 100));
     EXPECT_EQ(3u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled));
@@ -160,28 +160,28 @@ TEST_F(LayoutSVGShapeTest, RectBasedHitTest_Path) {
   }
   {
     // Inside #filled.
-    auto results = RectBasedHitTest(PhysicalRect(35, 35, 30, 30));
+    auto& results = RectBasedHitTest(PhysicalRect(35, 35, 30, 30));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled));
   }
   {
     // Covering #filled-xfrm.
-    auto results = RectBasedHitTest(PhysicalRect(105, 105, 90, 90));
+    auto& results = RectBasedHitTest(PhysicalRect(105, 105, 90, 90));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled_xfrm));
   }
   {
     // Intersecting #filled.
-    auto results = RectBasedHitTest(PhysicalRect(25, 25, 50, 50));
+    auto& results = RectBasedHitTest(PhysicalRect(25, 25, 50, 50));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled));
   }
   {
     // Intersecting #filled-xfrm.
-    auto results = RectBasedHitTest(PhysicalRect(125, 125, 50, 50));
+    auto& results = RectBasedHitTest(PhysicalRect(125, 125, 50, 50));
     EXPECT_EQ(2u, results.size());
     EXPECT_TRUE(results.Contains(svg));
     EXPECT_TRUE(results.Contains(filled_xfrm));

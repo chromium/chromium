@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">Ovdje možete otvoriti Objektiv.</translation>
 <translation id="1042296835509784301">Otvara Upravitelj lozinki u Chromiumu.</translation>
 <translation id="1047130070405668746">Odaberite Chromium</translation>
+<translation id="1086486568852410168">Pretražujte pomoću Google Objektiva</translation>
 <translation id="1091252999271033193">Ovo znači da će Chromium svaki put zatražiti web lokaciju za mobilni uređaj.</translation>
 <translation id="1115463765356382667">Izvršite predložene radnje u nastavku da iskoristite sve prednosti Chromiuma.</translation>
 <translation id="1140315115515116765">Koristite Chromium prema zadanim postavkama da jednostavno dobijate uvide u cijene</translation>
@@ -98,6 +99,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Ovo može uključivati historiju i automatsko popunjavanje.}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Ovo može uključivati historiju i automatsko popunjavanje.}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute. Ovo može uključivati historiju i automatsko popunjavanje.}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta. Ovo može uključivati historiju i automatsko popunjavanje.}}</translation>
 <translation id="3410395242749598859">Neki podaci Chromiuma još uvijek nisu sačuvani na <ph name="EMAIL" />.
 Pričekajte nekoliko minuta prije nego što promijenite račun. Ako promijenite račun sada, ti podaci će se izbrisati.</translation>
+<translation id="3440830787838130530">Jednostavno i sigurno dijelite kopiju lozinke s porodičnom grupom na Google upravitelju lozinki</translation>
 <translation id="3472200483164753384">Nije podržano na Chromium Canaryju</translation>
 <translation id="347967311580159871">Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu idite na <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Lozinka nije podijeljena. Provjerite internetsku vezu i jeste li prijavljeni u Chromium. Nakon toga pokušajte ponovo.</translation>

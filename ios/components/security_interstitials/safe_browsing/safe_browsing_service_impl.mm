@@ -11,7 +11,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
-#import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -158,7 +158,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
@@ -204,7 +204,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
@@ -284,7 +284,7 @@ bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
     return false;
   }
 
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();

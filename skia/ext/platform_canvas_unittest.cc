@@ -14,7 +14,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 
 // Native drawing context is only used/supported on Windows.
@@ -45,8 +44,7 @@ void MakeOpaque(SkCanvas* canvas, int x, int y, int width, int height) {
 
 bool IsOfColor(const SkBitmap& bitmap, int x, int y, uint32_t color) {
   // For masking out the alpha values.
-  static uint32_t alpha_mask =
-      static_cast<uint32_t>(SK_A32_MASK) << SK_A32_SHIFT;
+  constexpr uint32_t alpha_mask = SkColorSetARGB(0xFF, 0, 0, 0);
   return (*bitmap.getAddr32(x, y) | alpha_mask) == (color | alpha_mask);
 }
 

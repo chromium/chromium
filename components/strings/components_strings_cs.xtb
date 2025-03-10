@@ -138,6 +138,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1230244617745022071"><ph name="SOURCE" /> (zjištěno automaticky)</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
 <translation id="1236081509407217141">Povolit virtuální realitu?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Název zařízení</translation>
 <translation id="124116460088058876">Další jazyky</translation>
 <translation id="1243027604378859286">Autor:</translation>
@@ -1435,6 +1436,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3536227077203206203">Tentokrát povolit</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Obrazovka (stránkovaná)</translation>
+<translation id="3541016556608204104">Další informace o Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Obrázek karty</translation>
 <translation id="3542768452570884558">Otevřít odkaz v novém okně</translation>
 <translation id="3543935938072367282">Dokončete nákup rychleji s automatickým vyplňováním</translation>
@@ -1798,6 +1800,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="415440494507469262">Přidat kartu do srovnávací tabulky</translation>
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4165422751765527461">Otevře na nové kartě článek centra nápovědy</translation>
+<translation id="4165584779486830267">Teď můžete platit na splátky pomocí služby Affirm nebo Zip.</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
 <translation id="4169535189173047238">Nepovolovat</translation>
 <translation id="4171400957073367226">Chybný ověřovací podpis</translation>
@@ -2762,6 +2765,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5910140988253729859">Vrátit automatické vyplnění zpět</translation>
 <translation id="5911020115933784199">Události a přehledy</translation>
 <translation id="5911110632211230665">Otevření je blokováno</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> přidal(a) tuto kartu</translation>
 <translation id="5915189366813702112">Pružné uspořádání práce</translation>
 <translation id="59174027418879706">Povoleno</translation>
 <translation id="5918373444239520146">Technické hračky a přenosná elektronika</translation>
@@ -4620,6 +4624,7 @@ Další podrobnosti:
 <translation id="9183425211371246419">Web <ph name="HOST_NAME" /> používá nepodporovaný protokol.</translation>
 <translation id="918454845714257218">Zkontrolujte kód (<ph name="SIDE_OF_CARD" />) a zkuste to znovu</translation>
 <translation id="9186203289258525843">Tlačítko nastavení Chromu jako výchozího prohlížeče, aktivací nastavíte Chrome jako výchozí prohlížeč v nastavení systému</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> změnil(a) tuto kartu</translation>
 <translation id="9189789270972826888">Pokud se karta nevyplnila, kliknutím zkopírujte níže uvedené údaje o kartě. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Témata starší než 4 týdny se automaticky mažou</translation>
 <translation id="9191834167571392248">Děrování vlevo dole</translation>

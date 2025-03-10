@@ -143,10 +143,10 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
     app_name_publisher_view->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
-    app_name_publisher_view->AddChildView(
+    app_name_publisher_view->AddChildViewRaw(
         CreateNameLabel(base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)))
             .release());
-    app_name_publisher_view->AddChildView(
+    app_name_publisher_view->AddChildViewRaw(
         CreateOriginLabelFromStartUrl(registrar.GetAppStartUrl(app_id_), true)
             .release());
     app_info_view->AddChildView(std::move(app_name_publisher_view));

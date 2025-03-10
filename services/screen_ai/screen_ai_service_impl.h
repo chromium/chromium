@@ -76,6 +76,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
                           ExtractMainContentCallback callback) override;
   void ExtractMainNode(const ui::AXTreeUpdate& snapshot,
                        ExtractMainNodeCallback callback) override;
+  void IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
+                        IdentifyMainNodeCallback callback) override;
 
   // mojom::ScreenAIServiceFactory:
   void InitializeMainContentExtraction(

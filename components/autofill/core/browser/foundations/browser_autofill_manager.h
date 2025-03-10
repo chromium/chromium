@@ -525,7 +525,8 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       bool should_offer_single_field_form_fill,
       OnGenerateSuggestionsCallback callback,
-      std::vector<std::vector<Suggestion>> suggestion_lists);
+      std::vector<Suggestion> plus_address_suggestions,
+      std::vector<Suggestion> single_field_suggestions);
 
   // Triggered when the user undoes the filling of an address profile using an
   // email override.

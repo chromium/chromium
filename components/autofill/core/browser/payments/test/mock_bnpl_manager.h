@@ -32,6 +32,12 @@ class MockBnplManager : public payments::BnplManager {
               OnAmountExtractionReturned,
               (const std::optional<uint64_t>&),
               (override));
+
+  MOCK_METHOD(void,
+              InitBnplFlow,
+              (uint64_t final_checkout_amount,
+               OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback),
+              (override));
 };
 
 }  // namespace autofill

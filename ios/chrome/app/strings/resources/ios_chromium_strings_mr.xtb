@@ -4,6 +4,7 @@
 <translation id="1000436330784933699">तुम्ही इथे Lens उघडू शकता.</translation>
 <translation id="1042296835509784301">Chromium मध्ये Password Manager उघडते.</translation>
 <translation id="1047130070405668746">Chromium निवडा</translation>
+<translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
 <translation id="1091252999271033193">याचा अर्थ असा, की Chromium हे प्रत्येक वेळी मोबाइल साइटची विनंती करेल.</translation>
 <translation id="1115463765356382667">Chromium चा पुरेपूर वापर करण्यासाठी या सुचवलेल्या कृती पूर्ण करा.</translation>
 <translation id="1140315115515116765">किमतीच्या इनसाइट सहजपणे मिळवण्यासाठी बाय डीफॉल्ट Chromium वापरा</translation>
@@ -98,6 +99,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}other{Chromium {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}}</translation>
 <translation id="3410395242749598859">तुमचा काही Chromium डेटा अद्याप <ph name="EMAIL" /> मध्ये सेव्ह करण्यात आला नाही.
 खाती स्विच करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता खाती स्विच केल्यास, हा डेटा हटवला जाईल.</translation>
+<translation id="3440830787838130530">Google Password Manager मध्ये तुमच्या कुटुंब गटासोबत पासवर्डची कॉपी सहज आणि सुरक्षितपणे शेअर करा</translation>
 <translation id="3472200483164753384">Chromium कॅनरी वर सपोर्ट नाही</translation>
 <translation id="347967311580159871">तुमच्या Chromium अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
 <translation id="3512168799938877162">तुमचा पासवर्ड शेअर केला नाही. तुमचे इंटरनेट कनेक्शन तपासा आणि तुम्ही Chromium मध्ये साइन इन केले असल्याची खात्री करा. त्यानंतर, पुन्हा प्रयत्न करा.</translation>

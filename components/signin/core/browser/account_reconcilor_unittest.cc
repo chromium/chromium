@@ -1578,79 +1578,7 @@ TEST_F(AccountReconcilorDiceTest, UnverifiedAccountMerge) {
   ASSERT_EQ(AccountReconcilorState::kOk, reconcilor->GetState());
 }
 
-TEST_F(AccountReconcilorDiceTest, DeleteCookie) {
-  const CoreAccountId primary_account_id =
-      identity_test_env()
-          ->MakePrimaryAccountAvailable(kFakeEmail,
-                                        consent_level_for_reconcile_)
-          .account_id;
-  const CoreAccountId secondary_account_id =
-      identity_test_env()->MakeAccountAvailable(kFakeEmail2).account_id;
 
-  auto* identity_manager = identity_test_env()->identity_manager();
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(primary_account_id));
-  ASSERT_FALSE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_id));
-  ASSERT_TRUE(
-      identity_manager->HasAccountWithRefreshToken(secondary_account_id));
-  ASSERT_FALSE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          secondary_account_id));
-
-  AccountReconcilor* reconcilor = GetMockReconcilor();
-
-  // With scoped deletion, only secondary tokens are revoked.
-  {
-    std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-        reconcilor->GetScopedSyncDataDeletion();
-    reconcilor->OnAccountsCookieDeletedByUserAction();
-    EXPECT_TRUE(
-        identity_manager->HasAccountWithRefreshToken(primary_account_id));
-    EXPECT_FALSE(
-        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_account_id));
-    EXPECT_FALSE(
-        identity_manager->HasAccountWithRefreshToken(secondary_account_id));
-  }
-
-  identity_test_env()->SetRefreshTokenForAccount(secondary_account_id);
-  reconcilor->OnAccountsCookieDeletedByUserAction();
-
-  // Without scoped deletion, the primary token is also invalidated.
-  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(primary_account_id));
-  EXPECT_TRUE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_id));
-  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_CLIENT,
-            identity_manager
-                ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
-                .GetInvalidGaiaCredentialsReason());
-  EXPECT_FALSE(
-      identity_manager->HasAccountWithRefreshToken(secondary_account_id));
-
-  // If the primary account has an error, always revoke it.
-  identity_test_env()->SetRefreshTokenForAccount(primary_account_id);
-  EXPECT_FALSE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_id));
-  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_test_env()->identity_manager(), primary_account_id,
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
-  {
-    std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
-        reconcilor->GetScopedSyncDataDeletion();
-    reconcilor->OnAccountsCookieDeletedByUserAction();
-    EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                  CREDENTIALS_REJECTED_BY_CLIENT,
-              identity_manager
-                  ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
-                  .GetInvalidGaiaCredentialsReason());
-  }
-}
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class AccountReconcilorDiceTestForSupervisedUsers
@@ -1744,6 +1672,39 @@ class AccountReconcilorDiceTestWithUnoDesktop
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     AccountReconcilorDiceTestWithUnoDesktop);
 
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookie) {
+  const CoreAccountId primary_account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable(kFakeEmail,
+                                        consent_level_for_reconcile_)
+          .account_id;
+  const CoreAccountId secondary_account_id =
+      identity_test_env()->MakeAccountAvailable(kFakeEmail2).account_id;
+
+  auto* identity_manager = identity_test_env()->identity_manager();
+  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(primary_account_id));
+  ASSERT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id));
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(secondary_account_id));
+  ASSERT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          secondary_account_id));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+
+  identity_test_env()->SetRefreshTokenForAccount(secondary_account_id);
+  reconcilor->OnAccountsCookieDeletedByUserAction();
+
+  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(primary_account_id));
+  EXPECT_EQ(!is_uno_desktop_enabled(),
+            identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+                primary_account_id));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshToken(secondary_account_id));
+}
+
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSignedInUser) {
   auto* identity_manager = identity_test_env()->identity_manager();
   signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
@@ -1789,9 +1750,9 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSyncingUser) {
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_TRUE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info.account_id));
+  EXPECT_EQ(!is_uno_desktop_enabled(),
+            identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+                account_info.account_id));
 }
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
@@ -1882,12 +1843,14 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, CookieSettingMigrationSync) {
   ASSERT_EQ(is_uno_desktop_enabled(),
             pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-  // Sync is not auto-migrated.
+  // Sync is auto-migrated.
   GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  EXPECT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(
+                prefs::kCookieClearOnExitMigrationNoticeComplete));
 
-  // But is migrated on signout. Regression test for b/350888149.
+  // It is auto-migrated when clearing the primary account (and turning sync
+  // off).
   identity_test_env()->ClearPrimaryAccount();
   EXPECT_EQ(is_uno_desktop_enabled(),
             pref_service()->GetBoolean(
@@ -3302,14 +3265,6 @@ TEST_F(AccountReconcilorTest, ForcedReconcileTriggerShouldNotResultInNoop) {
       AccountReconcilor::kTriggerNoopHistogramName, 0);
   histogram_tester()->ExpectTotalCount(
       AccountReconcilor::kTriggerMultiloginHistogramName, 1);
-}
-
-TEST_F(AccountReconcilorTest, ScopedSyncedDataDeletionDestructionOrder) {
-  AccountReconcilor* reconcilor = GetMockReconcilor();
-  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> data_deletion =
-      reconcilor->GetScopedSyncDataDeletion();
-  DeleteReconcilor();
-  // data_deletion is destroyed after the reconcilor, this should not crash.
 }
 
 TEST_F(AccountReconcilorTest, LockDestructionOrder) {

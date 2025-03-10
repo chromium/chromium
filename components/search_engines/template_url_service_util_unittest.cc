@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -34,6 +35,8 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
+
+using regional_capabilities::CountryIdHolder;
 
 std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
     int prepopulate_id,
@@ -62,11 +65,11 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
     int prepopulate_id,
     const std::string& keyword,
     TemplateURLID id,
-    bool is_play_api_turl = false) {
+    RegulatoryExtensionType reg_ext_type = RegulatoryExtensionType::kDefault) {
   std::unique_ptr<TemplateURLData> data =
       CreatePrepopulateTemplateURLData(prepopulate_id, keyword);
   data->id = id;
-  data->created_from_play_api = is_play_api_turl;
+  data->regulatory_origin = reg_ext_type;
   return std::make_unique<TemplateURL>(*data);
 }
 
@@ -107,7 +110,6 @@ void CallGetSearchProvidersUsingLoadedEngines(
 
     GetSearchProvidersUsingLoadedEngines(
         keyword_web_data.get(), &search_engines_test_environment.pref_service(),
-        &search_engines_test_environment.search_engine_choice_service(),
         search_engines_test_environment.prepopulate_data_resolver(),
         template_urls,
         /*default_search_provider=*/nullptr, search_terms_data,
@@ -178,7 +180,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   TemplateURLService::OwnedTemplateURLVector local_turls;
 
   // Start with single search engine created from Play API data.
-  local_turls.push_back(CreatePrepopulateTemplateURL(0, "play", 1, true));
+  local_turls.push_back(CreatePrepopulateTemplateURL(
+      0, "play", 1, RegulatoryExtensionType::kAndroidEEA));
 
   // Test that prepopulated search engine with matching keyword is merged with
   // Play API search engine. Search URL should come from Play API search engine.
@@ -190,7 +193,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   ASSERT_EQ(local_turls.size(), 1U);
   // Merged search engine should have both Play API flag and valid
   // prepopulate_id.
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(1, local_turls[0]->prepopulate_id());
   EXPECT_NE(prepopulated_search_url, local_turls[0]->url());
 
@@ -201,7 +205,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->keyword(), u"play");
 
   // Test that removing search engine from prepopulated list doesn't delete Play
@@ -210,7 +215,8 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   MergeEnginesFromPrepopulateData(nullptr, &prepopulated_turls, &local_turls,
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
-  EXPECT_TRUE(local_turls[0]->created_from_play_api());
+  ASSERT_EQ(local_turls[0]->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   EXPECT_EQ(local_turls[0]->prepopulate_id(), 0);
 }
 
@@ -267,7 +273,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     // Country stored in the database. As such, when passed as input, it will
     // be used to update only the database. To change the profile's country,
     // write directly to prefs.
-    int country = 0;
+    std::optional<CountryIdHolder> country = std::nullopt;
 
     // Number of keywords search engines available. Ignored when passing the
     // struct as input to set the database's initial state.
@@ -276,8 +282,10 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     // Formatter method for Google Test.
     friend std::ostream& operator<<(std::ostream& out,
                                     const KeywordTestMetadata& m) {
-      return out << "{data_version=" << m.data_version
-                 << ", country=" << m.country
+      return out << "{data_version=" << m.data_version << ", country="
+                 << (m.country.has_value()
+                         ? base::NumberToString(m.country->GetForTesting())
+                         : "<null>")
                  << ", keyword_engines_count=" << m.keyword_engines_count
                  << "}";
     }
@@ -294,9 +302,12 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
   // For country samples, using Belgium and France for EEA, and the United
   // States for non-EEA.
-  const int kEeaCountryId = country_codes::CountryStringToCountryID("BE");
-  const int kOtherEeaCountryId = country_codes::CountryStringToCountryID("FR");
-  const int kNonEeaCountryId = country_codes::CountryStringToCountryID("US");
+  const CountryIdHolder kEeaCountryId =
+      CountryIdHolder(country_codes::CountryStringToCountryID("BE"));
+  const CountryIdHolder kOtherEeaCountryId =
+      CountryIdHolder(country_codes::CountryStringToCountryID("FR"));
+  const CountryIdHolder kNonEeaCountryId =
+      CountryIdHolder(country_codes::CountryStringToCountryID("US"));
 
   // Simulates how the search providers are loaded during Chrome init by
   // calling `GetSearchProvidersUsingLoadedEngines()`.
@@ -341,15 +352,14 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_OutOfEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall, kNonEeaCountryId);
+  prefs().SetInteger(country_codes::kCountryIDAtInstall,
+                     kNonEeaCountryId.GetForTesting());
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
       .country = kNonEeaCountryId,
       .keyword_engines_count = 5u};
-  const KeywordTestMetadata kNoUpdate = {.data_version = 0,
-                                         .country = 0,
-                                         .keyword_engines_count = 0u};
+  const KeywordTestMetadata kNoUpdate = {};
 
   // Initial state: nothing. Simulates a fresh install.
   // The function should populate the profile with 5 engines and current
@@ -386,18 +396,18 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_InEea) {
   search_engine_choice_service().ClearCountryIdCacheForTesting();
-  prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
+  prefs().SetInteger(country_codes::kCountryIDAtInstall,
+                     kEeaCountryId.GetForTesting());
   const size_t kEeaKeywordEnginesCount =
       TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-          kEeaCountryId)
+          kEeaCountryId.GetForTesting())
           .size();
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
       .country = kEeaCountryId,
       .keyword_engines_count = kEeaKeywordEnginesCount};
-  const KeywordTestMetadata kNoUpdate = {
-      .data_version = 0, .country = 0, .keyword_engines_count = 0u};
+  const KeywordTestMetadata kNoUpdate = {};
 
   // Initial state: nothing. Simulates a fresh install.
   // The function should populate the profile with 8 engines and current

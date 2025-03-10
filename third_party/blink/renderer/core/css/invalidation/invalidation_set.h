@@ -186,8 +186,6 @@ class CORE_EXPORT InvalidationSet
            !invalidation_flags_.InvalidatesParts();
   }
 
-  bool IsAlive() const { return is_alive_; }
-
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // Format the InvalidationSet for debugging purposes.
@@ -372,8 +370,6 @@ class CORE_EXPORT InvalidationSet
   explicit InvalidationSet(InvalidationType);
 
   ~InvalidationSet() {
-    CHECK(is_alive_);
-    is_alive_ = false;
     ClearAllBackings();
   }
 
@@ -436,9 +432,6 @@ class CORE_EXPORT InvalidationSet
   // (unless we know for sure no child can be affected by a
   // selector of the :nth-child type).
   unsigned invalidates_nth_ : 1;
-
-  // If true, the instance is alive and can be used.
-  unsigned is_alive_ : 1;
 };
 
 class CORE_EXPORT DescendantInvalidationSet final : public InvalidationSet {

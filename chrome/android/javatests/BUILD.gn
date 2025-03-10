@@ -543,8 +543,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetViewBinderTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillCardBenefitsFragmentTest.java",
-    "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalCardEditorTest.java",
-    "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalIbanEditorTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentCardBenefitsTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillProfilesFragmentTest.java",
@@ -1297,6 +1295,19 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab_group_sync") {
   deps = chrome_test_java_deps
 }
 
+android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationIntegrationTest.java" ]
+
+  deps = [
+    "//components/data_sharing/internal:internal_java",
+    "//components/data_sharing/public:public_java",
+  ]
+
+  deps += chrome_test_java_deps
+}
+
 android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
   resources_package = "org.chromium.chrome.test"
 
@@ -1380,6 +1391,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
     "src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuRenderTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/ToolbarButtonIphTest.java",
     "src/org/chromium/chrome/browser/toolbar/top/ToolbarPhoneTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletTest.java",
   ]
 
   deps = chrome_test_java_deps

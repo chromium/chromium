@@ -37,13 +37,20 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -619,5 +626,36 @@ public class MultiInstanceManager
      */
     public boolean closeChromeWindowIfEmpty(int instanceId) {
         return false;
+    }
+
+    /**
+     * Intended to be called on initialization. If there's only one window at the moment that has
+     * tabs stored for it, we then know that any tabs and groups that sync knows of are not in other
+     * windows, and their local ids should be cleared out.
+     *
+     * @param selector The root entry point to tab model objects. Does not necessarily have to be
+     *     done initializing.
+     */
+    public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
+        // Should only happen in tests.
+        if (selector == null) return;
+
+        TabModelUtils.runOnTabStateInitialized(
+                selector,
+                (TabModelSelector initializedSelector) -> {
+                    if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return;
+                    cleanupSyncedTabGroups(initializedSelector);
+                });
+    }
+
+    protected void cleanupSyncedTabGroups(TabModelSelector selector) {
+        TabGroupModelFilter filter =
+                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+
+        Profile profile = filter.getTabModel().getProfile();
+        if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
+
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
     }
 }

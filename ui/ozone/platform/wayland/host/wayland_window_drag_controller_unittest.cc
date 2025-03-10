@@ -29,6 +29,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
@@ -1528,6 +1529,52 @@ TEST_P(WaylandWindowDragControllerTest, NoopUnlessPointerOrTouchPressed) {
       DragEventSource::kTouch,
       /*allow_system_drag=*/false);
   ASSERT_EQ(State::kIdle, drag_controller_state());
+}
+
+ACTION_P(CloneEvent, ptr) {
+  *ptr = arg0->Clone();
+}
+
+// Regression test for https://crbug.com/400486350.
+TEST_P(WaylandWindowDragControllerTest,
+       CancelIfPointerButtonIsReleasedBeforeFirstEnter) {
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+
+  // Press left mouse button within |window_|.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+
+  // Ensure (at test compositor side) wl_data_device offer and enter are not
+  // automatically sent when the next drag session is started.
+  ASSERT_TRUE(connection_->data_device_manager()->GetDevice());
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    ASSERT_FALSE(server->data_device_manager()->data_source());
+    ASSERT_TRUE(server->data_device_manager()->data_device());
+    server->data_device_manager()
+        ->data_device()
+        ->disable_auto_send_start_drag_events();
+  });
+
+  // Request the drag to start and ensure internal state is set as expected.
+  GetWaylandToplevelExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  ASSERT_EQ(State::kAttached, drag_controller_state());
+  ASSERT_TRUE(drag_controller()->drag_source().has_value());
+
+  // Now the edge case emulation: send a wl_pointer.button release before the
+  // very first wl_data_device has been sent and ensure the drag session is
+  // cancelled, internal state is reset and the corresponding mouse event
+  // gets dispatched.
+  std::unique_ptr<Event> event;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
+  SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
+  Mock::VerifyAndClearExpectations(&delegate_);
+  ASSERT_TRUE(event->IsMouseEvent());
+  EXPECT_TRUE(event->AsMouseEvent()->IsLeftMouseButton());
+  EXPECT_EQ(event->type(), ui::EventType::kMouseReleased);
+  ASSERT_EQ(State::kIdle, drag_controller_state());
+  ASSERT_FALSE(drag_controller()->drag_source().has_value());
 }
 
 // Ensure events are handled appropriately when the target window is destroyed

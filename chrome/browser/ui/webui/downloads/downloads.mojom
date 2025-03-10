@@ -35,7 +35,6 @@ enum DangerType {
 enum TailoredWarningType {
   kNoApplicableTailoredWarningType,
   kCookieTheft,
-  kCookieTheftWithAccountInfo,
   kSuspiciousArchive,
 };
 
@@ -85,8 +84,6 @@ struct Data {
   string file_name;
   string file_path;
   string file_url;
-  // Used to display tailored warnings with account information.
-  string account_email;
   string id;
   string last_reason_text;
   string progress_status_text;

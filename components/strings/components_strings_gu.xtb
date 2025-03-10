@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ઑટોમૅટિક રીતે ભાળ મેળવેલી)</translation>
 <translation id="1232569758102978740">શીર્ષક વિનાનું</translation>
 <translation id="1236081509407217141">VRને મંજૂરી આપીએ?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">તમારા ડિવાઇસનું નામ</translation>
 <translation id="124116460088058876">વધુ ભાષાઓ</translation>
 <translation id="1243027604378859286">લેખક:</translation>
@@ -1438,6 +1439,7 @@
 <translation id="3536227077203206203">આ વખતે મંજૂરી આપી છે</translation>
 <translation id="3537165859691846083">લેટર પ્લસ</translation>
 <translation id="353816159217417898">સ્ક્રીન (પેજનું)</translation>
+<translation id="3541016556608204104">Chrome Enterprise Connectors વિશે વધુ</translation>
 <translation id="3542628208405253498">કાર્ડ પરની છબી</translation>
 <translation id="3542768452570884558">નવી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="3543935938072367282">ઑટોમૅટિક રીતે ભરવાની સુવિધા વડે વધુ ઝડપથી ચેકઆઉટ કરો</translation>
@@ -1802,6 +1804,7 @@
 <translation id="415440494507469262">તુલનાત્મક ટેબલમાં ટૅબ ઉમેરો</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4165422751765527461">નવા ટૅબમાં સહાયતા કેન્દ્ર પરનો લેખ ખોલે છે</translation>
+<translation id="4165584779486830267">તમે હવે Affirm અથવા Zipનો ઉપયોગ કરીને હપ્તેથી ચુકવણી કરી શકો છો.</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
 <translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4171400957073367226">ખોટી ચકાસણી સહી</translation>
@@ -2766,6 +2769,7 @@
 <translation id="5910140988253729859">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="5911020115933784199">ઇવેન્ટ અને સૂચિઓ</translation>
 <translation id="5911110632211230665">ફાઇલો ખોલવાનું બ્લૉક કરેલું છે</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> દ્વારા આ ટૅબ ઉમેરવામાં આવ્યું</translation>
 <translation id="5915189366813702112">અનુકૂળતા અનુસાર કામ કરવાની વ્યવસ્થા</translation>
 <translation id="59174027418879706">સક્ષમ કરેલું</translation>
 <translation id="5918373444239520146">ગૅજેટ અને નાના ઇલેક્ટ્રોનિક ડિવાઇસ</translation>
@@ -4626,6 +4630,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" />, એક અસમર્થિત પ્રોટોકોલનો ઉપયોગ કરે છે.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> કોડ ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="9186203289258525843">'Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો' બટન, Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે સક્રિય કરો</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> દ્વારા આ ટૅબમાં ફેરફાર કરવામાં આવ્યો</translation>
 <translation id="9189789270972826888">જો કાર્ડ ઑટોમૅટિક રીતે ભરવામાં આવ્યું ન હોય, તો કાર્ડની વિગતો કૉપિ પેસ્ટ કરવા માટે, તેના પર ક્લિક કરો. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 અઠવાડિયાથી જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે છે</translation>
 <translation id="9191834167571392248">નીચે ડાબી બાજુએ કાણું પાડો</translation>

@@ -7180,6 +7180,28 @@ TEST_F(DrawPropertiesTest, RenderSurfacePixelAlignment) {
             grand_child->visible_drawable_content_rect());
   EXPECT_TRUE(grand_child->is_clipped());
   EXPECT_EQ(gfx::Rect(51, 201), grand_child->clip_rect());
+
+  SetRenderSurfaceReason(
+      child, RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants);
+  UpdateActiveTreeDrawProperties();
+  ASSERT_EQ(parent_surface, GetRenderSurface(parent));
+  ASSERT_EQ(child_surface, GetRenderSurface(child));
+  // The parent still has the same pixel alignment.
+  EXPECT_TRANSFORM_EQ(gfx::Transform::MakeTranslation(25, 30),
+                      parent_surface->draw_transform());
+  EXPECT_VECTOR2DF_NEAR(gfx::Vector2dF(0.4, 0.6),
+                        parent_surface->pixel_alignment_offset(), kTolerance);
+  // `child` no longer has pixel alignment because it has
+  // RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants.
+  // `child_surface`'s draw transform now includes the pixel alignment of the
+  // target surface and its original offset from the target surface.
+  EXPECT_TRANSFORM_EQ(gfx::Transform::MakeTranslation(10.6, 21.4),
+                      child_surface->draw_transform());
+  EXPECT_VECTOR2DF_NEAR(gfx::Vector2dF(),
+                        child_surface->pixel_alignment_offset(), kTolerance);
+  EXPECT_TRUE(child->DrawTransform().IsIdentity());
+  EXPECT_TRANSFORM_NEAR(gfx::Transform::MakeTranslation(5.6, 10.4),
+                        grand_child->DrawTransform(), kTolerance);
 }
 
 // This tests that we skip computing the visible areas for the subtree

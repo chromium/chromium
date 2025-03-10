@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1045899828449635435">Remover também dados desses sites?</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
+<translation id="1052842760770519282">Não é possível acessar algumas das suas senhas</translation>
 <translation id="1058669287135776095">Você está off-line. Verifique sua conexão de Internet e tente de novo.</translation>
 <translation id="10614374240317010">Nunca salvas</translation>
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
@@ -70,6 +71,7 @@
 <translation id="1269129608791067105">Seu histórico será mostrado aqui</translation>
 <translation id="1273937721055267968">Bloquear o <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Toque para expandir</translation>
+<translation id="1289129165308566697">Veja seu histórico em outros dispositivos</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="1298077576058087471">Economize até 60% de dados enquanto lê as notícias de hoje</translation>
 <translation id="1303339473099049190">Não foi possível encontrar essa senha. Verifique a ortografia e tente novamente.</translation>
@@ -359,6 +361,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2677748264148917807">Sair</translation>
+<translation id="2687009626279857299">Parou de funcionar neste dispositivo</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
 <translation id="2705073298859543115">Criar resumo</translation>
 <translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseada nos dados de navegação enviados ao Google</translation>
@@ -937,6 +940,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponível(is)</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
+<translation id="5436928407363358055">Para continuar de onde parou, sincronize o histórico e as guias</translation>
 <translation id="5438292632479953702">Fazer o download novamente</translation>
 <translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="5441137934526263133">Site indisponível? Cookies de terceiros foram bloqueados</translation>

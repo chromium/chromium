@@ -1,0 +1,23 @@
+Name: libgudev
+URL: https://gitlab.gnome.org/GNOME/libgudev
+Version: 238
+Revision: df7c9c9940160307aaeb31347f4776a46f8736a9
+License: LGPL-2.1
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+This is libgudev, a library providing GObject bindings for libudev. It
+used to be part of udev, then merged into systemd. It's now a project
+on its own.
+
+This is only used in tests.
+
+Local Modifications:
+None.
+
+When updating to a new version, update the Revision above with the new commit hash,
+and perform the following steps:
+1. Run on_update.sh
+2. Check in the generated files along with the changes for the update.

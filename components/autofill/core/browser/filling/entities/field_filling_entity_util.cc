@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -17,18 +18,41 @@
 namespace autofill {
 
 namespace {
+
 std::u16string GetValueForSelectControl(const std::u16string& value,
-                                        const AutofillField& field) {
+                                        const AutofillField& field,
+                                        AddressNormalizer* address_normalizer) {
   switch (field.Type().GetStorableType()) {
     case ADDRESS_HOME_COUNTRY:
       return GetCountrySelectControlValue(value, field.options(),
                                           /*failure_to_fill=*/nullptr);
+    case ADDRESS_HOME_STATE:
+      // TODO(crbug.com/389625753): Support countries other than the US.
+      return GetStateSelectControlValue(value, field.options(),
+                                        /*country_code=*/"US",
+                                        address_normalizer,
+                                        /*failure_to_fill=*/nullptr);
+
     default:
       return GetSelectControlValue(value, field.options(),
                                    /*failure_to_fill=*/nullptr)
           .value_or(u"");
   }
 }
+
+std::u16string GetValueForInput(const std::u16string& value,
+                                const AutofillField& field) {
+  switch (field.Type().GetStorableType()) {
+    case ADDRESS_HOME_STATE:
+      // TODO(crbug.com/389625753): Support countries other than the US.
+      return GetStateTextForInput(value, /*country_code=*/"US",
+                                  field.max_length(),
+                                  /*failure_to_fill=*/nullptr);
+    default:
+      return value;
+  }
+}
+
 }  // namespace
 
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
@@ -63,7 +87,8 @@ std::pair<std::u16string, std::optional<FieldType>>
 GetFillValueAndTypeForEntity(const EntityInstance& entity,
                              const AutofillField& field,
                              mojom::ActionPersistence action_persistence,
-                             const std::string& app_locale) {
+                             const std::string& app_locale,
+                             AddressNormalizer* address_normalizer) {
   std::optional<FieldType> field_type =
       field.GetAutofillAiServerTypePredictions();
   if (!field_type) {
@@ -88,11 +113,14 @@ GetFillValueAndTypeForEntity(const EntityInstance& entity,
   // fail the fill a PASSPORT_NUMBER field that gets a
   // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
   // prediction logic.
-  std::u16string attribute_value = attribute_instance->GetInfo(
-      field.Type().GetStorableType(), app_locale, field.format_string());
+  std::u16string attribute_value = GetValueForInput(
+      attribute_instance->GetInfo(field.Type().GetStorableType(), app_locale,
+                                  field.format_string()),
+      field);
 
   if (!attribute_value.empty() && field.IsSelectElement()) {
-    attribute_value = GetValueForSelectControl(attribute_value, field);
+    attribute_value =
+        GetValueForSelectControl(attribute_value, field, address_normalizer);
   }
   // TODO(crbug.com/397620383): Which type should we return here?
   // TODO(crbug.com/394011769): Investigate whether the obfuscation should

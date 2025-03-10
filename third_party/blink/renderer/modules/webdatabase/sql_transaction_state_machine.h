@@ -23,15 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQL_TRANSACTION_STATE_MACHINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQL_TRANSACTION_STATE_MACHINE_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_state.h"
 
@@ -75,7 +71,7 @@ SQLTransactionStateMachine<T>::SQLTransactionStateMachine()
       requested_state_(SQLTransactionState::kIdle) {
 #if DCHECK_IS_ON()
   for (int i = 0; i < kSizeOfStateAuditTrail; i++)
-    state_audit_trail_[i] = SQLTransactionState::kNumberOfStates;
+    UNSAFE_TODO(state_audit_trail_[i]) = SQLTransactionState::kNumberOfStates;
 #endif
 }
 
@@ -96,7 +92,7 @@ void SQLTransactionStateMachine<T>::RunStateMachine() {
     DCHECK(state_function);
 
 #if DCHECK_IS_ON()
-    state_audit_trail_[next_state_audit_entry_] = next_state_;
+    UNSAFE_TODO(state_audit_trail_[next_state_audit_entry_]) = next_state_;
     next_state_audit_entry_ =
         (next_state_audit_entry_ + 1) % kSizeOfStateAuditTrail;
 #endif

@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -738,7 +739,7 @@ std::pair<GURL, std::optional<ErrorUrlType>> GetErrorUrlAndType(
     return std::make_pair(error_url, ErrorUrlType::kSameOrigin);
   }
 
-  if (!webid::IsSameSite(error_origin, idp_origin)) {
+  if (!net::SchemefulSite::IsSameSite(error_origin, idp_origin)) {
     return std::make_pair(GURL(), ErrorUrlType::kCrossSite);
   }
 

@@ -49,7 +49,7 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
       views::BoxLayout::Orientation::kVertical));
 
   labels->AddChildViewRaw(web_app::CreateNameLabel(app_title).release());
-  labels->AddChildView(
+  labels->AddChildViewRaw(
       web_app::CreateOriginLabelFromStartUrl(start_url, false).release());
 }
 

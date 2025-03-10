@@ -138,6 +138,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1230244617745022071"><ph name="SOURCE" /> (détecté automatiquement)</translation>
 <translation id="1232569758102978740">Sans titre</translation>
 <translation id="1236081509407217141">Autoriser la RV ?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Nom de votre appareil</translation>
 <translation id="124116460088058876">Autres langues</translation>
 <translation id="1243027604378859286">Auteur :</translation>
@@ -1438,6 +1439,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3536227077203206203">Accès autorisé cette fois-ci</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Sérigraphie (paginée)</translation>
+<translation id="3541016556608204104">En savoir plus sur les connecteurs Chrome Enterprise</translation>
 <translation id="3542628208405253498">Image de la carte</translation>
 <translation id="3542768452570884558">Ouvrir le lien dans une nouvelle fenêtre</translation>
 <translation id="3543935938072367282">Réglez vos achats plus rapidement grâce à la saisie automatique</translation>
@@ -1802,6 +1804,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="415440494507469262">Ajouter un onglet au tableau comparatif</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4165422751765527461">Ouvre un article du centre d'aide dans un nouvel onglet</translation>
+<translation id="4165584779486830267">Vous pouvez désormais payer en plusieurs fois avec Affirm ou Zip.</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
 <translation id="4171400957073367226">Signature de validation non valide.</translation>
@@ -2766,6 +2769,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5910140988253729859">Annuler la saisie automatique</translation>
 <translation id="5911020115933784199">Événementiel et organisation</translation>
 <translation id="5911110632211230665">Ouverture bloquée</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> a ajouté cet onglet</translation>
 <translation id="5915189366813702112">Aménagements du temps de travail</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5918373444239520146">Gadgets et appareils électroniques portables</translation>
@@ -4626,6 +4630,7 @@ Informations supplémentaires :
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole incompatible.</translation>
 <translation id="918454845714257218">Vérifiez le code indiqué à l'<ph name="SIDE_OF_CARD" />, puis réessayez</translation>
 <translation id="9186203289258525843">Bouton "Définir Chrome comme navigateur par défaut" à activer pour définir Chrome comme navigateur par défaut du système</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> a modifié cet onglet</translation>
 <translation id="9189789270972826888">Si les informations relatives à la carte n'ont pas été remplies, cliquez ci-dessous pour les copier et les coller. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Les thèmes datant de plus de quatre semaines sont supprimés automatiquement</translation>
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>

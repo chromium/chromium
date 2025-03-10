@@ -11,13 +11,11 @@ use crate::manifest;
 use std::fmt::{self, Display};
 use std::fs;
 use std::hash::Hash;
-use std::io;
 use std::num::NonZero;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
-use anyhow::Context;
-use log::error;
+use anyhow::{bail, Context, Result};
 use semver::Version;
 use serde::{Deserialize, Serialize};
 
@@ -323,7 +321,7 @@ pub fn collect_crate_files(
     p: &deps::Package,
     config: &BuildConfig,
     include_targets: IncludeCrateTargets,
-) -> anyhow::Result<(VendoredCrate, CrateFiles)> {
+) -> Result<(VendoredCrate, CrateFiles)> {
     let crate_config = config.per_crate_config.get(&p.crate_id().name);
 
     let mut files = CrateFiles::new();
@@ -412,7 +410,7 @@ pub fn collect_crate_files(
 /// Traverse vendored third-party crates in the Rust source package. Each
 /// `VendoredCrate` is paired with the package metadata from its manifest. The
 /// returned list is in unspecified order.
-pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<VendoredCrate>> {
+pub fn collect_std_vendored_crates(vendor_path: &Path) -> Result<Vec<VendoredCrate>> {
     let mut crates = Vec::new();
 
     for vendored_crate in fs::read_dir(vendor_path)? {
@@ -421,13 +419,7 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
             continue;
         }
 
-        let Some(crate_id) = get_vendored_crate_id(&vendored_crate.path())? else {
-            error!(
-                "Cargo.toml not found at {}. cargo vendor would not do that to us.",
-                vendored_crate.path().to_string_lossy()
-            );
-            panic!()
-        };
+        let crate_id = get_vendored_crate_id(&vendored_crate.path())?;
 
         // Vendored crate directories can be named "{package_name}" or
         // "{package_name}-{version}", but for now we only use the latter for
@@ -439,12 +431,7 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
             .map(|pos| std_path[..pos].to_string())
             .unwrap_or(std_path.to_string());
         if std_path != dir_name && std_path_no_version != dir_name {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                format!(
-                    "directory name {dir_name} does not match package information for {crate_id:?}"
-                ),
-            ));
+            bail!("directory name {dir_name} does not match package information for {crate_id:?}");
         }
         crates.push(crate_id);
     }
@@ -508,8 +495,8 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
 /// Recursively visits all files under `path` and calls `f` on each one.
 ///
 /// The `path` may be a single file or a directory.
-pub fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> anyhow::Result<()> {
-    fn recurse(path: &Path, root: &Path, f: &mut dyn FnMut(&Path)) -> anyhow::Result<()> {
+pub fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> Result<()> {
+    fn recurse(path: &Path, root: &Path, f: &mut dyn FnMut(&Path)) -> Result<()> {
         let meta = std::fs::metadata(path).with_context(|| format!("missing path {:?}", path))?;
         if !meta.is_dir() {
             // Working locally can produce files in tree that should not be considered, and
@@ -543,19 +530,13 @@ pub fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> anyhow::Res
 
 /// Get a crate's ID and parsed manifest from its path. Returns `Ok(None)` if
 /// there was no Cargo.toml, or `Err(_)` for other IO errors.
-fn get_vendored_crate_id(package_path: &Path) -> io::Result<Option<VendoredCrate>> {
-    let manifest_file = match fs::read_to_string(package_path.join("Cargo.toml")) {
-        Ok(f) => f,
-        Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(None),
-        Err(e) => return Err(e),
-    };
-
-    let manifest: manifest::CargoManifest = toml::de::from_str(&manifest_file).unwrap();
+fn get_vendored_crate_id(package_path: &Path) -> Result<VendoredCrate> {
+    let manifest = manifest::CargoManifest::from_path(&package_path.join("Cargo.toml"))?;
     let crate_id = VendoredCrate {
         name: manifest.package.name.as_str().into(),
         version: manifest.package.version.clone(),
     };
-    Ok(Some(crate_id))
+    Ok(crate_id)
 }
 
 /// Proxy for [de]serializing epochs to/from strings. This uses the "1" or "0.1"

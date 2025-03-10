@@ -220,12 +220,6 @@ dictionary PAExtendedHistogramContribution {
   bigint filteringId = 0;
 };
 
-[Exposed=InterestGroupScriptRunnerGlobalScope]
-partial interface PrivateAggregation {
-  undefined contributeToHistogramOnEvent(
-      DOMString event, PAExtendedHistogramContribution contribution);
-};
-
 [Exposed=InterestGroupBiddingAndScoringScriptRunnerGlobalScope]
 interface ForDebuggingOnly {
   undefined reportAdAuctionWin(USVString url);

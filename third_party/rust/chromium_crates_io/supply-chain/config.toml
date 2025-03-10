@@ -62,9 +62,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."base64:0.22.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bitflags:1.3.2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."bitflags:2.9.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -92,10 +89,10 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.29"]
+[policy."clap:4.5.31"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.29"]
+[policy."clap_builder:4.5.31"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.4"]
@@ -110,16 +107,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.141"]
+[policy."cxx:1.0.143"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.141"]
+[policy."cxxbridge-cmd:1.0.143"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.141"]
+[policy."cxxbridge-flags:1.0.143"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.141"]
+[policy."cxxbridge-macro:1.0.143"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."diplomat-runtime:0.9.0"]
@@ -332,7 +329,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."num-traits:0.2.19"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."png:0.17.16"]
+[policy."png:0.18.0-rc"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."potential_utf:0.1.0"]
@@ -413,10 +410,10 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."semver:1.0.26"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."serde:1.0.217"]
+[policy."serde:1.0.218"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.217"]
+[policy."serde_derive:1.0.218"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_json:1.0.140"]
@@ -539,7 +536,13 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."yoke-derive:0.7.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."yoke-derive:0.8.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."yoke:0.7.5"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."yoke:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerocopy-derive:0.7.35"]
@@ -551,13 +554,13 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerofrom:0.1.5"]
+[policy."zerofrom:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerotrie:0.2.0"]
+[policy."zerotrie:0.2.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerovec-derive:0.11.0"]
+[policy."zerovec-derive:0.11.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerovec:0.11.0"]
@@ -577,7 +580,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.cxx]]
-version = "1.0.141"
+version = "1.0.143"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -600,10 +603,11 @@ Exemption updated to 1.0.136 in January 2025.
 Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
+Exemption updated to 1.0.143 in February 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.141"
+version = "1.0.143"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -626,6 +630,7 @@ Exemption updated to 1.0.136 in January 2025.
 Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
+Exemption updated to 1.0.143 in February 2025.
 """
 
 [[exemptions.icu_experimental]]
@@ -846,19 +851,6 @@ Sister crate of Google-co-maintained ICU4X project, maintained by Mozillian ICU4
 https://crbug.com/366411886
 """
 
-[[exemptions.yoke-derive]]
-version = "0.7.5"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Unsafe code is either authored or reviewed by a
-crabal member, but a formal audit is yet to be performed.
-
-Part of Google-co-maintained ICU4X project.
-
-
-https://crbug.com/366411886
-"""
-
 [[exemptions.zerocopy]]
 version = "0.7.35"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
@@ -889,7 +881,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.zerovec-derive]]
-version = "0.11.0"
+version = "0.11.1"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Unsafe code is either authored or reviewed by a
@@ -899,4 +891,6 @@ Part of Google-co-maintained ICU4X project.
 
 
 https://crbug.com/366411886
+
+Exemption updated to 0.11.1 when updating the crate in February 2025.
 """

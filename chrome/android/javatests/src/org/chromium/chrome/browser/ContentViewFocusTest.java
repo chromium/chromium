@@ -239,12 +239,15 @@ public class ContentViewFocusTest {
         Assert.assertTrue("initial".equals(mTitle) || "focused".equals(mTitle));
         callCount = onTitleUpdatedHelper.getCallCount();
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> eventSink.onPauseForTesting());
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> eventSink.onActivityTopResumedChangedForTesting(false));
         onTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("blurred", mTitle);
         callCount = onTitleUpdatedHelper.getCallCount();
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> eventSink.onResumeForTesting());
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> eventSink.onActivityTopResumedChangedForTesting(true));
         onTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("focused", mTitle);
         ThreadUtils.runOnUiThreadBlocking(() -> observer.observe(null));

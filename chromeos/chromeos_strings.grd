@@ -3545,12 +3545,8 @@
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_TITLE" desc="The title of the introduction dialog displayed on the first time the user enters Sea Pen subpage.">
           A few things to keep in mind
         </message>
-        <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
-          Choose a theme and then select the underlined words to personalize your AI images.
-        </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog.">
-          <ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH">$1<ex>Choose a theme and then select the underlined words to personalize your AI images.</ex></ph>
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Choose a theme and then select the underlined words to personalize your AI images.<ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Select "Inspire me" to get more unique and varied AI images options.
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
@@ -3559,6 +3555,18 @@
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Generative AI is experimental, in early development, and currently has limited availability.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog when freeform is enabled.">
+          When you select “Create your own,” write a custom prompt. Or you can select “Choose a theme” and then select the underlined words to personalize your AI wallpaper.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Select "Inspire me" to get more unique and varied AI images options.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          When you create your own wallpaper, the prompt is sent to Google servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY">&lt;a target="_blank" href="https://policies.google.com/privacy"&gt;</ph>Google's Terms of Service and Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>. Don't include anything personal, sensitive, or confidential.
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          Generative AI can make mistakes, including about people, so double-check it. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER">&lt;a target="_blank" href="https://support.google.com/chromebook?p=octocorallia"&gt;</ph>Learn more<ph name="END_LINK_GOOGLE_PRIVACY_POLICY">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON" desc="The button to close the introduction dialog.">
           Got it
@@ -3612,9 +3620,6 @@
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
-        </message>
-        <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
-          When you select “Create with AI,” write a custom prompt. Or you can select “AI wallpapers,” to choose a theme and then select the underlined words to personalize your AI wallpaper.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SAMPLE_PROMPTS" desc="Aria label for a list of sample text prompts to be used to generate AI images (IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL)">
           Sample prompts
@@ -7028,6 +7033,12 @@
       <!-- Strings for the OnTask pod -->
       <message name="IDS_ON_TASK_POD_ACCESSIBLE_NAME" desc="Accessible name for the OnTask pod widget.">
         OnTask Pod
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_BACK_ACCESSIBLE_NAME" desc="Accessible name for the Navigate back button in the OnTask pod.">
+        Click to go back
+      </message>
+      <message name="IDS_ON_TASK_POD_NAVIGATE_FORWARD_ACCESSIBLE_NAME" desc="Accessible name for the Navigate forward button in the OnTask pod.">
+        Click to go forward
       </message>
       <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
         Reload tab

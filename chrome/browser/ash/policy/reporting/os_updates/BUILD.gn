@@ -14,7 +14,6 @@ static_library("os_updates") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting",
     "//chrome/browser/ash/policy/reporting/event_based_logs:utils",

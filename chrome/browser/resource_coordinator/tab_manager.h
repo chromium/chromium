@@ -21,7 +21,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -83,11 +82,6 @@ class TabManager : public LifecycleUnitObserver,
   // the given contents. Returns the new web_contents or null if no tab
   // was discarded.
   content::WebContents* DiscardTabByExtension(content::WebContents* contents);
-
-  // TODO(fdoray): Remove these methods. TabManager shouldn't know about tabs.
-  // https://crbug.com/775644
-  void AddObserver(TabLifecycleObserver* observer);
-  void RemoveObserver(TabLifecycleObserver* observer);
 
  private:
   friend class TabManagerStatsCollectorTest;

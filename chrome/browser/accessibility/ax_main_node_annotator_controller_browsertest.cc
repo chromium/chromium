@@ -106,7 +106,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
       screen_reader_override_.reset();
     } else if (!screen_reader_override_) {
       screen_reader_override_.emplace(ui::AXMode::kWebContents |
-                                      ui::AXMode::kScreenReader);
+                                      ui::AXMode::kExtendedProperties);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for ChromeVox to attach to the new tab if needed.
   if (!web_contents->GetAccessibilityMode().has_mode(
-          ui::AXMode::kScreenReader)) {
+          ui::AXMode::kExtendedProperties)) {
     content::AccessibilityNotificationWaiter waiter(web_contents);
     ASSERT_TRUE(waiter.WaitForNotification());
   }

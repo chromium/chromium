@@ -31,6 +31,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1909810060368225529">Bildiriş: Bu paylaşılan Tab Qrupuna edilən dəyişikliklər hər kəsə görünür. Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> taba əlfəcin əlavə edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> taba əlfəcin əlavə edin}}</translation>
+<translation id="2055057176188061528">Tab qrupu seçin və ya yeni tab qrupu yaradın</translation>
 <translation id="2118649612461486615">Mağaza məlumatları</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. Anonim tab əlçatan olmayacaq.}other{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. # anonim tab əlçatan olmayacaq.}}</translation>
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
@@ -67,6 +68,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3547352561153509682">Bu, qrupu <ph name="USER_EMAIL" /> hesabına daxil olmuş bütün cihazlardan siləcək</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni tab}other{<ph name="MANY_ADDED" /> yeni tab}}</translation>
 <translation id="3613492231657284463">Qeyri-aktiv tablar dialoqunu gizlədin</translation>
 <translation id="3619255692378312441">Girişi idarə edin</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="381219490185664296">Tab qrupu qruplaşdırması ləğv edilsin?</translation>
 <translation id="3940195383040445971">Tablarda qiymətləri izləyin</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni tab, <ph name="ANY_CLOSED" /> tab bağlıdır}other{<ph name="MANY_ADDED" /> yeni tab, <ph name="ANY_CLOSED" /> tab bağlıdır}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tabı qruplaşdırın}other{Tabları qruplaşdırın}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> deaktiv tab}other{<ph name="TABS_COUNT_MANY" /> deaktiv tab}}</translation>
 <translation id="3969565576924904454">Açın: <ph name="TITLE_OF_GROUP" /></translation>

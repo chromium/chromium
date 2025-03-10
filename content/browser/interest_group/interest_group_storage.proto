@@ -35,6 +35,9 @@ message BiddingAndAuctionServerKeysProtos {
 
   // Global keys
   repeated BiddingAndAuctionServerKeyProto keys = 1;
+
+  // Map from origin scope to the list of keys.
+  map<string, BiddingAndAuctionServerKeyProtos> origin_scoped_keys = 2;
 }
 
 message KAnonKeyProtos {

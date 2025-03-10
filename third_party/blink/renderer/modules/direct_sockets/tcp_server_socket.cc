@@ -203,7 +203,8 @@ void TCPServerSocket::ReleaseResources() {
   readable_stream_wrapper_.Clear();
 }
 
-void TCPServerSocket::OnReadableStreamClosed(v8::Local<v8::Value> exception) {
+void TCPServerSocket::OnReadableStreamClosed(v8::Local<v8::Value> exception,
+                                             int net_error) {
   DCHECK_EQ(GetState(), State::kOpen);
 
   if (!exception.IsEmpty()) {

@@ -29,7 +29,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_content_client.h"
@@ -369,7 +368,7 @@ void MaybeEnableWebShare() {
 }
 
 #if BUILDFLAG(ENABLE_NACL) && BUILDFLAG(ENABLE_EXTENSIONS) && \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 bool IsTerminalSystemWebAppNaClPage(GURL url) {
   GURL::Replacements replacements;
   replacements.ClearQuery();
@@ -1080,7 +1079,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             if (extension) {
               is_module_allowed =
                   IsNativeNaClAllowed(app_url, is_nacl_unrestricted, extension);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
               // Allow Terminal System App to load the SSH extension NaCl
               // module.
             } else if (IsTerminalSystemWebAppNaClPage(app_url)) {
@@ -1112,7 +1111,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                 blink::mojom::ConsoleMessageLevel::kError, error_message));
             placeholder = create_blocked_plugin(
                 IDR_BLOCKED_PLUGIN_HTML,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                 l10n_util::GetStringUTF16(IDS_NACL_PLUGIN_BLOCKED));
 #else
                 l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name));

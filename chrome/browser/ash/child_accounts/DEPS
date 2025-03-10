@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/policy/uploading",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",

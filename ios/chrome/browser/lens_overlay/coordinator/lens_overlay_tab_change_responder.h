@@ -5,11 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_TAB_CHANGE_RESPONDER_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_TAB_CHANGE_RESPONDER_H_
 
-/// Responds to tab change.
+/// Responds to tab changes.
 @protocol LensOverlayTabChangeResponder
 
-/// Notifies the receiver that a tab change is about to happen.
-- (void)respondToTabWillChange;
+/// Notifies the responder that a tab change is about to happen in the
+/// background.
+- (void)prepareForBackgroundTabChange;
 
 @end
 

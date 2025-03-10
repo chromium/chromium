@@ -138,6 +138,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectado automaticamente)</translation>
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1236081509407217141">Permitir RV?</translation>
+<translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">O nome do seu dispositivo</translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
@@ -1438,6 +1439,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3536227077203206203">Permitido apenas desta vez</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Tela (paginada)</translation>
+<translation id="3541016556608204104">Mais informações sobre o Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Imagem do cartão</translation>
 <translation id="3542768452570884558">Abrir link em uma nova janela</translation>
 <translation id="3543935938072367282">Finalize compras mais rápido com o preenchimento automático</translation>
@@ -1802,6 +1804,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="415440494507469262">Adicionar guia à tabela de comparação</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165422751765527461">Abre um artigo da Central de Ajuda em uma nova guia</translation>
+<translation id="4165584779486830267">Agora é possível parcelar suas compras usando o Affirm ou o Zip.</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4171400957073367226">Assinatura de verificação inválida</translation>
@@ -2766,6 +2769,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5910140988253729859">Desfazer preenchimento automático</translation>
 <translation id="5911020115933784199">Eventos e programações</translation>
 <translation id="5911110632211230665">A abertura de arquivos está bloqueada</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> adicionou esta guia</translation>
 <translation id="5915189366813702112">Condições flexíveis de trabalho</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5918373444239520146">Gadgets e aparelhos eletrônicos portáteis</translation>
@@ -4628,6 +4632,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> usa um protocolo incompatível.</translation>
 <translation id="918454845714257218">Confira o código na <ph name="SIDE_OF_CARD" /> e tente de novo</translation>
 <translation id="9186203289258525843">Botão "Definir o Chrome como navegador padrão". Ative para definir o Chrome como o navegador padrão do sistema</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> modificou esta guia</translation>
 <translation id="9189789270972826888">Clique nos detalhes do cartão abaixo para copiar e colar se o preenchimento não foi feito. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Temas com mais de quatro semanas são excluídos automaticamente</translation>
 <translation id="9191834167571392248">Perfuração na parte inferior esquerda</translation>

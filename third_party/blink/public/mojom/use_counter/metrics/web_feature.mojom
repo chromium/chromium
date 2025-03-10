@@ -4739,6 +4739,13 @@ enum WebFeature {
   kSRIHashAssertion = 5353,
   kSRIPublicKeyAssertion = 5354,
   kViewTransitionChangeRootElement = 5355,
+  kCSPBlockedWorkerCreation = 5356,
+  kV8Navigator_ClearOriginJoinedAdInterestGroups_Method = 5357,
+  kWebAppManifestDisplayMinimalUI = 5358,
+  kWebAppManifestDisplayBrowser = 5359,
+  kWebAppManifestDisplayFullscreen = 5360,
+  kWebAppManifestDisplayStandalone = 5361,
+  kBlockingAttributeFullFrameRateToken = 5362,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

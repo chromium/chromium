@@ -375,10 +375,6 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
 }
 
-- (void)respondToTabWillChange {
-  [self.delegate respondToTabWillChange];
-}
-
 #pragma mark - Private
 
 /// Updates the UI for lens `result`.

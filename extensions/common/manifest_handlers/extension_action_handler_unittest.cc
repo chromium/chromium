@@ -183,10 +183,6 @@ class ExtensionActionManifestTest
     EXPECT_EQ(error, "");
     return extension;
   }
-
- private:
-  // The "action" key is restricted to trunk.
-  ScopedCurrentChannel scoped_channel_{version_info::Channel::UNKNOWN};
 };
 
 // Tests that parsing an action succeeds and properly populates the given

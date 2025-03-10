@@ -263,7 +263,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
 
   // None of the specific rules apply. Evaluate against the basic include rule.
   if (include_site_) {
-    return AsInclusionResult(SchemefulSite(url) == *include_site_);
+    return AsInclusionResult(include_site_->IsSameSiteWith(url));
   }
 
   return AsInclusionResult(same_origin);

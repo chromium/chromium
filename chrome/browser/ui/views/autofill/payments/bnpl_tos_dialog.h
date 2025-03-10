@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {
@@ -32,6 +33,8 @@ class BnplTosDialog : public views::DialogDelegateView {
   BnplTosController* controller() const;
 
  private:
+  TitleWithIconAfterLabelView::Icon GetTitleIcon() const;
+
   base::WeakPtr<BnplTosController> controller_;
   base::RepeatingCallback<void(const GURL&)> link_opener_;
 

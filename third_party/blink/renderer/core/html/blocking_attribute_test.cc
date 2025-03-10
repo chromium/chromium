@@ -11,6 +11,10 @@ TEST_F(BlockingAttributeTest, CountRenderTokenUsageInLink) {
   SetHtmlInnerHTML("<link blocking=render rel=preload as=font href=foo.ttf>");
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kBlockingAttributeRenderToken));
+  SetHtmlInnerHTML(
+      "<link rel=expect blocking=full-frame-rate as=font href=foo.ttf>");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kBlockingAttributeFullFrameRateToken));
 }
 
 TEST_F(BlockingAttributeTest, CountRenderTokenUsageInScript) {

@@ -13,6 +13,7 @@
 <translation id="1036348656032585052">停用</translation>
 <translation id="1045899828449635435">要一併清除這些網站的資料嗎？</translation>
 <translation id="1049743911850919806">無痕</translation>
+<translation id="1052842760770519282">部分密碼無法使用</translation>
 <translation id="1058669287135776095">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="10614374240317010">永不儲存</translation>
 <translation id="107147699690128016">如果變更副檔名，此檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
@@ -70,6 +71,7 @@
 <translation id="1269129608791067105">您可在此查看記錄</translation>
 <translation id="1273937721055267968">封鎖 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
+<translation id="1289129165308566697">查看其他裝置上的記錄</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
 <translation id="1298077576058087471">節省高達 60% 數據用量，立即閱讀今天新聞</translation>
 <translation id="1303339473099049190">找不到該密碼。請檢查您輸入的內容，然後再試一次。</translation>
@@ -359,6 +361,7 @@
 <translation id="2666092431469916601">返回頁首</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2677748264148917807">離開</translation>
+<translation id="2687009626279857299">已停止在此裝置上運作</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
 <translation id="2705073298859543115">建立摘要</translation>
 <translation id="2708051474374549906">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
@@ -936,6 +939,7 @@
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5433691172869980887">已複製使用者名稱</translation>
+<translation id="5436928407363358055">只要同步記錄和分頁，就能輕鬆從上次暫停的位置繼續</translation>
 <translation id="5438292632479953702">再次下載</translation>
 <translation id="5439191312780166229">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chrome 警告。</translation>
 <translation id="5441137934526263133">網站無法正常運作嗎？因為第三方 Cookie 已被封鎖</translation>

@@ -223,15 +223,11 @@ BocaAppHandler::BocaAppHandler(
   network_info_provider_ = std::make_unique<NetworkInfoProvider>(
       base::BindRepeating(&BocaAppHandler::OnActiveNetworkStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
-  BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
-      /*is_app_opened=*/true);
   base_url_ = BocaAppClient::Get()->GetSchoolToolsServerBaseUrl();
 }
 
 BocaAppHandler::~BocaAppHandler() {
   BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
-  BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
-      /*is_app_opened=*/false);
 }
 
 void BocaAppHandler::AuthenticateWebview(AuthenticateWebviewCallback callback) {

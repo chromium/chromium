@@ -28,6 +28,9 @@ namespace keys = manifest_keys;
 static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
     LAZY_INSTANCE_INITIALIZER;
 
+IconsHandler::IconsHandler() = default;
+IconsHandler::~IconsHandler() = default;
+
 // static
 const ExtensionIconSet& IconsInfo::GetIcons(
     const Extension* extension,
@@ -65,10 +68,6 @@ GURL IconsInfo::GetIconURL(const Extension* extension,
       GetIcons(extension, color_scheme).Get(size_in_px, match_type);
   return path.empty() ? GURL() : extension->GetResourceURL(path);
 }
-
-IconsHandler::IconsHandler() = default;
-
-IconsHandler::~IconsHandler() = default;
 
 bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<IconsInfo> icons_info(new IconsInfo);

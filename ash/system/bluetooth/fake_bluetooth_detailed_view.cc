@@ -32,7 +32,7 @@ void FakeBluetoothDetailedView::UpdateBluetoothEnabledState(
 }
 
 BluetoothDeviceListItemView* FakeBluetoothDetailedView::AddDeviceListItem() {
-  return device_list_->AddChildView(
+  return device_list_->AddChildViewRaw(
       new BluetoothDeviceListItemView(/*listener=*/nullptr));
 }
 

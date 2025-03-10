@@ -164,6 +164,21 @@ signin_metrics::PromoAction GetPromoActionForNewAccount(
                    PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
 }
 
+// Returns if account extensions should be shown in the signout confirmation
+// prompt. If true, this will force the prompt to show before signing out.
+bool ShowAccountExtensionsOnSignout(Profile* profile) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Do not sign out immediately if the user has account extensions.
+  if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
+    extensions::AccountExtensionTracker* tracker =
+        extensions::AccountExtensionTracker::Get(profile);
+    return !tracker->GetSignedInAccountExtensions().empty();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return false;
+}
+
 // Called from `SignoutOrReauthWithPrompt()` after the user made a choice on the
 // confirmation dialog.
 void HandleSignoutConfirmationChoice(
@@ -662,16 +677,9 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     sign_out_immediately = true;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Do not sign out immediately if the user has account extensions.
-  if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
-    extensions::AccountExtensionTracker* tracker =
-        extensions::AccountExtensionTracker::Get(profile);
-    if (!tracker->GetSignedInAccountExtensions().empty()) {
-      sign_out_immediately = false;
-    }
+  if (ShowAccountExtensionsOnSignout(profile)) {
+    sign_out_immediately = false;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   SignoutConfirmationCallback callback = base::BindOnce(
       &HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
@@ -770,8 +778,10 @@ void SigninViewController::ShowSignoutConfirmationPrompt(
     SignoutConfirmationCallback callback) {
   if (!switches::IsImprovedSigninUIOnDesktopEnabled() &&
       prompt_variant ==
-          ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData) {
-    // This variant is not enabled. Skip the UI and sign out immediately.
+          ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData &&
+      !ShowAccountExtensionsOnSignout(browser_->profile())) {
+    // This variant is not enabled and there are no account extensions. Skip the
+    // UI and sign out immediately.
     std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout,
                             /*uninstall_account_extensions_on_signout=*/false);
     return;

@@ -59,7 +59,7 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
       screen_reader_override_.reset();
     } else if (!screen_reader_override_) {
       screen_reader_override_.emplace(ui::AXMode::kWebContents |
-                                      ui::AXMode::kScreenReader);
+                                      ui::AXMode::kExtendedProperties);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for ChromeVox to attach to the new tab if needed.
   if (!web_contents->GetAccessibilityMode().has_mode(
-          ui::AXMode::kScreenReader)) {
+          ui::AXMode::kExtendedProperties)) {
     content::AccessibilityNotificationWaiter waiter(web_contents);
     ASSERT_TRUE(waiter.WaitForNotification());
   }
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for ChromeVox to attach to the new tab if needed.
   if (!web_contents->GetAccessibilityMode().has_mode(
-          ui::AXMode::kScreenReader)) {
+          ui::AXMode::kExtendedProperties)) {
     content::AccessibilityNotificationWaiter waiter(web_contents);
     ASSERT_TRUE(waiter.WaitForNotification());
   }
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, EnabledByPreference) {
   // reader should have been detected yet, and the feature should be off.
   if (!content::BrowserAccessibilityState::GetInstance()
            ->GetAccessibilityMode()
-           .has_mode(ui::AXMode::kScreenReader)) {
+           .has_mode(ui::AXMode::kExtendedProperties)) {
     EXPECT_FALSE(web_contents->GetAccessibilityMode().has_mode(
         ui::AXMode::kLabelImages));
 

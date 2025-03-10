@@ -259,4 +259,31 @@ public class SharedGroupObserverUnitTest {
         mSyncObserverCaptor.getValue().onTabGroupUpdated(syncGroup, TriggerSource.LOCAL);
         assertEquals(GroupSharedState.HAS_OTHER_USERS, sharedStateSupplier.get().intValue());
     }
+
+    @Test
+    public void testNoCollaborationOnInitUntilLocalIdEvent() {
+        SavedTabGroup syncGroup = new SavedTabGroup();
+        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncGroup.collaborationId = null;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(syncGroup);
+
+        SharedGroupObserver observer =
+                new SharedGroupObserver(
+                        TAB_GROUP_ID,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService);
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
+        ObservableSupplier<Integer> sharedStateSupplier = observer.getGroupSharedStateSupplier();
+        assertEquals(GroupSharedState.NOT_SHARED, sharedStateSupplier.get().intValue());
+
+        GroupData shareGroup =
+                SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getGroupData(COLLABORATION_ID1)).thenReturn(shareGroup);
+
+        syncGroup.collaborationId = COLLABORATION_ID1;
+        mSyncObserverCaptor.getValue().onTabGroupLocalIdChanged("sync_id", syncGroup.localId);
+        assertEquals(GroupSharedState.HAS_OTHER_USERS, sharedStateSupplier.get().intValue());
+    }
 }

@@ -613,12 +613,6 @@
       status: "experimental",
     },
     {
-      // Full support for box-decoration-break, including block fragmentation,
-      // not just -webkit-box-decoration-break with inlines at line breaks.
-      name: "BoxDecorationBreak",
-      status: "stable",
-    },
-    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
@@ -768,7 +762,7 @@
     },
     {
       name: "CapturedSurfaceResolution",
-      status: { "Win": "experimental", "default": ""},
+      status: { "Win": "experimental", "Mac": "experimental", "default": ""},
     },
     {
       name: "CaptureHandle",
@@ -2351,12 +2345,6 @@
       depends_on: ["HTMLCommandAttributes"],
       status: "experimental",
     },
-    {
-      // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
-      // This feature shipped in M134, so this flag can be removed in M136.
-      name: "HTMLDialogLightDismiss",
-      status: "stable",
-    },
     // The `<embed>` should follow the specification, layout is not forced
     // when the `type` attribute is set to `image`.
     // https://html.spec.whatwg.org/C/#the-embed-element
@@ -2655,11 +2643,6 @@
       origin_trial_feature_name: "LimitThirdPartyCookies",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      // crbug.com/365814218
-      name: "LineBoxBelowLeadingFloats",
-      status: "stable",
     },
     {
       name: "ListItemWithCounterSetNotSetExplicitValue",
@@ -3200,12 +3183,6 @@
       name: "OverscrollCustomization",
       status: "experimental",
     },
-    // Support for page margin boxes.
-    // https://www.w3.org/TR/css-page-3/#margin-boxes
-    {
-      name: "PageMarginBoxes",
-      status: "stable",
-    },
     {
       name: "PagePopup",
       // Android does not have support for PagePopup
@@ -3657,7 +3634,7 @@
       // composited pixel alignment issues. See
       // https://crbug.com/40084005
       name: "RenderSurfaceFor2DScaleTransform",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
@@ -4062,6 +4039,11 @@
       origin_trial_feature_name: "ShadowRootReferenceTarget"
     },
     {
+      // If enabled, Reference Target will support aria-owns.
+      // https://github.com/WICG/webcomponents/issues/1091
+      name: "ShadowRootReferenceTargetAriaOwns",
+    },
+    {
       // crbug.com/329677645
       name: "ShapeResultCachedPreviousSafeToBreakOffset",
       status: "stable",
@@ -4410,11 +4392,6 @@
       status: "stable",
     },
     {
-      // crbug.com/359420112
-      name: "TextEmphasisNoPunctuation",
-      status: "stable",
-    },
-    {
       // crbug.com/368657256
       name: "TextEmphasisPositionAuto",
       status: "experimental",
@@ -4659,6 +4636,10 @@
       status: "stable",
     },
     {
+      name: "UseShadowHostStyleCheckEditable",
+      status: "stable",
+    },
+    {
       name: "UseUndoStepElementDispatchBeforeInput",
       status: "stable",
     },
@@ -4837,6 +4818,7 @@
     // https://crbug.com/41484826
     {
       name: "WebAuthenticationAlignErrorTypeForPaymentCredentialCreate",
+      status: "experimental",
     },
     // Prototyping https://github.com/w3c/webauthn/issues/2144
     {

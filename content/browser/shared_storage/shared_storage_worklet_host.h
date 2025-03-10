@@ -15,8 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/locks/lock_manager.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -38,6 +39,7 @@ class SimpleURLLoader;
 namespace content {
 
 class BrowserContext;
+class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;

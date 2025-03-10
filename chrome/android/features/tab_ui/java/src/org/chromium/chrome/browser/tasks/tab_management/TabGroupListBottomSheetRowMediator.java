@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.core.util.Pair;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -67,7 +68,7 @@ class TabGroupListBottomSheetRowMediator {
 
         builder.with(
                 TabGroupRowProperties.TIMESTAMP_EVENT,
-                new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.UPDATED));
+                new TabGroupTimeAgo(savedTabGroup.updateTimeMs, TimestampEvent.UPDATED));
         builder.with(
                 TabGroupRowProperties.ROW_CLICK_RUNNABLE,
                 () -> {
@@ -82,6 +83,7 @@ class TabGroupListBottomSheetRowMediator {
     }
 
     private void addToGroup(List<Tab> tabs) {
+        RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
         String syncId = mSavedTabGroup.syncId;
         if (syncId == null || mTabGroupSyncService == null) return;
 

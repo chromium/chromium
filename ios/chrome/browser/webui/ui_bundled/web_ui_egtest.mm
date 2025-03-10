@@ -72,11 +72,13 @@ using chrome_test_util::ForwardButton;
 // navigates to terms page.
 - (void)testChromeURLNavigateToTerms {
   [ChromeEarlGrey loadURL:WebUIPageUrlWithHost(kChromeUIChromeURLsHost)];
+  [ChromeEarlGrey waitForWebStateContainingText:"chrome://terms"];
 
   // Tap on chrome://terms link on the page.
-  [ChromeEarlGrey
-      tapWebStateElementWithID:[NSString
-                                   stringWithUTF8String:kChromeUITermsHost]];
+  NSString* clickLinkScript =
+      @"document.body.querySelector('chrome-urls-app')"
+       ".shadowRoot.querySelector('a[href=\"chrome://terms\"]').click()";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
 
   // Verify that the resulting page is chrome://terms.
   GREYAssert(WaitForOmniboxURLString(kChromeUITermsURL),
@@ -89,11 +91,13 @@ using chrome_test_util::ForwardButton;
 // click.
 - (void)testChromeURLBackNavigationFromAnchorClick {
   [ChromeEarlGrey loadURL:GURL(kChromeUIChromeURLsURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"chrome://version"];
 
   // Tap on chrome://version link on the page.
-  [ChromeEarlGrey
-      tapWebStateElementWithID:[NSString
-                                   stringWithUTF8String:kChromeUIVersionHost]];
+  NSString* clickLinkScript =
+      @"document.body.querySelector('chrome-urls-app')"
+       ".shadowRoot.querySelector('a[href=\"chrome://version\"]').click()";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
 
   // Verify that the resulting page is chrome://version.
   GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),

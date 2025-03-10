@@ -368,8 +368,9 @@ class LoginDatabase : public EncryptDecryptInterface {
   // Returns password notes corresponding to `primary_key`.
   std::vector<PasswordNote> GetPasswordNotes(FormPrimaryKey primary_key) const;
 
-  // Updates the `password_notes` table if `notes` changed for `primary_key`.
-  void UpdatePasswordNotes(FormPrimaryKey primary_key,
+  // Updates the `password_notes` table if `notes` changed for `primary_key` and
+  // returns true if `notes` have changed in `password_notes` table.
+  bool UpdatePasswordNotes(FormPrimaryKey primary_key,
                            const std::vector<PasswordNote>& notes);
 
   // If a non-null `is_empty_cb` was passed on construction, computes whether

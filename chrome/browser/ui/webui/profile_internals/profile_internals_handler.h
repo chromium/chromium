@@ -9,6 +9,10 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+namespace regional_capabilities {
+class CountryIdHolder;
+}
+
 // Handles actions on Profile Internals debug page.
 class ProfileInternalsHandler : public content::WebUIMessageHandler {
  public:
@@ -31,6 +35,9 @@ class ProfileInternalsHandler : public content::WebUIMessageHandler {
 
   static base::Value::Dict CreateProfileEntry(
       const ProfileAttributesEntry* entry);
+
+  static std::string CountryIdToDebugString(
+      std::optional<regional_capabilities::CountryIdHolder> country_id);
 
   // Returns the list of profiles ordered by the local profile name.
   base::Value::List GetProfilesList();

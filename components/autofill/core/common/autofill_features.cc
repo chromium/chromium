@@ -74,9 +74,9 @@ const base::FeatureParam<base::TimeDelta>
         &kAutofillAiServerModel, "autofill_ai_model_execution_timeout",
         base::Seconds(10)};
 
-// Whether the page's title and URL are included in the data sent to the model.
-const base::FeatureParam<bool> kAutofillAiServerModelSendPageTitleAndUrl{
-    &kAutofillAiServerModel, "autofill_ai_model_send_page_title_url", false};
+// Whether the page's full URL is included in the data sent to the model.
+const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
+    &kAutofillAiServerModel, "autofill_ai_model_send_page_url", false};
 
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
@@ -565,11 +565,6 @@ BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
              "AutofillSilentProfileUpdateForInsufficientImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Causes Autofill to announce the Compose popup less assertively.
-BASE_FEATURE(kComposePopupAnnouncePolitely,
-             "ComposePopupAnnouncePolitely",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.

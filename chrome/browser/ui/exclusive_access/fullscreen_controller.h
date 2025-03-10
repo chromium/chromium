@@ -16,8 +16,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "ui/display/types/display_constants.h"
+#include "url/origin.h"
 
-class GURL;
 class PopunderPreventer;
 
 namespace content {
@@ -150,7 +150,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   bool RequiresPressAndHoldEscToExit() const override;
 
   void ExitExclusiveAccessToPreviousState() override;
-  GURL GetURLForExclusiveAccessBubble() const override;
+  url::Origin GetOriginForExclusiveAccessBubble() const override;
   void ExitExclusiveAccessIfNecessary() override;
   // Callbacks /////////////////////////////////////////////////////////////////
 
@@ -192,7 +192,6 @@ class FullscreenController : public ExclusiveAccessControllerBase {
                                    content::RenderFrameHost* requesting_frame,
                                    int64_t display_id);
   void ExitFullscreenModeInternal();
-  void SetFullscreenedTab(content::WebContents* tab, const GURL& origin);
 
   // Returns true if |web_contents| was toggled into/out of fullscreen mode as a
   // screen-captured tab or as a content-fullscreen tab.
@@ -201,8 +200,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
                                       bool enter_fullscreen);
 
   // Helper methods that should be used in a TAB context.
-  GURL GetRequestingOrigin() const;
-  GURL GetEmbeddingOrigin() const;
+  url::Origin GetRequestingOrigin() const;
+  url::Origin GetEmbeddingOrigin() const;
 
   // This is recorded when the web page requests to go fullscreen, even if the
   // fullscreen state doesn't change.
@@ -213,10 +212,11 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // The origin of the specific frame requesting fullscreen, which may not match
   // the exclusive_access_tab()'s origin, if an embedded frame made the request.
-  GURL requesting_origin_;
+  url::Origin requesting_origin_;
 
-  // The URL of the extension which trigerred "browser fullscreen" mode.
-  GURL extension_caused_fullscreen_;
+  // The URL of the extension which triggered "browser fullscreen" mode,
+  // std::nullopt if it is not in extension fullscreen.
+  std::optional<GURL> extension_url_;
 
   enum PriorFullscreenState {
     STATE_INVALID,

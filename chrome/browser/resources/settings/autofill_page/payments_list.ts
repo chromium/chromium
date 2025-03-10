@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 import './credit_card_list_entry.js';
 import './iban_list_entry.js';
+import './pay_over_time_issuer_list_entry.js';
 import './passwords_shared.css.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -44,12 +45,27 @@ export class SettingsPaymentsListElement extends PolymerElement {
       ibans: Array,
 
       /**
+       * An array of all saved Pay Over Time issuers.
+       */
+      payOverTimeIssuers: Array,
+
+      /**
        * True if displaying IBANs in settings is enabled.
        */
       enableIbans_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showIbansSettings');
+        },
+      },
+
+      /**
+       * True if displaying Pay Over Time in settings is enabled.
+       */
+      enablePayOverTime_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
         },
       },
 
@@ -64,20 +80,33 @@ export class SettingsPaymentsListElement extends PolymerElement {
       },
 
       /**
+       * True iff Pay Over Time issuers will be shown and there will be other
+       *     payment methods shown above.
+       */
+      showIbanPayOverTimeIssuerSeparator_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowIbanPayOverTimeIssuerSeparator_(' +
+            'creditCards, ibans, enableIbans_, payOverTimeIssuers, enablePayOverTime_)',
+      },
+
+      /**
        * True iff any payment methods will be shown.
        */
       showAnyPaymentMethods_: {
         type: Boolean,
         value: false,
         computed: 'computeShowAnyPaymentMethods_(' +
-            'creditCards, ibans, enableIbans_)',
+            'creditCards, ibans, enableIbans_, payOverTimeIssuers, enablePayOverTime_)',
       },
     };
   }
 
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
+  payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
   private enableIbans_: boolean;
+  private enablePayOverTime_: boolean;
   private showCreditCardIbanSeparator_: boolean;
   private showAnyPaymentMethods_: boolean;
 
@@ -168,6 +197,13 @@ export class SettingsPaymentsListElement extends PolymerElement {
   }
 
   /**
+   * @return true iff there are Pay Over Time issuers to be shown.
+   */
+  private showPayOverTimeIssuers_(): boolean {
+    return this.enablePayOverTime_ && this.hasSome_(this.payOverTimeIssuers);
+  }
+
+  /**
    * @return true iff both credit cards and IBANs will be shown.
    */
   private computeShowCreditCardIbanSeparator_(): boolean {
@@ -175,10 +211,26 @@ export class SettingsPaymentsListElement extends PolymerElement {
   }
 
   /**
+   * @return true iff Pay Over Time issuers will be shown and there will be
+   *     other payment methods shown above.
+   */
+  private computeShowIbanPayOverTimeIssuerSeparator_(): boolean {
+    return this.showPayOverTimeIssuers_() &&
+        (this.showIbans_() || this.showCreditCards_());
+  }
+
+  /**
    * @return true iff any payment methods will be shown.
    */
   private computeShowAnyPaymentMethods_(): boolean {
-    return this.showCreditCards_() || this.showIbans_();
+    return this.showCreditCards_() || this.showIbans_() ||
+        this.showPayOverTimeIssuers_();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-payments-list': SettingsPaymentsListElement;
   }
 }
 

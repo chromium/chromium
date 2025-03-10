@@ -321,11 +321,16 @@ def _objectbuild_from_bazel_log(action, platform: _Platform) -> ObjectBuild:
     else:
         dir = src_path[2]
 
-    if dir == 'bf16-f32-gemm':
-        # TODO: crbug.com/395969334 - This target breaks windows builds.
-        return None
     args = [arg for arg in action_args if arg.startswith('-m')]
-    return ObjectBuild(platform=platform, src=src, dir=dir, args=args)
+    ob = ObjectBuild(platform=platform, src=src, dir=dir, args=args)
+    if ob.GnName() in (
+            'bf16-f32-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
+            'f32-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
+            'qd8-f32-qc8w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
+    ):
+        # TODO: crbug.com/395969334 - These target breaks windows builds.
+        return None
+    return ob
 
 
 def _run_bazel_cmd(args: list[str]) -> str:

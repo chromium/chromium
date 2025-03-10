@@ -933,7 +933,8 @@ TEST_P(TemplateURLServicePlayApiTest, CreateFromPlayAPI) {
   ASSERT_EQ(image_translate_target_language_param_key,
             t_url->image_translate_target_language_param_key());
 
-  ASSERT_TRUE(t_url->created_from_play_api());
+  ASSERT_EQ(t_url->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
   ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(keyword));
 
   auto cloned_url = std::make_unique<TemplateURL>(t_url->data());
@@ -997,7 +998,8 @@ TEST_P(TemplateURLServicePlayApiTest, UpdateFromPlayAPI) {
   ASSERT_EQ(new_other_data, t_url->image_translate_url());
   ASSERT_EQ(new_other_data, t_url->image_translate_source_language_param_key());
   ASSERT_EQ(new_other_data, t_url->image_translate_target_language_param_key());
-  ASSERT_TRUE(t_url->created_from_play_api());
+  ASSERT_EQ(t_url->GetRegulatoryExtensionType(),
+            RegulatoryExtensionType::kAndroidEEA);
 
   // Make sure the mappings in the model were updated.
   ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(keyword));

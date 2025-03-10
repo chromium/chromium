@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1110,12 +1111,9 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
   std::vector<autofill_private::EntityInstanceWithLabels> result =
-      base::ToVector(entity_data_manager->GetEntityInstances(),
-                     [&](const EntityInstance& entity) {
-                       return autofill_ai_util::
-                           EntityInstanceToPrivateApiEntityInstanceWithLabels(
-                               entity, autofill_client()->GetAppLocale());
-                     });
+      autofill_ai_util::EntityInstancesToPrivateApiEntityInstancesWithLabels(
+          entity_data_manager->GetEntityInstances(),
+          g_browser_process->GetApplicationLocale());
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }

@@ -218,18 +218,30 @@ after that. All of them go through `gpu::gles2::GLES2DecoderImpl::DoCommand`.
 
 To actually debug the GPU process:
 
-On Linux this works for me:
+On Linux, gdb can be automatically attached via the `--gpu-launcher` argument:
 
 *   `out/Debug/chromium --no-sandbox --gpu-launcher="xterm -e gdb --args"
     http://localhost:8000/page-to-repro.html`
 
-On OSX this works for me:
+Similarly, gdb can be attached with the same argument on OSX:
 
 *   `out/Debug/Chromium.app/Contents/MacOSX/Chromium --no-sandbox
     --gpu-launcher="xterm -e gdb --args"
     http://localhost:8000/page-to-repro.html`
 
-On Windows I use `--gpu-startup-dialog` and then connect to the listed process.
+On Windows, `--gpu-launcher` used with `windbg` does not appear to work
+properly, as the browser process will always fail to start the GPU process.
+Instead, you have two alternative options:
+
+1. Use `--gpu-startup-dialog`, which will cause a dialog window to be shown on
+   GPU process startup with the PID that you can attach to. This should work for
+   most use cases, but since it will add at least several seconds of delay, it
+   is possible to change behavior if the issue being debugged is timing related.
+2. Run the browser process through `windbg` and automatically attach to child
+   processes via `windbg -g -G -o <command to start Chrome>`.
+
+Similar approaches are likely possible with other debuggers, but the specifics
+are not listed here.
 
 ### `GPU PARSE ERROR`
 

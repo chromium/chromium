@@ -388,7 +388,8 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   show_params.screen_reader_prompt_available =
-      CheckScreenReaderPromptAvailable(promo_data.for_demo || in_demo_mode);
+      CheckExtendedPropertiesPromptAvailable(promo_data.for_demo ||
+                                             in_demo_mode);
 
   // When not explicitly for a demo, notify the tracker that the promo is
   // starting. Since this is also one of the preconditions for the promo,

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate_factory.h"
 
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system_provider.h"
 

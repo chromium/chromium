@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -53,6 +54,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/network/public/cpp/features.h"
@@ -1195,6 +1197,26 @@ class BidderWorkletMultiThreadingTest
       public testing::WithParamInterface<size_t> {
  public:
   size_t NumThreads() override { return GetParam(); }
+
+  void ValidateTrustedSignalsUrl(size_t num_generate_bid_calls,
+                                 const GURL& url) {
+    std::vector<std::string> expected_keys;
+    for (size_t i = 0; i < num_generate_bid_calls; ++i) {
+      expected_keys.push_back(base::NumberToString(i));
+    }
+    EXPECT_TRUE(url.spec().starts_with(
+        "https://signals.test/?hostname=top.window.test&"));
+    std::string igs;
+    ASSERT_TRUE(net::GetValueForKeyInQuery(url, "interestGroupNames", &igs));
+    EXPECT_EQ("Fred", igs);
+
+    std::string keys;
+    ASSERT_TRUE(net::GetValueForKeyInQuery(url, "keys", &keys));
+    std::vector<std::string> actual_keys = base::SplitString(
+        keys, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    EXPECT_THAT(actual_keys,
+                ::testing::UnorderedElementsAreArray(expected_keys));
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4939,19 +4961,35 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
 
 TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
   RunGenerateBidExpectingExpressionIsTrue(
-      R"(!('encodeUtf8' in browserSignals))");
-  RunGenerateBidExpectingExpressionIsTrue(
-      R"(!('decodeUtf8' in browserSignals))");
+      R"(!('protectedAudience' in globalThis))");
 }
 
 TEST_F(BidderWorkletTextConversionsTest, GenerateBidTextConversions) {
-  RunGenerateBidExpectingExpressionIsTrue(R"('encodeUtf8' in browserSignals)");
-  RunGenerateBidExpectingExpressionIsTrue(R"('decodeUtf8' in browserSignals)");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"('encodeUtf8' in protectedAudience)");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"('decodeUtf8' in protectedAudience)");
 
   RunGenerateBidExpectingExpressionIsTrue(
-      "browserSignals.encodeUtf8('A')[0] === 65");
+      "protectedAudience.encodeUtf8('A')[0] === 65");
   RunGenerateBidExpectingExpressionIsTrue(
-      "browserSignals.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
+      "protectedAudience.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
+}
+
+// Make sure we don't stomp over an existing user protectedAudience
+TEST_F(BidderWorkletTextConversionsTest, GenerateBidNoGlobalStomp) {
+  const char kScript[] = R"(
+    function protectedAudience() {
+      return {bid: 1, render:"https://response.test/"};
+    }
+
+    function generateBid() {
+      return protectedAudience();
+    }
+  )";
+
+  RunGenerateBidWithJavascriptExpectingResult(kScript,
+                                              TestBidBuilder().Build());
 }
 
 class BidderWorkletCreativeScanningTest : public BidderWorkletTest {
@@ -5203,26 +5241,21 @@ TEST_P(BidderWorkletMultiThreadingTest,
   EXPECT_EQ(0u, num_generate_bid_calls);
 
   // 3) The trusted bidding signals are loaded.
-  std::string keys;
   base::Value::Dict keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    if (i != 0) {
-      keys.append(",");
-    }
-    keys.append(base::NumberToString(i));
     keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
   std::string signals_json;
   base::JSONWriter::Write(signals_dict, &signals_json);
-  AddBidderJsonResponse(
-      &url_loader_factory_,
-      GURL(base::StringPrintf(
-          "https://signals.test/"
-          "?hostname=top.window.test&keys=%s&interestGroupNames=Fred",
-          keys.c_str())),
-      signals_json, /*data_version=*/10u);
+
+  ASSERT_EQ(url_loader_factory_.NumPending(), 1);
+  GURL url = url_loader_factory_.GetPendingRequest(0)->request.url;
+  ValidateTrustedSignalsUrl(kNumGenerateBidCalls, url);
+
+  AddBidderJsonResponse(&url_loader_factory_, url, signals_json,
+                        /*data_version=*/10u);
 
   // The worklets can now generate bids.
   run_loop.Run();
@@ -5326,26 +5359,27 @@ TEST_P(BidderWorkletMultiThreadingTest,
   EXPECT_EQ(0u, num_generate_bid_calls);
 
   // 2) The trusted bidding signals are loaded.
-  std::string keys;
   base::Value::Dict keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    if (i != 0) {
-      keys.append(",");
-    }
-    keys.append(base::NumberToString(i));
     keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
   std::string signals_json;
   base::JSONWriter::Write(signals_dict, &signals_json);
-  AddBidderJsonResponse(
-      &url_loader_factory_,
-      GURL(base::StringPrintf(
-          "https://signals.test/"
-          "?hostname=top.window.test&keys=%s&interestGroupNames=Fred",
-          keys.c_str())),
-      signals_json, /*data_version=*/42u);
+
+  // Find the trusted signals fetch, and provide data to it.
+  ASSERT_EQ(url_loader_factory_.NumPending(), 2);
+  for (const auto& pending : *url_loader_factory_.pending_requests()) {
+    GURL url = pending.request.url;
+    if (url.spec().starts_with(
+            "https://signals.test/?hostname=top.window.test&")) {
+      ValidateTrustedSignalsUrl(kNumGenerateBidCalls, url);
+      AddBidderJsonResponse(&url_loader_factory_, url, signals_json,
+                            /*data_version=*/42u);
+      break;
+    }
+  }
 
   // No callbacks should have been invoked, since the worklet script hasn't
   // loaded yet.
@@ -5463,26 +5497,20 @@ TEST_P(BidderWorkletMultiThreadingTest,
   EXPECT_EQ(0u, num_generate_bid_calls);
 
   // 3) The trusted bidding signals are loaded.
-  std::string keys;
   base::Value::Dict keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    if (i != 0) {
-      keys.append(",");
-    }
-    keys.append(base::NumberToString(i));
     keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
   base::Value::Dict signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
   std::string signals_json;
   base::JSONWriter::Write(signals_dict, &signals_json);
-  AddBidderJsonResponse(
-      &url_loader_factory_,
-      GURL(base::StringPrintf(
-          "https://signals.test/"
-          "?hostname=top.window.test&keys=%s&interestGroupNames=Fred",
-          keys.c_str())),
-      signals_json, /*data_version=*/22u);
+
+  ASSERT_EQ(url_loader_factory_.NumPending(), 1);
+  GURL url = url_loader_factory_.GetPendingRequest(0)->request.url;
+  ValidateTrustedSignalsUrl(kNumGenerateBidCalls, url);
+  AddBidderJsonResponse(&url_loader_factory_, url, signals_json,
+                        /*data_version=*/22u);
 
   // The worklets can now generate bids.
   run_loop.Run();
@@ -7841,20 +7869,31 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
 
 TEST_F(BidderWorkletTest, ReportWinTextConversions) {
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
-      GURL("https://foo.test/?false"));
-  RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      "sendReportTo('https://foo.test?' + ('protectedAudience' in globalThis))",
       GURL("https://foo.test/?false"));
 }
 
 TEST_F(BidderWorkletTextConversionsTest, ReportWinTextConversions) {
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
+      "sendReportTo('https://foo.test?' + ('encodeUtf8' in protectedAudience))",
       GURL("https://foo.test/?true"));
   RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      "sendReportTo('https://foo.test?' + ('decodeUtf8' in protectedAudience))",
       GURL("https://foo.test/?true"));
+}
+
+// Make sure we don't stomp over an existing user protectedAudience object.
+TEST_F(BidderWorkletTextConversionsTest, ReportWinNoGlobalStomp) {
+  const char kScript[] = R"(
+    function protectedAudience() {
+      sendReportTo("https://foo.test");
+    }
+
+    function reportWin() {
+      protectedAudience();
+    }
+  )";
+  RunReportWinWithJavascriptExpectingResult(kScript, GURL("https://foo.test"));
 }
 
 TEST_F(BidderWorkletTest, SendReportToLongUrl) {

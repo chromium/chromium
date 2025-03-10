@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_executor.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -45,6 +47,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -138,6 +141,8 @@ using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
+using test::AddFieldPredictionsToForm;
+using test::CreateFieldPrediction;
 using test::CreateTestAddressFormData;
 using test::CreateTestFormField;
 using test::CreateTestIbanFormData;
@@ -750,6 +755,11 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
 
+  MOCK_METHOD(AutofillAiModelCache*, GetAutofillAiModelCache, (), (override));
+  MOCK_METHOD(AutofillAiModelExecutor*,
+              GetAutofillAiModelExecutor,
+              (),
+              (override));
   MOCK_METHOD(profile_metrics::BrowserProfileType,
               GetProfileType,
               (),
@@ -3371,6 +3381,37 @@ TEST_F(BrowserAutofillManagerTest,
               testing::Optional(filled_card.instrument_id()));
 }
 
+// BNPL suggestion is limited to Windows, macOS, Linux, and ChromeOS.
+// Therefore, the system will only check for supported BNPL issuers on these
+// platforms.
+// TODO(crbug.com/401370610): Update when BNPL is launched to other platform.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Tests that, in the BNPL flow, a VCN is not fetched again due to prior
+// authorization.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldFetchCreditCard_VcnNotFetchedForSupportedBnplIssuer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  CreditCard credit_card = test::GetVirtualCard();
+  credit_card.set_issuer_id(issuer.issuer_id());
+  test_api(client().GetPersonalDataManager().payments_data_manager())
+      .AddBnplIssuer(issuer);
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
+
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      credit_card, AutofillTriggerSource::kPopup);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 // Test that the importing logic is called on form submit.
 TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
@@ -4119,17 +4160,17 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   AutofillQueryResponse::FormSuggestion* form_suggestion;
   // Set suggestions for form.
   form_suggestion = response.add_form_suggestions();
-  autofill::test::AddFieldPredictionsToForm(
+  AddFieldPredictionsToForm(
       form.fields()[0],
-      {test::CreateFieldPrediction(NAME_FIRST,
-                                   FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
-       test::CreateFieldPrediction(USERNAME,
-                                   FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
+      {CreateFieldPrediction(NAME_FIRST,
+                             FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+       CreateFieldPrediction(USERNAME,
+                             FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
       form_suggestion);
-  autofill::test::AddFieldPredictionsToForm(
+  AddFieldPredictionsToForm(
       form.fields()[1],
-      {test::CreateFieldPrediction(ADDRESS_HOME_LINE1,
-                                   FieldPrediction::SOURCE_OVERRIDE)},
+      {CreateFieldPrediction(ADDRESS_HOME_LINE1,
+                             FieldPrediction::SOURCE_OVERRIDE)},
       form_suggestion);
   autofill::test::AddFieldPredictionToForm(form.fields()[2], ADDRESS_HOME_CITY,
                                            form_suggestion);
@@ -4475,7 +4516,13 @@ TEST_F(
   // Autocomplete is set to off, so suggestions should not get returned from
   // single_field_fill_router().
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   OnAskForValuesToFill(form, email_field);
 
@@ -4500,9 +4547,15 @@ TEST_F(BrowserAutofillManagerTest,
   field.set_should_autocomplete(false);
 
   // Autocomplete is set to off, so suggestions should not get returned from
-  // |single_field_fill_router()|.
+  // `single_field_fill_router()`.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   OnAskForValuesToFill(form, field);
 
@@ -6862,6 +6915,98 @@ TEST_F(BrowserAutofillManagerTest, CC) {
   FormSubmitted(response_data);
 }
 
+class BrowserAutofillManagerWithAiModelTest
+    : public BrowserAutofillManagerTest {
+ public:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    ON_CALL(client(), GetAutofillAiModelCache).WillByDefault(Return(&cache_));
+    ON_CALL(client(), GetAutofillAiModelExecutor)
+        .WillByDefault(Return(&executor_));
+  }
+
+  void SeeForm(bool may_run_model) {
+    FormData form =
+        test::GetFormData({.fields = {{.name = u"First name"},
+                                      {.name = u"Last name"},
+                                      {.name = u"Passport number"}}});
+
+    FormStructure* form_structure = nullptr;
+    {
+      auto fs = std::make_unique<FormStructure>(form);
+      form_structure = fs.get();
+      fs->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+      manager().AddSeenFormStructure(std::move(fs));
+    }
+
+    // Make API response with suggestions.
+    std::string server_response;
+    {
+      AutofillQueryResponse response;
+      AutofillQueryResponse::FormSuggestion* form_suggestion =
+          response.add_form_suggestions();
+      AddFieldPredictionsToForm(
+          form.fields()[0],
+          {CreateFieldPrediction(NAME_FIRST,
+                                 FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+           CreateFieldPrediction(PASSPORT_NAME_TAG,
+                                 FieldPrediction::SOURCE_AUTOFILL_AI)},
+          form_suggestion);
+      AddFieldPredictionsToForm(
+          form.fields()[1],
+          {CreateFieldPrediction(NAME_LAST,
+                                 FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+           CreateFieldPrediction(PASSPORT_NAME_TAG,
+                                 FieldPrediction::SOURCE_AUTOFILL_AI)},
+          form_suggestion);
+      AddFieldPredictionsToForm(
+          form.fields()[2],
+          {CreateFieldPrediction(PASSPORT_NUMBER,
+                                 FieldPrediction::SOURCE_AUTOFILL_AI)},
+          form_suggestion);
+      form_suggestion->set_run_autofill_ai_model(may_run_model);
+      ASSERT_TRUE(response.SerializeToString(&server_response));
+    }
+
+    test_api(manager()).OnLoadedServerPredictions(
+        base::Base64Encode(server_response),
+        test::GetEncodedSignatures(*form_structure));
+  }
+
+  MockAutofillAiModelCache& cache() { return cache_; }
+  MockAutofillAiModelExecutor& executor() { return executor_; }
+
+ private:
+  MockAutofillAiModelCache cache_;
+  MockAutofillAiModelExecutor executor_;
+};
+
+// Tests that the Autofill AI server model is run if cache and model are
+// available and the form is not contained in the cache.
+TEST_F(BrowserAutofillManagerWithAiModelTest, AutofillAiServerModelRun) {
+  ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(executor(), GetPredictions);
+  SeeForm(/*may_run_model=*/true);
+}
+
+// Tests that the Autofill AI server model is not run if the form is already
+// contained in the cache.
+TEST_F(BrowserAutofillManagerWithAiModelTest,
+       AutofillAiServerModelNotRunWhenInCache) {
+  ON_CALL(cache(), Contains).WillByDefault(Return(true));
+  EXPECT_CALL(executor(), GetPredictions).Times(0);
+  SeeForm(/*may_run_model=*/true);
+}
+
+// Tests that the Autofill AI server model is not run if the form is not
+// eligible.
+TEST_F(BrowserAutofillManagerWithAiModelTest,
+       AutofillAiServerModelNotRunWhenNotFormIneligible) {
+  ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(executor(), GetPredictions).Times(0);
+  SeeForm(/*may_run_model=*/false);
+}
+
 // Test param indicates if there is an active screen reader.
 class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
                                public testing::WithParamInterface<bool> {
@@ -7557,7 +7702,13 @@ TEST_F(BrowserAutofillManagerTest,
   // Autocomplete suggestions (and all others for that matter) should be empty
   // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
   FormsSeen({form});
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -7778,7 +7929,13 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   // Single field form fill suggestions request - No results.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -7972,7 +8129,13 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
   // Single field form fill suggestions request - No results.
   EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce(Return(false));
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+        return false;
+      });
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(

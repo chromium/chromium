@@ -54,7 +54,7 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
     }
 
-    if (new_mode_flags & AXMode::kScreenReader) {
+    if (new_mode_flags & AXMode::kExtendedProperties) {
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
     }

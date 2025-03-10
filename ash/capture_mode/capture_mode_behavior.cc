@@ -386,6 +386,9 @@ class SunfishBehavior : public CaptureModeBehavior {
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
   }
+  const std::string GetCaptureModeOpenAnnouncement() const override {
+    return l10n_util::GetStringUTF8(IDS_ASH_SUNFISH_MODE_ALERT_OPEN);
+  }
   int GetCaptureBarWidth() const override {
     // Return the height so the button is circular.
     return capture_mode::kCaptureBarHeight;
@@ -621,6 +624,30 @@ const std::u16string CaptureModeBehavior::GetCaptureLabelRegionText() const {
       controller->type() == CaptureModeType::kImage
           ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
           : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
+}
+
+const std::string CaptureModeBehavior::GetCaptureModeOpenAnnouncement() const {
+  CaptureModeController* controller = CaptureModeController::Get();
+  int capture_source_id;
+  switch (controller->source()) {
+    case CaptureModeSource::kFullscreen:
+      capture_source_id = IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
+      break;
+    case CaptureModeSource::kRegion:
+      capture_source_id = IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
+      break;
+    case CaptureModeSource::kWindow:
+      capture_source_id = IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
+      break;
+  }
+
+  return l10n_util::GetStringFUTF8(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
+      l10n_util::GetStringUTF16(capture_source_id),
+      l10n_util::GetStringUTF16(
+          controller->type() == CaptureModeType::kImage
+              ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
+              : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING));
 }
 
 std::unique_ptr<CaptureModeBarView>

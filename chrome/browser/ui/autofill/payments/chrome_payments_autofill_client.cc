@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
@@ -714,14 +715,20 @@ void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromePaymentsAutofillClient::ShowBnplTos() {
+void ChromePaymentsAutofillClient::ShowBnplTos(
+    BnplTosModel bnpl_tos_model,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
   if (!bnpl_tos_controller_) {
     bnpl_tos_controller_ = std::make_unique<BnplTosControllerImpl>();
   }
+
 #if !BUILDFLAG(IS_ANDROID)
-  bnpl_tos_controller_->Show(base::BindOnce(&CreateAndShowBnplTos,
-                                            bnpl_tos_controller_->GetWeakPtr(),
-                                            base::Unretained(web_contents())));
+  bnpl_tos_controller_->Show(
+      base::BindOnce(&CreateAndShowBnplTos, bnpl_tos_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())),
+      std::move(bnpl_tos_model), std::move(accept_callback),
+      std::move(cancel_callback));
 #endif
 }
 

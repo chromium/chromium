@@ -228,6 +228,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/permission_controller.h"
@@ -450,14 +451,15 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
 // Returns whether immmersive fullscreen should replace fullscreen. This
 // should only occur for "browser-fullscreen" for tabbed-typed windows (not
 // for tab-fullscreen and not for app/popup type windows).
-bool ShouldUseImmersiveFullscreenForUrl(const GURL& url) {
+bool ShouldUseImmersiveFullscreenForUrl(ExclusiveAccessBubbleType type) {
   // Kiosk mode needs the whole screen.
   if (IsRunningInAppMode()) {
     return false;
   }
   // An empty URL signifies browser fullscreen. Immersive is used for browser
   // fullscreen only.
-  return url.is_empty();
+  return type ==
+         EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION;
 }
 #endif
 
@@ -907,7 +909,8 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
     // asynchronously since AXMode changes can happen while AXTree updates or
     // notifications are in progress, and |MaybeInitializeWebUITabStrip| can
     // destroy things synchronously.
-    if (mode.has_mode(ui::AXMode::kScreenReader)) {
+    if (content::BrowserAccessibilityState::GetInstance()
+            ->IsKnownScreenReaderActiveSlow()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
                                     browser_view_->GetAsWeakPtr()));
@@ -1043,7 +1046,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // container.
   auto lens_overlay_view = std::make_unique<views::View>();
   lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
-  lens_overlay_view->SetVisible(true);
+  lens_overlay_view->SetVisible(false);
   lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
   lens_overlay_view_ =
       contents_container->AddChildView(std::move(lens_overlay_view));
@@ -1086,13 +1089,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_separator_ =
       top_container_->AddChildView(std::make_unique<ContentsSeparator>());
 
-  ContentsWebView* active_contents_view =
-      static_cast<ContentsWebView*>(GetContentsWebView());
-  // TODO(crbug.com/393451405): This probably isn't sufficient, we should have
-  // one close handler for each visible WebContents.
-  web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(
-      static_cast<ContentsWebView*>(active_contents_view));
-
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
@@ -1113,11 +1109,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
   infobar_container_ =
       AddChildView(std::make_unique<InfoBarContainerView>(this));
-
-  // TODO(crbug.com/393451405): This probably isn't sufficient, we should have
-  // one status bubble for each visible WebContents.
-  status_bubble_ = std::make_unique<StatusBubbleViews>(active_contents_view);
-  active_contents_view->SetStatusBubble(status_bubble_.get());
 
   // Create do-nothing view for the sake of controlling the z-order of the find
   // bar widget.
@@ -1713,8 +1704,29 @@ void BrowserView::SetTopControlsGestureScrollInProgress(bool in_progress) {
   }
 }
 
-StatusBubble* BrowserView::GetStatusBubble() {
-  return status_bubble_.get();
+std::vector<StatusBubble*> BrowserView::GetStatusBubbles() {
+  std::vector<StatusBubble*> status_bubbles;
+  if (multi_contents_view_) {
+    if (multi_contents_view_->IsInSplitView()) {
+      if (StatusBubble* active_bubble =
+              multi_contents_view_->GetActiveContentsView()
+                  ->GetStatusBubble()) {
+        status_bubbles.push_back(active_bubble);
+      }
+      if (StatusBubble* inactive_bubble =
+              multi_contents_view_->GetInactiveContentsView()
+                  ->GetStatusBubble()) {
+        status_bubbles.push_back(inactive_bubble);
+      }
+    } else if (StatusBubble* active_bubble =
+                   multi_contents_view_->GetActiveContentsView()
+                       ->GetStatusBubble()) {
+      status_bubbles.push_back(active_bubble);
+    }
+  } else if (StatusBubble* bubble = contents_web_view_->GetStatusBubble()) {
+    status_bubbles.push_back(bubble);
+  }
+  return status_bubbles;
 }
 
 void BrowserView::UpdateTitleBar() {
@@ -1979,7 +1991,15 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       }
     }
 
-    web_contents_close_handler_->ActiveTabChanged();
+    if (multi_contents_view_) {
+      multi_contents_view_->ExecuteOnEachVisibleContentsView(
+          base::BindRepeating([](ContentsWebView* contents_view) {
+            contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
+          }));
+    } else {
+      contents_web_view_->GetWebContentsCloseHandler()->ActiveTabChanged();
+    }
+
     if (loading_bar_) {
       loading_bar_->SetWebContents(new_contents);
     }
@@ -2049,7 +2069,14 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   // We need to reset the current tab contents to null before it gets
   // freed. This is because the focus manager performs some operations
   // on the selected WebContents when it is removed.
-  web_contents_close_handler_->ActiveTabChanged();
+  if (multi_contents_view_) {
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
+        }));
+  } else {
+    contents_web_view_->GetWebContentsCloseHandler()->ActiveTabChanged();
+  }
   if (loading_bar_) {
     loading_bar_->SetWebContents(nullptr);
   }
@@ -2138,7 +2165,7 @@ void BrowserView::Restore() {
   frame_->Restore();
 }
 
-void BrowserView::EnterFullscreen(const GURL& url,
+void BrowserView::EnterFullscreen(const url::Origin& origin,
                                   ExclusiveAccessBubbleType bubble_type,
                                   const int64_t display_id) {
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
@@ -2190,7 +2217,7 @@ void BrowserView::UpdateExclusiveAccessBubble(
     // However, do show the bubble in a managed guest session (see
     // crbug.com/741069).
     // Immersive mode logic for downloads is handled by the download controller.
-    should_close_bubble |= ShouldUseImmersiveFullscreenForUrl(params.url) &&
+    should_close_bubble |= ShouldUseImmersiveFullscreenForUrl(params.type) &&
                            !chromeos::IsManagedGuestSession();
 #endif
   }
@@ -2305,24 +2332,27 @@ void BrowserView::FullscreenStateChanged() {
   // TODO(b/365146870): Remove once we consolidate locked fullscreen with
   // OnTask.
   bool avoid_using_immersive_mode =
-      platform_util::IsBrowserLockedFullscreen(browser_.get());
-  if (browser_->IsLockedForOnTask()) {
-    avoid_using_immersive_mode = false;
-  }
+      platform_util::IsBrowserLockedFullscreen(browser_.get()) &&
+      !browser_->IsLockedForOnTask();
+
   if (avoid_using_immersive_mode) {
     immersive_mode_controller_->SetEnabled(false);
   } else {
     // Enable immersive before the browser refreshes its list of enabled
     // commands.
-    bool should_stay_immersive =
-        !IsFullscreen() &&
-        immersive_mode_controller_->ShouldStayImmersiveAfterExitingFullscreen();
-    GURL url = IsFullscreen() ? GetExclusiveAccessManager()
-                                    ->fullscreen_controller()
-                                    ->GetURLForExclusiveAccessBubble()
-                              : GURL();
-    if (ShouldUseImmersiveFullscreenForUrl(url) && !should_stay_immersive) {
-      immersive_mode_controller_->SetEnabled(IsFullscreen());
+    // Enable immersive mode when entering browser fullscreen, unless it's in
+    // app mode.
+    if (IsFullscreen()) {
+      bool enable_immersive =
+          !IsRunningInAppMode() && GetExclusiveAccessManager()
+                                       ->fullscreen_controller()
+                                       ->IsFullscreenForBrowser();
+      immersive_mode_controller_->SetEnabled(enable_immersive);
+    } else if (!immersive_mode_controller_
+                    ->ShouldStayImmersiveAfterExitingFullscreen()) {
+      // Disable immersive mode if not required to stay immersive after exiting
+      // fullscreen.
+      immersive_mode_controller_->SetEnabled(false);
     }
   }
 #endif
@@ -3781,7 +3811,14 @@ void BrowserView::OnTabStripModelChanged(
       DCHECK(contents.contents->GetNativeView()->GetRootWindow());
     }
 #endif
-    web_contents_close_handler_->TabInserted();
+    if (multi_contents_view_) {
+      multi_contents_view_->ExecuteOnEachVisibleContentsView(
+          base::BindRepeating([](ContentsWebView* contents_view) {
+            contents_view->GetWebContentsCloseHandler()->TabInserted();
+          }));
+    } else {
+      contents_web_view_->GetWebContentsCloseHandler()->TabInserted();
+    }
   }
 
   UpdateAccessibleNameForRootView();
@@ -3795,13 +3832,28 @@ void BrowserView::TabStripEmpty() {
 }
 
 void BrowserView::WillCloseAllTabs(TabStripModel* tab_strip_model) {
-  web_contents_close_handler_->WillCloseAllTabs();
+  if (multi_contents_view_) {
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->WillCloseAllTabs();
+        }));
+  } else {
+    contents_web_view_->GetWebContentsCloseHandler()->WillCloseAllTabs();
+  }
 }
 
 void BrowserView::CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                       CloseAllStoppedReason reason) {
-  if (reason == kCloseAllCanceled) {
-    web_contents_close_handler_->CloseAllTabsCanceled();
+  if (reason != kCloseAllCanceled) {
+    return;
+  }
+  if (multi_contents_view_) {
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
+        }));
+  } else {
+    contents_web_view_->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
   }
 }
 
@@ -4516,9 +4568,10 @@ void BrowserView::OnWidgetMove() {
   // Comment out for one cycle to see if this fixes dist tests.
   // tabstrip_->DestroyDragController();
 
-  // status_bubble_ may be null if this is invoked during construction.
-  if (status_bubble_.get()) {
-    status_bubble_->Reposition();
+  // There may be no status bubbles if this is invoked during construction.
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    static_cast<StatusBubbleViews*>(status_bubble)->Reposition();
   }
 
   BookmarkBubbleView::Hide();
@@ -4557,6 +4610,21 @@ void BrowserView::CloseTabSearchBubble() {
   if (auto* tab_search_host = GetTabSearchBubbleHost()) {
     tab_search_host->CloseTabSearchBubble();
   }
+}
+
+std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {
+  std::vector<ContentsWebView*> contents_views;
+  if (multi_contents_view_) {
+    contents_views.push_back(multi_contents_view_->GetActiveContentsView());
+    ContentsWebView* inactive_contents_view =
+        multi_contents_view_->GetInactiveContentsView();
+    if (inactive_contents_view->GetVisible()) {
+      contents_views.push_back(inactive_contents_view);
+    }
+  } else {
+    contents_views.push_back(contents_web_view_);
+  }
+  return contents_views;
 }
 
 void BrowserView::RevealTabStripIfNeeded() {
@@ -5828,8 +5896,8 @@ void BrowserView::HideDownloadShelf() {
     download_shelf_->Hide();
   }
 
-  StatusBubble* status_bubble = GetStatusBubble();
-  if (status_bubble) {
+  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
     status_bubble->Hide();
   }
 }

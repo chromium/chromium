@@ -193,7 +193,9 @@ class PropertyTreeManager {
   // TODO(crbug.com/504464): There is ongoing work in cc to delay render surface
   // decision until later phase of the pipeline. Remove premature optimization
   // here once the work is ready.
-  void UpdateConditionalRenderSurfaceReasons(const cc::LayerList& layers);
+  void UpdateConditionalRenderSurfaceReasons(
+      const cc::LayerList& layers,
+      const HashSet<int>& layers_having_text);
 
   // The type of operation the current cc effect node applies.
   enum CcEffectType {

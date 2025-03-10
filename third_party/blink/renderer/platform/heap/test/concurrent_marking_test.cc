@@ -224,30 +224,31 @@ TEST_F(ConcurrentMarkingTest, SwapHashSet) {
 }
 
 template <typename T>
-struct MethodAdapter<HeapLinkedHashSet<T>>
-    : public MethodAdapterBase<HeapLinkedHashSet<T>> {
-  static void Swap(HeapLinkedHashSet<T>& a, HeapLinkedHashSet<T>& b) {
+struct MethodAdapter<GCedHeapLinkedHashSet<T>>
+    : public MethodAdapterBase<GCedHeapLinkedHashSet<T>> {
+  static void Swap(GCedHeapLinkedHashSet<T>& a, GCedHeapLinkedHashSet<T>& b) {
     a.Swap(b);
   }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToLinkedHashSet) {
-  AddToCollection<HeapLinkedHashSet<Member<IntegerObject>>>();
+  AddToCollection<GCedHeapLinkedHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfLinkedHashSet) {
-  RemoveFromBeginningOfCollection<HeapLinkedHashSet<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<
+      GCedHeapLinkedHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfLinkedHashSet) {
-  RemoveFromMiddleOfCollection<HeapLinkedHashSet<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<GCedHeapLinkedHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfLinkedHashSet) {
-  RemoveFromEndOfCollection<HeapLinkedHashSet<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<GCedHeapLinkedHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearLinkedHashSet) {
-  ClearCollection<HeapLinkedHashSet<Member<IntegerObject>>>();
+  ClearCollection<GCedHeapLinkedHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapLinkedHashSet) {
-  SwapCollections<HeapLinkedHashSet<Member<IntegerObject>>>();
+  SwapCollections<GCedHeapLinkedHashSet<Member<IntegerObject>>>();
 }
 
 // HeapHashCountedSet

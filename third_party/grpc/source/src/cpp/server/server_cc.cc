@@ -15,26 +15,10 @@
 //
 //
 
-#include <limits.h>
-#include <string.h>
-
-#include <algorithm>
-#include <atomic>
-#include <cstdlib>
-#include <memory>
-#include <new>
-#include <sstream>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
-#include "absl/status/status.h"
-
 #include <grpc/byte_buffer.h>
 #include <grpc/grpc.h>
+#include <grpc/impl/channel_arg_names.h>
 #include <grpc/slice.h>
-#include <grpc/support/log.h>
 #include <grpc/support/sync.h>
 #include <grpc/support/time.h>
 #include <grpcpp/channel.h>
@@ -57,6 +41,7 @@
 #include <grpcpp/server.h>
 #include <grpcpp/server_context.h>
 #include <grpcpp/server_interface.h>
+#include <grpcpp/support/byte_buffer.h>
 #include <grpcpp/support/channel_arguments.h>
 #include <grpcpp/support/client_interceptor.h>
 #include <grpcpp/support/interceptor.h>
@@ -64,14 +49,30 @@
 #include <grpcpp/support/server_interceptor.h>
 #include <grpcpp/support/slice.h>
 #include <grpcpp/support/status.h>
+#include <limits.h>
+#include <string.h>
 
+#include <algorithm>
+#include <atomic>
+#include <cstdlib>
+#include <memory>
+#include <new>
+#include <sstream>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/status/status.h"
 #include "src/core/ext/transport/inproc/inproc_transport.h"
-#include "src/core/lib/gprpp/manual_constructor.h"
 #include "src/core/lib/iomgr/exec_ctx.h"
 #include "src/core/lib/iomgr/iomgr.h"
 #include "src/core/lib/resource_quota/api.h"
 #include "src/core/lib/surface/completion_queue.h"
-#include "src/core/lib/surface/server.h"
+#include "src/core/server/server.h"
+#include "src/core/util/manual_constructor.h"
 #include "src/cpp/client/create_channel_internal.h"
 #include "src/cpp/server/external_connection_acceptor_impl.h"
 #include "src/cpp/server/health/default_health_check_service.h"
@@ -108,7 +109,7 @@ gpr_once g_once_init_callbacks = GPR_ONCE_INIT;
 
 void InitGlobalCallbacks() {
   if (!g_callbacks) {
-    g_callbacks.reset(new DefaultGlobalCallbacks());
+    g_callbacks = std::make_shared<DefaultGlobalCallbacks>();
   }
 }
 
@@ -237,11 +238,10 @@ void ServerInterface::RegisteredAsyncRequest::IssueRequest(
     ServerCompletionQueue* notification_cq) {
   // The following call_start_batch is internally-generated so no need for an
   // explanatory log on failure.
-  GPR_ASSERT(grpc_server_request_registered_call(
-                 server_->server(), registered_method, &call_,
-                 &context_->deadline_, context_->client_metadata_.arr(),
-                 payload, call_cq_->cq(), notification_cq->cq(),
-                 this) == GRPC_CALL_OK);
+  ABSL_CHECK(grpc_server_request_registered_call(
+            server_->server(), registered_method, &call_, &context_->deadline_,
+            context_->client_metadata_.arr(), payload, call_cq_->cq(),
+            notification_cq->cq(), this) == GRPC_CALL_OK);
 }
 
 ServerInterface::GenericAsyncRequest::GenericAsyncRequest(
@@ -252,8 +252,8 @@ ServerInterface::GenericAsyncRequest::GenericAsyncRequest(
     : BaseAsyncRequest(server, context, stream, call_cq, notification_cq, tag,
                        delete_on_finalize) {
   grpc_call_details_init(&call_details_);
-  GPR_ASSERT(notification_cq);
-  GPR_ASSERT(call_cq);
+  ABSL_CHECK(notification_cq);
+  ABSL_CHECK(call_cq);
   if (issue_request) {
     IssueRequest();
   }
@@ -287,10 +287,10 @@ bool ServerInterface::GenericAsyncRequest::FinalizeResult(void** tag,
 void ServerInterface::GenericAsyncRequest::IssueRequest() {
   // The following call_start_batch is internally-generated so no need for an
   // explanatory log on failure.
-  GPR_ASSERT(grpc_server_request_call(server_->server(), &call_, &call_details_,
-                                      context_->client_metadata_.arr(),
-                                      call_cq_->cq(), notification_cq_->cq(),
-                                      this) == GRPC_CALL_OK);
+  ABSL_CHECK(grpc_server_request_call(server_->server(), &call_, &call_details_,
+                                 context_->client_metadata_.arr(),
+                                 call_cq_->cq(), notification_cq_->cq(),
+                                 this) == GRPC_CALL_OK);
 }
 
 namespace {
@@ -444,7 +444,7 @@ class Server::SyncRequest final : public grpc::internal::CompletionQueueTag {
       deserialized_request_ = handler->Deserialize(call_, request_payload_,
                                                    &request_status_, nullptr);
       if (!request_status_.ok()) {
-        gpr_log(GPR_DEBUG, "Failed to deserialize message.");
+        ABSL_VLOG(2) << "Failed to deserialize message.";
       }
       request_payload_ = nullptr;
       interceptor_methods_.AddInterceptionHookPoint(
@@ -478,7 +478,7 @@ class Server::SyncRequest final : public grpc::internal::CompletionQueueTag {
 
     // Ensure the cq_ is shutdown
     grpc::PhonyTag ignored_tag;
-    GPR_ASSERT(cq_.Pluck(&ignored_tag) == false);
+    ABSL_CHECK(cq_.Pluck(&ignored_tag) == false);
 
     // Cleanup structures allocated during Run/ContinueRunAfterInterception
     wrapped_call_.Destroy();
@@ -530,7 +530,7 @@ class Server::SyncRequest final : public grpc::internal::CompletionQueueTag {
   grpc::internal::InterceptorBatchMethodsImpl interceptor_methods_;
 
   // ServerContextWrapper allows ManualConstructor while using a private
-  // contructor of ServerContext via this friend class.
+  // constructor of ServerContext via this friend class.
   struct ServerContextWrapper {
     ServerContext ctx;
 
@@ -640,8 +640,8 @@ class Server::CallbackRequest final
     void Run(bool ok) {
       void* ignored = req_;
       bool new_ok = ok;
-      GPR_ASSERT(!req_->FinalizeResult(&ignored, &new_ok));
-      GPR_ASSERT(ignored == req_);
+      ABSL_CHECK(!req_->FinalizeResult(&ignored, &new_ok));
+      ABSL_CHECK(ignored == req_);
 
       if (!ok) {
         // The call has been shutdown.
@@ -687,7 +687,7 @@ class Server::CallbackRequest final
             req_->call_, req_->request_payload_, &req_->request_status_,
             &req_->handler_data_);
         if (!(req_->request_status_.ok())) {
-          gpr_log(GPR_DEBUG, "Failed to deserialize message.");
+          ABSL_VLOG(2) << "Failed to deserialize message.";
         }
         req_->request_payload_ = nullptr;
         req_->interceptor_methods_.AddInterceptionHookPoint(
@@ -822,8 +822,8 @@ class Server::SyncRequestThreadManager : public grpc::ThreadManager {
 
     // Under the AllocatingRequestMatcher model we will never see an invalid tag
     // here.
-    GPR_DEBUG_ASSERT(sync_req != nullptr);
-    GPR_DEBUG_ASSERT(ok);
+    ABSL_DCHECK_NE(sync_req, nullptr);
+    ABSL_DCHECK(ok);
 
     sync_req->Run(global_callbacks_, resources);
   }
@@ -995,8 +995,8 @@ Server::~Server() {
 }
 
 void Server::SetGlobalCallbacks(GlobalCallbacks* callbacks) {
-  GPR_ASSERT(!grpc::g_callbacks);
-  GPR_ASSERT(callbacks);
+  ABSL_CHECK(!grpc::g_callbacks);
+  ABSL_CHECK(callbacks);
   grpc::g_callbacks.reset(callbacks);
 }
 
@@ -1040,8 +1040,8 @@ static grpc_server_register_method_payload_handling PayloadHandlingForMethod(
 bool Server::RegisterService(const std::string* addr, grpc::Service* service) {
   bool has_async_methods = service->has_async_methods();
   if (has_async_methods) {
-    GPR_ASSERT(service->server_ == nullptr &&
-               "Can only register an asynchronous service against one server.");
+    ABSL_CHECK_EQ(service->server_, nullptr)
+        << "Can only register an asynchronous service against one server.";
     service->server_ = this;
   }
 
@@ -1056,8 +1056,7 @@ bool Server::RegisterService(const std::string* addr, grpc::Service* service) {
         server_, method->name(), addr ? addr->c_str() : nullptr,
         PayloadHandlingForMethod(method.get()), 0);
     if (method_registration_tag == nullptr) {
-      gpr_log(GPR_DEBUG, "Attempt to register %s multiple times",
-              method->name());
+      ABSL_VLOG(2) << "Attempt to register " << method->name() << " multiple times";
       return false;
     }
 
@@ -1098,17 +1097,16 @@ bool Server::RegisterService(const std::string* addr, grpc::Service* service) {
 }
 
 void Server::RegisterAsyncGenericService(grpc::AsyncGenericService* service) {
-  GPR_ASSERT(service->server_ == nullptr &&
-             "Can only register an async generic service against one server.");
+  ABSL_CHECK_EQ(service->server_, nullptr)
+      << "Can only register an async generic service against one server.";
   service->server_ = this;
   has_async_generic_service_ = true;
 }
 
 void Server::RegisterCallbackGenericService(
     grpc::CallbackGenericService* service) {
-  GPR_ASSERT(
-      service->server_ == nullptr &&
-      "Can only register a callback generic service against one server.");
+  ABSL_CHECK_EQ(service->server_, nullptr)
+      << "Can only register a callback generic service against one server.";
   service->server_ = this;
   has_callback_generic_service_ = true;
   generic_handler_.reset(service->Handler());
@@ -1124,7 +1122,7 @@ void Server::RegisterCallbackGenericService(
 
 int Server::AddListeningPort(const std::string& addr,
                              grpc::ServerCredentials* creds) {
-  GPR_ASSERT(!started_);
+  ABSL_CHECK(!started_);
   int port = creds->AddPortToServer(addr, server_);
   global_callbacks_->AddPort(this, addr, creds, port);
   return port;
@@ -1140,7 +1138,7 @@ void Server::UnrefWithPossibleNotify() {
     // No refs outstanding means that shutdown has been initiated and no more
     // callback requests are outstanding.
     grpc::internal::MutexLock lock(&mu_);
-    GPR_ASSERT(shutdown_);
+    ABSL_CHECK(shutdown_);
     shutdown_done_ = true;
     shutdown_done_cv_.Signal();
   }
@@ -1158,7 +1156,7 @@ void Server::UnrefAndWaitLocked() {
 }
 
 void Server::Start(grpc::ServerCompletionQueue** cqs, size_t num_cqs) {
-  GPR_ASSERT(!started_);
+  ABSL_CHECK(!started_);
   global_callbacks_->PreServerStart(this);
   started_ = true;
 
@@ -1265,6 +1263,8 @@ void Server::ShutdownInternal(gpr_timespec deadline) {
   // shutdown. We should force a shutdown now by cancelling all inflight calls
   if (status == grpc::CompletionQueue::NextStatus::TIMEOUT) {
     grpc_server_cancel_all_calls(server_);
+    status =
+        shutdown_cq.AsyncNext(&tag, &ok, gpr_inf_future(GPR_CLOCK_MONOTONIC));
   }
   // Else in case of SHUTDOWN or GOT_EVENT, it means that the server has
   // successfully shutdown

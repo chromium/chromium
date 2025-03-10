@@ -38,10 +38,13 @@ static_library("regional_capabilities") {
 source_set("country_access_reason") {
   visibility = [
     ":*",
+    "//chrome/browser/ui:ui",
     "//components/search_engines:search_engines",
   ]
 
   sources = [ "access/country_access_reason.h" ]
+
+  deps = [ "//base" ]
 }
 
 static_library("country_id") {

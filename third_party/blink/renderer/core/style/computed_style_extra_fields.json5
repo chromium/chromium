@@ -353,7 +353,7 @@
       default_value: "FillLayer(EFillLayerType::kBackground, true)",
       field_group: "background",
       computed_style_custom_functions: ["initial", "getter", "setter"],
-      invalidate: ["background", "background-current-color"],
+      invalidate: ["background", "currentcolor"],
     },
     {
       name: "HasClipPath",
@@ -945,7 +945,7 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
-      invalidate: ["accent-color", "background-current-color", "border-visual", "paint"],
+      invalidate: ["accent-color", "border-visual", "currentcolor", "paint"],
     },
     {
       // This flag is set if both the computed value of color-scheme is 'normal'

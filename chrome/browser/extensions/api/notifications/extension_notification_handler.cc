@@ -61,8 +61,8 @@ void ExtensionNotificationHandler::OnClose(
     bool by_user,
     base::OnceClosure completed_closure) {
   EventRouter::UserGestureState gesture =
-      by_user ? EventRouter::USER_GESTURE_ENABLED
-              : EventRouter::USER_GESTURE_NOT_ENABLED;
+      by_user ? EventRouter::UserGestureState::kEnabled
+              : EventRouter::UserGestureState::kNotEnabled;
   ExtensionId extension_id(GetExtensionId(GURL(origin)));
   DCHECK(!extension_id.empty());
 
@@ -100,7 +100,7 @@ void ExtensionNotificationHandler::OnClick(
                                : api::notifications::OnClicked::kEventName;
 
   SendEvent(profile, extension_id, histogram_value, event_name,
-            EventRouter::USER_GESTURE_ENABLED, std::move(args));
+            EventRouter::UserGestureState::kEnabled, std::move(args));
 
   std::move(completed_closure).Run();
 }

@@ -33,3 +33,15 @@
 
 # crbug.com/401292006
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+
+# crbug.com/383144566
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testExternalNavigationWithoutUserGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPeekStateHeightGrowsForEdgeToEdge
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTapWithoutLanguage
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTranslateCaption
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testQuickActionIntent
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testUnacceptedPrivacy
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testAllInternalStatesVisitedResolvingTap
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testResolveGestureSelects

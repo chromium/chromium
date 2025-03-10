@@ -366,30 +366,22 @@ extern bool UsePdfsAsContext();
 
 // Returns whether to include the inner text from the underlying page in the
 // request to be used as page context. This is for webpages and sends text
-// equivalent to document.body.innerText.
+// equivalent to document.body.innerText. Must have UseUpdatedContextFields
+// enabled when combined with other page content types.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerTextAsContext();
 
 // Returns whether to include the inner html from the underlying page in the
-// request to be used as page context. Does nothing if UseInnerTextAsContext is
-// enabled.
+// request to be used as page context. Must have UseUpdatedContextFields enabled
+// when combined with other page content types.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerHtmlAsContext();
 
-// Returns whether to include the inner text from the underlying page in
-// the inner HTML requests used as page context. Must also have
-// UseUpdatedContextFields and UseInnerHtmlAsContext enabled.
-// TODO(crbug.com/399721803): Remove and support enabling both
-// UseInnerTextAsContext and UseInnerHtmlAsContext.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IncludeInnerTextWithInnerHtml();
-
 // Returns whether to include the Annotated Page Content from the underlying
-// page in the inner HTML requests used as page context. Must also have
-// UseUpdatedContextFields and UseInnerHtmlAsContext enabled.
-// TODO(crbug.com/399721803): Make independent of inner HTML.
+// page in the inner HTML requests used as page context. Must have
+// UseUpdatedContextFields enabled when combined with other page content types.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IncludeApcWithInnerHtml();
+extern bool UseApcAsContext();
 
 // Returns whether to include the page URL in the page content upload request.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -693,6 +685,24 @@ extern bool ShouldAutoFocusSearchbox();
 // Whether to enable the simplified selection flow in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsSimplifiedSelectionEnabled();
+
+// The text received timeout for the simplified selection feature. Time to wait
+// for Lens text response before displaying the selected region context menu, in
+// milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetSimplifiedSelectionTextReceivedTimeout();
+
+// The copy text received timeout for the simplified selection feature. Time to
+// wait for text in the interaction response before falling back to using the
+// full image response to copy text from a region.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetCopyTextReceivedTimeout();
+
+// The translate text received timeout for the simplified selection feature.
+// Time to wait for text in the interaction response before falling back to
+// using the full image response to translate text from a region.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetTranslateTextReceivedTimeout();
 
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content

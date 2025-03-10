@@ -52,6 +52,9 @@ class CONTENT_EXPORT BiddingAndAuctionKeySet {
  public:
   explicit BiddingAndAuctionKeySet(
       std::vector<BiddingAndAuctionServerKey> keys);
+  explicit BiddingAndAuctionKeySet(
+      base::flat_map<url::Origin, std::vector<BiddingAndAuctionServerKey>>
+          origin_scoped_keys);
   ~BiddingAndAuctionKeySet();
 
   BiddingAndAuctionKeySet(BiddingAndAuctionKeySet&& keyset);
@@ -59,6 +62,7 @@ class CONTENT_EXPORT BiddingAndAuctionKeySet {
 
   // Returns true if we have any keys in this Keyset.
   bool HasKeys() const;
+  uint8_t SchemaVersion() const;
 
   // Returns a random key from the set of keys for this coordinator. If keys are
   // scoped by origin, the provided `scoped_origin` is used to select the the
@@ -74,6 +78,8 @@ class CONTENT_EXPORT BiddingAndAuctionKeySet {
 
  private:
   std::vector<BiddingAndAuctionServerKey> keys_;
+  base::flat_map<url::Origin, std::vector<BiddingAndAuctionServerKey>>
+      origin_scoped_keys_;
 };
 
 // BiddingAndAuctionServerKeyFetcher manages fetching and caching of the public
@@ -174,6 +180,12 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // queued callbacks.
   void OnParsedKeys(url::Origin coordinator,
                     data_decoder::DataDecoder::ValueOrError result);
+
+  // Called when the JSON blob containing the keys has be parsed into
+  // base::Values for v2 keys. Uses the parsed result to add keys to the cache
+  // and calls queued callbacks.
+  void OnParsedKeysV2(url::Origin coordinator,
+                      data_decoder::DataDecoder::ValueOrError result);
 
   void CacheKeysAndRunAllCallbacks(const url::Origin& coordinator,
                                    BiddingAndAuctionKeySet keyset,

@@ -13995,4 +13995,131 @@ TEST_F(HttpCacheTest, PrioritizeCachingFlagSetForMainFrameNavigationRequest) {
             HINT_HIGH_PRIORITY);
 }
 
+class HttpCacheNoVarySearchTest : public HttpCacheTest,
+                                  public ::testing::WithParamInterface<bool> {
+ protected:
+  static constexpr int kMaxAgeOneDay = 24 * 60 * 60;  // seconds
+
+  HttpCacheNoVarySearchTest() {
+    using base::test::FeatureRef;
+    std::vector<FeatureRef> enabled_features = {
+        features::kHttpCacheNoVarySearch};
+    std::vector<FeatureRef> disabled_features;
+    FeatureRef split_cache_feature = features::kSplitCacheByNetworkIsolationKey;
+    if (GetParam()) {
+      enabled_features.push_back(split_cache_feature);
+    } else {
+      disabled_features.push_back(split_cache_feature);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    http_cache_.emplace();
+  }
+
+  HttpCache* cache() { return http_cache_->http_cache(); }
+
+  // Callers can safely modify the return value, except for the `url` field.
+  MockTransaction& CreateMockTransaction(std::string_view query,
+                                         std::string_view no_vary_search,
+                                         int max_age = kMaxAgeOneDay) {
+    auto iterator = CreateData(query, no_vary_search, max_age);
+    MockTransaction transaction = kTypicalGET_Transaction;
+    transaction.url = iterator->first.possibly_invalid_spec().c_str();
+    transaction.response_headers = iterator->second.c_str();
+    scoped_mock_transactions_.emplace_back(transaction);
+    return scoped_mock_transactions_.back();
+  }
+
+  void FetchIntoCache(std::string_view query,
+                      std::string_view no_vary_search,
+                      int max_age = kMaxAgeOneDay) {
+    MockTransaction& transaction =
+        CreateMockTransaction("q=fred&a=1", "params=(\"a\")", max_age);
+    MockHttpRequest network_request(transaction);
+
+    HttpResponseInfo info;
+    RunTransactionTestWithRequest(cache(), transaction, network_request, &info);
+
+    // These aren't part of the test, but will help with debugging if something
+    // goes wrong.
+    EXPECT_FALSE(info.was_cached);
+    EXPECT_TRUE(info.network_accessed);
+    EXPECT_EQ(info.headers->response_code(), 200);
+  }
+
+ private:
+  std::map<GURL, std::string>::iterator CreateData(
+      std::string_view query,
+      std::string_view no_vary_search,
+      int max_age) {
+    GURL url(base::StrCat({"https://example.com/search?", query}));
+    std::string no_vary_search_string(no_vary_search);
+    std::string response_headers = base::StringPrintf(
+        "ETag: \"foo\"\n"
+        "Cache-Control: max-age=%d\n"
+        "No-Vary-Search: %s\n",
+        max_age, no_vary_search_string.c_str());
+    auto [data_iterator, data_inserted] =
+        mock_transaction_data_.emplace(url, response_headers);
+    CHECK(data_inserted)
+        << "Can only create one MockTransaction per distinct query";
+    return data_iterator;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // MockTransaction doesn't own the URL or response headers, so we store them
+  // in this map.
+  std::map<GURL, std::string> mock_transaction_data_;
+
+  // ScopedMockTransaction needs to be destroyed before the pointers it
+  // references. This is a list because ScopedMockTransactions require pointer
+  // stability.
+  std::list<ScopedMockTransaction> scoped_mock_transactions_;
+
+  // Need to delay construction until we have set up the `scoped_feature_list_`
+  // in the constructor.
+  std::optional<MockHttpCache> http_cache_;
+};
+
+TEST_P(HttpCacheNoVarySearchTest, SimpleSuccess) {
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  MockTransaction& from_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  MockHttpRequest cache_request(from_cache);
+
+  HttpResponseInfo info;
+
+  RunTransactionTestWithRequest(cache(), from_cache, cache_request, &info);
+  EXPECT_TRUE(info.was_cached);
+  EXPECT_FALSE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
+  EXPECT_EQ(info.headers->response_code(), 200);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, HeadMethodSupported) {
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  MockTransaction& from_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  from_cache.method = "HEAD";
+  from_cache.data = "";
+  MockHttpRequest cache_request(from_cache);
+
+  HttpResponseInfo info;
+
+  RunTransactionTestWithRequest(cache(), from_cache, cache_request, &info);
+  EXPECT_TRUE(info.was_cached);
+  EXPECT_FALSE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
+  EXPECT_EQ(info.headers->response_code(), 200);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpCacheNoVarySearchTest,
+                         ::testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "NotSplitCache" : "SplitCache";
+                         });
+
 }  // namespace net

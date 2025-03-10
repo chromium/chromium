@@ -220,7 +220,7 @@ void EventRouter::DispatchExtensionMessage(
   params->host_id = host_id.Clone();
   params->event_name = event_name;
   params->event_id = event_id;
-  params->is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
+  params->is_user_gesture = user_gesture == UserGestureState::kEnabled;
   params->filtering_info = std::move(info);
   RouteDispatchEvent(rph, std::move(params), std::move(event_args),
                      std::move(callback));
@@ -298,8 +298,8 @@ void EventRouter::DispatchEventToSender(
     ObserveProcess(rph);
     DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
                              event_id, event_name, std::move(event_args),
-                             UserGestureState::USER_GESTURE_UNKNOWN,
-                             std::move(info), base::DoNothing());
+                             UserGestureState::kUnknown, std::move(info),
+                             base::DoNothing());
     // In this case, we won't log the metric for dispatch_start_time. But this
     // means we aren't dispatching an event to an extension so the metric
     // wouldn't be relevant anyways (e.g. would go to a web page or webUI).
@@ -342,8 +342,8 @@ void EventRouter::DispatchEventToSender(
   ObserveProcess(rph);
   DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
                            event_id, event_name, std::move(event_args),
-                           UserGestureState::USER_GESTURE_UNKNOWN,
-                           std::move(info), std::move(callback));
+                           UserGestureState::kUnknown, std::move(info),
+                           std::move(callback));
 }
 
 // static.
@@ -524,6 +524,13 @@ void EventRouter::AddLazyListenerForServiceWorker(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
     const std::string& event_name) {
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    bad_message::ReceivedBadMessage(
+        GetRenderProcessHostForCurrentReceiver(),
+        bad_message::ER_INVALID_EXTENSION_ID_FOR_PROCESS);
+    return;
+  }
+
   // TODO(richardzh): Passing in browser context from the process.
   // Browser context is added to listener object in order to separate lazy
   // listeners for regular and incognito(split) context. The first step adds
@@ -636,6 +643,13 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
     const std::string& event_name) {
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    bad_message::ReceivedBadMessage(
+        GetRenderProcessHostForCurrentReceiver(),
+        bad_message::ER_INVALID_EXTENSION_ID_FOR_PROCESS);
+    return;
+  }
+
   // TODO(richardzh): Passing in browser context from the process.
   // Browser context is added to listener object in order to separate lazy
   // listeners for regular and incognito(split) context. The first step adds
@@ -1704,7 +1718,7 @@ Event::Event(events::HistogramValue histogram_value,
             restrict_to_browser_context,
             restrict_to_context_type,
             GURL(),
-            EventRouter::USER_GESTURE_UNKNOWN,
+            EventRouter::UserGestureState::kUnknown,
             mojom::EventFilteringInfo::New()) {}
 
 Event::Event(events::HistogramValue histogram_value,

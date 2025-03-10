@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 
 @class CRWWebUISchemeHandler;
+@class WKWebsiteDataStore;
 @class WKWebViewConfiguration;
 
 namespace base {
@@ -77,6 +78,10 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // Callers must not retain the returned object.
   WKWebViewConfiguration* GetWebViewConfiguration();
 
+  // Returns a WKWebsiteDataStore associated with browser state. Lazily creates
+  // the data store if it does not exist.
+  WKWebsiteDataStore* GetWebsiteDataStore();
+
   // Recreates and re-adds all injected Javascript into the current
   // configuration. This will only affect WebStates that are loaded after a call
   // to this function. All current WebStates will keep their existing Javascript
@@ -100,12 +105,20 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   SEQUENCE_CHECKER(_sequence_checker_);
 
   CRWWebUISchemeHandler* scheme_handler_ = nil;
+  WKWebsiteDataStore* website_data_store_ = nil;
   WKWebViewConfiguration* configuration_ = nil;
   raw_ptr<BrowserState> browser_state_;
   std::unique_ptr<WKContentRuleListProvider> content_rule_list_provider_;
 
   // List of callbacks notified when a new WKWebViewConfiguration is created.
   ConfigurationCreatedCallbackList configuration_created_callbacks_;
+
+  // Whether the data store is originated from //ios/web. This is used to
+  // determine whether the data store should be reset when the configuration is
+  // reset. `web::EnsureWebViewCreatedWithConfiguration` supports the case
+  // where the web view configuration and data store are not originated from
+  // //ios/web.
+  bool is_data_store_originated_from_ios_web_ = true;
 
   // Weak pointer factory.
   base::WeakPtrFactory<WKWebViewConfigurationProvider> weak_ptr_factory_{this};

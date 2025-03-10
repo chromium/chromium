@@ -48,7 +48,7 @@ import android.view.inputmethod.InputConnection;
 import android.view.textclassifier.TextClassifier;
 import android.webkit.JavascriptInterface;
 
-import androidx.annotation.GuardedBy;
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -413,7 +413,7 @@ public class AwContents implements SmartClipProvider {
     private AwWebContentsObserver mWebContentsObserver;
     private final AwContentsClientBridge mContentsClientBridge;
     private final AwWebContentsDelegateAdapter mWebContentsDelegate;
-    private final AwContentsBackgroundThreadClient mBackgroundThreadClient;
+    private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
     private final AwContentsIoThreadClient mIoThreadClient;
     private final InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
     private InternalAccessDelegate mInternalAccessAdapter;
@@ -686,32 +686,26 @@ public class AwContents implements SmartClipProvider {
     // (ie before it is destroyed).
     private CleanupReference mCleanupReference;
 
-    private final Object mAsyncShouldInterceptRequestCallbackLock = new Object();
-
-    @GuardedBy("mAsyncShouldInterceptRequestCallbackLock")
-    @Nullable
-    private AsyncShouldInterceptRequestCallback mAsyncShouldInterceptRequestCallback;
-
+    @AnyThread
     public void setAsyncShouldInterceptRequestCallback(
             AsyncShouldInterceptRequestCallback callback) {
-        synchronized (mAsyncShouldInterceptRequestCallbackLock) {
-            mAsyncShouldInterceptRequestCallback = callback;
-        }
+        mShouldInterceptRequestMediator.setAsyncCallback(callback);
     }
 
+    @AnyThread
     public void clearAsyncShouldInterceptRequestCallback() {
-        synchronized (mAsyncShouldInterceptRequestCallbackLock) {
-            mAsyncShouldInterceptRequestCallback = null;
-        }
+        mShouldInterceptRequestMediator.setAsyncCallback(null);
     }
 
     // --------------------------------------------------------------------------------------------
-    private class BackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {
+    private class AwContentsShouldInterceptRequestMediator extends ShouldInterceptRequestMediator {
         // All methods are called on the background thread.
 
         @Override
         public void shouldInterceptRequest(
-                AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback) {
+                AwContentsClient.AwWebResourceRequest request,
+                WebResponseCallback callback,
+                AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
             String url = request.url;
             WebResourceResponseInfo webResourceResponseInfo;
             callback.setAwContentsClient(mContentsClient);
@@ -722,15 +716,11 @@ public class AwContents implements SmartClipProvider {
                 return;
             }
 
-            AsyncShouldInterceptRequestCallback asyncCallback;
-            synchronized (mAsyncShouldInterceptRequestCallbackLock) {
-                asyncCallback = mAsyncShouldInterceptRequestCallback;
-            }
-            if (asyncCallback == null) {
+            if (asyncShouldInterceptRequestCallback == null) {
                 webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
                 callback.intercept(webResourceResponseInfo);
             } else {
-                asyncCallback.shouldInterceptRequestAsync(request, callback);
+                asyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(request, callback);
             }
         }
     }
@@ -1093,11 +1083,11 @@ public class AwContents implements SmartClipProvider {
                     new AwContentsClientBridge(
                             mContext, contentsClient, AwContentsStatics.getClientCertLookupTable());
             mZoomControls = new AwZoomControls(this);
-            mBackgroundThreadClient = new BackgroundThreadClientImpl();
+            mShouldInterceptRequestMediator = new AwContentsShouldInterceptRequestMediator();
             mIoThreadClient =
                     new AwContentsIoThreadClientImpl(
                             mSettings,
-                            mBackgroundThreadClient,
+                            mShouldInterceptRequestMediator,
                             () -> mBrowserContext.getCookieManager().acceptCookie());
             mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
             mDisplayObserver = new AwDisplayAndroidObserver();

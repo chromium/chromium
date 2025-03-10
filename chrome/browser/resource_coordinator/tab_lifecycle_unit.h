@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
+#include "components/performance_manager/public/mojom/lifecycle.mojom-forward.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -23,8 +22,6 @@ class WebContents;
 }  // namespace content
 
 namespace resource_coordinator {
-
-class TabLifecycleObserver;
 
 // Time during which backgrounded tabs are protected from urgent discarding
 // (not on ChromeOS).
@@ -46,12 +43,9 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // constructor is invoked. |web_contents| and |tab_strip_model| are the
   // WebContents and TabStripModel associated with this tab. The |source| is
   // optional and may be nullptr.
-  TabLifecycleUnit(
-      TabLifecycleUnitSource* source,
-      base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged*
-          observers,
-      content::WebContents* web_contents,
-      TabStripModel* tab_strip_model);
+  TabLifecycleUnit(TabLifecycleUnitSource* source,
+                   content::WebContents* web_contents,
+                   TabStripModel* tab_strip_model);
 
   TabLifecycleUnit(const TabLifecycleUnit&) = delete;
   TabLifecycleUnit& operator=(const TabLifecycleUnit&) = delete;
@@ -148,11 +142,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   void AttemptFastKillForDiscard(content::WebContents* web_contents,
                                  LifecycleUnitDiscardReason discard_reason);
 
-  // LifecycleUnitBase:
-  void OnLifecycleUnitStateChanged(
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason) override;
-
   // content::WebContentsObserver:
   void DidStartLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -160,12 +149,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // Updates |decision_details| based on device usage by the tab (USB or
   // Bluetooth).
   void CheckDeviceUsage(DecisionDetails* decision_details) const;
-
-  // List of observers to notify when the discarded state or the auto-
-  // discardable state of this tab changes.
-  raw_ptr<
-      base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged>
-      observers_;
 
   // TabStripModel to which this tab belongs.
   raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;

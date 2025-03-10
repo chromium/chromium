@@ -38,6 +38,13 @@ BASE_EXPORT bool DenyAccessToPath(const FilePath& path,
                                   DWORD inheritance,
                                   bool recursive = true);
 
+// Checks if a list of SIDs has the specified |access_mask| and
+// |inheritance| flags for a file or directory |path|.
+BASE_EXPORT bool HasAccessToPath(const FilePath& path,
+                                 const std::vector<Sid>& sids,
+                                 DWORD access_mask,
+                                 DWORD inheritance);
+
 // Clone a vector of Sids.
 BASE_EXPORT std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids);
 

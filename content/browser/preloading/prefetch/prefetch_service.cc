@@ -438,7 +438,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     // With `kPrerender2FallbackPrefetchSpecRules`, B' triggers prefetch ahead
     // of prerender B for URL X. Sites use SpecRules A+B' with expectation
     // "prefetch X then prerender X", but the order of
-    // `PrefetchService::AddPrefetchContainer()` for A and B is unstable in
+    // `PrefetchService::AddPrefetchContainer*()` for A and B is unstable in
     // general.
     //
     // `PrerenderHost` of B' needs to know eligibility and status of B. We use
@@ -587,21 +587,14 @@ std::unique_ptr<PrefetchHandle> PrefetchService::AddPrefetchContainerWithHandle(
     std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
   base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetch_container->GetWeakPtr();
-  PrefetchService::AddPrefetchContainer(std::move(owned_prefetch_container));
-  return std::make_unique<PrefetchHandleImpl>(GetWeakPtr(), prefetch_container);
-}
-
-void PrefetchService::AddPrefetchContainer(
-    std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
-  base::WeakPtr<PrefetchContainer> prefetch_container =
-      owned_prefetch_container->GetWeakPtr();
   AddPrefetchContainerWithoutStartingPrefetch(
       std::move(owned_prefetch_container));
 
-  if (!prefetch_container) {
-    return;
+  if (prefetch_container) {
+    PrefetchUrl(prefetch_container);
   }
-  PrefetchUrl(std::move(prefetch_container));
+
+  return std::make_unique<PrefetchHandleImpl>(GetWeakPtr(), prefetch_container);
 }
 
 void PrefetchService::AddPrefetchContainerWithoutStartingPrefetchForTesting(
@@ -1507,8 +1500,8 @@ void PrefetchService::OnPrefetchRedirect(
              redirect_head->headers->response_code() < 300 ||
              redirect_head->headers->response_code() >= 400) {
     failure = PrefetchRedirectResult::kFailedInvalidResponseCode;
-  } else if (net::SchemefulSite(prefetch_container->GetCurrentURL()) !=
-                 net::SchemefulSite(redirect_info.new_url) &&
+  } else if (!net::SchemefulSite::IsSameSite(
+                 prefetch_container->GetCurrentURL(), redirect_info.new_url) &&
              !IsReferrerPolicySufficientlyStrict(new_referrer_policy)) {
     // The new referrer policy is not sufficiently strict to allow cross-site
     // redirects.

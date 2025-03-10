@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/channel_info.h"

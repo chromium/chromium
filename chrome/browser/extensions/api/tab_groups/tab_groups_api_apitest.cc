@@ -8,10 +8,13 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tab_groups.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -61,6 +64,49 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
       event_observer.events().at(api::tab_groups::OnCreated::kEventName).get();
   EXPECT_EQ(incognito_event->restrict_to_browser_context,
             incognito_browser->profile());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+
+  // TODO(crbug.com/392952244): Remove this after migrating callers to using new
+  // APIs.
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+      observation_pauser_ =
+          tab_group_service->CreateScopedLocalObserverPauser();
+
+  TestEventRouterObserver event_observer(
+      EventRouter::Get(browser()->profile()));
+
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      browser()->tab_strip_model()->DetachTabGroupForInsertion(group);
+
+  event_observer.WaitForEventWithName(api::tab_groups::OnRemoved::kEventName);
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnRemoved::kEventName));
+
+  event_observer.ClearEvents();
+
+  browser()->tab_strip_model()->InsertDetachedTabGroupAt(
+      std::move(detached_group), 1);
+
+  // Group added as well as the tab's group changed event should be sent.
+  event_observer.WaitForEventWithName(api::tab_groups::OnCreated::kEventName);
+  event_observer.WaitForEventWithName(api::tab_groups::OnUpdated::kEventName);
+
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnCreated::kEventName));
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tab_groups::OnUpdated::kEventName));
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, SetGroupTitleToEmoji) {

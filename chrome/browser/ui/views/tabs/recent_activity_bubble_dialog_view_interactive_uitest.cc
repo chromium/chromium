@@ -216,7 +216,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   auto TriggerCurrentTabDialog(std::vector<ActivityLogItem> activity_log) {
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
       bubble_coordinator_.ShowForCurrentTab(
-          tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0),
+          tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0), {},
           activity_log, browser()->profile());
     });
   }

@@ -690,8 +690,7 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     }
     settings->setCursor(value);
   }
-
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (IsCapturedSurfaceResolutionActive(platform_settings)) {
     std::optional<float> ratio = platform_settings.device_scale_factor;
     if (platform_settings.display_surface ==
@@ -1187,7 +1186,7 @@ void MediaStreamTrackImpl::SendLogMessage(const WTF::String& message) {
 
 bool MediaStreamTrackImpl::IsCapturedSurfaceResolutionActive(
     const MediaStreamTrackPlatform::Settings& platform_settings) const {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (RuntimeEnabledFeatures::CapturedSurfaceResolutionEnabled(
           execution_context_) &&
       platform_settings.physical_frame_size) {

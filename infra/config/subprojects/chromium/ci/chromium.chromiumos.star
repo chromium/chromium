@@ -308,6 +308,12 @@ ci.thin_tester(
         mixins = [
             "chromeos-generic-vm",
         ],
+        per_test_modifications = {
+            "net_unittests": targets.mixin(
+                # TODO(crbug.com/398792039): Deflake & reenable, or just remove.
+                ci_only = True,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.CROS_CHROME,

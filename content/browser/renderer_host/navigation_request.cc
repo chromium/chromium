@@ -1626,8 +1626,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     blink::mojom::AncestorChainBit ancestor_chain_bit =
         blink::mojom::AncestorChainBit::kSameSite;
     if (render_frame_host->ComputeSiteForCookies().IsNull() ||
-        net::SchemefulSite(origin) != top_level_site ||
-        !top_level_site.opaque() || origin.opaque()) {
+        !top_level_site.IsSameSiteWith(origin) || !top_level_site.opaque() ||
+        origin.opaque()) {
       ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
     }
 
@@ -4610,6 +4610,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
       << "`render_frame_host_` should not be set before the "
          "`NavigationRequest` starts to select the RFH.";
   ScopedCrashKeys crash_keys(*this);
+  std::string rfh_selected_reason;
 
   // Select an appropriate renderer to commit the navigation.
   if (IsServedFromBackForwardCache()) {
@@ -4639,12 +4640,19 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
                                  prerender_frame_tree_node_id_.value())
                              ->GetSafeRef();
   } else if (response_should_be_rendered_) {
+    std::string* reason_output =
+        base::FeatureList::IsEnabled(
+            features::kHoldbackDebugReasonStringRemoval)
+            ? &rfh_selected_reason
+            : nullptr;
+
     if (auto result =
             frame_tree_node_->render_manager()->GetFrameHostForNavigation(
                 this, &browsing_context_group_swap_,
                 ProcessAllocationContext::CreateForNavigationRequest(
                     ProcessAllocationNavigationStage::kAfterResponse,
-                    navigation_id_));
+                    navigation_id_),
+                reason_output);
         result.has_value()) {
       render_frame_host_ = result.value()->GetSafeRef();
     } else {
@@ -4863,6 +4871,16 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
+  }
+
+  // TODO(crbug.com/399783247): Remove
+  if (base::FeatureList::IsEnabled(
+          features::kHoldbackDebugReasonStringRemoval)) {
+    SCOPED_CRASH_KEY_STRING256(
+        "Bug1454273", "base_host_for_data_url",
+        common_params_->base_url_for_data_url.host_piece());
+    SCOPED_CRASH_KEY_STRING1024("Bug1454273", "rfh_selected_reason",
+                                rfh_selected_reason);
   }
 
   if (HasRenderFrameHost() &&
@@ -6339,8 +6357,8 @@ void NavigationRequest::CommitNavigation() {
   commit_params_->should_have_sticky_user_activation =
       !frame_tree_node_->IsMainFrame() &&
       old_frame_host->HasStickyUserActivation() &&
-      net::SchemefulSite(old_frame_host->GetLastCommittedOrigin()) ==
-          net::SchemefulSite(origin_to_commit);
+      net::SchemefulSite::IsSameSite(old_frame_host->GetLastCommittedOrigin(),
+                                     origin_to_commit);
 
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM

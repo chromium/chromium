@@ -12,8 +12,15 @@
 #include "base/mac/mac_util.h"
 #endif
 
-namespace features {
+namespace {
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kMacSystemAudioLoopbackOverride,
+             "MacSystemAudioLoopbackOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+}  // namespace
 
+namespace features {
 // If enabled, base::DumpWithoutCrashing is called whenever an audio service
 // hang is detected.
 BASE_FEATURE(kDumpOnAudioServiceHang,
@@ -49,10 +56,12 @@ bool IsSystemLoopbackCaptureSupported() {
 #elif BUILDFLAG(IS_MAC)
   // Only supported on macOS 13.0+.
   // Not supported on macOS 15.0+ yet.
+  // The override feature is useful for testing on unsupported versions.
   // TODO(crbug.com/365602111): Implement SCContentPicker compatible capture
   // for MacOS 15.
-  return base::mac::MacOSVersion() >= 13'00'00 &&
-         base::mac::MacOSVersion() < 15'00'00;
+  return (base::mac::MacOSVersion() >= 13'00'00 &&
+          base::mac::MacOSVersion() < 15'00'00) ||
+         base::FeatureList::IsEnabled(kMacSystemAudioLoopbackOverride);
 #elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
   return true;
 #else

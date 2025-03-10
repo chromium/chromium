@@ -8,3 +8,20 @@
 
 # crbug.com/368117896
 -org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
+
+# crbug.com/401321001
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafeBrowsingLearnMoreLink_OpensInCct
+
+# crbug.com/383144566
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testExternalNavigationWithoutUserGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPeekStateHeightGrowsForEdgeToEdge
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTapWithoutLanguage
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTranslateCaption
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testQuickActionIntent
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testUnacceptedPrivacy
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testAllInternalStatesVisitedResolvingTap
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testResolveGestureSelects
+
+

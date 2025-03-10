@@ -138,6 +138,7 @@
 <translation id="1230244617745022071"><ph name="SOURCE" /> (സ്വയം-കണ്ടെത്തി)</translation>
 <translation id="1232569758102978740">ശീര്‍ഷകമില്ലാത്ത</translation>
 <translation id="1236081509407217141">VR അനുവദിക്കണോ?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">നിങ്ങളുടെ ഉപകരണത്തിൻ്റെ പേര്</translation>
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
@@ -1804,6 +1805,7 @@
 <translation id="415440494507469262">താരതമ്യ പട്ടികയിലേക്ക് ടാബ് ചേർക്കുക</translation>
 <translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
 <translation id="4165422751765527461">ഒരു സഹായകേന്ദ്ര ലേഖനം പുതിയ ടാബിൽ തുറക്കുന്നു</translation>
+<translation id="4165584779486830267">ഇപ്പോൾ നിങ്ങൾക്ക് Affirm അല്ലെങ്കിൽ Zip ഉപയോഗിച്ച് കാലക്രമേണ പേ ചെയ്യാം.</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
 <translation id="4169535189173047238">അനുവദിക്കരുത്</translation>
 <translation id="4171400957073367226">മോശം പരിശോധിച്ചുറപ്പിക്കൽ സിഗ്‌നേച്ചർ</translation>
@@ -2768,6 +2770,7 @@
 <translation id="5910140988253729859">'സ്വയമേവ പൂരിപ്പിക്കൽ' പഴയപടിയാക്കുക</translation>
 <translation id="5911020115933784199">ഇവന്റുകളും ലിസ്റ്റിംഗുകളും</translation>
 <translation id="5911110632211230665">തുറക്കുന്നത് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />, ഈ ടാബ് ചേർത്തു</translation>
 <translation id="5915189366813702112">സൗകര്യപ്രദമായ ജോലി ക്രമീകരണങ്ങൾ</translation>
 <translation id="59174027418879706">പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5918373444239520146">ഗാഡ്‌ജെറ്റുകളും പോർട്ടബിൾ ഇലക്‌ട്രോണിക്‌സും</translation>
@@ -4626,6 +4629,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> പിന്തുണയ്‌ക്കാത്ത ഒരു പ്രോട്ടോക്കോളാണ് ഉപയോഗിക്കുന്നത്.</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> ഉള്ള കോഡ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="9186203289258525843">'ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക' ബട്ടൺ, സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome ക്രമീകരിക്കാൻ സജീവമാക്കുക</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />, ഈ ടാബ് മാറ്റി</translation>
 <translation id="9189789270972826888">കാർഡ് വിശദാംശങ്ങൾ പൂരിപ്പിച്ചിട്ടില്ലെങ്കിൽ, പകർത്തി ഒട്ടിക്കാൻ താഴെയുള്ള കാർഡ് വിശദാംശങ്ങൾ ക്ലിക്ക് ചെയ്യുക. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 ആഴ്ചയിൽ കൂടുതൽ പഴക്കമുള്ള വിഷയങ്ങൾ സ്വയമേവ ഇല്ലാതാക്കും</translation>
 <translation id="9191834167571392248">താഴെ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>

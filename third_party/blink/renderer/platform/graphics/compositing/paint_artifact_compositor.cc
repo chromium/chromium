@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
@@ -243,8 +239,8 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
   // the opaqueness of the scrolling contents. If it has an opaque rect
   // covering the whole scrolling contents, we can use composited scrolling
   // without losing LCD text.
-  for (auto next = chunk_cursor + 1; next != artifact.GetPaintChunks().end();
-       ++next) {
+  for (auto next = UNSAFE_TODO(chunk_cursor + 1);
+       next != artifact.GetPaintChunks().end(); UNSAFE_TODO(++next)) {
     if (&next->properties.Transform() ==
         &chunk_cursor->properties.Transform()) {
       // Skip scroll controls that are painted in the same transform space
@@ -703,7 +699,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       pending_layers_.emplace_back(
           artifact_, *chunk_cursor_,
           compositor_.ChunkCompositingType(artifact_, *chunk_cursor_));
-      ++chunk_cursor_;
+      UNSAFE_TODO(++chunk_cursor_);
       // force_draws_content doesn't apply to pending layers that require own
       // layer, specifically scrollbar layers, foreign layers, scroll hit
       // testing layers.
@@ -875,7 +871,7 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
   if (entry == synthesized_clip_cache_.end()) {
     synthesized_clip_cache_.push_back(SynthesizedClipEntry{
         &clip, std::make_unique<SynthesizedClip>(), false});
-    entry = synthesized_clip_cache_.end() - 1;
+    entry = UNSAFE_TODO(synthesized_clip_cache_.end() - 1);
   }
 
   entry->in_use = true;
@@ -1016,6 +1012,7 @@ void PaintArtifactCompositor::Update(
   }
 
   cc::LayerSelection layer_selection;
+  HashSet<int> layers_having_text;
   for (auto& pending_layer : pending_layers_) {
     pending_layer.UpdateCompositedLayer(
         old_pending_layer_matcher.Find(pending_layer), layer_selection,
@@ -1049,6 +1046,9 @@ void PaintArtifactCompositor::Update(
             ScrollTranslationStateForLayer(pending_layer));
 
     layer_list_builder.Add(&layer);
+    if (pending_layer.HasText()) {
+      layers_having_text.insert(layer.id());
+    }
 
     layer.set_property_tree_sequence_number(
         root_layer_->property_tree_sequence_number());
@@ -1080,7 +1080,8 @@ void PaintArtifactCompositor::Update(
       g_s_property_tree_sequence_number);
 
   auto layers = layer_list_builder.Finalize();
-  property_tree_manager.UpdateConditionalRenderSurfaceReasons(layers);
+  property_tree_manager.UpdateConditionalRenderSurfaceReasons(
+      layers, layers_having_text);
   root_layer_->SetChildLayerList(std::move(layers));
 
   // Mark the property trees as having been rebuilt.

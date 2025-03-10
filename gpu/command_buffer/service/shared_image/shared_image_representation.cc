@@ -728,7 +728,7 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
       backend_textures[i] = graphite_texture_holders_[i]->texture();
     }
     skgpu::graphite::YUVABackendTextures yuva_backend_textures(
-        recorder, yuva_info, backend_textures);
+        yuva_info, backend_textures);
     return SkImages::TextureFromYUVATextures(
         recorder, yuva_backend_textures, sk_color_space, wrapped_release_proc,
         wrapped_release_context);

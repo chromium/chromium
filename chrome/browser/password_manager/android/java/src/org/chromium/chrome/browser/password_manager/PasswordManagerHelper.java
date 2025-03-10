@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialogCoordinator;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
@@ -171,8 +172,85 @@ public class PasswordManagerHelper {
                 referrer,
                 ManagePasswordsReferrer.MAX_VALUE);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            showPasswordSettingsPreLoginDbDeprecation(
+                    context,
+                    referrer,
+                    modalDialogManagerSupplier,
+                    managePasskeys,
+                    account,
+                    customTabIntentHelper);
+            return;
+        }
+
         PrefService prefService = UserPrefs.get(mProfile);
 
+        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService)
+                && !prefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
+            // The automatic export is ongoing. Usually a dialog offering the user to download
+            // the auto-exported CSV would be shown, but until the CSV is written, the dialog
+            // can't be shown. This is a rare corner-case.
+            return;
+        }
+        boolean isReferrerAFragmentActivity =
+                (referrer == ManagePasswordsReferrer.CHROME_SETTINGS
+                        || referrer == ManagePasswordsReferrer.SAFETY_CHECK);
+        if (!showPwmUnavailableOrDownloadCsvDialog(
+                context, isReferrerAFragmentActivity, modalDialogManagerSupplier)) {
+            LoadingModalDialogCoordinator loadingDialogCoordinator =
+                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+            launchTheCredentialManager(
+                    referrer,
+                    syncService,
+                    loadingDialogCoordinator,
+                    modalDialogManagerSupplier,
+                    context,
+                    account);
+        }
+    }
+
+    private boolean showPwmUnavailableOrDownloadCsvDialog(
+            Context context,
+            boolean isReferrerAFragmentActivity,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
+            showDownloadCsvDialog(context, isReferrerAFragmentActivity, modalDialogManagerSupplier);
+            return true;
+        }
+
+        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+            new PasswordManagerUnavailableDialogCoordinator()
+                    .showDialog(
+                            context,
+                            modalDialogManagerSupplier.get(),
+                            PasswordManagerUtilBridge.isGooglePlayServicesUpdatable()
+                                    ? GmsUpdateLauncher::launch
+                                    : null);
+            return true;
+        }
+        return false;
+    }
+
+    private void showDownloadCsvDialog(
+            Context context,
+            boolean isReferrerAFragmentActivity,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (isReferrerAFragmentActivity) {
+            PasswordAccessLossDialogHelper.launchExportFlow(
+                    context, mProfile, modalDialogManagerSupplier);
+        } else {
+            PasswordExportLauncher.showMainSettingsAndStartExport(context);
+        }
+    }
+
+    private void showPasswordSettingsPreLoginDbDeprecation(
+            Context context,
+            @ManagePasswordsReferrer int referrer,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            boolean managePasskeys,
+            @Nullable String account,
+            CustomTabIntentHelper customTabIntentHelper) {
         if (PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
                 mProfile,
                 context,
@@ -183,6 +261,8 @@ public class PasswordManagerHelper {
             return;
         }
 
+        PrefService prefService = UserPrefs.get(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
         // Password settings will fail and instead the blocking dialog with the suggestion to update
         // will be displayed.
@@ -512,7 +592,6 @@ public class PasswordManagerHelper {
             credentialManagerLauncher = getCredentialManagerLauncher();
         } catch (CredentialManagerBackendException exception) {
             if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;
-
             showGmsUpdateDialog(modalDialogManagerSupplier, context);
             return;
         }
@@ -555,8 +634,24 @@ public class PasswordManagerHelper {
         try {
             checkupClient = getPasswordCheckupClientHelper();
         } catch (PasswordCheckBackendException exception) {
+            // This is slightly different than the access to the management UI where if there
+            // is an auto-exported CSV, a dialog shown even if the password manager is available
+            // If a checkup is possible, the results of the checkup are more important than
+            // the CSV. In addition, the CSV issue is being prominently presented on the
+            // main settings view.
+            if (exception.errorCode == CredentialManagerError.PASSWORD_MANAGER_NOT_AVAILABLE) {
+                if (!UserPrefs.get(mProfile).getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
+                    // The auto-exported file is not ready, so there it's not possible to show a
+                    // dialog to download the CSV.
+                    return;
+                }
+                showPwmUnavailableOrDownloadCsvDialog(
+                        context,
+                        referrer == PasswordCheckReferrer.SAFETY_CHECK,
+                        modalDialogManagerSupplier);
+                return;
+            }
             if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;
-
             showGmsUpdateDialog(modalDialogManagerSupplier, context);
             return;
         }

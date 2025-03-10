@@ -748,6 +748,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.28 -> 4.5.29"
 notes = "No code changes."
 
+[[audits.clap]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.29 -> 4.5.31"
+notes = "Comment-only change to update version."
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -846,6 +852,12 @@ who = "Jonathan Hao <phao@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.27 -> 4.5.29"
 notes = "Only changed `args_present` method a bit and added a `value` method to `flat_map`."
+
+[[audits.clap_builder]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.29 -> 4.5.31"
+notes = "No unsafe uses added or changed. Delta consists of miscellaneous fixes and cleanups (e.g. improvements for ValueRange) and a new parser for Saturating<T>."
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
@@ -1115,6 +1127,12 @@ who = "Takuto Ikuta <tikuta@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.140 -> 1.0.141"
 
+[[audits.cxxbridge-cmd]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.141 -> 1.0.143"
+notes = "Clippy lint suppression and... a C++ deduction guide for cxx::Slice."
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1195,6 +1213,12 @@ delta = "1.0.137 -> 1.0.140"
 who = "Takuto Ikuta <tikuta@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.140 -> 1.0.141"
+
+[[audits.cxxbridge-flags]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.141 -> 1.0.143"
+notes = "Only changes for rustdoc generation."
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
@@ -2186,6 +2210,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.17.15 -> 0.17.16"
 
+[[audits.png]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.17.16 -> 0.18.0-rc"
+notes = "Still no `unsafe`, no cryptography, and justified usage of `std::fs`."
+
 [[audits.potential_utf]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -3003,6 +3033,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.216 -> 1.0.217"
 notes = "Minimal changes, nothing unsafe"
 
+[[audits.serde]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.217 -> 1.0.218"
+notes = "No changes outside comments and documentation."
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -3100,6 +3136,12 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.216 -> 1.0.217"
 notes = "No changes"
+
+[[audits.serde_derive]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.217 -> 1.0.218"
+notes = "No changes outside comments and documentation."
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"
@@ -3744,17 +3786,42 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto"]
 version = "0.7.5"
 
+[[audits.yoke]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.7.5 -> 0.8.0"
+notes = """
+Cleaning up a previous hack for adding trait bounds to yoke objects. Unsafe changes:
+- deleting the hack itself removes a lot of unsafe use required in the hack's implementation
+- changes another unsafe use to remove the use of the hack, now that it's no longer needed
+
+
+See https://crrev.com/c/6323349 for more audit notes.
+"""
+
 [[audits.yoke-derive]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.7.5"
 notes = "Custom derive implementing the `Yokeable` trait. Generally generates simple code that asserts covariance."
 
+[[audits.yoke-derive]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.7.5 -> 0.8.0"
+notes = "No code changes: only incrementing the version."
+
 [[audits.zerofrom]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.1.5"
 notes = "Contains no unsafe"
+
+[[audits.zerofrom]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.1.5 -> 0.1.6"
+notes = "Only minor cfg tweaks."
 
 [[audits.zerofrom-derive]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -3774,6 +3841,17 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.2.0"
 notes = "Minor repr(transparent) unsafe code. Improved comments in https://github.com/unicode-org/icu4x/pull/6054"
 
+[[audits.zerotrie]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.2.0 -> 0.2.1"
+notes = """
+Changes in unsafe blocks are wrapping direct calls to `core::mem::transmute` with the `transparent_ref_from_store` wrapper.
+No safety guarantees change, but providing the `transparent_ref_from_store` as a wrapper provides a convenient marker that this transmute operation is actually sound.
+
+See https://crrev.com/c/6323349 for more audit notes.
+"""
+
 [[audits.zerovec]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
@@ -3783,6 +3861,11 @@ version = "0.11.0"
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.11.0"
+
+[[audits.zerovec-derive]]
+who = "Daniel Cheng <dcheng@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "0.11.0 -> 0.11.1"
 
 [[trusted.hashbrown]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

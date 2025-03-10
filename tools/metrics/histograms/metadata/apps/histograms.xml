@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.FirstLoginFlowTime.{Status}" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2026-03-02">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>

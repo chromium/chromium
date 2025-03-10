@@ -44,6 +44,7 @@
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -835,9 +836,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   FadeCollaborationMessagingFooterRow* const collaboration_messaging_row =
       GetPrimaryCollaborationMessagingRowFromHoverCard(
           SimulateHoverTab(browser(), 1));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
-                base::UTF8ToUTF16(given_name)),
+  EXPECT_EQ(u"User added this tab",
             collaboration_messaging_row->footer_label()->GetText());
   EXPECT_FALSE(collaboration_messaging_row->icon()->GetImageModel().IsEmpty());
 
@@ -861,9 +860,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   tab_strip->SetTabData(1, tab_renderer_data);
   SimulateHoverTab(browser(), 1);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
-                base::UTF8ToUTF16(given_name2)),
+  EXPECT_EQ(u"Another User changed this tab",
             collaboration_messaging_row->footer_label()->GetText());
   EXPECT_FALSE(collaboration_messaging_row->icon()->GetImageModel().IsEmpty());
 }

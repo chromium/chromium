@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ip_protection {
@@ -66,6 +67,12 @@ class IpProtectionProbabilisticRevealTokenManager {
 
   // Request new batch of tokens.
   void RequestTokens();
+
+  // True the first time GetToken() is called, false otherwise.
+  bool is_initial_get_token_call_ = true;
+
+  // Time that the current token fetch began, for measurement.
+  base::TimeTicks token_fetch_start_time_;
 
   // Used for fetching tokens.
   std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher_;

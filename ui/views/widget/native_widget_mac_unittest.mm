@@ -516,7 +516,8 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
 // bounds whilst minimized.
 TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   WidgetAutoclosePtr widget(new Widget);
-  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   auto* view = widget->GetContentsView()->AddChildView(
@@ -642,7 +643,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
 // minimizes the widget (previously it ordered its window out).
 TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
   WidgetAutoclosePtr widget(new Widget);
-  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   auto* view = widget->GetContentsView()->AddChildView(
@@ -916,7 +918,9 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
     // First verify the behavior of CloseAllSecondaryWidgets in the normal case,
     // and how [NSApp windows] changes in response to Widget closure.
     Widget* widget = CreateWidgetWithTestWindow(
-        Widget::InitParams(Widget::InitParams::TYPE_WINDOW), &last_window_weak);
+        Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW),
+        &last_window_weak);
     last_window_weak.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
     EXPECT_TRUE([NSApp.windows containsObject:last_window_weak]);
@@ -932,7 +936,8 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
     // Repeat, but now retain a reference and close the window before
     // CloseAllSecondaryWidgets().
     Widget* widget = CreateWidgetWithTestWindow(
-        Widget::InitParams(Widget::InitParams::TYPE_WINDOW),
+        Widget::InitParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW),
         &last_window_strong);
     last_window_strong.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
@@ -1172,7 +1177,8 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
 // Regression test for https://crbug.com/942452.
 TEST_F(NativeWidgetMacTest, CapturedMouseUpClearsDrag) {
   MouseTrackingWidget* widget = new MouseTrackingWidget;
-  Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                                 Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
 
   NSWindow* window = widget->GetNativeWindow().GetNativeNSWindow();
@@ -2137,7 +2143,8 @@ TEST_F(NativeWidgetMacTest, SetSizeDoesntChangeOrigin) {
   Widget* child_control = new Widget;
   gfx::Rect child_control_rect(50, 70, 300, 100);
   {
-    Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
+    Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_CONTROL);
     params.parent = parent->GetNativeView();
     params.bounds = child_control_rect;
     child_control->Init(std::move(params));
@@ -2148,7 +2155,8 @@ TEST_F(NativeWidgetMacTest, SetSizeDoesntChangeOrigin) {
   Widget* child_window = new Widget;
   gfx::Rect child_window_rect(110, 90, 200, 50);
   {
-    Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW);
     params.parent = parent->GetNativeView();
     params.bounds = child_window_rect;
     child_window->Init(std::move(params));

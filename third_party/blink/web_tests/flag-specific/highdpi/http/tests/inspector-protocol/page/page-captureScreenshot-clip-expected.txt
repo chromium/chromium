@@ -11,7 +11,7 @@ Tests that screenshot works with clip
 {
     id : <number>
     result : {
-        data : iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAIAAAAnApehAAAAWElEQVR4nOzY0QmAUAhG4T9wr+smjdJts9qkTSxpB4XLOQg+fviqSaGOxn5Zbj/lU5XNPNjUFzY2NjY2NjY2NjY2NjY2Nvay9jN0Hyrvtz2nvC2i57/29QIAAP//cl0PgwAAAAZJREFUAwAxbA2bbUvybwAAAABJRU5ErkJggg==
+        data : iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAIAAAAnApehAAAAWElEQVR4nOzYwQnAQAgF0R+wr7WTlJJNZ1tKOjGR9KCwzCB4fHjVpFBH41yW22/5VGUzDzb1hY2NjY2NjY2NjY2NjY2Njb2t/QytS+X9tueUd0T0/Ne+XgAAAP//nKfQRgAAAAZJREFUAwAwAA2a4z2X2AAAAABJRU5ErkJggg==
     }
     sessionId : <string>
 }

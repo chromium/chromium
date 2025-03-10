@@ -75,6 +75,11 @@ class AIModelDownloadProgressManager {
     // The ids of the components we're reporting the progress for.
     base::flat_set<std::string> component_ids_;
 
+    bool has_previous_progress_event_ = false;
+
+    int last_reported_progress_ = 0;
+    base::TimeTicks last_progress_time_;
+
     base::WeakPtrFactory<Reporter> weak_ptr_factory_{this};
   };
 

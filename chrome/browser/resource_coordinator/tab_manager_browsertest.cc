@@ -22,9 +22,9 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
@@ -121,23 +121,22 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
   base::RunLoop run_loop_;
 };
 
-class DiscardWaiter : public TabLifecycleObserver {
+class DiscardWaiter : public LifecycleUnitObserver {
  public:
-  DiscardWaiter() { TabLifecycleUnitExternal::AddTabLifecycleObserver(this); }
+  DiscardWaiter() { GetTabLifecycleUnitSource()->AddLifecycleObserver(this); }
 
   ~DiscardWaiter() override {
-    TabLifecycleUnitExternal::RemoveTabLifecycleObserver(this);
+    GetTabLifecycleUnitSource()->RemoveLifecycleObserver(this);
   }
 
   void Wait() { run_loop_.Run(); }
 
  private:
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
-      mojom::LifecycleUnitState previous_state,
-      mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
-    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
+  void OnLifecycleUnitStateChanged(
+      LifecycleUnit* lifecycle_unit,
+      LifecycleUnitState last_state,
+      LifecycleUnitStateChangeReason reason) override {
+    if (lifecycle_unit->GetState() == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_.Quit();
     }
   }

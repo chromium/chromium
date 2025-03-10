@@ -547,6 +547,7 @@ uint32_t WaylandWindowDragController::DispatchEvent(
   if (wl::EventShouldCancelDrag(event)) {
     if (!has_received_enter_) {
       CancelDragSession();
+      return POST_DISPATCH_PERFORM_DEFAULT;
     }
     return POST_DISPATCH_STOP_PROPAGATION;
   }

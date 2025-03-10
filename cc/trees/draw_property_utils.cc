@@ -669,9 +669,11 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
     // pixel alignment to align it to screen pixels.
     render_surface_transform.PostTranslate(
         render_surface->render_target()->pixel_alignment_offset());
-    if (base::FeatureList::IsEnabled(features::kViewTransitionFloorTransform) ||
-        !render_surface->OwningEffectNode()
-             ->view_transition_element_resource_id.IsValid()) {
+    if (effect_node->render_surface_reason !=
+            RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants &&
+        (base::FeatureList::IsEnabled(
+             features::kViewTransitionFloorTransform) ||
+         !effect_node->view_transition_element_resource_id.IsValid())) {
       if (auto offset = draw_property_utils::PixelAlignmentOffset(
               render_surface->screen_space_transform(),
               render_surface_transform)) {

@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 
 namespace crosapi {
@@ -18,9 +17,6 @@ TestCrosapiEnvironment::~TestCrosapiEnvironment() = default;
 void TestCrosapiEnvironment::SetUp() {
   // CrosapiAsh depends on ProfileManager.
   CHECK(testing_profile_manager_.SetUp());
-  // Without this line, IdleServiceAsh gets initialized by CrosapiAsh and fails
-  // due to missing dependencies.
-  crosapi::IdleServiceAsh::DisableForTesting();
   // CrosapiAsh depends on LoginState. We initialize it here only if it hasn't
   // already been initialized by another test class such as AshTestBase.
   if (!ash::LoginState::IsInitialized()) {

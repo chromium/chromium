@@ -1158,9 +1158,14 @@ void ChromeClientImpl::StopDeferringCommits(
 void ChromeClientImpl::SetShouldThrottleFrameRate(bool flag,
                                                   LocalFrame& main_frame) {
   DCHECK(main_frame.IsLocalRoot());
-  WebLocalFrameImpl::FromFrame(main_frame)
-      ->FrameWidgetImpl()
-      ->SetShouldThrottleFrameRate(flag);
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(main_frame);
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
+  // The widget can be null for web frames that are being replaced.
+  if (!widget) {
+    return;
+  }
+
+  widget->SetShouldThrottleFrameRate(flag);
 }
 
 void ChromeClientImpl::SetHasScrollEventHandlers(LocalFrame* frame,

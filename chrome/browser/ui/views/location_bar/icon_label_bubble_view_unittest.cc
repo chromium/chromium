@@ -571,3 +571,79 @@ TEST_F(IconLabelBubbleViewCrashTest,
   static_cast<views::View*>(icon_label_bubble_view)->GetPreferredSize();
 }
 #endif
+
+// This view facilitates checking each of its calculated widths, used
+// for regression testing crbug.com/401231035.
+class TestIconLabelBubbleViewWidthChecker : public TestIconLabelBubbleView {
+ public:
+  using TestIconLabelBubbleView::TestIconLabelBubbleView;
+
+  void SetWidthCheckCallback(base::RepeatingCallback<void(int)> cb) {
+    width_check_cb_ = std::move(cb);
+  }
+
+ private:
+  int GetWidthBetween(int min, int max) const override {
+    int result = IconLabelBubbleView::GetWidthBetween(min, max);
+    if (width_check_cb_) {
+      width_check_cb_.Run(result);
+    }
+    return result;
+  }
+
+  base::RepeatingCallback<void(int)> width_check_cb_;
+};
+
+class IconLabelBubbleViewWidthTest : public IconLabelBubbleViewTestBase {
+ public:
+  using IconLabelBubbleViewTestBase::IconLabelBubbleViewTestBase;
+
+ protected:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    gfx::FontList font_list;
+
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    view_ = widget_->SetContentsView(
+        std::make_unique<TestIconLabelBubbleViewWidthChecker>(font_list, this));
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    view_ = nullptr;
+    widget_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+  TestIconLabelBubbleViewWidthChecker* view() { return view_; }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<TestIconLabelBubbleViewWidthChecker> view_;
+};
+
+// Regression test for crbug.com/401231035, where AnimateOut would flicker at
+// the beginning of the animation.
+TEST_F(IconLabelBubbleViewWidthTest, WidthDecreasesDuringAnimateOut) {
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
+  ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
+
+  view()->SetUpAnimation();
+
+  view()->ResetSlideAnimation(true);
+  EXPECT_TRUE(view()->GetVisible());
+  EXPECT_TRUE(view()->IsLabelVisible());
+
+  int last_width = view()->GetPreferredSize().width();
+  int animation_step_count = 0;
+  view()->SetWidthCheckCallback(base::BindRepeating(
+      [](int& last_width, int& animation_step_count, int width) {
+        EXPECT_LE(width, last_width)
+            << "Failed on animation step #" << animation_step_count;
+        last_width = width;
+        ++animation_step_count;
+      },
+      std::ref(last_width), std::ref(animation_step_count)));
+
+  view()->AwaitAnimateOut();
+}

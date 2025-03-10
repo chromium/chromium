@@ -278,9 +278,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     ~YUVTextureCache();
     void Reset();
 
-    // The ContextProvider that holds the texture.
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider;
-
     // The RGB shared image cache backing the texture.
     std::unique_ptr<VideoFrameSharedImageCache> rgb_shared_image_cache;
 

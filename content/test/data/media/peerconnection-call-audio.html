@@ -45,87 +45,69 @@
   }
 
   function callAndEnsureRemoteAudioTrackMutingWorks(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       // Call is up, now mute the remote track and check we stop playing out
       // audio (after a small delay, we don't expect it to happen instantly).
       enableRemoteAudio(false);
 
-      // Ensure that ensureAudioSilence result is returned.
-      await ensureAudioSilence(remoteAudioTrack);
-    }).then(logSuccess);
+      return new Promise(resolve => {
+        setTimeout(resolve, 250);
+      }).then(() => {
+        // Ensure that ensureSilence result is returned.
+        return ensureSilence(remoteAudioTrack);
+      });
+    }).then(logSuccess());
   }
 
   function callAndEnsureLocalAudioTrackMutingWorks(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       // Call is up, now mute the local track of the sending side and ensure
       // the receiving side stops receiving audio.
       enableLocalAudio(false);
 
-      await ensureAudioSilence(remoteAudioTrack);
-    }).then(logSuccess);
+      return new Promise(resolve => {
+        setTimeout(resolve, 250);
+      })
+      .then(() => {
+        return ensureSilence(remoteAudioTrack)
+      });
+    })
+    .then(logSuccess);
   }
 
   function callAndEnsureAudioTrackUnmutingWorks(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       // Mute, wait a while, unmute, verify audio gets back up.
       // (Also, ensure video muting doesn't affect audio).
       enableRemoteAudio(false);
       enableRemoteVideo(false);
 
-      await new Promise(resolve => setTimeout(function() {
+      setTimeout(function() {
         enableRemoteAudio(true);
-        resolve();
-      }, 500));
+      }, 500);
 
-      await ensureAudioPlaying(remoteAudioTrack);
-    }).then(logSuccess);
+      return new Promise(resolve => {
+        setTimeout(resolve, 1500);
+      })
+      .then(() => ensureAudioPlaying(remoteAudioTrack));
+    })
+    .then(logSuccess);
   }
 
   function callAndEnsureLocalVideoMutingDoesntMuteAudio(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableLocalVideo(false);
-      await ensureAudioPlaying(remoteAudioTrack);
-    }).then(logSuccess);
+      return ensureAudioPlaying(remoteAudioTrack)
+        .then(logSuccess);
+    });
   }
 
   function callAndEnsureRemoteVideoMutingDoesntMuteAudio(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableRemoteVideo(false);
-      await ensureAudioPlaying(remoteAudioTrack);
-    }).then(logSuccess);
-  }
-
-  function callAndEnsureRemoteClonedAudioTrackStopNotStopOriginalTrack(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
-      // Call is up, it clone the media audio track and stop the cloned track,
-      // which should not affect the the original track.
-      const clonedAudioTrack = remoteAudioTrack.clone();
-
-      // Stop the cloned audio track.
-      clonedAudioTrack.stop();
-      console.log('Cloned audio track should be silence');
-      await ensureAudioSilence(clonedAudioTrack);
-
-      console.log('Remote audio track should be playing');
-      await ensureAudioPlaying(remoteAudioTrack);
-    }).then(logSuccess);
-  }
-
-  function callAndEnsureRemoteAudioTrackDisableNotDisableClonedTrack(constraints) {
-    return setupCallAndPromiseAudioPlaying(constraints).then(async () => {
-      // Call is up, it clone the media audio track and stop the original,,
-      // which should not affect the cloned track.
-      const clonedAudioTrack = remoteAudioTrack.clone();
-
-      // Disable the original audio track.
-      enableRemoteAudio(false)
-
-      console.log('Remote audio track should be silence');
-      await ensureAudioSilence(remoteAudioTrack);
-
-      console.log('Cloned audio track should be playing');
-      await ensureAudioPlaying(clonedAudioTrack);
-    }).then(logSuccess);
+      return ensureAudioPlaying(remoteAudioTrack)
+          .then(logSuccess);
+    });
   }
 
   // TODO(crbug.com/40637961): This test is a temporary replacement for:

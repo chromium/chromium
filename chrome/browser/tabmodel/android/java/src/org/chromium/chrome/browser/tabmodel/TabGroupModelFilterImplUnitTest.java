@@ -2373,23 +2373,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetLazyAllTabRootIds() {
-        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
-        // group. Tabs 1 and 4 are also unique.
-        Set<Integer> rootIds = new ArraySet<>();
-        rootIds.add(mTab1.getRootId());
-        rootIds.add(mTab2.getRootId());
-        rootIds.add(mTab4.getRootId());
-        rootIds.add(mTab5.getRootId());
-
-        assertEquals(
-                rootIds,
-                mTabGroupModelFilter
-                        .getLazyAllRootIds(new ArrayList<Tab>(), /* includePendingClosures= */ true)
-                        .get());
-    }
-
-    @Test
     public void testGetLazyAllTabGroupIds() {
         // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
         // group.

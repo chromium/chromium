@@ -72,7 +72,8 @@ void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame) {
 [[nodiscard]] testing::AssertionResult ClientSideRedirectViaMetaTag(
     WebContents* web_contents,
     RenderFrameHost* frame,
-    const GURL& target_url) {
+    const GURL& target_url,
+    const std::optional<const GURL>& expected_commit_url) {
   TestFrameNavigationObserver nav_observer(frame);
   bool js_succeeded = ExecJs(frame,
                              JsReplace(
@@ -97,19 +98,22 @@ void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame) {
            << target_url;
   }
   nav_observer.Wait();
-  if (nav_observer.last_committed_url() == target_url) {
+  if (nav_observer.last_committed_url() ==
+      expected_commit_url.value_or(target_url)) {
     return testing::AssertionSuccess();
   } else {
     return testing::AssertionFailure()
-           << "Expected to arrive at " << target_url << " but URL was actually "
-           << nav_observer.last_committed_url();
+           << "Expected to arrive at "
+           << expected_commit_url.value_or(target_url)
+           << " but URL was actually " << nav_observer.last_committed_url();
   }
 }
 
 [[nodiscard]] testing::AssertionResult ClientSideRedirectViaJS(
     WebContents* web_contents,
     RenderFrameHost* frame,
-    const GURL& target_url) {
+    const GURL& target_url,
+    const std::optional<const GURL>& expected_commit_url) {
   TestFrameNavigationObserver nav_observer(frame);
   bool js_succeeded =
       ExecJs(frame, JsReplace(R"(window.location.replace($1);)", target_url),
@@ -120,12 +124,48 @@ void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame) {
            << target_url;
   }
   nav_observer.Wait();
-  if (nav_observer.last_committed_url() == target_url) {
+  if (nav_observer.last_committed_url() ==
+      expected_commit_url.value_or(target_url)) {
     return testing::AssertionSuccess();
   } else {
     return testing::AssertionFailure()
-           << "Expected to arrive at " << target_url << " but URL was actually "
-           << nav_observer.last_committed_url();
+           << "Expected to arrive at "
+           << expected_commit_url.value_or(target_url)
+           << " but URL was actually " << nav_observer.last_committed_url();
+  }
+}
+
+std::string StringifyBtmClientRedirectMethod(
+    BtmClientRedirectMethod client_redirect_method) {
+  switch (client_redirect_method) {
+    case BtmClientRedirectMethod::kMetaTag:
+      return "MetaTag";
+    case BtmClientRedirectMethod::kJsWindowLocationReplace:
+      return "JsWindowLocationReplace";
+    case BtmClientRedirectMethod::kRedirectLikeNavigation:
+      return "RedirectLikeNavigation";
+  }
+}
+
+[[nodiscard]] testing::AssertionResult PerformClientRedirect(
+    BtmClientRedirectMethod redirect_method,
+    WebContents* web_contents,
+    const GURL& redirect_url,
+    const std::optional<const GURL>& expected_commit_url) {
+  const GURL& commit_url = expected_commit_url.value_or(redirect_url);
+  switch (redirect_method) {
+    case BtmClientRedirectMethod::kMetaTag:
+      return ClientSideRedirectViaMetaTag(web_contents,
+                                          web_contents->GetPrimaryMainFrame(),
+                                          redirect_url, commit_url);
+    case BtmClientRedirectMethod::kJsWindowLocationReplace:
+      return ClientSideRedirectViaJS(web_contents,
+                                     web_contents->GetPrimaryMainFrame(),
+                                     redirect_url, commit_url);
+    case BtmClientRedirectMethod::kRedirectLikeNavigation:
+      return testing::AssertionResult(
+          NavigateToURLFromRendererWithoutUserGesture(
+              web_contents, redirect_url, commit_url));
   }
 }
 

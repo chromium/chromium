@@ -1732,7 +1732,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // This promo blocks specific promos in the same session.
+    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config.session_rate_impact.affected_features.emplace();
+    config.session_rate_impact.affected_features->push_back(
+        "IPH_AutofillVirtualCardSuggestion");
     config.trigger =
         EventConfig("autofill_credit_card_benefit_iph_trigger",
                     Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,

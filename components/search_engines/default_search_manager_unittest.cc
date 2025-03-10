@@ -137,7 +137,7 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
   data.date_created = base::Time();
   data.last_modified = base::Time();
   data.last_modified = base::Time();
-  data.created_from_play_api = true;
+  data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
 
   manager->SetUserSelectedDefaultSearchEngine(data);
   const TemplateURLData* read_data = manager->GetDefaultSearchEngine(nullptr);
@@ -394,7 +394,7 @@ TEST_F(DefaultSearchManagerTest,
 
   auto supplied_engine = GenerateDummyTemplateURLData(
       base::UTF16ToUTF8(builtin_engine->keyword()));
-  supplied_engine->created_from_play_api = true;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   // Needed by ExpectSimilar.
   supplied_engine->favicon_url = builtin_engine->favicon_url;
 
@@ -403,7 +403,7 @@ TEST_F(DefaultSearchManagerTest,
   auto* result = manager->GetDefaultSearchEngine(nullptr);
 
   TemplateURLData expected_engine = *builtin_engine;
-  expected_engine.created_from_play_api = true;
+  expected_engine.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   ExpectSimilar(&expected_engine, result);
 }
 
@@ -422,7 +422,7 @@ TEST_F(DefaultSearchManagerTest,
 
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
   supplied_engine->SetURL("https://emea.search.yahoo.com/any_path");
-  supplied_engine->created_from_play_api = true;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   // Needed by ExpectSimilar.
   supplied_engine->favicon_url = builtin_engine->favicon_url;
 
@@ -431,6 +431,6 @@ TEST_F(DefaultSearchManagerTest,
   auto* result = manager->GetDefaultSearchEngine(nullptr);
 
   TemplateURLData expected_engine = *builtin_engine;
-  expected_engine.created_from_play_api = true;
+  expected_engine.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   ExpectSimilar(&expected_engine, result);
 }

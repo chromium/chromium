@@ -9,18 +9,12 @@
 
 namespace enterprise_connectors {
 
-// Controls whether Chrome can stop register fcm token.
-BASE_DECLARE_FEATURE(kStopRegisterFcmEnabled);
-
 // Controls uploading scanned data even after a metadata verdict
 // is received for content scans.
 BASE_DECLARE_FEATURE(kEnableAsyncUploadAfterVerdict);
 
 // Controls whether resumable upload is enabled on consumer scans.
 BASE_DECLARE_FEATURE(kEnableResumableUploadOnConsumerScan);
-
-// Returns true if stop register fcm token is enabled.
-bool IsStopRegisterFcmEnabled();
 
 }  // namespace enterprise_connectors
 

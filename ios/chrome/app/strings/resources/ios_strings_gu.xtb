@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">આગળ વધીને, તમે <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1062138828266376352">તમારો પિન બદલાયો નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
+<translation id="1072476005125066234">તમારી રુચિઓ આધારિત રિવ્યૂ</translation>
 <translation id="1074827084851510304">તમે {password_count} પાસવર્ડ અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2060114494785549741">1 મહિનામાં ડિલીટ કરો</translation>
+<translation id="2060638295449304809">આ સરનામું માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">એકમના પ્રકારનું પસંદગીકર્તા</translation>
 <translation id="2067852168641682340">દરેક વખતે આ એકાઉન્ટમાં સાચવો</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">વૉલ્યૂમ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} અને અન્ય 1}one{{domain} અને અન્ય {count}}other{{domain} અને અન્ય {count}}}</translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
+<translation id="4828431027673677473">તમારી રુચિઓ આધારિત પ્રોડક્ટ</translation>
 <translation id="4833786495304741580">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે.</translation>
 <translation id="483689884442613745">સાચવો…</translation>
 <translation id="4840495572919996524">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય બાબતો હવેથી Google એકાઉન્ટ પર સિંક થશે નહીં.</translation>
@@ -1724,6 +1727,7 @@
 <translation id="828291969289324795">{count,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="8283172974887967105">સેટ કરો…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> નોટિફિકેશન બંધ કર્યા</translation>
+<translation id="8290077367744012649">તમારા ટૅબમાંથી કિંમતો ટ્રૅક કરો</translation>
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8307481894409578819">આ ફાઇલ અપલોડ કરી શકતા નથી</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>

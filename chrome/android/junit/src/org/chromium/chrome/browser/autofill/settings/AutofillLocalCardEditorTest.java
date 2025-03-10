@@ -6,14 +6,23 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,11 +30,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentFactory;
-import androidx.fragment.app.testing.FragmentScenario;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -49,24 +56,34 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.CreditCardScanner;
+import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerJni;
+import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileManagerUtilsJni;
+import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 import java.util.List;
 
 /** Unit tests for {@link AutofillLocalCardEditorTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE)
+@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+@DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD)
 public class AutofillLocalCardEditorTest {
-
     // This is a non-amex card without a CVC code.
     private static CreditCard getSampleLocalCard() {
         return new CreditCard(
@@ -151,16 +168,19 @@ public class AutofillLocalCardEditorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Profile mProfile;
+    @Mock private Profile mMockProfile;
     @Mock private PersonalDataManager mMockPersonalDataManager;
-    @Mock private PersonalDataManager.Natives mPersonalDataManagerJni;
-    @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private PersonalDataManager.Natives mMockPersonalDataManagerJni;
+    @Mock private SettingsNavigation mMockSettingsNavigation;
+    @Mock private ChromeBrowserInitializer mMockInitializer;
+    @Mock private CreditCardScanner mMockScanner;
+    @Mock private CreditCardScannerManager mMockScannerManager;
+    @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
 
     private UserActionTester mActionTester;
 
-    private FragmentScenario mScenario;
-
     private Button mDoneButton;
+    private Button mScanButton;
     private EditText mNicknameText;
     private TextInputLayout mNicknameLabel;
 
@@ -170,6 +190,7 @@ public class AutofillLocalCardEditorTest {
     private EditText mCvc;
 
     private EditText mNumberText;
+    private EditText mNameText;
 
     private ImageView mCvcHintImage;
 
@@ -177,11 +198,15 @@ public class AutofillLocalCardEditorTest {
     private String mExpirationDateInvalidError;
     private String mExpiredCardError;
 
+    private ActivityScenario<SettingsActivity> mActivityScenario;
+    private SettingsActivity mSettingsActivity;
+    private AutofillLocalCardEditor mCardEditor;
+
     @Before
     public void setUp() {
-        PersonalDataManagerJni.setInstanceForTesting(mPersonalDataManagerJni);
+        PersonalDataManagerJni.setInstanceForTesting(mMockPersonalDataManagerJni);
         // Mock a card recognition logic
-        when(mPersonalDataManagerJni.getBasicCardIssuerNetwork(anyString(), anyBoolean()))
+        when(mMockPersonalDataManagerJni.getBasicCardIssuerNetwork(anyString(), anyBoolean()))
                 .thenAnswer(
                         new Answer<String>() {
                             @Override
@@ -195,16 +220,28 @@ public class AutofillLocalCardEditorTest {
                         });
         when(mMockPersonalDataManager.getCreditCardForNumber(NON_AMEX_CARD_NUMBER))
                 .thenReturn(getSampleLocalCard());
+        when(mMockScanner.canScan()).thenReturn(true);
 
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
-        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mMockSettingsNavigation);
+        ProfileManagerUtilsJni.setInstanceForTesting(mMockProfileManagerUtilsJni);
+        ChromeBrowserInitializer.setForTesting(mMockInitializer);
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         mActionTester = new UserActionTester();
+
+        CreditCardScanner.setFactory(
+                new CreditCardScanner.Factory() {
+                    @Override
+                    public CreditCardScanner create(Delegate delegate) {
+                        return mMockScanner;
+                    }
+                });
     }
 
     @After
     public void tearDown() {
-        if (mScenario != null) {
-            mScenario.close();
+        if (mActivityScenario != null) {
+            mActivityScenario.close();
         }
         mActionTester.tearDown();
     }
@@ -217,53 +254,49 @@ public class AutofillLocalCardEditorTest {
             when(mMockPersonalDataManager.getCreditCard(guid)).thenReturn(card);
         }
 
-        mScenario =
-                FragmentScenario.launchInContainer(
-                        AutofillLocalCardEditor.class,
-                        arguments,
-                        R.style.Theme_MaterialComponents,
-                        new FragmentFactory() {
-                            @NonNull
-                            @Override
-                            public Fragment instantiate(
-                                    @NonNull ClassLoader classLoader, @NonNull String className) {
-                                Fragment fragment = super.instantiate(classLoader, className);
-                                if (fragment instanceof AutofillLocalCardEditor) {
-                                    ((AutofillLocalCardEditor) fragment).setProfile(mProfile);
-                                }
-                                return fragment;
-                            }
-                        });
-        mScenario.onFragment(
-                fragment -> {
-                    mDoneButton = fragment.getView().findViewById(R.id.button_primary);
-                    mNicknameText = fragment.getView().findViewById(R.id.credit_card_nickname_edit);
-                    mNicknameLabel =
-                            fragment.getView().findViewById(R.id.credit_card_nickname_label);
-                    mNicknameInvalidError =
-                            fragment.getContext()
-                                    .getString(
-                                            R.string.autofill_credit_card_editor_invalid_nickname);
-                    mExpirationMonth =
-                            fragment.getView()
-                                    .findViewById(R.id.autofill_credit_card_editor_month_spinner);
-                    mExpirationYear =
-                            fragment.getView()
-                                    .findViewById(R.id.autofill_credit_card_editor_year_spinner);
-                    mExpirationDate =
-                            fragment.getView().findViewById(R.id.expiration_month_and_year);
-                    mCvc = fragment.getView().findViewById(R.id.cvc);
-                    mCvcHintImage = fragment.getView().findViewById(R.id.cvc_hint_image);
-                    mNumberText = fragment.getView().findViewById(R.id.credit_card_number_edit);
-                    mExpirationDateInvalidError =
-                            fragment.getContext()
-                                    .getString(
-                                            R.string
-                                                    .autofill_credit_card_editor_invalid_expiration_date);
-                    mExpiredCardError =
-                            fragment.getContext()
-                                    .getString(R.string.autofill_credit_card_editor_expired_card);
+        Intent intent =
+                SettingsIntentUtil.createIntent(
+                        ContextUtils.getApplicationContext(),
+                        AutofillLocalCardEditor.class.getName(),
+                        arguments);
+
+        mActivityScenario = ActivityScenario.launch(intent);
+        mActivityScenario.onActivity(
+                activity -> {
+                    mSettingsActivity = activity;
+                    mSettingsActivity.setTheme(R.style.Theme_MaterialComponents);
                 });
+
+        mCardEditor = (AutofillLocalCardEditor) mSettingsActivity.getMainFragment();
+
+        mDoneButton = mSettingsActivity.findViewById(R.id.button_primary);
+        mNicknameText = mSettingsActivity.findViewById(R.id.credit_card_nickname_edit);
+        mNicknameLabel = mSettingsActivity.findViewById(R.id.credit_card_nickname_label);
+        mNicknameInvalidError =
+                mSettingsActivity.getString(R.string.autofill_credit_card_editor_invalid_nickname);
+        mExpirationMonth =
+                mSettingsActivity.findViewById(R.id.autofill_credit_card_editor_month_spinner);
+        mExpirationYear =
+                mSettingsActivity.findViewById(R.id.autofill_credit_card_editor_year_spinner);
+        mExpirationDate = mSettingsActivity.findViewById(R.id.expiration_month_and_year);
+        mCvc = mSettingsActivity.findViewById(R.id.cvc);
+        mCvcHintImage = mSettingsActivity.findViewById(R.id.cvc_hint_image);
+        mNumberText = mSettingsActivity.findViewById(R.id.credit_card_number_edit);
+        mExpirationDateInvalidError =
+                mSettingsActivity.getString(
+                        R.string.autofill_credit_card_editor_invalid_expiration_date);
+        mExpiredCardError =
+                mSettingsActivity.getString(R.string.autofill_credit_card_editor_expired_card);
+        mScanButton = mSettingsActivity.findViewById(R.id.scan_card_button);
+        mNameText = mSettingsActivity.findViewById(R.id.credit_card_name_edit);
+    }
+
+    private void openDeletePaymentMethodConfirmationDialog(ModalDialogManager modalDialogManager) {
+        mCardEditor.setModalDialogManagerSupplier(() -> modalDialogManager);
+
+        MenuItem deleteButton = mock(MenuItem.class);
+        when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
+        mCardEditor.onOptionsItemSelected(deleteButton);
     }
 
     /**
@@ -626,6 +659,106 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
+    public void deleteCreditCardConfirmationDialog_deleteEntryCanceled_dialogDismissed() {
+        CreditCard card = getSampleLocalCard();
+        initFragment(card);
+
+        FakeModalDialogManager fakeModalDialogManager =
+                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
+        openDeletePaymentMethodConfirmationDialog(fakeModalDialogManager);
+
+        // Verify the dialog is open.
+        assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        fakeModalDialogManager.clickNegativeButton();
+
+        // Verify the dialog is closed.
+        assertNull(fakeModalDialogManager.getShownDialogModel());
+
+        // Verify the card entry is not deleted.
+        verify(mMockPersonalDataManager, never()).deleteCreditCard(card.getGUID());
+    }
+
+    @Test
+    @MediumTest
+    public void
+            deleteCreditCardConfirmationDialog_deleteEntryConfirmed_dialogDismissedAndEntryDeleted() {
+        CreditCard card = getSampleLocalCard();
+        initFragment(card);
+
+        FakeModalDialogManager fakeModalDialogManager =
+                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
+        openDeletePaymentMethodConfirmationDialog(fakeModalDialogManager);
+
+        // Verify the dialog is open.
+        assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        fakeModalDialogManager.clickPositiveButton();
+
+        // Verify the dialog is closed.
+        assertNull(fakeModalDialogManager.getShownDialogModel());
+
+        // Verify the card entry is deleted.
+        verify(mMockPersonalDataManager).deleteCreditCard(card.getGUID());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutCvc() {
+        initFragment(null);
+        // Mock that there are already 4 cards saved.
+        when(mMockPersonalDataManager.getCreditCardCountForSettings()).thenReturn(4);
+
+        // Expect histogram to record 4 for 4 existing cards.
+        HistogramWatcher saveCardCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
+                                4)
+                        .build();
+
+        mNumberText.setText(NON_AMEX_CARD_NUMBER);
+        mExpirationMonth.setSelection(/* monthSelection= */ 1);
+        mExpirationYear.setSelection(/* yearSelection= */ 1);
+        mDoneButton.performClick();
+
+        saveCardCountHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithCvc() {
+        initFragment(null);
+
+        // Mock that there are already 4 cards saved.
+        when(mMockPersonalDataManager.getCreditCardCountForSettings()).thenReturn(4);
+
+        // Expect histogram to record 4 for 4 existing cards.
+        HistogramWatcher saveCardCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
+                                4)
+                        .build();
+
+        // Expect histogram to record false for adding a with existing cards.
+        HistogramWatcher saveCardWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor.CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                false)
+                        .build();
+
+        mNumberText.setText(NON_AMEX_CARD_NUMBER);
+        mExpirationDate.setText(String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
+        mCvc.setText(/* code= */ "321");
+        mDoneButton.performClick();
+
+        saveCardCountHistogram.assertExpected();
+        saveCardWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     public void testRecordHistogram_whenNewCreditCardIsAddedWithoutExistingCards() {
         initFragment(null);
         // Expect histogram to record true for adding a card without existing cards.
@@ -770,5 +903,189 @@ public class AutofillLocalCardEditorTest {
         initFragment(getSampleLocalCard());
 
         addCardFlowWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void getExpirationMonth_whenDoubleDigitMonth_returnsMonth() {
+        assertThat(AutofillLocalCardEditor.getExpirationMonth("12/23")).isEqualTo("12");
+    }
+
+    @Test
+    @SmallTest
+    public void getExpirationMonth_whenSingleDigitMonth_returnsMonthWithoutLeadingZero() {
+        assertThat(AutofillLocalCardEditor.getExpirationMonth("02/23")).isEqualTo("2");
+    }
+
+    @Test
+    @SmallTest
+    public void getExpirationYear_returnsYearWithPrefix() {
+        assertThat(AutofillLocalCardEditor.getExpirationYear("12/23")).isEqualTo("2023");
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAmExCard_whenAmExCardNumberPrefixIsEntered_returnsTrue() {
+        // Underlying JNI call is mocked for `isAmExCard` method.
+        assertTrue(AutofillLocalCardEditor.isAmExCard(AMEX_CARD_NUMBER_PREFIX));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAmExCard_whenNonAmExCardNumberPrefixIsEntered_returnsFalse() {
+        // Underlying JNI call is mocked for `isAmExCard` method.
+        assertFalse(AutofillLocalCardEditor.isAmExCard(NON_AMEX_CARD_NUMBER_PREFIX));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void scannerFeatureDisabled_scanButtonIsHidden() {
+        initFragment(null);
+        assertEquals(View.GONE, mScanButton.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void scannerFeatureEnabled_scanButtonIsVisible() {
+        initFragment(null);
+        assertEquals(View.VISIBLE, mScanButton.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void scannerCannotScan_scanButtonIsHidden() {
+        when(mMockScanner.canScan()).thenReturn(false);
+        initFragment(null);
+
+        assertEquals(View.GONE, mScanButton.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void scannerButtonClicked_scanIsCalled() {
+        initFragment(null);
+
+        mScanButton.performClick();
+        verify(mMockScanner).scan(mSettingsActivity.getIntentRequestTracker());
+    }
+
+    @Test
+    @MediumTest
+    public void onScanCompleted_cardDataIsAdded() {
+        initFragment(null);
+        CreditCard card = getSampleLocalCard();
+        // Explicitly set the month to single digit to test padding.
+        card.setMonth("5");
+
+        assertTrue(mNameText.getText().toString().isEmpty());
+        assertTrue(mNumberText.getText().toString().isEmpty());
+        assertTrue(mExpirationDate.getText().toString().isEmpty());
+
+        mCardEditor.onScanCompleted(
+                card.getName(),
+                card.getNumber(),
+                Integer.parseInt(card.getMonth()),
+                Integer.parseInt(card.getYear()));
+
+        assertThat(mNameText.getText().toString()).isEqualTo(card.getName());
+        assertThat(mNumberText.getText().toString().replaceAll(" ", ""))
+                .isEqualTo(card.getNumber());
+        assertThat(mExpirationDate.getText().toString())
+                .isEqualTo(String.format("0%s/%s", card.getMonth(), card.getYear().substring(2)));
+    }
+
+    @Test
+    @MediumTest
+    public void paymentSettingsOnScanCompleted_twoDigitMonth() {
+        initFragment(null);
+        CreditCard card = getSampleLocalCard();
+        // Ensure a two-digit month is formatted as-is.
+        card.setMonth("10");
+
+        assertTrue(mExpirationDate.getText().toString().isEmpty());
+
+        mCardEditor.onScanCompleted(
+                card.getName(),
+                card.getNumber(),
+                Integer.parseInt(card.getMonth()),
+                Integer.parseInt(card.getYear()));
+
+        assertThat(mExpirationDate.getText().toString())
+                .isEqualTo(String.format("%s/%s", card.getMonth(), card.getYear().substring(2)));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE
+    }) // Feature disabled to allow saving cards without expiration dates.
+    public void onCardSave_scannerManagerLogScanResultIsCalled() {
+        initFragment(null);
+        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
+        mNumberText.setText(NON_AMEX_CARD_NUMBER);
+
+        mDoneButton.performClick();
+
+        verify(mMockScannerManager).logScanResult();
+    }
+
+    @Test
+    @MediumTest
+    public void onFinishPage_scannerManagerFormClosedIsCalled() {
+        initFragment(null);
+        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
+
+        mCardEditor.finishPage();
+
+        verify(mMockScannerManager).formClosed();
+    }
+
+    @Test
+    @MediumTest
+    public void nameFieldEdited_scannerManagerFieldEditedIsCalledWithName() {
+        initFragment(null);
+        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
+        mNameText.setText("Okarun");
+
+        verify(mMockScannerManager).fieldEdited(FieldType.NAME);
+    }
+
+    @Test
+    @MediumTest
+    public void numberFieldEdited_scannerManagerFieldEditedIsCalledWithNumber() {
+        initFragment(null);
+        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
+        mNumberText.setText(NON_AMEX_CARD_NUMBER);
+
+        // Field edit may be called more than once because there are other listeners for the number
+        // field that format the number as it's entered into the text field.
+        verify(mMockScannerManager, atLeastOnce()).fieldEdited(FieldType.NUMBER);
+    }
+
+    @Test
+    @MediumTest
+    public void expirationDateFieldEdited_scannerManagerFieldEditedIsCalledWithMonthAndYear() {
+        initFragment(null);
+        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
+
+        mExpirationDate.setText("10/95");
+
+        verify(mMockScannerManager).fieldEdited(FieldType.MONTH);
+        verify(mMockScannerManager).fieldEdited(FieldType.YEAR);
+    }
+
+    @Test
+    @MediumTest
+    public void cvcFieldEdited_scannerManagerFieldEditedIsCalledWithUnknown() {
+        initFragment(null);
+        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
+
+        mCvc.setText("101");
+
+        verify(mMockScannerManager).fieldEdited(FieldType.UNKNOWN);
     }
 }

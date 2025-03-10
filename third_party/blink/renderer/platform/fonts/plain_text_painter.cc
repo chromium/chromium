@@ -4,7 +4,12 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
+#include <cmath>
+
+#include "base/containers/adapters.h"
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 
 namespace blink {
@@ -38,8 +43,24 @@ void PlainTextPainter::DrawWithoutBidi(const TextRun& run,
                                        const gfx::PointF& location,
                                        const cc::PaintFlags& flags,
                                        Font::DrawType draw_type) {
-  // TODO(crbug.com/389726691): Implement this without Font::DrawText().
-  font.DrawText(&canvas, run, location, flags, draw_type);
+  // Don't draw anything while we are using custom fonts that are in the process
+  // of loading.
+  if (font.ShouldSkipDrawing()) {
+    return;
+  }
+
+  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
+  gfx::PointF point = location;
+  for (const auto& item : node.ItemList()) {
+    ShapeResultBloberizer::FillGlyphsNG bloberizer(
+        font.GetFontDescription(), item.Text(), 0, item.Length(),
+        item.EnsureView(),
+        draw_type == Font::DrawType::kGlyphsOnly
+            ? ShapeResultBloberizer::Type::kNormal
+            : ShapeResultBloberizer::Type::kEmitText);
+    DrawTextBlobs(bloberizer.Blobs(), canvas, point, flags, cc::kInvalidNodeId);
+    point.Offset(bloberizer.Advance(), 0);
+  }
 }
 
 bool PlainTextPainter::DrawWithBidiReorder(
@@ -72,8 +93,47 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
                                              unsigned to_index,
                                              const Font& font,
                                              gfx::RectF* glyph_bounds) {
-  // TODO(crbug.com/389726691): Implement this without Font::SubRunWidth().
-  return font.SubRunWidth(run, from_index, to_index, glyph_bounds);
+  if (run.length() == 0) {
+    return 0;
+  }
+  FontCachePurgePreventer purge_preventer;
+
+  const PlainTextNode& node = CreateNode(run, font);
+  float x_pos = 0;
+  for (const auto& item : node.ItemList()) {
+    wtf_size_t start_offset = item.StartOffset();
+    if (item.EndOffset() <= from_index || to_index <= start_offset) {
+      continue;
+    }
+    // Calculate the required indexes for this specific run.
+    unsigned run_from = std::max(0u, from_index - start_offset);
+    unsigned run_to = std::min(item.Length(), to_index - start_offset);
+    // Measure the subrun.
+    StringView sub_text(node.TextContent(), start_offset, item.Length());
+    TextRun text_run(sub_text, item.Direction(),
+                     /* directional_override */ false, mode_ == kCanvas);
+    const PlainTextNode& sub_node =
+        CreateNode(text_run, font, /* supports_bidi */ false);
+    CharacterRange character_range =
+        sub_node.ComputeCharacterRange(run_from, run_to);
+
+    // Accumulate the position and the glyph bounding box.
+    if (glyph_bounds) {
+      gfx::RectF range_bounds(character_range.start, -character_range.ascent,
+                              character_range.Width(),
+                              character_range.Height());
+      // ComputeCharacterRange() returns bounds positioned as if the whole run
+      // was there, so the rect has to be moved to align with the current
+      // position.
+      range_bounds.Offset(-range_bounds.x() + x_pos, 0);
+      glyph_bounds->Union(range_bounds);
+    }
+    x_pos += character_range.Width();
+  }
+  if (glyph_bounds) {
+    glyph_bounds->Offset(-glyph_bounds->x(), 0);
+  }
+  return x_pos;
 }
 
 float PlainTextPainter::ComputeInlineSizeWithoutBidi(const TextRun& run,
@@ -89,9 +149,35 @@ int PlainTextPainter::OffsetForPositionWithoutBidi(
     float position,
     IncludePartialGlyphsOption partial_option,
     BreakGlyphsOption break_option) {
-  // TODO(crbug.com/389726691): Implement this without
-  // Font::OffsetForPosition().
-  return font.OffsetForPosition(run, position, partial_option, break_option);
+  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
+  unsigned total_offset;
+  if (run.Rtl()) {
+    total_offset = node.TextContent().length();
+    for (const auto& item : base::Reversed(node.ItemList())) {
+      const ShapeResult* word_result = item.GetShapeResult();
+      total_offset -= word_result->NumCharacters();
+      if (position >= 0 && position <= word_result->Width()) {
+        int offset_for_word = word_result->OffsetForPosition(
+            position, item.Text(), partial_option, break_option);
+        return total_offset + offset_for_word;
+      }
+      position -= word_result->Width();
+    }
+  } else {
+    total_offset = 0;
+    for (const auto& item : node.ItemList()) {
+      const ShapeResult* word_result = item.GetShapeResult();
+      int offset_for_word = word_result->OffsetForPosition(
+          position, item.Text(), partial_option, break_option);
+      DCHECK_GE(offset_for_word, 0);
+      total_offset += offset_for_word;
+      if (position >= 0 && position <= word_result->Width()) {
+        return total_offset;
+      }
+      position -= word_result->Width();
+    }
+  }
+  return total_offset;
 }
 
 gfx::RectF PlainTextPainter::SelectionRectForTextWithoutBidi(
@@ -101,10 +187,13 @@ gfx::RectF PlainTextPainter::SelectionRectForTextWithoutBidi(
     const Font& font,
     const gfx::PointF& left_baseline,
     float height) {
-  // TODO(crbug.com/389726691): Implement this without
-  // Font::SelectionRectForText().
-  return font.SelectionRectForText(run, left_baseline, height, from_index,
-                                   to_index);
+  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
+  CharacterRange range = node.ComputeCharacterRange(from_index, to_index);
+  float rounded_x = std::round(left_baseline.x() + range.start);
+  return gfx::RectF(
+      rounded_x, left_baseline.y(),
+      std::round(left_baseline.x() + range.start + range.Width()) - rounded_x,
+      height);
 }
 
 const PlainTextNode& PlainTextPainter::CreateNode(const TextRun& text_run,

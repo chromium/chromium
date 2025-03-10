@@ -43,6 +43,7 @@
 #include "net/http/structured_headers.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 using base::Time;
 
@@ -923,47 +924,35 @@ size_t HttpResponseHeaders::FindHeader(size_t from,
   return std::string::npos;
 }
 
-std::optional<base::TimeDelta> HttpResponseHeaders::GetCacheControlDirective(
-    std::string_view directive) const {
-  static constexpr std::string_view name("cache-control");
-  std::optional<std::string_view> value;
-
-  size_t directive_size = directive.size();
-
-  size_t iter = 0;
-  while ((value = EnumerateHeader(&iter, name))) {
-    if (!base::StartsWith(*value, directive,
-                          base::CompareCase::INSENSITIVE_ASCII)) {
-      continue;
-    }
-    if (value->size() == directive_size || (*value)[directive_size] != '=') {
-      continue;
-    }
-    // 1*DIGIT with leading and trailing spaces, as described at
-    // https://datatracker.ietf.org/doc/html/rfc7234#section-1.2.1.
-    auto start = value->cbegin() + directive_size + 1;
-    auto end = value->cend();
-    while (start < end && *start == ' ') {
-      // leading spaces
-      ++start;
-    }
-    while (start < end - 1 && *(end - 1) == ' ') {
-      // trailing spaces
-      --end;
-    }
-    if (start == end ||
-        !std::all_of(start, end, [](char c) { return '0' <= c && c <= '9'; })) {
-      continue;
-    }
-    int64_t seconds = 0;
-    base::StringToInt64(base::MakeStringPiece(start, end), &seconds);
-    // We ignore the return value because we've already checked the input
-    // string. For the overflow case we use
-    // base::TimeDelta::FiniteMax().InSeconds().
-    seconds = std::min(seconds, base::TimeDelta::FiniteMax().InSeconds());
-    return base::Seconds(seconds);
+std::optional<base::TimeDelta> HttpResponseHeaders::ParseSeconds(
+    std::string_view value) const {
+  // 1*DIGIT with leading and trailing spaces, as described at
+  // https://datatracker.ietf.org/doc/html/rfc7234#section-1.2.1.
+  value = base::TrimString(value, " ", base::TRIM_ALL);
+  if (value.empty() || !std::ranges::all_of(value, absl::ascii_isdigit)) {
+    return std::nullopt;
   }
+  int64_t seconds = 0;
+  base::StringToInt64(value, &seconds);
+  // We ignore the return value because we've already checked the input
+  // string. For the overflow case we use
+  // base::TimeDelta::FiniteMax().InSeconds().
+  seconds = std::min(seconds, base::TimeDelta::FiniteMax().InSeconds());
+  return base::Seconds(seconds);
+}
 
+std::optional<base::TimeDelta>
+HttpResponseHeaders::GetCacheControlHeaderValueForTesting(
+    const std::string_view directive) const {
+  for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
+    if (base::StartsWith(*value, directive,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      const auto delta = ParseSeconds(value->substr(directive.size()));
+      if (delta.has_value()) {
+        return delta;
+      }
+    }
+  }
   return std::nullopt;
 }
 
@@ -1016,7 +1005,6 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
   // Add server specified transients.  Any 'cache-control: no-cache="foo,bar"'
   // headers present in the response specify additional headers that we should
   // not store in the cache.
-  const char kCacheControl[] = "cache-control";
   const char kPrefix[] = "no-cache=\"";
   const size_t kPrefixLen = sizeof(kPrefix) - 1;
 
@@ -1208,12 +1196,43 @@ ValidationType HttpResponseHeaders::RequiresValidation(
   return VALIDATION_SYNCHRONOUS;
 }
 
+bool HttpResponseHeaders::HasCacheRestriction() const {
+  for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
+    if (base::EqualsCaseInsensitiveASCII(*value, kNoCache) ||
+        base::EqualsCaseInsensitiveASCII(*value, kNoStore)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+HttpResponseHeaders::CacheControlFreshnessDirectives
+HttpResponseHeaders::ParseCacheControlDirectivesForFreshness() const {
+  CacheControlFreshnessDirectives directives;
+  for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
+    if (base::EqualsCaseInsensitiveASCII(*value, kMustRevalidate)) {
+      directives.must_revalidate = true;
+    } else if (!directives.max_age &&
+               base::StartsWith(*value, kMaxAge,
+                                base::CompareCase::INSENSITIVE_ASCII)) {
+      // Extract just the value part after "max-age="
+      directives.max_age = ParseSeconds(value->substr(kMaxAge.size()));
+    } else if (!directives.stale_while_revalidate &&
+               base::StartsWith(*value, kStaleWhileRevalidate,
+                                base::CompareCase::INSENSITIVE_ASCII)) {
+      directives.stale_while_revalidate =
+          ParseSeconds(value->substr(kStaleWhileRevalidate.size()));
+    }
+  }
+  return directives;
+}
+
 // From RFC 2616 section 13.2.4:
 //
 // The max-age directive takes priority over Expires, so if max-age is present
 // in a response, the calculation is simply:
 //
-//   freshness_lifetime = max_age_value
+//   freshness_lifetime = max_age
 //
 // Otherwise, if Expires is present in the response, the calculation is:
 //
@@ -1237,27 +1256,24 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   // Check for headers that force a response to never be fresh.  For backwards
   // compat, we treat "Pragma: no-cache" as a synonym for "Cache-Control:
   // no-cache" even though RFC 2616 does not specify it.
-  if (HasHeaderValue("cache-control", "no-cache") ||
-      HasHeaderValue("cache-control", "no-store") ||
-      HasHeaderValue("pragma", "no-cache")) {
+
+  if (HasCacheRestriction() || HasHeaderValue("pragma", "no-cache")) {
     return lifetimes;
   }
 
+  auto [must_revalidate, max_age, stale_while_revalidate] =
+      ParseCacheControlDirectivesForFreshness();
   // Cache-Control directive must_revalidate overrides stale-while-revalidate.
-  bool must_revalidate = HasHeaderValue("cache-control", "must-revalidate");
-
   lifetimes.staleness =
-      must_revalidate
-          ? base::TimeDelta()
-          : GetStaleWhileRevalidateValue().value_or(base::TimeDelta());
+      must_revalidate ? base::TimeDelta()
+                      : stale_while_revalidate.value_or(base::TimeDelta());
 
   // NOTE: "Cache-Control: max-age" overrides Expires, so we only check the
   // Expires header after checking for max-age in GetFreshnessLifetimes.  This
   // is important since "Expires: <date in the past>" means not fresh, but
   // it should not trump a max-age value.
-  std::optional<base::TimeDelta> max_age_value = GetMaxAgeValue();
-  if (max_age_value) {
-    lifetimes.freshness = max_age_value.value();
+  if (max_age) {
+    lifetimes.freshness = max_age.value();
     return lifetimes;
   }
 
@@ -1400,7 +1416,7 @@ base::TimeDelta HttpResponseHeaders::GetCurrentAge(
 }
 
 std::optional<base::TimeDelta> HttpResponseHeaders::GetMaxAgeValue() const {
-  return GetCacheControlDirective("max-age");
+  return GetCacheControlHeaderValueForTesting(kMaxAge);
 }
 
 std::optional<base::TimeDelta> HttpResponseHeaders::GetAgeValue() const {
@@ -1440,7 +1456,7 @@ std::optional<Time> HttpResponseHeaders::GetExpiresValue() const {
 
 std::optional<base::TimeDelta>
 HttpResponseHeaders::GetStaleWhileRevalidateValue() const {
-  return GetCacheControlDirective("stale-while-revalidate");
+  return GetCacheControlHeaderValueForTesting(kStaleWhileRevalidate);
 }
 
 std::optional<Time> HttpResponseHeaders::GetTimeValuedHeader(

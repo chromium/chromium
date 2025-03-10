@@ -650,7 +650,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   }
 
   // A 2D context does not know before lazy creation whether or not it is
-  // direct composited. The Canvas2DLayerBridge will handle this
+  // direct composited.
   if (!IsRenderingContext2D())
     SetNeedsCompositingUpdate();
 
@@ -2172,20 +2172,17 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
 CanvasResourceProvider*
 HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
     CanvasHibernationHandler& hibernation_handler) {
-  // Restore() is tried at most four times in two seconds to recreate the
-  // ResourceProvider before the final attempt, in which a new
-  // Canvas2DLayerBridge is created along with its resource provider.
-
   bool want_acceleration = ShouldTryToUseGpuRaster();
   RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
                                                    : RasterModeHint::kPreferCPU;
 
-  // Re-creation will happen through Restore().
-  // If the Canvas2DLayerBridge has just been created, possibly due to failed
-  // attempts of Restore(), the layer would not exist, therefore, it will not
-  // fall through this clause to try Restore() again
   if (CcLayer() && adjusted_hint == RasterModeHint::kPreferGPU &&
       !hibernation_handler.IsHibernating()) {
+    // In this case re-creation will happen through
+    // CanvasRenderingContext2D::Restore(). Restore() attempts to recreate the
+    // ResourceProvider at most four times in two seconds before it clears all
+    // state (including the CC layer) by calling DiscardResourceProvider() on
+    // this object.
     return nullptr;
   }
 

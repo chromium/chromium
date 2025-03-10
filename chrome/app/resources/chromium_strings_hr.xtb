@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">Vaša organizacija zatvara Chromium kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. Podaci o pregledavanju su izbrisani. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6542839706527980775">Svaki profil ima vlastite podatke u Chromiumu kao što su oznake, povijest, zaporke i slično</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Promjene ove postavke primijenit će se nakon ponovnog pokretanja Chromiuma.</translation>
 <translation id="656935081669708576">Možete se prebaciti da biste vidjeli zaporke s nekog drugog profila na Chromiumu</translation>
 <translation id="6570579332384693436">Chromium Googleu šalje tekst koji utipkate u tekstualna polja kako bi ispravio pravopisne pogreške</translation>
 <translation id="6598877126913850652">Otvori postavke obavijesti za Chromium</translation>

@@ -24,8 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -196,14 +196,15 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                          base::BindRepeating(&TabStatsTracker::OnHeartbeatEvent,
                                              base::Unretained(this)));
 
-  g_browser_process->GetTabManager()->AddObserver(this);
+  resource_coordinator::GetTabLifecycleUnitSource()->AddLifecycleObserver(this);
 }
 
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
   base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
-  g_browser_process->GetTabManager()->RemoveObserver(this);
+  resource_coordinator::GetTabLifecycleUnitSource()->RemoveLifecycleObserver(
+      this);
 }
 
 // static
@@ -470,16 +471,16 @@ void TabStatsTracker::OnResume() {
       tab_stats_data_store_->tab_stats().total_tab_count);
 }
 
-// resource_coordinator::TabLifecycleObserver:
-void TabStatsTracker::OnTabLifecycleStateChange(
-    content::WebContents* contents,
-    mojom::LifecycleUnitState previous_state,
-    mojom::LifecycleUnitState new_state,
-    std::optional<LifecycleUnitDiscardReason> discard_reason) {
+// resource_coordinator::LifecycleUnitObserver:
+void TabStatsTracker::OnLifecycleUnitStateChanged(
+    resource_coordinator::LifecycleUnit* lifecycle_unit,
+    ::mojom::LifecycleUnitState previous_state,
+    ::mojom::LifecycleUnitStateChangeReason reason) {
+  const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   if (previous_state == ::mojom::LifecycleUnitState::DISCARDED ||
       new_state == ::mojom::LifecycleUnitState::DISCARDED) {
     tab_stats_data_store_->OnTabDiscardStateChange(
-        discard_reason.value(),
+        lifecycle_unit->GetDiscardReason(),
         new_state == ::mojom::LifecycleUnitState::DISCARDED);
   }
 }

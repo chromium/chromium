@@ -1012,7 +1012,7 @@
     {
         "name": "webkit",
         "group": "androidx.webkit",
-        "version": "1.13.0-SNAPSHOT"
+        "version": "1.14.0-SNAPSHOT"
     },
     {
         "name": "extensions",

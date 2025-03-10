@@ -174,6 +174,63 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       @"Profile should have been switched");
 }
 
+// Tests switching to a managed account (and thus managed profile) and the
+// managed account is removed while the enterprise onboarding is shown.
+- (void)testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+
+  NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
+
+  // Setup: There's 1 personal and 1 managed account. The personal account is
+  // signed in.
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:personalIdentity];
+
+  FakeSystemIdentity* const managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:managedIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:personalIdentity];
+
+  // Switch to the managed account, which triggers a switch to a new managed
+  // profile.
+  OpenAccountMenu();
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+  // Wait for the enterprise onboarding screen.
+  ConditionBlock enterpriseOnboardingCondition = ^{
+    NSError* error;
+    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout,
+                 enterpriseOnboardingCondition),
+             @"Enterprise onboarding didn't appear.");
+
+  // Remove the managed account from device.
+  [SigninEarlGrey forgetFakeIdentity:managedIdentity];
+
+  // Ensure the enterprise onboarding screen did disapepar.
+  [[EarlGrey selectElementWithMatcher:IdentityDiscMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
+
+  // Verify that the profile is still the personal one.
+  GREYAssert(
+      [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
+      @"Profile should stay the same");
+}
+
 // Tests switching to a managed account and refuse the enterprise onboard
 // screen.
 // TODO(crbug.com/399015648): Test is flaky on device.

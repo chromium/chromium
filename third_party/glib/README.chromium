@@ -1,0 +1,21 @@
+Name: glib
+URL: https://gitlab.gnome.org/GNOME/glib
+Version: 2.81.1
+Revision: 95eafc073843cb6e8c848f3850c074a83e01427c
+License: LGPL-2.1
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+Low-level core library that forms the basis for projects such as GTK+ and GNOME.
+
+This is only used in tests.
+
+Local Modifications:
+None.
+
+When updating to a new version, update the Revision above with the new commit hash,
+and perform the following steps:
+1. Run on_update.sh
+2. Check in the generated files along with the changes for the update.

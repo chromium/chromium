@@ -43,7 +43,6 @@
 #include <algorithm>
 
 #include "base/synchronization/lock.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -258,9 +257,6 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
       c == kTibetanMarkDelimiterTshegBstarCharacter)
     return false;
 
-  if (!RuntimeEnabledFeatures::TextEmphasisNoPunctuationEnabled()) {
-    return true;
-  }
   // Punctuation
   if (category &
       (WTF::unicode::kPunctuation_Dash | WTF::unicode::kPunctuation_Open |

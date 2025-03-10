@@ -112,8 +112,7 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
 InvalidationSet::InvalidationSet(InvalidationType type)
     : type_(static_cast<unsigned>(type)),
       invalidates_self_(false),
-      invalidates_nth_(false),
-      is_alive_(true) {}
+      invalidates_nth_(false) {}
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {
   if (invalidation_flags_.WholeSubtreeInvalid()) {
@@ -173,8 +172,6 @@ bool InvalidationSet::InvalidatesTagName(Element& element) const {
 }
 
 void InvalidationSet::Combine(const InvalidationSet& other) {
-  CHECK(is_alive_);
-  CHECK(other.is_alive_);
   CHECK_EQ(GetType(), other.GetType());
 
   if (IsSelfInvalidationSet()) {

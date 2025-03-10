@@ -7,12 +7,15 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <tuple>
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -148,9 +151,26 @@ void BnplManager::FetchVcnDetails() {
 void BnplManager::OnVcnDetailsFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchVcnResponseDetails& response_details) {
-  // TODO(crbug.com/378518604): Implement OnVcnDetailsFetched() to fill the form
-  // from the VCN details that were fetched.
-
+  if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    CHECK(ongoing_flow_state_);
+    CreditCard credit_card;
+    credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
+                           base::UTF8ToUTF16(response_details.pan));
+    credit_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+    credit_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
+                           base::UTF8ToUTF16(response_details.cardholder_name));
+    credit_card.SetRawInfo(
+        autofill::CREDIT_CARD_EXP_MONTH,
+        base::UTF8ToUTF16(response_details.expiration_month));
+    credit_card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                           base::UTF8ToUTF16(response_details.expiration_year));
+    credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
+    credit_card.set_issuer_id(ongoing_flow_state_->issuer_id);
+    std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
+        .Run(credit_card);
+  } else {
+    // TODO(crbug.com/399449550): Add error dialog.
+  }
   ongoing_flow_state_.reset();
 }
 
@@ -260,7 +280,7 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   BnplSuggestionUpdateResult update_suggestions_result =
       ::autofill::MaybeUpdateSuggestionsWithBnpl(
           /*current_suggestions=*/std::get<0>(*suggestions_shown_response),
-          bnpl_issuers);
+          bnpl_issuers, extracted_amount->value());
 
   if (!update_suggestions_result.is_bnpl_suggestion_added) {
     // No need to update the pop up, if no BNPL suggestion is added.

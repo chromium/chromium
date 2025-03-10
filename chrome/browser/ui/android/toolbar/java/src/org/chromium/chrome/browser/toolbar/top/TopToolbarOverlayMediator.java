@@ -198,7 +198,7 @@ public class TopToolbarOverlayMediator {
 
                         // TODO(peilinwang) Clean up this flag and remove the updateVisibility call
                         // when stable experiment is finished.
-                        if (!ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
+                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
                             updateShadowState();
                             updateVisibility();
                         }
@@ -216,18 +216,14 @@ public class TopToolbarOverlayMediator {
                     public void onControlsConstraintsChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                            @BrowserControlsState int constraints) {
+                            @BrowserControlsState int constraints,
+                            boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            if (ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
-                                mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
-                            } else {
-                                mTopControlsOffsetTag = offsetTagsInfo.getContentOffsetTag();
-                            }
+                            mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
                             mBottomControlsOffsetTag = offsetTagsInfo.getBottomControlsOffsetTag();
                             updateOffsetTag();
 
-                            if (mBrowserControlsStateProvider
-                                    .shouldUpdateOffsetsWhenConstraintsChange()) {
+                            if (shouldUpdateOffsets) {
                                 mModel.set(
                                         TopToolbarOverlayProperties.CONTENT_OFFSET,
                                         mBrowserControlsStateProvider.getContentOffset());
@@ -275,8 +271,7 @@ public class TopToolbarOverlayMediator {
      * android view is not shown.
      */
     private void updateShadowState() {
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                && ChromeFeatureList.sBcivZeroBrowserFrames.isEnabled()) {
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
             // With BCIV enabled, we show the hairline on the composited toolbar by default,
             // and we don't want to update its visibility from the browser, because that incurs a
             // compositor frame.

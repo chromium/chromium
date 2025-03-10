@@ -151,7 +151,10 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Returns whether or not the glic window is currently attached to a browser.
   // Virtual for testing.
-  virtual bool IsAttached();
+  virtual bool IsAttached() const;
+
+  // Returns wehether or not the glic window is currently showing detached.
+  bool IsDetached() const;
 
   using WindowActivationChangedCallback =
       base::RepeatingCallback<void(bool active)>;

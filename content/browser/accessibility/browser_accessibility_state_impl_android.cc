@@ -439,14 +439,14 @@ void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kScreenReader mode, which is used by many clients.
+  // just kExtendedProperties mode, which is used by many clients.
   // TODO(accessibility) Add metric for Talkback usage and remove this
   // metric, which is redundant with
   // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader",
-                        mode.has_mode(ui::AXMode::kScreenReader));
+                        mode.has_mode(ui::AXMode::kExtendedProperties));
 }
 
 void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
@@ -454,12 +454,12 @@ void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
 
   ui::AXMode mode = GetAccessibilityMode();
   // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kScreenReader mode, which is used by many clients.
+  // just kExtendedProperties mode, which is used by many clients.
   // TODO(accessibility) Add metric for Talkback usage and remove this
   // metric, which is redundant with
   // PerformanceManager.Experimental.HasAccessibilityModeFlag.
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader.EveryReport",
-                        mode.has_mode(ui::AXMode::kScreenReader));
+                        mode.has_mode(ui::AXMode::kExtendedProperties));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback.EveryReport",
                         is_talkback_active_);
 }

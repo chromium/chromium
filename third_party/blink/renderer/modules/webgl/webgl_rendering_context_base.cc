@@ -1433,12 +1433,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
       WTF::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
                          WrapWeakPersistent(this)));
 
-  // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
-  // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
-  // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1.4
-  if (IsWebGL2())
-    ContextGL()->Enable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
-
   // This ensures that the context has a valid "lastFlushID" and won't be
   // mistakenly identified as the "least recently used" context.
   ContextGL()->Flush();

@@ -18,7 +18,7 @@
 #include "base/rand_util.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/paint/display_item_list.h"
@@ -51,9 +51,6 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates)
     : client_(client),
-      resource_size_(in_use_resource.size()),
-      shared_image_format_(in_use_resource.format()),
-      color_space_(in_use_resource.color_space()),
       resource_has_previous_content_(resource_has_previous_content),
       depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
       depends_on_hardware_accelerated_jpeg_candidates_(
@@ -78,11 +75,11 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     backing_->can_access_shared_image_on_compositor_thread = false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only do this in Chrome OS because:
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only do this in ChromeOS because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
   //      only need to collect that data to assess the impact of hardware
-  //      acceleration of image decodes which works only on Chrome OS.
+  //      acceleration of image decodes which works only on ChromeOS.
   //   2) We use CLOCK_MONOTONIC in that OS to get timestamps, so we can assert
   //      certain assumptions.
   creation_time_ = base::TimeTicks::Now();
@@ -289,13 +286,13 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Use a query to detect when the GPU side is ready to start issuing raster
     // work to the driver. We will use the resulting timestamp to measure raster
-    // scheduling delay. We only care about this in Chrome OS because we will
+    // scheduling delay. We only care about this in ChromeOS because we will
     // use this timestamp to measure raster scheduling delay and we only need to
     // collect that data to assess the impact of hardware acceleration of image
-    // decodes which work only in Chrome OS. Furthermore, we don't count raster
+    // decodes which work only in ChromeOS. Furthermore, we don't count raster
     // work that depends on at-raster image decodes. This is because we want the
     // delay to always include image decoding and uploading time, and at-raster
     // decodes should be relatively rare.
@@ -352,10 +349,10 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->set_shared_image(
-        sii->CreateSharedImage({shared_image_format_, resource_size_,
-                                color_space_, flags, "GpuRasterTile"},
-                               gpu::kNullSurfaceHandle));
+    backing_->set_shared_image(sii->CreateSharedImage(
+        {backing_->format(), backing_->size(), backing_->color_space(), flags,
+         "GpuRasterTile"},
+        gpu::kNullSurfaceHandle));
     CHECK(backing_->shared_image());
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -387,8 +384,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, msaa_mode, use_lcd_text,
-      playback_settings.visible, color_space_, playback_settings.hdr_headroom,
-      backing_->shared_image()->mailbox().name);
+      playback_settings.visible, backing_->color_space(),
+      playback_settings.hdr_headroom, backing_->shared_image()->mailbox().name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());

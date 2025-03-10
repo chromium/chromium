@@ -259,7 +259,7 @@ void CrostiniExportImport::Start(
                             .Run(operation_data->type, path);
   status_tracker->SetStatusRunning(0);
 
-  auto it = status_trackers_.find(operation_data_->container_id);
+  auto it = status_trackers_.find(operation_data->container_id);
   if (it != status_trackers_.end()) {
     // There is already an operation in progress. Ensure the existing
     // status_tracker is (re)displayed so the user knows why this new concurrent

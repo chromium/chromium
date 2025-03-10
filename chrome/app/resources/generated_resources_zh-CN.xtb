@@ -590,6 +590,7 @@
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="140723521119632973">移动网络激活</translation>
+<translation id="1407908250220330281">此资料现在将受到管理</translation>
 <translation id="1407970155431887387">点击即可打开<ph name="SEARCH_ENGINE_NAME" />的“修改”对话框</translation>
 <translation id="1408504635543854729">在“文件”应用中浏览此设备上的内容。相关内容受到管理员的限制，无法修改。</translation>
 <translation id="1408980562518920698">管理个人信息</translation>
@@ -795,6 +796,7 @@
 <translation id="1549966883323105187">更快地获取您已保存的密码</translation>
 <translation id="1550656959113606473">默认 Chrome</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
+<translation id="1552357433305859738">继续与此资料同步并合并数据</translation>
 <translation id="1552752544932680961">管理扩展程序</translation>
 <translation id="1553538517812678578">无限制</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />详细了解<ph name="LINK_END" /> Chromebook 上的 Microsoft 365。</translation>
@@ -1426,6 +1428,7 @@
 <translation id="1980168597243156">空间站</translation>
 <translation id="1981434377190976112">读取您在所有网站上的数据</translation>
 <translation id="1982851102516626421">您已退出账号</translation>
+<translation id="1983612835086592681">您在过去一周内打开过</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1984683754853869253">您想创建一份新的学校资料吗？</translation>
 <translation id="198507684520034826">帮助</translation>
@@ -1589,6 +1592,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：在此过程中，系统将会重新启动。</translation>
+<translation id="209423774103268003">有网站正在访问您的智能卡读卡器</translation>
 <translation id="2095774564753225041">支持的文件类型</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2097950021134740304">取消清除订阅</translation>
@@ -2231,6 +2235,7 @@
 <translation id="2529887123641260401">您随时可从“开关控制”设置中更改自己的设置或再次打开设置指南。</translation>
 <translation id="2530166226437958497">问题排查</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />出了点问题，无法安装 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2532117279786409580">获取更多信息</translation>
 <translation id="2532144599248877204">会将电池电量保持在 80% 左右以延长电池寿命，并会在您通常切断电源的时间之前将电池电量充满。</translation>
 <translation id="2532146950330687938">正在准备设备…</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 设置中管理安全 DNS</translation>
@@ -3130,6 +3135,7 @@
 <translation id="3183139917765991655">个人资料导入应用</translation>
 <translation id="3183143381919926261">移动数据网络</translation>
 <translation id="3183700187146209259">无法安装扫描仪软件</translation>
+<translation id="3183750649832309748">您的组织 (<ph name="ACCOUNT_MANAGER" />) 将能够查看某些信息，包括：</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">使用此 PIN 码可更改家长控制设置。
@@ -3155,6 +3161,7 @@
 <translation id="3202499879214571401">暂停将屏幕投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="3202578601642193415">最后</translation>
 <translation id="3204648577100496185">系统可能会从此设备上移除与该应用相关的数据</translation>
+<translation id="3204717934117444051">仅保存在此设备上的数据将保留在现有资料中，不会同步到 <ph name="EMAIL" /></translation>
 <translation id="3207344462385471911">系统会根据您的近期活动向您推荐您可能感兴趣的搜索内容和购物折扣。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4287,6 +4294,7 @@
 <translation id="3977886311744775419">使用此网络类型时无法下载自动更新，但您可以手动检查是否有更新。</translation>
 <translation id="3978325380690188371">开启 ChromeVox 后，无法使用粘滞键</translation>
 <translation id="3978732922947854545">Chrome 让 PDF 文件的使用体验更佳</translation>
+<translation id="3979093622823535817">加入会议“<ph name="MEETING_TITLE" />”</translation>
 <translation id="3979395879372752341">已添加新扩展程序（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="3979748722126423326">启用<ph name="NETWORKDEVICE" /></translation>
 <translation id="398095528354975981">隐藏这些标签页</translation>
@@ -4323,6 +4331,7 @@
 <translation id="3994878504415702912">缩放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="3995963973192100066">播放动画</translation>
+<translation id="3997537546406230684">创建一份新的工作资料，与我的现有数据分开存放</translation>
 <translation id="399788104667917863">固定到工具栏</translation>
 <translation id="3998780825367526465">显示标签页预览图片</translation>
 <translation id="3998976413398910035">管理打印机</translation>
@@ -5768,6 +5777,7 @@
 <translation id="5059526285558225588">选择要分享什么</translation>
 <translation id="5060332552815861872">有 1 台可保存的打印机。</translation>
 <translation id="5060419232449737386">字幕设置</translation>
+<translation id="5061270227873845372">您目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />、<ph name="NUMBERED_ITEM_3" />和其他一些数据。您的组织将能够查看和管理这些数据</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{此文件夹包含 1 个书签。确定要删除此文件夹吗？}other{此文件夹包含 # 个书签。确定要删除此文件夹吗？}}</translation>
 <translation id="5061531353537614467">苔原</translation>
 <translation id="5062930723426326933">登录失败，请连接到互联网，然后重试。</translation>
@@ -5951,6 +5961,7 @@
 <translation id="5186788525428341874">您可以使用此通行密钥在各个设备上更快地登录。系统会将它保存到 <ph name="ACCOUNT_NAME" /> 的 Google 密码管理工具中。</translation>
 <translation id="5187641678926990264">将网页作为应用安装(&amp;I)…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188242000716462162">由<ph name="USER_NAME" />共享</translation>
 <translation id="5188648870018555788">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
 <translation id="5189274947477567401">如需停用进程共享功能，需要重启浏览器。此浏览器将立即重启。</translation>
 <translation id="5189404424758444348">蒸汽朋克</translation>
@@ -6937,7 +6948,6 @@
 <translation id="5911533659001334206">快捷键查看器</translation>
 <translation id="5911545422157959623">在访客模式下无法使用书签</translation>
 <translation id="5914016309240354769">自然</translation>
-<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />添加了此标签页</translation>
 <translation id="5914724413750400082">模数（<ph name="MODULUS_NUM_BITS" />位）：
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -7994,6 +8004,7 @@
 <translation id="668599234725812620">打开 Google Play</translation>
 <translation id="6686490380836145850">关闭右侧标签页</translation>
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
+<translation id="6686676261102452995">您今天打开过</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
 <translation id="6687008241368170505">更改 Google 密码管理工具 PIN 码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
@@ -8218,6 +8229,7 @@
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6832218595502288407">左对齐</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除该标签页并删除该分组吗？}=1{要移除这些标签页并删除该分组吗？}other{要移除这些标签页并删除这些分组吗？}}</translation>
+<translation id="6833103209700200188">页脚标记</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">均衡（推荐）</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
@@ -9376,6 +9388,7 @@
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />（在 <ph name="PAGE_TITLE" /> 中）。</translation>
 <translation id="7672726198839739113">已屏蔽。时间表当前设为<ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" />，只能手动更新。</translation>
 <translation id="7673313156293624327">ChromeOS Shill（连接管理器）日志</translation>
+<translation id="767381852303199643">您想如何处理现有的资料数据？</translation>
 <translation id="7674416868315480713">停用 Linux 中所有正被转发的端口</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 个应用</translation>
 <translation id="7674542105240814168">已禁止使用位置信息</translation>
@@ -9607,6 +9620,7 @@
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
+<translation id="7836745198769390202">您目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />和其他一些数据。您的组织将能够查看和管理这些数据</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
 <translation id="7838838951812478896">未能保存由“<ph name="DEVICE_NAME" />”分享的“<ph name="NETWORK_NAME" />”</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}other{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}}</translation>
@@ -10108,6 +10122,7 @@
 <translation id="8176529144855282213">如需开启麦克风使用权限，请开启设备上的实体麦克风开关</translation>
 <translation id="8177196903785554304">网络详细信息</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
+<translation id="8178657161962192959">您昨天打开过</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。这是第 <ph name="ITEM_POSITION" /> 台打印机，共 <ph name="NUM_PRINTERS" /> 台。</translation>
 <translation id="8180785270975217276">节能模式已开启</translation>
@@ -10215,6 +10230,7 @@
 <translation id="825238165904109940">总是显示完整网址</translation>
 <translation id="8252569384384439529">正在上传…</translation>
 <translation id="8253198102038551905">点击“+”可查看网络属性</translation>
+<translation id="8254871563792426806">此网站正在访问连接到您的设备的智能卡读卡器，并且可能会访问读卡器中的智能卡</translation>
 <translation id="8255212965098517578">近期的照片、通知和应用</translation>
 <translation id="8255927332875030912">搜索键 + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">狗狗</translation>
@@ -11368,6 +11384,7 @@
 <translation id="9052404922357793350">继续拦截</translation>
 <translation id="90528604757378587">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制。</translation>
 <translation id="9053563360605707198">双面打印</translation>
+<translation id="9055810458113674066">您目前有 <ph name="NUMBERED_ITEM" />和其他一些数据。您的组织将能够查看和管理这些数据</translation>
 <translation id="9056788090206401048">您需要开启蓝牙，才能在一部不同的设备上使用通行密钥。您随时可在设置中管理此选项。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想访问以下内容：</translation>
@@ -11562,7 +11579,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 账号登录</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
-<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />更改了此标签页</translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>
 <translation id="919686179725692564">详细了解如何备份您的应用</translation>

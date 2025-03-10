@@ -46,35 +46,38 @@ namespace auction_worklet {
 
 namespace {
 
-// Creates a query param of the form `&<name>=<values in comma-delimited list>`.
-// Uses `proj` to extract out the values to add from items in `keys`.
-// Returns an empty string if `keys` is empty. `name` will not be escaped, but
-// the extracted values will be will be.
+// Computes a piece of a query param containing a comma-delimited list.
+//
+// If `keys` is empty, returns an empty string.
+// If `is_first_of_query_param` is true, returns
+//    "&<name>=<values in comma-delimited list>"
+// If it's false, returns ",<values in a comma-delimited list>"
+//
+// The list items are extracted from `keys` with help of `proj`.
+// `name` will not be escaped, but the extracted values will be will be, unless
+// `escape` is false.
 template <typename Container, typename Proj = std::identity>
-std::string CreateQueryParam(std::string_view name,
-                             const Container& keys,
-                             Proj proj = {},
-                             bool escape = true) {
-  if (keys.empty()) {
-    return std::string();
-  }
-
-  std::string query_param = base::StrCat({"&", name, "="});
-  bool first_key = true;
+std::string CreateQueryParamPiece(std::string_view name,
+                                  bool is_first_of_query_param,
+                                  const Container& keys,
+                                  Proj proj = {},
+                                  bool escape = true) {
+  std::string computed_piece;
   for (const auto& key : keys) {
-    if (first_key) {
-      first_key = false;
+    if (is_first_of_query_param) {
+      computed_piece = base::StringPrintf("&%s=", name);
+      is_first_of_query_param = false;
     } else {
-      query_param.append(",");
+      computed_piece.append(",");
     }
     if (escape) {
-      query_param.append(
+      computed_piece.append(
           base::EscapeQueryParamValue(proj(key), /*use_plus=*/true));
     } else {
-      query_param.append(proj(key));
+      computed_piece.append(proj(key));
     }
   }
-  return query_param;
+  return computed_piece;
 }
 
 GURL SetQueryParam(const GURL& base_url, const std::string& new_query_params) {
@@ -428,57 +431,101 @@ bool TrustedSignals::CreativeInfo::operator<(
                   other.buyer_and_seller_reporting_id);
 }
 
-GURL TrustedSignals::BuildTrustedBiddingSignalsURL(
+void TrustedSignals::BuildTrustedBiddingSignalsURL(
     const std::string& hostname,
     const GURL& trusted_bidding_signals_url,
     const std::set<std::string>& interest_group_names,
     const std::set<std::string>& bidding_signals_keys,
     std::optional<uint16_t> experiment_group_id,
-    const std::string& trusted_bidding_signals_slot_size_param) {
-  std::string query_params = base::StrCat(
-      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("keys", bidding_signals_keys),
-       CreateQueryParam("interestGroupNames", interest_group_names)});
-
-  if (experiment_group_id.has_value()) {
-    base::StrAppend(&query_params,
-                    {"&experimentGroupId=",
-                     base::NumberToString(experiment_group_id.value())});
+    const std::string& trusted_bidding_signals_slot_size_param,
+    std::vector<UrlPiece>& main_fragments,
+    std::vector<UrlPiece>& key_fragments) {
+  bool creating_new_url = main_fragments.empty();
+  if (creating_new_url) {
+    std::string host_name_param =
+        base::StrCat({"hostname=", base::EscapeQueryParamValue(
+                                       hostname, /*use_plus=*/true)});
+    main_fragments.emplace_back(
+        UrlField::kBase,
+        SetQueryParam(trusted_bidding_signals_url, host_name_param).spec());
   }
-  if (!trusted_bidding_signals_slot_size_param.empty()) {
-    base::StrAppend(&query_params,
-                    {"&", trusted_bidding_signals_slot_size_param});
-  }
-  GURL full_signals_url =
-      SetQueryParam(trusted_bidding_signals_url, query_params);
 
-  return full_signals_url;
+  main_fragments.emplace_back(
+      UrlField::kInterestGroupNames,
+      CreateQueryParamPiece("interestGroupNames", creating_new_url,
+                            interest_group_names));
+
+  if (!bidding_signals_keys.empty()) {
+    bool key_was_empty = key_fragments.empty();
+    key_fragments.emplace_back(
+        UrlField::kKeys,
+        CreateQueryParamPiece("keys", key_was_empty, bidding_signals_keys));
+  }
+
+  if (creating_new_url) {
+    if (experiment_group_id.has_value()) {
+      main_fragments.emplace_back(
+          UrlField::kExperimentGroupId,
+          base::StrCat({"&experimentGroupId=",
+                        base::NumberToString(experiment_group_id.value())}));
+    }
+    if (!trusted_bidding_signals_slot_size_param.empty()) {
+      main_fragments.emplace_back(
+          UrlField::kSlotSizeParam,
+          base::StrCat({"&", trusted_bidding_signals_slot_size_param}));
+    }
+  }
 }
 
-GURL TrustedSignals::BuildTrustedScoringSignalsURL(
+void TrustedSignals::BuildTrustedScoringSignalsURL(
     bool send_creative_scanning_metadata,
     const std::string& hostname,
     const GURL& trusted_scoring_signals_url,
     const std::set<CreativeInfo>& ads,
     const std::set<CreativeInfo>& component_ads,
-    std::optional<uint16_t> experiment_group_id) {
-  // TODO(crbug.com/40264073): Find a way to rename renderUrls to renderURLs.
+    std::optional<uint16_t> experiment_group_id,
+    std::vector<UrlPiece>& main_fragments,
+    std::vector<UrlPiece>& ad_component_fragments) {
+  // When we start the URL; and also when we start query params for ads, as
+  // the first call must have at least one ad.
+  bool creating_new_url = main_fragments.empty();
+  if (creating_new_url) {
+    std::string host_name_param =
+        base::StrCat({"hostname=", base::EscapeQueryParamValue(
+                                       hostname, /*use_plus=*/true)});
+    main_fragments.emplace_back(
+        UrlField::kBase,
+        SetQueryParam(trusted_scoring_signals_url, host_name_param).spec());
+  }
 
   auto extract_render_url =
       [](const CreativeInfo& creative_info) -> const std::string& {
     return creative_info.ad_descriptor.url.spec();
   };
 
-  std::string query_params = base::StrCat(
-      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("renderUrls", ads, extract_render_url),
-       CreateQueryParam("adComponentRenderUrls", component_ads,
-                        extract_render_url)});
-  if (experiment_group_id.has_value()) {
-    base::StrAppend(&query_params,
-                    {"&experimentGroupId=",
-                     base::NumberToString(experiment_group_id.value())});
+  // TODO(crbug.com/40264073): Find a way to rename renderUrls to renderURLs.
+  main_fragments.emplace_back(
+      UrlField::kRenderUrls,
+      CreateQueryParamPiece("renderUrls", creating_new_url, ads,
+                            extract_render_url));
+
+  bool components_was_empty = ad_component_fragments.empty();
+  if (!component_ads.empty()) {
+    ad_component_fragments.emplace_back(
+        UrlField::kAdComponentRenderUrls,
+        CreateQueryParamPiece("adComponentRenderUrls", components_was_empty,
+                              component_ads, extract_render_url));
   }
+
+  if (creating_new_url) {
+    if (experiment_group_id.has_value()) {
+      main_fragments.emplace_back(
+          UrlField::kExperimentGroupId,
+          base::StrCat({"&experimentGroupId=",
+                        base::NumberToString(experiment_group_id.value())}));
+    }
+  }
+
   if (send_creative_scanning_metadata) {
     auto extract_creative_scan_metadata =
         [](const CreativeInfo& creative_info) -> const std::string& {
@@ -503,28 +550,75 @@ GURL TrustedSignals::BuildTrustedScoringSignalsURL(
       return creative_info.buyer_and_seller_reporting_id;
     };
 
-    base::StrAppend(
-        &query_params,
-        {CreateQueryParam("adCreativeScanningMetadata", ads,
-                          extract_creative_scan_metadata),
-         CreateQueryParam("adComponentCreativeScanningMetadata", component_ads,
-                          extract_creative_scan_metadata),
-         CreateQueryParam("adSizes", ads, extract_size,
-                          /*escape=*/false),
-         CreateQueryParam("adComponentSizes", component_ads, extract_size,
-                          /*escape=*/false),
-         CreateQueryParam("adBuyer", ads, extract_buyer),
-         CreateQueryParam("adComponentBuyer", component_ads, extract_buyer),
-         CreateQueryParam("adBuyerAndSellerReportingIds", ads,
-                          extract_buyer_and_seller_reporting_id)});
+    main_fragments.emplace_back(
+        UrlField::kAdCreativeScanningMetadata,
+        CreateQueryParamPiece("adCreativeScanningMetadata", creating_new_url,
+                              ads, extract_creative_scan_metadata));
+    if (!component_ads.empty()) {
+      ad_component_fragments.emplace_back(
+          UrlField::kAdComponentCreativeScanningMetadata,
+          CreateQueryParamPiece("adComponentCreativeScanningMetadata",
+                                components_was_empty, component_ads,
+                                extract_creative_scan_metadata));
+    }
+
+    main_fragments.emplace_back(
+        UrlField::kAdSizes,
+        CreateQueryParamPiece("adSizes", creating_new_url, ads, extract_size,
+                              /*escape=*/false));
+
+    if (!component_ads.empty()) {
+      ad_component_fragments.emplace_back(
+          UrlField::kAdComponentSizes,
+          CreateQueryParamPiece("adComponentSizes", components_was_empty,
+                                component_ads, extract_size,
+                                /*escape=*/false));
+    }
+
+    main_fragments.emplace_back(
+        UrlField::kAdBuyer,
+        CreateQueryParamPiece("adBuyer", creating_new_url, ads, extract_buyer));
+    if (!component_ads.empty()) {
+      ad_component_fragments.emplace_back(
+          UrlField::kAdComponentBuyer,
+          CreateQueryParamPiece("adComponentBuyer", components_was_empty,
+                                component_ads, extract_buyer));
+    }
+    main_fragments.emplace_back(
+        UrlField::kBuyerAndSellerReportingIds,
+        CreateQueryParamPiece("adBuyerAndSellerReportingIds", creating_new_url,
+                              ads, extract_buyer_and_seller_reporting_id));
   } else {
     DCHECK(!ContainsNonUrlInfo(ads));
     DCHECK(!ContainsNonUrlInfo(component_ads));
   }
-  GURL full_signals_url =
-      SetQueryParam(trusted_scoring_signals_url, query_params);
+}
 
-  return full_signals_url;
+GURL TrustedSignals::ComposeURL(std::vector<UrlPiece> main_fragments,
+                                std::vector<UrlPiece> aux_fragments) {
+  std::array<std::vector<std::string>, static_cast<int>(UrlField::kNumValues)>
+      all_fragments;
+  size_t total_len = 0;
+  for (auto& fragment_val : main_fragments) {
+    total_len += fragment_val.text.length();
+    all_fragments[static_cast<int>(fragment_val.field)].push_back(
+        std::move(fragment_val.text));
+  }
+
+  for (auto& fragment_val : aux_fragments) {
+    total_len += fragment_val.text.length();
+    all_fragments[static_cast<int>(fragment_val.field)].push_back(
+        std::move(fragment_val.text));
+  }
+
+  std::string out;
+  out.reserve(total_len);
+  for (const auto& fragments_for_field : all_fragments) {
+    for (const std::string& fragment : fragments_for_field) {
+      out += fragment;
+    }
+  }
+  return GURL(out);
 }
 
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
@@ -533,18 +627,15 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
         devtools_pending_remote,
     std::set<std::string> interest_group_names,
     std::set<std::string> bidding_signals_keys,
-    const std::string& hostname,
     const GURL& trusted_bidding_signals_url,
-    std::optional<uint16_t> experiment_group_id,
-    const std::string& trusted_bidding_signals_slot_size_param,
+    std::vector<UrlPiece> main_fragments,
+    std::vector<UrlPiece> key_fragments,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!interest_group_names.empty());
 
-  GURL full_signals_url = TrustedSignals::BuildTrustedBiddingSignalsURL(
-      hostname, trusted_bidding_signals_url, interest_group_names,
-      bidding_signals_keys, experiment_group_id,
-      trusted_bidding_signals_slot_size_param);
+  GURL full_signals_url =
+      ComposeURL(std::move(main_fragments), std::move(key_fragments));
 
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(
@@ -571,14 +662,15 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     const std::string& hostname,
     const GURL& trusted_scoring_signals_url,
     std::optional<uint16_t> experiment_group_id,
+    std::vector<UrlPiece> main_fragments,
+    std::vector<UrlPiece> ad_component_fragments,
     bool send_creative_scanning_metadata,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!ads.empty());
 
-  GURL full_signals_url = BuildTrustedScoringSignalsURL(
-      send_creative_scanning_metadata, hostname, trusted_scoring_signals_url,
-      ads, ad_components, experiment_group_id);
+  GURL full_signals_url =
+      ComposeURL(std::move(main_fragments), std::move(ad_component_fragments));
 
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(

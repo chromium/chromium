@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] properties of pseudo elements in update callback
+  assert_equals: wrapper(target) expected "fixed" but got "absolute"
+[FAIL] properties of pseudo elements outside of transition
+  assert_equals: expected "fixed" but got "absolute"
+Harness: the test ran to completion.
+

@@ -7,7 +7,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@implementation LensOverlayNetworkIssueAlertPresenter {
+@implementation LensOverlayNetworkIssuePresenter {
+  // The view controller on which to present.
   __weak UIViewController* _baseViewController;
 }
 
@@ -22,7 +23,7 @@
 }
 
 - (void)showNoInternetAlert {
-  [self.delegate onNetworkIssueAlertWillShow];
+  [self.delegate lensOverlayNetworkIssuePresenterWillShowAlert:self];
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_TITLE)
                        message:l10n_util::GetNSString(
@@ -34,9 +35,12 @@
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_CLOSE_ACTION)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
-                [weakSelf.delegate onNetworkIssueAlertAcknowledged];
+                [weakSelf.delegate
+                    lensOverlayNetworkIssuePresenterDidAcknowledgeAlert:
+                        weakSelf];
               }];
   [alert addAction:defaultAction];
+
   [_baseViewController presentViewController:alert animated:YES completion:nil];
 }
 

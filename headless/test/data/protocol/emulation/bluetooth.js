@@ -28,7 +28,8 @@
     await pProtocol.Page.navigate({url: 'https://test.com/index.html'});
 
     // Simulate an adapter and a bluetooth device.
-    await bProtocol.BluetoothEmulation.enable({state: 'powered-on'});
+    await bProtocol.BluetoothEmulation.enable(
+        {state: 'powered-on', leSupported: true});
     await bProtocol.BluetoothEmulation.simulatePreconnectedPeripheral({
       address: '09:09:09:09:09:09',
       name: 'Test BLE device',

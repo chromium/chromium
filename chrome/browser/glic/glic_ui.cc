@@ -71,6 +71,8 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
 
+  source->AddBoolean("loggingEnabled",
+                     command_line->HasSwitch(::switches::kGlicHostLogging));
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
 

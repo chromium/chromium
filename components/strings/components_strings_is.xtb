@@ -138,6 +138,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1230244617745022071"><ph name="SOURCE" /> (greint sjálfvirkt)</translation>
 <translation id="1232569758102978740">Ónefnt</translation>
 <translation id="1236081509407217141">Viltu leyfa VR?</translation>
+<translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Heiti tækisins þíns</translation>
 <translation id="124116460088058876">Fleiri tungumál</translation>
 <translation id="1243027604378859286">Höfundur:</translation>
@@ -628,6 +629,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2082238445998314030">Niðurstaða <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Leyfa við hverja heimsókn</translation>
 <translation id="2085876078937250610">Vista…</translation>
+<translation id="2090451897496479509">Hafðu samband við þjónustuveitanda til að fá frekari upplýsingar</translation>
 <translation id="2091887806945687916">Hljóð</translation>
 <translation id="2093982008204312032">Google Chrome er að reyna að slökkva á Windows Hello til að fylla út aðgangsorð.</translation>
 <translation id="2094505752054353250">Misræmi í léni</translation>
@@ -1310,6 +1312,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="33073482541490531">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Aðgangsorðastjórnun mælir með að þessu aðgangsorði verði breytt núna.</translation>
 <translation id="3307649904964670439">Hnappurinn „Sérsníða Chrome“, virkjaðu til að sérsníða útlit vafrans</translation>
 <translation id="3308006649705061278">Skipulagseining (OU)</translation>
+<translation id="3317077846337994567">Greiðsludreifing er ekki í boði eins og er. Reyndu aftur síðar.</translation>
 <translation id="3318016344440038475">Gamanþættir</translation>
 <translation id="3324687287337751929">4 x 6 to.</translation>
 <translation id="3324983252691184275">Fagurrauður</translation>
@@ -1438,6 +1441,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3536227077203206203">Leyft í þetta skipti</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Silkiþrykk (aðskilið)</translation>
+<translation id="3541016556608204104">Nánar um Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Mynd á korti</translation>
 <translation id="3542768452570884558">Opna tengil í nýjum glugga</translation>
 <translation id="3543935938072367282">Gakktu hraðar frá kaupum með sjálfvirkri útfyllingu</translation>
@@ -1802,6 +1806,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="415440494507469262">Bæta flipa við samanburðartöflu</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4165422751765527461">Opnar grein í hjálparmiðstöðinni í nýjum flipa</translation>
+<translation id="4165584779486830267">Nú geturðu notað Affirm eða Zip til að dreifa greiðslum.</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
 <translation id="4169535189173047238">Ekki leyfa</translation>
 <translation id="4171400957073367226">Röng staðfestingarundirskrift</translation>
@@ -2766,6 +2771,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5910140988253729859">Afturkalla sjálfvirka útfyllingu</translation>
 <translation id="5911020115933784199">Viðburðir og dagskrá</translation>
 <translation id="5911110632211230665">Lokuð skrá</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> bætti þessum flipa við</translation>
 <translation id="5915189366813702112">Sveigjanlegur vinnutími</translation>
 <translation id="59174027418879706">Virkt</translation>
 <translation id="5918373444239520146">Græjur og ferðaraftæki</translation>
@@ -4625,6 +4631,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> notast við óstuddar samskiptareglur.</translation>
 <translation id="918454845714257218">Athugaðu kóðann á <ph name="SIDE_OF_CARD" /> og reyndu aftur</translation>
 <translation id="9186203289258525843">Hnappurinn „Stilla Chrome sem sjálfgefinn vafra“, virkjaðu til að stilla Chrome sem sjálfgefinn vafra kerfisins</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> breytti þessum flipa</translation>
 <translation id="9189789270972826888">Smelltu á upplýsingarnar á spjaldinu hér að neðan til að afrita og líma þær ef spjaldið var ekki útfyllt. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Umfjöllunarefnum sem eru eldri en 4 vikna verður sjálfkrafa eytt</translation>
 <translation id="9191834167571392248">Gat neðst til vinstri</translation>

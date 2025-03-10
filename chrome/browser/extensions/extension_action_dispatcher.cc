@@ -140,7 +140,7 @@ void ExtensionActionDispatcher::DispatchEventToExtension(
 
   auto event = std::make_unique<Event>(histogram_value, event_name,
                                        std::move(event_args), context);
-  event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
   EventRouter::Get(context)->DispatchEventToExtension(extension_id,
                                                       std::move(event));
 }

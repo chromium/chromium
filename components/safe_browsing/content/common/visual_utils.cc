@@ -18,9 +18,9 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_utils.h"
 
 namespace safe_browsing::visual_utils {
@@ -167,7 +167,7 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
       int b_mean = b_total / sample_count;
 
       *target->getAddr32(block_x, block_y) =
-          SkPackARGB32(255, r_mean, g_mean, b_mean);
+          SkPMColorSetARGB(255, r_mean, g_mean, b_mean);
     }
   }
 

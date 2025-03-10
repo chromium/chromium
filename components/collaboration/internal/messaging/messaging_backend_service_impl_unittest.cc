@@ -411,6 +411,15 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogWithNoEvents) {
   EXPECT_EQ(0u, activity_log.size());
 }
 
+TEST_F(MessagingBackendServiceImplTest, TestTabActivityLogWithNoEvents) {
+  CreateAndInitializeService();
+  ActivityLogQueryParams params;
+  params.collaboration_id = data_sharing::GroupId("my group id");
+  params.local_tab_id = tab_groups::LocalTabID();
+  std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
+  EXPECT_EQ(0u, activity_log.size());
+}
+
 TEST_F(MessagingBackendServiceImplTest, TestActivityLogAcceptsMaxLength) {
   CreateAndInitializeService();
 
@@ -526,6 +535,80 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
   // We should also fill in the MessageAttribution.
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[1].activity_metadata.affected_user->email);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestTabActivityLogCollaborationEvents) {
+  CreateAndInitializeService();
+
+  // Create a saved group with a 2 tabs. Only 1 message is stored per tab.
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
+
+  base::Time now = base::Time::Now();
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_ADDED, DirtyType::kNone,
+      now + base::Seconds(4));
+  message1.set_affected_user_gaia_id("gaia_1");
+  message1.mutable_tab_data()->set_sync_tab_group_id(
+      tab_group.saved_guid().AsLowercaseString());
+  collaboration_pb::Message message2 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kNone, now + base::Seconds(3));
+  message2.set_triggering_user_gaia_id("gaia_1");
+  message2.mutable_tab_data()->set_sync_tab_id(
+      tab1_sync_id.AsLowercaseString());
+  message2.mutable_tab_data()->set_sync_tab_group_id(
+      tab_group.saved_guid().AsLowercaseString());
+  collaboration_pb::Message message3 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_UPDATED,
+      DirtyType::kNone, now + base::Seconds(2));
+  message3.mutable_tab_data()->set_sync_tab_id(
+      tab2_sync_id.AsLowercaseString());
+  message3.mutable_tab_data()->set_sync_tab_group_id(
+      tab_group.saved_guid().AsLowercaseString());
+
+  AddMessage(message1);
+  AddMessage(message2);
+  AddMessage(message3);
+
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_1"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_1"), "gaia1@gmail.com",
+                                     "Display Name", "Given Name 1")));
+
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  ActivityLogQueryParams params;
+  params.collaboration_id = collaboration_group_id;
+  params.result_length = 1;
+  params.local_tab_id = tab_group.GetTab(tab1_sync_id)->local_tab_id().value();
+
+  std::vector<ActivityLogItem> tab1_activity_log =
+      service_->GetActivityLog(params);
+  ASSERT_EQ(1u, tab1_activity_log.size());
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED,
+            tab1_activity_log[0].collaboration_event);
+  EXPECT_EQ(u"Given Name 1 added this tab", tab1_activity_log[0].title_text);
+  EXPECT_EQ(u"example.com", tab1_activity_log[0].description_text);
+
+  params.local_tab_id = tab_group.GetTab(tab2_sync_id)->local_tab_id().value();
+  std::vector<ActivityLogItem> tab2_activity_log =
+      service_->GetActivityLog(params);
+  ASSERT_EQ(1u, tab2_activity_log.size());
+  EXPECT_EQ(CollaborationEvent::TAB_UPDATED,
+            tab2_activity_log[0].collaboration_event);
+  EXPECT_EQ(u"Deleted account changed this tab",
+            tab2_activity_log[0].title_text);
+  EXPECT_EQ(u"example2.com", tab2_activity_log[0].description_text);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEventsFromRemote) {

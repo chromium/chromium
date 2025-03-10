@@ -1,0 +1,21 @@
+Name: mutter
+URL: https://gitlab.gnome.org/GNOME/mutter
+Version: 48.alpha
+Revision: 30b7162b54de7681fb585d095de8a5ffaf771d38
+License: GPL-2.0
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+A Wayland display server and X11 window manager and compositor library.
+
+This is only used in tests.
+
+Local Modifications:
+- Implement chromium ui-controls protocol in forked chromium branch.
+
+When updating to a new version, update the Revision above with the new commit hash,
+and perform the following steps:
+1. Run on_update.sh
+2. Check in the generated files along with the changes for the update.

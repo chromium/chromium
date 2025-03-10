@@ -109,7 +109,7 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
 
   // Invoked when one of the streams (readable or writable) closes.
   // `exception` is non-empty iff the stream closed with an error.
-  void OnStreamClosed(v8::Local<v8::Value> exception);
+  void OnStreamClosed(v8::Local<v8::Value> exception, int net_error);
   void OnBothStreamsClosed();
 
   Member<UDPSocketMojoRemote> udp_socket_;

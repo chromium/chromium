@@ -20,6 +20,7 @@
 <translation id="1054745118061919935">Ако продолжите, се согласувате со <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Никогаш не е зачувано</translation>
 <translation id="1062138828266376352">Вашиот PIN не е променет. Проверете ја интернет-врската и обидете се повторно</translation>
+<translation id="1072476005125066234">Рецензии според вашите интереси</translation>
 <translation id="1074827084851510304">Ќе избришете {password_count} лозинки, како и списокот со сајтови и апликации за коишто сте избрале никогаш да не се зачувуваат податоците за најавување. Сметките што сте ги создале за сајтовите и апликациите нема да се избришат.</translation>
 <translation id="1076421457278169141">Кодот е скениран</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} картичка}one{{count} картичка}other{{count} картички}}</translation>
@@ -264,6 +265,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> сметки ја користат истата лозинка</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2060114494785549741">Избриши по 1 месец</translation>
+<translation id="2060638295449304809">Адресава е зачувана само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Избирач на типови единици</translation>
 <translation id="2067852168641682340">Секогаш зачувувај на оваа сметка</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 картичка}one{{count} картичка}other{{count} картички}}</translation>
@@ -888,6 +890,7 @@
 <translation id="4824480232751123840">Волумен</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и уште 1}one{{domain} и уште {count}}other{{domain} и уште {count}}}</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
+<translation id="4828431027673677473">Производи според вашите интереси</translation>
 <translation id="4833786495304741580">Автоматски испраќа статистика за користењето и извештаи за падовите во Google.</translation>
 <translation id="483689884442613745">Зачувајте…</translation>
 <translation id="4840495572919996524">Обележувачите, историјата, лозинките и другo веќе нема да се синхронизираат со сметката на Google.</translation>
@@ -1724,6 +1727,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="828291969289324795">{count,plural, =1{Додајте картичка во нова група}one{Додајте картички во нова група}other{Додајте картички во нова група}}</translation>
 <translation id="8283172974887967105">Постави…</translation>
 <translation id="8289930144142009940">Известувањата за <ph name="FEATURE_NAME" /> се исклучени</translation>
+<translation id="8290077367744012649">Следење на цените од вашите картички</translation>
 <translation id="8299417921174340354">За да ги користите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="8307481894409578819">Датотекава не можеше да се прикачи</translation>
 <translation id="8319076807703933069">Ново пребарување</translation>

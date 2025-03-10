@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -48,6 +49,8 @@ NSString* const kRecentActivitySectionIdentifier =
   [super viewDidLoad];
   self.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE);
+
+  self.view.accessibilityIdentifier = kTabGroupRecentActivityIdentifier;
 
   // Configure a close button.
   UIImage* buttonImage = SymbolWithPalette(
@@ -119,13 +122,17 @@ NSString* const kRecentActivitySectionIdentifier =
   cell.descriptionLabel.text = itemIdentifier.actionDescription;
   cell.faviconImageView.image = itemIdentifier.favicon;
 
-  UIView* view = [itemIdentifier.avatarPrimitive view];
-  [cell.avatarView addSubview:view];
-  [NSLayoutConstraint activateConstraints:@[
-    [view.centerXAnchor constraintEqualToAnchor:cell.avatarView.centerXAnchor],
-    [view.centerYAnchor constraintEqualToAnchor:cell.avatarView.centerYAnchor],
-  ]];
-  [itemIdentifier.avatarPrimitive resolve];
+  if (itemIdentifier.avatarPrimitive) {
+    UIView* view = [itemIdentifier.avatarPrimitive view];
+    [cell.avatarView addSubview:view];
+    [NSLayoutConstraint activateConstraints:@[
+      [view.centerXAnchor
+          constraintEqualToAnchor:cell.avatarView.centerXAnchor],
+      [view.centerYAnchor
+          constraintEqualToAnchor:cell.avatarView.centerYAnchor],
+    ]];
+    [itemIdentifier.avatarPrimitive resolve];
+  }
   return cell;
 }
 

@@ -455,6 +455,20 @@ void ScreenAIService::ExtractMainNode(const ui::AXTreeUpdate& snapshot,
   }
 }
 
+void ScreenAIService::IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
+                                       IdentifyMainNodeCallback callback) {
+  ui::AXTree tree;
+  std::optional<std::vector<int32_t>> content_node_ids;
+  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+
+  if (success) {
+    ui::AXNodeID main_node_id = ComputeMainNode(&tree, *content_node_ids);
+    std::move(callback).Run(tree.GetAXTreeID(), main_node_id);
+  } else {
+    std::move(callback).Run(ui::AXTreeIDUnknown(), ui::kInvalidAXNodeID);
+  }
+}
+
 bool ScreenAIService::ExtractMainContentInternal(
     const ui::AXTreeUpdate& snapshot,
     ui::AXTree& tree,

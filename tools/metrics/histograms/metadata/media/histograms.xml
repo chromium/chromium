@@ -817,6 +817,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.VoiceProcessingEffects"
+    enum="AudioEffectType" expires_after="2025-12-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Supported audio effect types detected for audio input devices. Emitted each
+    time a client requests the preferred audio parameters for a specified device
+    but also each time a client opens an audio input stream where an AEC effect
+    is requested by the input parameters. Only supported on Windows and when the
+    EnforceSystemEchoCancellation flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
     units="errorcode" expires_after="2025-08-31">
   <owner>peah@chromium.org</owner>

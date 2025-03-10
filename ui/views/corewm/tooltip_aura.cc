@@ -30,6 +30,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/tooltip_observer.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 // Max visual tooltip width. If a tooltip is greater than this width, it will
@@ -42,6 +46,20 @@ bool CanUseTranslucentTooltipWidget() {
   return false;
 #else
   return true;
+#endif
+}
+
+bool ShouldIgnoreScreenBounds() {
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms, such as Wayland, disallow client applications to manipulate
+  // global screen coordinates, requiring popups to be positioned relative to
+  // their parent windows and partially handled at display server side. See
+  // comment in ozone_platform_wayland.cc.
+  return !ui::OzonePlatform::GetInstance()
+              ->GetPlatformProperties()
+              .supports_global_screen_coordinates;
+#else
+  return false;
 #endif
 }
 
@@ -141,6 +159,12 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   // TODO(msisov): handle RTL.
   anchor->anchor_rect =
       gfx::Rect(anchor_point, {kCursorOffsetX, kCursorOffsetY});
+
+  // In platforms such as Wayland, screen bounds constraints are handled by the
+  // windowing system instead, using anchor parameters set above.
+  if (ShouldIgnoreScreenBounds()) {
+    return tooltip_rect;
+  }
 
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(

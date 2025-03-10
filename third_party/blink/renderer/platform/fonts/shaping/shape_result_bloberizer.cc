@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -637,6 +638,62 @@ float ShapeResultBloberizer::FillFastHorizontalGlyphs(const ShapeResult* result,
   return result->ForEachGlyph(initial_advance,
                               &AddFastHorizontalGlyphToBloberizer,
                               static_cast<void*>(this));
+}
+
+void DrawTextBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,
+                   cc::PaintCanvas& canvas,
+                   const gfx::PointF& point,
+                   const cc::PaintFlags& flags,
+                   cc::NodeId node_id) {
+  for (const auto& blob_info : blobs) {
+    DCHECK(blob_info.blob);
+    cc::PaintCanvasAutoRestore auto_restore(&canvas, false);
+    switch (blob_info.rotation) {
+      case CanvasRotationInVertical::kRegular:
+        break;
+      case CanvasRotationInVertical::kRotateCanvasUpright: {
+        canvas.save();
+
+        SkMatrix m;
+        m.setSinCos(-1, 0, point.x(), point.y());
+        canvas.concat(SkM44(m));
+        break;
+      }
+      case CanvasRotationInVertical::kRotateCanvasUprightOblique: {
+        canvas.save();
+
+        SkMatrix m;
+        m.setSinCos(-1, 0, point.x(), point.y());
+        // TODO(yosin): We should use angle specified in CSS instead of
+        // constant value -15deg.
+        // Note: We draw glyph in right-top corner upper.
+        // See CSS "transform: skew(0, -15deg)"
+        SkMatrix skew_y;
+        constexpr SkScalar kSkewY = -0.2679491924311227;  // tan(-15deg)
+        skew_y.setSkew(0, kSkewY, point.x(), point.y());
+        m.preConcat(skew_y);
+        canvas.concat(SkM44(m));
+        break;
+      }
+      case CanvasRotationInVertical::kOblique: {
+        // TODO(yosin): We should use angle specified in CSS instead of
+        // constant value 15deg.
+        // Note: We draw glyph in right-top corner upper.
+        // See CSS "transform: skew(0, -15deg)"
+        canvas.save();
+        SkMatrix skew_x;
+        constexpr SkScalar kSkewX = 0.2679491924311227;  // tan(15deg)
+        skew_x.setSkew(kSkewX, 0, point.x(), point.y());
+        canvas.concat(SkM44(skew_x));
+        break;
+      }
+    }
+    if (node_id != cc::kInvalidNodeId) {
+      canvas.drawTextBlob(blob_info.blob, point.x(), point.y(), node_id, flags);
+    } else {
+      canvas.drawTextBlob(blob_info.blob, point.x(), point.y(), flags);
+    }
+  }
 }
 
 }  // namespace blink

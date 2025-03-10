@@ -10,7 +10,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /** Utility class for extracting metadata from a list of tabs that form a tab group. */
@@ -33,13 +33,15 @@ public class TabGroupMetadataExtractor {
         // 1. Collect IDs and URLs for each tab in the group. Check if the selected tab is in the
         // tab group, otherwise default select the first tab in the group after re-parenting to
         // destination window.
-        ArrayList<Integer> tabIds = new ArrayList<>();
-        ArrayList<String> tabUrls = new ArrayList<>();
+        LinkedHashMap<Integer, String> tabIdsToUrls = new LinkedHashMap();
         boolean selectedTabIsInGroup = false;
-        for (Tab tab : groupedTabs) {
+        // Tabs are stored in reverse to ensure the correct opening order. Because tabs are inserted
+        // one-by-one at the same start index in the target window, storing them in their original
+        // order would reverse their final order in destination window.
+        for (int i = groupedTabs.size() - 1; i >= 0; i--) {
+            Tab tab = groupedTabs.get(i);
             if (tab.getId() == selectedTabId) selectedTabIsInGroup = true;
-            tabIds.add(tab.getId());
-            tabUrls.add(tab.getUrl().getSpec());
+            tabIdsToUrls.put(tab.getId(), tab.getUrl().getSpec());
         }
         if (!selectedTabIsInGroup) selectedTabId = groupedTabs.get(0).getId();
 
@@ -61,8 +63,7 @@ public class TabGroupMetadataExtractor {
                         selectedTabId,
                         sourceWindowIndex,
                         tabGroupId,
-                        tabIds,
-                        tabUrls,
+                        tabIdsToUrls,
                         tabGroupColor,
                         tabGroupTitle,
                         tabGroupCollapsed,

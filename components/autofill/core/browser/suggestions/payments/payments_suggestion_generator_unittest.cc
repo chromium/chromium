@@ -1361,9 +1361,12 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest, MaybeUpdateSuggestionsWithBnpl) {
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
+  uint64_t extracted_amount_in_micros = 50'000'000;
+
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers());
+                                     payments_data().GetBnplIssuers(),
+                                     extracted_amount_in_micros);
 
   // `updated_suggesions` should contains 7 suggestions which are 4 credit
   // card suggestions, 1 BNPL suggestion, 1 separator, and 1 manage card
@@ -1384,6 +1387,10 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest, MaybeUpdateSuggestionsWithBnpl) {
   }
 
   // Checks BNPL suggestion is inserted.
+  EXPECT_EQ(updated_suggestions[current_suggestion_index]
+                .GetPayload<Suggestion::PaymentsPayload>()
+                .extracted_amount_in_micros,
+            extracted_amount_in_micros);
   EXPECT_THAT(
       updated_suggestions[current_suggestion_index++],
       EqualsSuggestion(
@@ -1522,7 +1529,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
 
   EXPECT_FALSE(
-      MaybeUpdateSuggestionsWithBnpl({}, payments_data().GetBnplIssuers())
+      MaybeUpdateSuggestionsWithBnpl({}, payments_data().GetBnplIssuers(),
+                                     /*extracted_amount_in_micros=*/50'000'000)
           .is_bnpl_suggestion_added);
 }
 
@@ -1544,7 +1552,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*should_show_cards_from_account=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers());
+                                     payments_data().GetBnplIssuers(),
+                                     /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_THAT(update_suggestions_result.suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
@@ -1553,7 +1562,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                           EqualsSuggestion(SuggestionType::kManageCreditCard)));
   EXPECT_FALSE(
       MaybeUpdateSuggestionsWithBnpl(update_suggestions_result.suggestions,
-                                     payments_data().GetBnplIssuers())
+                                     payments_data().GetBnplIssuers(),
+                                     /*extracted_amount_in_micros=*/50'000'000)
           .is_bnpl_suggestion_added);
 }
 
@@ -1573,7 +1583,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*should_show_cards_from_account=*/false, summary);
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateSuggestionsWithBnpl(suggestions,
-                                     payments_data().GetBnplIssuers());
+                                     payments_data().GetBnplIssuers(),
+                                     /*extracted_amount_in_micros=*/50'000'000);
 
   ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
   Suggestion bnpl_suggestion = *std::ranges::find_if(

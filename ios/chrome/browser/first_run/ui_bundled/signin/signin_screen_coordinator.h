@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol FirstRunScreenDelegate;
 namespace signin_metrics {
@@ -14,7 +15,8 @@ enum class PromoAction : int;
 }  // namespace signin_metrics
 
 // Coordinator to present sign-in screen with FRE consent (optional).
-@interface SigninScreenCoordinator : InterruptibleChromeCoordinator
+@interface SigninScreenCoordinator
+    : ChromeCoordinator <InterruptibleChromeCoordinator>
 
 // Initiates a SigninScreenCoordinator with `navigationController`,
 // `browser` and `delegate`.

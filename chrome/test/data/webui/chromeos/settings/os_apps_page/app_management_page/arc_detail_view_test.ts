@@ -346,7 +346,6 @@ suite('<app-management-arc-detail-view>', () => {
 
           loadTimeData.overrideValues({
             'appManagementArcReadOnlyPermissions': true,
-            'privacyHubAppPermissionsV2Enabled': true,
             'privacyHubLocationAccessControlEnabled': true,
           });
 
@@ -376,7 +375,6 @@ suite('<app-management-arc-detail-view>', () => {
           arcPermissionView.remove();
           loadTimeData.overrideValues({
             'appManagementArcReadOnlyPermissions': false,
-            'privacyHubAppPermissionsV2Enabled': false,
             'privacyHubLocationAccessControlEnabled': false,
           });
         });

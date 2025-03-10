@@ -3254,6 +3254,9 @@ if (enable_java_templates) {
       if (defined(invoker.jar_excluded_patterns)) {
         args += [ "--jar-info-exclude-globs=${invoker.jar_excluded_patterns}" ]
       }
+      if (defined(invoker.jar_included_patterns)) {
+        args += [ "--jar-info-include-globs=${invoker.jar_included_patterns}" ]
+      }
 
       if (invoker.enable_errorprone) {
         # Our custom plugin pulls in the main errorprone dep transitively.

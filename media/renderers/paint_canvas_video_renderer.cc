@@ -1491,7 +1491,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
       yuv_cache_.rgb_shared_image_cache->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
           SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
-  yuv_cache_.raster_context_provider = raster_context_provider;
   CHECK(rgb_shared_image);
 
   // Wait on the `rgb_sync_token` passed from the cache that may have been
@@ -1546,8 +1545,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     int level,
     bool premultiply_alpha,
     bool flip_y) {
-  if (!raster_context_provider)
+  if (!raster_context_provider) {
     return false;
+  }
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40751207): These formats don't work with the passthrough
   // command decoder on Android for some reason.
@@ -1599,7 +1599,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
       yuv_cache_.rgb_shared_image_cache->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
           SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
-  yuv_cache_.raster_context_provider = raster_context_provider;
   CHECK(rgb_shared_image);
 
   // On the source Raster context, do the YUV->RGB conversion.
@@ -1920,17 +1919,11 @@ PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
 }
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
-  if (!rgb_shared_image_cache && !yuv_shared_image_cache) {
-    return;
-  }
-  DCHECK(raster_context_provider);
   rgb_shared_image_cache.reset();
   yuv_shared_image_cache.reset();
-
-  // Kick off the GL work as well as the SharedImageInterface work, to ensure
-  // the shared image memory is released in a timely fashion.
-  raster_context_provider->SharedImageInterface()->Flush();
-  raster_context_provider.reset();
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request is flushed. Thus, clients don't need to
+  // call SharedImageInterface::Flush explicitly.
 }
 
 gfx::Size PaintCanvasVideoRenderer::LastImageDimensionsForTesting() {

@@ -344,9 +344,6 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
 
  private:
   // Private accessors.
-  const std::vector<std::wstring>& ia2_attributes() const {
-    return win_attributes_->ia2_attributes;
-  }
   std::wstring name() const { return win_attributes_->name; }
   std::wstring description() const { return win_attributes_->description; }
   std::wstring value() const { return win_attributes_->value; }
@@ -413,9 +410,6 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
     // IAccessible2 role and state.
     int32_t ia2_role;
     int32_t ia2_state;
-
-    // IAccessible2 attributes.
-    std::vector<std::wstring> ia2_attributes;
 
     // Maps each style span to its start offset in hypertext.
     TextAttributeMap offset_to_text_attributes;

@@ -20,8 +20,11 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -103,27 +106,26 @@ class PageNodeIdleWaiter : public PageNodeObserver,
 // Waits for resource coordinator to register a LifecycleUnitState::FROZEN state
 // change.
 class TabLifecycleUnitFreezeWaiter
-    : public resource_coordinator::TabLifecycleObserver {
+    : public resource_coordinator::LifecycleUnitObserver {
  public:
   TabLifecycleUnitFreezeWaiter() {
-    resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
+    resource_coordinator::GetTabLifecycleUnitSource()->AddLifecycleObserver(
         this);
   }
   ~TabLifecycleUnitFreezeWaiter() override {
-    resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
+    resource_coordinator::GetTabLifecycleUnitSource()->RemoveLifecycleObserver(
         this);
   }
 
   void Wait() { run_loop_.Run(); }
 
  private:
-  // resource_coordinator::TabLifecycleObserver:
-  void OnTabLifecycleStateChange(
-      content::WebContents* contents,
-      ::mojom::LifecycleUnitState previous_state,
-      ::mojom::LifecycleUnitState new_state,
-      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
-    if (new_state == ::mojom::LifecycleUnitState::FROZEN) {
+  // resource_coordinator::LifecycleUnitObserver:
+  void OnLifecycleUnitStateChanged(
+      resource_coordinator::LifecycleUnit* lifecycle_unit,
+      ::mojom::LifecycleUnitState last_state,
+      ::mojom::LifecycleUnitStateChangeReason reason) override {
+    if (lifecycle_unit->GetState() == ::mojom::LifecycleUnitState::FROZEN) {
       run_loop_.Quit();
     }
   }

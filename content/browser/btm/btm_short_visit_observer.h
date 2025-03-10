@@ -50,6 +50,8 @@ class CONTENT_EXPORT BtmShortVisitObserver
   const raw_ref<const base::Clock> clock_;
   // The eTLD+1 of the page visited before the currently-committed page.
   std::optional<std::string> prev_site_;
+  // The UKM source id of the page visited before the current page.
+  ukm::SourceId prev_source_id_ = ukm::kInvalidSourceId;
   // The time the current page committed.
   base::Time last_committed_at_;
   // The source ID of the current page -- used in DidFinishNavigation() to emit

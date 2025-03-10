@@ -698,6 +698,7 @@ void TracingScenario::OnFinalizingDone(
 void TracingScenario::DisableNestedScenarios() {
   if (active_scenario_) {
     CHECK(current_state_ == State::kRecording ||
+          current_state_ == State::kStarting ||
           current_state_ == State::kStopping)
         << static_cast<int>(current_state_);
     on_nested_stopped_.Cancel();
