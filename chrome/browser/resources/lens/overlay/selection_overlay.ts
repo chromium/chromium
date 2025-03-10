@@ -406,8 +406,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(
         document, 'hide-selected-region-context-menu', () => {
           this.setShowSelectedRegionContextMenu(false);
-          this.textSelectionStartIndex = -1;
-          this.textSelectionEndIndex = -1;
           this.detectedTextStartIndex = -1;
           this.detectedTextEndIndex = -1;
         });

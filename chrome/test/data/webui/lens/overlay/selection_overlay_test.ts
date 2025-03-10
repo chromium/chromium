@@ -557,6 +557,79 @@ suite('SelectionOverlay', function() {
               testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
         });
 
+    test('CopyTextWorksAfterSelectText', async () => {
+      callbackRouterRemote.setPostRegionSelection({
+        box: normalizedBox({x: 65, y: 25, width: 30, height: 30}),
+        rotation: 0.0,
+        coordinateType: 1,
+      });
+      await addWords();
+
+      assertEquals(
+          0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+      assertEquals(
+          0,
+          testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
+
+      testBrowserProxy.handler.reset();
+      selectionOverlayElement.handleSelectTextForTesting();
+
+      const textQuery = await testBrowserProxy.handler.whenCalled(
+          'issueTextSelectionRequest');
+      assertDeepEquals('there test', textQuery);
+      assertEquals(
+          0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+
+      selectionOverlayElement.handleCopyForTesting();
+      const copyQuery = await testBrowserProxy.handler.whenCalled('copyText');
+      // Copied text should include newlines.
+      assertDeepEquals('there\r\ntest', copyQuery);
+
+      // Verify context menu hides when an option is selected.
+      assertFalse(
+          selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+    });
+    test('TranslateTextWorksAfterSelectText', async () => {
+      callbackRouterRemote.setPostRegionSelection({
+        box: normalizedBox({x: 65, y: 25, width: 30, height: 30}),
+        rotation: 0.0,
+        coordinateType: 1,
+      });
+      await addWords();
+
+      assertEquals(
+          0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+      assertEquals(
+          0,
+          testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
+
+      testBrowserProxy.handler.reset();
+      selectionOverlayElement.handleSelectTextForTesting();
+
+      const textQuery = await testBrowserProxy.handler.whenCalled(
+          'issueTextSelectionRequest');
+      assertDeepEquals('there test', textQuery);
+      assertEquals(
+          0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+
+      selectionOverlayElement.handleTranslateForTesting();
+      const translateQuery = await testBrowserProxy.handler.whenCalled(
+          'issueTranslateSelectionRequest');
+      assertDeepEquals('there test', translateQuery);
+
+      // Verify context menu hides when an option is selected.
+      assertFalse(
+          selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+    });
+
     test('verify that select text in detected text options works', async () => {
       await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
       selectionOverlayElement.handleSelectTextForTesting();
