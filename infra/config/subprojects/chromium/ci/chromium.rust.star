@@ -57,7 +57,7 @@ ci.builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "base_config",
             apply_configs = ["android"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
@@ -106,7 +106,7 @@ ci.builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "base_config",
             apply_configs = ["android"],
             build_config = builder_config.build_config.DEBUG,
             target_arch = builder_config.target_arch.ARM,
@@ -154,7 +154,7 @@ ci.builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "android",
+            config = "base_config",
             apply_configs = ["android"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
