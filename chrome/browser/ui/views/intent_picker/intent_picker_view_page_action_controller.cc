@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/intent_picker_view_page_action_controller.h"
+#include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 
 #include "base/check_op.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
@@ -44,8 +40,4 @@ void IntentPickerViewPageActionController::HideIcon() {
       tab_interface_->GetTabFeatures()->page_action_controller();
   CHECK(page_action_controller);
   page_action_controller->Hide(kActionShowIntentPicker);
-  if (IntentPickerBubbleView* bubble_controller =
-          IntentPickerBubbleView::intent_picker_bubble()) {
-    bubble_controller->CloseCurrentBubble();
-  }
 }

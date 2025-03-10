@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-
-class Browser;
-
-// TODO(crbug.com/376283840): Move this file, along with other intent picker
-// and tab helper files, to a dedicated directory in a separate CL.
 
 /**
  * IntentPickerViewPageActionController manages the page action associated with
@@ -45,4 +40,4 @@ class IntentPickerViewPageActionController {
   const raw_ref<tabs::TabInterface> tab_interface_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
