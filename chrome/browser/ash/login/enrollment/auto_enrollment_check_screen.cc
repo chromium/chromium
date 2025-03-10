@@ -102,15 +102,12 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   const bool has_controller_failed =
       auto_enrollment_controller_->state().has_value() &&
       !auto_enrollment_controller_->state().value().has_value();
-  if (has_controller_failed) {
-    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
-    // preserved in the logs.
-    LOG(WARNING) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
-                 << " check due to failure.";
-    auto_enrollment_controller_->Retry();
-  } else {
-    auto_enrollment_controller_->Start();
-  }
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+  // preserved in the logs.
+  LOG_IF(WARNING, has_controller_failed)
+      << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
+      << " check due to failure.";
+  auto_enrollment_controller_->Start();
 }
 
 void AutoEnrollmentCheckScreen::HideImpl() {
@@ -175,7 +172,7 @@ void AutoEnrollmentCheckScreen::UpdateState(
   // Retry if applicable. This is last so eventual callbacks find consistent
   // state.
   if (retry) {
-    auto_enrollment_controller_->Retry();
+    auto_enrollment_controller_->Start();
   }
 }
 
@@ -262,7 +259,7 @@ bool AutoEnrollmentCheckScreen::IsCompleted() const {
 }
 
 void AutoEnrollmentCheckScreen::OnConnectRequested() {
-  auto_enrollment_controller_->Retry();
+  auto_enrollment_controller_->Start();
 }
 
 }  // namespace ash

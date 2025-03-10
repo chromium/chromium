@@ -162,11 +162,6 @@ void AutoEnrollmentController::Start() {
   return;
 }
 
-// TODO(crbug.com/383047722) Remove `Retry` and call `Start` directly.
-void AutoEnrollmentController::Retry() {
-    Start();
-}
-
 base::CallbackListSubscription
 AutoEnrollmentController::RegisterProgressCallback(
     const ProgressCallbackList::CallbackType& callback) {
@@ -180,7 +175,7 @@ void AutoEnrollmentController::PortalStateChanged(
   // or failed, we will restart the check process. If the check is in progress,
   // the retry call will be ignored.
   if (portal_state == ash::NetworkState::PortalState::kOnline) {
-    Retry();
+    Start();
   }
 }
 
