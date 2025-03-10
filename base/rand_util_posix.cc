@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -72,38 +73,10 @@ class URandomFd {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_ANDROID)) &&                        \
     !BUILDFLAG(IS_NACL)
-// TODO(pasko): Unify reading kernel version numbers in:
-// mojo/core/channel_linux.cc
-// chrome/browser/android/seccomp_support_detector.cc
-void KernelVersionNumbers(int32_t* major_version,
-                          int32_t* minor_version,
-                          int32_t* bugfix_version) {
-  struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
-  }
-  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
-                        bugfix_version);
-  if (num_read < 1) {
-    *major_version = 0;
-  }
-  if (num_read < 2) {
-    *minor_version = 0;
-  }
-  if (num_read < 3) {
-    *bugfix_version = 0;
-  }
-}
 
 bool KernelSupportsGetRandom() {
-  int32_t major = 0;
-  int32_t minor = 0;
-  int32_t bugfix = 0;
-  KernelVersionNumbers(&major, &minor, &bugfix);
-  if (major > 3 || (major == 3 && minor >= 17)) {
-    return true;
-  }
-  return false;
+  return base::SysInfo::KernelVersionNumber::Current() >=
+         base::SysInfo::KernelVersionNumber(3, 17);
 }
 
 bool GetRandomSyscall(void* output, size_t output_length) {
