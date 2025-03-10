@@ -57,7 +57,12 @@ LensPreselectionBubble::LensPreselectionBubble(
     base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::NONE,
+// TODO(crbug.com/399737950): Remove this once the bug is fixed at head.
+#if BUILDFLAG(IS_WIN)
+                               views::BubbleBorder::DIALOG_SHADOW),
+#else
                                views::BubbleBorder::NO_SHADOW),
+#endif
       lens_overlay_controller_(lens_overlay_controller),
       offline_(offline),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
