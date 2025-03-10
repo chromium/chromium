@@ -1,0 +1,65 @@
+# This file is part of ICU4X. For terms of use, please see the file
+# called LICENSE at the top level of the ICU4X source tree
+# (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+
+[package]
+name = "icu_segmenter"
+description = "Unicode line breaking and text segmentation algorithms for text boundaries analysis"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+include.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+displaydoc = { workspace = true }
+icu_collections = { workspace = true }
+icu_locale_core = { workspace = true }
+icu_provider = { workspace = true }
+utf8_iter = { workspace = true }
+zerovec = { workspace = true, features = ["alloc", "yoke"] }
+
+databake = { workspace = true, optional = true, features = ["derive"] }
+serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+potential_utf = { workspace = true, features = ["alloc", "zerovec"] }
+
+core_maths = { workspace = true, optional = true }
+
+icu_segmenter_data = { workspace = true, optional = true }
+
+[dev-dependencies]
+icu = { path = "../../components/icu", default-features = false }
+icu_properties = { path = "../properties", features = ["compiled_data"] }
+itertools = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+criterion = { workspace = true }
+
+[features]
+default = ["compiled_data", "auto"]
+serde = ["dep:serde", "potential_utf/serde", "zerovec/serde", "icu_collections/serde", "icu_provider/serde"]
+datagen = ["serde", "dep:databake", "potential_utf/databake", "zerovec/databake", "icu_collections/databake", "icu_provider/export"]
+lstm = ["dep:core_maths"]
+auto = ["lstm"] # Enabled try_new_auto_unstable constructors
+compiled_data = ["dep:icu_segmenter_data"]
+
+[lib]
+bench = false  # This option is required for Benchmark CI
+
+[[bench]]
+name = "bench"
+harness = false
+
+[[test]]
+name = "complex_word"
+required-features = ["auto"]

@@ -12,29 +12,29 @@ cargo_crate("lib") {
   crate_name = "icu_plurals"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/operands.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/options.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/provider.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/raw_operands.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/reference/ast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/reference/lexer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/reference/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/reference/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/reference/resolver.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/reference/serializer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/runtime/ast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/runtime/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta1/src/rules/runtime/resolver.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/operands.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/reference/ast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/reference/lexer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/reference/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/reference/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/reference/resolver.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/reference/serializer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/runtime/ast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/runtime/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/provider/rules/runtime/resolver.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_plurals-2.0.0-beta2/src/raw_operands.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_version = "2.0.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_plurals"
   cargo_pkg_description = "Unicode Plural Rules categorizer for numeric input"
@@ -47,7 +47,7 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
-    "//third_party/rust/fixed_decimal/v0_6:lib",
+    "//third_party/rust/fixed_decimal/v0_7:lib",
     "//third_party/rust/icu_plurals_data/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/zerovec/v0_11:lib",

@@ -1278,16 +1278,34 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.9.0"
 notes = "Unsafe code pertaining to defining FFI interfaces"
 
+[[audits.diplomat]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+delta = "0.9.0 -> 0.10.0"
+notes = "Similar unsafe code pertaining to FFI interfaces"
+
 [[audits.diplomat-runtime]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.9.0"
 notes = "Unsafe code pertaining to defining FFI-compatible types, with safety comments."
 
+[[audits.diplomat-runtime]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+delta = "0.9.0 -> 0.10.0"
+notes = "Very minor diff"
+
 [[audits.diplomat_core]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.9.0"
+notes = "No unsafe code"
+
+[[audits.diplomat_core]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+delta = "0.9.0 -> 0.10.0"
 notes = "No unsafe code"
 
 [[audits.displaydoc]]
@@ -1422,6 +1440,12 @@ delta = "1.5.3 -> 1.5.5"
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.6.0"
+notes = "Contains no unsafe"
+
+[[audits.fixed_decimal]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+delta = "0.6.0 -> 0.7.0"
 notes = "Contains no unsafe"
 
 [[audits.flate2]]
@@ -1706,10 +1730,22 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "2.0.0-beta1"
 notes = "Contains no unsafe"
 
+[[audits.icu_calendar]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "No unsafe introduced"
+
 [[audits.icu_calendar_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_calendar_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_capi]]
@@ -1718,16 +1754,34 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "2.0.0-beta1"
 notes = "Despite being an FFI crate, it is 100% safe code since it uses Diplomat for bindings."
 
+[[audits.icu_capi]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Despite being an FFI crate, it is 100% safe code since it uses Diplomat for bindings."
+
 [[audits.icu_casemap]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
 notes = "Safety review: One bit of unsafe DST construction from constant values. One checklisted ULE impl for a simple type wrapping RawBytesULE."
 
+[[audits.icu_casemap]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "No meaningful change to unsafe code"
+
 [[audits.icu_casemap_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_casemap_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_collator]]
@@ -1741,10 +1795,27 @@ All unsafe code commented:
  - from_u32 from a packed type that maintains a valid char invariant
 """
 
+[[audits.icu_collator]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta2"
+notes = """
+All unsafe code commented (and improved from prior version):
+ - enum construction from discriminant with masks or other checks
+ - from_u32 for Hangul Jamo, with math that is in range
+ - from_u32 from a packed type that maintains a valid char invariant
+"""
+
 [[audits.icu_collator_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_collator_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_collections]]
@@ -1759,6 +1830,12 @@ Two instances of unsafe :
 Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
 """
 
+[[audits.icu_collections]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "from_utf8 unsafe removed. no new unsafe added"
+
 [[audits.icu_datetime]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -1771,10 +1848,22 @@ All unsafe code commented:
 Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
 """
 
+[[audits.icu_datetime]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Same unsafe code as last time, with improved comments"
+
 [[audits.icu_datetime_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_datetime_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_decimal]]
@@ -1783,10 +1872,22 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "2.0.0-beta1"
 notes = "Contains no unsafe"
 
+[[audits.icu_decimal]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Contains no unsafe"
+
 [[audits.icu_decimal_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_decimal_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_experimental]]
@@ -1794,10 +1895,22 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.2.0"
 
+[[audits.icu_experimental]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+delta = "0.2.0 -> 0.3.0-beta2"
+notes = "No crypto introduced"
+
 [[audits.icu_experimental_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.2.0-dev"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_experimental_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.2.0-dev -> 0.3.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_list]]
@@ -1806,10 +1919,22 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 version = "2.0.0-beta1"
 notes = "Simple well-commented unsafe around regex-automata DFA construction."
 
+[[audits.icu_list]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Some new use of VarZeroCow unsafe APIs, which are on byte slices so the unchecked construction is not a problem"
+
 [[audits.icu_list_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_list_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_locale]]
@@ -1817,6 +1942,12 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
 notes = "Covariant transform transmute; since rustc does not understand that ZeroMap is invariant"
+
+[[audits.icu_locale]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "No contentful changes to unsafe code"
 
 [[audits.icu_locale_core]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -1831,10 +1962,33 @@ All unsafe code commented:
 Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
 """
 
+[[audits.icu_locale_core]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta2"
+notes = """
+All unsafe code commented (and improved from prior version):
+  - A checklisted ULE impl
+  - from-utf8 code on known-ASCII
+  - Some unchecked indexing around maintained invariants
+"""
+
 [[audits.icu_locale_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_locale_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_locale_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_normalizer]]
@@ -1842,10 +1996,24 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "2.0.0-beta1"
 
+[[audits.icu_normalizer]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta2"
+notes = """
+All unsafe is unchecked `char` and `str` conversion, mostly well-commented.
+"""
+
 [[audits.icu_normalizer_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_normalizer_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_pattern]]
@@ -1858,6 +2026,12 @@ Simple unsafe around repr(transparent), and one checklist-commented VarULE impl.
 Comments improved in https://github.com/unicode-org/icu4x/pull/6056
 """
 
+[[audits.icu_pattern]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.3.0 -> 0.4.0"
+notes = "Unsafe code unchanged; comments improved"
+
 [[audits.icu_plurals]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
@@ -1868,10 +2042,22 @@ Unsafe code pertaining to checklisted ULE/VarULE impls.
 Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
 """
 
+[[audits.icu_plurals]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "No new unsafe code."
+
 [[audits.icu_plurals_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_plurals_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_properties]]
@@ -1879,10 +2065,22 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "2.0.0-beta1"
 
+[[audits.icu_properties]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta2"
+notes = "All unsafe was removed"
+
 [[audits.icu_properties_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_properties_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_provider]]
@@ -1899,16 +2097,39 @@ All unsafe code commented:
 Comment improvements can be found in https://github.com/unicode-org/icu4x/pull/6056
 """
 
+[[audits.icu_provider]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "from_utf8_unchecked unsafe remove, all other unsafe not meaningfully changed"
+
 [[audits.icu_provider_adapters]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "2.0.0-beta1"
 notes = "Contains no unsafe"
 
+[[audits.icu_provider_adapters]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Still contains no unsafe"
+
 [[audits.icu_provider_baked]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "2.0.0-beta1"
+
+[[audits.icu_provider_baked]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta2"
+notes = """
+All unsafe code commented:
+   - Unchecked indexing in generated code
+   - Unchecked indexing around successful binary searches
+   - Unchecked indexing in ZeroTrie assuming valid tries by-construction
+"""
 
 [[audits.icu_provider_macros]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -1922,10 +2143,34 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 version = "2.0.0-beta1"
 notes = "Unsafe code pertaining to unchecked indexing, with length checks right before it"
 
+[[audits.icu_segmenter]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "No change to unsafe code"
+
 [[audits.icu_segmenter_data]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_segmenter_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+delta = "2.0.0-beta1 -> 2.0.0-beta2"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_time]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta2"
+notes = "Does not contain any unsafe code"
+
+[[audits.icu_time_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta2"
 notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
 
 [[audits.icu_timezone]]
@@ -2008,6 +2253,12 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.3.0"
 notes = "Contains no unsafe"
+
+[[audits.ixdtf]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+delta = "0.3.0 -> 0.4.0"
+notes = "No unsafe"
 
 [[audits.lazy_static]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -2221,6 +2472,12 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "0.1.0"
 notes = "Contains a handful of lines of from-UTF8 unsafety and some `repr(transparent)` casting unsafety. Reasonably well commented, could do with listing invariants explicitly."
+
+[[audits.potential_utf]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+delta = "0.1.0 -> 0.1.2"
+notes = "Addition of safe comparison APIs since last audit"
 
 [[audits.ppv-lite86]]
 who = "danakj@chromium.org"
@@ -3856,6 +4113,16 @@ See https://crrev.com/c/6323349 for more audit notes.
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.11.0"
+
+[[audits.zerovec]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.11.0 -> 0.11.1"
+notes = """
+Some unsafe changed:
+  - VarZeroCow unsafe moved around but not changed much, comments improved.
+  - Added a ULE impl for ()
+"""
 
 [[audits.zerovec-derive]]
 who = "Manish Goregaokar <manishearth@google.com>"

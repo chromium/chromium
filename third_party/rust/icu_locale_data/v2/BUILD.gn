@@ -12,37 +12,37 @@ cargo_crate("lib") {
   crate_name = "icu_locale_data"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/lib.rs"
-  sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/lib.rs" ]
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/lib.rs" ]
   inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/aliases_v2_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/aliases_v2_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_auxiliary_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_auxiliary_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_index_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_index_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_main_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_main_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_numbers_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_numbers_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_punctuation_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/exemplar_characters_punctuation_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/likely_subtags_extended_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/likely_subtags_extended_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/likely_subtags_for_language_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/likely_subtags_for_language_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/likely_subtags_for_script_region_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/likely_subtags_for_script_region_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/parents_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/parents_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/script_direction_v1_marker.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta1/src/../data/script_direction_v1_marker.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_aliases_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_aliases_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_auxiliary_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_auxiliary_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_index_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_index_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_main_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_main_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_numbers_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_numbers_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_punctuation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_exemplar_characters_punctuation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_likely_subtags_extended_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_likely_subtags_extended_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_likely_subtags_language_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_likely_subtags_language_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_likely_subtags_script_region_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_likely_subtags_script_region_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_parents_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_parents_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_script_direction_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/locale_script_direction_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_locale_data-2.0.0-beta2/src/../data/mod.rs",
   ]
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_version = "2.0.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_locale_data"
   cargo_pkg_description = "Data for the icu_locale crate"
