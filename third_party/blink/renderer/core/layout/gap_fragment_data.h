@@ -13,6 +13,15 @@ namespace blink {
 
 class GapFragmentData {
  public:
+  // Represents the direction in which a GapIntersecion is blocked. When
+  // considering column gaps, `kBefore` means a GapIntersection is blocked by a
+  // spanning item upwards and `kAfter` means it is blocked downwards. When
+  // considering row gaps, `kBefore` means a GapIntersection is blocked by a
+  // spanning item to the left and `kAfter` means it is blocked to the right.
+  enum BlockedDirection {
+    kBefore,
+    kAfter,
+  };
   // GapIntersection points are used to paint gap decorations. An
   // intersection point occurs:
   // 1. At the center of an intersection between a gap and the container edge.
@@ -81,6 +90,24 @@ class GapFragmentData {
                              Vector<GapIntersectionList>&& intersection_list) {
       track_direction == kForColumns ? column_intersections_ = intersection_list
                                      : row_intersections_ = intersection_list;
+    }
+
+    // Marks the intersection point at [main_index][inner_index] in the
+    // specified `track_direction` (kColumns or kRows) as blocked in the given
+    // `blocked_direction` (`kBefore` or `kAfter`). This is necessary to avoid
+    // painting gap decorations behind spanners when authors set the
+    // `*-rule-break` property to 'spanning-item' or `intersection`.
+    void MarkGapIntersectionBlocked(GridTrackSizingDirection track_direction,
+                                    BlockedDirection blocked_direction,
+                                    wtf_size_t main_index,
+                                    wtf_size_t inner_index) {
+      auto& intersections = track_direction == kForColumns
+                                ? column_intersections_
+                                : row_intersections_;
+
+      blocked_direction == kBefore
+          ? intersections[main_index][inner_index].is_blocked_before = true
+          : intersections[main_index][inner_index].is_blocked_after = true;
     }
 
     const Vector<GapIntersectionList>& GetGapIntersections(

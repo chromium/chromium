@@ -35,6 +35,10 @@ namespace {
                 expected_intersections[i][j].column_offset);                   \
       EXPECT_EQ(actual_intersections[i][j].row_offset,                         \
                 expected_intersections[i][j].row_offset);                      \
+      EXPECT_EQ(actual_intersections[i][j].is_blocked_before,                  \
+                expected_intersections[i][j].is_blocked_before);               \
+      EXPECT_EQ(actual_intersections[i][j].is_blocked_after,                   \
+                expected_intersections[i][j].is_blocked_after);                \
     }                                                                          \
   }
 
@@ -90,6 +94,14 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
       GridLayoutAlgorithm& algorithm,
       GapFragmentData::GapGeometry* gap_geometry) {
     algorithm.BuildGapIntersectionPoints(layout_data_, gap_geometry);
+  }
+
+  void RunMarkBlockedStatusForGapIntersections(
+      GridLayoutAlgorithm& algorithm,
+      GapFragmentData::GapGeometry* gap_geometry) {
+    for (const auto& grid_item : *cached_grid_items_) {
+      algorithm.MarkBlockedStatusForGapIntersections(grid_item, gap_geometry);
+    }
   }
 
   void RunPopulateGapIntersectionPoints(
@@ -305,6 +317,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
   }
 
   RunBuildGapIntersectionPoints(algorithm, gap_geometry);
+  RunMarkBlockedStatusForGapIntersections(algorithm, gap_geometry);
   Vector<GapFragmentData::GapIntersectionList> expected_column_intersections = {
       {
           GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit()),
@@ -352,21 +365,19 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
     }
     .item3 {
       grid-column: 3 / 4;
-      grid-row: 1 / 3;
     }
-    .item8 {
+    .item4 {
       grid-column: 2 / 4;
-      grid-row: 3 / 4;
+      grid-row: 2 / 4;
     }
-    </style>
-    <div id="grid1">
+  </style>
+   <div id="grid1">
       <div class="item item1"></div>
       <div class="item item3"></div>
       <div class="item"></div>
+      <div class="item item4"></div>
       <div class="item"></div>
-      <div class="item"></div>
-      <div class="item item8"></div>
-    </div>
+  </div>
   )HTML");
 
   BlockNode node(GetLayoutBoxByElementId("grid1"));
@@ -422,6 +433,7 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
   }
 
   RunBuildGapIntersectionPoints(algorithm, gap_geometry);
+  RunMarkBlockedStatusForGapIntersections(algorithm, gap_geometry);
   Vector<GapFragmentData::GapIntersectionList> expected_column_intersections = {
       {
           GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit()),
@@ -451,6 +463,34 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
           GapFragmentData::GapIntersection(LayoutUnit(320), LayoutUnit(215)),
       },
   };
+
+  // The rendered version of the grid looks like:
+  // +---+---+---+
+  // |       |   |
+  // +---+---+---+
+  // |   |       |
+  // +---+       +
+  // |   |       |
+  // +---+---+---+
+  // The first column gap has intersection[0] blocked after and
+  // intersection[1] blocked before.
+  // The second column gap has intersection[1] blocked after,
+  // intersection[2] blocked before and blocked after and intersection[3]
+  // blocked before.
+  // The second row gap has intersection[1] blocked after, intersection[2]
+  // blocked before and blocked after and intersection[3] blocked before.
+
+  // Mark intersection points which are blocked by the spanners.
+  expected_column_intersections[0][0].is_blocked_after = true;
+  expected_column_intersections[0][1].is_blocked_before = true;
+  expected_column_intersections[1][1].is_blocked_after = true;
+  expected_column_intersections[1][2].is_blocked_before = true;
+  expected_column_intersections[1][2].is_blocked_after = true;
+  expected_column_intersections[1][3].is_blocked_before = true;
+  expected_row_intersections[1][1].is_blocked_after = true;
+  expected_row_intersections[1][2].is_blocked_before = true;
+  expected_row_intersections[1][2].is_blocked_after = true;
+  expected_row_intersections[1][3].is_blocked_before = true;
 
   EXPECT_GAP_INTERSECTIONS(gap_geometry->GetGapIntersections(kForColumns),
                            expected_column_intersections);
