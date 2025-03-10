@@ -11,6 +11,7 @@ self.onmessage = function(e) {
   test_font.load().then((font) => {
     self.fonts.add(font);
     offscreen_ctx.font = '25px Lato-Medium';
+    offscreen_ctx.lang = 'tr';
     offscreen_ctx.fillText('fi', 5, 50);
 
     // Draw a single pixel, used to detect that the worker has completed.

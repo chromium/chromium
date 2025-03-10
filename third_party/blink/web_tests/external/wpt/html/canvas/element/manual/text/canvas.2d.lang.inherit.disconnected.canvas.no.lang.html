@@ -1,12 +1,12 @@
 <!doctype HTML>
-<html lang="en-US">
+<html lang="tr">
   <meta charset="utf-8">
-  <title>HTML5 Canvas Test: The lang attribute inherits from a disconnected canvas element</title>
-  <link rel="match" href="canvas.2d.lang-ref.html"/>
+  <title>HTML5 Canvas Test: The lang attribute inherits the unknown lang when disconnected and no lang attribute</title>
+  <link rel="match" href="canvas.2d.unknown.lang-ref.html"/>
   <link rel="author" href="mailto:schenney@chromium.org"/>
   <link rel="help"
     href="https://html.spec.whatwg.org/multipage/canvas.html#text-styles"/>
-  <meta name="assert" content="Verify that a disconnected canvas uses the canvas lang."/>
+  <meta name="assert" content="Verify that a disconnected canvas with no lang attribute uses the unknown lang."/>
   <style>
     #canvas-tr {
       position: absolute;
@@ -26,7 +26,6 @@
         canvas.setAttribute('width', '300');
         canvas.setAttribute('height', '100');
         canvas.setAttribute('id', 'canvas-' + language);
-        canvas.setAttribute('lang', language);
         var ctx = canvas.getContext('2d');
 
         // The default for direction is inherit
@@ -45,6 +44,7 @@
       test_font.load().then((font) => {
         document.fonts.add(font);
         drawText('tr');
+        document.documentElement.setAttribute('lang', 'en');
         drawText('en');
       });
     </script>
