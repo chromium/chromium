@@ -2042,8 +2042,8 @@ interface TextCluster
     attribute @@toStringTag
     getter align
     getter baseline
-    getter begin
     getter end
+    getter start
     getter x
     getter y
     method constructor
