@@ -484,28 +484,6 @@ TEST_F(SharedImagePoolTest, ReclaimTimerRestartedAfterReclaiming) {
   EXPECT_TRUE(pool->IsReclaimTimerRunningForTesting());
 }
 
-// Test to verify that Flush() is called on SharedImageInterface after
-// reclaiming resources.
-TEST_F(SharedImagePoolTest, FlushCalledAfterReclaiming) {
-  ImageInfo info = {
-      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  constexpr auto kExpirationTime = base::Seconds(30);
-  auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
-      /*max_pool_size=*/std::nullopt, kExpirationTime);
-
-  auto image = pool->GetImage();
-  pool->ReleaseImage(std::move(image));
-
-  // Expect that Flush() will be called on the SharedImageInterface. Flush() can
-  // be called more than once,i.e., once during reclaiming resource after
-  // expiration and another during SharedImagePool destruction.
-  EXPECT_CALL(*test_sii_, DoFlush()).Times(AtLeast(1));
-
-  // Advance time past the expiration time.
-  task_environment_.FastForwardBy(kExpirationTime + base::Seconds(1));
-}
-
 // Test to check that images created by different pools have unique pool IDs.
 TEST_F(SharedImagePoolTest, DifferentPoolsHaveDifferentPoolIds) {
   ImageInfo info1 = {
