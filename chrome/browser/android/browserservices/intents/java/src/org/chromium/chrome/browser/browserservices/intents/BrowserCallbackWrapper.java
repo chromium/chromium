@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.browserservices.intents;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabCallback;
 import androidx.browser.auth.AuthTabSessionToken;
@@ -17,18 +15,22 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.ExperimentalMinimizationCallback;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Class that holds either a {@link CustomTabsSessionToken} or {@link AuthTabSessionToken}. */
 @OptIn(markerClass = {ExperimentalAuthTab.class, ExperimentalMinimizationCallback.class})
+@NullMarked
 public class BrowserCallbackWrapper {
-    private final CustomTabsCallback mCustomTabsCallback;
-    private final AuthTabCallback mAuthTabCallback;
+    private final @Nullable CustomTabsCallback mCustomTabsCallback;
+    private final @Nullable AuthTabCallback mAuthTabCallback;
 
-    public BrowserCallbackWrapper(@NonNull CustomTabsCallback callback) {
+    public BrowserCallbackWrapper(CustomTabsCallback callback) {
         mCustomTabsCallback = callback;
         mAuthTabCallback = null;
     }
 
-    public BrowserCallbackWrapper(@NonNull AuthTabCallback callback) {
+    public BrowserCallbackWrapper(AuthTabCallback callback) {
         mAuthTabCallback = callback;
         mCustomTabsCallback = null;
     }
@@ -43,7 +45,7 @@ public class BrowserCallbackWrapper {
         }
     }
 
-    public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+    public void extraCallback(String callbackName, @Nullable Bundle args) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.extraCallback(callbackName, args);
         } else {
@@ -52,8 +54,7 @@ public class BrowserCallbackWrapper {
         }
     }
 
-    @Nullable
-    public Bundle extraCallbackWithResult(@NonNull String callbackName, @Nullable Bundle args) {
+    public @Nullable Bundle extraCallbackWithResult(String callbackName, @Nullable Bundle args) {
         if (mCustomTabsCallback != null) {
             return mCustomTabsCallback.extraCallbackWithResult(callbackName, args);
         } else {
@@ -69,27 +70,27 @@ public class BrowserCallbackWrapper {
         }
     }
 
-    public void onPostMessage(@NonNull String message, @Nullable Bundle extras) {
+    public void onPostMessage(String message, @Nullable Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onPostMessage(message, extras);
         }
     }
 
     public void onRelationshipValidationResult(
-            int relation, @NonNull Uri requestedOrigin, boolean result, @Nullable Bundle extras) {
+            int relation, Uri requestedOrigin, boolean result, @Nullable Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onRelationshipValidationResult(
                     relation, requestedOrigin, result, extras);
         }
     }
 
-    public void onActivityResized(int height, int width, @NonNull Bundle extras) {
+    public void onActivityResized(int height, int width, Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onActivityResized(height, width, extras);
         }
     }
 
-    public void onWarmupCompleted(@NonNull Bundle extras) {
+    public void onWarmupCompleted(Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onWarmupCompleted(extras);
         } else {
@@ -99,19 +100,19 @@ public class BrowserCallbackWrapper {
     }
 
     public void onActivityLayout(
-            int left, int top, int right, int bottom, int state, @NonNull Bundle extras) {
+            int left, int top, int right, int bottom, int state, Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onActivityLayout(left, top, right, bottom, state, extras);
         }
     }
 
-    public void onMinimized(@NonNull Bundle extras) {
+    public void onMinimized(Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onMinimized(extras);
         }
     }
 
-    public void onUnminimized(@NonNull Bundle extras) {
+    public void onUnminimized(Bundle extras) {
         if (mCustomTabsCallback != null) {
             mCustomTabsCallback.onUnminimized(extras);
         }
