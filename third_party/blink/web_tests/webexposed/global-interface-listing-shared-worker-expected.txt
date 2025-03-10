@@ -107,15 +107,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method translate
 [Worker]     method translateStreaming
-[Worker] interface AITranslatorCapabilities
-[Worker]     attribute @@toStringTag
-[Worker]     getter available
-[Worker]     method constructor
-[Worker]     method languagePairAvailable
 [Worker] interface AITranslatorFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability
-[Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AIWriter

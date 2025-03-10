@@ -123,20 +123,7 @@ void TestCreateTranslator(Browser* browser,
                           const std::string_view targetLang,
                           const std::string_view result);
 
-// Tests that the AITranslatorCapabilities.available returns the expected
-// result.
-void TestTranslatorCapabilitiesAvailable(Browser* browser,
-                                         const std::string_view result);
-
-// Tests that the AITranslatorCapabilities.languagePairAvailable() returns the
-// expected result.
-void TestLanguagePairAvailable(Browser* browser,
-                               const std::string_view sourceLang,
-                               const std::string_view targetLang,
-                               const std::string_view result);
-
-// Tests that the AITranslatorCapabilities.languagePairAvailable() returns the
-// expected result.
+// Tests that`availability()` returns the expected result.
 void TestTranslationAvailable(Browser* browser,
                               const std::string_view sourceLang,
                               const std::string_view targetLang,

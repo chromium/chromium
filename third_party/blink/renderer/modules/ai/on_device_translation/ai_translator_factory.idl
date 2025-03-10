@@ -16,12 +16,6 @@ interface AITranslatorFactory {
     RaisesException
   ]
   Promise<AITranslator> create(AITranslatorCreateOptions options);
-  [
-    CallWith=ScriptState,
-    RaisesException
-  ]
-  // TODO(crbug.com/392185835): Remove capabilities method.
-  Promise<AITranslatorCapabilities> capabilities();
 };
 
 dictionary AITranslatorCreateCoreOptions {

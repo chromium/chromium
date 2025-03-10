@@ -102,15 +102,9 @@ interface AITranslator
     method destroy
     method translate
     method translateStreaming
-interface AITranslatorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languagePairAvailable
 interface AITranslatorFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
 interface AIWriter
