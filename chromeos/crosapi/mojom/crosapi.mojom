@@ -34,7 +34,6 @@ import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
-import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
@@ -275,11 +274,7 @@ interface Crosapi {
   [MinVersion=51]
   BindIdentityManager@55(pending_receiver<IdentityManager> receiver);
 
-  // Binds the IdleService interface for reading idle states.
-  // Added in M90.
-  [MinVersion=16]
-  BindIdleService@21(pending_receiver<IdleService> receiver);
-
+  // BindIdleService@21 was removed.
   // BindImageWriter@42 was removed.
 
   // Binds the InSessionAuth interface for authenticating users in session
