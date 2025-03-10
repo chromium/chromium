@@ -59,16 +59,16 @@ public class MockPaymentAppInstaller {
      */
     public void install() {
         MockPackageManagerDelegate packageManagerDelegate = new MockPackageManagerDelegate();
+        MockPaymentManifestDownloader downloader = new MockPaymentManifestDownloader();
+
         for (MockPaymentApp app : mApps) {
+            downloader.serveManifestFor(app);
             packageManagerDelegate.installPaymentApp(
                     app.getLabel(), app.getPackage(), app.getMethod(), app.getSignature());
         }
-        AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
 
-        // TODO(crbug.com/401537658): Make the package names and SHA256 certificate fingerprints be
-        // parameters to the MockPaymentManifestDownloader class.
-        AndroidPaymentAppFinder.setDownloaderForTest(
-                new MockPaymentManifestDownloader(mApps.get(0).getMethod()));
+        AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
+        AndroidPaymentAppFinder.setDownloaderForTest(downloader);
 
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(
                 new MockAndroidIntentLauncher(
