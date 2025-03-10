@@ -39,7 +39,8 @@ namespace {
 enum class MetricsFailure {
   kAlreadyRunning,
   kSizeMismatch,
-  kMaxValue = kSizeMismatch
+  kMeasureFailure,
+  kMaxValue = kMeasureFailure
 };
 
 // This constant is chosen arbitrarily, to allow time for the background tasks
@@ -234,6 +235,12 @@ void PreFreezeBackgroundMemoryTrimmer::RecordMetrics() {
     const std::optional<uint64_t> value_before = values_before_[i];
 
     std::optional<uint64_t> value_after = metric->Measure();
+
+    if (!value_after) {
+      UmaHistogramEnumeration("Memory.PreFreeze2.RecordMetricsFailureType",
+                              MetricsFailure::kMeasureFailure);
+      continue;
+    }
 
     MaybeRecordPreFreezeMetric(value_before, metric->name(), "Before");
     MaybeRecordPreFreezeMetric(value_after, metric->name(), "After");

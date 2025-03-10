@@ -22570,6 +22570,7 @@ Called by update_net_error_codes.py.-->
   <int value="0"
       label="Tried to record metrics during a pending metrics recording task"/>
   <int value="1" label="Metrics were changed during recording"/>
+  <int value="2" label="Failed to measure a particular metric value"/>
 </enum>
 
 <enum name="PreloadingTriggeringOutcome">
