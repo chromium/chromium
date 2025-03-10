@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_GRAPH_REGISTERED_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_GRAPH_REGISTERED_H_
 
+#include "base/check.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
 
 namespace performance_manager {
 
@@ -31,6 +33,9 @@ namespace performance_manager {
 //   Foo* foo = graph->GetRegisteredObjectAs<Foo>();
 //   foo->DoSomething();
 // }
+//
+// GraphRegisteredImpl also provides a GetFromGraph() convenience helper that
+// wraps `graph->GetRegisteredObjectAs<...>()`.
 //
 // This may easily (and commonly) be combined with GraphOwned, allowing the
 // registered object to be owned by the graph as well. The
@@ -104,8 +109,17 @@ class GraphRegisteredImpl : public GraphRegistered {
   uintptr_t GetTypeId() const override { return TypeId(); }
 
   // Helper function for looking up the registered object of this type from the
-  // provided graph. Syntactic sugar for "Graph::GetRegisteredObjectAs".
-  static SelfType* GetFromGraph(Graph* graph) {
+  // provided `graph`. If none is provided, looks up the object in the default
+  // graph returned by PerformanceManager::GetGraph(), returning nullptr if
+  // the default graph is not available.
+  static SelfType* GetFromGraph(Graph* graph = nullptr) {
+    if (!graph) {
+      if (!PerformanceManager::IsAvailable()) {
+        return nullptr;
+      }
+      graph = PerformanceManager::GetGraph();
+      CHECK(graph);
+    }
     return graph->GetRegisteredObjectAs<SelfType>();
   }
 
