@@ -140,6 +140,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/browsing_data/model:test_support",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/search_engines/model",

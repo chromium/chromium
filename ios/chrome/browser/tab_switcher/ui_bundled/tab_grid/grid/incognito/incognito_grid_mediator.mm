@@ -8,6 +8,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
@@ -195,6 +198,10 @@
   [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
   [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
                                        focusOmnibox:NO];
+  if (IsDownloadAutoDeletionFeatureEnabled()) {
+    self.tracker->NotifyEvent(
+        feature_engagement::events::kIOSDownloadAutoDeletionIPHCriterionMet);
+  }
 }
 
 #pragma mark - PrefObserverDelegate
