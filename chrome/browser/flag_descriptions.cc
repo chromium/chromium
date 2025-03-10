@@ -4679,12 +4679,6 @@ const char kRelatedSearchesSwitchName[] =
 const char kRelatedSearchesSwitchDescription[] =
     "Enables requesting related searches suggestions.";
 
-const char kRichAutocompletionAndroidName[] =
-    "Omnibox rich inline autocompletion on Android";
-const char kRichAutocompletionAndroidDescription[] =
-    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
-    "to any type of input that users repeatedly use to get to specific URLs.";
-
 const char kRightEdgeGoesForwardGestureNavName[] =
     "RightEdgeGoesForwardGestureNav";
 const char kRightEdgeGoesForwardGestureNavDescription[] =
