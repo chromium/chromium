@@ -23,8 +23,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
-#include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
@@ -1291,14 +1289,30 @@ class ClipboardTestContentAnalysisDelegate
             base::BindRepeating(&ClipboardTestContentAnalysisDelegate::
                                     FakeUploadFileForDeepScanning,
                                 base::Unretained(ret.get()))));
-    enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
-        base::BindRepeating(
-            &enterprise_connectors::test::FakeClipboardRequestHandler::Create,
-            base::Unretained(ret.get())));
     return ret;
   }
 
  private:
+  void UploadTextForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        UploadTextForDeepScanning(std::move(request));
+  }
+
+  void UploadImageForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        UploadImageForDeepScanning(std::move(request));
+  }
+
   void FakeUploadFileForDeepScanning(
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
