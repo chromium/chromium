@@ -133,14 +133,16 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         if (mIsCurrentTabPriceTracked) {
+            Profile profile = mProfileSupplier.get();
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
                     mBookmarkModelSupplier.get(),
                     mBookmarkModelSupplier.get().getUserBookmarkIdForTab(mActiveTabSupplier.get()),
                     /* enabled= */ false,
                     mSnackbarManager,
                     view.getResources(),
-                    mProfileSupplier.get(),
-                    (success) -> {});
+                    profile,
+                    (success) -> {},
+                    PriceDropNotificationManagerFactory.create(profile));
         } else {
             mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get());
         }

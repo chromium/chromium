@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -151,7 +152,8 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                             mSnackbarManager,
                             mProfile,
                             mBottomSheetController,
-                            new BookmarkManagerOpenerImpl());
+                            new BookmarkManagerOpenerImpl(),
+                            PriceDropNotificationManagerFactory.create(mProfile));
                 });
     }
 

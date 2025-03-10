@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
@@ -347,7 +348,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                             mSnackbarManagerSupplier.get(),
                             mTab.getProfile(),
                             mBottomSheetControllerSupplier.get(),
-                            new BookmarkManagerOpenerImpl());
+                            new BookmarkManagerOpenerImpl(),
+                            PriceDropNotificationManagerFactory.create(mTab.getProfile()));
                     TrackerFactory.getTrackerForProfile(profile)
                             .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 

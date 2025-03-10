@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -192,6 +193,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private BasicNativePage mNativePage;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<SelectionObserver> mSelectionObserver;
@@ -535,7 +537,8 @@ public class BookmarkManagerMediatorTest {
                         mCanShowPromo,
                         mOnScrollListenerConsumer,
                         mBookmarkMoveSnackbarManager,
-                        mBookmarkManagerOpener);
+                        mBookmarkManagerOpener,
+                        mPriceDropNotificationManager);
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
 

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -51,7 +52,8 @@ public class BookmarkPage extends BasicNativePage {
                         profile,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                         mBookmarkOpener,
-                        new BookmarkManagerOpenerImpl());
+                        new BookmarkManagerOpenerImpl(),
+                        PriceDropNotificationManagerFactory.create(profile));
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         initWithView(mBookmarkManagerCoordinator.getView());
     }
