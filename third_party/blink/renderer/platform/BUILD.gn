@@ -845,6 +845,7 @@ component("platform") {
     "geometry/length_functions.h",
     "geometry/length_point.h",
     "geometry/length_size.h",
+    "geometry/logical_direction.h",
     "geometry/math_functions.h",
     "geometry/path.cc",
     "geometry/path.h",

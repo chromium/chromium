@@ -109,6 +109,11 @@ bool {{class_name}}::IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
     CSSPropertyID id) const {
   return CSSDirectionAwareResolver::Logical{{group_name}}Mapping().Contains(id);
 }
+const CSSProperty& {{class_name}}::ToLogicalInternal(
+    WritingDirectionMode writing_direction) const {
+  return CSSDirectionAwareResolver::Resolve{{resolver_name}}(writing_direction,
+      CSSDirectionAwareResolver::Logical{{group_name}}Mapping());
+}
     {% endif %}
   {% endif %}
 

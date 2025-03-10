@@ -156,6 +156,20 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       WritingDirectionMode) const {
     return *this;
   }
+
+  const CSSProperty& ToLogical(WritingDirectionMode writing_direction) const {
+    if (!IsInLogicalPropertyGroup()) {
+      // Avoid the potentially expensive virtual function call.
+      return *this;
+    } else {
+      return ToLogicalInternal(writing_direction);
+    }
+  }
+
+  virtual const CSSProperty& ToLogicalInternal(WritingDirectionMode) const {
+    return *this;
+  }
+
   virtual bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
       CSSPropertyID) const {
     return false;

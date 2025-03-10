@@ -112,6 +112,9 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
     // before calling CSSValueFromComputedStyleInternal.
     NOTREACHED();
   }
+    {% else %}
+  const CSSProperty& ToLogicalInternal(
+      WritingDirectionMode) const override;
     {% endif %}
   {% endif %}
   {% if property.style_builder_declare %}
