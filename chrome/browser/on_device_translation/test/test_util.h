@@ -9,10 +9,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "chrome/browser/on_device_translation/translation_manager_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class Browser;
@@ -96,6 +98,22 @@ class MockComponentManager : public ComponentManager {
 
   const base::FilePath package_dir_;
   base::WeakPtrFactory<MockComponentManager> weak_ptr_factory_{this};
+};
+
+class MockTranslationManagerImpl : public TranslationManagerImpl {
+ public:
+  explicit MockTranslationManagerImpl(content::BrowserContext* browser_context,
+                                      const url::Origin& origin);
+  ~MockTranslationManagerImpl() override;
+
+  MockTranslationManagerImpl(const MockTranslationManagerImpl&) = delete;
+  MockTranslationManagerImpl& operator=(const MockTranslationManagerImpl&) =
+      delete;
+
+  MOCK_METHOD(base::TimeDelta, GetTranslatorDownloadDelay, (), (override));
+
+ private:
+  base::AutoReset<TranslationManagerImpl*> mock_translation_manager_impl_;
 };
 
 // Creates a fake dictionary data file for the given source and target

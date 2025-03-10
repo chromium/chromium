@@ -64,6 +64,8 @@ bool RequiresUserActivation(CanCreateTranslatorResult result) {
     case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
     case CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
+    case mojom::blink::CanCreateTranslatorResult::
+        kAfterDownloadTranslatorCreationRequired:
       return true;
     case CanCreateTranslatorResult::kReadily:
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:

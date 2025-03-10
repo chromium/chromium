@@ -7,7 +7,9 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/rand_util.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
@@ -22,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -195,13 +198,29 @@ std::vector<std::vector<TranslationAvailability>> CreateAvailabilityMatrix(
 
 }  // namespace
 
+TranslationManagerImpl* TranslationManagerImpl::translation_manager_for_test_ =
+    nullptr;
+
 TranslationManagerImpl::TranslationManagerImpl(
     base::PassKey<TranslationManagerImpl>,
+    content::BrowserContext* browser_context,
+    const url::Origin& origin)
+    : TranslationManagerImpl(browser_context, origin) {}
+
+TranslationManagerImpl::TranslationManagerImpl(
     content::BrowserContext* browser_context,
     const url::Origin& origin)
     : browser_context_(browser_context->GetWeakPtr()), origin_(origin) {}
 
 TranslationManagerImpl::~TranslationManagerImpl() = default;
+
+// static
+base::AutoReset<TranslationManagerImpl*> TranslationManagerImpl::SetForTesting(
+    TranslationManagerImpl* manager) {
+  base::AutoReset translation_manager_for_test(  // IN-TEST
+      &translation_manager_for_test_, manager);
+  return translation_manager_for_test;
+}
 
 // static
 void TranslationManagerImpl::Bind(
@@ -220,6 +239,11 @@ TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
     content::BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
     const url::Origin& origin) {
+  // Use the testing instance of `TranslationManagerImpl*`, if it exists.
+  if (translation_manager_for_test_) {
+    return translation_manager_for_test_;
+  }
+
   // Currently two TranslationManagers can be bound, for self.ai.translator and
   // for self.translator.
   // TODO(crbug.com/322229993): Remove this when we delete the legacy Translator
@@ -261,36 +285,29 @@ void TranslationManagerImpl::CanCreateTranslator(
                                       std::move(callback));
 }
 
-void TranslationManagerImpl::CreateTranslator(
+// Returns a delay upon initial translator creation to safeguard against
+// fingerprinting resulting from timing translator creation duration.
+//
+// The delay is triggered when the `availability()` of the translation
+// evaluates to "downloadable", even though all required resources for
+// translation have already been downloaded and available.
+base::TimeDelta TranslationManagerImpl::GetTranslatorDownloadDelay() {
+  return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
+}
+
+void TranslationManagerImpl::CreateTranslatorImpl(
     mojo::PendingRemote<blink::mojom::TranslationManagerCreateTranslatorClient>
         client,
-    blink::mojom::TranslatorCreateOptionsPtr options) {
-  RecordTranslationAPICallForLanguagePair("Create", options->source_lang->code,
-                                          options->target_lang->code);
-  CHECK(browser_context_);
-  PrefService* profile_pref =
-      Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
-  if (!profile_pref->GetBoolean(prefs::kTranslatorAPIAllowed)) {
-    mojo::Remote(std::move(client))
-        ->OnResult(blink::mojom::CreateTranslatorResult::NewError(
-            blink::mojom::CreateTranslatorError::kDisallowedByPolicy));
-    return;
-  }
-  if (!PassAcceptLanguagesCheck(
-          profile_pref->GetString(language::prefs::kAcceptLanguages),
-          options->source_lang->code, options->target_lang->code)) {
-    mojo::Remote(std::move(client))
-        ->OnResult(blink::mojom::CreateTranslatorResult::NewError(
-            blink::mojom::CreateTranslatorError::kAcceptLanguagesCheckFailed));
-    return;
-  }
+    const std::string& source_language,
+    const std::string& target_language) {
   GetServiceController().CreateTranslator(
-      options->source_lang->code, options->target_lang->code,
+      source_language, target_language,
       base::BindOnce(
           [](base::WeakPtr<TranslationManagerImpl> self,
              mojo::PendingRemote<
                  blink::mojom::TranslationManagerCreateTranslatorClient> client,
-             const std::string& source_lang, const std::string& target_lang,
+             const std::string& source_language,
+             const std::string& target_language,
              base::expected<mojo::PendingRemote<mojom::Translator>,
                             blink::mojom::CreateTranslatorError> result) {
             if (!client || !self) {
@@ -299,6 +316,7 @@ void TranslationManagerImpl::CreateTranslator(
               // TODO(crbug.com/331735396): Support abort signal.
               return;
             }
+
             if (!result.has_value()) {
               mojo::Remote<
                   blink::mojom::TranslationManagerCreateTranslatorClient>(
@@ -310,7 +328,7 @@ void TranslationManagerImpl::CreateTranslator(
             mojo::PendingRemote<::blink::mojom::Translator> blink_remote;
             self->translators_.Add(
                 std::make_unique<Translator>(self->browser_context_,
-                                             source_lang, target_lang,
+                                             source_language, target_language,
                                              std::move(result.value())),
                 blink_remote.InitWithNewPipeAndPassReceiver());
             mojo::Remote<
@@ -319,8 +337,68 @@ void TranslationManagerImpl::CreateTranslator(
                 ->OnResult(blink::mojom::CreateTranslatorResult::NewTranslator(
                     std::move(blink_remote)));
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(client),
-          options->source_lang->code, options->target_lang->code));
+          weak_ptr_factory_.GetWeakPtr(), std::move(client), source_language,
+          target_language));
+}
+
+void TranslationManagerImpl::CreateTranslator(
+    mojo::PendingRemote<blink::mojom::TranslationManagerCreateTranslatorClient>
+        client,
+    blink::mojom::TranslatorCreateOptionsPtr options) {
+  const std::string source_language = options->source_lang->code;
+  const std::string target_language = options->target_lang->code;
+
+  RecordTranslationAPICallForLanguagePair("Create", source_language,
+                                          target_language);
+
+  CHECK(browser_context_);
+  PrefService* profile_pref =
+      Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
+
+  if (!profile_pref->GetBoolean(prefs::kTranslatorAPIAllowed)) {
+    mojo::Remote(std::move(client))
+        ->OnResult(blink::mojom::CreateTranslatorResult::NewError(
+            blink::mojom::CreateTranslatorError::kDisallowedByPolicy));
+    return;
+  }
+
+  if (!PassAcceptLanguagesCheck(
+          profile_pref->GetString(language::prefs::kAcceptLanguages),
+          source_language, target_language)) {
+    mojo::Remote(std::move(client))
+        ->OnResult(blink::mojom::CreateTranslatorResult::NewError(
+            blink::mojom::CreateTranslatorError::kAcceptLanguagesCheckFailed));
+    return;
+  }
+
+  base::OnceClosure create_translator =
+      base::BindOnce(&TranslationManagerImpl::CreateTranslatorImpl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client),
+                     source_language, target_language);
+
+  TranslationAvailable(
+      TranslatorLanguageCode::New(source_language),
+      TranslatorLanguageCode::New(target_language),
+      base::BindOnce(
+          [](base::WeakPtr<TranslationManagerImpl> self,
+             base::OnceClosure create_translator,
+             blink::mojom::CanCreateTranslatorResult result) {
+            if (!self) {
+              return;
+            }
+
+            if (base::FeatureList::IsEnabled(
+                    blink::features::kTranslationAPIV1) &&
+                result == blink::mojom::CanCreateTranslatorResult::
+                              kAfterDownloadTranslatorCreationRequired) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                  FROM_HERE, std::move(create_translator),
+                  self->GetTranslatorDownloadDelay());
+            } else {
+              std::move(create_translator).Run();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(create_translator)));
 }
 
 // static
@@ -459,8 +537,9 @@ void TranslationManagerImpl::TranslationAvailable(
               // before returning the "readily" availability value for the
               // translation, instead of always returning an "after-download"
               // result.
-              std::move(callback).Run(blink::mojom::CanCreateTranslatorResult::
-                                          kAfterDownloadLanguagePackNotReady);
+              std::move(callback).Run(
+                  blink::mojom::CanCreateTranslatorResult::
+                      kAfterDownloadTranslatorCreationRequired);
               return;
             }
             std::move(callback).Run(result);

@@ -157,6 +157,7 @@ std::string_view GetCanCreateTranslatorResultString(
     case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
     case CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
+    case CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired:
       return "downloadable";
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
     case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
@@ -844,6 +845,22 @@ class OnDeviceTranslationV1BrowserTest : public OnDeviceTranslationBrowserTest {
   }
   ~OnDeviceTranslationV1BrowserTest() override = default;
 
+ protected:
+  content::BrowserContext* GetBrowserContext() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetBrowserContext();
+  }
+
+  const url::Origin GetLastCommittedOrigin() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetLastCommittedOrigin();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -907,6 +924,74 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
   // preferred languages.
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
+}
+
+// A delay is triggered for a "downloadable" translation containing a language
+// outside of English + preferred languages.
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationV1BrowserTest,
+    CreateTranslator_Delay_ForMaskedDownloadableTranslation) {
+  // Setup Translate Kit Component and select Spanish as the preferred language.
+  SetSelectedLanguages("en,es");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  auto manager =
+      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+
+  // Simulate the download of an additional language pack (Japanese) by another
+  // site.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+
+  // The delay is triggered upon the initial translator creation for Japanese,
+  // given that it is not a preferred language.
+  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(1);
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// No delay is triggered for a "downloadable" translation between English +
+// preferred languages.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+                       CreateTranslator_NoDelay_DownloadableTranslation) {
+  SetSelectedLanguages("en,es");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  auto manager =
+      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Es});
+  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
+  TestSimpleTranslationWorks(browser(), "en", "es");
+
+  // No delay is triggered now that the translation is "available".
+  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
+  TestSimpleTranslationWorks(browser(), "en", "es");
+}
+
+// No delay is triggered in attempt to create a translator for an unsupported
+// language.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+                       CreateTranslator_NoDelay_UnsupportedLanguage) {
+  SetSelectedLanguages("en,xx");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  auto manager =
+      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+
+  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
+  EXPECT_NE(EvalJsCatchingError(R"(
+      const translator = await ai.translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'xx',
+      });
+      return await translator.translate('hello');
+    )"),
+            "en to xx: hello");
 }
 
 // Tests the behavior of the crash of calling create() and availability().

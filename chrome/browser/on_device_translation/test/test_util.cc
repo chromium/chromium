@@ -141,6 +141,15 @@ void MockComponentManager::InstallMockLanguagePackLater(
                      weak_ptr_factory_.GetWeakPtr(), language_pack_key));
 }
 
+MockTranslationManagerImpl::MockTranslationManagerImpl(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin)
+    : TranslationManagerImpl(browser_context, origin),
+      mock_translation_manager_impl_(
+          TranslationManagerImpl::SetForTesting(this)) {}
+
+MockTranslationManagerImpl::~MockTranslationManagerImpl() = default;
+
 std::string CreateFakeDictionaryData(const std::string_view sourceLang,
                                      const std::string_view targetLang) {
   return base::StringPrintf("%s to %s: ", sourceLang, targetLang);
