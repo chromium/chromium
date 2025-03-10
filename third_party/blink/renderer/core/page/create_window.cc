@@ -305,6 +305,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     return nullptr;
   }
 
+  request.SetInitiatorFrameToken(opener_frame.GetLocalFrameToken());
+  request.SetInitiatorNavigationStateKeepAliveHandle(
+      opener_frame.IssueKeepAliveHandle());
+
   const WebWindowFeatures& features = request.GetWindowFeatures();
   const auto& picture_in_picture_window_options =
       request.GetPictureInPictureWindowOptions();
