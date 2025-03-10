@@ -164,7 +164,7 @@ class NodeRareData : public GarbageCollected<NodeRareData> {
   Member<FlatTreeNodeData> flat_tree_node_data_;
   // Keeps strong scroll timeline pointers linked to this node to ensure
   // the timelines are alive as long as the node is alive.
-  Member<HeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
+  Member<GCedHeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
   // An ordered set of DOM Parts for this Node, in order of construction. This
   // order is important, since `getParts()` returns a tree-ordered set of parts,
   // with parts on the same `Node` returned in `Part` construction order.

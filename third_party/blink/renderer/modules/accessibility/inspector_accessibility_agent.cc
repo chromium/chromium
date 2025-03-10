@@ -133,7 +133,7 @@ std::unique_ptr<protocol::Array<AXNode>> WalkAXNodesToDepth(
 
 using EnabledAgentsMultimap =
     HeapHashMap<WeakMember<LocalFrame>,
-                Member<HeapHashSet<Member<InspectorAccessibilityAgent>>>>;
+                Member<GCedHeapHashSet<Member<InspectorAccessibilityAgent>>>>;
 
 EnabledAgentsMultimap& EnabledAgents() {
   DEFINE_STATIC_LOCAL(Persistent<EnabledAgentsMultimap>, enabled_agents,
@@ -518,7 +518,7 @@ void InspectorAccessibilityAgent::ProcessPendingDirtyNodes(Document& document) {
   // Sometimes, computing properties for an object while serializing will
   // mark other objects dirty. This makes us re-enter this function.
   // To make this benign, we use a copy of dirty_nodes_ when iterating.
-  Member<HeapHashSet<WeakMember<AXObject>>> dirty_nodes =
+  Member<GCedHeapHashSet<WeakMember<AXObject>>> dirty_nodes =
       dirty_nodes_.Take(&document);
   auto nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -588,7 +588,7 @@ bool InspectorAccessibilityAgent::MarkAXObjectDirty(AXObject* ax_object) {
   auto inserted = dirty_nodes_.insert(document, nullptr);
   if (inserted.is_new_entry) {
     inserted.stored_value->value =
-        MakeGarbageCollected<HeapHashSet<WeakMember<AXObject>>>();
+        MakeGarbageCollected<GCedHeapHashSet<WeakMember<AXObject>>>();
   }
   return inserted.stored_value->value->insert(ax_object).is_new_entry;
 }
@@ -623,7 +623,7 @@ void InspectorAccessibilityAgent::EnableAndReset() {
   if (!EnabledAgents().Contains(frame)) {
     EnabledAgents().Set(
         frame, MakeGarbageCollected<
-                   HeapHashSet<Member<InspectorAccessibilityAgent>>>());
+                   GCedHeapHashSet<Member<InspectorAccessibilityAgent>>>());
   }
   EnabledAgents().find(frame)->value->insert(this);
   for (auto& context : document_to_context_map_.Values()) {

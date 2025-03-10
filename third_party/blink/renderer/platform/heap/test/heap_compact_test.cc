@@ -263,7 +263,7 @@ TEST_F(HeapCompactTest, CompactLinkedHashSetVector) {
 }
 
 TEST_F(HeapCompactTest, CompactLinkedHashSetMap) {
-  using Inner = HeapHashSet<Member<IntWrapper>>;
+  using Inner = GCedHeapHashSet<Member<IntWrapper>>;
   using OrderedHashSet = GCedHeapLinkedHashSet<Member<Inner>>;
 
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();

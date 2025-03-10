@@ -205,22 +205,22 @@ TEST_F(ConcurrentMarkingTest, SwapHashMap) {
 // HeapHashSet
 
 TEST_F(ConcurrentMarkingTest, AddToHashSet) {
-  AddToCollection<HeapHashSet<Member<IntegerObject>>>();
+  AddToCollection<GCedHeapHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfHashSet) {
-  RemoveFromBeginningOfCollection<HeapHashSet<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<GCedHeapHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfHashSet) {
-  RemoveFromMiddleOfCollection<HeapHashSet<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<GCedHeapHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfHashSet) {
-  RemoveFromEndOfCollection<HeapHashSet<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<GCedHeapHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearHashSet) {
-  ClearCollection<HeapHashSet<Member<IntegerObject>>>();
+  ClearCollection<GCedHeapHashSet<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapHashSet) {
-  SwapCollections<HeapHashSet<Member<IntegerObject>>>();
+  SwapCollections<GCedHeapHashSet<Member<IntegerObject>>>();
 }
 
 template <typename T>
@@ -439,7 +439,7 @@ namespace {
 class RegisteredMixin;
 
 class CollectsMixins : public GarbageCollected<CollectsMixins> {
-  using MixinSet = HeapHashSet<Member<RegisteredMixin>>;
+  using MixinSet = GCedHeapHashSet<Member<RegisteredMixin>>;
 
  public:
   CollectsMixins() : set_(MakeGarbageCollected<MixinSet>()) {}

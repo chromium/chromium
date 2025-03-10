@@ -107,7 +107,7 @@ class CORE_EXPORT StyleScopeFrame {
  private:
   friend class SelectorChecker;
 
-  using ScopeSet = HeapHashSet<Member<const StyleScope>>;
+  using ScopeSet = GCedHeapHashSet<Member<const StyleScope>>;
 
   ScopeSet* CalculateSeenImplicitScopes();
 

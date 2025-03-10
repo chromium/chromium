@@ -212,7 +212,7 @@ AudioNode* AudioNode::connect(AudioNode* destination,
                            destination->Handler().Input(input_index));
   if (!connected_nodes_[output_index]) {
     connected_nodes_[output_index] =
-        MakeGarbageCollected<HeapHashSet<Member<AudioNode>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<AudioNode>>>();
   }
   connected_nodes_[output_index]->insert(destination);
 
@@ -257,7 +257,7 @@ void AudioNode::connect(AudioParam* param,
   AudioNodeWiring::Connect(Handler().Output(output_index), param->Handler());
   if (!connected_params_[output_index]) {
     connected_params_[output_index] =
-        MakeGarbageCollected<HeapHashSet<Member<AudioParam>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<AudioParam>>>();
   }
   connected_params_[output_index]->insert(param);
 

@@ -43,7 +43,8 @@ void RenderBlockingElementLinkMap::AddToElementLinkMap(
   if (it == element_link_map->end()) {
     auto result = element_link_map->insert(
         target_element_id,
-        MakeGarbageCollected<HeapHashSet<WeakMember<const HTMLLinkElement>>>());
+        MakeGarbageCollected<
+            GCedHeapHashSet<WeakMember<const HTMLLinkElement>>>());
     result.stored_value->value->insert(link);
   } else {
     it->value->insert(link);

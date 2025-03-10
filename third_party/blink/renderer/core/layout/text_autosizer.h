@@ -147,8 +147,8 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   };
 
  private:
-  typedef HeapHashSet<Member<LayoutBlock>> BlockSet;
-  typedef HeapHashSet<Member<const LayoutBlock>> ConstBlockSet;
+  using BlockSet = GCedHeapHashSet<Member<LayoutBlock>>;
+  using ConstBlockSet = GCedHeapHashSet<Member<const LayoutBlock>>;
 
   enum HasEnoughTextToAutosize {
     kUnknownAmountOfText,
@@ -364,7 +364,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 #if DCHECK_IS_ON()
   // Used to ensure we don't compute properties of a block before beginLayout()
   // is called on it.
-  ConstBlockSet blocks_that_have_begun_layout_;
+  HeapHashSet<Member<const LayoutBlock>> blocks_that_have_begun_layout_;
 #endif
 
   // Clusters are created and destroyed during layout

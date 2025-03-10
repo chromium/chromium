@@ -197,9 +197,9 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
                               const PhysicalRect& rect,
                               SetOptions options,
                               Element* element_for_display_lock) {
-  HeapHashSet<Member<Element>>* display_locks = nullptr;
+  GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
   if (element_for_display_lock) {
-    display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
+    display_locks = MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
     display_locks->insert(element_for_display_lock);
   }
   Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
@@ -251,9 +251,10 @@ void PhysicalAnchorQuery::SetFromChild(
       PhysicalRect rect = reference->rect;
       rect.offset += additional_offset;
 
-      HeapHashSet<Member<Element>>* display_locks = nullptr;
+      GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
       if (reference->display_locks || element_for_display_lock) {
-        display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
+        display_locks =
+            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
       }
       if (reference->display_locks) {
         *display_locks = *reference->display_locks;
