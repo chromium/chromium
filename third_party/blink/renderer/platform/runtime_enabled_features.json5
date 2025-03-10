@@ -792,7 +792,7 @@
     // the common ancestor of pointerdown and pointerup targets.
     {
       name: "ClickToCapturedPointer",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allows top-level sites to restrict collection of high-entropy UA client
