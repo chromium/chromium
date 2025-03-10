@@ -623,12 +623,26 @@ static void* kObservingContext = &kObservingContext;
   completionHandler();
 }
 
+// To set caret when users long-press on spacebar and move.
 - (void)selectPositionAtPoint:(CGPoint)point
             completionHandler:(void (^)(void))completionHandler {
-  // Unclear when this is used instead of selectTextInGranularity.
-  [self selectTextInGranularity:UITextGranularityWord
-                        atPoint:point
-              completionHandler:completionHandler];
+  if (!_view) {
+    completionHandler();
+    return;
+  }
+
+  CGFloat x = point.x;
+  CGFloat y = point.y;
+  // Constrain point to bounds of focused element.
+  auto textControlBounds = [self textControlBounds];
+  if (textControlBounds.has_value()) {
+    x = std::clamp<CGFloat>(x, textControlBounds->x(),
+                            textControlBounds->right());
+    y = std::clamp<CGFloat>(y, textControlBounds->y(),
+                            textControlBounds->bottom());
+  }
+  _view->host()->delegate()->MoveCaret(gfx::ToRoundedPoint(gfx::PointF(x, y)));
+  completionHandler();
 }
 
 - (void)selectPositionAtPoint:(CGPoint)point

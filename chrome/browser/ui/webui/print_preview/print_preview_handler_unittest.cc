@@ -81,7 +81,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -426,7 +425,6 @@ class PrintPreviewHandlerTest : public testing::Test {
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
     local_printer_ = std::make_unique<TestLocalPrinterAsh>(&profile_, nullptr);
-    crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
     manager_ = std::make_unique<crosapi::CrosapiManager>();
 #endif

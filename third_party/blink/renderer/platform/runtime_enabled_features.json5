@@ -4392,11 +4392,6 @@
       status: "stable",
     },
     {
-      // crbug.com/359420112
-      name: "TextEmphasisNoPunctuation",
-      status: "stable",
-    },
-    {
       // crbug.com/368657256
       name: "TextEmphasisPositionAuto",
       status: "experimental",
@@ -4638,6 +4633,10 @@
       // of selection start.
       // https://crbug.com/40658856
       name: "UseSelectionFocusNodeForCaretNavigation",
+      status: "stable",
+    },
+    {
+      name: "UseShadowHostStyleCheckEditable",
       status: "stable",
     },
     {

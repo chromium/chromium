@@ -1051,10 +1051,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         Assert.assertEquals(1, navHistory.getCurrentEntryIndex());
         Assert.assertEquals(linkUrl, navHistory.getEntryAtIndex(1).getUrl().getSpec());
 
-        pageFinishedCount = onPageFinishedHelper.getCallCount();
+        OnPageStartedHelper startHelper = mContentsClient.getOnPageStartedHelper();
+        int pageStartedCount = startHelper.getCallCount();
         shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mAwContents.goBack());
-        onPageFinishedHelper.waitForCallback(pageFinishedCount);
+        startHelper.waitForCallback(pageStartedCount);
         Assert.assertEquals(
                 "Should not invoke shouldOverrideUrlLoading() for history navigation",
                 shouldOverrideUrlLoadingCallCount,

@@ -400,10 +400,11 @@ static constexpr base::FeatureParam<CacheControlNoStoreExperimentLevel>::Option
          "restore-unless-http-only-cookie-change"},
 };
 const base::FeatureParam<CacheControlNoStoreExperimentLevel>
-    cache_control_level{&features::kCacheControlNoStoreEnterBackForwardCache,
-                        kCacheControlNoStoreExperimentLevelName,
-                        CacheControlNoStoreExperimentLevel::kDoNotStore,
-                        &cache_control_levels};
+    cache_control_level{
+        &features::kCacheControlNoStoreEnterBackForwardCache,
+        kCacheControlNoStoreExperimentLevelName,
+        CacheControlNoStoreExperimentLevel::kStoreAndRestoreUnlessCookieChange,
+        &cache_control_levels};
 
 CacheControlNoStoreExperimentLevel GetCacheControlNoStoreLevel() {
   if (!IsBackForwardCacheEnabled() ||

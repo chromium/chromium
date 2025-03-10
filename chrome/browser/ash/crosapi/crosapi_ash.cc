@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/input_methods_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
@@ -162,7 +161,6 @@ CrosapiAsh::CrosapiAsh()
       full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
-      idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       input_methods_ash_(std::make_unique<InputMethodsAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
@@ -371,11 +369,6 @@ void CrosapiAsh::BindHidManager(
 void CrosapiAsh::BindIdentityManager(
     mojo::PendingReceiver<crosapi::mojom::IdentityManager> receiver) {
   identity_manager_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindIdleService(
-    mojo::PendingReceiver<crosapi::mojom::IdleService> receiver) {
-  idle_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindInputMethods(

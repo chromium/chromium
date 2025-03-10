@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
@@ -141,10 +143,13 @@ gfx::RectF PlainTextPainter::SelectionRectForTextWithoutBidi(
     const Font& font,
     const gfx::PointF& left_baseline,
     float height) {
-  // TODO(crbug.com/389726691): Implement this without
-  // Font::SelectionRectForText().
-  return font.SelectionRectForText(run, left_baseline, height, from_index,
-                                   to_index);
+  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
+  CharacterRange range = node.ComputeCharacterRange(from_index, to_index);
+  float rounded_x = std::round(left_baseline.x() + range.start);
+  return gfx::RectF(
+      rounded_x, left_baseline.y(),
+      std::round(left_baseline.x() + range.start + range.Width()) - rounded_x,
+      height);
 }
 
 const PlainTextNode& PlainTextPainter::CreateNode(const TextRun& text_run,

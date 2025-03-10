@@ -39,7 +39,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -104,7 +103,6 @@ void BrowserWithTestWindowTest::SetUp() {
       profile_manager_->local_state()->Get());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  crosapi::IdleServiceAsh::DisableForTesting();
   manager_ = std::make_unique<crosapi::CrosapiManager>();
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 #endif
