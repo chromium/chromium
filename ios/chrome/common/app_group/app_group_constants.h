@@ -205,6 +205,10 @@ extern NSString* const kEmail;
 // Supported bundle IDs for opening incognito links in Chrome.
 extern NSString* const kYoutubeBundleID;
 
+// Stores in NSUserDefaults info about the latest changed primary account for
+// all profiles. Empty if last operation was a sign-out.
+extern NSString* const kPrimaryAccount;
+
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);
 OpenExtensionOutcome OutcomeTypeFromKey(NSString*);

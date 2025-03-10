@@ -9,10 +9,12 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/build_config.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/core/browser/signin_error_controller.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 // This class listens to various signin events and updates the signin-related
 // fields of ProfileAttributesStorageIOS.
@@ -34,7 +36,11 @@ class SigninProfileInfoUpdater : public KeyedService,
   void Shutdown() override;
 
   // Updates the profile info on signin and signout events.
-  void UpdateBrowserStateInfo();
+  void UpdateProfileInfo();
+
+  // Updates the primary account details displayed in widgets on signin and
+  // signout events.
+  void UpdateWidgetsInfo(const signin::PrimaryAccountChangeEvent& event);
 
   // SigninErrorController::Observer:
   void OnErrorChanged() override;
