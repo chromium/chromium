@@ -9,8 +9,8 @@ import {MetricsBrowserProxyImpl, playFromSelectionTimeout} from 'chrome-untruste
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 export async function createApp(): Promise<AppElement> {
   const app = document.createElement('read-anything-app');
@@ -34,6 +34,17 @@ export function emitEvent(app: AppElement, name: string, options?: any): void {
 export function emitEventForPolymer(
     target: HTMLElement, name: string, options?: any): void {
   target.dispatchEvent(new CustomEvent(name, options));
+}
+
+// Creates a FakeSpeechSynthesis object with default voices and updates the app
+// to use it.
+export function setDefaultSpeechSynthesis(app: AppElement):
+    FakeSpeechSynthesis {
+  const speechSynthesis = new FakeSpeechSynthesis();
+  speechSynthesis.setDefaultVoices();
+  app.synth = speechSynthesis;
+  app.enabledLangs = ['en'];
+  return speechSynthesis;
 }
 
 // Runs the requestAnimationFrame callback immediately
@@ -62,36 +73,21 @@ export function getItemsInMenu(
   return Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
 }
 
-export function createSpeechErrorEvent(
-    utterance: SpeechSynthesisUtterance,
-    errorCode: SpeechSynthesisErrorCode): SpeechSynthesisErrorEvent {
-  return new SpeechSynthesisErrorEvent(
-      'type', {utterance: utterance, error: errorCode});
-}
-
-export function setupBasicSpeech(
-    app: AppElement, speech: TestSpeechBrowserProxy) {
-  app.enabledLangs = ['en'];
-  createAndSetVoices(
-      app, speech, [{lang: 'en', name: 'Google Basic', default: true}]);
-}
-
-// Creates SpeechSynthesisVoices and sets them on the given
-// TestSpeechBrowserProxy.
+// Creates SpeechSynthesisVoices and sets them on the given FakeSpeechSynthesis.
 export function createAndSetVoices(
-    app: AppElement, speech: TestSpeechBrowserProxy,
+    app: AppElement, speechSynthesis: FakeSpeechSynthesis,
     overrides: Array<Partial<SpeechSynthesisVoice>>) {
   const voices: SpeechSynthesisVoice[] = [];
   overrides.forEach(partialVoice => {
     voices.push(createSpeechSynthesisVoice(partialVoice));
   });
-  setVoices(app, speech, voices);
+  setVoices(app, speechSynthesis, voices);
 }
 
 export function setVoices(
-    app: AppElement, speech: TestSpeechBrowserProxy,
+    app: AppElement, speechSynthesis: FakeSpeechSynthesis,
     voices: SpeechSynthesisVoice[]) {
-  speech.setVoices(voices);
+  speechSynthesis.setVoices(voices);
   app.onVoicesChanged();
 }
 

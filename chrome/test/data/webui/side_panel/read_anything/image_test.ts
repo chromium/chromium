@@ -5,17 +5,17 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {IMAGES_TOGGLE_BUTTON_ID, SpeechBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {IMAGES_TOGGLE_BUTTON_ID} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, setupBasicSpeech} from './common.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {createApp, setDefaultSpeechSynthesis} from './common.js';
+import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+
 
 suite('Images', () => {
   let app: AppElement;
   let imagesToggleButton: CrIconButtonElement|null;
-  let speech: TestSpeechBrowserProxy;
 
   function setTree(rootChildren: number[], nodes: Object[]) {
     const tree = {
@@ -42,8 +42,6 @@ suite('Images', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     chrome.readingMode.onConnected = () => {};
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
 
     // Override chrome.readingMode.requestImageData to avoid the cross-process
     // hop.
@@ -132,8 +130,10 @@ suite('Images', () => {
   });
 
   suite('with read aloud,', () => {
+    let speechSynthesis: FakeSpeechSynthesis;
+
     setup(() => {
-      setupBasicSpeech(app, speech);
+      speechSynthesis = setDefaultSpeechSynthesis(app);
     });
 
     test('image captions are read aloud when showing', () => {
@@ -174,8 +174,8 @@ suite('Images', () => {
 
       app.playSpeech();
 
-      assertEquals(1, speech.getCallCount('speak'));
-      assertEquals(figcaption, speech.getArgs('speak')[0].text);
+      assertEquals(1, speechSynthesis.spokenUtterances.length);
+      assertEquals(figcaption, speechSynthesis.spokenUtterances[0]!.text);
     });
 
     test('image captions are not read aloud when hidden', async () => {
@@ -219,7 +219,7 @@ suite('Images', () => {
 
       app.playSpeech();
 
-      assertEquals(0, speech.getCallCount('speak'));
+      assertEquals(0, speechSynthesis.spokenUtterances.length);
     });
   });
 });

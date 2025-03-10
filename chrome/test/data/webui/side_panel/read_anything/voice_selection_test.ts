@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, SpeechBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('Automatic voice selection', () => {
   const defaultLang = 'en-us';
@@ -34,11 +34,11 @@ suite('Automatic voice selection', () => {
   ];
 
   let app: AppElement;
-  let speech: TestSpeechBrowserProxy;
+  let speechSynthesis: FakeSpeechSynthesis;
 
   function addNaturalVoices() {
     setVoices(
-        app, speech,
+        app, speechSynthesis,
         voices.concat(
             createSpeechSynthesisVoice(
                 {lang: defaultLang, name: 'Google Wall-e (Natural)'}),
@@ -55,11 +55,11 @@ suite('Automatic voice selection', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.baseLanguageForSpeech = pageLang;
     chrome.readingMode.isReadAloudEnabled = true;
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
 
     app = await createApp();
-    setVoices(app, speech, voices);
+    speechSynthesis = new FakeSpeechSynthesis();
+    app.synth = speechSynthesis;
+    setVoices(app, speechSynthesis, voices);
 
     // Initializes some class variables needed for voice selection logic
     app.restoreEnabledLanguagesFromPref();
