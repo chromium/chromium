@@ -2219,6 +2219,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Theme.BatchUpload.HasLocalTheme" enum="Boolean"
+    expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Recorded whenever the batch upload dialog queries the local theme data. This
+    is true iff there exists a local theme, and false otherwise.
+  </summary>
+</histogram>
+
+<histogram name="Theme.BatchUpload.LocalThemeMigrationTriggered" enum="Boolean"
+    expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Recorded whenever the batch upload dialog triggers the local theme
+    migration. Only the true value is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Theme.RestoredLocalThemeUponSignout" enum="Boolean"
+    expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Recorded whenever themes sync is being stopped, for example, upon signout.
+    This is true iff a saved local theme existed. A false value would imply that
+    no local theme data existed which can happen if a batch upload was triggered
+    previously.
+  </summary>
+</histogram>
+
 <histogram name="Theme.ThemePrefMigration.AlreadyMigrated" enum="Boolean"
     expires_after="2026-02-16">
   <owner>ankushkush@google.com</owner>
