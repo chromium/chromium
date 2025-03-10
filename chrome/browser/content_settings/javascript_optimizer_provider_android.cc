@@ -4,19 +4,29 @@
 
 #include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/single_value_wildcard_rule_iterator.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/android/os_additional_security_permission_util_android.h"
 
-JavascriptOptimizerProviderAndroid::JavascriptOptimizerProviderAndroid()
+JavascriptOptimizerProviderAndroid::JavascriptOptimizerProviderAndroid(
+    bool should_record_metrics)
     : has_permission_callback_(
           base::BindRepeating(&permissions::HasJavascriptOptimizerPermission)) {
+  if (should_record_metrics) {
+    RecordHistogramMetrics();
+  }
 }
 
 JavascriptOptimizerProviderAndroid::JavascriptOptimizerProviderAndroid(
-    CheckPermissionCallback callback)
-    : has_permission_callback_(std::move(callback)) {}
+    CheckPermissionCallback callback,
+    bool should_record_metrics)
+    : has_permission_callback_(std::move(callback)) {
+  if (should_record_metrics) {
+    RecordHistogramMetrics();
+  }
+}
 
 JavascriptOptimizerProviderAndroid::~JavascriptOptimizerProviderAndroid() {}
 
@@ -28,7 +38,7 @@ JavascriptOptimizerProviderAndroid::GetRuleIterator(
   if (content_type != ContentSettingsType::JAVASCRIPT_OPTIMIZER) {
     return nullptr;
   }
-  return !has_permission_callback_ || has_permission_callback_.Run()
+  return QueryHasPermission()
              ? nullptr
              : std::make_unique<
                    content_settings::SingleValueWildcardRuleIterator>(
@@ -45,13 +55,12 @@ JavascriptOptimizerProviderAndroid::GetRule(
   if (content_type != ContentSettingsType::JAVASCRIPT_OPTIMIZER) {
     return nullptr;
   }
-  return !has_permission_callback_ || has_permission_callback_.Run()
-             ? nullptr
-             : std::make_unique<content_settings::Rule>(
-                   ContentSettingsPattern::Wildcard(),
-                   ContentSettingsPattern::Wildcard(),
-                   base::Value(CONTENT_SETTING_BLOCK),
-                   content_settings::RuleMetaData{});
+  return QueryHasPermission() ? nullptr
+                              : std::make_unique<content_settings::Rule>(
+                                    ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsPattern::Wildcard(),
+                                    base::Value(CONTENT_SETTING_BLOCK),
+                                    content_settings::RuleMetaData{});
 }
 
 bool JavascriptOptimizerProviderAndroid::SetWebsiteSetting(
@@ -72,4 +81,14 @@ void JavascriptOptimizerProviderAndroid::ShutdownOnUIThread() {
   CHECK(CalledOnValidThread());
   RemoveAllObservers();
   has_permission_callback_.Reset();
+}
+
+bool JavascriptOptimizerProviderAndroid::QueryHasPermission() const {
+  return !has_permission_callback_ || has_permission_callback_.Run();
+}
+
+void JavascriptOptimizerProviderAndroid::RecordHistogramMetrics() {
+  base::UmaHistogramBoolean(
+      "ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs",
+      !QueryHasPermission());
 }
