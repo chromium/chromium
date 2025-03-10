@@ -1850,25 +1850,44 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   } else {
     CHECK_EQ(request->GetAssociatedRFHType(),
              NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
-    CHECK(speculative_render_frame_host_);
     if (use_current_rfh) {
       RecordWastedSpeculativeRFHCase(
           from_ad_click, WastedSpeculativeRFHCase::kWasted_NowUseCurrentRFH);
-      // Record the difference between the previously picked RFH for the
-      // navigation and the new one.
-      RecordWastedAndReplacementRFHDiff(
-          from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
-          render_frame_host_->GetSiteInstance());
-    } else if (speculative_render_frame_host_->GetSiteInstance() !=
-               dest_site_instance.get()) {
+      if (speculative_render_frame_host_) {
+        // Record the difference between the previously picked RFH for the
+        // navigation and the new one. It's possible that the previous
+        // speculative RFH is already gone at this point, in which case it's not
+        // possible to know the SiteInstance difference etc, so we will skip
+        // recording the diff here. We should still record the
+        // `WastedSpeculativeRFHCase` above though, since we do know that we
+        // previously picked a speculative RFH but will now use the current RFH.
+        // TODO(crbug.com/401175298): Figure out how the speculative RFH can be
+        // gone at this point.
+        RecordWastedAndReplacementRFHDiff(
+            from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
+            render_frame_host_->GetSiteInstance());
+      }
+    } else if (!speculative_render_frame_host_ ||
+               speculative_render_frame_host_->GetSiteInstance() !=
+                   dest_site_instance.get()) {
       RecordWastedSpeculativeRFHCase(
           from_ad_click,
           WastedSpeculativeRFHCase::kWasted_NowUseNewSpeculativeRFH);
-      // Record the difference between the previously picked RFH for the
-      // navigation and the new one.
-      RecordWastedAndReplacementRFHDiff(
-          from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
-          dest_site_instance);
+      if (speculative_render_frame_host_) {
+        // Record the difference between the previously picked RFH for the
+        // navigation and the new one. Similar to the first case above, it's
+        // possible that the previous speculative RFH is already gone at this
+        // point, in which case it's not possible to know the SiteInstance
+        // difference etc, so we will skip recording the diff here. We should
+        // still record the `WastedSpeculativeRFHCase` above though, since we
+        // do know that we previously picked a speculative RFH but will now use
+        // a new speculative RFH.
+        // TODO(crbug.com/401175298): Figure out how the speculative RFH can be
+        // gone at this point.
+        RecordWastedAndReplacementRFHDiff(
+            from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
+            dest_site_instance);
+      }
     } else {
       RecordWastedSpeculativeRFHCase(
           from_ad_click,
