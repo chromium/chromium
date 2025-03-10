@@ -4,9 +4,11 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
+#include "base/strings/sys_string_conversions.h"
 #include "services/webnn/error.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/graph_builder_ort.h"
@@ -14,12 +16,15 @@
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_switches.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_session_options_config_keys.h"
 
 namespace webnn::ort {
 
@@ -32,18 +37,170 @@ void HandleTensorCreationFailure(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
 
+// These OpenVINO EP specific keys and values must align with the implementation
+// of the ORT OpenVINO EP. Misalignment of keys will be ignored. Misalignment of
+// values may cause errors.
+// More details can be found at:
+// https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/providers/openvino/openvino_provider_factory.cc
+// and
+// https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options,
+//
+// Keys:
+constexpr char kOVPrecision[] = "precision";
+constexpr char kOVCacheDir[] = "cache_dir";
+// Values:
+constexpr char kOVDeviceType[] = "device_type";
+constexpr char kOVDeviceGPU[] = "GPU";
+constexpr char kOVDeviceCPU[] = "CPU";
+constexpr char kOVDeviceNPU[] = "NPU";
+
 }  // namespace
+
+// static
+base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr>
+SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
+  ScopedTrace scoped_trace("SessionOptions::Create");
+
+  scoped_trace.AddStep("Create session options");
+  const OrtApi* ort_api = GetOrtApi();
+  ScopedOrtSessionOptions session_options;
+  if (ORT_CALL_FAILED(ort_api->CreateSessionOptions(
+          ScopedOrtSessionOptions::Receiver(session_options).get()))) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create session options."));
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDumpModel)) {
+    static uint64_t dump_count = 0;
+    base::FilePath dump_directory =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNOrtDumpModel);
+    base::FilePath dump_path = dump_directory.AppendASCII(
+        base::StringPrintf("model%d.onnx", dump_count++));
+
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNOrtUseOpenvino)) {
+      CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
+          session_options.get(), dump_path.value().c_str()));
+    } else {
+      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+          session_options.get(), kOrtSessionOptionEpContextEnable,
+          /*config_value=*/"1"));
+      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+          session_options.get(), kOrtSessionOptionEpContextEmbedMode,
+          /*config_value=*/"1"));
+      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+          session_options.get(), kOrtSessionOptionEpContextFilePath,
+          base::SysWideToUTF8(dump_path.value()).c_str()));
+    }
+
+    // TODO(https://github.com/shiyi9801/chromium/issues/54): Support saving
+    // tensors created with `CreateTensorWithDataAsOrtValue()` or
+    // `CreateTensorWithDataAndDeleterAsOrtValue()` when ORT Model Builder API
+    // supports it.
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDisableCpuFallback)) {
+    CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+        session_options.get(),
+        /*config_key=*/kOrtSessionOptionsDisableCPUEPFallback,
+        /*config_value=*/"1"));
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtUseOpenvino)) {
+    std::vector<const char*> provider_options_keys;
+    std::vector<const char*> provider_options_values;
+    std::string gpu_precision;
+    switch (device_type) {
+      case mojom::CreateContextOptions::Device::kCpu: {
+        provider_options_keys.push_back(kOVDeviceType);
+        provider_options_values.push_back(kOVDeviceCPU);
+        break;
+      }
+      case mojom::CreateContextOptions::Device::kGpu: {
+        provider_options_keys.push_back(kOVDeviceType);
+        provider_options_values.push_back(kOVDeviceGPU);
+
+        // "GPU" will use FP16 inference precision by default.
+        if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                switches::kWebNNOrtOVGpuPrecision)) {
+          gpu_precision =
+              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  switches::kWebNNOrtOVGpuPrecision);
+          provider_options_keys.push_back(kOVPrecision);
+          provider_options_values.push_back(gpu_precision.data());
+        }
+        break;
+      }
+      case mojom::CreateContextOptions::Device::kNpu: {
+        provider_options_keys.push_back(kOVDeviceType);
+        provider_options_values.push_back(kOVDeviceNPU);
+        break;
+      }
+    }
+
+    std::string cache_dir;
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNOrtUseOVModelCache)) {
+      base::FilePath cache_path =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+              switches::kWebNNOrtUseOVModelCache);
+
+      cache_dir = base::SysWideToUTF8(cache_path.value());
+      provider_options_keys.push_back(kOVCacheDir);
+      provider_options_values.push_back(cache_dir.c_str());
+    }
+
+    // It is recommended to disable the graph optimization for OpenVINO
+    // backend.
+    // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
+    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
+        session_options.get(), GraphOptimizationLevel::ORT_DISABLE_ALL));
+
+    scoped_trace.AddStep("Append OpenVINO execution provider");
+    // OpenVINO related dlls are loaded by this call.
+    if (ORT_CALL_FAILED(
+            ort_api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(
+                session_options.get(), provider_options_keys.data(),
+                provider_options_values.data(),
+                provider_options_keys.size()))) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "OnnxRuntime OpenVINO EP is not supported."));
+    }
+  } else {
+    // Use CPU EP by default.
+    //
+    // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate how
+    // to apply layout optimizations (ORT_ENABLE_ALL).
+    // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
+    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
+        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
+  }
+
+  return base::WrapRefCounted(new SessionOptions(std::move(session_options)));
+}
+
+SessionOptions::SessionOptions(ScopedOrtSessionOptions session_options)
+    : session_options_(std::move(session_options)) {}
+SessionOptions::~SessionOptions() = default;
 
 ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
-    ScopedOrtEnv env)
+    ScopedOrtEnv env,
+    scoped_refptr<SessionOptions> session_options)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
                        std::move(options)),
-      env_(std::move(env)) {}
+      env_(std::move(env)),
+      session_options_(std::move(session_options)) {}
 
 ContextImplOrt::~ContextImplOrt() = default;
 

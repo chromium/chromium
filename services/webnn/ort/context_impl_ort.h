@@ -15,6 +15,24 @@
 
 namespace webnn::ort {
 
+class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
+ public:
+  static base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr> Create(
+      const mojom::CreateContextOptions::Device device_type);
+
+  SessionOptions(const SessionOptions&) = delete;
+  SessionOptions& operator=(const SessionOptions&) = delete;
+
+  const OrtSessionOptions* get() const { return session_options_.get(); }
+
+ private:
+  friend class base::RefCountedThreadSafe<SessionOptions>;
+  SessionOptions(ScopedOrtSessionOptions session_options);
+  ~SessionOptions();
+
+  ScopedOrtSessionOptions session_options_;
+};
+
 // `ContextImplOrt` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplOrt` which uses ORT for inference.
 class ContextImplOrt final : public WebNNContextImpl {
@@ -22,7 +40,8 @@ class ContextImplOrt final : public WebNNContextImpl {
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
-                 ScopedOrtEnv env);
+                 ScopedOrtEnv env,
+                 scoped_refptr<SessionOptions> session_options);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
@@ -33,6 +52,10 @@ class ContextImplOrt final : public WebNNContextImpl {
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
   static ContextProperties GetContextProperties();
+
+  scoped_refptr<SessionOptions> session_options() const {
+    return session_options_;
+  }
 
  private:
   void CreateGraphImpl(
@@ -48,6 +71,10 @@ class ContextImplOrt final : public WebNNContextImpl {
       CreateTensorImplCallback callback) override;
 
   ScopedOrtEnv env_;
+
+  // The session options are shared among all the sessions created by this
+  // context.
+  scoped_refptr<SessionOptions> session_options_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };

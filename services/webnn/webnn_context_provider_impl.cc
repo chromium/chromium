@@ -268,8 +268,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       return;
     }
 
-    context_impl = new ort::ContextImplOrt(std::move(receiver), this,
-                                           std::move(options), std::move(env));
+    base::expected<scoped_refptr<ort::SessionOptions>, mojom::ErrorPtr>
+        session_options_result = ort::SessionOptions::Create(options->device);
+    if (!session_options_result.has_value()) {
+      std::move(callback).Run(ToError<mojom::CreateContextResult>(
+          mojom::Error::Code::kNotSupportedError,
+          session_options_result.error()->message));
+      return;
+    }
+
+    context_impl = new ort::ContextImplOrt(
+        std::move(receiver), this, std::move(options), std::move(env),
+        std::move(session_options_result.value()));
   }
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 

@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -26,29 +25,10 @@
 #include "services/webnn/resource_task.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
-#include "services/webnn/webnn_switches.h"
-#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_session_options_config_keys.h"
 
 namespace webnn::ort {
 
 namespace {
-
-// These OpenVINO EP specific keys and values must align with the implementation
-// of the ORT OpenVINO EP. Misalignment of keys will be ignored. Misalignment of
-// values may cause errors.
-// More details can be found at:
-// https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/providers/openvino/openvino_provider_factory.cc
-// and
-// https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options,
-//
-// Keys:
-constexpr char kOVPrecision[] = "precision";
-constexpr char kOVCacheDir[] = "cache_dir";
-// Values:
-constexpr char kOVDeviceType[] = "device_type";
-constexpr char kOVDeviceGPU[] = "GPU";
-constexpr char kOVDeviceCPU[] = "CPU";
-constexpr char kOVDeviceNPU[] = "NPU";
 
 struct Session {
   Session(ScopedOrtEnv env,
@@ -169,7 +149,7 @@ void GraphImplOrt::CreateAndBuild(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
-                     std::move(graph_info), context->options().Clone(),
+                     std::move(graph_info), context->session_options(),
                      context->properties(), std::move(constant_operands),
                      std::move(scoped_trace)),
       std::move(wrapped_callback));
@@ -179,144 +159,22 @@ void GraphImplOrt::CreateAndBuild(
 base::expected<std::unique_ptr<GraphImplOrt::ComputeResources>, mojom::ErrorPtr>
 GraphImplOrt::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
-    mojom::CreateContextOptionsPtr context_options,
+    scoped_refptr<SessionOptions> session_options,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     ScopedTrace scoped_trace) {
-  const mojom::CreateContextOptions::Device device_type =
-      context_options->device;
-
   scoped_trace.AddStep("Create model info");
   ASSIGN_OR_RETURN(std::unique_ptr<OrtModelEditor::ModelInfo> model_info,
                    GraphBuilderOrt::CreateAndBuild(
                        *graph_info, std::move(context_properties),
                        std::move(constant_operands)));
 
-  scoped_trace.AddStep("Create session options");
-  const OrtApi* ort_api = GetOrtApi();
-  ScopedOrtSessionOptions session_options;
-  if (ORT_CALL_FAILED(ort_api->CreateSessionOptions(
-          ScopedOrtSessionOptions::Receiver(session_options).get()))) {
-    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to create graph."));
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtDumpModel)) {
-    static uint64_t dump_count = 0;
-    base::FilePath dump_directory =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-            switches::kWebNNOrtDumpModel);
-    base::FilePath dump_path = dump_directory.AppendASCII(
-        base::StringPrintf("model%d.onnx", dump_count++));
-
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNOrtUseOpenvino)) {
-      CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
-          session_options.get(), dump_path.value().c_str()));
-    } else {
-      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-          session_options.get(), kOrtSessionOptionEpContextEnable,
-          /*config_value=*/"1"));
-      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-          session_options.get(), kOrtSessionOptionEpContextEmbedMode,
-          /*config_value=*/"1"));
-      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-          session_options.get(), kOrtSessionOptionEpContextFilePath,
-          base::SysWideToUTF8(dump_path.value()).c_str()));
-    }
-
-    // TODO(https://github.com/shiyi9801/chromium/issues/54): Support saving
-    // tensors created with `CreateTensorWithDataAsOrtValue()` or
-    // `CreateTensorWithDataAndDeleterAsOrtValue()` when ORT Model Builder API
-    // supports it.
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtDisableCpuFallback)) {
-    CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-        session_options.get(),
-        /*config_key=*/kOrtSessionOptionsDisableCPUEPFallback,
-        /*config_value=*/"1"));
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtUseOpenvino)) {
-    std::vector<const char*> provider_options_keys;
-    std::vector<const char*> provider_options_values;
-    std::string gpu_precision;
-    switch (device_type) {
-      case mojom::CreateContextOptions::Device::kCpu: {
-        provider_options_keys.push_back(kOVDeviceType);
-        provider_options_values.push_back(kOVDeviceCPU);
-        break;
-      }
-      case mojom::CreateContextOptions::Device::kGpu: {
-        provider_options_keys.push_back(kOVDeviceType);
-        provider_options_values.push_back(kOVDeviceGPU);
-
-        // "GPU" will use FP16 inference precision by default.
-        if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kWebNNOrtOVGpuPrecision)) {
-          gpu_precision =
-              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                  switches::kWebNNOrtOVGpuPrecision);
-          provider_options_keys.push_back(kOVPrecision);
-          provider_options_values.push_back(gpu_precision.data());
-        }
-        break;
-      }
-      case mojom::CreateContextOptions::Device::kNpu: {
-        provider_options_keys.push_back(kOVDeviceType);
-        provider_options_values.push_back(kOVDeviceNPU);
-        break;
-      }
-    }
-
-    std::string cache_dir;
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNOrtUseOVModelCache)) {
-      base::FilePath cache_path =
-          base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-              switches::kWebNNOrtUseOVModelCache);
-
-      cache_dir = base::SysWideToUTF8(cache_path.value());
-      provider_options_keys.push_back(kOVCacheDir);
-      provider_options_values.push_back(cache_dir.c_str());
-    }
-
-    // It is recommended to disable the graph optimization for OpenVINO
-    // backend.
-    // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
-    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options.get(), GraphOptimizationLevel::ORT_DISABLE_ALL));
-
-    scoped_trace.AddStep("Append OpenVINO execution provider");
-    // OpenVINO related dlls are loaded by this call.
-    if (ORT_CALL_FAILED(
-            ort_api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(
-                session_options.get(), provider_options_keys.data(),
-                provider_options_values.data(),
-                provider_options_keys.size()))) {
-      return base::unexpected(
-          mojom::Error::New(mojom::Error::Code::kUnknownError,
-                            "OnnxRuntime OpenVINO EP is not supported."));
-    }
-  } else {
-    // Use CPU EP by default.
-    //
-    // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate how
-    // to apply layout optimizations (ORT_ENABLE_ALL).
-    // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
-    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
-  }
-
   // `CreateEnv()` will increase the reference count and return the reference of
   // the existing `OrtEnv` instance that is created by context provider. `env`
   // will be owned by `GraphImplOrt::Session` that ensures releasing `OrtEnv`
   // reference after releasing `OrtSession`.
+  const OrtApi* ort_api = GetOrtApi();
   ScopedOrtEnv env;
   if (ORT_CALL_FAILED(ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "WebNN",
                                          ScopedOrtEnv::Receiver(env).get()))) {
@@ -327,7 +185,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;
   if (ORT_CALL_FAILED(GetOrtModelEditorApi()->CreateSessionFromModel(
-          env.get(), model_info->model.get(), session_options.get(),
+          env.get(), model_info->model.get(), session_options->get(),
           ScopedOrtSession::Receiver(session).get()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to build graph."));

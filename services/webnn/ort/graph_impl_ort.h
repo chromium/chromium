@@ -30,6 +30,7 @@ class ScopedTrace;
 namespace ort {
 
 class ContextImplOrt;
+class SessionOptions;
 
 // GraphImplOrt inherits from WebNNGraphImpl to represent a ort graph
 // implementation. It is mainly responsible for building a ort
@@ -59,7 +60,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
-      mojom::CreateContextOptionsPtr context_options,
+      scoped_refptr<SessionOptions> session_options,
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
