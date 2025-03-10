@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js, unless the document is loaded from an allowed
@@ -58,9 +58,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
-  const std::vector<const char*> kSubframeNames{"one", "two"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -78,6 +77,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // Re-do the navigation after User Bypass is enabled and assert all frames are
   // loaded despite the blocklist matching on the deactivated filter.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
@@ -94,7 +94,6 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   ExpectFpfExceptionUkms(test_ukm_recorder, 1u,
                          static_cast<int64_t>(ExceptionSource::USER_BYPASS));
 
-  const std::vector<bool> kExpectAllSubframes{true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -107,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js, unless the document is loaded from an allowed
@@ -115,6 +114,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
@@ -123,8 +123,6 @@ IN_PROC_BROWSER_TEST_F(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kEnabled, 1);
 
-  const std::vector<const char*> kSubframeNames{"one", "two"};
-  const std::vector<bool> kExpectOnlySecondSubframe{false, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
@@ -142,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(
   // Re-do the navigation after User Bypass is enabled and assert all frames are
   // loaded despite the blocklist matching on the deactivated filter.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
@@ -158,7 +157,6 @@ IN_PROC_BROWSER_TEST_F(
   ExpectFpfExceptionUkms(test_ukm_recorder, 1u,
                          static_cast<int64_t>(ExceptionSource::USER_BYPASS));
 
-  const std::vector<bool> kExpectAllSubframes{true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -170,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Would disallow loading child frame documents that in turn would end up
   // loading included_script.js. However, in dry run mode, all frames are
@@ -178,9 +176,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
-  const std::vector<const char*> kSubframeNames{"one", "two"};
-  const std::vector<bool> kExpectAllSubframes{true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -198,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // Re-do the navigation after User Bypass is enabled and verify all frames are
   // still loaded as bypass exception should have no impact in dry_run mode.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
   // +2 UKM logs as User Bypass has no impact in dry_run mode.
   ExpectFpfActivatedUkms(test_ukm_recorder, 4u,
@@ -241,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js, unless the document is loaded from an allowed
@@ -260,10 +258,10 @@ IN_PROC_BROWSER_TEST_F(
   AllowlistViaContentSettings(settings_map, url);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
   // Assert that FPF is not activated due to the user bypass exception.
-  const std::vector<const char*> kSubframeNames{"one", "two"};
-  const std::vector<bool> kExpectAllSubframes{true, true};
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
@@ -293,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kTestFrameSetPath));
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
   // loading included_script.js, unless the document is loaded from an allowed
@@ -307,11 +305,11 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int>(content_settings::CookieControlsMode::kOff));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateSubframesToCrossOriginSite();
 
   // Assert that FPF is not activated because conditions are not met for
   // enabling the filter.
-  const std::vector<const char*> kSubframeNames{"one", "two"};
-  const std::vector<bool> kExpectAllSubframes{true, true};
+
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectAllSubframes));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);

@@ -5,6 +5,8 @@
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -15,9 +17,11 @@
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +29,10 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace fingerprinting_protection_filter {
+
+// Cross-origin base url definitions.
+const std::string& embedder_base = "embedder.test";
+const std::string& cross_site_base = "cross-site.test";
 
 FingerprintingProtectionFilterBrowserTest::
     FingerprintingProtectionFilterBrowserTest() {
@@ -39,10 +47,42 @@ FingerprintingProtectionFilterBrowserTest::
 FingerprintingProtectionFilterBrowserTest::
     ~FingerprintingProtectionFilterBrowserTest() = default;
 
+GURL FingerprintingProtectionFilterBrowserTest::GetTestUrl(
+    const std::string& relative_url) const {
+  return embedded_test_server()->GetURL(embedder_base, relative_url);
+}
+
+GURL FingerprintingProtectionFilterBrowserTest::GetCrossSiteTestUrl(
+    const std::string& relative_url) const {
+  return embedded_test_server()->GetURL(cross_site_base, relative_url);
+}
+
+void FingerprintingProtectionFilterBrowserTest::
+    NavigateSubframesToCrossOriginSite() {
+  NavigateFrame(kSubframeNames[0],
+                GetCrossSiteTestUrl("/frame_with_included_script.html"));
+  NavigateFrame(kSubframeNames[1],
+                GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
+  NavigateFrame(kSubframeNames[2],
+                GetCrossSiteTestUrl("/frame_with_included_script.html"));
+}
+void FingerprintingProtectionFilterBrowserTest::UpdateIncludedScriptSource(
+    const GURL& url) {
+  ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
+                              (content::JsReplace(
+                                  R"(script_element = document.querySelector(
+      'script[src=\"included_script.js\"]');
+      script_element = '$1';)",
+                                  url))));
+}
+
 void FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread() {
   SubresourceFilterSharedBrowserTest::SetUpOnMainThread();
+  content::SetupCrossSiteRedirector(embedded_test_server());
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/fingerprinting_protection");
+  host_resolver()->AddRule(embedder_base, "127.0.0.1");
+  host_resolver()->AddRule(cross_site_base, "127.0.0.1");
   // Allow derived classes to start the server on their own.
 }
 
@@ -51,6 +91,18 @@ void FingerprintingProtectionFilterBrowserTest::
   subresource_filter::testing::TestRulesetPair test_ruleset_pair;
   ruleset_creator_.CreateRulesetToDisallowURLsWithPathSuffix(
       suffix, &test_ruleset_pair);
+
+  subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
+      g_browser_process->fingerprinting_protection_ruleset_service());
+  ASSERT_NO_FATAL_FAILURE(
+      test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
+}
+
+void FingerprintingProtectionFilterBrowserTest::
+    SetRulesetToDisallowURLsWithSubstring(const std::string& substring) {
+  subresource_filter::testing::TestRulesetPair test_ruleset_pair;
+  ruleset_creator_.CreateRulesetToDisallowURLWithSubstrings({substring},
+                                                            &test_ruleset_pair);
 
   subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
       g_browser_process->fingerprinting_protection_ruleset_service());
@@ -131,6 +183,20 @@ void FingerprintingProtectionFilterBrowserTest::ExpectFpfExceptionUkms(
         entry, ukm::builders::FingerprintingProtectionException::kSourceName,
         expected_source);
   }
+}
+
+void FingerprintingProtectionFilterBrowserTest::
+    NavigateMultiFrameSubframesAndLoad3pScripts() {
+  NavigateFrame(kSubframeNames[0],
+                GetTestUrl("/frame_with_included_script.html"));
+  UpdateIncludedScriptSource(GetCrossSiteTestUrl("/included_script.js"));
+  NavigateFrame(kSubframeNames[1],
+                GetTestUrl("/frame_with_allowed_script.html"));
+  UpdateIncludedScriptSource(
+      GetCrossSiteTestUrl("/included_allowed_script.js"));
+  NavigateFrame(kSubframeNames[2],
+                GetTestUrl("/frame_with_included_script.html"));
+  UpdateIncludedScriptSource(GetCrossSiteTestUrl("/included_script.js"));
 }
 
 // ============= FingerprintingProtectionFilterDryRunBrowserTest ==============

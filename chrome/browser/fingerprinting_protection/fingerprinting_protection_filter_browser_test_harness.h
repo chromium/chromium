@@ -17,6 +17,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -25,6 +26,15 @@
 #endif
 
 namespace fingerprinting_protection_filter {
+
+// ================= kMultiPlatformTestFrameSetPath Constants ==================
+
+// iframe names defined in `kMultiPlatformTestFrameSetPath`.
+const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+const std::vector<bool> kExpectAllSubframes{true, true, true};
+const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+
+// ================ FingerprintingProtectionFilterBrowserTest =================
 
 // Browser tests for the Fingerprinting Protection Filter component. Due to some
 // shared functionality with the Subresource Filter, these tests use a
@@ -40,10 +50,6 @@ class FingerprintingProtectionFilterBrowserTest
       const FingerprintingProtectionFilterBrowserTest&) = delete;
 
   ~FingerprintingProtectionFilterBrowserTest() override;
-
-  // The path to a multi-frame document used for desktop browser tests.
-  static constexpr const char kTestFrameSetPath[] =
-      "/subresource_filter/frame_set.html";
 
   // The path to a multi-frame document used for browser tests that run on
   // Android and Desktop.
@@ -94,9 +100,17 @@ class FingerprintingProtectionFilterBrowserTest
       "TotalCPUDuration.Incognito";
 
  protected:
+  // Override to use a custom `embedder_base` url.
+  GURL GetTestUrl(const std::string& relative_url) const override;
+
+  // Same as GetTestUrl, but uses a cross-origin base url, `cross-origin.test`.
+  GURL GetCrossSiteTestUrl(const std::string& relative_url) const;
+
   void SetUpOnMainThread() override;
 
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
+
+  void SetRulesetToDisallowURLsWithSubstring(const std::string& substring);
 
   void SetRulesetWithRules(const std::vector<proto::UrlRule>& rules);
 
@@ -121,6 +135,17 @@ class FingerprintingProtectionFilterBrowserTest
   void ExpectFpfExceptionUkms(const ukm::TestAutoSetUkmRecorder& recorder,
                               const unsigned long& expected_count,
                               const int64_t& expected_source);
+
+  // Navigate all subframes of `kMultiPlatformTestFrameSetPath` to cross-origin
+  // sites, i.e. `cross-origin.test/`.
+  void NavigateSubframesToCrossOriginSite();
+
+  // Update the src of included_script.js with the input.
+  void UpdateIncludedScriptSource(const GURL& url);
+
+  // Navigate subframes in `kMultiPlatformTestFrameSetPath` and load scripts in
+  // 3p (cross-origin.test) contexts.
+  void NavigateMultiFrameSubframesAndLoad3pScripts();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
