@@ -4152,6 +4152,8 @@ static_library("browser") {
       "upgrade_detector/upgrade_detector.cc",
       "upgrade_detector/upgrade_detector.h",
       "upgrade_detector/upgrade_observer.h",
+      "upgrade_detector/version_history_client.cc",
+      "upgrade_detector/version_history_client.h",
       "usb/usb_connection_tracker.cc",
       "usb/usb_connection_tracker.h",
       "usb/usb_connection_tracker_factory.cc",
@@ -4537,8 +4539,6 @@ static_library("browser") {
         "upgrade_detector/installed_version_poller.h",
         "upgrade_detector/upgrade_detector_impl.cc",
         "upgrade_detector/upgrade_detector_impl.h",
-        "upgrade_detector/version_history_client.cc",
-        "upgrade_detector/version_history_client.h",
         "usb/usb_status_icon.cc",
         "usb/usb_status_icon.h",
       ]
