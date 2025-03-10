@@ -4,19 +4,18 @@
 
 #include "ui/accessibility/platform/ax_unique_id.h"
 
-#include <unordered_set>
-
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ui {
 
 namespace {
 
 // Returns the container of assigned IDs.
-std::unordered_set<AXPlatformNodeId>& GetAssignedIds() {
-  static base::NoDestructor<std::unordered_set<AXPlatformNodeId>> assigned_ids;
+absl::flat_hash_set<AXPlatformNodeId>& GetAssignedIds() {
+  static base::NoDestructor<absl::flat_hash_set<AXPlatformNodeId>> assigned_ids;
   return *assigned_ids;
 }
 

@@ -129,6 +129,7 @@
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -4772,7 +4773,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // A mapping of each AXNodeID managed by `browser_accessibility_manager_`,
   // which is only unique within its renderer, to an AXUniqueId, which is unique
   // within the scope of the web contents.
-  std::map<ui::AXNodeID, ui::AXUniqueId> ax_unique_ids_;
+  absl::flat_hash_map<ui::AXNodeID, ui::AXUniqueId> ax_unique_ids_;
 
   // This is the value of the reset token expected for accessibility messages.
   // Any message with a different reset token will be dropped.

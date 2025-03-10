@@ -3844,10 +3844,9 @@ bool RenderFrameHostImpl::AccessibilityIsWebContentSource() {
 
 ui::AXPlatformNodeId RenderFrameHostImpl::GetOrCreateAXNodeUniqueId(
     ui::AXNodeID ax_node_id) {
-  auto iter = ax_unique_ids_.lower_bound(ax_node_id);
-  if (iter == ax_unique_ids_.end() || iter->first != ax_node_id) {
-    iter =
-        ax_unique_ids_.emplace_hint(iter, ax_node_id, ui::AXUniqueId::Create());
+  auto iter = ax_unique_ids_.find(ax_node_id);
+  if (iter == ax_unique_ids_.end()) {
+    iter = ax_unique_ids_.emplace(ax_node_id, ui::AXUniqueId::Create()).first;
   }
   return iter->second;
 }
