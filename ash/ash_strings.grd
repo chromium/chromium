@@ -6928,8 +6928,8 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCANNER_ERROR_GENERIC" desc="Generic message shown when an error occurs while loading actions for a screenshot.">
         Something went wrong.
       </message>
-      <message name="IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message shown when the language detected in the screenshot area is unsupported for this feature.">
-        This language isn't supported
+      <message name="IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message shown when more actions are not available because the language detected in the screenshot area is unsupported.">
+        No more actions for this language
       </message>
 
       <!-- Snap Group -->
