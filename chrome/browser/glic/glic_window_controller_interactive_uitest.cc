@@ -46,6 +46,11 @@
 
 namespace glic {
 
+namespace {
+const InteractiveBrowserTestApi::DeepQuery kMockGlicClientUnresponsiveButton = {
+    "#busyWork"};
+}  // anonymous namespace
+
 class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
  public:
   GlicWindowControllerUiTest() = default;
@@ -348,6 +353,15 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
         glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
       }),
       CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ClientBecomeUnresponsive) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      ClickMockGlicElement(kMockGlicClientUnresponsiveButton, true),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      WaitForState(test::internal::kGlicAppState,
+                   mojom::WebUiState::kUnresponsive));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest
