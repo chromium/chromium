@@ -67,6 +67,13 @@ bool EmbeddedPermissionPromptAndroid::ShouldFinalizeRequestAfterDecided()
   return false;
 }
 
+std::optional<gfx::Rect>
+EmbeddedPermissionPromptAndroid::GetViewBoundsInScreen() const {
+  // This is a modal prompt, the view bounds will cover the whole content
+  // view.
+  return web_contents()->GetContainerBounds();
+}
+
 std::vector<permissions::ElementAnchoredBubbleVariant>
 EmbeddedPermissionPromptAndroid::GetPromptVariants() const {
   std::vector<permissions::ElementAnchoredBubbleVariant> variants;

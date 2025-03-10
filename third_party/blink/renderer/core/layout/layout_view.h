@@ -358,7 +358,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   // Set if laying out with a new initial containing block size, and populated
   // as we handle nodes that may have been affected by that.
-  Member<HeapHashSet<Member<const LayoutObject>>>
+  Member<GCedHeapHashSet<Member<const LayoutObject>>>
       initial_containing_block_resize_handled_list_;
 
   bool CanHaveChildren() const override;

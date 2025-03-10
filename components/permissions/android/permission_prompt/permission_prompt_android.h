@@ -86,7 +86,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
       raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
   Requests() const;
   GURL GetRequestingOrigin() const;
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() const { return web_contents_; }
   PermissionDialogDelegate* permission_dialog_delegate() const {
     return permission_dialog_delegate_.get();
   }

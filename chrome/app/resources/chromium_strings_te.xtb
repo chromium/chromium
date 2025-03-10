@@ -456,7 +456,6 @@
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="734373864078049451">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chromium అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>
-<translation id="7355355292030546812">ఈ డౌన్‌లోడ్‌ను Chromium బ్లాక్ చేసింది, ఎందుకంటే <ph name="USER_EMAIL" />‌తో సహా మీ వ్యక్తిగత, సోషల్ నెట్‌వర్క్ ఖాతాలకు ఆ ఫైల్ హాని కలిగించగలదు</translation>
 <translation id="7384121030444253939">ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయదు. బదులుగా దాన్ని తీసివేయమని Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="7389750180956889333">Chromium ఫారమ్‌లను బాగా అర్థం చేసుకుంటుంది, మీ కోసం వాటిని వేగంగా ఆటోఫిల్ చేయగలదు. <ph name="BEGIN_LINK" />Chrome ఆటోఫిల్<ph name="END_LINK" /> గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>

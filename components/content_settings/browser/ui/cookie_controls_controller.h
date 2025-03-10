@@ -182,7 +182,7 @@ class CookieControlsController final
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,
       const GURL url,
-      SettingInfo info,
+      const SettingInfo& info,
       bool cookies_allowed);
 
   bool ShowIpProtection() const;

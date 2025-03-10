@@ -75,7 +75,7 @@ void NodeMutationObserverData::RemoveRegistration(
 void NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {
   if (!scroll_timelines_) {
     scroll_timelines_ =
-        MakeGarbageCollected<HeapHashSet<Member<ScrollTimeline>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<ScrollTimeline>>>();
   }
   scroll_timelines_->insert(timeline);
 }

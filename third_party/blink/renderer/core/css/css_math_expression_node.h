@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -928,12 +929,13 @@ struct DowncastTraits<CSSMathExpressionAnchorQuery> {
 class CORE_EXPORT CSSMathExpressionSiblingFunction final
     : public CSSMathExpressionNode {
  public:
-  explicit CSSMathExpressionSiblingFunction(CSSValueID function_id)
+  explicit CSSMathExpressionSiblingFunction(
+      const cssvalue::CSSScopedKeywordValue* function)
       : CSSMathExpressionNode(kCalcNumber,
                               /*has_comparisons=*/false,
                               /*has_anchor_functions=*/false,
-                              /*needs_tree_scope_population=*/false),
-        function_id_(function_id) {}
+                              /*needs_tree_scope_population=*/true),
+        function_(function) {}
 
   // TODO(crbug.com/1309178): This is not entirely correct, since "math
   // function" should refer to functions defined in [1]. We may need to clean up
@@ -942,7 +944,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
   bool IsMathFunction() const final { return true; }
 
   CSSMathExpressionNode* Copy() const override {
-    return MakeGarbageCollected<CSSMathExpressionSiblingFunction>(function_id_);
+    return MakeGarbageCollected<CSSMathExpressionSiblingFunction>(function_);
   }
 
   bool IsSiblingFunction() const override { return true; }
@@ -982,9 +984,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
       const CSSLengthResolver&) const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(
-      const TreeScope*) const final {
-    NOTREACHED();
-  }
+      const TreeScope*) const final;
 
 #if DCHECK_IS_ON()
   bool InvolvesPercentageComparisons() const final { return false; }
@@ -1001,6 +1001,8 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
     return false;
   }
 
+  void Trace(Visitor* visitor) const final;
+
  protected:
   double ComputeDouble(const CSSLengthResolver&) const final;
   std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
@@ -1010,7 +1012,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
                                           const CSSLengthResolver&) const;
   AnchorQuery ToQuery(const CSSLengthResolver& length_resolver) const;
 
-  CSSValueID function_id_;
+  Member<const cssvalue::CSSScopedKeywordValue> function_;
 };
 
 template <>

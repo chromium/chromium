@@ -219,8 +219,7 @@ class ProfileOAuth2TokenServiceDelegate {
   // for this method.
   // Redirects to `LoadCredentialsInternal()` which can be overridden by
   // subclasses. Sets the source for the refresh token operation.
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing);
+  void LoadCredentials(const CoreAccountId& primary_account_id);
 
   // Returns the state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state() const {
@@ -335,8 +334,8 @@ class ProfileOAuth2TokenServiceDelegate {
   // Internal implementations of the methods that can be overridden by
   // subclasses.
 
-  virtual void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                                       bool is_syncing) = 0;
+  virtual void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) = 0;
 
   virtual void UpdateCredentialsInternal(
       const CoreAccountId& account_id,

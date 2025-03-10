@@ -265,15 +265,14 @@ const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
 }
 
 void ProfileOAuth2TokenServiceDelegate::LoadCredentials(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
+    const CoreAccountId& primary_account_id) {
   DCHECK_EQ(SourceForRefreshTokenOperation::kUnknown,
             update_refresh_token_source_);
   // AutoReset is not used here since the call to loading the credentials is
   // asynchronous. The source will be reset in `FireRefreshTokensLoaded()`.
   update_refresh_token_source_ =
       SourceForRefreshTokenOperation::kTokenService_LoadCredentials;
-  LoadCredentialsInternal(primary_account_id, is_syncing);
+  LoadCredentialsInternal(primary_account_id);
 }
 
 void ProfileOAuth2TokenServiceDelegate::ExtractCredentials(

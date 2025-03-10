@@ -458,7 +458,6 @@
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="734373864078049451">Таны веб хуудас, хавчуурга, болон бусад Chromium-ийн зүйлс энд байдаг.</translation>
 <translation id="7349591376906416160">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд <ph name="ALTERNATIVE_BROWSER_NAME" />-г нээхээр тохируулсан байна.</translation>
-<translation id="7355355292030546812">Файл <ph name="USER_EMAIL" />-г оруулаад таны хувийн болон сошиал сүлжээний бүртгэлүүдэд хор хөнөөл учруулах боломжтой тул Chromium энэ таталтыг блоклосон</translation>
 <translation id="7384121030444253939">Энэ өргөтгөлийг дэмжихээ больсон. Chromium танд оронд нь үүнийг хасахыг зөвлөж байна.</translation>
 <translation id="7389750180956889333">Chromium маягтыг илүү сайн ойлгодог ба танд илүү хурдан автоматаар бөглөж өгөх боломжтой. <ph name="BEGIN_LINK" />Chrome-н автоматаар бөглөх хэсгийн<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авах</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Дев</translation>

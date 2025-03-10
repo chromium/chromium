@@ -324,8 +324,7 @@ PrimaryAccountManager::PrimaryAccountManager(
   // token service.
   token_service_observation_.Observe(token_service_);
   token_service_->LoadCredentials(
-      GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      HasPrimaryAccount(signin::ConsentLevel::kSync));
+      GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 }
 
 PrimaryAccountManager::~PrimaryAccountManager() = default;

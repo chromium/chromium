@@ -35,12 +35,12 @@ void FakeVideoEffectsService::CreateEffectsProcessor(
   }
 }
 
-std::unique_ptr<base::test::TestFuture<void>>
+base::test::TestFuture<void>
 FakeVideoEffectsService::GetEffectsProcessorCreationFuture() {
   CHECK(!effects_processor_creation_cb_);
 
-  auto result = std::make_unique<base::test::TestFuture<void>>();
-  effects_processor_creation_cb_ = result->GetCallback();
+  base::test::TestFuture<void> result;
+  effects_processor_creation_cb_ = result.GetCallback();
   return result;
 }
 
@@ -51,12 +51,12 @@ void FakeVideoEffectsService::SetBackgroundSegmentationModel(
   }
 }
 
-std::unique_ptr<base::test::TestFuture<base::File>>
+base::test::TestFuture<base::File>
 FakeVideoEffectsService::GetBackgroundSegmentationModelFuture() {
   CHECK(!background_segmentation_model_set_cb_);
 
-  auto result = std::make_unique<base::test::TestFuture<base::File>>();
-  background_segmentation_model_set_cb_ = result->GetCallback();
+  base::test::TestFuture<base::File> result;
+  background_segmentation_model_set_cb_ = result.GetCallback();
   return result;
 }
 

@@ -236,8 +236,8 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
     const ComputedStyle* computed_style = link.GetComputedStyle();
     DCHECK(computed_style);
     DCHECK(!DisplayLockUtilities::LockedAncestorPreventingStyle(link));
-    const Persistent<HeapHashSet<WeakMember<StyleRule>>>& matched_selectors =
-        computed_style->DocumentRulesSelectors();
+    const Persistent<GCedHeapHashSet<WeakMember<StyleRule>>>&
+        matched_selectors = computed_style->DocumentRulesSelectors();
     if (!matched_selectors) {
       return false;
     }

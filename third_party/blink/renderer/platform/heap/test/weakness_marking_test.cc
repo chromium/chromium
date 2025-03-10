@@ -112,13 +112,13 @@ void TestSetImpl(ObjectLiveness object_liveness) {
 }
 
 TEST_F(WeaknessMarkingTest, WeakSet) {
-  using Set = HeapHashSet<WeakMember<IntegerObject>>;
+  using Set = GCedHeapHashSet<WeakMember<IntegerObject>>;
   TestSetImpl<Set, Persistent>(ObjectLiveness::Alive);
   TestSetImpl<Set, WeakPersistent>(ObjectLiveness::Dead);
 }
 
 TEST_F(WeaknessMarkingTest, StrongSet) {
-  using Set = HeapHashSet<Member<IntegerObject>>;
+  using Set = GCedHeapHashSet<Member<IntegerObject>>;
   TestSetImpl<Set, Persistent>(ObjectLiveness::Alive);
   TestSetImpl<Set, WeakPersistent>(ObjectLiveness::Alive);
 }
@@ -179,7 +179,7 @@ TEST_F(WeaknessMarkingTest, ClearWeakHashTableAfterMarking) {
   // left behind after marking. The test creates a backing that is floating
   // garbage. The marking verifier ensures that all buckets are properly
   // deleted.
-  using Set = HeapHashSet<WeakMember<IntegerObject>>;
+  using Set = GCedHeapHashSet<WeakMember<IntegerObject>>;
   Persistent<Set> holder(MakeGarbageCollected<Set>());
   holder->insert(MakeGarbageCollected<IntegerObject>(1));
   IncrementalMarkingTestDriver driver(ThreadState::Current());
@@ -206,7 +206,7 @@ TEST_F(WeaknessMarkingTest, StrongifyBackingOnStack) {
 }
 
 TEST_F(WeaknessMarkingTest, StrongifyAlreadyMarkedOnBackingDuringIteration) {
-  using WeakSet = HeapHashSet<WeakMember<IntegerObject>>;
+  using WeakSet = GCedHeapHashSet<WeakMember<IntegerObject>>;
   static constexpr size_t kNumberOfWeakEntries = 1000;
 
   Persistent<WeakSet> weak_set = MakeGarbageCollected<WeakSet>();

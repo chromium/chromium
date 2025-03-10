@@ -311,7 +311,7 @@ bool IsFillableFieldType(FieldType field_type) {
     case MAX_VALID_FIELD_TYPE:
       return false;
   }
-  return false;
+  NOTREACHED();
 }
 
 std::string_view FieldTypeToStringView(FieldType type) {

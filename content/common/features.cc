@@ -65,6 +65,12 @@ BASE_FEATURE(kHidePastePopupOnGSB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Holdback the removal of debug reason strings in crrev.com/c/6312375
+// to measure the impact.
+BASE_FEATURE(kHoldbackDebugReasonStringRemoval,
+             "HoldbackDebugReasonStringRemoval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kCanvas2DImageChromium,

@@ -398,7 +398,7 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       last_frame_time(now),
       agent_group_schedulers(
           MakeGarbageCollected<
-              HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>()) {}
+              GCedHeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>()) {}
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
 

@@ -14,4 +14,12 @@ public interface WebViewNavigationClientBoundaryInterface
     void onNavigationRedirected(/* WebViewNavigation */ InvocationHandler navigation);
 
     void onNavigationCompleted(/* WebViewNavigation */ InvocationHandler navigation);
+
+    void onPageDeleted(/* WebViewPage */ InvocationHandler page);
+
+    void onPageLoadEventFired(/* WebViewPage */ InvocationHandler page);
+
+    void onPageDOMContentLoadedEventFired(/* WebViewPage */ InvocationHandler page);
+
+    void onFirstContentfulPaint(/* WebViewPage */ InvocationHandler page);
 }

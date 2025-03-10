@@ -549,7 +549,7 @@ TEST_F(ContentSettingsPrefTest, DecidedByRelatedWebsiteSetsLoad) {
     content_settings_pref->SetWebsiteSetting(
         ContentSettingsPattern::FromString("http://example.com"),
         ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        metadata, partition_key);
+        std::move(metadata), partition_key);
   }
 
   // Read pref.
@@ -590,7 +590,7 @@ TEST_F(ContentSettingsPrefTest,
     content_settings_pref->SetWebsiteSetting(
         ContentSettingsPattern::FromString("http://example.com"),
         ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        metadata, partition_key);
+        std::move(metadata), partition_key);
   }
 
   // Read pref from dict and make sure `decided_by_related_website_sets` is not

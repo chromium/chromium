@@ -531,4 +531,43 @@ TEST_F(PermissionsAiHandlerTest,
   histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 1);
 }
 
+TEST_F(PermissionsAiHandlerTest, ModelHandlerUnsubscribesSuccessfully) {
+  // Prevent regressions to behavior as the one fixed in crbug.com/399860232.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
+  permissions_ai_handler_->InquireAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
+  EXPECT_EQ(future.Take(), std::nullopt);
+
+  run_loop_for_add_observer.Run();
+  ASSERT_TRUE(availability_observer);
+
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kPermissionsAi,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              RemoveOnDeviceModelAvailabilityChangeObserver(_, _));
+
+  // Destructor shall trigger unsubscription.
+  permissions_ai_handler_.reset();
+}
+
 }  // namespace permissions

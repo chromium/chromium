@@ -459,7 +459,6 @@
 <translation id="7339898014177206373">नई विंडो</translation>
 <translation id="734373864078049451">आपके वेब, बुकमार्क, और अन्य क्रोमियम सामग्री यहां मौजूद रहती है.</translation>
 <translation id="7349591376906416160">आपके सिस्टम एडमिन ने <ph name="ALTERNATIVE_BROWSER_NAME" /> खाेलने के लिए, क्रोमियम को कॉन्फ़िगर किया है ताकि <ph name="TARGET_URL_HOSTNAME" /> काे ऐक्सेस किया जा सके.</translation>
-<translation id="7355355292030546812">Chromium ने इस डाउनलोड को ब्लॉक किया है, क्योंकि यह फ़ाइल आपके निजी और सोशल नेटवर्क खातों को नुकसान पहुंचा सकती है. इनमें <ph name="USER_EMAIL" /> भी शामिल है</translation>
 <translation id="7384121030444253939">इस एक्सटेंशन का इस्तेमाल अब नहीं किया जा सकता. Chromium का सुझाव है कि आप इसे अनइंस्टाॅल कर दें.</translation>
 <translation id="7389750180956889333">Chromium, फ़ॉर्म को बेहतर तरीके से समझता है और आपके लिए, फ़ॉर्म में तुरंत और ऑटोमैटिक तरीके से जानकारी भर सकता है. <ph name="BEGIN_LINK" />Chrome की, जानकारी ऑटोमैटिक तरीके से भरने की सुविधा<ph name="END_LINK" /> के बारे में ज़्यादा जानें</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - क्रोमियम डेवपलर</translation>

@@ -40,12 +40,9 @@ using testing::Return;
 class FakeEnterpriseSearchAggregatorProvider
     : public EnterpriseSearchAggregatorProvider {
  public:
-  explicit FakeEnterpriseSearchAggregatorProvider(
-      AutocompleteProviderClient* client,
-      AutocompleteProviderListener* listener)
-      : EnterpriseSearchAggregatorProvider(client, listener),
-        update_results_future_(
-            std::make_unique<base::test::TestFuture<void>>()) {}
+  FakeEnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
+                                         AutocompleteProviderListener* listener)
+      : EnterpriseSearchAggregatorProvider(client, listener) {}
 
   using EnterpriseSearchAggregatorProvider::CreateMatch;
   using EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider;
@@ -63,14 +60,14 @@ class FakeEnterpriseSearchAggregatorProvider
                      const int response_code) override {
     EnterpriseSearchAggregatorProvider::UpdateResults(std::move(response_value),
                                                       response_code);
-    update_results_future_->SetValue();
+    update_results_future_.SetValue();
   }
 
-  bool WaitForUpdateResults() { return update_results_future_->Wait(); }
+  bool WaitForUpdateResults() { return update_results_future_.Wait(); }
 
  protected:
   ~FakeEnterpriseSearchAggregatorProvider() override = default;
-  std::unique_ptr<base::test::TestFuture<void>> update_results_future_;
+  base::test::TestFuture<void> update_results_future_;
 };
 
 const std::string kGoodJsonResponse = base::StringPrintf(

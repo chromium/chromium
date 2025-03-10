@@ -42,8 +42,8 @@ ProgressEvent::ProgressEvent(const AtomicString& type,
 
 ProgressEvent::ProgressEvent(const AtomicString& type,
                              bool length_computable,
-                             uint64_t loaded,
-                             uint64_t total)
+                             double loaded,
+                             double total)
     : Event(type, Bubbles::kNo, Cancelable::kNo),
       length_computable_(length_computable),
       loaded_(loaded),

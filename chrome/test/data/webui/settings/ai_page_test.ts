@@ -443,7 +443,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
 
   // Always hide the Autofill AI row if `autofillAiFeatureEnabled` is false.
   test('AutofillAIHiddenIfFeatureNotEnabled', async () => {
-    entityDataManager.setloadEntityInstancesResponse([testEntityWithLabels]);
+    entityDataManager.setLoadEntityInstancesResponse([testEntityWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: false,
       userEligibleForAutofillAi: true,
@@ -482,7 +482,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
     // V2 UI should still be hidden while the refresh flag is disabled.
     assertFalse(isChildVisible(page, '#autofillAiRowV2'));
 
-    entityDataManager.setloadEntityInstancesResponse([testEntityWithLabels]);
+    entityDataManager.setLoadEntityInstancesResponse([testEntityWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: true,
       userEligibleForAutofillAi: false,

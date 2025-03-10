@@ -128,8 +128,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedEarlyDeath) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -166,8 +166,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -205,8 +205,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithQueuedResult) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -246,8 +246,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithTwoQueuedResults) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -298,8 +298,8 @@ TEST_F(IDBTransactionTest, DocumentShutdownWithQueuedAndBlockedResults) {
 
     BuildTransaction(scope, database_backend, transaction_backend);
 
-    Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-        MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+    Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+        MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
     live_transactions->insert(transaction_);
 
     ThreadState::Current()->CollectAllGarbageForTesting();
@@ -348,8 +348,8 @@ TEST_F(IDBTransactionTest, TransactionFinish) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();

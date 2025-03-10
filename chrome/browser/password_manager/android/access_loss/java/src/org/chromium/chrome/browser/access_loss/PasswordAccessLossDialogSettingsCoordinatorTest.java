@@ -13,8 +13,8 @@ import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRe
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.MAIN_ACTION;
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.getDialogShownHistogramName;
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.getDialogUserActionHistogramName;
-import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
-import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
+import static org.chromium.chrome.browser.password_manager.HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
+import static org.chromium.chrome.browser.password_manager.HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
 
 import android.app.Activity;
 import android.content.Context;

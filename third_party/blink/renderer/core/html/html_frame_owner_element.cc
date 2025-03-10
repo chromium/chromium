@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -80,9 +81,10 @@ namespace {
 
 using PluginSet = HeapHashSet<Member<WebPluginContainerImpl>>;
 PluginSet& PluginsPendingDispose() {
-  DEFINE_STATIC_LOCAL(Persistent<PluginSet>, set,
-                      (MakeGarbageCollected<PluginSet>()));
-  return *set;
+  using PluginSetHolder = DisallowNewWrapper<PluginSet>;
+  DEFINE_STATIC_LOCAL(Persistent<PluginSetHolder>, holder,
+                      (MakeGarbageCollected<PluginSetHolder>()));
+  return holder->Value();
 }
 
 bool DoesParentAllowLazyLoadingChildren(Document& document) {

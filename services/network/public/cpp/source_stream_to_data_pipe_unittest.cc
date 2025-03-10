@@ -215,10 +215,11 @@ TEST_P(SourceStreamToDataPipeTest, Error) {
 }
 
 TEST_P(SourceStreamToDataPipeTest, ConsumerClosed) {
-  const char message[] = "a";
+  const std::string message(GetParam().pipe_capacity, 'a');
 
   Init();
-  source()->AddReadResult(message, sizeof(message) - 1, net::OK,
+  source()->set_expect_all_input_consumed(false);
+  source()->AddReadResult(message.data(), message.size(), net::OK,
                           GetParam().mode);
   adapter()->Start(callback());
 

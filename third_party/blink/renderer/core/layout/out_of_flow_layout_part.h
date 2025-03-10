@@ -254,7 +254,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool overflows_containing_block = false;
 
     Member<Element> accessibility_anchor;
-    Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
+    Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
     void Trace(Visitor* visitor) const;
   };

@@ -65,12 +65,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
       FlushReason,
       scoped_refptr<StaticBitmapImage> image);
 
-  // If `image` has unpremultiplied alpha, then multiply alpha. If `image` is
-  // opaque or already premultiplied, return `image.
-  static scoped_refptr<StaticBitmapImage> GetWithAlphaPremultiplied(
-      FlushReason,
-      scoped_refptr<StaticBitmapImage> image);
-
   // Convert `image` to the specified color space.
   static scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
       FlushReason,

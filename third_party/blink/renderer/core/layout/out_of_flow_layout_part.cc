@@ -1836,7 +1836,7 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
     NodeToLayout& oof_node_to_layout,
     const ConstraintSpace* fragmentainer_constraint_space,
     bool is_last_fragmentainer_so_far) {
-  const HeapHashSet<Member<Element>>* past_display_lock_elements = nullptr;
+  const GCedHeapHashSet<Member<Element>>* past_display_lock_elements = nullptr;
   if (auto* box = oof_node_to_layout.node_info.node.GetLayoutBox()) {
     past_display_lock_elements = box->DisplayLocksAffectedByAnchors();
   }

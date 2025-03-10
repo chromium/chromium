@@ -203,13 +203,10 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
-    ResetProfileOAuth2TokenServiceDelegateChromeOS(
-        /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);
+    ResetProfileOAuth2TokenServiceDelegateChromeOS();
   }
 
-  void ResetProfileOAuth2TokenServiceDelegateChromeOS(
-      bool delete_signin_cookies_on_exit,
-      bool is_syncing) {
+  void ResetProfileOAuth2TokenServiceDelegateChromeOS() {
     delegate_.reset();
     delegate_ =
         std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
@@ -220,7 +217,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
 
     LoadCredentialsAndWaitForCompletion(
-        /*primary_account_id=*/account_info_.account_id, is_syncing);
+        /*primary_account_id=*/account_info_.account_id);
   }
 
   account_manager::AccountKey gaia_account_key() const {
@@ -255,13 +252,12 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   }
 
   void LoadCredentialsAndWaitForCompletion(
-      const CoreAccountId& primary_account_id,
-      bool is_syncing) {
+      const CoreAccountId& primary_account_id) {
     signin::MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokensLoaded())
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    delegate_->LoadCredentials(primary_account_id, is_syncing);
+    delegate_->LoadCredentials(primary_account_id);
     run_loop.Run();
   }
 
@@ -342,8 +338,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
   // Test that LoadCredentials works as expected.
   EXPECT_FALSE(observer.refresh_tokens_loaded_);
-  delegate->LoadCredentials(CoreAccountId() /* primary_account_id */,
-                            /*is_syncing=*/false);
+  delegate->LoadCredentials(CoreAccountId() /* primary_account_id */);
   EXPECT_TRUE(observer.refresh_tokens_loaded_);
   EXPECT_EQ(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
@@ -604,8 +599,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
           network::TestNetworkConnectionTracker::GetInstance(),
           account_manager_facade.get(),
           /*is_regular_profile=*/true);
-  delegate->LoadCredentials(account1.account_id /* primary_account_id */,
-                            /*is_syncing=*/false);
+  delegate->LoadCredentials(account1.account_id /* primary_account_id */);
   TestOAuth2TokenServiceObserver observer(delegate.get());
   // Wait until AccountManager is fully initialized.
   task_environment_.RunUntilIdle();

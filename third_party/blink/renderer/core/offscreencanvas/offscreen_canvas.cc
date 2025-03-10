@@ -259,8 +259,7 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     FlushReason reason,
     SourceImageStatus* status,
-    const gfx::SizeF& size,
-    const AlphaDisposition alpha_disposition) {
+    const gfx::SizeF& size) {
   if (!context_) {
     *status = kInvalidSourceImageStatus;
     sk_sp<SkSurface> surface = SkSurfaces::Raster(
@@ -282,14 +281,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     image = CreateTransparentImage(Size());
 
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
-
-  if (alpha_disposition == kDontChangeAlpha) {
-    return image;
-  }
-  // If the alpha_disposition is already correct, or the image is opaque, this
-  // is a no-op.
-  return StaticBitmapImageTransform::GetWithAlphaPremultiplied(
-      reason, std::move(image));
+  return image;
 }
 
 ScriptPromise<ImageBitmap> OffscreenCanvas::CreateImageBitmap(

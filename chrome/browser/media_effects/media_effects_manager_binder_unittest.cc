@@ -83,6 +83,6 @@ TEST_F(MediaEffectsManagerBinderTest, BindVideoEffectsProcessor) {
       "some_device_id", &browser_context_,
       video_effects_processor.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(effects_processor_future.Wait());
   EXPECT_TRUE(video_effects_processor.is_connected());
 }
