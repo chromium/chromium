@@ -1219,6 +1219,9 @@ extern const char kCastStreamingWinHardwareH264Description[];
 extern const char kCastEnableStreamingWithHiDPIName[];
 extern const char kCastEnableStreamingWithHiDPIDescription[];
 
+extern const char kChromeWebStoreNavigationThrottleName[];
+extern const char kChromeWebStoreNavigationThrottleDescription[];
+
 extern const char kContextualPageActionsName[];
 extern const char kContextualPageActionsDescription[];
 
