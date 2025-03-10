@@ -2497,13 +2497,8 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
   // are not allowed by css-syntax.
   //
   // https://drafts.csswg.org/css-syntax/#consume-qualified-rule
-  bool custom_property_ambiguity = false;
-  if (CSSVariableParser::IsValidVariableName(stream.Peek())) {
-    CSSParserTokenStream::State state = stream.Save();
-    stream.ConsumeIncludingWhitespace();  // <ident>
-    custom_property_ambiguity = stream.Peek().GetType() == kColonToken;
-    stream.Restore(state);
-  }
+  bool custom_property_ambiguity =
+      CSSVariableParser::StartsCustomPropertyDeclaration(stream);
 
   bool has_visited_pseudo = false;
   // Parse the prelude of the style rule
