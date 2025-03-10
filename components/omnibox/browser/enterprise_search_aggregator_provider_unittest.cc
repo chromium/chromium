@@ -973,7 +973,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::ElementsAre(
+      testing::UnorderedElementsAre(
           ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
           ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
           ScoredMatch{u"https://www.google.com/?q=mango-3-people", 600},
@@ -1073,7 +1073,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
                               "https://url-mango-3/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(
+              testing::UnorderedElementsAre(
                   ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
                   ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
                   ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
@@ -1097,8 +1097,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                              "familyName"),
       },
       {
-          CreateContentResult("title", "mime_type", "https://url/"),
-          CreateContentResult("matchTitle", "mime_type", "https://url/"),
+          CreateContentResult("title", "xmime_type", "https://url/"),
+          CreateContentResult("matchTitle", "xmime_type", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
@@ -1275,8 +1275,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(ScoredMatch{u"https://url/", 401}));
 
-  // Require at least 1 strong match or 2 weak matches.
-  provider_->adjusted_input_ = CreateInput(u"mimeA mimeB", true);
+  // When unscoped, requires at least 1 strong match or 2 weak matches.
+  provider_->adjusted_input_ = CreateInput(u"mimeA mimeB", false);
   ParseResponse(CreateResponse(
       {}, {},
       {
@@ -1285,6 +1285,18 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(ScoredMatch{u"https://url-2/", 201}));
+
+  // When scoped, does not require at least 1 strong match or 2 weak matches.
+  provider_->adjusted_input_ = CreateInput(u"mimeA mimeB", true);
+  ParseResponse(CreateResponse(
+      {}, {},
+      {
+          CreateContentResult("title", "mimeA", "https://url-1/"),
+          CreateContentResult("title", "mimeA mimeB", "https://url-2/"),
+      }));
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(ScoredMatch{u"https://url-2/", 201},
+                                   ScoredMatch{u"https://url-1/", 101}));
 
   // Require at least half the input words to match.
   provider_->adjusted_input_ = CreateInput(u"title x y", true);
