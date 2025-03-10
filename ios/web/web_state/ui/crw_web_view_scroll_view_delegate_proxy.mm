@@ -202,12 +202,6 @@
   if (self.userIsZooming) {
     [self.scrollViewProxy.observers
         webViewScrollViewDidZoom:self.scrollViewProxy];
-  } else {
-    if (@available(iOS 16.0, *)) {
-      // In iOS < 16 versions, changing the value of `zoomScale` calls
-      // `scrollViewDidZoom`.
-      scrollView.zoomScale = scrollView.minimumZoomScale;
-    }
   }
 }
 

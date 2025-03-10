@@ -6,11 +6,17 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
+
+namespace {
+// Delay to fix the zoomScale after a rotation or window size change.
+constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
+}  // namespace
 
 @interface CRWWebControllerContainerView () <CRWViewportAdjustmentContainer>
 
@@ -215,8 +221,13 @@
     // modified as websites can adjust to the preferred content size (using
     // font: -apple-system-body;). It avoids being in a different zoomed
     // position from where the user initially zoomed.
-    UIScrollView* scrollView = self.contentViewProxy.contentView.scrollView;
-    scrollView.zoomScale = scrollView.minimumZoomScale;
+    __weak UIScrollView* weakScrollView =
+        self.contentViewProxy.contentView.scrollView;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 kFixZoomScaleOnRotationDelay.InNanoseconds()),
+                   dispatch_get_main_queue(), ^{
+                     weakScrollView.zoomScale = weakScrollView.minimumZoomScale;
+                   });
   }
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
