@@ -2201,6 +2201,11 @@ chromium-metrics-reviews@google.com.
   <int value="1336" label="GenAISmartGroupingSettings"/>
   <int value="1337" label="GenAiChromeOsSmartActionsSettings"/>
   <int value="1338" label="RelaunchSupersededReleaseAge"/>
+  <int value="1339" label="ClassManagementCaptionsEnabled"/>
+  <int value="1340" label="ClassManagementClassroomIntegrationEnabled"/>
+  <int value="1341" label="ClassManagementNetworkRestrictionEnabled"/>
+  <int value="1342" label="ClassManagementSendingContentEnabled"/>
+  <int value="1343" label="ClassManagementViewScreenEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
