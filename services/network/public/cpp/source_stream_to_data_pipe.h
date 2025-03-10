@@ -35,19 +35,36 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
   int64_t TransferredBytes() const { return transferred_bytes_; }
 
  private:
-  void ReadMore();
-  void DidRead(int result);
+  enum class State {
+    kNone,
+    kBeginWrite,
+    kBeginWriteComplete,
+    kReadData,
+    kReadDataComplete,
+  };
 
+  int DoLoop(int result);
+
+  int DoBeginWrite();
+  int DoBeginWriteComplete(int result);
+  int DoReadData();
+  int DoReadDataComplete(int result);
+  int DoCleanup(int result);
+
+  void DidRead(int result);
   void OnDataPipeWritable(MojoResult result);
-  void OnDataPipeClosed(MojoResult result);
-  void OnComplete(int result);
+
+  void OnIOComplete(int result);
+
+  void CleanupAndRunCallback(int result);
+
+  State next_state_ = State::kNone;
 
   std::unique_ptr<net::SourceStream> source_;
   mojo::ScopedDataPipeProducerHandle dest_;
   base::OnceCallback<void(int)> completion_callback_;
   int64_t transferred_bytes_ = 0;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   mojo::SimpleWatcher writable_handle_watcher_;
 
