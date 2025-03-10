@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/glic_window_controller.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -926,7 +928,7 @@ void GlicWindowController::HandleWindowDragWithOffset(
     glic_widget_->Reparent(nullptr);
 #endif
     GetGlicWidget()->RunMoveLoop(
-        mouse_offset, move_loop_source,
+        GetClampedMouseDragOffset(mouse_offset), move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
     // set glic z-order back to normal after drag is done.
@@ -936,6 +938,18 @@ void GlicWindowController::HandleWindowDragWithOffset(
     // browser window.
     OnDragComplete();
   }
+}
+
+gfx::Vector2d GlicWindowController::GetClampedMouseDragOffset(
+    const gfx::Vector2d& mouse_offset) {
+  static const int kMinimumDragOffset = 10;
+  const int max_x = GetGlicView()->width() - kMinimumDragOffset;
+  const int max_y = GetWidgetInitialSize().height() - kMinimumDragOffset;
+  CHECK_GT(max_x, kMinimumDragOffset);
+  CHECK_GT(max_y, kMinimumDragOffset);
+
+  return {std::clamp(mouse_offset.x(), kMinimumDragOffset, max_x),
+          std::clamp(mouse_offset.y(), kMinimumDragOffset, max_y)};
 }
 
 void GlicWindowController::OnDragComplete() {
