@@ -98,11 +98,14 @@ void GlicFocusedTabManager::OnBrowserBecameActive(
 
 void GlicFocusedTabManager::OnBrowserBecameInactive(
     BrowserWindowInterface* browser_interface) {
-  MaybeUpdateFocusedTab(/*force_notify=*/true);
+  // Debounce these updates in case Glic Window is about to become active.
+  MaybeUpdateFocusedTab(/*force_notify=*/true, /*debounce=*/true);
 }
 
 void GlicFocusedTabManager::OnGlicWindowActivationChanged(bool active) {
-  MaybeUpdateFocusedTab();
+  // Debounce updates when Glic Window becomes inactive in case a browser window
+  // is about to become active.
+  MaybeUpdateFocusedTab(/*force_notify=*/false, /*debounce=*/!active);
 }
 
 void GlicFocusedTabManager::OnWidgetShowStateChanged(views::Widget* widget) {
@@ -131,17 +134,24 @@ void GlicFocusedTabManager::PanelStateChanged(
   MaybeUpdateFocusedTab();
 }
 
-void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify) {
+void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify,
+                                                  bool debounce) {
   // Cache any calls with force_notify set to true so they don't get swallowed
   // by subsequent calls without it. Otherwise necessary updates might get
   // dropped.
   if (force_notify) {
     cached_force_notify_ = true;
   }
-  debouncer_.Start(
-      FROM_HERE, kDebounceDelay,
-      base::BindOnce(&GlicFocusedTabManager::PerformMaybeUpdateFocusedTab,
-                     base::Unretained(this), cached_force_notify_));
+  if (debounce) {
+    debouncer_.Start(
+        FROM_HERE, kDebounceDelay,
+        base::BindOnce(&GlicFocusedTabManager::PerformMaybeUpdateFocusedTab,
+                       base::Unretained(this), cached_force_notify_));
+  } else {
+    // Stop any pending debounced calls so they don't fire needlessly later.
+    debouncer_.Stop();
+    PerformMaybeUpdateFocusedTab(cached_force_notify_);
+  }
 }
 
 void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
