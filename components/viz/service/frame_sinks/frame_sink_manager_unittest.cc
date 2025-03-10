@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_trace_processor.h"
 #include "components/input/features.h"
@@ -878,13 +877,7 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
       local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
   manager_.EvictSurfaces({surface_id});
-
-  // Eviction of the root surface takes a snapshot, so the root surface will
-  // not be evicted immediately.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
-  }));
-
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
@@ -909,13 +902,7 @@ TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
   const LocalSurfaceId next_local_surface_id =
       allocator.GetCurrentLocalSurfaceId();
   manager_.EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
-
-  // Eviction of the root surface takes a snapshot, so the root surface will
-  // not be evicted immediately.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
-  }));
-
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
@@ -939,16 +926,8 @@ TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
       local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
-  manager_.EvictSurfaces({surface_id});
-
-  // Eviction of the root surface takes a snapshot, so the root surface will
-  // not be evicted immediately.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
-  }));
-
-  manager_.EvictSurfaces({surface_id2});
-
+  manager_.EvictSurfaces({surface_id, surface_id2});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
   GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
       local_surface_id2, MakeDefaultCompositorFrame(), std::nullopt, 0);
 

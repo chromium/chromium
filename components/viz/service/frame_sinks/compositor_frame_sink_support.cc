@@ -710,34 +710,6 @@ void CompositorFrameSinkSupport::SubmitCompositorFrame(
   DCHECK_EQ(result, SubmitResult::ACCEPTED);
 }
 
-void CompositorFrameSinkSupport::SubmitCompositorFrameLocally(
-    const SurfaceId& surface_id,
-    CompositorFrame frame,
-    const RendererSettings& settings) {
-  CHECK_EQ(surface_id, last_created_surface_id_);
-
-  pending_frames_.push_back(FrameData{.local_frame = true});
-  Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
-
-  auto frame_rejected_callback =
-      base::ScopedClosureRunner(base::BindOnce([] { NOTREACHED(); }));
-  auto frame_index = ++last_frame_index_;
-  Surface::QueueFrameResult result = surface->QueueFrame(
-      std::move(frame), frame_index, std::move(frame_rejected_callback));
-  // Currently, frames are only queued on Android, and we don't need to use
-  // `SubmitCompositorFrameLocally` for evicting resources on Android.
-  CHECK_EQ(result, Surface::QueueFrameResult::ACCEPTED_ACTIVE);
-
-  // Make sure this surface will be stretched to match the display size. If
-  // `auto_resize_output_surface` is false, then swap will not occur meaning
-  // that the content of this compositor frame will not be presented. If it is
-  // not, then we won't properly push out existing resources. A mismatch between
-  // root surface size and display size can happen. For example, there is a race
-  // condition if `Display` is resized after it is set not visible but before
-  // any compositor frame with that new size is submitted.
-  CHECK(settings.auto_resize_output_surface);
-}
-
 SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
