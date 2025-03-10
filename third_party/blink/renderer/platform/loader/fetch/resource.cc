@@ -210,6 +210,10 @@ void Resource::CheckResourceIntegrity() {
     DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context));
     integrity_disposition_ =
         ResourceIntegrityDisposition::kFailedUnencodedDigest;
+    integrity_report_.AddConsoleErrorMessage(
+        "The resource '" + Url().ElidedString() +
+        "' has an `unencoded-digest` header which asserts a digest which does "
+        "not match the resource's body.");
     return;
   }
 
