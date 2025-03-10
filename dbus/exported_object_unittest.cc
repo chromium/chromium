@@ -7,6 +7,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -37,8 +38,7 @@ class ExportedObjectTest : public testing::Test {
 };
 
 // Tests that calling a method that doesn't send a response crashes.
-// TODO(crbug.com/401584852): Reenable this test.
-TEST_F(ExportedObjectTest, DISABLED_NotSendingResponseCrash) {
+TEST_F(ExportedObjectTest, NotSendingResponseCrash) {
   TestService::Options options;
   TestService test_service(options);
   ObjectProxy* object_proxy = bus_->GetObjectProxy(
@@ -62,11 +62,10 @@ TEST_F(ExportedObjectTest, DISABLED_NotSendingResponseCrash) {
   MethodCall method_call("org.chromium.TestInterface",
                          "NotSendingResponseCrash");
   base::expected<std::unique_ptr<Response>, Error> result;
-  EXPECT_DEATH_IF_SUPPORTED(
-      result = object_proxy->CallMethodAndBlock(
-          &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT),
-      "ResponseSender did not run for "
-      "org.chromium.TestInterface.NotSendingResponseCrash");
+  EXPECT_CHECK_DEATH_WITH(result = object_proxy->CallMethodAndBlock(
+                              &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT),
+                          "ResponseSender did not run for "
+                          "org.chromium.TestInterface.NotSendingResponseCrash");
 }
 
 }  // namespace
