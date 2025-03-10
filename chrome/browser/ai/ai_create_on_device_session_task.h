@@ -9,7 +9,6 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 
 class AIManager;
 
@@ -104,7 +103,7 @@ class CreateLanguageModelOnDeviceSessionTask
       AIManager& ai_manager,
       AIContextBoundObjectSet& context_bound_object_set,
       content::BrowserContext* browser_context,
-      const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
+      optimization_guide::SamplingParams sampling_params,
       base::OnceCallback<
           void(std::unique_ptr<
                optimization_guide::OptimizationGuideModelExecutor::Session>)>
@@ -126,8 +125,7 @@ class CreateLanguageModelOnDeviceSessionTask
       optimization_guide::SessionConfigParams* config_params) override;
 
  private:
-  std::optional<optimization_guide::SamplingParams> sampling_params_ =
-      std::nullopt;
+  const optimization_guide::SamplingParams sampling_params_;
   base::OnceCallback<void(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session>)>
