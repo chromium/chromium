@@ -68,6 +68,7 @@ void SharedStorageRuntimeManager::CreateWorkletHost(
     SharedStorageDocumentServiceImpl* document_service,
     const url::Origin& frame_origin,
     const url::Origin& data_origin,
+    blink::mojom::SharedStorageDataOriginType data_origin_type,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
@@ -86,9 +87,10 @@ void SharedStorageRuntimeManager::CreateWorkletHost(
 
   std::unique_ptr<SharedStorageWorkletHost> worklet_host =
       CreateWorkletHostHelper(
-          *document_service, frame_origin, data_origin, script_source_url,
-          credentials_mode, creation_method, origin_trial_features,
-          std::move(worklet_host_receiver), std::move(callback));
+          *document_service, frame_origin, data_origin, data_origin_type,
+          script_source_url, credentials_mode, creation_method,
+          origin_trial_features, std::move(worklet_host_receiver),
+          std::move(callback));
 
   SharedStorageWorkletHost* raw_worklet_host = worklet_host.get();
 
@@ -126,6 +128,7 @@ SharedStorageRuntimeManager::CreateWorkletHostHelper(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
     const url::Origin& data_origin,
+    blink::mojom::SharedStorageDataOriginType data_origin_type,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
@@ -135,9 +138,9 @@ SharedStorageRuntimeManager::CreateWorkletHostHelper(
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
         callback) {
   return std::make_unique<SharedStorageWorkletHost>(
-      document_service, frame_origin, data_origin, script_source_url,
-      credentials_mode, creation_method, origin_trial_features,
-      std::move(worklet_host), std::move(callback));
+      document_service, frame_origin, data_origin, data_origin_type,
+      script_source_url, credentials_mode, creation_method,
+      origin_trial_features, std::move(worklet_host), std::move(callback));
 }
 
 void SharedStorageRuntimeManager::OnWorkletKeepAliveFinished(

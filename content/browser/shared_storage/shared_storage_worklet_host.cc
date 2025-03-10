@@ -314,6 +314,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
     const url::Origin& data_origin,
+    blink::mojom::SharedStorageDataOriginType data_origin_type,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
@@ -410,6 +411,9 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
               document_service_->render_frame_host())
               .ComputeSiteForCookies());
 
+  // TODO(crbug.com/401011862): Distinguish between whether this in an addModule
+  // or a createWorklet call using `creation_method_`, and also send
+  // `data_origin_type` as part of the event params.
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessType::kDocumentAddModule, document_service_->main_frame_id(),
       shared_storage_origin_.Serialize(),

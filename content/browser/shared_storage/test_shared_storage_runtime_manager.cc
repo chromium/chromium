@@ -30,6 +30,7 @@ TestSharedStorageRuntimeManager::CreateWorkletHostHelper(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
     const url::Origin& data_origin,
+    blink::mojom::SharedStorageDataOriginType data_origin_type,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
@@ -39,9 +40,9 @@ TestSharedStorageRuntimeManager::CreateWorkletHostHelper(
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
         callback) {
   return std::make_unique<TestSharedStorageWorkletHost>(
-      document_service, frame_origin, data_origin, script_source_url,
-      credentials_mode, creation_method, origin_trial_features,
-      std::move(worklet_host), std::move(callback),
+      document_service, frame_origin, data_origin, data_origin_type,
+      script_source_url, credentials_mode, creation_method,
+      origin_trial_features, std::move(worklet_host), std::move(callback),
       should_defer_worklet_messages_);
 }
 
