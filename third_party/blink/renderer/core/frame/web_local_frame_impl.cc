@@ -822,6 +822,11 @@ void WebLocalFrameImpl::SetContentSettingsClient(
   content_settings_client_ = client;
 }
 
+const mojom::RendererContentSettingsPtr& WebLocalFrameImpl::GetContentSettings()
+    const {
+  return GetFrame()->GetContentSettings();
+}
+
 ScrollableArea* WebLocalFrameImpl::LayoutViewport() const {
   if (LocalFrameView* view = GetFrameView())
     return view->LayoutViewport();

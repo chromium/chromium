@@ -10,6 +10,7 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -24,7 +25,9 @@ bool BrowserFrameContextData::HasControlledFrameCapability() const {
   return frame_ &&
          frame_->IsFeatureEnabled(
              network::mojom::PermissionsPolicyFeature::kControlledFrame) &&
-         content::HasIsolatedContextCapability(frame_);
+         content::HasIsolatedContextCapability(frame_) &&
+         ExtensionsBrowserClient::Get()->HasControlledFrameCapability(
+             frame_->GetBrowserContext(), GetUrl());
 }
 
 std::unique_ptr<FrameContextData>
