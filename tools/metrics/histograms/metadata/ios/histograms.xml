@@ -99,6 +99,18 @@ chromium-metrics-reviews@google.com.
                final state of the task is 'Not Started'."/>
 </variants>
 
+<!-- LINT.IfChange(IOSTurnOnCredentialProviderExtensionPromptSource) -->
+
+<variants name="IOSTurnOnCredentialProviderExtensionPromptSource">
+  <variant name="PasswordSettings"
+      summary="The prompt was presented from Password Settings."/>
+  <variant name="Promo"
+      summary="The prompt was presented from the Credential Provider
+               Extension promo."/>
+</variants>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.mm:TurnOnCredentialProviderExtensionPromptSourceToString) -->
+
 <variants name="MXVersion">
   <variant name=""
       summary="Warning: This is only recorded when the current app version
@@ -961,6 +973,23 @@ chromium-metrics-reviews@google.com.
     <variant name=".IsReminder"
         summary="impression of promo shown as reminder"/>
   </token>
+</histogram>
+
+<histogram
+    name="IOS.CredentialProviderExtension.TurnOnPromptOutcome.{PromptSource}"
+    enum="Boolean" expires_after="2025-09-03">
+  <owner>noemies@google.com</owner>
+  <owner>tmartino@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Logs whether or not the user has decided to turn on the app as a credential
+    provider when shown the iOS &quot;Turn on AutoFill&quot; prompt.
+    {PromptSource} indicates where the prompt was presented from.
+
+    Note: This prompt is only available on iOS 18+.
+  </summary>
+  <token key="PromptSource"
+      variants="IOSTurnOnCredentialProviderExtensionPromptSource"/>
 </histogram>
 
 <histogram name="IOS.DefaultBrowserAbandonment{PeriodConsidered}"
