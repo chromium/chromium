@@ -58,8 +58,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kGooglePasswordManager";
     case Suggestion::Icon::kGooglePay:
       return "kGooglePay";
-    case Suggestion::Icon::kGooglePayDark:
-      return "kGooglePayDark";
     case Suggestion::Icon::kHttpWarning:
       return "kHttpWarning";
     case Suggestion::Icon::kHttpsInvalid:

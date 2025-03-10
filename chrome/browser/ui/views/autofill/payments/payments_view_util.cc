@@ -58,19 +58,6 @@ constexpr int kIconHeight = 16;
 // The size of the icons in the view created by `CreateTextWithIconView()`.
 constexpr int kTextWithIconViewIconSize = 24;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// kGooglePayLogoIcon is square overall, despite the drawn portion being a
-// rectangular area at the top. CreateTiledImage() will correctly clip it
-// whereas setting the icon size would rescale it incorrectly and keep the
-// bottom empty portion.
-gfx::ImageSkia CreateTiledGooglePayLogo(const ui::ColorProvider* provider) {
-  return gfx::ImageSkiaOperations::CreateTiledImage(
-      gfx::CreateVectorIcon(vector_icons::kGooglePayLogoIcon,
-                            provider->GetColor(kColorPaymentsGooglePayLogo)),
-      /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 std::unique_ptr<views::ImageView> CreateIconView(
     TitleWithIconAfterLabelView::Icon icon_to_show) {
   ui::ImageModel model;
@@ -78,7 +65,8 @@ std::unique_ptr<views::ImageView> CreateIconView(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY:
       model = ui::ImageModel::FromImageGenerator(
-          base::BindRepeating(&CreateTiledGooglePayLogo),
+          base::BindRepeating(&CreateTiledGooglePayLogo, kGooglePayLogoWidth,
+                              kIconHeight),
           gfx::Size(kGooglePayLogoWidth, kIconHeight));
       break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM:
@@ -326,5 +314,20 @@ std::unique_ptr<views::View> CreateTextWithIconView(
 
   return std::move(view_builder).Build();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// kGooglePayLogoIcon is square overall, despite the drawn portion being a
+// rectangular area at the top. CreateTiledImage() will correctly clip it
+// whereas setting the icon size would rescale it incorrectly and keep the
+// bottom empty portion.
+gfx::ImageSkia CreateTiledGooglePayLogo(int width,
+                                        int height,
+                                        const ui::ColorProvider* provider) {
+  return gfx::ImageSkiaOperations::CreateTiledImage(
+      gfx::CreateVectorIcon(vector_icons::kGooglePayLogoIcon,
+                            provider->GetColor(kColorPaymentsGooglePayLogo)),
+      /*x=*/0, /*y=*/0, width, height);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace autofill

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -98,6 +99,16 @@ std::unique_ptr<views::View> CreateTextWithIconView(
     const std::u16string& text,
     std::optional<TextLinkInfo> text_link_info,
     const gfx::VectorIcon& icon);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// kGooglePayLogoIcon is square overall, despite the drawn portion being a
+// rectangular area at the top. CreateTiledImage() will correctly clip it
+// whereas setting the icon size would rescale it incorrectly and keep the
+// bottom empty portion.
+gfx::ImageSkia CreateTiledGooglePayLogo(int width,
+                                        int height,
+                                        const ui::ColorProvider* provider);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace autofill
 

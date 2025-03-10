@@ -48,23 +48,11 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kOfferTag, IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
     {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {Suggestion::Icon::kGooglePay, IDR_AUTOFILL_GOOGLE_PAY},
-#if !BUILDFLAG(IS_ANDROID)
-    {Suggestion::Icon::kGooglePayDark, IDR_AUTOFILL_GOOGLE_PAY_DARK},
-#endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 });
 
 }  // namespace
 
 int GetIconResourceID(Suggestion::Icon resource_name) {
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (resource_name == Suggestion::Icon::kGooglePay ||
-      resource_name == Suggestion::Icon::kGooglePayDark) {
-    return 0;
-  }
-#endif
   auto it = kDataResources.find(resource_name);
   return it == kDataResources.end() ? kResourceNotFoundId : it->second;
 }

@@ -58,10 +58,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "ui/native_theme/native_theme.h"  // nogncheck
-#endif
-
 namespace autofill {
 
 namespace {
@@ -195,10 +191,7 @@ Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
     suggestion.icon = Suggestion::Icon::kGooglePay;
 #else
     suggestion.icon = Suggestion::Icon::kSettings;
-    suggestion.trailing_icon =
-        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-            ? Suggestion::Icon::kGooglePayDark
-            : Suggestion::Icon::kGooglePay;
+    suggestion.trailing_icon = Suggestion::Icon::kGooglePay;
 #endif
   } else {
     suggestion.icon = Suggestion::Icon::kSettings;
