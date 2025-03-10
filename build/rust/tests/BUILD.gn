@@ -45,6 +45,15 @@ group("deps") {
       #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
     ]
 
+    if (target_cpu == "x86") {
+      # Some `target_os`s do not support 32-bit platforms anymore.  The
+      # selection below is _loosely_ based on `is_valid_x86_target` from
+      # the top-level `//BUILD.gn`.
+      if (is_win || is_android) {
+        deps += [ "//build/rust/tests/test_build_rs_target_arch_x86" ]
+      }
+    }
+
     if (!(is_apple && is_official_build)) {
       # TODO: crbug.com/372055517 - Apple lld has an ordering dependency bug
       # when LTO is enabled, and this particular build target runs into that.
