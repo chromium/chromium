@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.verification;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.content_relationship_verification.VerificationResultStore;
@@ -17,6 +18,7 @@ import java.util.Set;
  * ChromeVerificationResultStore stores relationships to SharedPreferences which are therefore
  * persisted across Chrome launches.
  */
+@NullMarked
 public class ChromeVerificationResultStore extends VerificationResultStore {
     // If we constructed this lazily (creating a new instance in getInstance, that would open us
     // up to a possible race condition if getInstance is called on multiple threads. We could solve
