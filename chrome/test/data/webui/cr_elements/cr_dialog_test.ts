@@ -389,94 +389,22 @@ suite('cr-dialog', function() {
     await assertAutofocus(/*useTextarea=*/ true);
   });
 
-  // Ensuring that intersectionObserver does not fire any callbacks before the
-  // dialog has been opened.
-  test('body scrollable border not added before modal shown', async function() {
+  test('supports custom top-border on body', () => {
     document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
-        <div slot="body">body</div>
       </cr-dialog>`;
+    const dialog = document.querySelector('cr-dialog')!;
+    dialog.showModal();
 
-    const dialog = document.body.querySelector('cr-dialog')!;
-    assertFalse(dialog.open);
-    const bodyContainer = dialog.shadowRoot.querySelector('.body-container');
-    assertTrue(!!bodyContainer);
-    const topShadow =
-        dialog.shadowRoot.querySelector('#cr-container-shadow-top');
-    assertTrue(!!topShadow);
-    const bottomShadow =
-        dialog.shadowRoot.querySelector('#cr-container-shadow-bottom');
-    assertTrue(!!bottomShadow);
+    const scrollableTop =
+        dialog.shadowRoot.querySelector('.cr-scrollable-top')!;
+    assertFalse(isVisible(scrollableTop), 'border not visible by default');
 
-    await microtasksFinished();
-    assertFalse(topShadow.classList.contains('has-shadow'));
-    assertFalse(bottomShadow.classList.contains('has-shadow'));
-  });
-
-  test('dialog body scrollable border when appropriate', function(done) {
-    document.body.innerHTML = getTrustedHTML`
-      <cr-dialog>
-        <div slot="title">title</div>
-        <div slot="body">
-          <div style="height: 100px">tall content</div>
-        </div>
-      </cr-dialog>`;
-
-    const dialog = document.body.querySelector('cr-dialog')!;
-    const bodyContainer =
-        dialog.shadowRoot.querySelector<HTMLElement>('.body-container');
-    assertTrue(!!bodyContainer);
-    const topShadow = dialog.shadowRoot.querySelector<HTMLElement>(
-        '#cr-container-shadow-top');
-    assertTrue(!!topShadow);
-    const bottomShadow = dialog.shadowRoot.querySelector<HTMLElement>(
-        '#cr-container-shadow-bottom');
-    assertTrue(!!bottomShadow);
-
-    dialog.showModal();  // Attach the dialog for the first time here.
-
-    let observerCount = 0;
-
-    function hasTransparentBorder(element: HTMLElement): boolean {
-      const style = element.computedStyleMap().get('border-bottom-color') as
-          CSSStyleValue;
-      return style.toString() === 'rgba(0, 0, 0, 0)';
-    }
-
-    // Needs to setup the observer before attaching, since InteractionObserver
-    // calls callback before MutationObserver does.
-    const observer = new MutationObserver(function(changes) {
-      // Only care about class mutations.
-      if (changes[0]!.attributeName !== 'class') {
-        return;
-      }
-
-      observerCount++;
-      switch (observerCount) {
-        case 1:  // Triggered when scrolled to bottom.
-          assertTrue(hasTransparentBorder(bottomShadow));
-          assertFalse(hasTransparentBorder(topShadow));
-          bodyContainer.scrollTop = 0;
-          break;
-        case 2:  // Triggered when scrolled back to top.
-          assertFalse(hasTransparentBorder(bottomShadow));
-          assertTrue(hasTransparentBorder(topShadow));
-          bodyContainer.scrollTop = 2;
-          break;
-        case 3:  // Triggered when finally scrolling to middle.
-          assertFalse(hasTransparentBorder(bottomShadow));
-          assertFalse(hasTransparentBorder(topShadow));
-          observer.disconnect();
-          done();
-          break;
-      }
-    });
-    observer.observe(bodyContainer, {attributes: true});
-
-    // Height is normally set via CSS, but mixin doesn't work with innerHTML.
-    bodyContainer.style.height = '60px';  // Element has "min-height: 60px".
-    bodyContainer.scrollTop = 100;
+    const borderTopValue = '1px solid rgb(0, 255, 0)';
+    dialog.style.setProperty('--cr-dialog-body-border-top', borderTopValue);
+    assertTrue(isVisible(scrollableTop), 'border is now visible');
+    assertEquals(borderTopValue, getComputedStyle(scrollableTop).borderTop);
   });
 
   test(
