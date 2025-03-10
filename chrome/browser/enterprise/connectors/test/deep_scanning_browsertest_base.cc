@@ -14,6 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -68,6 +70,20 @@ class UnresponsiveFilesRequestHandler : public FilesRequestHandler {
   }
 };
 
+class UnresponsiveClipboardRequestHandler : public ClipboardRequestHandler {
+ public:
+  using ClipboardRequestHandler::Create;
+
+ protected:
+  using ClipboardRequestHandler::ClipboardRequestHandler;
+
+ private:
+  void UploadForDeepScanning(
+      std::unique_ptr<ClipboardAnalysisRequest> request) override {
+    // Do nothing.
+  }
+};
+
 class UnresponsiveContentAnalysisDelegate : public FakeContentAnalysisDelegate {
  public:
   using FakeContentAnalysisDelegate::FakeContentAnalysisDelegate;
@@ -81,16 +97,11 @@ class UnresponsiveContentAnalysisDelegate : public FakeContentAnalysisDelegate {
       CompletionCallback callback) {
     FilesRequestHandler::SetFactoryForTesting(
         base::BindRepeating(&UnresponsiveFilesRequestHandler::Create));
+    enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(&UnresponsiveClipboardRequestHandler::Create));
     return std::make_unique<UnresponsiveContentAnalysisDelegate>(
         delete_closure, status_callback, std::move(dm_token), web_contents,
         std::move(data), std::move(callback));
-  }
-
- private:
-  void UploadTextForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override {
-    // Do nothing.
   }
 };
 
