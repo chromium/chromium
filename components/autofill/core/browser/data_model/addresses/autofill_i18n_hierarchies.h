@@ -13,6 +13,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
