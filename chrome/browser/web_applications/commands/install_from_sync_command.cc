@@ -268,7 +268,7 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
 
   current_info->generated_icon_fix =
       generated_icon_fix_util::CreateInitialTimeWindow(
-          GeneratedIconFixSource_SYNC_INSTALL);
+          proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL);
 
   lock_->install_finalizer().FinalizeInstall(
       *current_info, GetFinalizerOptionForSyncInstall(),

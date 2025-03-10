@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/features.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
@@ -353,7 +354,7 @@ class WebApp {
 
   const base::Time& latest_install_time() const { return latest_install_time_; }
 
-  const std::optional<GeneratedIconFix>& generated_icon_fix() const;
+  const std::optional<proto::GeneratedIconFix>& generated_icon_fix() const;
 
   int supported_links_offer_ignore_count() const {
     return supported_links_offer_ignore_count_;
@@ -501,7 +502,8 @@ class WebApp {
 
   void SetLatestInstallTime(const base::Time& latest_install_time);
 
-  void SetGeneratedIconFix(std::optional<GeneratedIconFix> generated_icon_fix);
+  void SetGeneratedIconFix(
+      std::optional<proto::GeneratedIconFix> generated_icon_fix);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -603,7 +605,7 @@ class WebApp {
 
   base::Time latest_install_time_;
 
-  std::optional<GeneratedIconFix> generated_icon_fix_;
+  std::optional<proto::GeneratedIconFix> generated_icon_fix_;
 
   int supported_links_offer_ignore_count_ = 0;
   int supported_links_offer_dismiss_count_ = 0;

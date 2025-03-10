@@ -17,13 +17,11 @@ import "chromeos/ash/experiences/system_web_apps/types/proto/system_web_app_data
 
 option optimize_for = LITE_RUNTIME;
 
-// TODO(http://b/307989065) Make this web_app.proto and remove "Proto" from type
-// names.
-package web_app;
+package web_app.proto;
 
 // A mapping between a MIME type and a set of file extensions for a file handler
 // "accept" entry. See chrome/browser/web_applications/web_app.h for details.
-message WebAppFileHandlerAcceptProto {
+message WebAppFileHandlerAccept {
   optional string mimetype = 1;  // Required.
   repeated string file_extensions = 2;
 }
@@ -32,9 +30,9 @@ message WebAppFileHandlerAcceptProto {
 // which specifies a MIME type and corresponding set of file extensions that the
 // handler can handle. See chrome/browser/web_applications/web_app.h for
 // details.
-message WebAppFileHandlerProto {
+message WebAppFileHandler {
   optional string action = 1;  // Required.
-  repeated WebAppFileHandlerAcceptProto accept = 2;
+  repeated WebAppFileHandlerAccept accept = 2;
   repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
   optional string display_name = 4;
 
@@ -54,7 +52,7 @@ message WebAppProtocolHandler {
 
 // Represents a parsed and validated scope extension defined in the web app's
 // manifest. The `scope` field is a full URL, not only the path.
-message WebAppScopeExtensionProto {
+message WebAppScopeExtension {
   optional string origin = 1;             // Required.
   optional bool has_origin_wildcard = 2;  // Required.
   optional string scope = 3;              // Required.
@@ -63,8 +61,8 @@ message WebAppScopeExtensionProto {
 // A set to track simultaneous installs and uninstalls from multiple install
 // sources. This should stay in sync with |WebAppManagement| in
 // chrome/browser/web_applications/web_app_constants.h
-// and the WebAppManagementProto enum below.
-message SourcesProto {
+// and the WebAppManagement enum below.
+message Sources {
   optional bool system = 1;
   optional bool policy = 2;
   optional bool web_app_store = 3;
@@ -83,7 +81,7 @@ message SourcesProto {
 }
 
 // Properties for integrating with Chrome OS.
-message ChromeOSDataProto {
+message ChromeOSData {
   optional bool show_in_launcher = 1;
   optional bool show_in_search_and_shelf = 2;
   optional bool show_in_management = 3;
@@ -93,12 +91,12 @@ message ChromeOSDataProto {
   reserved 7;
 }
 
-message ClientDataProto {
+message ClientData {
   optional ash.SystemWebAppDataProto system_web_app_data = 1;
 }
 
 // Properties for a WebApp's shortcuts menu item.
-message WebAppShortcutsMenuItemInfoProto {
+message WebAppShortcutsMenuItemInfo {
   optional string name = 1;  // Required.
   optional string url = 2;   // Required.
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons = 3;
@@ -107,7 +105,7 @@ message WebAppShortcutsMenuItemInfoProto {
 }
 
 // List of icon sizes downloaded to disk for a shortcuts menu item.
-message DownloadedShortcutsMenuIconSizesProto {
+message DownloadedShortcutsMenuIconSizes {
   repeated int32 icon_sizes = 1;
   repeated int32 icon_sizes_maskable = 2;
   repeated int32 icon_sizes_monochrome = 3;
@@ -122,8 +120,8 @@ message WebAppPermissionsPolicy {
 
 // This enum should be synced with |WebAppManagement| in
 // chrome/browser/web_applications/web_app_constants.h as well as
-// with the SourcesProto message defined above.
-enum WebAppManagementProto {
+// with the Sources message defined above.
+enum WebAppManagement {
   WEBAPPMANAGEMENT_UNSPECIFIED = 0;
   SYSTEM = 1;
   POLICY = 2;
@@ -145,7 +143,7 @@ enum WebAppManagementProto {
 // This stores data per-external-WebAppManagement::Type, as each installation
 // manager can have different installation configurations for the same web app.
 message ManagementToExternalConfigInfo {
-  optional WebAppManagementProto management = 1;
+  optional WebAppManagement management = 1;
   // The collection of install_urls per web_app per WebAppManagement::Type.
   repeated string install_urls = 2;
   // Stores whether the app is a placeholder app or not.
@@ -160,10 +158,10 @@ message ManagementToExternalConfigInfo {
 
 // The initiator of a sync generated icon fix time window.
 enum GeneratedIconFixSource {
-  GeneratedIconFixSource_UNKNOWN = 0;
-  GeneratedIconFixSource_SYNC_INSTALL = 1;
-  GeneratedIconFixSource_RETROACTIVE = 2;
-  GeneratedIconFixSource_MANIFEST_UPDATE = 3;
+  GENERATED_ICON_FIX_SOURCE_UNKNOWN = 0;
+  GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL = 1;
+  GENERATED_ICON_FIX_SOURCE_RETROACTIVE = 2;
+  GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE = 3;
 };
 
 // Represents the current state of attempts to fix broken icons from sync
@@ -182,7 +180,7 @@ message GeneratedIconFix {
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
 // app_id is the storage key in DataTypeStore.
-message WebAppProto {
+message WebApp {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
       "run_on_os_login_os_integration_state", "url_handlers";
@@ -214,7 +212,7 @@ message WebAppProto {
   optional string description = 4;
   optional DisplayMode display_mode = 5;
   optional string scope = 6;
-  optional SourcesProto sources = 7;       // Required.
+  optional Sources sources = 7;  // Required.
   // This used to be `bool is_locally_installed`.
   required proto.InstallState install_state = 8;  // Required.
 
@@ -231,14 +229,14 @@ message WebAppProto {
   repeated int32 downloaded_icon_sizes_purpose_any = 11;
 
   // A list of file handlers.
-  repeated WebAppFileHandlerProto file_handlers = 12;
+  repeated WebAppFileHandler file_handlers = 12;
 
   // A list of additional search terms to use when searching for the app.
   repeated string additional_search_terms = 13;
 
   // Even though |chromeos_data| is optional, it should always exist on
   // ChromeOS.
-  optional ChromeOSDataProto chromeos_data = 14;
+  optional ChromeOSData chromeos_data = 14;
 
   // Last time the app is launched.
   // ms since the Unix epoch. See sync/base/time.h.
@@ -256,9 +254,9 @@ message WebAppProto {
   optional bool is_generated_icon = 18;
 
   // A list of Shortcuts Menu items specified in the Web App Manifest.
-  repeated WebAppShortcutsMenuItemInfoProto shortcuts_menu_item_infos = 19;
+  repeated WebAppShortcutsMenuItemInfo shortcuts_menu_item_infos = 19;
   // A list of icon sizes we successfully downloaded to store on disk.
-  repeated DownloadedShortcutsMenuIconSizesProto
+  repeated DownloadedShortcutsMenuIconSizes
       downloaded_shortcuts_menu_icons_sizes = 20;
 
   optional uint32 background_color = 21;
@@ -291,7 +289,7 @@ message WebAppProto {
 
   reserved 27;
 
-  optional ClientDataProto client_data = 28;
+  optional ClientData client_data = 28;
 
   // This enum should be synced with |CaptureLinks| in
   // third_party/blink/public/mojom/manifest/capture_links.mojom
@@ -328,7 +326,7 @@ message WebAppProto {
   // when launching the web app.
   repeated string allowed_launch_protocols = 37;
 
-  optional LaunchHandlerProto launch_handler = 38;
+  optional LaunchHandler launch_handler = 38;
 
   // Time the app is updated.
   // ms since the Unix epoch. See sync/base/time.h.
@@ -410,13 +408,13 @@ message WebAppProto {
   optional proto.IsolationData isolation_data = 60;
 
   // Contains web origins that are part of the app's extended scope.
-  repeated WebAppScopeExtensionProto scope_extensions = 61;
+  repeated WebAppScopeExtension scope_extensions = 61;
 
   // The same as scope_extensions but filtered to origins that have validated
   // associations with this web app. See
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
-  repeated WebAppScopeExtensionProto scope_extensions_validated = 62;
+  repeated WebAppScopeExtension scope_extensions_validated = 62;
 
   // Stores whether the current web app is set as the default app to capture
   // links.

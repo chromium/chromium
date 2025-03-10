@@ -80,239 +80,239 @@ namespace web_app {
 
 namespace {
 
-ShareTarget_Method MethodToProto(apps::ShareTarget::Method method) {
+proto::ShareTarget_Method MethodToProto(apps::ShareTarget::Method method) {
   switch (method) {
     case apps::ShareTarget::Method::kGet:
-      return ShareTarget_Method_GET;
+      return proto::ShareTarget_Method_GET;
     case apps::ShareTarget::Method::kPost:
-      return ShareTarget_Method_POST;
+      return proto::ShareTarget_Method_POST;
   }
 }
 
-apps::ShareTarget::Method ProtoToMethod(ShareTarget_Method method) {
+apps::ShareTarget::Method ProtoToMethod(proto::ShareTarget_Method method) {
   switch (method) {
-    case ShareTarget_Method_GET:
+    case proto::ShareTarget_Method_GET:
       return apps::ShareTarget::Method::kGet;
-    case ShareTarget_Method_POST:
+    case proto::ShareTarget_Method_POST:
       return apps::ShareTarget::Method::kPost;
   }
 }
 
-ShareTarget_Enctype EnctypeToProto(apps::ShareTarget::Enctype enctype) {
+proto::ShareTarget_Enctype EnctypeToProto(apps::ShareTarget::Enctype enctype) {
   switch (enctype) {
     case apps::ShareTarget::Enctype::kFormUrlEncoded:
-      return ShareTarget_Enctype_FORM_URL_ENCODED;
+      return proto::ShareTarget_Enctype_FORM_URL_ENCODED;
     case apps::ShareTarget::Enctype::kMultipartFormData:
-      return ShareTarget_Enctype_MULTIPART_FORM_DATA;
+      return proto::ShareTarget_Enctype_MULTIPART_FORM_DATA;
   }
 }
 
-apps::ShareTarget::Enctype ProtoToEnctype(ShareTarget_Enctype enctype) {
+apps::ShareTarget::Enctype ProtoToEnctype(proto::ShareTarget_Enctype enctype) {
   switch (enctype) {
-    case ShareTarget_Enctype_FORM_URL_ENCODED:
+    case proto::ShareTarget_Enctype_FORM_URL_ENCODED:
       return apps::ShareTarget::Enctype::kFormUrlEncoded;
-    case ShareTarget_Enctype_MULTIPART_FORM_DATA:
+    case proto::ShareTarget_Enctype_MULTIPART_FORM_DATA:
       return apps::ShareTarget::Enctype::kMultipartFormData;
   }
 }
 
 blink::mojom::CaptureLinks ProtoToCaptureLinks(
-    WebAppProto::CaptureLinks capture_links) {
+    proto::WebApp::CaptureLinks capture_links) {
   switch (capture_links) {
-    case WebAppProto_CaptureLinks_NONE:
+    case proto::WebApp_CaptureLinks_NONE:
       return blink::mojom::CaptureLinks::kNone;
-    case WebAppProto_CaptureLinks_NEW_CLIENT:
+    case proto::WebApp_CaptureLinks_NEW_CLIENT:
       return blink::mojom::CaptureLinks::kNewClient;
-    case WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE:
+    case proto::WebApp_CaptureLinks_EXISTING_CLIENT_NAVIGATE:
       return blink::mojom::CaptureLinks::kExistingClientNavigate;
   }
 }
 
-WebAppProto::CaptureLinks CaptureLinksToProto(
+proto::WebApp::CaptureLinks CaptureLinksToProto(
     blink::mojom::CaptureLinks capture_links) {
   switch (capture_links) {
     case blink::mojom::CaptureLinks::kUndefined:
       NOTREACHED();
     case blink::mojom::CaptureLinks::kNone:
-      return WebAppProto_CaptureLinks_NONE;
+      return proto::WebApp_CaptureLinks_NONE;
     case blink::mojom::CaptureLinks::kNewClient:
-      return WebAppProto_CaptureLinks_NEW_CLIENT;
+      return proto::WebApp_CaptureLinks_NEW_CLIENT;
     case blink::mojom::CaptureLinks::kExistingClientNavigate:
-      return WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE;
+      return proto::WebApp_CaptureLinks_EXISTING_CLIENT_NAVIGATE;
   }
 }
 
 LaunchHandler ProtoLaunchHandlerToLaunchHandlerClientMode(
-    LaunchHandlerProto::DeprecatedRouteTo route_to,
-    LaunchHandlerProto::DeprecatedNavigateExistingClient
+    proto::LaunchHandler::DeprecatedRouteTo route_to,
+    proto::LaunchHandler::DeprecatedNavigateExistingClient
         navigate_existing_client,
-    LaunchHandlerProto::ClientMode client_mode,
+    proto::LaunchHandler::ClientMode client_mode,
     std::optional<bool> client_mode_valid_and_specified) {
   // When migrating from a database that doesn't have the
   // client_mode_valid_and_specified field saved yet, set it to `true` when the
   // client mode is non-auto. If the site did set the client_mode to 'auto',
   // then this is corrected on the next manifest update.
   switch (client_mode) {
-    case LaunchHandlerProto_ClientMode_AUTO:
+    case proto::LaunchHandler_ClientMode_AUTO:
       return LaunchHandler{LaunchHandler::ClientMode::kAuto};
-    case LaunchHandlerProto_ClientMode_NAVIGATE_NEW:
+    case proto::LaunchHandler_ClientMode_NAVIGATE_NEW:
       return LaunchHandler{LaunchHandler::ClientMode::kNavigateNew};
-    case LaunchHandlerProto_ClientMode_NAVIGATE_EXISTING:
+    case proto::LaunchHandler_ClientMode_NAVIGATE_EXISTING:
       return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
-    case LaunchHandlerProto_ClientMode_FOCUS_EXISTING:
+    case proto::LaunchHandler_ClientMode_FOCUS_EXISTING:
       return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
-    case LaunchHandlerProto_ClientMode_UNSPECIFIED_CLIENT_MODE: {
+    case proto::LaunchHandler_ClientMode_UNSPECIFIED_CLIENT_MODE: {
       // route_to was removed in favor of client_mode, fall back to it if client
       // mode is unset.
       switch (route_to) {
-        case LaunchHandlerProto_DeprecatedRouteTo_UNSPECIFIED_ROUTE:
-        case LaunchHandlerProto_DeprecatedRouteTo_AUTO_ROUTE:
+        case proto::LaunchHandler_DeprecatedRouteTo_UNSPECIFIED_ROUTE:
+        case proto::LaunchHandler_DeprecatedRouteTo_AUTO_ROUTE:
           return LaunchHandler{std::nullopt};
-        case LaunchHandlerProto_DeprecatedRouteTo_NEW_CLIENT:
+        case proto::LaunchHandler_DeprecatedRouteTo_NEW_CLIENT:
           return LaunchHandler{LaunchHandler::ClientMode::kNavigateNew};
-        case LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT:
+        case proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT:
           // route_to: existing-client and navigate_existing_client were
           // removed in favor of existing-client-navigate and
           // existing-client-retain.
           if (navigate_existing_client ==
-              LaunchHandlerProto_DeprecatedNavigateExistingClient_NEVER) {
+              proto::LaunchHandler_DeprecatedNavigateExistingClient_NEVER) {
             return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
           }
           return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
-        case LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT_NAVIGATE:
+        case proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT_NAVIGATE:
           return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
-        case LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT_RETAIN:
+        case proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT_RETAIN:
           return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
       }
     }
   }
 }
 
-LaunchHandlerProto::ClientMode LaunchHandlerClientModeToProto(
+proto::LaunchHandler::ClientMode LaunchHandlerClientModeToProto(
     LaunchHandler::ClientMode client_mode) {
   switch (client_mode) {
     case LaunchHandler::ClientMode::kAuto:
-      return LaunchHandlerProto_ClientMode_AUTO;
+      return proto::LaunchHandler_ClientMode_AUTO;
     case LaunchHandler::ClientMode::kNavigateNew:
-      return LaunchHandlerProto_ClientMode_NAVIGATE_NEW;
+      return proto::LaunchHandler_ClientMode_NAVIGATE_NEW;
     case LaunchHandler::ClientMode::kNavigateExisting:
-      return LaunchHandlerProto_ClientMode_NAVIGATE_EXISTING;
+      return proto::LaunchHandler_ClientMode_NAVIGATE_EXISTING;
     case LaunchHandler::ClientMode::kFocusExisting:
-      return LaunchHandlerProto_ClientMode_FOCUS_EXISTING;
+      return proto::LaunchHandler_ClientMode_FOCUS_EXISTING;
   }
 }
 
 ApiApprovalState ProtoToApiApprovalState(
-    WebAppProto::ApiApprovalState approval_state) {
+    proto::WebApp::ApiApprovalState approval_state) {
   switch (approval_state) {
-    case WebAppProto_ApiApprovalState_REQUIRES_PROMPT:
+    case proto::WebApp_ApiApprovalState_REQUIRES_PROMPT:
       return ApiApprovalState::kRequiresPrompt;
-    case WebAppProto_ApiApprovalState_ALLOWED:
+    case proto::WebApp_ApiApprovalState_ALLOWED:
       return ApiApprovalState::kAllowed;
-    case WebAppProto_ApiApprovalState_DISALLOWED:
+    case proto::WebApp_ApiApprovalState_DISALLOWED:
       return ApiApprovalState::kDisallowed;
   }
 }
 
-WebAppProto::ApiApprovalState ApiApprovalStateToProto(
+proto::WebApp::ApiApprovalState ApiApprovalStateToProto(
     ApiApprovalState approval_state) {
   switch (approval_state) {
     case ApiApprovalState::kRequiresPrompt:
-      return WebAppProto_ApiApprovalState_REQUIRES_PROMPT;
+      return proto::WebApp_ApiApprovalState_REQUIRES_PROMPT;
     case ApiApprovalState::kAllowed:
-      return WebAppProto_ApiApprovalState_ALLOWED;
+      return proto::WebApp_ApiApprovalState_ALLOWED;
     case ApiApprovalState::kDisallowed:
-      return WebAppProto_ApiApprovalState_DISALLOWED;
+      return proto::WebApp_ApiApprovalState_DISALLOWED;
   }
 }
 
 apps::FileHandler::LaunchType ProtoToLaunchType(
-    WebAppFileHandlerProto::LaunchType state) {
+    proto::WebAppFileHandler::LaunchType state) {
   switch (state) {
-    case WebAppFileHandlerProto_LaunchType_SINGLE_CLIENT:
+    case proto::WebAppFileHandler_LaunchType_SINGLE_CLIENT:
       return apps::FileHandler::LaunchType::kSingleClient;
-    case WebAppFileHandlerProto_LaunchType_MULTIPLE_CLIENTS:
+    case proto::WebAppFileHandler_LaunchType_MULTIPLE_CLIENTS:
       return apps::FileHandler::LaunchType::kMultipleClients;
-    case WebAppFileHandlerProto_LaunchType_UNDEFINED:
+    case proto::WebAppFileHandler_LaunchType_UNDEFINED:
       return apps::FileHandler::LaunchType::kSingleClient;
   }
 }
 
-WebAppFileHandlerProto::LaunchType LaunchTypeToProto(
+proto::WebAppFileHandler::LaunchType LaunchTypeToProto(
     apps::FileHandler::LaunchType state) {
   switch (state) {
     case apps::FileHandler::LaunchType::kSingleClient:
-      return WebAppFileHandlerProto_LaunchType_SINGLE_CLIENT;
+      return proto::WebAppFileHandler_LaunchType_SINGLE_CLIENT;
     case apps::FileHandler::LaunchType::kMultipleClients:
-      return WebAppFileHandlerProto_LaunchType_MULTIPLE_CLIENTS;
+      return proto::WebAppFileHandler_LaunchType_MULTIPLE_CLIENTS;
   }
 }
 
-WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
+WebAppManagement::Type ProtoToWebAppManagement(proto::WebAppManagement type) {
   switch (type) {
-    case WebAppManagementProto::WEBAPPMANAGEMENT_UNSPECIFIED:
+    case proto::WebAppManagement::WEBAPPMANAGEMENT_UNSPECIFIED:
       NOTREACHED();
-    case WebAppManagementProto::SYSTEM:
+    case proto::WebAppManagement::SYSTEM:
       return WebAppManagement::Type::kSystem;
-    case WebAppManagementProto::KIOSK:
+    case proto::WebAppManagement::KIOSK:
       return WebAppManagement::Type::kKiosk;
-    case WebAppManagementProto::POLICY:
+    case proto::WebAppManagement::POLICY:
       return WebAppManagement::Type::kPolicy;
-    case WebAppManagementProto::SUBAPP:
+    case proto::WebAppManagement::SUBAPP:
       return WebAppManagement::Type::kSubApp;
-    case WebAppManagementProto::WEBAPPSTORE:
+    case proto::WebAppManagement::WEBAPPSTORE:
       return WebAppManagement::Type::kWebAppStore;
-    case WebAppManagementProto::SYNC:
+    case proto::WebAppManagement::SYNC:
       return WebAppManagement::Type::kSync;
-    case WebAppManagementProto::USER_INSTALLED:
+    case proto::WebAppManagement::USER_INSTALLED:
       return WebAppManagement::Type::kUserInstalled;
-    case WebAppManagementProto::DEFAULT:
+    case proto::WebAppManagement::DEFAULT:
       return WebAppManagement::Type::kDefault;
-    case WebAppManagementProto::IWA_SHIMLESS_RMA:
+    case proto::WebAppManagement::IWA_SHIMLESS_RMA:
       return WebAppManagement::Type::kIwaShimlessRma;
-    case WebAppManagementProto::IWA_POLICY:
+    case proto::WebAppManagement::IWA_POLICY:
       return WebAppManagement::Type::kIwaPolicy;
-    case WebAppManagementProto::IWA_USER_INSTALLED:
+    case proto::WebAppManagement::IWA_USER_INSTALLED:
       return WebAppManagement::Type::kIwaUserInstalled;
-    case WebAppManagementProto::OEM:
+    case proto::WebAppManagement::OEM:
       return WebAppManagement::Type::kOem;
-    case WebAppManagementProto::ONEDRIVEINTEGRATION:
+    case proto::WebAppManagement::ONEDRIVEINTEGRATION:
       return WebAppManagement::Type::kOneDriveIntegration;
-    case WebAppManagementProto::APS_DEFAULT:
+    case proto::WebAppManagement::APS_DEFAULT:
       return WebAppManagement::Type::kApsDefault;
   }
 }
 
-WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
+proto::WebAppManagement WebAppManagementToProto(WebAppManagement::Type type) {
   switch (type) {
     case WebAppManagement::Type::kSystem:
-      return WebAppManagementProto::SYSTEM;
+      return proto::WebAppManagement::SYSTEM;
     case WebAppManagement::Type::kKiosk:
-      return WebAppManagementProto::KIOSK;
+      return proto::WebAppManagement::KIOSK;
     case WebAppManagement::Type::kPolicy:
-      return WebAppManagementProto::POLICY;
+      return proto::WebAppManagement::POLICY;
     case WebAppManagement::Type::kSubApp:
-      return WebAppManagementProto::SUBAPP;
+      return proto::WebAppManagement::SUBAPP;
     case WebAppManagement::Type::kWebAppStore:
-      return WebAppManagementProto::WEBAPPSTORE;
+      return proto::WebAppManagement::WEBAPPSTORE;
     case WebAppManagement::Type::kSync:
-      return WebAppManagementProto::SYNC;
+      return proto::WebAppManagement::SYNC;
     case WebAppManagement::Type::kUserInstalled:
-      return WebAppManagementProto::USER_INSTALLED;
+      return proto::WebAppManagement::USER_INSTALLED;
     case WebAppManagement::Type::kDefault:
-      return WebAppManagementProto::DEFAULT;
+      return proto::WebAppManagement::DEFAULT;
     case WebAppManagement::Type::kIwaShimlessRma:
-      return WebAppManagementProto::IWA_SHIMLESS_RMA;
+      return proto::WebAppManagement::IWA_SHIMLESS_RMA;
     case WebAppManagement::Type::kIwaPolicy:
-      return WebAppManagementProto::IWA_POLICY;
+      return proto::WebAppManagement::IWA_POLICY;
     case WebAppManagement::Type::kIwaUserInstalled:
-      return WebAppManagementProto::IWA_USER_INSTALLED;
+      return proto::WebAppManagement::IWA_USER_INSTALLED;
     case WebAppManagement::Type::kOem:
-      return WebAppManagementProto::OEM;
+      return proto::WebAppManagement::OEM;
     case WebAppManagement::Type::kOneDriveIntegration:
-      return WebAppManagementProto::ONEDRIVEINTEGRATION;
+      return proto::WebAppManagement::ONEDRIVEINTEGRATION;
     case WebAppManagement::Type::kApsDefault:
-      return WebAppManagementProto::APS_DEFAULT;
+      return proto::WebAppManagement::APS_DEFAULT;
   }
 }
 
@@ -470,9 +470,9 @@ void WebAppDatabase::Write(
 }
 
 // static
-std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
+std::unique_ptr<proto::WebApp> WebAppDatabase::CreateWebAppProto(
     const WebApp& web_app) {
-  auto local_data = std::make_unique<WebAppProto>();
+  auto local_data = std::make_unique<proto::WebApp>();
 
   // Required fields:
   const GURL start_url = web_app.start_url();
@@ -618,7 +618,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_is_generated_icon(web_app.is_generated_icon());
 
   for (const auto& file_handler : web_app.file_handlers()) {
-    WebAppFileHandlerProto* file_handler_proto =
+    proto::WebAppFileHandler* file_handler_proto =
         local_data->add_file_handlers();
     DCHECK(file_handler.action.is_valid());
     file_handler_proto->set_action(file_handler.action.spec());
@@ -628,7 +628,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         LaunchTypeToProto(file_handler.launch_type));
 
     for (const auto& accept_entry : file_handler.accept) {
-      WebAppFileHandlerAcceptProto* accept_entry_proto =
+      proto::WebAppFileHandlerAccept* accept_entry_proto =
           file_handler_proto->add_accept();
       accept_entry_proto->set_mimetype(accept_entry.mime_type);
 
@@ -660,7 +660,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       mutable_share_target_params->set_url(params.url);
 
     for (const auto& files_entry : params.files) {
-      ShareTargetParamsFile* mutable_share_target_files =
+      proto::ShareTargetParamsFile* mutable_share_target_files =
           mutable_share_target_params->add_files();
       mutable_share_target_files->set_name(files_entry.name);
 
@@ -671,7 +671,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   for (const WebAppShortcutsMenuItemInfo& shortcut_info :
        web_app.shortcuts_menu_item_infos()) {
-    WebAppShortcutsMenuItemInfoProto* shortcut_info_proto =
+    proto::WebAppShortcutsMenuItemInfo* shortcut_info_proto =
         local_data->add_shortcuts_menu_item_infos();
     shortcut_info_proto->set_name(base::UTF16ToUTF8(shortcut_info.name));
     shortcut_info_proto->set_url(shortcut_info.url.spec());
@@ -701,7 +701,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
 
     const IconSizes& icon_sizes = shortcut_info.downloaded_icon_sizes;
-    DownloadedShortcutsMenuIconSizesProto* icon_sizes_proto =
+    proto::DownloadedShortcutsMenuIconSizes* icon_sizes_proto =
         local_data->add_downloaded_shortcuts_menu_icons_sizes();
     for (const SquareSizePx& icon_size :
          icon_sizes.GetSizesForPurpose(IconPurpose::ANY)) {
@@ -724,7 +724,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   }
 
   for (const auto& protocol_handler : web_app.protocol_handlers()) {
-    WebAppProtocolHandler* protocol_handler_proto =
+    proto::WebAppProtocolHandler* protocol_handler_proto =
         local_data->add_protocol_handlers();
     protocol_handler_proto->set_protocol(protocol_handler.protocol);
     protocol_handler_proto->set_url(protocol_handler.url.spec());
@@ -743,7 +743,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   }
 
   for (const auto& scope_extension : web_app.scope_extensions()) {
-    WebAppScopeExtensionProto* scope_extension_proto =
+    proto::WebAppScopeExtension* scope_extension_proto =
         local_data->add_scope_extensions();
     scope_extension_proto->set_origin(scope_extension.origin.Serialize());
     scope_extension_proto->set_scope(scope_extension.scope.spec());
@@ -752,7 +752,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   }
 
   for (const auto& valid_extension : web_app.validated_scope_extensions()) {
-    WebAppScopeExtensionProto* scope_extension_proto =
+    proto::WebAppScopeExtension* scope_extension_proto =
         local_data->add_scope_extensions_validated();
     scope_extension_proto->set_origin(valid_extension.origin.Serialize());
     CHECK(valid_extension.scope.is_valid());
@@ -802,7 +802,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     const auto& feature_to_name_map =
         blink::GetPermissionsPolicyFeatureToNameMap();
     for (const auto& decl : web_app.permissions_policy()) {
-      WebAppPermissionsPolicy proto_policy;
+      proto::WebAppPermissionsPolicy proto_policy;
       const auto feature_name = feature_to_name_map.find(decl.feature);
       if (feature_name == feature_to_name_map.end())
         continue;
@@ -820,7 +820,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   if (!web_app.management_to_external_config_map().empty()) {
     for (const auto& [source, external_config] :
          web_app.management_to_external_config_map()) {
-      ManagementToExternalConfigInfo* management_config_proto =
+      proto::ManagementToExternalConfigInfo* management_config_proto =
           local_data->add_management_to_external_config_info();
       management_config_proto->set_management(WebAppManagementToProto(source));
       management_config_proto->set_is_placeholder(
@@ -968,7 +968,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
 // static
 std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
-    const WebAppProto& local_data) {
+    const proto::WebApp& local_data) {
   if (!local_data.has_sync_data()) {
     DLOG(ERROR) << "WebApp proto parse error: no sync_data field";
     return nullptr;
@@ -1127,7 +1127,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   std::vector<DisplayMode> display_mode_override;
   for (int i = 0; i < local_data.display_mode_override_size(); i++) {
-    WebAppProto::DisplayMode display_mode = local_data.display_mode_override(i);
+    proto::WebApp::DisplayMode display_mode =
+        local_data.display_mode_override(i);
     display_mode_override.push_back(ToMojomDisplayMode(display_mode));
   }
   web_app->SetDisplayModeOverride(std::move(display_mode_override));
@@ -1283,7 +1284,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   web_app->SetFileHandlers(std::move(file_handlers));
 
   if (local_data.has_share_target()) {
-    const ShareTarget& local_share_target = local_data.share_target();
+    const proto::ShareTarget& local_share_target = local_data.share_target();
     if (!local_share_target.has_action() || !local_share_target.has_method() ||
         !local_share_target.has_enctype() || !local_share_target.has_params()) {
       DLOG(ERROR) << "WebApp proto Share Target parse error";
@@ -1291,7 +1292,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     }
     apps::ShareTarget share_target;
 
-    const ShareTargetParams& local_share_target_params =
+    const proto::ShareTargetParams& local_share_target_params =
         local_share_target.params();
 
     GURL action(local_share_target.action());
@@ -1577,7 +1578,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_launch_handler()) {
-    const LaunchHandlerProto& launch_handler_proto =
+    const proto::LaunchHandler& launch_handler_proto =
         local_data.launch_handler();
     LaunchHandler launch_handler = ProtoLaunchHandlerToLaunchHandlerClientMode(
         launch_handler_proto.route_to(),
@@ -1874,7 +1875,7 @@ WebAppDatabase::ProtobufState WebAppDatabase::ParseProtobufs(
       continue;
     }
 
-    WebAppProto app_proto;
+    proto::WebApp app_proto;
     bool success = app_proto.ParseFromString(record.value);
     if (!success) {
       DLOG(ERROR) << "WebApps LevelDB parse error: can't parse app proto.";
@@ -2038,7 +2039,7 @@ void WebAppDatabase::OnDataWritten(
 std::unique_ptr<WebApp> WebAppDatabase::ParseWebApp(
     const webapps::AppId& app_id,
     const std::string& value) {
-  WebAppProto proto;
+  proto::WebApp proto;
   const bool parsed = proto.ParseFromString(value);
   if (!parsed) {
     DLOG(ERROR) << "WebApps LevelDB parse error: can't parse proto.";
@@ -2061,47 +2062,47 @@ std::unique_ptr<WebApp> WebAppDatabase::ParseWebApp(
   return web_app;
 }
 
-DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode) {
+DisplayMode ToMojomDisplayMode(proto::WebApp::DisplayMode display_mode) {
   switch (display_mode) {
-    case WebAppProto::BROWSER:
+    case proto::WebApp::BROWSER:
       return DisplayMode::kBrowser;
-    case WebAppProto::MINIMAL_UI:
+    case proto::WebApp::MINIMAL_UI:
       return DisplayMode::kMinimalUi;
-    case WebAppProto::STANDALONE:
+    case proto::WebApp::STANDALONE:
       return DisplayMode::kStandalone;
-    case WebAppProto::FULLSCREEN:
+    case proto::WebApp::FULLSCREEN:
       return DisplayMode::kFullscreen;
-    case WebAppProto::WINDOW_CONTROLS_OVERLAY:
+    case proto::WebApp::WINDOW_CONTROLS_OVERLAY:
       return DisplayMode::kWindowControlsOverlay;
-    case WebAppProto::TABBED:
+    case proto::WebApp::TABBED:
       return DisplayMode::kTabbed;
-    case WebAppProto::BORDERLESS:
+    case proto::WebApp::BORDERLESS:
       return DisplayMode::kBorderless;
-    case WebAppProto::PICTURE_IN_PICTURE:
+    case proto::WebApp::PICTURE_IN_PICTURE:
       return DisplayMode::kPictureInPicture;
   }
 }
 
-WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
+proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
   switch (display_mode) {
     case DisplayMode::kBrowser:
-      return WebAppProto::BROWSER;
+      return proto::WebApp::BROWSER;
     case DisplayMode::kMinimalUi:
-      return WebAppProto::MINIMAL_UI;
+      return proto::WebApp::MINIMAL_UI;
     case DisplayMode::kUndefined:
       NOTREACHED();
     case DisplayMode::kStandalone:
-      return WebAppProto::STANDALONE;
+      return proto::WebApp::STANDALONE;
     case DisplayMode::kFullscreen:
-      return WebAppProto::FULLSCREEN;
+      return proto::WebApp::FULLSCREEN;
     case DisplayMode::kWindowControlsOverlay:
-      return WebAppProto::WINDOW_CONTROLS_OVERLAY;
+      return proto::WebApp::WINDOW_CONTROLS_OVERLAY;
     case DisplayMode::kTabbed:
-      return WebAppProto::TABBED;
+      return proto::WebApp::TABBED;
     case DisplayMode::kBorderless:
-      return WebAppProto::BORDERLESS;
+      return proto::WebApp::BORDERLESS;
     case DisplayMode::kPictureInPicture:
-      return WebAppProto::PICTURE_IN_PICTURE;
+      return proto::WebApp::PICTURE_IN_PICTURE;
   }
 }
 

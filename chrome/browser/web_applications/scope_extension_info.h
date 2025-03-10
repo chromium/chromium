@@ -19,7 +19,9 @@ class Value;
 
 namespace web_app {
 
-class WebAppScopeExtensionProto;
+namespace proto {
+class WebAppScopeExtension;
+}  // namespace proto
 
 // Contains information about a web app's scope extension information derived
 // from its web app manifest.
@@ -34,7 +36,7 @@ struct ScopeExtensionInfo {
                                            bool has_origin_wildcard = false);
   // Used specifically in WebAppDatabase::CreateWebAppProto
   static ScopeExtensionInfo CreateForProto(
-      const WebAppScopeExtensionProto& web_app_scope_extension_proto);
+      const proto::WebAppScopeExtension& web_app_scope_extension_proto);
 
   // Reset the scope extension to its default state.
   REINITIALIZES_AFTER_MOVE void Reset();

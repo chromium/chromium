@@ -31,7 +31,7 @@ namespace web_app {
 
 GeneratedIconFixCommand::GeneratedIconFixCommand(
     webapps::AppId app_id,
-    GeneratedIconFixSource source,
+    proto::GeneratedIconFixSource source,
     base::OnceCallback<void(GeneratedIconFixResult)> callback)
     : WebAppCommand<SharedWebContentsWithAppLock, GeneratedIconFixResult>(
           "GeneratedIconFixCommand",

@@ -1126,9 +1126,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetLatestInstallTime(random.next_time());
 
   if (random.next_bool()) {
-    GeneratedIconFix generated_icon_fix;
-    generated_icon_fix.set_source(
-        NEXT_PROTO_ENUM(random, GeneratedIconFixSource, /*skip_zero=*/true));
+    proto::GeneratedIconFix generated_icon_fix;
+    generated_icon_fix.set_source(NEXT_PROTO_ENUM(
+        random, proto::GeneratedIconFixSource, /*skip_zero=*/true));
     generated_icon_fix.set_window_start_time(random.next_proto_time());
     if (random.next_bool()) {
       generated_icon_fix.set_last_attempt_time(random.next_proto_time());

@@ -856,7 +856,7 @@ void WebApp::SetLatestInstallTime(const base::Time& latest_install_time) {
 }
 
 void WebApp::SetGeneratedIconFix(
-    std::optional<GeneratedIconFix> generated_icon_fix) {
+    std::optional<proto::GeneratedIconFix> generated_icon_fix) {
   CHECK(!generated_icon_fix.has_value() ||
         generated_icon_fix_util::IsValid(*generated_icon_fix));
   generated_icon_fix_ = generated_icon_fix;
@@ -926,7 +926,8 @@ const std::vector<TabbedModeScopeMatcher>& WebApp::GetTabbedModeHomeScope()
   return *cached_derived_data_.home_tab_scope;
 }
 
-const std::optional<GeneratedIconFix>& WebApp::generated_icon_fix() const {
+const std::optional<proto::GeneratedIconFix>& WebApp::generated_icon_fix()
+    const {
   CHECK(!generated_icon_fix_.has_value() ||
         generated_icon_fix_util::IsValid(generated_icon_fix_.value()));
   return generated_icon_fix_;
