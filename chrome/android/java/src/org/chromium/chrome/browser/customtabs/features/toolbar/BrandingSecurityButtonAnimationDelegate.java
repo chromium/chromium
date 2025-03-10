@@ -66,7 +66,9 @@ class BrandingSecurityButtonAnimationDelegate {
         if (mCurrentDrawableResource == newResourceId) return;
         mCurrentDrawableResource = newResourceId;
 
-        if (mImageView.getVisibility() == View.VISIBLE && mImageView.getDrawable() != null) {
+        if (newResourceId != 0
+                && mImageView.getVisibility() == View.VISIBLE
+                && mImageView.getDrawable() != null) {
             updateWithTransitionalDrawable(newResourceId);
         } else {
             mImageView.setImageResource(newResourceId);
