@@ -150,6 +150,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "allow-user-installed-chrome-apps",
+    "owners": ["//apps/DEPRECATION_OWNERS"],
+    "expiry_milestone": 169
+  },
+  {
     "name": "alt-click-and-six-pack-customization",
     "owners": [ "michaelcheco@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140

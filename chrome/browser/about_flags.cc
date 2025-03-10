@@ -264,6 +264,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/process/process.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -11735,6 +11736,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHAutofillCreditCardBenefitFeature)},
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"allow-user-installed-chrome-apps",
+     flag_descriptions::kAllowUserInstalledChromeAppsName,
+     flag_descriptions::kAllowUserInstalledChromeAppsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         apps::chrome_app_deprecation::kAllowUserInstalledChromeApps)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
