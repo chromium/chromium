@@ -403,8 +403,8 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean onDragStart(float xPx, float yPx, ClipDescription clipDescription) {
-        if (clipDescription == null
-                || clipDescription.filterMimeTypes(MimeTypeUtils.CHROME_MIMETYPE_TAB) == null
+        // Only proceed if browser content is being dragged; otherwise, skip the operations.
+        if (!MimeTypeUtils.clipDescriptionHasBrowserContent(clipDescription)
                 || DragDropGlobalState.getState(sDragTrackerToken) == null) {
             return false;
         }
@@ -468,11 +468,21 @@ public class TabDragSource implements View.OnDragListener {
             return true;
         }
 
-        if (dropEvent.getClipDescription() == null
-                || !dropEvent.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
-            return false;
+        ClipDescription clipDescription = dropEvent.getClipDescription();
+        if (clipDescription == null) return false;
+
+        if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
+            return handleTabDrop(dropEvent, helper);
         }
 
+        if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP)) {
+            return handleGroupDrop();
+        }
+
+        return false;
+    }
+
+    private boolean handleTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
         Tab tabBeingDragged = getTabFromGlobalState(dropEvent);
         if (tabBeingDragged == null) {
             return false;
@@ -500,6 +510,11 @@ public class TabDragSource implements View.OnDragListener {
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
         mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         return true;
+    }
+
+    private boolean handleGroupDrop() {
+        // TODO(crbug.com/401029454): Implement.
+        return false;
     }
 
     private boolean onDragEnd(
