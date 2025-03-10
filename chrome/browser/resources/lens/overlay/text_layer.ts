@@ -28,7 +28,7 @@ import type {GestureEvent} from './selection_utils.js';
 import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
 import {Alignment, WritingDirection} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
-import type {TextLayerBase} from './text_layer_base.js';
+import type {TextCopyCallback, TextLayerBase} from './text_layer_base.js';
 import {getTextSeparator, isWordRenderable, translateWords} from './text_rendering.js';
 import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
@@ -1321,6 +1321,11 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
       return 'ltr';
     }
     return isRtlLanguage(language) ? 'rtl' : 'ltr';
+  }
+
+  onCopyDetectedText(
+      _startIndex: number, _endIndex: number, _callbackFn: TextCopyCallback) {
+    // This layer does not support copying detected text. Only selected text.
   }
 
   getElementForTesting(): Element {

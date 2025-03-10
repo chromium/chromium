@@ -8231,8 +8231,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserSimplifiedSelectionTest,
       fake_controller->fake_overlay_page_.last_received_objects_[0].get();
   auto* text = fake_controller->fake_overlay_page_.last_received_text_.get();
   EXPECT_TRUE(object);
-  EXPECT_FALSE(text);
+  EXPECT_TRUE(text);
   EXPECT_TRUE(kTestOverlayObject->Equals(*object));
+  EXPECT_EQ(kTestText->content_language, text->content_language);
 }
 
 }  // namespace

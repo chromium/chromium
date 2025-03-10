@@ -52,6 +52,28 @@ export async function addGenericWordsToPage(
   await flushTasks();
 }
 
+/**
+ * Adds generic text to the `callbackRouterRemote` provided. Text is already
+ * normalized without the need for a rendered element.
+ */
+export async function addGenericWordsToPageNormalized(
+    callbackRouterRemote: LensPageRemote) {
+  const text = createText([
+    createParagraph([
+      createLine([
+        createWord('hello', {x: 0.1, y: 0.1, width: 0.1, height: 0.1}),
+        createWord('there', {x: 0.2, y: 0.2, width: 0.1, height: 0.1}),
+      ]),
+    ]),
+    createParagraph([
+      createLine(
+          [createWord('test', {x: 0.3, y: 0.3, width: 0.1, height: 0.1})]),
+    ]),
+  ]);
+  callbackRouterRemote.textReceived(text);
+  await flushTasks();
+}
+
 export function getHighlightedNodesForTesting(textLayerElement: Element):
     NodeListOf<Element> {
   return textLayerElement.shadowRoot!.querySelectorAll('.highlighted-line');

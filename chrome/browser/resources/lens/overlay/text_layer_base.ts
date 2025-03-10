@@ -4,6 +4,9 @@
 
 import type {GestureEvent} from './selection_utils.js';
 
+export type TextCopyCallback =
+    (textStartIndex: number, textEndIndex: number, text: string) => void;
+
 // Shared interface for the text layer on the overlay.
 export interface TextLayerBase {
   // Mouse events that the text selection layer handles.
@@ -20,6 +23,10 @@ export interface TextLayerBase {
   // Called when a selection was finished regardless of which layer handled it.
   // This includes region and text selections.
   onSelectionFinish(): void;
+
+  // Called when the selection overlay attempts to copy detected text.
+  onCopyDetectedText(
+      startIndex: number, endIndex: number, callbackFn: TextCopyCallback): void;
 
   selectAndSendWords(selectionStartIndex: number, selectionEndIndex: number):
       void;

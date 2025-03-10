@@ -5,26 +5,32 @@ import 'chrome-untrusted://lens-overlay/selection_overlay.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
+import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {SemanticEvent} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SimplifiedTextLayerElement} from 'chrome-untrusted://lens-overlay/simplified_text_layer.js';
+import type {TextCopyCallback} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {normalizeBoxInElement} from '../utils/selection_utils.js';
-import {addEmptyTextToPage, addGenericWordsToPage} from '../utils/text_utils.js';
+import {addEmptyTextToPage, addGenericWordsToPageNormalized} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
 const TEXT_RECEIVED_TIMEOUT_MS = 1000000;
+const COPY_TEXT_TIMEOUT_MS = 1000001;
+const TRANSLATE_TEXT_TIMEOUT_MS = 1000002;
 
 suite('SimplifiedSelection', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let textLayerElement: SimplifiedTextLayerElement;
   let callbackRouterRemote: LensPageRemote;
   let textReceivedTimeoutFunction: Function|undefined;
+  let copyTextTimeoutFunction: Function|undefined;
+  let translateTextTimeoutFunction: Function|undefined;
+  let selectionOverlayRect: DOMRect;
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -34,6 +40,8 @@ suite('SimplifiedSelection', function() {
 
     loadTimeData.overrideValues({
       'textReceivedTimeout': TEXT_RECEIVED_TIMEOUT_MS,
+      'copyTextTimeout': COPY_TEXT_TIMEOUT_MS,
+      'translateTextTimeout': TRANSLATE_TEXT_TIMEOUT_MS,
     });
 
     // Override setTimeout, and only alter behavior for the text received
@@ -47,6 +55,16 @@ suite('SimplifiedSelection', function() {
         textReceivedTimeoutFunction = callback;
         return 0;
       }
+      if (timeout === COPY_TEXT_TIMEOUT_MS) {
+        const callback = handler as Function;
+        copyTextTimeoutFunction = callback;
+        return 0;
+      }
+      if (timeout === TRANSLATE_TEXT_TIMEOUT_MS) {
+        const callback = handler as Function;
+        translateTextTimeoutFunction = callback;
+        return 0;
+      }
       return origSetTimeout(handler, timeout);
     };
 
@@ -56,15 +74,16 @@ suite('SimplifiedSelection', function() {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     textLayerElement = document.createElement('lens-simplified-text-layer');
+    selectionOverlayRect = {height: 100, width: 100, x: 50, y: 50} as DOMRect;
+    textLayerElement.setSelectionOverlayRectForTesting(selectionOverlayRect);
     document.body.appendChild(textLayerElement);
     await waitAfterNextRender(textLayerElement);
-
-    textLayerElement.onSelectionStart();
-    textLayerElement.onSelectionFinish();
   });
 
   teardown(() => {
     textReceivedTimeoutFunction = undefined;
+    copyTextTimeoutFunction = undefined;
+    translateTextTimeoutFunction = undefined;
   });
 
   function callTextReceivedTimeout() {
@@ -72,18 +91,28 @@ suite('SimplifiedSelection', function() {
     textReceivedTimeoutFunction!();
   }
 
+  function callCopyTextTimeout() {
+    assertTrue(copyTextTimeoutFunction !== undefined);
+    copyTextTimeoutFunction();
+  }
+
+  function callTranslateTextTimeout() {
+    assertTrue(translateTextTimeoutFunction !== undefined);
+    translateTextTimeoutFunction();
+  }
+
   async function dispatchDetextTextInRegionEvent() {
     const centerRotatedBox = {
-      box: normalizeBoxInElement(
-          {x: 10, y: 10, width: 10, height: 10}, textLayerElement),
+      box: {x: 0.2, y: 0.2, width: 0.4, height: 0.4},
       rotation: 0,
       coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
     };
-    textLayerElement.dispatchEvent(new CustomEvent('detect-text-in-region', {
-      bubbles: true,
-      composed: true,
-      detail: centerRotatedBox,
-    }));
+    textLayerElement.dispatchEvent(
+        new CustomEvent<CenterRotatedBox>('detect-text-in-region', {
+          bubbles: true,
+          composed: true,
+          detail: centerRotatedBox,
+        }));
     await flushTasks();
   }
 
@@ -99,8 +128,9 @@ suite('SimplifiedSelection', function() {
   test('OnSelectionFinishedClearsText', async () => {
     const receivedTextEventPromise =
         eventToPromise('finished-receiving-text', document.body);
-    await addGenericWordsToPage(callbackRouterRemote, textLayerElement);
+    await addEmptyTextToPage(callbackRouterRemote);
     await receivedTextEventPromise;
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
 
     // Simulate a new selection being created.
     textLayerElement.onSelectionStart();
@@ -111,8 +141,6 @@ suite('SimplifiedSelection', function() {
     const showSelectedRegionContextMenuEventPromise =
         eventToPromise('show-selected-region-context-menu', document.body);
 
-    // Call timeout to simulate no text being received.
-    callTextReceivedTimeout();
     await dispatchDetextTextInRegionEvent();
 
     const showSelectedRegionContextMenuEvent =
@@ -175,6 +203,10 @@ suite('SimplifiedSelection', function() {
         testBrowserProxy.handler.getCallCount(
             'recordLensOverlaySemanticEvent'));
 
+    // Simulate a new selection being created.
+    textLayerElement.onSelectionStart();
+    textLayerElement.onSelectionFinish();
+
     // When the detect text in region event is received, the context menu should
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
@@ -188,8 +220,28 @@ suite('SimplifiedSelection', function() {
         showSelectedRegionContextMenuEvent.detail.selectionStartIndex, -1);
   });
 
-  test('SelectedRegionContextMenuAppearsWithText', async () => {
-    await addGenericWordsToPage(callbackRouterRemote, textLayerElement);
+  test('SelectedRegionContextMenuAppearsWithFullImageText', async () => {
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+
+    // When the detect text in region event is received, the context menu should
+    // be shown without any detected text.
+    const showSelectedRegionContextMenuEventPromise =
+        eventToPromise('show-selected-region-context-menu', document.body);
+    await dispatchDetextTextInRegionEvent();
+    const showSelectedRegionContextMenuEvent =
+        await showSelectedRegionContextMenuEventPromise;
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionStartIndex, 0);
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionEndIndex, 2);
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.text, 'hello there\r\ntest');
+  });
+
+  test('SelectedRegionContextMenuAppearsWithRegionText', async () => {
+    // Two add text calls to have text be used from the region.
+    await addEmptyTextToPage(callbackRouterRemote);
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
 
     const semanticEventArgs = await testBrowserProxy.handler.getArgs(
         'recordLensOverlaySemanticEvent');
@@ -211,11 +263,75 @@ suite('SimplifiedSelection', function() {
         showSelectedRegionContextMenuEvent.detail.text, 'hello there\r\ntest');
   });
 
-  test('TranslateRegionWords', async () => {
-    await addGenericWordsToPage(callbackRouterRemote, textLayerElement);
+  test('CopyRegionWordsFromFullTextResponse', async () => {
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+
+    let expectedStartIndex = -1;
+    let expectedEndIndex = -1;
+    let expectedText: string = '';
+    const copyDetectedText: TextCopyCallback =
+        (startIndex: number, endIndex: number, text: string) => {
+          expectedStartIndex = startIndex;
+          expectedEndIndex = endIndex;
+          expectedText = text;
+        };
+
+    textLayerElement.onCopyDetectedText(/*startIndex=*/ 0,
+                                        /*endIndex=*/ 2, copyDetectedText);
+    assertEquals(expectedStartIndex, -1);
+    assertEquals(expectedEndIndex, -1);
+    assertEquals(expectedText, '');
+
+    callCopyTextTimeout();
+    assertEquals(expectedStartIndex, 0);
+    assertEquals(expectedEndIndex, 2);
+    assertEquals(expectedText, 'hello there\r\ntest');
+  });
+
+  test('CopyRegionWordsFromRegionResponse', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+
+    let expectedStartIndex = -1;
+    let expectedEndIndex = -1;
+    let expectedText: string = '';
+    const copyDetectedText: TextCopyCallback =
+        (startIndex: number, endIndex: number, text: string) => {
+          expectedStartIndex = startIndex;
+          expectedEndIndex = endIndex;
+          expectedText = text;
+        };
+
+    textLayerElement.onCopyDetectedText(/*startIndex=*/ 0,
+                                        /*endIndex=*/ 2, copyDetectedText);
+    assertEquals(expectedStartIndex, -1);
+    assertEquals(expectedEndIndex, -1);
+    assertEquals(expectedText, '');
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+
+    assertEquals(expectedStartIndex, 0);
+    assertEquals(expectedEndIndex, 2);
+    assertEquals(expectedText, 'hello there\r\ntest');
+  });
+
+  test('TranslateRegionWordsFromFullTextResponse', async () => {
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
 
     textLayerElement.selectAndTranslateWords(/*startIndex=*/ 0,
                                              /*endIndex=*/ 2);
+    callTranslateTextTimeout();
+    const textQuery = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateSelectionRequest');
+    assertDeepEquals('hello there test', textQuery);
+  });
+
+  test('TranslateRegionWordsFromRegionTextResponse', async () => {
+    // The first text received will be part of the full image response.
+    await addEmptyTextToPage(callbackRouterRemote);
+
+    textLayerElement.selectAndTranslateWords(/*startIndex=*/ 0,
+                                             /*endIndex=*/ 2);
+    // The next text received will be considered part of the region response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
     const textQuery = await testBrowserProxy.handler.whenCalled(
         'issueTranslateSelectionRequest');
     assertDeepEquals('hello there test', textQuery);
