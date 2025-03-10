@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_show_open_file_picker[True]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+[FAIL] test_show_open_file_picker[False]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+Harness: the test ran to completion.
+
