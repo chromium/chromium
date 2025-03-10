@@ -538,12 +538,10 @@ class Generator(generator.Generator):
         'is_bool_kind': mojom.IsBoolKind,
         'is_any_handle_kind': mojom.IsAnyHandleKind,
         "is_enum_kind": mojom.IsEnumKind,
-        "is_float_kind": mojom.IsFloatKind,
         'is_map_kind': mojom.IsMapKind,
         'is_nullable_kind': mojom.IsNullableKind,
         "is_nullable_value_kind_packed_field":
         pack.IsNullableValueKindPackedField,
-        "is_object_kind": mojom.IsObjectKind,
         "is_primary_nullable_value_kind_packed_field":
         pack.IsPrimaryNullableValueKindPackedField,
         'is_pointer_array_kind': IsPointerArrayKind,
