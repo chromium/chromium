@@ -9,12 +9,9 @@
 #import "base/ios/device_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
@@ -202,10 +199,6 @@ TEST_F(PreloadControllerTest, TestIsPrerenderingEnabled_preloadNever) {
 }
 
 TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-
   // Sign in supervised user.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
@@ -217,24 +210,6 @@ TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
 
   // Never prerender pages for supervised users regardless of the setting for
   // "Preload Webpages".
-  SimulateWiFiConnection();
-
-  PreloadWebpagesAlways();
-  EXPECT_FALSE(controller_.enabled);
-
-  PreloadWebpagesWiFiOnly();
-  EXPECT_FALSE(controller_.enabled);
-
-  PreloadWebpagesNever();
-  EXPECT_FALSE(controller_.enabled);
-}
-
-TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsersWithPrefs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-  supervised_user::EnableParentalControls(*profile_->GetPrefs());
-
   SimulateWiFiConnection();
 
   PreloadWebpagesAlways();

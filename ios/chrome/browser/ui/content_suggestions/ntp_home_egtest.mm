@@ -16,7 +16,6 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -1599,66 +1598,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("--") +
                                    switches::kDisableSearchEngineChoiceScreen);
-  config.features_enabled.push_back(
-      supervised_user::
-          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self
-      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-
-  // Ensure that label is visible with correct text for enabled feed, and that
-  // the NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-
-  // Opens settings menu and ensures that Discover setting is present.
-  [self checkDiscoverSettingsToggleVisible:YES];
-
-  // The identity must exist in the test storage to be able to set capabilities
-  // through the fake identity service.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
-                 }];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  // Check that the feed label is not visible and if NTP is scrollable.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-  [self checkIfNTPIsScrollable];
-
-  // Check that the fake omnibox is visible.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::FakeOmnibox()];
-
-  // Opens settings menu and ensures that Discover setting is not present.
-  [self checkDiscoverSettingsToggleVisible:NO];
-
-  [SigninEarlGreyUI signOut];
-
-  // The feed label should be visible on sign-out.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-
-  // Opens settings menu and ensures that Discover setting is present.
-  [self checkDiscoverSettingsToggleVisible:YES];
-}
-
-// Tests that content suggestions are hidden for supervised users on sign-in,
-// with supervision status based on system capabilities.
-// TODO(crbug.com/346756363): Remove this test when supervision status system
-// capabilities are deprecated.
-- (void)testFeedHiddenForSupervisedUserViaSystemCapabilities {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kDisableSearchEngineChoiceScreen);
-  config.features_disabled.push_back(
-      supervised_user::
-          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self
