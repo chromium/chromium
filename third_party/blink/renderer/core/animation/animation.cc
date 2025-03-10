@@ -250,6 +250,10 @@ bool GreaterThanOrEqualWithinTimeTolerance(const AnimationTimeDelta& a,
   return a_ms > b_ms;
 }
 
+constexpr const char* AnimationTraceCategories() {
+  return "blink.animations,devtools.timeline,benchmark,rail";
+}
+
 // Consider boundaries aligned if they round to the same integer pixel value.
 const double kScrollBoundaryTolerance = 0.5;
 
@@ -740,10 +744,17 @@ bool Animation::PreCommit(
   if (should_start) {
     compositor_group_ = compositor_group;
     if (start_on_compositor) {
-      PropertyHandleSet unsupported_properties;
+      std::optional<PropertyHandleSet> unsupported_properties_for_tracing;
+      bool category_enabled;
+      TRACE_EVENT_CATEGORY_GROUP_ENABLED(AnimationTraceCategories(),
+                                         &category_enabled);
+      if (category_enabled) {
+        unsupported_properties_for_tracing.emplace();
+      }
       CompositorAnimations::FailureReasons failure_reasons =
-          CheckCanStartAnimationOnCompositor(paint_artifact_compositor,
-                                             &unsupported_properties);
+          CheckCanStartAnimationOnCompositor(
+              paint_artifact_compositor,
+              base::OptionalToPtr(unsupported_properties_for_tracing));
       RecordCompositorAnimationFailureReasons(failure_reasons);
 
       if (failure_reasons == CompositorAnimations::kNoFailure) {
@@ -767,10 +778,11 @@ bool Animation::PreCommit(
       DCHECK_EQ(V8AnimationPlayState::Enum::kRunning,
                 CalculateAnimationPlayState());
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-          "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "data", [&](perfetto::TracedValue context) {
+          AnimationTraceCategories(), "Animation", this, "data",
+          [&](perfetto::TracedValue context) {
             inspector_animation_compositor_event::Data(
-                std::move(context), failure_reasons, unsupported_properties);
+                std::move(context), failure_reasons,
+                unsupported_properties_for_tracing.value());
           });
     }
   }
@@ -2204,13 +2216,14 @@ void Animation::ForceServiceOnNextFrame() {
 CompositorAnimations::FailureReasons
 Animation::CheckCanStartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
-    PropertyHandleSet* unsupported_properties) const {
+    PropertyHandleSet* unsupported_properties_for_tracing) const {
   CompositorAnimations::FailureReasons reasons =
       CheckCanStartAnimationOnCompositorInternal();
 
   if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get())) {
     reasons |= keyframe_effect->CheckCanStartAnimationOnCompositor(
-        paint_artifact_compositor, playback_rate_, unsupported_properties);
+        paint_artifact_compositor, playback_rate_,
+        unsupported_properties_for_tracing);
   }
   return reasons;
 }
@@ -3280,20 +3293,20 @@ void Animation::NotifyProbe() {
 
     if (!was_active && is_active) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-          "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "data", [&](perfetto::TracedValue context) {
+          AnimationTraceCategories(), "Animation", this, "data",
+          [&](perfetto::TracedValue context) {
             inspector_animation_event::Data(std::move(context), *this);
           });
     } else if (was_active && !is_active) {
       TRACE_EVENT_NESTABLE_ASYNC_END1(
-          "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "endData", [&](perfetto::TracedValue context) {
+          AnimationTraceCategories(), "Animation", this, "endData",
+          [&](perfetto::TracedValue context) {
             inspector_animation_state_event::Data(std::move(context), *this);
           });
     } else {
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-          "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "data", [&](perfetto::TracedValue context) {
+          AnimationTraceCategories(), "Animation", this, "data",
+          [&](perfetto::TracedValue context) {
             inspector_animation_state_event::Data(std::move(context), *this);
           });
     }

@@ -157,12 +157,12 @@ bool HasIncompatibleAnimations(const Element& target_element,
 }
 
 void DefaultToUnsupportedProperty(
-    PropertyHandleSet* unsupported_properties,
+    PropertyHandleSet* unsupported_properties_for_tracing,
     const PropertyHandle& property,
     CompositorAnimations::FailureReasons* reasons) {
   (*reasons) |= CompositorAnimations::kUnsupportedCSSProperty;
-  if (unsupported_properties) {
-    unsupported_properties->insert(property);
+  if (unsupported_properties_for_tracing) {
+    unsupported_properties_for_tracing->insert(property);
   }
 }
 
@@ -242,7 +242,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor,
     double animation_playback_rate,
-    PropertyHandleSet* unsupported_properties) {
+    PropertyHandleSet* unsupported_properties_for_tracing) {
   FailureReasons reasons = kNoFailure;
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
 
@@ -313,8 +313,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
         if (generator) {
           // Presently limited to a single Native Paint Worklet property per
           // animation.
-          DefaultToUnsupportedProperty(unsupported_properties, property,
-                                       &reasons);
+          DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                       property, &reasons);
           break;
         }
         if (property.GetCSSProperty().PropertyID() ==
@@ -341,8 +341,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
 
         if (!generator ||
             !generator->GetAnimationIfCompositable(&target_element)) {
-          DefaultToUnsupportedProperty(unsupported_properties, property,
-                                       &reasons);
+          DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                       property, &reasons);
         }
         break;
 
@@ -403,8 +403,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                 !layout_object->Style()->HasCSSPaintImagesUsingCustomProperty(
                     property.CustomPropertyName(),
                     layout_object->GetDocument())) {
-              DefaultToUnsupportedProperty(unsupported_properties, property,
-                                           &reasons);
+              DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                           property, &reasons);
             }
             // TODO: Add support for keyframes containing different types
             if (!keyframes.front() ||
@@ -416,8 +416,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           } else {
             // We skip the rest of the loop in this case for the same reason as
             // unsupported CSS properties - see below.
-            DefaultToUnsupportedProperty(unsupported_properties, property,
-                                         &reasons);
+            DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                         property, &reasons);
             continue;
           }
           break;
@@ -426,8 +426,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // We skip the rest of the loop in this case because
           // |GetCompositorKeyframeValue()| will be false so we will
           // accidentally count this as kInvalidAnimationOrEffect as well.
-          DefaultToUnsupportedProperty(unsupported_properties, property,
-                                       &reasons);
+          DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                       property, &reasons);
           continue;
       }
 
@@ -609,11 +609,11 @@ CompositorAnimations::CheckCanStartAnimationOnCompositor(
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor,
     double animation_playback_rate,
-    PropertyHandleSet* unsupported_properties) {
+    PropertyHandleSet* unsupported_properties_for_tracing) {
   FailureReasons reasons = CheckCanStartEffectOnCompositor(
       timing, normalized_timing, target_element, animation_to_add, effect,
       paint_artifact_compositor, animation_playback_rate,
-      unsupported_properties);
+      unsupported_properties_for_tracing);
   return reasons | CheckCanStartElementOnCompositor(target_element, effect);
 }
 
