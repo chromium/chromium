@@ -1396,7 +1396,7 @@ TEST_F(OmniboxEditModelPopupTest,
 // Tests the `GetMatchIcon()` method, verifying that no favicon is used for
 // `FEATURED_ENTERPRISE_SEARCH` matches with `kSearchAggregator` policy origin.
 TEST_F(OmniboxEditModelPopupTest,
-       GetMatchIconForFeaturedEnterpriseSearchAggregatorUsesDoesNotUseFavicon) {
+       GetMatchIconForFeaturedEnterpriseSearchAggregator) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   bitmap.eraseColor(SK_ColorRED);
@@ -1420,6 +1420,7 @@ TEST_F(OmniboxEditModelPopupTest,
   search_aggregator_match.keyword = u"searchaggregator";
   search_aggregator_match.associated_keyword =
       std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  search_aggregator_match.icon_url = GURL("https://aggregator.com/icon.png");
   matches.push_back(search_aggregator_match);
   AutocompleteMatch url_match(nullptr, 1000, false,
                               AutocompleteMatchType::URL_WHAT_YOU_TYPED);
@@ -1452,6 +1453,7 @@ TEST_F(OmniboxEditModelPopupTest,
   search_aggregator_match.keyword = u"searchaggregator";
   search_aggregator_match.associated_keyword =
       std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  search_aggregator_match.icon_url = GURL("https://aggregator.com/icon.png");
   matches.push_back(search_aggregator_match);
   AutocompleteMatch content_match(nullptr, 1000, false,
                                   AutocompleteMatchType::NAVSUGGEST);

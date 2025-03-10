@@ -384,6 +384,9 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
   match.contents_class = {{}};
   match.allowed_to_be_default_match = false;
   match.keyword = template_url.keyword();
+  if (template_url.CreatedByEnterpriseSearchAggregatorPolicy()) {
+    match.icon_url = template_url.favicon_url();
+  }
 
   matches_.push_back(match);
 }

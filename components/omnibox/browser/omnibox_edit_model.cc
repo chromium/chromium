@@ -1757,24 +1757,12 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     auto on_icon_fetched =
         base::BindOnce(&OmniboxEditModel::OnFaviconFetched,
                        weak_factory_.GetWeakPtr(), match.destination_url);
-    if (turl && AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type)) {
-      // `IsFeaturedEnterpriseSearchType()` also includes site search matches.
-      // We should only use the bitmap for enterprise search aggregators.
-      // Otherwise, use the favicon for the keyword search provider.
-      if (turl->policy_origin() ==
-          TemplateURLData::PolicyOrigin::kSearchAggregator) {
-        const SkBitmap* bitmap = GetPopupRichSuggestionBitmap(match.keyword);
-        if (bitmap) {
-          favicon = controller_->client()->GetSizedIcon(bitmap);
-        }
-      } else {
-        favicon = controller_->client()->GetFaviconForKeywordSearchProvider(
-            turl, std::move(on_icon_fetched));
-      }
-    } else {
-      favicon = controller_->client()->GetFaviconForPageUrl(
-          match.destination_url, std::move(on_icon_fetched));
-    }
+    favicon =
+        (turl && AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type))
+            ? controller_->client()->GetFaviconForKeywordSearchProvider(
+                  turl, std::move(on_icon_fetched))
+            : controller_->client()->GetFaviconForPageUrl(
+                  match.destination_url, std::move(on_icon_fetched));
 
     // Extension icons are the correct size for non-touch UI but need to be
     // adjusted to be the correct size for touch mode.
