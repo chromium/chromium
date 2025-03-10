@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_screenshot_capturer.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
@@ -168,6 +169,12 @@ void GlicScreenshotCapturer::SignalError(
     glic::mojom::CaptureScreenshotErrorReason error_reason) {
   std::move(capture_callback_)
       .Run(mojom::CaptureScreenshotResult::NewErrorReason(error_reason));
+}
+
+// static
+std::vector<uint8_t> GlicScreenshotCapturer::ConvertFrameToJpegForTesting(
+    std::unique_ptr<webrtc::DesktopFrame> frame) {
+  return ConvertFrameToJpeg(std::move(frame));
 }
 
 }  // namespace glic
