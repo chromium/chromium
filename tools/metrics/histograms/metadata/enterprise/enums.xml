@@ -2200,6 +2200,7 @@ chromium-metrics-reviews@google.com.
   <int value="1335" label="GeminiSettings"/>
   <int value="1336" label="GenAISmartGroupingSettings"/>
   <int value="1337" label="GenAiChromeOsSmartActionsSettings"/>
+  <int value="1338" label="RelaunchSupersededReleaseAge"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

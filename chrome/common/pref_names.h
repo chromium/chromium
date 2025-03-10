@@ -3144,6 +3144,13 @@ inline constexpr char kRelaunchNotificationPeriod[] =
 inline constexpr char kRelaunchWindow[] = "browser.relaunch_window";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Pref name for the policy controlling the maximum age of a build before
+// forcing a quick relaunch.
+inline constexpr char kRelaunchSupersededReleaseAge[] =
+    "browser.relaunch_superseded_release_age";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Pref name for the policy controlling the time period between the first user
 // notification about need to relaunch and the end of the
