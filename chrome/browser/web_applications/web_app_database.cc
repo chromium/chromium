@@ -153,15 +153,15 @@ LaunchHandler ProtoLaunchHandlerToLaunchHandlerClientMode(
   // client mode is non-auto. If the site did set the client_mode to 'auto',
   // then this is corrected on the next manifest update.
   switch (client_mode) {
-    case proto::LaunchHandler_ClientMode_AUTO:
+    case proto::LaunchHandler::CLIENT_MODE_AUTO:
       return LaunchHandler{LaunchHandler::ClientMode::kAuto};
-    case proto::LaunchHandler_ClientMode_NAVIGATE_NEW:
+    case proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW:
       return LaunchHandler{LaunchHandler::ClientMode::kNavigateNew};
-    case proto::LaunchHandler_ClientMode_NAVIGATE_EXISTING:
+    case proto::LaunchHandler::CLIENT_MODE_NAVIGATE_EXISTING:
       return LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting};
-    case proto::LaunchHandler_ClientMode_FOCUS_EXISTING:
+    case proto::LaunchHandler::CLIENT_MODE_FOCUS_EXISTING:
       return LaunchHandler{LaunchHandler::ClientMode::kFocusExisting};
-    case proto::LaunchHandler_ClientMode_UNSPECIFIED_CLIENT_MODE: {
+    case proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED: {
       // route_to was removed in favor of client_mode, fall back to it if client
       // mode is unset.
       switch (route_to) {
@@ -192,13 +192,13 @@ proto::LaunchHandler::ClientMode LaunchHandlerClientModeToProto(
     LaunchHandler::ClientMode client_mode) {
   switch (client_mode) {
     case LaunchHandler::ClientMode::kAuto:
-      return proto::LaunchHandler_ClientMode_AUTO;
+      return proto::LaunchHandler::CLIENT_MODE_AUTO;
     case LaunchHandler::ClientMode::kNavigateNew:
-      return proto::LaunchHandler_ClientMode_NAVIGATE_NEW;
+      return proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW;
     case LaunchHandler::ClientMode::kNavigateExisting:
-      return proto::LaunchHandler_ClientMode_NAVIGATE_EXISTING;
+      return proto::LaunchHandler::CLIENT_MODE_NAVIGATE_EXISTING;
     case LaunchHandler::ClientMode::kFocusExisting:
-      return proto::LaunchHandler_ClientMode_FOCUS_EXISTING;
+      return proto::LaunchHandler::CLIENT_MODE_FOCUS_EXISTING;
   }
 }
 
@@ -229,11 +229,11 @@ proto::WebApp::ApiApprovalState ApiApprovalStateToProto(
 apps::FileHandler::LaunchType ProtoToLaunchType(
     proto::WebAppFileHandler::LaunchType state) {
   switch (state) {
-    case proto::WebAppFileHandler_LaunchType_SINGLE_CLIENT:
+    case proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT:
       return apps::FileHandler::LaunchType::kSingleClient;
-    case proto::WebAppFileHandler_LaunchType_MULTIPLE_CLIENTS:
+    case proto::WebAppFileHandler::LAUNCH_TYPE_MULTIPLE_CLIENTS:
       return apps::FileHandler::LaunchType::kMultipleClients;
-    case proto::WebAppFileHandler_LaunchType_UNDEFINED:
+    case proto::WebAppFileHandler::LAUNCH_TYPE_UNSPECIFIED:
       return apps::FileHandler::LaunchType::kSingleClient;
   }
 }
@@ -242,77 +242,79 @@ proto::WebAppFileHandler::LaunchType LaunchTypeToProto(
     apps::FileHandler::LaunchType state) {
   switch (state) {
     case apps::FileHandler::LaunchType::kSingleClient:
-      return proto::WebAppFileHandler_LaunchType_SINGLE_CLIENT;
+      return proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT;
     case apps::FileHandler::LaunchType::kMultipleClients:
-      return proto::WebAppFileHandler_LaunchType_MULTIPLE_CLIENTS;
+      return proto::WebAppFileHandler::LAUNCH_TYPE_MULTIPLE_CLIENTS;
   }
 }
 
-WebAppManagement::Type ProtoToWebAppManagement(proto::WebAppManagement type) {
+WebAppManagement::Type ProtoToWebAppManagement(
+    proto::WebAppManagementType type) {
   switch (type) {
-    case proto::WebAppManagement::WEBAPPMANAGEMENT_UNSPECIFIED:
+    case proto::WEB_APP_MANAGEMENT_TYPE_UNSPECIFIED:
       NOTREACHED();
-    case proto::WebAppManagement::SYSTEM:
+    case proto::WEB_APP_MANAGEMENT_TYPE_SYSTEM:
       return WebAppManagement::Type::kSystem;
-    case proto::WebAppManagement::KIOSK:
+    case proto::WEB_APP_MANAGEMENT_TYPE_KIOSK:
       return WebAppManagement::Type::kKiosk;
-    case proto::WebAppManagement::POLICY:
+    case proto::WEB_APP_MANAGEMENT_TYPE_POLICY:
       return WebAppManagement::Type::kPolicy;
-    case proto::WebAppManagement::SUBAPP:
+    case proto::WEB_APP_MANAGEMENT_TYPE_SUB_APP:
       return WebAppManagement::Type::kSubApp;
-    case proto::WebAppManagement::WEBAPPSTORE:
+    case proto::WEB_APP_MANAGEMENT_TYPE_WEB_APP_STORE:
       return WebAppManagement::Type::kWebAppStore;
-    case proto::WebAppManagement::SYNC:
+    case proto::WEB_APP_MANAGEMENT_TYPE_SYNC:
       return WebAppManagement::Type::kSync;
-    case proto::WebAppManagement::USER_INSTALLED:
+    case proto::WEB_APP_MANAGEMENT_TYPE_USER_INSTALLED:
       return WebAppManagement::Type::kUserInstalled;
-    case proto::WebAppManagement::DEFAULT:
+    case proto::WEB_APP_MANAGEMENT_TYPE_DEFAULT:
       return WebAppManagement::Type::kDefault;
-    case proto::WebAppManagement::IWA_SHIMLESS_RMA:
+    case proto::WEB_APP_MANAGEMENT_TYPE_IWA_SHIMLESS_RMA:
       return WebAppManagement::Type::kIwaShimlessRma;
-    case proto::WebAppManagement::IWA_POLICY:
+    case proto::WEB_APP_MANAGEMENT_TYPE_IWA_POLICY:
       return WebAppManagement::Type::kIwaPolicy;
-    case proto::WebAppManagement::IWA_USER_INSTALLED:
+    case proto::WEB_APP_MANAGEMENT_TYPE_IWA_USER_INSTALLED:
       return WebAppManagement::Type::kIwaUserInstalled;
-    case proto::WebAppManagement::OEM:
+    case proto::WEB_APP_MANAGEMENT_TYPE_OEM:
       return WebAppManagement::Type::kOem;
-    case proto::WebAppManagement::ONEDRIVEINTEGRATION:
+    case proto::WEB_APP_MANAGEMENT_TYPE_ONE_DRIVE_INTEGRATION:
       return WebAppManagement::Type::kOneDriveIntegration;
-    case proto::WebAppManagement::APS_DEFAULT:
+    case proto::WEB_APP_MANAGEMENT_TYPE_APS_DEFAULT:
       return WebAppManagement::Type::kApsDefault;
   }
 }
 
-proto::WebAppManagement WebAppManagementToProto(WebAppManagement::Type type) {
+proto::WebAppManagementType WebAppManagementToProto(
+    WebAppManagement::Type type) {
   switch (type) {
     case WebAppManagement::Type::kSystem:
-      return proto::WebAppManagement::SYSTEM;
+      return proto::WEB_APP_MANAGEMENT_TYPE_SYSTEM;
     case WebAppManagement::Type::kKiosk:
-      return proto::WebAppManagement::KIOSK;
+      return proto::WEB_APP_MANAGEMENT_TYPE_KIOSK;
     case WebAppManagement::Type::kPolicy:
-      return proto::WebAppManagement::POLICY;
+      return proto::WEB_APP_MANAGEMENT_TYPE_POLICY;
     case WebAppManagement::Type::kSubApp:
-      return proto::WebAppManagement::SUBAPP;
+      return proto::WEB_APP_MANAGEMENT_TYPE_SUB_APP;
     case WebAppManagement::Type::kWebAppStore:
-      return proto::WebAppManagement::WEBAPPSTORE;
+      return proto::WEB_APP_MANAGEMENT_TYPE_WEB_APP_STORE;
     case WebAppManagement::Type::kSync:
-      return proto::WebAppManagement::SYNC;
+      return proto::WEB_APP_MANAGEMENT_TYPE_SYNC;
     case WebAppManagement::Type::kUserInstalled:
-      return proto::WebAppManagement::USER_INSTALLED;
+      return proto::WEB_APP_MANAGEMENT_TYPE_USER_INSTALLED;
     case WebAppManagement::Type::kDefault:
-      return proto::WebAppManagement::DEFAULT;
+      return proto::WEB_APP_MANAGEMENT_TYPE_DEFAULT;
     case WebAppManagement::Type::kIwaShimlessRma:
-      return proto::WebAppManagement::IWA_SHIMLESS_RMA;
+      return proto::WEB_APP_MANAGEMENT_TYPE_IWA_SHIMLESS_RMA;
     case WebAppManagement::Type::kIwaPolicy:
-      return proto::WebAppManagement::IWA_POLICY;
+      return proto::WEB_APP_MANAGEMENT_TYPE_IWA_POLICY;
     case WebAppManagement::Type::kIwaUserInstalled:
-      return proto::WebAppManagement::IWA_USER_INSTALLED;
+      return proto::WEB_APP_MANAGEMENT_TYPE_IWA_USER_INSTALLED;
     case WebAppManagement::Type::kOem:
-      return proto::WebAppManagement::OEM;
+      return proto::WEB_APP_MANAGEMENT_TYPE_OEM;
     case WebAppManagement::Type::kOneDriveIntegration:
-      return proto::WebAppManagement::ONEDRIVEINTEGRATION;
+      return proto::WEB_APP_MANAGEMENT_TYPE_ONE_DRIVE_INTEGRATION;
     case WebAppManagement::Type::kApsDefault:
-      return proto::WebAppManagement::APS_DEFAULT;
+      return proto::WEB_APP_MANAGEMENT_TYPE_APS_DEFAULT;
   }
 }
 
@@ -2064,21 +2066,23 @@ std::unique_ptr<WebApp> WebAppDatabase::ParseWebApp(
 
 DisplayMode ToMojomDisplayMode(proto::WebApp::DisplayMode display_mode) {
   switch (display_mode) {
-    case proto::WebApp::BROWSER:
+    case proto::WebApp::DISPLAY_MODE_UNSPECIFIED:
+      return DisplayMode::kUndefined;
+    case proto::WebApp::DISPLAY_MODE_BROWSER:
       return DisplayMode::kBrowser;
-    case proto::WebApp::MINIMAL_UI:
+    case proto::WebApp::DISPLAY_MODE_MINIMAL_UI:
       return DisplayMode::kMinimalUi;
-    case proto::WebApp::STANDALONE:
+    case proto::WebApp::DISPLAY_MODE_STANDALONE:
       return DisplayMode::kStandalone;
-    case proto::WebApp::FULLSCREEN:
+    case proto::WebApp::DISPLAY_MODE_FULLSCREEN:
       return DisplayMode::kFullscreen;
-    case proto::WebApp::WINDOW_CONTROLS_OVERLAY:
+    case proto::WebApp::DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY:
       return DisplayMode::kWindowControlsOverlay;
-    case proto::WebApp::TABBED:
+    case proto::WebApp::DISPLAY_MODE_TABBED:
       return DisplayMode::kTabbed;
-    case proto::WebApp::BORDERLESS:
+    case proto::WebApp::DISPLAY_MODE_BORDERLESS:
       return DisplayMode::kBorderless;
-    case proto::WebApp::PICTURE_IN_PICTURE:
+    case proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE:
       return DisplayMode::kPictureInPicture;
   }
 }
@@ -2086,23 +2090,23 @@ DisplayMode ToMojomDisplayMode(proto::WebApp::DisplayMode display_mode) {
 proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
   switch (display_mode) {
     case DisplayMode::kBrowser:
-      return proto::WebApp::BROWSER;
+      return proto::WebApp::DISPLAY_MODE_BROWSER;
     case DisplayMode::kMinimalUi:
-      return proto::WebApp::MINIMAL_UI;
+      return proto::WebApp::DISPLAY_MODE_MINIMAL_UI;
     case DisplayMode::kUndefined:
       NOTREACHED();
     case DisplayMode::kStandalone:
-      return proto::WebApp::STANDALONE;
+      return proto::WebApp::DISPLAY_MODE_STANDALONE;
     case DisplayMode::kFullscreen:
-      return proto::WebApp::FULLSCREEN;
+      return proto::WebApp::DISPLAY_MODE_FULLSCREEN;
     case DisplayMode::kWindowControlsOverlay:
-      return proto::WebApp::WINDOW_CONTROLS_OVERLAY;
+      return proto::WebApp::DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY;
     case DisplayMode::kTabbed:
-      return proto::WebApp::TABBED;
+      return proto::WebApp::DISPLAY_MODE_TABBED;
     case DisplayMode::kBorderless:
-      return proto::WebApp::BORDERLESS;
+      return proto::WebApp::DISPLAY_MODE_BORDERLESS;
     case DisplayMode::kPictureInPicture:
-      return proto::WebApp::PICTURE_IN_PICTURE;
+      return proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE;
   }
 }
 

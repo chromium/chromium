@@ -28,11 +28,11 @@ message LaunchHandler {
   }
 
   enum ClientMode {
-    UNSPECIFIED_CLIENT_MODE = 0;
-    AUTO = 1;
-    NAVIGATE_NEW = 2;
-    NAVIGATE_EXISTING = 3;
-    FOCUS_EXISTING = 4;
+    CLIENT_MODE_UNSPECIFIED = 0;
+    CLIENT_MODE_AUTO = 1;
+    CLIENT_MODE_NAVIGATE_NEW = 2;
+    CLIENT_MODE_NAVIGATE_EXISTING = 3;
+    CLIENT_MODE_FOCUS_EXISTING = 4;
   }
 
   optional DeprecatedRouteTo route_to = 1 [deprecated = true];

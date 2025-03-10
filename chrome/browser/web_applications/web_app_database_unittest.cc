@@ -810,7 +810,7 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   old_navigate_proto.mutable_launch_handler()->set_navigate_existing_client(
       proto::LaunchHandler_DeprecatedNavigateExistingClient_ALWAYS);
   old_navigate_proto.mutable_launch_handler()->set_client_mode(
-      proto::LaunchHandler_ClientMode_UNSPECIFIED_CLIENT_MODE);
+      proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
 
   std::unique_ptr<WebApp> new_navigate_app =
       WebAppDatabase::CreateWebApp(old_navigate_proto);
@@ -829,7 +829,7 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
       proto::
           LaunchHandler_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
   EXPECT_EQ(new_navigate_proto->launch_handler().client_mode(),
-            proto::LaunchHandler_ClientMode_NAVIGATE_EXISTING);
+            proto::LaunchHandler::CLIENT_MODE_NAVIGATE_EXISTING);
 
   // "launch_handler": {
   //   "route_to": "existing-client",
@@ -845,7 +845,7 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   old_focus_proto.mutable_launch_handler()->set_navigate_existing_client(
       proto::LaunchHandler_DeprecatedNavigateExistingClient_NEVER);
   old_focus_proto.mutable_launch_handler()->set_client_mode(
-      proto::LaunchHandler_ClientMode_UNSPECIFIED_CLIENT_MODE);
+      proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
 
   std::unique_ptr<WebApp> new_focus_app =
       WebAppDatabase::CreateWebApp(old_focus_proto);
@@ -865,7 +865,7 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
       proto::
           LaunchHandler_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
   EXPECT_EQ(new_focus_proto->launch_handler().client_mode(),
-            proto::LaunchHandler_ClientMode_FOCUS_EXISTING);
+            proto::LaunchHandler::CLIENT_MODE_FOCUS_EXISTING);
 }
 
 // Tests handling crashes fixed in crbug.com/1417955.

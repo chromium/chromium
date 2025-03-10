@@ -266,11 +266,11 @@ content::proto::ImageResource AppImageResourceToProto(
 
 RunOnOsLoginMode ToRunOnOsLoginMode(proto::WebApp::RunOnOsLoginMode mode) {
   switch (mode) {
-    case proto::WebApp::MINIMIZED:
+    case proto::WebApp::RUN_ON_OS_LOGIN_MODE_MINIMIZED:
       return RunOnOsLoginMode::kMinimized;
-    case proto::WebApp::WINDOWED:
+    case proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED:
       return RunOnOsLoginMode::kWindowed;
-    case proto::WebApp::NOT_RUN:
+    case proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN:
     default:
       return RunOnOsLoginMode::kNotRun;
   }
@@ -280,11 +280,11 @@ proto::WebApp::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     RunOnOsLoginMode mode) {
   switch (mode) {
     case RunOnOsLoginMode::kMinimized:
-      return proto::WebApp::MINIMIZED;
+      return proto::WebApp::RUN_ON_OS_LOGIN_MODE_MINIMIZED;
     case RunOnOsLoginMode::kWindowed:
-      return proto::WebApp::WINDOWED;
+      return proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED;
     case RunOnOsLoginMode::kNotRun:
-      return proto::WebApp::NOT_RUN;
+      return proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN;
   }
 }
 

@@ -28,7 +28,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -595,13 +594,12 @@ class WebApp {
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen_ = true;
 
-  proto::WebAppOsIntegrationState current_os_integration_states_ =
-      proto::WebAppOsIntegrationState();
+  proto::WebAppOsIntegrationState current_os_integration_states_;
 
   std::optional<IsolationData> isolation_data_;
 
   proto::LinkCapturingUserPreference user_link_capturing_preference_ =
-      proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT;
+      proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT;
 
   base::Time latest_install_time_;
 
