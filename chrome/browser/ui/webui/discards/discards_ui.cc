@@ -222,7 +222,9 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
               GetPrimaryPageNodeForWebContents(web_contents);
       CHECK(page_node);
 
-      performance_manager::user_tuning::DiscardPage(page_node.get(), reason);
+      performance_manager::user_tuning::DiscardPage(
+          page_node.get(), reason,
+          /*ignore_minimum_time_in_background=*/true);
     }
     std::move(callback).Run();
   }
@@ -246,7 +248,8 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
 
   void Discard(DiscardCallback callback) override {
     performance_manager::user_tuning::DiscardAnyPage(
-        mojom::LifecycleUnitDiscardReason::URGENT);
+        mojom::LifecycleUnitDiscardReason::URGENT,
+        /*ignore_minimum_time_in_background=*/true);
     std::move(callback).Run();
   }
 
