@@ -60,15 +60,14 @@ std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(  // IN-TEST
 }
 
 std::vector<MdlType> FromMdlResourceProto(
-    masked_domain_list::Resource resource) {
+    const masked_domain_list::Resource& resource) {
   std::vector<MdlType> mdl_types;
 
   if (!resource.exclude_default_group()) {
     mdl_types.emplace_back(MdlType::kIncognito);
   }
 
-  if (resource.experiments_size() != 0 &&
-      base::Contains(resource.experiments(),
+  if (base::Contains(resource.experiments(),
                      masked_domain_list::Resource::Experiment::
                          Resource_Experiment_EXPERIMENT_EXTERNAL_REGULAR)) {
     mdl_types.emplace_back(MdlType::kRegularBrowsing);
