@@ -133,6 +133,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         int BINARY_RADIO_BUTTON = 3;
     }
 
+    public static final String EMBEDDED_CONTENT_HELP_CENTER_URL =
+            "https://support.google.com/chrome/?p=embedded_content";
+
     // The key to use to pass which category this preference should display,
     // e.g. Location/Popups/All sites (if blank).
     public static final String EXTRA_CATEGORY = "category";
@@ -1438,7 +1441,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         getContext(),
                         (widget) -> {
                             getSiteSettingsDelegate()
-                                    .launchStorageAccessHelpActivity(getActivity());
+                                    .launchUrlInCustomTab(
+                                            getActivity(), EMBEDDED_CONTENT_HELP_CENTER_URL);
                         });
         return SpanApplier.applySpans(
                 storageAccessRawString,

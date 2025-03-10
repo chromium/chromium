@@ -508,7 +508,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                                     getStyledContext(),
                                     getSiteSettingsDelegate(),
                                     entry,
-                                    getActivity().getLayoutInflater());
+                                    getActivity().getLayoutInflater(),
+                                    /* showRwsMembershipLabels= */ true);
                     preference.setOnDeleteCallback(
                             () -> {
                                 getInfoForOrigins();

@@ -69,9 +69,6 @@ import java.util.Set;
 
 /** A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic. */
 public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
-    public static final String EMBEDDED_CONTENT_HELP_CENTER_URL =
-            "https://support.google.com/chrome/?p=embedded_content";
-
     private final Context mContext;
     private final Profile mProfile;
     private final PrivacySandboxBridge mPrivacySandboxBridge;
@@ -258,10 +255,10 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     // TODO(crbug.com/40286347): Migrate to `HelpAndFeedbackLauncherImpl` when
     // Chrome has migrated to Open-to-Context (OTC) and new p-links work.
     @Override
-    public void launchStorageAccessHelpActivity(Activity currentActivity) {
+    public void launchUrlInCustomTab(Activity currentActivity, String url) {
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(false).build();
-        customTabIntent.intent.setData(Uri.parse(EMBEDDED_CONTENT_HELP_CENTER_URL));
+        customTabIntent.intent.setData(Uri.parse(url));
 
         Intent intent =
                 LaunchIntentDispatcher.createCustomTabActivityIntent(

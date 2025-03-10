@@ -124,8 +124,8 @@ public interface SiteSettingsDelegate {
      */
     void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity);
 
-    /** Launches the Storage Access API help center link in a Chrome Custom Tab. */
-    void launchStorageAccessHelpActivity(Activity currentActivity);
+    /** Launches a Help Center URL in a custom tab. */
+    void launchUrlInCustomTab(Activity currentActivity, String url);
 
     /**
      * @return The set of all origins that have a WebAPK or TWA installed.
