@@ -73,9 +73,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const gfx::Rect& raster_full_rect,
       const gfx::Rect& raster_dirty_rect,
       const gfx::AxisTransform2d& transform,
-      const gfx::Size& resource_size,
-      viz::SharedImageFormat format,
-      const gfx::ColorSpace& color_space,
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
       uint64_t new_content_id,
@@ -111,9 +108,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     raw_ptr<ResourcePool::Backing> backing_;
 
     // These fields are for use on the worker thread.
-    const gfx::Size resource_size_;
-    const viz::SharedImageFormat format_;
-    const gfx::ColorSpace color_space_;
     const uint64_t previous_content_id_;
     gpu::SyncToken before_raster_sync_token_;
     bool mailbox_texture_is_overlay_candidate_;
@@ -138,12 +132,9 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   gpu::SyncToken CopyOnWorkerThread(StagingBuffer* staging_buffer,
                                     const RasterSource* raster_source,
                                     const gfx::Rect& rect_to_copy,
-                                    viz::SharedImageFormat format,
-                                    const gfx::Size& resource_size,
                                     ResourcePool::Backing* backing,
                                     bool mailbox_texture_is_overlay_candidate,
-                                    const gpu::SyncToken& sync_token,
-                                    const gfx::ColorSpace& color_space);
+                                    const gpu::SyncToken& sync_token);
 
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
