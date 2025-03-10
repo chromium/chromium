@@ -24,6 +24,8 @@ import {getCurrentSpeechRate, isWhitespace, minOverflowLengthToScroll, playFromS
 import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
+import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
+import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isGoogle, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
@@ -120,7 +122,7 @@ export interface SpeechPlayingState {
   // not update it.
   hasSpeechBeenTriggered: boolean;
   // If we're in the middle of repositioning speech, as this could cause a
-  // this.synth.cancel() that shouldn't update the UI for the speech playing
+  // this.speech_.cancel() that shouldn't update the UI for the speech playing
   // state.
   isSpeechBeingRepositioned: boolean;
 }
@@ -260,8 +262,6 @@ export class AppElement extends AppElementBase {
   // request the install.
   private waitingForNewEngine_ = false;
 
-  synth = window.speechSynthesis;
-
   protected selectedVoice_: SpeechSynthesisVoice|undefined;
   // The set of languages currently enabled for use by Read Aloud. This
   // includes user-enabled languages and auto-downloaded languages. The former
@@ -307,6 +307,7 @@ export class AppElement extends AppElementBase {
   private notificationManager_: VoiceNotificationManager;
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
+  private speech_: SpeechBrowserProxy;
   protected settingsPrefs_: SettingsPrefs;
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
@@ -354,6 +355,7 @@ export class AppElement extends AppElementBase {
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.notificationManager_ = VoiceNotificationManager.getInstance();
+    this.speech_ = SpeechBrowserProxyImpl.getInstance();
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -391,16 +393,14 @@ export class AppElement extends AppElementBase {
     if (this.isReadAloudEnabled_) {
       // Clear state. We don't do this in disconnectedCallback because that's
       // not always reliabled called.
-      this.synth.cancel();
+      this.speech_.cancel();
       this.hasContent_ = false;
       this.firstUtteranceSpoken_ = false;
       this.firstTextNodeSetForReadAloud = null;
       this.domNodeToAxNodeIdMap_.clear();
       this.clearReadAloudState();
 
-      this.synth.onvoiceschanged = () => {
-        this.onVoicesChanged();
-      };
+      this.speech_.setOnVoicesChanged(this.onVoicesChanged);
     }
 
     this.settingsPrefs_ = {
@@ -693,7 +693,7 @@ export class AppElement extends AppElementBase {
     this.emptyStateSubheading_ = '';
     this.hasContent_ = false;
     if (this.isReadAloudEnabled_) {
-      this.synth.cancel();
+      this.speech_.cancel();
       this.clearReadAloudState();
     }
   }
@@ -704,7 +704,7 @@ export class AppElement extends AppElementBase {
     // Each time we rebuild the subtree, we should clear the node id of the
     // first text node.
     this.firstTextNodeSetForReadAloud = null;
-    this.synth.cancel();
+    this.speech_.cancel();
     this.clearReadAloudState();
     const container = this.$.container;
 
@@ -1272,7 +1272,7 @@ export class AppElement extends AppElementBase {
 
   private getVoices_(refresh: boolean = false): SpeechSynthesisVoice[] {
     if (!this.availableVoices_.length || refresh) {
-      this.availableVoices_ = getFilteredVoiceList(this.synth.getVoices());
+      this.availableVoices_ = getFilteredVoiceList(this.speech_.getVoices());
       this.availableLangs_ =
           [...new Set(this.availableVoices_.map(({lang}) => lang))];
 
@@ -1373,7 +1373,7 @@ export class AppElement extends AppElementBase {
       this.previewVoicePlaying_ = undefined;
     };
 
-    this.synth.speak(utterance);
+    this.speech_.speak(utterance);
   }
 
   protected onVoiceMenuClose_(
@@ -1419,10 +1419,10 @@ export class AppElement extends AppElementBase {
     // synth.pause() and synth.resume() for speech to resume from where it left
     // off.
     if (pausedFromButton) {
-      this.synth.pause();
+      this.speech_.pause();
     } else {
       // Canceling clears all the Utterances that are queued up via synth.play()
-      this.synth.cancel();
+      this.speech_.cancel();
     }
 
     // Restore links if they're enabled when speech pauses. Don't restore links
@@ -1449,7 +1449,7 @@ export class AppElement extends AppElementBase {
       isSpeechBeingRepositioned: true,
     };
 
-    this.synth.cancel();
+    this.speech_.cancel();
     this.resetPreviousHighlight_();
     // Reset the word boundary index whenever we move the granularity position.
     this.resetToDefaultWordBoundaryState();
@@ -1465,7 +1465,7 @@ export class AppElement extends AppElementBase {
       ...this.speechPlayingState,
       isSpeechBeingRepositioned: true,
     };
-    this.synth.cancel();
+    this.speech_.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
     // determine what's currently being highlighted.
@@ -1492,7 +1492,7 @@ export class AppElement extends AppElementBase {
 
       let playedFromSelection = false;
       if (hasSelection) {
-        this.synth.cancel();
+        this.speech_.cancel();
         this.resetToDefaultWordBoundaryState();
         playedFromSelection = this.playFromSelection();
       }
@@ -1504,9 +1504,9 @@ export class AppElement extends AppElementBase {
           // If word boundaries aren't supported for the given voice, we should
           // still continue to use synth.resume, as this is preferable to
           // restarting the current message.
-          this.synth.resume();
+          this.speech_.resume();
         } else {
-          this.synth.cancel();
+          this.speech_.cancel();
           if (!this.highlightAndPlayInterruptedMessage()) {
             // Ensure we're updating Read Aloud state if there's no text to
             // speak.
@@ -1995,7 +1995,7 @@ export class AppElement extends AppElementBase {
       this.speechEngineLoaded_ = false;
       this.firstUtteranceSpoken_ = true;
     }
-    this.synth.speak(message);
+    this.speech_.speak(message);
   }
 
   handleSpeechSynthesisError(
@@ -2036,7 +2036,7 @@ export class AppElement extends AppElementBase {
       // the accessible text length boundaries to shorten the text. Even
       // if this gives a much smaller sentence than TTS would have supported,
       // this is still preferable to no speech.
-      this.synth.cancel();
+      this.speech_.cancel();
       this.playTextWithBoundaries(
           utteranceText, true, this.getAccessibleTextLength(utteranceText));
       return;

@@ -6,17 +6,18 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent, VoiceClientSideStatusCode, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent} from './common.js';
+import {createApp, emitEvent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
+  let speech: TestSpeechBrowserProxy;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -75,6 +76,8 @@ suite('AppReceivesToolbarChanges', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     app = await createApp();
@@ -233,34 +236,29 @@ suite('AppReceivesToolbarChanges', () => {
       });
   });
 
-  suite('on speech rate change', () => {
-    function emitRate() {
-      emitEvent(app, ToolbarEvent.RATE);
-    }
+  test('on speech rate change speech rate updated', () => {
+    setupBasicSpeech(app, speech);
+    app.updateContent();
+    app.playSpeech();
 
-    test('speech rate updated', () => {
-      const speechSynthesis = new FakeSpeechSynthesis();
-      app.synth = speechSynthesis;
-      app.playSpeech();
+    const speechRate1 = 2;
+    chrome.readingMode.speechRate = speechRate1;
+    emitEvent(app, ToolbarEvent.RATE);
+    assertEquals(2, speech.getCallCount('speak'));
 
-      const speechRate1 = 2;
-      chrome.readingMode.speechRate = speechRate1;
-      emitRate();
-      assertTrue(speechSynthesis.spokenUtterances.every(
-          utterance => utterance.rate === speechRate1));
+    const speechRate2 = 0.5;
+    chrome.readingMode.speechRate = speechRate2;
+    emitEvent(app, ToolbarEvent.RATE);
+    assertEquals(3, speech.getCallCount('speak'));
 
-      const speechRate2 = 0.5;
-      chrome.readingMode.speechRate = speechRate2;
-      emitRate();
-      assertTrue(speechSynthesis.spokenUtterances.every(
-          utterance => utterance.rate === speechRate2));
+    const speechRate3 = 4;
+    chrome.readingMode.speechRate = speechRate3;
+    emitEvent(app, ToolbarEvent.RATE);
+    assertEquals(4, speech.getCallCount('speak'));
 
-      const speechRate3 = 4;
-      chrome.readingMode.speechRate = speechRate3;
-      emitRate();
-      assertTrue(speechSynthesis.spokenUtterances.every(
-          utterance => utterance.rate === speechRate3));
-    });
+    const speechRates =
+        speech.getArgs('speak').map(utterance => utterance.rate);
+    assertArrayEquals([1, 2, 0.5, 4], speechRates);
   });
 
   suite('play/pause', () => {
