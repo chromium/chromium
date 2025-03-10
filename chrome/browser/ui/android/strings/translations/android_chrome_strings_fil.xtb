@@ -1128,6 +1128,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6296366034485697675">I-export at i-delete</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
+<translation id="6307241780749477694">I-verify na ikaw ito para makuha ang lahat ng iyong password sa device na ito</translation>
 <translation id="6312687380483398334">Mga web app (tahimik)</translation>
 <translation id="6315386555979018699">I-delete at magpatuloy</translation>
 <translation id="6316139424528454185">Hindi sinusuportahan ang bersyon ng Android</translation>
@@ -1389,6 +1390,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7359002509206457351">I-access ang mga paraan ng pagbabayad</translation>
 <translation id="7363349185727752629">Isang gabay tungkol sa iyong mga opsyon sa privacy</translation>
 <translation id="7364103838544876661">Higit pang opsyon sa pag-delete ng data mula sa pag-browse</translation>
+<translation id="7365073365123878797">Para simulan ang pag-save at paggamit ng mga password gamit ang Google Password Manager, i-update ang mga serbisyo ng Google Play</translation>
 <translation id="7375125077091615385">Uri:</translation>
 <translation id="7376560087009844242">Kapag nagsama ka ng mas maraming text ng isang page, posibleng makakita ka ng mas magagandang resulta kapag ginagamit mo ang Pindutin para Maghanap. Puwede mong bisitahin ang <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" /> anumang oras para baguhin ito.</translation>
 <translation id="7379900596734708416">Available ang Madilim na tema para sa mga site</translation>
@@ -1467,10 +1469,12 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7686086654630106285">Higit pa tungkol sa mga ad na iminumungkahi ng site</translation>
 <translation id="7690596512217303514">Hindi mabuksan ng iyong device ang Chrome. Para ayusin ang isyu, i-download ang pinakabagong update sa Chrome sa iyong app store.</translation>
 <translation id="7691043218961417207">Mag-explore ng content na susubaybayan</translation>
+<translation id="7692761875510935111">Mabilis na buksan sa browser. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="7697383401610880082">Handle sa pag-drag</translation>
 <translation id="7698359219371678927">Gumawa ng email sa <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Binuksan nang buo ang bottom sheet ng kamakailang aktibidad</translation>
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
+<translation id="7708994397325774423">Kunin ang lahat ng password mo</translation>
 <translation id="7733878270780732638">Walang sapat na espasyo sa device.</translation>
 <translation id="7746817319925672889">Malapit nang hindi gumana ang Google Password Manager sa device na ito</translation>
 <translation id="774876555279732384">Pinapamahalaan din ang mga serbisyo ng autofill sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
@@ -1612,6 +1616,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8310451567823644042">Malapit nang hindi gumana ang mga password</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Ipapaalam sa iyo ng Chrome ang tungkol sa mga site na posibleng nagpapadala ng masyadong maraming notification</translation>
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>
@@ -1743,6 +1748,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8937772741022875483">Alisin sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
 <translation id="8942627711005830162">Buksan sa ibang window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Hindi ma-download ang wikang ito. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="8946759102391960088">Panatilihin ang access sa iyong mga password</translation>
 <translation id="8957528460562961174">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito at pagkatapos ay i-import ang mga ito sa gusto mong password manager. Huminto sa paggana ang Google Password Manager dahil hindi available ang mga serbisyo ng Google Play.</translation>
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8965591936373831584">nakabinbin</translation>

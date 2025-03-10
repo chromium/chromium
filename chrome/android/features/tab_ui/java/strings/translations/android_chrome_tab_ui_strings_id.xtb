@@ -31,6 +31,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1909810060368225529">Pemberitahuan: Perubahan pada Grup Tab bersama ini dapat dilihat oleh semua orang. Siapa saja dapat melakukan perubahan pada grup tab bersama Anda</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bookmark <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
+<translation id="2055057176188061528">Pilih grup tab atau buat grup tab baru</translation>
 <translation id="2118649612461486615">Info toko</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> di <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="3194464645767632461">rating</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3547352561153509682">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baru}other{<ph name="MANY_ADDED" /> tab baru}}</translation>
 <translation id="3613492231657284463">Sembunyikan dialog tab tidak aktif</translation>
 <translation id="3619255692378312441">Kelola akses</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="381219490185664296">Pisahkan grup tab?</translation>
 <translation id="3940195383040445971">Pantau harga di tab</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baru, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab baru, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Kelompokkan tab}other{Kelompokkan tab}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab tidak aktif}other{<ph name="TABS_COUNT_MANY" /> tab tidak aktif}}</translation>
 <translation id="3969565576924904454">Buka <ph name="TITLE_OF_GROUP" /></translation>

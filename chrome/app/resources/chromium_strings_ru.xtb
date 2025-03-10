@@ -455,7 +455,6 @@
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="734373864078049451">Все веб-страницы, закладки и другие данные Chromium можно найти здесь.</translation>
 <translation id="7349591376906416160">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7355355292030546812">Chromium заблокировал скачивание, поскольку этот файл может представлять опасность для ваших личных аккаунтов и аккаунтов в социальных сетях, включая <ph name="USER_EMAIL" />.</translation>
 <translation id="7384121030444253939">Это расширение больше не поддерживается. Рекомендуем удалить его из Chromium.</translation>
 <translation id="7389750180956889333">Chromium лучше определяет формы и быстрее их заполняет. Подробнее <ph name="BEGIN_LINK" />об автозаполнении Chrome<ph name="END_LINK" />…</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>

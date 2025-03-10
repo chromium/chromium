@@ -66,6 +66,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="3078350928901129212">Ikon warna kumpulan tab <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Senarai kumpulan tab ditutup</translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab pada kumpulan}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab pada kumpulan}}</translation>
 <translation id="3328308545011660196">Cadangan: <ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
 <translation id="3547352561153509682">Tindakan ini akan memadamkan kumpulan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baharu}other{<ph name="MANY_ADDED" /> tab baharu}}</translation>
@@ -98,6 +99,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="4783638485675352219">Kongsi tajuk dan URL tab yang dibuka daripada peranti ini dengan sistem pengendalian</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih pada kumpulan}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih pada kumpulan}}</translation>
 <translation id="4861611890274104875">Ketepikan kad.</translation>
 <translation id="4861953997778766866">Semua orang boleh membuat perubahan pada kumpulan tab dikongsi anda</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
@@ -134,6 +136,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="6271513594716432922">Tutup semua tab tidak aktif</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab pada kumpulan baharu}other{Tambahkan tab pada kumpulan baharu}}</translation>
 <translation id="6333260925957816943">Maklumat tentang kedai ini</translation>
 <translation id="6381032505162537930">Anda akan menemukan kumpulan tab anda di sini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Nyahkumpulkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Nyahkumpulkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
@@ -186,6 +189,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="799469866974412355">Kumpulan baharu daripada peranti anda yang lain</translation>
 <translation id="8029301326595421733">Maklumat tentang kedai ini dibuka pada ketinggian penuh</translation>
 <translation id="8053770993984522566">Senarai kumpulan tab, dibuka pada ketinggian separuh</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Tambahkan tab pada kumpulan}other{Tambahkan tab pada kumpulan}}</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>

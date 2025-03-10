@@ -454,7 +454,6 @@
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="734373864078049451">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chromium.</translation>
 <translation id="7349591376906416160">Системният ви администратор е конфигурирал Chromium да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7355355292030546812">Chromium блокира това изтегляне, защото файлът може да навреди на личния ви профил и на профилите ви в социалните мрежи, включително <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Това разширение вече не се поддържа. Chromium препоръчва да го премахнете.</translation>
 <translation id="7389750180956889333">Chromium разпознава формулярите по-добре и може да ги попълва по-бързо вместо вас. Научете повече за <ph name="BEGIN_LINK" />автоматичното попълване в Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>

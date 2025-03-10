@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">屏保动画</translation>
 <translation id="152892567002884378">调高音量</translation>
 <translation id="1539864135338521185">青金石</translation>
+<translation id="1548555207631326346">选择一个主题，然后选择带下划线的字词，打造个性化的 AI 图像。<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" /> 
+          当您利用 AI 创作内容时，系统会将提示发送到 Google AI 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《隐私权政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 尚处于早期开发实验阶段，目前仅面向部分用户推出。</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1561927818299383735">背光颜色</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海滩</translation>
 <translation id="819278132617411009">使用 Google AI 提高工作效率</translation>
+<translation id="82003371436638355">如果选择“创建您自己的壁纸”，请撰写自定义提示。或者，您也可以选择“选择主题”，然后选择带下划线的字词，打造个性化的 AI 壁纸。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          当您创建自己的壁纸时，系统会将提示发送到 Google 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服务条款》和《隐私权政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。请勿包含任何个人、敏感或机密信息。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 的回答（包括与人有关的信息）未必正确无误，请务必核查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />了解详情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">播放媒体内容</translation>
 <translation id="8318753676953949627">无图片</translation>
 <translation id="8320910311642849813">森林</translation>
+<translation id="8322464149031882595">点击此处继续</translation>
 <translation id="8329018942023753850">计算器应用</translation>
 <translation id="8336739000755212683">更改设备账号图片</translation>
 <translation id="8339024191194156249">详细了解自动启动功能</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">企鹅</translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
+<translation id="8972061581514441296">点击此处返回</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{扫描}=1{扫描 {NUMBER_OF_PAGES} 个页面}other{扫描 {NUMBER_OF_PAGES} 个页面}}</translation>
 <translation id="89945434909472341">村庄</translation>

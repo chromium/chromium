@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">ეკრანმზოგის ანიმაცია</translation>
 <translation id="152892567002884378">ხმის აწევა</translation>
 <translation id="1539864135338521185">ლაზურიტი</translation>
+<translation id="1548555207631326346">გენერაციული სურათების პერსონალიზებისთვის აირჩიეთ თემა, შემდეგ კი — ხაზგასმული სიტყვები.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ხელოვნური ინტელექტით შექმნილი სურათების უფრო უნიკალური და განსხვავებული ვარიანტების მისაღებად აირჩიეთ „შთაგონების მიღება“.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ხელოვნური ინტელექტის დახმარებით რაიმეს შექმნისას შესაბამისი მოთხოვნა ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს, რომლებიც შემდეგ ქმნის სურათებს და აუმჯობესებს პროდუქტს <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ის კონფიდენციალურობის დებულების<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> შესაბამისად.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          გენერაციული ხელოვნური ინტელექტი ექსპერიმენტული ფუნქციაა, რომელიც შემუშავების ადრეულ სტადიებზეა, ამიტომ მისი ხელმისაწვდომობა შეზღუდულია.</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">ფონური განათების ფერი</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">პლაჟი</translation>
 <translation id="819278132617411009">გამოიყენეთ Google-ის ხელოვნური ინტელექტი პროდუქტიულობის გაზრდაში</translation>
+<translation id="82003371436638355">როცა აირჩევთ ვარიანტს „საკუთარი მოთხოვნის შექმნა“, დაწერეთ მორგებული მოთხოვნა. ან აირჩიეთ „თემის არჩევა“ და შემდეგ მონიშნეთ ხაზგასმული სიტყვები, რომ მოახდინოთ თქვენი AI ფონის პერსონალიზება.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ხელოვნური ინტელექტით შექმნილი სურათების უფრო უნიკალური და განსხვავებული ვარიანტების მისაღებად აირჩიეთ „შთაგონების მიღება“.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          თქვენი ფონის შექმნისას შესაბამისი მოთხოვნა ეგზავნება Google-ის სერვერებს, რომლებიც შემდეგ ქმნის სურათებს და აუმჯობესებს პროდუქტს <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ის კონფიდენციალურობის დებულების<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> შესაბამისად. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          გენერაციული ხელოვნური ინტელექტი შეიძლება შეცდეს, მათ შორის, ხალხის შესახებ, ამიტომ გადაამოწმეთ მისი ინფორმაცია <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />შეიტყვეთ მეტი<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">მედიის დაკვრა</translation>
 <translation id="8318753676953949627">სურათები არ არის</translation>
 <translation id="8320910311642849813">ტყე</translation>
+<translation id="8322464149031882595">დააწკაპუნეთ გასაგრძელებლად</translation>
 <translation id="8329018942023753850">კალკულატორის აპი</translation>
 <translation id="8336739000755212683">მოწყობილობის ანგარიშის სურათის შეცვლა</translation>
 <translation id="8339024191194156249">შეიტყვეთ მეტი ავტომატური გაშვების შესახებ</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">პინგვინები</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
+<translation id="8972061581514441296">დააწკაპუნეთ უკან დასაბრუნებლად</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{სკანირება}=1{გვერდის {NUMBER_OF_PAGES} სკანირება}other{გვერდის {NUMBER_OF_PAGES} სკანირება}}</translation>
 <translation id="89945434909472341">სოფელი</translation>

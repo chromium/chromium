@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">స్క్రీన్ సేవర్ యానిమేషన్</translation>
 <translation id="152892567002884378">వాల్యూమ్ పెంచండి</translation>
 <translation id="1539864135338521185">లాపస్ లాజులై</translation>
+<translation id="1548555207631326346">మీ AI ఇమేజ్‌లను వ్యక్తిగతీకరించడానికి థీమ్‌ను ఎంచుకుని, అండర్‌లైన్ చేసిన పదాలను ఎంచుకోండి.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మరింత ప్రత్యేకమైన, విభిన్నమైన AI ఇమేజ్‌ల ఆప్షన్‌లను పొందడానికి "నాలో స్ఫూర్తిని నింపండి" అనే ఆప్షన్‌ను ఎంచుకోండి.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మీరు AIతో క్రియేట్ చేసినప్పుడు, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google గోప్యతా పాలసీ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />కి లోబడి ఇమేజ్‌లను జెనరేట్ చేయడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి Googleకు చెందిన AI టెక్నాలజీల సర్వర్‌లకు ప్రాంప్ట్ పంపబడుతుంది.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          జెనరేటివ్ AI ప్రయోగాత్మకమైనది, ఇంకా ప్రారంభ స్థాయి అభివృద్ధి దశలోనే ఉంది, ప్రస్తుతానికి అది పరిమిత స్థాయిలో అందుబాటులో ఉంది.</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
 <translation id="1561927818299383735">బ్యాక్‌లైట్ రంగు</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">బీచ్</translation>
 <translation id="819278132617411009">ప్రొడక్టివిటీని మరింత పెంచుకోవడానికి Googleకు చెందిన AI టెక్నాలజీలను ఉపయోగించండి</translation>
+<translation id="82003371436638355">మీరు “మీ సొంతంగా క్రియేట్ చేయండి” అనే ఆప్షన్‌ను ఎంచుకున్నప్పుడు, అనుకూల ప్రాంప్ట్‌ను రాయండి. లేదా మీ AI వాల్‌పేపర్‌ను వ్యక్తిగతీకరించడానికి మీరు “థీమ్‌ను ఎంచుకోండి”ని ఎంచుకుని, ఆ తర్వాత అండర్‌లైన్ చేసిన పదాలను ఎంచుకోవచ్చు.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మరింత ప్రత్యేకమైన, విభిన్నమైన AI ఇమేజ్‌ల ఆప్షన్‌లను పొందడానికి "నాలో స్ఫూర్తిని నింపండి" అనే ఆప్షన్‌ను ఎంచుకోండి.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మీరు మీ సొంత వాల్‌పేపర్‌ను క్రియేట్ చేసినప్పుడు, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google సర్వీస్ నియమాలు, గోప్యతా పాలసీ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />‌కి అనుగుణంగా ఇమేజ్‌లు జెనరేట్ చేయడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి, Googleకు చెందిన సర్వర్‌లకు ప్రాంప్ట్ పంపబడుతుంది. అందులో వ్యక్తిగతమైన వాటిని, సున్నితమైన, లేదా గోప్యమైన అంశాలను చేర్చకండి.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          జెనరేటివ్ AI ఇచ్చే సమాధానాలు కరెక్ట్‌గా ఉండకపోవచ్చు, వ్యక్తులకు సంబంధించిన సమాచారం విషయంలో కూడా ఇదే వర్తిస్తుంది, కాబట్టి దాన్ని డబుల్-చెక్ చేయండి. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />మరింత తెలుసుకోండి<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">మీడియాను ప్లే చేస్తుంది</translation>
 <translation id="8318753676953949627">ఇమేజ్‌లు లేవు</translation>
 <translation id="8320910311642849813">అడవి</translation>
+<translation id="8322464149031882595">ముందుకు వెళ్లడానికి క్లిక్ చేయండి</translation>
 <translation id="8329018942023753850">క్యాలిక్యులేటర్ యాప్</translation>
 <translation id="8336739000755212683">పరికరం ఖాతా చిత్రాన్ని మార్చండి</translation>
 <translation id="8339024191194156249">ఆటోమేటిక్ లాంచ్ గురించి మరింత తెలుసుకోండి</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">పెంగ్విన్‌లు</translation>
 <translation id="8968751544471797276">ఛార్జింగ్ రేట్</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
+<translation id="8972061581514441296">వెనుకకు వెళ్లడానికి క్లిక్ చేయండి</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="89945434909472341">గ్రామం</translation>

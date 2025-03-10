@@ -460,7 +460,6 @@
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="734373864078049451">Εδώ μπορείτε να βρείτε τις ιστοσελίδες, τους σελιδοδείκτες σας και άλλα δεδομένα του Chromium.</translation>
 <translation id="7349591376906416160">Ο διαχειριστής συστήματος έχει διαμορφώσει το Chromium ώστε να ανοίγει το <ph name="ALTERNATIVE_BROWSER_NAME" /> για την πρόσβαση σε <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7355355292030546812">Το Chromium απέκλεισε αυτή τη λήψη, επειδή το αρχείο μπορεί να βλάψει τους προσωπικούς σας λογαριασμούς και τους λογαριασμούς σας σε κοινωνικά δίκτυα, συμπεριλαμβανομένου του <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Αυτή η επέκταση δεν υποστηρίζεται πλέον. Το Chromium προτείνει να την καταργήσετε.</translation>
 <translation id="7389750180956889333">Το Chromium κατανοεί καλύτερα τις φόρμες και μπορεί να τις συμπληρώνει αυτόματα πιο γρήγορα για εσάς. Μάθετε περισσότερα σχετικά με την <ph name="BEGIN_LINK" />Αυτόματη συμπλήρωση του Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
