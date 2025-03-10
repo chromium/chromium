@@ -435,6 +435,15 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     return make_result(StoreSourceResult::InternalError());
   }
 
+  if (int64_t count =
+          storage_.CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+              net::SchemefulSite(source.common_info().reporting_origin()),
+              source_time);
+      count >= 0) {
+    base::UmaHistogramCounts100(
+        "Conversions.UniqueReportingOriginsPerReportingSiteForSource", count);
+  }
+
   std::optional<base::Time> min_fake_report_time;
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {

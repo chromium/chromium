@@ -5567,4 +5567,45 @@ TEST_F(AttributionResolverTest,
           AttributionTrigger::AggregatableResult::kInsufficientNamedBudget));
 }
 
+TEST_F(AttributionResolverTest,
+       UniqueDailyReportingOriginsPerReportingSiteForSource) {
+  base::HistogramTester histogram_tester;
+
+  // Count is 1 (origin "a")
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r1.test"))
+          .Build());
+
+  // Count is 1 (origin "a" for previous and current sources)
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r1.test"))
+          .Build());
+
+  // Count is 2 (origins "a", "b")
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r1.test"))
+          .Build());
+
+  // Count is 3 (origins are "a", "b", "c")
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://c.r1.test"))
+          .Build());
+
+  // Count is 1 (different reporting site than the previous sources)
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r2.test"))
+          .Build());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Conversions.UniqueReportingOriginsPerReportingSiteForSource"),
+      base::BucketsAre(base::Bucket(1, 3), base::Bucket(2, 1),
+                       base::Bucket(3, 1)));
+}
+
 }  // namespace content

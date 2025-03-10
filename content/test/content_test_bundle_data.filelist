@@ -6185,6 +6185,7 @@ data/attribution_reporting/databases/version_65.sql
 data/attribution_reporting/databases/version_66.sql
 data/attribution_reporting/databases/version_67.sql
 data/attribution_reporting/databases/version_68.sql
+data/attribution_reporting/databases/version_69.sql
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
 data/attribution_reporting/interop/aggregatable_contributions_with_filtering_ids.json
