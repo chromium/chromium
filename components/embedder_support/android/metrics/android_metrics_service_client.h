@@ -151,7 +151,7 @@ class AndroidMetricsServiceClient
       MetricsLogUploader::MetricServiceType service_type,
       const MetricsLogUploader::UploadCallback& on_upload_complete) override;
   base::TimeDelta GetStandardUploadInterval() override;
-  bool ShouldStartUpFastForTesting() const override;
+  bool ShouldStartUpFast() const override;
 
   // Gets the embedding app's package name if it's OK to log. Otherwise, this
   // returns the empty string.

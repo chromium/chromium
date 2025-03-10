@@ -161,10 +161,9 @@ class MetricsServiceClient {
 
   // Whether or not the MetricsService should start up quickly and upload the
   // initial report quickly. By default, this work may be delayed by some
-  // amount. Only the default behavior should be used in production, but clients
-  // can override this in tests if tests need to make assertions on the log
-  // data.
-  virtual bool ShouldStartUpFastForTesting() const;
+  // amount. This should be overridden very sparingly in production and the
+  // default behavior should be used in most cases.
+  virtual bool ShouldStartUpFast() const;
 
   // Called when loading state changed, e.g. start/stop loading.
   virtual void LoadingStateChanged(bool is_loading) {}

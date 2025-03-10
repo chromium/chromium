@@ -420,7 +420,7 @@ void MetricsService::InitializeMetricsRecordingState() {
       // MetricsRotationScheduler is tied to the lifetime of |this|.
       base::BindRepeating(&MetricsServiceClient::GetUploadInterval,
                           base::Unretained(client_)),
-      client_->ShouldStartUpFastForTesting());
+      client_->ShouldStartUpFast());
 
   // Init() has to be called after LogCrash() in order for LogCrash() to work.
   delegating_provider_.Init();
@@ -832,7 +832,7 @@ MetricsService::GetSyntheticTrialRegistry() {
 
 base::TimeDelta MetricsService::GetInitializationDelay() {
   return base::Seconds(
-      client_->ShouldStartUpFastForTesting() ? 0 : kInitializationDelaySeconds);
+      client_->ShouldStartUpFast() ? 0 : kInitializationDelaySeconds);
 }
 
 base::TimeDelta MetricsService::GetUpdateLastAliveTimestampDelay() {
