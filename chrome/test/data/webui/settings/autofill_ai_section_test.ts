@@ -42,7 +42,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
         entitySubLabel: 'Passport',
       },
     ];
-    entityDataManager.setloadEntityInstancesResponse(
+    entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
 
     // Define the opt in pref.
@@ -191,7 +191,7 @@ suite('AutofillAiSectionUiTest', function() {
       },
     ];
     entityDataManager.setGetAllEntityTypesResponse(testEntityTypes);
-    entityDataManager.setloadEntityInstancesResponse(
+    entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
 
     section = document.createElement('settings-autofill-ai-section');
