@@ -19,6 +19,7 @@
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/ort/utils_ort.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -157,6 +158,8 @@ void GraphImplOrt::CreateAndBuild(
         constant_operands,
     ContextImplOrt* context,
     WebNNContextImpl::CreateGraphImplCallback callback) {
+  ScopedTrace scoped_trace("GraphImplOrt::CreateAndBuild");
+
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, context->AsWeakPtr(),
                      std::move(compute_resource_info), std::move(callback)));
@@ -167,7 +170,8 @@ void GraphImplOrt::CreateAndBuild(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), context->options().Clone(),
-                     context->properties(), std::move(constant_operands)),
+                     context->properties(), std::move(constant_operands),
+                     std::move(scoped_trace)),
       std::move(wrapped_callback));
 }
 
@@ -178,15 +182,18 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands) {
+        constant_operands,
+    ScopedTrace scoped_trace) {
   const mojom::CreateContextOptions::Device device_type =
       context_options->device;
 
+  scoped_trace.AddStep("Create model info");
   ASSIGN_OR_RETURN(std::unique_ptr<OrtModelEditor::ModelInfo> model_info,
                    GraphBuilderOrt::CreateAndBuild(
                        *graph_info, std::move(context_properties),
                        std::move(constant_operands)));
 
+  scoped_trace.AddStep("Create session options");
   const OrtApi* ort_api = GetOrtApi();
   ScopedOrtSessionOptions session_options;
   if (ORT_CALL_FAILED(ort_api->CreateSessionOptions(
@@ -285,6 +292,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
         session_options.get(), GraphOptimizationLevel::ORT_DISABLE_ALL));
 
+    scoped_trace.AddStep("Append OpenVINO execution provider");
+    // OpenVINO related dlls are loaded by this call.
     if (ORT_CALL_FAILED(
             ort_api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(
                 session_options.get(), provider_options_keys.data(),
@@ -315,6 +324,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
                                               "Failed to create graph."));
   }
 
+  scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;
   if (ORT_CALL_FAILED(GetOrtModelEditorApi()->CreateSessionFromModel(
           env.get(), model_info->model.get(), session_options.get(),
@@ -323,6 +333,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
                                               "Failed to build graph."));
   }
 
+  scoped_trace.AddStep("Create compute resources");
   auto compute_session =
       base::WrapUnique(new Session(std::move(env), std::move(session),
                                    std::move(model_info->external_data)));
