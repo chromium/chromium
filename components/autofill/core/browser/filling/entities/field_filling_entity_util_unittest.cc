@@ -116,12 +116,12 @@ class GetFillValueAndTypeForEntityTest : public testing::Test {
   GetFillValueAndTypeForEntityTest() = default;
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWithDataSchema};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 TEST_F(GetFillValueAndTypeForEntityTest, UnobfuscatedAttributes) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   AutofillField field;
   {
     FieldPrediction prediction1;
@@ -152,8 +152,6 @@ TEST_F(GetFillValueAndTypeForEntityTest, UnobfuscatedAttributes) {
 }
 
 TEST_F(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   AutofillField field;
   {
     FieldPrediction prediction;
@@ -181,8 +179,6 @@ TEST_F(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
 
 // Tests that we can correctly fill structured name information into fields.
 TEST_F(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   EntityInstance passport = test::GetPassportEntityInstance();
   for (const auto& [type, expectation] :
        std::vector<std::pair<FieldType, std::u16string>>{
@@ -210,8 +206,6 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
 // Tests that we can correctly fill country information into input fields
 // according to various locales.
 TEST_F(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   EntityInstance passport =
       test::GetPassportEntityInstance({.country = u"Lebanon"});
   for (const auto& [locale, expectation] :
@@ -243,8 +237,6 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
 // regardless of whether the internal representation of the element uses country
 // names or codes.
 TEST_F(GetFillValueAndTypeForEntityTest, FillingSelectControlWithCountries) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   EntityInstance passport = test::GetPassportEntityInstance();
   for (const auto& [options, expectation] :
        std::vector<std::pair<std::vector<const char*>, std::u16string>>{
@@ -316,8 +308,6 @@ class GetFillValueAndTypeForEntityStateTest
 // Tests that we can correctly fill state information into input fields
 // regardless whether the field is asking for the full name or the abbreviation.
 TEST_F(GetFillValueAndTypeForEntityStateTest, FillingStateValueIntoInput) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   EntityInstance drivers_license =
       test::GetDriversLicenseEntityInstance({.region = u"California"});
   for (const auto& [max_length, expectation] :
@@ -346,8 +336,6 @@ TEST_F(GetFillValueAndTypeForEntityStateTest, FillingStateValueIntoInput) {
 // Tests that we can correctly fill state information into select fields
 // regardless whether the field is asking for the full name or the abbreviation.
 TEST_F(GetFillValueAndTypeForEntityStateTest, FillingSelectControlWithState) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWithDataSchema};
   EntityInstance drivers_license =
       test::GetDriversLicenseEntityInstance({.region = u"California"});
   for (const auto& [options, expectation] :
@@ -370,6 +358,50 @@ TEST_F(GetFillValueAndTypeForEntityStateTest, FillingSelectControlWithState) {
                   .first,
               expectation);
   }
+}
+
+// Tests that a date is filled into an input according to the format string.
+TEST_F(GetFillValueAndTypeForEntityTest, FillingDateValueIntoTextInput) {
+  EntityInstance drivers_license =
+      test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
+  AutofillField field;
+  FieldPrediction prediction;
+  prediction.set_type(PASSPORT_ISSUE_DATE);
+  prediction.set_source(
+      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+          FieldPrediction::SOURCE_AUTOFILL_AI);
+  field.set_server_predictions({prediction});
+  field.set_form_control_type(FormControlType::kInputText);
+  field.set_format_string_unless_overruled(
+      u"DD/MM/YYYY", AutofillField::FormatStringSource::kServer);
+
+  EXPECT_EQ(GetFillValueAndTypeForEntity(drivers_license, field,
+                                         mojom::ActionPersistence::kFill,
+                                         /*app_locale=*/"",
+                                         /*address_normalizer=*/nullptr)
+                .first,
+            u"16/12/2022");
+}
+
+// Tests that a date is filled into an input according to the format string.
+TEST_F(GetFillValueAndTypeForEntityTest, FillingDateValueIntoMonthInput) {
+  EntityInstance drivers_license =
+      test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
+  AutofillField field;
+  FieldPrediction prediction;
+  prediction.set_type(PASSPORT_ISSUE_DATE);
+  prediction.set_source(
+      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+          FieldPrediction::SOURCE_AUTOFILL_AI);
+  field.set_server_predictions({prediction});
+  field.set_form_control_type(FormControlType::kInputMonth);
+
+  EXPECT_EQ(GetFillValueAndTypeForEntity(drivers_license, field,
+                                         mojom::ActionPersistence::kFill,
+                                         /*app_locale=*/"",
+                                         /*address_normalizer=*/nullptr)
+                .first,
+            u"2022-12");
 }
 
 }  // namespace
