@@ -28,6 +28,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -244,6 +245,12 @@ BASE_FEATURE(kGlicFrePreconnect,
              "GlicFrePreconnect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool,
+                   kGlicFrePreconnectToSubresourceDomains,
+                   &kGlicFrePreconnect,
+                   "GlicFrePreconnectToSubresourceDomains",
+                   true);
+
 }  // namespace
 
 void GlicFreController::MaybePreconnect() {
@@ -263,6 +270,14 @@ void GlicFreController::MaybePreconnect() {
   loading_predictor->PreconnectURLIfAllowed(
       glic::GetFreURL(profile_), /*allow_credentials=*/true, anonymization_key,
       kGlicFrePreconnectTrafficAnnotation, &storage_partition_config);
+  if (kGlicFrePreconnectToSubresourceDomains.Get() &&
+      google_util::IsGoogleDomainUrl(fre_url, google_util::ALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
+    loading_predictor->PreconnectURLIfAllowed(
+        GURL("https://www.gstatic.com/"), /*allow_credentials=*/true,
+        anonymization_key, kGlicFrePreconnectTrafficAnnotation,
+        &storage_partition_config);
+  }
 }
 
 // static
