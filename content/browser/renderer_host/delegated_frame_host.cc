@@ -31,7 +31,6 @@
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/dip_util.h"
 
 namespace content {
@@ -715,28 +714,6 @@ void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
     host_frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id_,
                                                      "DelegatedFrameHost");
   }
-}
-
-// static
-bool DelegatedFrameHost::ShouldIncludeUiCompositorForEviction() {
-#if BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(
-          features::kApplyNativeOcclusionToCompositor)) {
-    return false;
-  }
-
-  const std::string type =
-      features::kApplyNativeOcclusionToCompositorType.Get();
-  return type == features::kApplyNativeOcclusionToCompositorTypeRelease ||
-         type ==
-             features::kApplyNativeOcclusionToCompositorTypeThrottleAndRelease;
-#else
-  // ChromeOS does not have native occlusion, and the UI compositor corresponds
-  // to the entire display, so we don't evict it. Linux does not have native
-  // occlusion support, so we don't know when we can evict it, as it may e.g.
-  // be shown in a preview while minimized.
-  return false;
-#endif
 }
 
 }  // namespace content
