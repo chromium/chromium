@@ -410,12 +410,13 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                         .checkIsSubjectToParentalControls(
                                 coreAccountInfo,
                                 (isChild, childAccount) -> {
-                                    if (isChild) {
+                                    Context context = getContext();
+                                    if (isChild && context != null) {
                                         mProfileDataCache.setBadge(
                                                 childAccount.getEmail(),
                                                 ProfileDataCache
                                                         .createDefaultSizeChildAccountBadgeConfig(
-                                                                requireContext(),
+                                                                context,
                                                                 R.drawable.ic_account_child_20dp));
                                     }
                                 });
@@ -425,12 +426,13 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                         .checkChildAccountStatus(
                                 coreAccountInfo,
                                 (isChild, childAccount) -> {
-                                    if (isChild) {
+                                    Context context = getContext();
+                                    if (isChild && context != null) {
                                         mProfileDataCache.setBadge(
                                                 childAccount.getEmail(),
                                                 ProfileDataCache
                                                         .createDefaultSizeChildAccountBadgeConfig(
-                                                                requireContext(),
+                                                                context,
                                                                 R.drawable.ic_account_child_20dp));
                                     }
                                 });
