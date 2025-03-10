@@ -27,6 +27,7 @@ class TestCoralDelegate : public CoralDelegate {
       ScannerDelegate::SendFeedbackCallback send_feedback_callback) override;
   void CheckGenAIAgeAvailability(GenAIInquiryCallback callback) override;
   bool GetGenAILocationAvailability() override;
+  bool GetLanguageAvailability() override;
 };
 
 }  // namespace ash
