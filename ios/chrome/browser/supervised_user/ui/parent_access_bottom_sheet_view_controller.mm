@@ -117,7 +117,6 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 // Returns a custom detent between the medium and large detents.
 // This is necessary because the WebView height is dynamic and
 // `preferredHeightDetent` is not applicable.
-// TODO(crbug.com/384514294): Update the custom height if needed.
 - (UISheetPresentationControllerDetent*)customHeightDetentWithIdentifier:
     (NSString*)identifier {
   auto resolver = ^CGFloat(
@@ -127,8 +126,8 @@ UIImage* CloseButtonImage(BOOL highlighted) {
     CGFloat mediumDetentHeight =
         [UISheetPresentationControllerDetent.mediumDetent
             resolvedValueInContext:context];
-    // Make sure detent is at least 75% of the maximum detent.
-    return MAX(mediumDetentHeight, largeDetentHeight * 0.75);
+    // Make sure detent is at least 67.5% of the maximum detent.
+    return MAX(mediumDetentHeight, largeDetentHeight * 0.675);
   };
 
   return
