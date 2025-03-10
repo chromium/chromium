@@ -23,7 +23,11 @@ import {readdirSync} from 'fs';
 exec(
   `git clean -Xf ${readdirSync(process.cwd())
     .filter((file) => {
-      return file !== 'node_modules';
+      return (
+        file !== 'node_modules' &&
+        // Required for in IntelliJ.
+        !file.endsWith('.iml')
+      );
     })
     .join(' ')}`,
 );

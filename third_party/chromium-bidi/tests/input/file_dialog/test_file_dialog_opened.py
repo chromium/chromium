@@ -327,11 +327,15 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
 }],
                          indirect=True)
 async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
-        websocket, context_id, url_example):
+        websocket, context_id, url_example, test_headless_mode):
     """
     The test exploits the fact that the file picker dialog can't be opened
     twice. This is used as an indicator that the dialog was shown.
     """
+    if test_headless_mode != "false":
+        pytest.xfail("Headless browser always cancels the file dialog")
+        return
+
     await goto_url(websocket, context_id, url_example)
 
     resp = await execute_command(
