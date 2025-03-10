@@ -32,6 +32,14 @@ class BackForwardCacheBrowserTestWithNotRestoredReasons
   }
 };
 
+namespace {
+// WebXR's source location isn't reported on ChromeOS, so those variables won't
+// be used on that OS.
+const std::string kBlockingReasonFunction = "";
+const int kBlockingReasonLineNumber = 5;
+const int kBlockingReasonColumnNumber = 14;
+}  // namespace
+
 // NotRestoredReasons are not reported when the page is successfully restored
 // from back/forward cache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
@@ -141,7 +149,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*src=*/rfh_b_url.spec(), /*reasons=*/
       {MatchesDetailedReason("masked", /*source=*/std::nullopt)},
       /*same_origin_details=*/std::nullopt);
-
   auto rfh_a_2_result = MatchesNotRestoredReasons(
       /*id=*/"rfh_a_2_id", /*name=*/"rfh_a_2_name",
       /*src=*/rfh_a_2_url.spec(), /*reasons=*/{},
@@ -435,6 +442,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -444,12 +452,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
                     {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
   // Expect that NotRestoredReasons and the blocking feature's source location
   // are reported.
+  std::optional<SourceLocationMatcher> expected_source = MatchesSourceLocation(
+      url_a, kBlockingReasonFunction, kBlockingReasonLineNumber,
+      kBlockingReasonColumnNumber);
   auto rfh_a_result = MatchesNotRestoredReasons(
       /*id=*/std::nullopt, /*name=*/std::nullopt,
       /*src=*/std::nullopt,
       /*reasons=*/
       {MatchesDetailedReason(kBlockingReasonString,
-                             /*source=*/std::nullopt)},
+                             /*source=*/expected_source)},
       MatchesSameOriginDetails(
           /*url=*/url_a,
           /*children=*/{}));
