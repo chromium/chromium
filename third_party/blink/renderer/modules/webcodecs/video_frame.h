@@ -131,11 +131,9 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
  private:
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                               SourceImageStatus*,
+                                               const gfx::SizeF&) override;
 
   gfx::SizeF ElementSize(const gfx::SizeF&,
                          const RespectImageOrientationEnum) const override;

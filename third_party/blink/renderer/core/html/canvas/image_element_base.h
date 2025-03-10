@@ -33,11 +33,9 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
                                                const ImageBitmapOptions*,
                                                ExceptionState&) override;
 
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                               SourceImageStatus*,
+                                               const gfx::SizeF&) override;
 
   bool WouldTaintOrigin() const override;
 

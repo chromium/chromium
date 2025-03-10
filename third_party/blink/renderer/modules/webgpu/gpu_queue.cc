@@ -240,16 +240,14 @@ ExternalSource GetExternalSourceFromExternalImage(
       gfx::SizeF(),  // It will be ignored and won't affect size.
       kRespectImageOrientation);
 
-  // TODO(crbug.com/1197369): Ensure kUnpremultiplyAlpha impl will also make
-  // image live on GPU if possible.
-  // Use kDontChangeAlpha here to bypass the alpha type conversion here.
-  // Left the alpha op to CopyTextureForBrowser() and CopyContentFromCPU().
-  // This will help combine more transforms (e.g. flipY, color-space)
-  // into a single blit.
+  // The alpha op will happen at CopyTextureForBrowser() and
+  // CopyContentFromCPU(). This will help combine more transforms (e.g. flipY,
+  // color-space) into a single blit.
+  // TODO(https://crbug.com/40760113): Ensure unpremultiplied images will live
+  // on GPU if possible.
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   auto image_for_canvas = canvas_image_source->GetSourceImageForCanvas(
-      FlushReason::kWebGPUExternalImage, &source_image_status, image_size,
-      CanvasImageSource::kDontChangeAlpha);
+      FlushReason::kWebGPUExternalImage, &source_image_status, image_size);
   if (source_image_status != kNormalSourceImageStatus) {
     // Canvas back resource is broken, zero size, incomplete or invalid.
     // but developer can do nothing. Return nullptr and issue an noop.

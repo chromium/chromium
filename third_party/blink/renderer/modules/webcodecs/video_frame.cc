@@ -777,7 +777,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   SourceImageStatus status = kInvalidSourceImageStatus;
   auto image = image_source->GetSourceImageForCanvas(
-      FlushReason::kCreateVideoFrame, &status, source_size, kDontChangeAlpha);
+      FlushReason::kCreateVideoFrame, &status, source_size);
   if (!image || status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid source state");
@@ -1448,8 +1448,7 @@ VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
 scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
     FlushReason,
     SourceImageStatus* status,
-    const gfx::SizeF&,
-    const AlphaDisposition) {
+    const gfx::SizeF&) {
   const auto local_handle = handle_->CloneForInternalUse();
   if (!local_handle) {
     DLOG(ERROR) << "GetSourceImageForCanvas() called for closed frame.";
