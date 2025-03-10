@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWO
 
 import android.content.Context;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,11 +51,6 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
         mPostPasswordMigrationSheetCoordinator =
                 new PostPasswordMigrationSheetCoordinator(
                         context, mBottomSheetController, mProfile);
-    }
-
-    @After
-    public void tearDown() {
-        PostPasswordMigrationSheetCoordinatorFactory.setCoordinatorInstanceForTesting(null);
     }
 
     @Test
