@@ -2530,21 +2530,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
         Path& path = state.clip_path.emplace();
         path.AddRoundedRect(paint_clip_rect);
       }
-      auto effective_change = properties_->UpdateInnerBorderRadiusClip(
-          *context_.current.clip, std::move(state));
-      // TODO(crbug.com/401543213): This is a workaround. The proper fix is to
-      // figure out how to construct an effect tree referencing a proper
-      // transform node without also breaking crbug.com/328339028.
-      if (effective_change <
-              PaintPropertyChangeType::kChangedOnlyNonRerasterValues &&
-          IsViewTransitionGroupWithNesting(object_)) {
-        effective_change =
-            PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-      }
-      OnUpdateClip(effective_change);
+      OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
+          *context_.current.clip, std::move(state)));
     } else {
       OnClearClip(properties_->ClearInnerBorderRadiusClip());
     }
+  }
+
+  // TODO(crbug.com/401543213): This is a workaround. The proper fix is to
+  // figure out how to construct an effect tree referencing a proper
+  // transform node without also breaking crbug.com/328339028.
+  // Note that this is intentionally triggering an update whether or not
+  // NeedsPaintPropertyUpdate is true.
+  if (IsViewTransitionGroupWithNesting(object_)) {
+    OnUpdateClip(PaintPropertyChangeType::kChangedOnlyNonRerasterValues);
   }
 
   if (auto* border_radius_clip = properties_->InnerBorderRadiusClip())
