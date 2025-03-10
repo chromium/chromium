@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
@@ -328,7 +329,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
 TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 // Read Aloud is currently only enabled by default on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(controller().IsReadAloudEnabled());
 
 #else
@@ -336,7 +337,7 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 
   scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   EXPECT_TRUE(controller().IsReadAloudEnabled());
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
