@@ -332,7 +332,7 @@ TEST(ImageDecoderTest, decodedSizeUnlimited) {
 #else
 
 // The limit is currently ignored on non-Fuchsia platforms (except for
-// JPEG, which would decode a down-sampled version).
+// JPEG and PNG, which would decode a down-sampled version).
 TEST(ImageDecoderTest, decodedSizeLimitIsIgnored) {
   constexpr unsigned kWidth = 100;
   constexpr unsigned kHeight = 200;

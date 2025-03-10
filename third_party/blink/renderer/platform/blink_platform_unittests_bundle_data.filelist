@@ -525,6 +525,8 @@
 ../../web_tests/images/resources/png-color-profile-and-gamma-chunk.png
 ../../web_tests/images/resources/png-extra-row-crash.png
 ../../web_tests/images/resources/png-in-ico.ico
+../../web_tests/images/resources/png-600x600-interlace.png
+../../web_tests/images/resources/png-8x8-normal.png
 ../../web_tests/images/resources/png-simple.png
 ../../web_tests/images/resources/png_per_row_alpha.png
 ../../web_tests/images/resources/pngfuzz/border-image.png
