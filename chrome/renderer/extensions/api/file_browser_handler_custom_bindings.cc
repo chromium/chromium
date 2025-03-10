@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_dom_file_system.h"
@@ -34,9 +33,7 @@ void FileBrowserHandlerCustomBindings::GetExternalFileEntry(
     ScriptContext* context) {
   // TODO(zelidrag): Make this magic work on other platforms when file browser
   // matures enough on ChromeOS.
-  // Lacros supports fileBrowserHandler, but does not use this code path.
-  // Therefore this code remains Ash-only.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHECK(args.Length() == 1);
   CHECK(args[0]->IsObject());
   v8::Local<v8::Object> file_def = args[0].As<v8::Object>();

@@ -6,7 +6,6 @@ package org.chromium.content.browser;
 
 import android.content.res.Configuration;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
@@ -140,11 +139,11 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     private void addActivityStateObserver() {
         if (!mAttachedToWindow || mWindowAndroid == null) return;
         mWindowAndroid.addActivityStateObserver(mViewEventSink);
-        // Sets the state of ViewEventSink right if activity is already in resumed state.
+        // Sets the state of ViewEventSink right if activity is already in top-resumed state.
         // Can happen when the front tab gets moved down in the stack while Chrome
         // is in background. See https://crbug.com/852336.
-        if (mWindowAndroid.getActivityState() == ActivityState.RESUMED) {
-            mViewEventSink.onActivityResumed();
+        if (mWindowAndroid.isTopResumedActivity()) {
+            mViewEventSink.onActivityTopResumedChanged(true);
         }
     }
 

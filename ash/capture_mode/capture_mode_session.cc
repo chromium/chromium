@@ -369,18 +369,6 @@ int GetArrowKeyPressChange(int event_flags) {
   return capture_mode::kArrowKeyboardRegionChangeDp;
 }
 
-// Returns the `message_id` for the chromevox alert when capture session starts.
-int GetMessageIdForInitialCaptureSource(CaptureModeSource source) {
-  switch (source) {
-    case CaptureModeSource::kFullscreen:
-      return IDS_ASH_SCREEN_CAPTURE_SOURCE_FULLSCREEN;
-    case CaptureModeSource::kRegion:
-      return IDS_ASH_SCREEN_CAPTURE_SOURCE_PARTIAL;
-    default:
-      return IDS_ASH_SCREEN_CAPTURE_SOURCE_WINDOW;
-  }
-}
-
 void UpdateFloatingPanelBoundsIfNeeded() {
   Shell::Get()->accessibility_controller()->UpdateFloatingPanelBoundsIfNeeded();
 }
@@ -3834,14 +3822,8 @@ void CaptureModeSession::InitInternal() {
   // Trigger this before creating `capture_mode_bar_widget_` as we want to read
   // out this message before reading out the first view of
   // `capture_mode_bar_widget_`.
-  capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
-      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
-      l10n_util::GetStringUTF16(
-          GetMessageIdForInitialCaptureSource(controller_->source())),
-      l10n_util::GetStringUTF16(
-          controller_->type() == CaptureModeType::kImage
-              ? IDS_ASH_SCREEN_CAPTURE_TYPE_SCREENSHOT
-              : IDS_ASH_SCREEN_CAPTURE_TYPE_SCREEN_RECORDING)));
+  capture_mode_util::TriggerAccessibilityAlert(
+      active_behavior_->GetCaptureModeOpenAnnouncement());
 
   // A context menu may have input capture when entering a session. Remove
   // capture from it, otherwise subsequent mouse events will cause it to close,

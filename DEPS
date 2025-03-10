@@ -263,7 +263,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.21',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:ef01a689b77e0a3c98e841310bf3cdea737707ab',
+  'siso_version': 'git_revision:6b0b080aea4fa142b573795daa977e8751947452',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -290,7 +290,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '0f53870c7449b732a7ad5e150768a6c09ecd24f6',
+  'skia_revision': 'f17d37ee0ac6f7bd6c9711d622ae3bde063f7e75',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -514,7 +514,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '2c7a258470d472ba2e761f9d6a931ca0f7b5c0ab',
+  'llvm_libc_revision':    'aff620db66a915d80a92239c2c2c47ad4e8ad638',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1470,7 +1470,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '2ada14a027e1c5f81e68485cb768c3bd3d3c20be',
+    'a5bfc57c6b69cc33545defaeee9ffa399d276785',
     'condition': 'checkout_android and checkout_src_internal',
   },
 

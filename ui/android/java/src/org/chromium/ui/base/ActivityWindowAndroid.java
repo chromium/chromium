@@ -53,6 +53,7 @@ public class ActivityWindowAndroid extends WindowAndroid
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 new ActivityKeyboardVisibilityDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                /* activityTopResumedSupported= */ false,
                 intentRequestTracker,
                 insetObserver,
                 trackOcclusion);
@@ -71,6 +72,7 @@ public class ActivityWindowAndroid extends WindowAndroid
             Context context,
             boolean listenToActivityState,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            boolean activityTopResumedSupported,
             IntentRequestTracker intentRequestTracker,
             InsetObserver insetObserver,
             boolean trackOcclusion) {
@@ -80,6 +82,7 @@ public class ActivityWindowAndroid extends WindowAndroid
                 new ActivityAndroidPermissionDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 keyboardVisibilityDelegate,
+                activityTopResumedSupported,
                 intentRequestTracker,
                 insetObserver,
                 trackOcclusion);
@@ -99,10 +102,16 @@ public class ActivityWindowAndroid extends WindowAndroid
             boolean listenToActivityState,
             ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
             ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
+            boolean activityTopResumedSupported,
             IntentRequestTracker intentRequestTracker,
             @Nullable InsetObserver insetObserver,
             boolean trackOcclusion) {
-        super(context, intentRequestTracker, insetObserver, trackOcclusion);
+        super(
+                context,
+                activityTopResumedSupported,
+                intentRequestTracker,
+                insetObserver,
+                trackOcclusion);
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             throw new IllegalArgumentException("Context is not and does not wrap an Activity");

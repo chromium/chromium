@@ -53,6 +53,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
@@ -2166,7 +2167,7 @@ std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {
 }
 
 void WebFrameWidgetImpl::SetShouldThrottleFrameRate(bool flag) {
-  if (!View()->does_composite()) {
+  if (!View()->does_composite() || flag == throttling_frame_rate_) {
     return;
   }
   throttling_frame_rate_ = flag;
@@ -2589,7 +2590,8 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
 
   probe::DidInitializeFrameWidget(local_root_->GetFrame());
   local_root_->GetFrame()->NotifyFrameWidgetCreated();
-  local_root_->GetFrame()->GetDocument()->UpdateRenderFrameRate();
+  SetShouldThrottleFrameRate(
+      features::kThrottleFrameRateOnInitialization.Get());
 
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
