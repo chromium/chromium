@@ -103,9 +103,11 @@ public class TabGroupListBottomSheetMediator {
      * @param tabs The tabs to be added to a tab group.
      */
     void requestShowContent(List<Tab> tabs) {
-        if (!mDelegate.requestShowContent()) return;
-        mBottomSheetController.addObserver(mBottomSheetObserver);
+        // Populate the list of tabs before sending the show-content request to the delegate.
+        // This allows us to know the height of the bottom sheet.
         populateList(tabs);
+        if (!mDelegate.requestShowContent()) return; // Return early if content didn't actually show
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     /** Hides the bottom sheet. */

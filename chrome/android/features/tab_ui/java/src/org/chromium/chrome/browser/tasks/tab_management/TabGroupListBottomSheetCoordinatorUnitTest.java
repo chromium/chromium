@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -34,6 +36,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
@@ -42,6 +46,10 @@ import java.util.List;
 /** Unit tests for {@link TabGroupListBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupListBottomSheetCoordinatorUnitTest {
+
+    private static final Token TAB_GROUP_ID = Token.createRandom();
+    private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabGroupModelFilter mFilter;
@@ -50,6 +58,8 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
+    private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
+    private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
     private TabGroupListBottomSheetCoordinator mCoordinator;
 
     @Before
@@ -57,6 +67,10 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
+
+        mSavedTabGroup.savedTabs = new ArrayList<>(List.of(mSavedTabGroupTab));
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {TAB_GROUP_ID_STRING});
+        when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(mSavedTabGroup);
 
         Context context =
                 new ContextThemeWrapper(
