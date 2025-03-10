@@ -135,8 +135,7 @@ void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
+    const CoreAccountId& primary_account_id) {
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   FireRefreshTokensLoaded();

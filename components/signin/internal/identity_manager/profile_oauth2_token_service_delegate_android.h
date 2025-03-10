@@ -87,8 +87,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;
 
-  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                               bool is_syncing) override;
+  void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) override;
 
   std::string MapAccountIdToAccountName(const CoreAccountId& account_id) const;
   CoreAccountId MapAccountNameToAccountId(
