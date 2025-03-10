@@ -239,6 +239,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".Emoji"/>
   <variant name=".Feed"/>
   <variant name=".HistoryClustersSidePanel"/>
+  <variant name=".HistorySidePanel"/>
   <variant name=".LensOverlayUntrusted"/>
   <variant name=".LensSidePanelUntrusted"/>
   <variant name=".MakoUntrusted"/>
@@ -250,7 +251,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".UserNotesSidePanel"/>
 </variants>
 
-<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/others/histograms.xml:TopChromeWebUIName) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:TopChromeWebUIName) -->
 
 <variants name="Window">
   <variant name="SessionWindow"/>

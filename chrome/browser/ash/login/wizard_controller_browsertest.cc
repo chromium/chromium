@@ -1415,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, OneFetchAtATime) {
   // Simulate connection error, reset factory and attempt a retry.
   fetcher_factory.ReportEnrollmentState(kAutoEnrollmentConnectionError);
   fetcher_factory.Reset();
-  auto_enrollment_controller()->Retry();
+  auto_enrollment_controller()->Start();
 
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 }

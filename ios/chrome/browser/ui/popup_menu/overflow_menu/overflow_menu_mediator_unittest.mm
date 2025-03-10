@@ -34,9 +34,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
-#import "components/supervised_user/core/common/features.h"
-#import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -166,10 +163,6 @@ class OverflowMenuMediatorTest : public PlatformTest {
             std::make_unique<language_detection::LanguageDetectionModel>()) {
     pref_service_.registry()->RegisterBooleanPref(
         translate::prefs::kOfferTranslateEnabled, true);
-    pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
-                                                 std::string());
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kChildAccountStatusKnown, false);
   }
 
   void SetUp() override {
@@ -715,10 +708,6 @@ TEST_F(OverflowMenuMediatorTest,
 
 // Tests that the Family Link item is hidden for non-supervised users.
 TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-
   // Sign in unsupervised user.
   SignInPrimaryAccountWithSupervisionStatus(/*is_supervised=*/false);
 
@@ -733,54 +722,10 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
   ASSERT_FALSE(HasFamilyLinkInfoItem());
 }
 
-// Tests that the Family Link item is hidden for non-supervised users with
-// pref-based supervision status.
-TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-
-  supervised_user::DisableParentalControls(*profile_->GetPrefs());
-
-  CreateMediator(/*is_incognito=*/NO);
-  SetUpActiveWebState();
-
-  mediator_.webStateList = browser_->GetWebStateList();
-
-  // Force model update.
-  mediator_.model = model_;
-
-  ASSERT_FALSE(HasFamilyLinkInfoItem());
-}
-
 // Tests that the Family Link item is shown for supervised users.
 TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-
   // Sign in supervised user.
   SignInPrimaryAccountWithSupervisionStatus(/*is_supervised=*/true);
-
-  CreateMediator(/*is_incognito=*/NO);
-  SetUpActiveWebState();
-
-  mediator_.webStateList = browser_->GetWebStateList();
-
-  // Force model update.
-  mediator_.model = model_;
-
-  ASSERT_TRUE(HasFamilyLinkInfoItem());
-}
-
-// Tests that the Family Link item is shown for supervised users with pref-based
-// supervision status.
-TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShownWithSupervisionPrefs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-
-  supervised_user::EnableParentalControls(*profile_->GetPrefs());
 
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();

@@ -31,7 +31,7 @@ public class SharedTabGroupPreview {
 
     @CalledByNative
     private static SharedTabGroupPreview createSharedTabGroupPreview(
-            String title, TabPreview[] tabs) {
+            String title, TabPreview @Nullable [] tabs) {
         return new SharedTabGroupPreview(title, tabs == null ? null : List.of(tabs));
     }
 }

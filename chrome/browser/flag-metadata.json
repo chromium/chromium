@@ -150,6 +150,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "allow-user-installed-chrome-apps",
+    "owners": ["//apps/DEPRECATION_OWNERS"],
+    "expiry_milestone": 169
+  },
+  {
     "name": "alt-click-and-six-pack-customization",
     "owners": [ "michaelcheco@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
@@ -5328,11 +5333,6 @@
     "name": "ios-new-share-extension",
     "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "ios-one-tap-mini-map-restrictions",
-    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 145
   },
   {
     "name": "ios-page-info-last-visited",

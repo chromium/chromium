@@ -122,7 +122,7 @@ void AIRewriter::Rewrite(
 void AIRewriter::DidGetExecutionInputSize(
     mojo::RemoteSetElementId responder_id,
     optimization_guide::proto::WritingAssistanceApiRequest request,
-    uint32_t number_of_tokens) {
+    std::optional<uint32_t> result) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
@@ -137,7 +137,13 @@ void AIRewriter::DidGetExecutionInputSize(
     return;
   }
 
-  if (number_of_tokens > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
+  if (!result.has_value()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+    return;
+  }
+
+  if (result.value() > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
     return;

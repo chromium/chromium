@@ -37,12 +37,14 @@ std::vector<std::string> GetCannotDiscardReasonsForPageNode(
 // chrome://discards UI - most discards should use the more detailed methods in
 // PageDiscardingHelper.
 void DiscardPage(const performance_manager::PageNode* page_node,
-                 ::mojom::LifecycleUnitDiscardReason reason);
+                 ::mojom::LifecycleUnitDiscardReason reason,
+                 bool ignore_minimum_time_in_background = false);
 
 // Chooses and discards a PageNode if possible. This is a shortcut for the
 // chrome://discards UI - most discards should use the more detailed methods in
 // PageDiscardingHelper.
-void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason);
+void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason,
+                    bool ignore_minimum_time_in_background = false);
 
 }  // namespace performance_manager::user_tuning
 

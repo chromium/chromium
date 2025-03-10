@@ -15,8 +15,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_favicon_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_view.h"
@@ -70,11 +68,9 @@
           static_cast<TabResumptionItem*>(config);
       return [self tabResumptionViewForConfig:tabResumptionItem];
     }
-    case ContentSuggestionsModuleType::kParcelTracking: {
-      ParcelTrackingItem* parcelTrackingItem =
-          static_cast<ParcelTrackingItem*>(config);
-      return [self parcelTrackingViewForConfig:parcelTrackingItem];
-    }
+    case ContentSuggestionsModuleType::kParcelTracking:
+      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
+      NOTREACHED();
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckState* safetyCheckConfig =
           static_cast<SafetyCheckState*>(config);
@@ -163,14 +159,6 @@
     tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
     return tabResumptionView;
   }
-}
-
-- (UIView*)parcelTrackingViewForConfig:(ParcelTrackingItem*)parcelTrackingItem {
-  ParcelTrackingModuleView* parcelTrackingModuleView =
-      [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
-  parcelTrackingModuleView.commandHandler = parcelTrackingItem.commandHandler;
-  [parcelTrackingModuleView configureView:parcelTrackingItem];
-  return parcelTrackingModuleView;
 }
 
 - (UIView*)priceTrackingPromoViewForConfig:

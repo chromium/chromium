@@ -5,9 +5,13 @@
 #include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 
 #include <atomic>
+#include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/memory/platform_shared_memory_handle.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
@@ -16,6 +20,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -29,15 +34,16 @@ namespace performance_manager {
 namespace {
 
 using performance_scenarios::GetLoadingScenario;
+using performance_scenarios::PerformanceScenarioObserver;
 using performance_scenarios::PerformanceScenarioObserverList;
 using performance_scenarios::ScenarioScope;
+using performance_scenarios::ScopedReadOnlyScenarioMemory;
 using ::testing::_;
 
 // Since the browser process also maps in a read-only view of the global
-// scenario state for querying outside performance_manager, the blink observer
-// is also notified.
-class MockPerformanceScenarioObserver
-    : public performance_scenarios::PerformanceScenarioObserver {
+// scenario state for querying outside performance_manager, the observer is also
+// notified.
+class MockPerformanceScenarioObserver : public PerformanceScenarioObserver {
  public:
  public:
   MOCK_METHOD(void,
@@ -57,6 +63,23 @@ class MockPerformanceScenarioObserver
 using StrictMockPerformanceScenarioObserver =
     ::testing::StrictMock<MockPerformanceScenarioObserver>;
 
+// A fake SharedMemoryMapper that fails to map in memory.
+class FailingSharedMemoryMapper final : public base::SharedMemoryMapper {
+ public:
+  FailingSharedMemoryMapper() = default;
+  ~FailingSharedMemoryMapper() = default;
+
+  std::optional<base::span<uint8_t>> Map(
+      base::subtle::PlatformSharedMemoryHandle handle,
+      bool write_allowed,
+      uint64_t offset,
+      size_t size) final {
+    return std::nullopt;
+  }
+
+  void Unmap(base::span<uint8_t> mapping) final {}
+};
+
 class BrowserPerformanceScenariosTest : public PerformanceManagerTestHarness {
  public:
   void SetUp() override {
@@ -68,24 +91,20 @@ class BrowserPerformanceScenariosTest : public PerformanceManagerTestHarness {
         web_contents(), GURL("https://www.example.com"));
   }
 
-  // Returns the shared memory region handle for the main frame's process, or an
-  // invalid handle if there is none.
-  base::ReadOnlySharedMemoryRegion main_process_region() {
+  // Returns the ProcessNode for the main frame's process, or nullptr if there
+  // is none.
+  const ProcessNode* main_process_node() {
     if (!process()) {
-      return base::ReadOnlySharedMemoryRegion();
+      return nullptr;
     }
     base::WeakPtr<ProcessNode> process_node =
         PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-    EXPECT_TRUE(process_node);
-
-    // GetPerformanceScenarioRegionForProcess() creates writable shared memory
-    // for that process' state if it doesn't already exist.
-    return GetSharedScenarioRegionForProcessNode(process_node.get());
+    return process_node.get();
   }
 };
 
 TEST_F(BrowserPerformanceScenariosTest, SetWithoutSharedMemory) {
-  // Can't set up the blink scenario observer without mapped memory.
+  // Can't set up the scenario observer without mapped memory.
   EXPECT_FALSE(
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 
@@ -99,8 +118,6 @@ TEST_F(BrowserPerformanceScenariosTest, SetWithoutSharedMemory) {
 }
 
 TEST_F(BrowserPerformanceScenariosTest, SetWithSharedMemory) {
-  base::WeakPtr<ProcessNode> process_node =
-      PerformanceManager::GetProcessNodeForRenderProcessHost(process());
   StrictMockPerformanceScenarioObserver mock_observer;
   EXPECT_CALL(mock_observer,
               OnLoadingScenarioChanged(ScenarioScope::kGlobal,
@@ -130,7 +147,10 @@ TEST_F(BrowserPerformanceScenariosTest, SetWithSharedMemory) {
   // Create writable shared memory for a render process state. Since this is
   // called in the browser process and the state is for a different process, it
   // doesn't map in a read-only view.
-  base::ReadOnlySharedMemoryRegion process_region = main_process_region();
+  ASSERT_TRUE(process());
+  ASSERT_TRUE(main_process_node());
+  base::ReadOnlySharedMemoryRegion process_region =
+      GetSharedScenarioRegionForProcessNode(main_process_node());
   EXPECT_TRUE(process_region.IsValid());
   SetLoadingScenarioForProcess(LoadingScenario::kVisiblePageLoading, process());
 
@@ -141,13 +161,60 @@ TEST_F(BrowserPerformanceScenariosTest, SetWithSharedMemory) {
   // Map in the read-only view of `process_region`. Normally this would be done
   // in the renderer process as the "current process" state. The state should
   // now become visible.
-  performance_scenarios::ScopedReadOnlyScenarioMemory process_shared_memory(
+  ScopedReadOnlyScenarioMemory process_shared_memory(
       ScenarioScope::kCurrentProcess, std::move(process_region));
   EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
 
   observer_list->RemoveObserver(&mock_observer);
+}
+
+TEST_F(BrowserPerformanceScenariosTest, MappingFailure) {
+  FailingSharedMemoryMapper failing_mapper;
+  ScopedGlobalScenarioMemory global_shared_memory(&failing_mapper);
+
+  // When the mapping fails, observer lists should exist but do nothing, so that
+  // callers don't have to handle unexpected nullptr's on failure. (They should
+  // only be null during process startup, before ScopedReadOnlyScenarioMemory
+  // exists.)
+  StrictMockPerformanceScenarioObserver mock_observer;
+  auto global_observer_list =
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
+  ASSERT_TRUE(global_observer_list);
+  global_observer_list->AddObserver(&mock_observer);
+
+  // Setting the global scenario should safely be ignored.
+  SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
+            LoadingScenario::kNoPageLoading);
+
+  // First access to the PerformanceScenarioData uses the failing mapper.
+  ASSERT_TRUE(process());
+  ASSERT_TRUE(main_process_node());
+  PerformanceScenarioData::GetOrCreate(main_process_node(), &failing_mapper);
+  base::ReadOnlySharedMemoryRegion process_region =
+      GetSharedScenarioRegionForProcessNode(main_process_node());
+  EXPECT_FALSE(process_region.IsValid());
+
+  // Trying to map in the read-only view should safely create no-op observers
+  // and cause reads and writes to do nothing.
+  ScopedReadOnlyScenarioMemory process_shared_memory(
+      ScenarioScope::kCurrentProcess, std::move(process_region));
+
+  auto process_observer_list = PerformanceScenarioObserverList::GetForScope(
+      ScenarioScope::kCurrentProcess);
+  ASSERT_TRUE(process_observer_list);
+  process_observer_list->AddObserver(&mock_observer);
+
+  SetLoadingScenarioForProcess(LoadingScenario::kVisiblePageLoading, process());
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
+                ->load(std::memory_order_relaxed),
+            LoadingScenario::kNoPageLoading);
+
+  process_observer_list->RemoveObserver(&mock_observer);
+  global_observer_list->RemoveObserver(&mock_observer);
 }
 
 }  // namespace

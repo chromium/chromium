@@ -231,5 +231,16 @@ TEST_F(TachyonAuthedClientImplTest, TokenFetchFailed) {
   EXPECT_EQ(test_future()->Get().status(), TachyonResponse::Status::kAuthError);
 }
 
+TEST_F(TachyonAuthedClientImplTest, FetchSucceededNullToken) {
+  CreateAuthedClient();
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
+  fake_token_manager()->WaitForForceFetchRequest();
+  fake_token_manager()->SetTokenString(nullptr);
+  fake_token_manager()->ExecuteFetchCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future()->Get().status(), TachyonResponse::Status::kAuthError);
+}
+
 }  // namespace
 }  // namespace ash::babelorca

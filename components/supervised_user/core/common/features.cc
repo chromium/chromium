@@ -177,12 +177,4 @@ BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
 #endif
 );
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS,
-             "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
-             "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 }  // namespace supervised_user

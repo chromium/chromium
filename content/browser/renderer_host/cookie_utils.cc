@@ -278,6 +278,7 @@ bool ShouldReportDevToolsIssueForStatus(
 
 void SplitCookiesIntoAllowedAndBlocked(
     const network::mojom::CookieAccessDetailsPtr& cookie_details,
+    CookieAccessDetails::Source source,
     CookieAccessDetails* allowed,
     CookieAccessDetails* blocked) {
   // For some cases `site_for_cookies` representative url is empty when
@@ -301,7 +302,8 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   /* blocked_by_policy=*/false,
                                   cookie_details->is_ad_tagged,
                                   cookie_details->cookie_setting_overrides,
-                                  cookie_details->site_for_cookies});
+                                  cookie_details->site_for_cookies,
+                                  source});
   int allowed_count = std::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
@@ -320,7 +322,8 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   /* blocked_by_policy=*/true,
                                   cookie_details->is_ad_tagged,
                                   cookie_details->cookie_setting_overrides,
-                                  cookie_details->site_for_cookies});
+                                  cookie_details->site_for_cookies,
+                                  source});
   int blocked_count = std::ranges::count_if(
       cookie_details->cookie_list,
       [](const network::mojom::CookieOrLineWithAccessResultPtr&

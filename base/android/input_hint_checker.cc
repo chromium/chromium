@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -306,8 +307,11 @@ InputHintChecker::ScopedOverrideInstance::~ScopedOverrideInstance() {
   g_test_instance = nullptr;
 }
 
-// static
 void InputHintChecker::RecordInputHintResult(InputHintResult result) {
+  if (!metric_subsampling_disabled_ &&
+      !base::ShouldRecordSubsampledMetric(0.001)) {
+    return;
+  }
   UMA_HISTOGRAM_ENUMERATION("Android.InputHintChecker.InputHintResult", result);
 }
 
@@ -319,8 +323,7 @@ void JNI_InputHintChecker_SetView(_JNIEnv* env,
 void JNI_InputHintChecker_OnCompositorViewHolderTouchEvent(_JNIEnv* env) {
   auto& checker = InputHintChecker::GetInstance();
   if (checker.is_after_input_yield()) {
-    InputHintChecker::RecordInputHintResult(
-        InputHintResult::kCompositorViewTouchEvent);
+    checker.RecordInputHintResult(InputHintResult::kCompositorViewTouchEvent);
   }
   checker.set_is_after_input_yield(false);
 }
@@ -347,6 +350,7 @@ jboolean JNI_InputHintChecker_HasInputWithThrottlingForTesting(_JNIEnv* env) {
 void JNI_InputHintChecker_SetIsAfterInputYieldForTesting(  // IN-TEST
     _JNIEnv* env,
     jboolean after) {
+  InputHintChecker::GetInstance().disable_metric_subsampling();
   InputHintChecker::GetInstance().set_is_after_input_yield(after);
 }
 

@@ -18,6 +18,10 @@
 
 namespace apps::chrome_app_deprecation {
 
+BASE_FEATURE(kAllowUserInstalledChromeApps,
+             "AllowUserInstalledChromeApps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 constexpr auto kUserInstalledAndKiosk = base::MakeFixedFlatSet<
     std::string_view>(
@@ -154,8 +158,15 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
 
   if (IsUserInstalled(app_id, profile)) {
     // TODO(crbug.com/379264039): Block the execution in M139.
-    if (!IsAllowlisted(app_id)) {
+    if (IsAllowlisted(app_id)) {
+      return DeprecationStatus::kLaunchAllowed;
+    }
+
+    if (base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps)) {
       ShowNotification(*app, profile);
+      return DeprecationStatus::kLaunchAllowed;
+    } else {
+      return DeprecationStatus::kLaunchBlocked;
     }
   }
 
@@ -164,6 +175,10 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
 
 void AddAppToAllowlistForTesting(std::string_view app_id) {
   kTestAllowlistedApps->emplace(app_id);
+}
+
+void ResetAllowlistForTesting() {
+  kTestAllowlistedApps->clear();
 }
 
 }  // namespace apps::chrome_app_deprecation

@@ -43,7 +43,7 @@ uint32_t RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
 std::optional<webrtc::Timestamp>
 RTCEncodedVideoFrameDelegate::PresentationTimestamp() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? webrtc_frame_->GetCaptureTimeIdentifier()
+  return webrtc_frame_ ? webrtc_frame_->GetPresentationTimestamp()
                        : std::nullopt;
 }
 

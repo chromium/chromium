@@ -160,7 +160,7 @@ std::optional<base::TimeDelta> MetricsServiceClient::GetCustomUploadInterval()
   return std::nullopt;
 }
 
-bool MetricsServiceClient::ShouldStartUpFastForTesting() const {
+bool MetricsServiceClient::ShouldStartUpFast() const {
   return false;
 }
 

@@ -557,7 +557,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
   }
 
   for (const auto& cluster : minimal_clusters) {
-    if (cluster->end() <= start or end <= cluster->begin()) {
+    if (cluster->end() <= start or end <= cluster->start()) {
       continue;
     }
     clusters_for_range.push_back(cluster);

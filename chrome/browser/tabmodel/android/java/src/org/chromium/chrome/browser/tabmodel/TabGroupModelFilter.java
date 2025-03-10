@@ -336,10 +336,4 @@ public interface TabGroupModelFilter extends TabList {
 
     /** Delete the title, color and collapsed state of a tab group. */
     void deleteTabGroupVisualData(int rootId);
-
-    /** Returns the sync ID associated with the tab group. */
-    String getTabGroupSyncId(int rootId);
-
-    /** Stores the sync ID associated with the tab group. */
-    void setTabGroupSyncId(int rootId, String syncId);
 }

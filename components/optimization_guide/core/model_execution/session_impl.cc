@@ -232,16 +232,18 @@ void SessionImpl::DestroyOnDeviceState() {
 void SessionImpl::GetSizeInTokens(
     const std::string& text,
     OptimizationGuideModelSizeInTokenCallback callback) {
-  // TODO(crbug.com/377539962): Return nullopt on error instead.
   if (!ShouldUseOnDeviceModel()) {
-    std::move(callback).Run(0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   auto input = on_device_model::mojom::Input::New();
   input->pieces.push_back(text);
   on_device_context_->GetOrCreateSession()->GetSizeInTokens(
-      std::move(input),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
+      std::move(input), base::BindOnce([](uint32_t size) {
+                          return std::optional<uint32_t>(size);
+                        })
+                            .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                                std::move(callback), std::nullopt)));
 }
 
 void SessionImpl::GetExecutionInputSizeInTokens(
@@ -281,20 +283,22 @@ void SessionImpl::GetSizeInTokensInternal(
     MultimodalMessageReadView request,
     OptimizationGuideModelSizeInTokenCallback callback,
     bool want_input_context) {
-  // TODO(crbug.com/377539962): Return nullopt on error instead.
   if (!ShouldUseOnDeviceModel()) {
-    std::move(callback).Run(0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   auto input = on_device_context_->opts().adapter->ConstructInputString(
       request, want_input_context);
   if (!input) {
-    std::move(callback).Run(0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   on_device_context_->GetOrCreateSession()->GetSizeInTokens(
       std::move(input->input),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
+      base::BindOnce(
+          [](uint32_t size) { return std::optional<uint32_t>(size); })
+          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                            std::nullopt)));
 }
 
 }  // namespace optimization_guide

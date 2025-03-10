@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.segmentation_platform.client_util;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.ClassificationResult;
@@ -19,6 +19,7 @@ import org.chromium.components.segmentation_platform.prediction_status.Predictio
 import java.util.List;
 
 /** Helper class to fetch module order. */
+@NullMarked
 public final class HomeModulesRankingHelper {
     /**
      * Fetches the module rank including both stable and ephemeral modules.
@@ -29,9 +30,9 @@ public final class HomeModulesRankingHelper {
      * @param callback the callback to be called when the module rank is fetched
      */
     public static void fetchModulesRank(
-            @NonNull Profile profile,
-            @NonNull InputContext freshnessAndEphemeralInputs,
-            @NonNull Callback<List<String>> callback) {
+            Profile profile,
+            InputContext freshnessAndEphemeralInputs,
+            Callback<@Nullable List<String>> callback) {
         HomeModulesRankingHelperJni.get()
                 .getClassificationResult(
                         profile,
@@ -49,7 +50,7 @@ public final class HomeModulesRankingHelper {
      * @param profile the profile to notify the module ranker
      * @param moduleLabel the module label to notify the module ranker
      */
-    public static void notifyCardInteracted(@NonNull Profile profile, @NonNull String moduleLabel) {
+    public static void notifyCardInteracted(Profile profile, String moduleLabel) {
         HomeModulesRankingHelperJni.get().notifyCardInteracted(profile, moduleLabel);
     }
 
@@ -59,7 +60,7 @@ public final class HomeModulesRankingHelper {
      * @param profile the profile to notify the module ranker
      * @param moduleLabel the module label to notify the module ranker
      */
-    public static void notifyCardShown(@NonNull Profile profile, @NonNull String moduleLabel) {
+    public static void notifyCardShown(Profile profile, String moduleLabel) {
         HomeModulesRankingHelperJni.get().notifyCardShown(profile, moduleLabel);
     }
 

@@ -61,7 +61,7 @@ const char* valid_attr_values[] = {
     "attr(p type(<number>+))",
     "attr(p type(<color>#), red)",
     "attr(p px)",
-    "attr(p string)",
+    "attr(p raw-string)",
     "attr(p type(<color>))",
     "attr(p type(<color> ))",
     "attr(p type( <color>))",
@@ -83,6 +83,7 @@ const char* invalid_attr_values[] = {
     "attr(p <string>)",
     "attr(p type(<color>) red)",
     "attr(p type(<url>))",
+    "attr(p string)",
     // clang-format on
 };
 
@@ -271,6 +272,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ValidAttrTest, ContainsValidAttr) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
+  ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -290,8 +292,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          InvalidAttrTest,
                          testing::ValuesIn(invalid_attr_values));
 
-TEST_P(InvalidAttrTest, ContainsValidAttr) {
+TEST_P(InvalidAttrTest, ContainsInvalidAttr) {
   ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
+  ScopedCSSAttrRawStringForTest scoped_feature_attr_raw_string(true);
 
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};

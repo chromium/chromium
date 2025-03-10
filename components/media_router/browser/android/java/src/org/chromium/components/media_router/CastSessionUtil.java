@@ -4,7 +4,10 @@
 
 package org.chromium.components.media_router;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class that implements functions useful to all CastSession types. */
+@NullMarked
 public class CastSessionUtil {
     public static final String MEDIA_NAMESPACE = "urn:x-cast:com.google.cast.media";
 

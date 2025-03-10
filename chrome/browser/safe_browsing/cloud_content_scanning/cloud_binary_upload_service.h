@@ -114,10 +114,25 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void OnGetAccessToken(Request::Id request_id,
                         const std::string& access_token);
 
+  // Convenience callback method that calls both OnGetContentAnalysisResponse
+  // and OnContentUploaded. Since the multipart uploader does not send separate
+  // requests for metadata and content, it only needs one callback that finishes
+  // the request and performs the cleanup.
   void OnUploadComplete(Request::Id request_id,
                         bool success,
                         int http_status,
                         const std::string& response_data);
+
+  // Callback that runs when a content analysis verdict is received. Only used
+  // explicitly by the resumable uploader.
+  void OnGetContentAnalysisResponse(Request::Id request_id,
+                                    bool success,
+                                    int http_status,
+                                    const std::string& response_data);
+
+  // Callback to cleanup the request. Only used explicitly by the resumable
+  // uploader once the content is uploaded.
+  void OnContentUploaded(Request::Id request_id);
 
   void OnGetResponse(Request::Id request_id,
                      enterprise_connectors::ContentAnalysisResponse response);

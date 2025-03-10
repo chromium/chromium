@@ -1339,39 +1339,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
         Your top sites
       </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS" desc="The Parcel Tracking module package arriving status description on the Home surface [Length: 10em]">
-        Arriving <ph name="Date"><ex>Monday, September 13</ex>$1</ph>
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_CANCELLED_STATUS" desc="The Parcel Tracking module package delivery cancelled status description on the Home surface [Length: 10em]">
-        Your delivery was cancelled
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS" desc="The Parcel Tracking module package delivered status description on the Home surface [Length: 10em]">
-        Delivered
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY" desc="When the tracked parcel was delivered today [Length: 10em]">
-        Today
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERY_ATTEMPTED_STATUS" desc="The Parcel Tracking module package delivery attempted status description on the Home surface [Length: 10em]">
-        Delivery attempted. Will retry
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ERROR_STATUS" desc="The Parcel Tracking module package delivery error status description on the Home surface [Length: 10em]">
-        Needs attention
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_INFORMATION" desc="The Parcel Tracking module package information on the Home surface [Length: 10em]">
-        <ph name="Carrier_Name"><ex>USPS</ex>$1</ph> • #<ph name="Parcel_Identifier"><ex>1237834578495</ex>$2</ph>
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_LABEL_CREATED_STATUS" desc="The Parcel Tracking module package label created status description on the Home surface [Length: 10em]">
-        Label created. Date pending
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_NEW_STATUS" desc="The Parcel Tracking module package new status description on the Home surface [Length: 10em]">
-        Getting package status
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_READY_PICKUP_STATUS" desc="The Parcel Tracking module package delivery ready for pickup status description on the Home surface [Length: 10em]">
-        Ready for pickup
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_RETURNED_TO_SENDER_STATUS" desc="The Parcel Tracking module package delivery returned to sender status description on the Home surface [Length: 10em]">
-        Return to sender
-      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS" desc="The Parcel Tracking module package delivery undeliverable status description on the Home surface [Length: 10em]">
         Your package can't be delivered
       </message>
@@ -1551,6 +1518,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_SUGGEST_STRONG_PASSWORD" desc="Button allowing users to request Chrome suggest a strong password">
+        Suggest strong password
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_SAVED" desc="Notification that a newly created passkey was synced to the user's account. [iOS only]">
         Passkey saved

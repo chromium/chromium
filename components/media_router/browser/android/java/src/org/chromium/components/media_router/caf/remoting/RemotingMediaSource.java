@@ -11,18 +11,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 
-import androidx.annotation.Nullable;
 import androidx.mediarouter.media.MediaRouteSelector;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.MediaSource;
 
 import java.io.UnsupportedEncodingException;
 
 /** Abstracts parsing the Cast application id and other parameters from the source id. */
+@NullMarked
 public class RemotingMediaSource implements MediaSource {
     private static final String TAG = "MediaRemoting";
 
@@ -37,7 +39,7 @@ public class RemotingMediaSource implements MediaSource {
             "org.chromium.content.browser.REMOTE_PLAYBACK_APP_ID";
 
     /** The Cast application id. */
-    private static String sApplicationId;
+    private static @Nullable String sApplicationId;
 
     /** The original source URL that the {@link MediaSource} object was created from. */
     private final String mSourceId;
@@ -50,8 +52,7 @@ public class RemotingMediaSource implements MediaSource {
      * @param sourceId a URL containing encoded info about the media element's source.
      * @return an initialized media source if the id is valid, null otherwise.
      */
-    @Nullable
-    public static RemotingMediaSource from(String sourceId) {
+    public static @Nullable RemotingMediaSource from(String sourceId) {
         assert sourceId != null;
         // The sourceId for RemotingMediaSource is not a hierarchical URI, which can't be parsed to
         // get query parameters. By removing the scheme from the URI, we can get an Relative URI
@@ -59,7 +60,7 @@ public class RemotingMediaSource implements MediaSource {
         // hierarchical, and use it for query parameter parsing.
         if (!sourceId.startsWith(SOURCE_PREFIX)) return null;
         Uri sourceUri = Uri.parse(sourceId.substring(SOURCE_PREFIX.length()));
-        if (!sourceUri.getPath().equals("media-element")) return null;
+        if (!"media-element".equals(sourceUri.getPath())) return null;
 
         String mediaUrl;
         try {

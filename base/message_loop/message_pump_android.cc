@@ -592,7 +592,8 @@ void MessagePumpAndroid::OnReturnFromLooper() {
   }
   auto& checker = InputHintChecker::GetInstance();
   if (checker.is_after_input_yield()) {
-    InputHintChecker::RecordInputHintResult(InputHintResult::kBackToNative);
+    InputHintChecker::GetInstance().RecordInputHintResult(
+        InputHintResult::kBackToNative);
   }
   checker.set_is_after_input_yield(false);
 }

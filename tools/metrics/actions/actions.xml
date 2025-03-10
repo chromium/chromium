@@ -37644,6 +37644,14 @@ should be able to be added at any place in this file.
   <description>The user closed the side panel.</description>
 </action>
 
+<action name="SidePanel.History.Shown">
+  <owner>mfacey@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the history side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.HistoryClusters.NewTabButtonClicked">
   <owner>mfacey@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -48707,8 +48715,10 @@ should be able to be added at any place in this file.
   <suffix name="kActionShowTranslate" label="Show translate action"/>
   <suffix name="kActionSidePanelShowBookmarks"
       label="Show bookmarks side panel action"/>
+  <suffix name="kActionSidePanelShowHistory"
+      label="Show history side panel action"/>
   <suffix name="kActionSidePanelShowHistoryCluster"
-      label="Show history clusster side panel action"/>
+      label="Show history cluster side panel action"/>
   <suffix name="kActionSidePanelShowLensOverlayResults"
       label="Show lens overlay action"/>
   <suffix name="kActionSidePanelShowReadAnything"

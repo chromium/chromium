@@ -24,7 +24,7 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   TextCluster(const String& text,
               double x,
               double y,
-              unsigned begin,
+              unsigned start,
               unsigned end,
               V8CanvasTextAlign align,
               V8CanvasTextBaseline baseline,
@@ -32,7 +32,7 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   static TextCluster* Create(const String& text,
                              double x,
                              double y,
-                             unsigned begin,
+                             unsigned start,
                              unsigned end,
                              V8CanvasTextAlign align,
                              V8CanvasTextBaseline baseline,
@@ -41,7 +41,7 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   const String& text() const { return text_; }
   double x() const { return x_; }
   double y() const { return y_; }
-  unsigned begin() const { return begin_; }
+  unsigned start() const { return start_; }
   unsigned end() const { return end_; }
   V8CanvasTextAlign align() const { return align_; }
   V8CanvasTextBaseline baseline() const { return baseline_; }
@@ -56,7 +56,7 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   const String text_;
   double x_ = 0.0;
   double y_ = 0.0;
-  unsigned begin_ = 0;
+  unsigned start_ = 0;
   unsigned end_ = 0;
   const V8CanvasTextAlign align_;
   const V8CanvasTextBaseline baseline_;

@@ -1119,6 +1119,45 @@ Called by update_protocol_commands_enum.py.-->
       label="SelectElementAccessibilityIssue::InteractiveContentOptionChild"/>
   <int value="90"
       label="SelectElementAccessibilityIssue::InteractiveContentLegendChild"/>
+  <int value="91" label="SRIMessageSignatureIssue::MissingSignatureHeader"/>
+  <int value="92"
+      label="SRIMessageSignatureIssue::MissingSignatureInputHeader"/>
+  <int value="93" label="SRIMessageSignatureIssue::InvalidSignatureHeader"/>
+  <int value="94"
+      label="SRIMessageSignatureIssue::InvalidSignatureInputHeader"/>
+  <int value="95"
+      label="SRIMessageSignatureIssue::SignatureHeaderValueIsNotByteSequence"/>
+  <int value="96"
+      label="SRIMessageSignatureIssue::SignatureHeaderValueIsParameterized"/>
+  <int value="97"
+      label="SRIMessageSignatureIssue::SignatureHeaderValueIsIncorrectLength"/>
+  <int value="98"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderMissingLabel"/>
+  <int value="99"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderValueNotInnerList"/>
+  <int value="100"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderValueMissingComponents"/>
+  <int value="101"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidComponentType"/>
+  <int value="102"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidComponentName"/>
+  <int value="103"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidHeaderComponentParameter"/>
+  <int value="104"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidDerivedComponentParameter"/>
+  <int value="105"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderKeyIdLength"/>
+  <int value="106"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidParameter"/>
+  <int value="107"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderMissingRequiredParameters"/>
+  <int value="108"
+      label="SRIMessageSignatureIssue::ValidationFailedSignatureExpired"/>
+  <int value="109"
+      label="SRIMessageSignatureIssue::ValidationFailedInvalidLength"/>
+  <int value="110"
+      label="SRIMessageSignatureIssue::ValidationFailedSignatureMismatch"/>
+  <int value="111" label="CorsIssue::LocalNetworkAccessPermissionDenied"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

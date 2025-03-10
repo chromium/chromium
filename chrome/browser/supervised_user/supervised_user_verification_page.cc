@@ -119,9 +119,6 @@ void SupervisedUserVerificationPage::CloseSignInTabs() {
     }
     tab_interface->Close();
   }
-
-  // TODO(b/364546097): Ideally focus the last visited tab (before the sign-in
-  // page), before closing the sign-in tabs.
 }
 
 bool SupervisedUserVerificationPage::IsSignInUrl(const GURL& url) {

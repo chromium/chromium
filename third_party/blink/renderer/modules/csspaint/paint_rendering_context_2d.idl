@@ -9,4 +9,4 @@
 ] interface PaintRenderingContext2D {
 };
 PaintRenderingContext2D includes CanvasPath;
-PaintRenderingContext2D includes CanvasRecordingContext2D;
+PaintRenderingContext2D includes Canvas2DRecorderContext;

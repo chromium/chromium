@@ -25,7 +25,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -355,20 +354,12 @@
   }
 
   // Update the feed if the account is subject to parental controls.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
-    signin::Tribool capability =
-        supervised_user::IsPrimaryAccountSubjectToParentalControls(
-            identityManager);
-    [self
-        updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
-  } else {
-    // Update asynchronously using system capabilities.
-    [self updateFeedVisibilityForSupervision];
-  }
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+  signin::Tribool capability =
+      supervised_user::IsPrimaryAccountSubjectToParentalControls(
+          identityManager);
+  [self updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
 
   [self configureNTPMediator];
   if (self.NTPMediator.feedHeaderVisible) {
@@ -1534,7 +1525,6 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
       [self.contentSuggestionsCoordinator refresh];
-      [self updateFeedVisibilityForSupervision];
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kNone:
@@ -1564,14 +1554,10 @@
 
 - (void)onIsSubjectToParentalControlsCapabilityChanged:
     (supervised_user::CapabilityUpdateState)capabilityUpdateState {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
-    BOOL isSubjectToParentalControl =
-        (capabilityUpdateState ==
-         supervised_user::CapabilityUpdateState::kSetToTrue);
-    [self updateFeedWithIsSupervisedUser:isSubjectToParentalControl];
-  }
+  BOOL isSubjectToParentalControl =
+      (capabilityUpdateState ==
+       supervised_user::CapabilityUpdateState::kSetToTrue);
+  [self updateFeedWithIsSupervisedUser:isSubjectToParentalControl];
 }
 
 #pragma mark - SceneStateObserver
@@ -1709,37 +1695,6 @@
   viewControllerConfig.signInPromoDelegate = self;
 
   return viewControllerConfig;
-}
-
-// Updates the visibility of the content suggestions on the NTP if the account
-// is subject to parental controls.
-// TODO(crbug.com/346756363): Remove this method as we deprecate getting
-// supervision status from SystemIdentityManager.
-- (void)updateFeedVisibilityForSupervision {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::
-              kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
-    DCHECK(self.prefService);
-    DCHECK(self.authService);
-
-    id<SystemIdentity> identity =
-        self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    if (!identity) {
-      [self updateFeedWithIsSupervisedUser:NO];
-      return;
-    }
-
-    using CapabilityResult = SystemIdentityCapabilityResult;
-
-    __weak NewTabPageCoordinator* weakSelf = self;
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->IsSubjectToParentalControls(
-            identity, base::BindOnce(^(CapabilityResult result) {
-              const bool isSupervisedUser = result == CapabilityResult::kTrue;
-              [weakSelf updateFeedWithIsSupervisedUser:isSupervisedUser];
-            }));
-  }
 }
 
 // Toggles feed visibility between hidden or expanded using the feed header

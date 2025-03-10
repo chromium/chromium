@@ -80,9 +80,9 @@ DwaService::DwaService(MetricsServiceClient* client, PrefService* local_state)
   auto get_upload_interval_callback =
       base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
                           base::Unretained(client_));
-  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
+  bool fast_startup = client_->ShouldStartUpFast();
   scheduler_ = std::make_unique<DwaRotationScheduler>(
-      rotate_callback, get_upload_interval_callback, fast_startup_for_testing);
+      rotate_callback, get_upload_interval_callback, fast_startup);
   scheduler_->InitTaskComplete();
 }
 

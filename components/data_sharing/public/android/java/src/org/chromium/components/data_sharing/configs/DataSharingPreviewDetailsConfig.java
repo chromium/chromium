@@ -21,9 +21,9 @@ public final class DataSharingPreviewDetailsConfig {
         // The display URL for the tab, see TabPreview.displayUrl.
         public final String displayUrl;
         // Favicon for the tab, can be null.
-        public final Bitmap favicon;
+        public final @Nullable Bitmap favicon;
 
-        public TabPreview(String displayUrl, Bitmap favicon) {
+        public TabPreview(String displayUrl, @Nullable Bitmap favicon) {
             this.displayUrl = displayUrl;
             this.favicon = favicon;
         }

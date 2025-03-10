@@ -124,8 +124,10 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
   dict.Set("timeSinceLastRefresh",
            GetTimeSinceLastActionString(last_refresh_time));
 
-  // In case state_keys aren't available, we have no scheduler. See also
-  // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445.
+  // In case of ChromeOS device policies, if state keys are supported but not
+  // available, there is no scheduler, see
+  // `DeviceCloudPolicyInitializer::TryToStartConnection` and
+  // `DeviceCloudPolicyManagerAsh::StartConnection`.
   base::Time last_fetch_attempted_time =
       refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
   dict.Set("timeSinceLastFetchAttempt",

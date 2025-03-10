@@ -4,6 +4,8 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
+#include "third_party/blink/public/common/features_generated.h"
+
 using blink::mojom::EmbeddedPermissionControlClient;
 using blink::mojom::PermissionName;
 
@@ -15,9 +17,7 @@ namespace {
 // type, so as to limit the potential for abuse/misuse, for example: embedded
 // iframes can be intentionally disruptive by appending too many embedded
 // permission elements.
-// TODO(crbug.com/40275129): Add a command line switch to disable the check
-// policy and other security measures.
-constexpr static int kMaxPEPCPerPage = 2;
+constexpr static int kMaxPEPCPerPage = 3;
 
 }  // namespace
 
@@ -34,7 +34,9 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
       std::make_unique<Client>(this, std::move(permissions),
                                std::move(pending_client), std::move(callback));
   auto& queue = client_map_[client->permissions()];
-  if (queue.size() < kMaxPEPCPerPage) {
+  if (queue.size() < kMaxPEPCPerPage ||
+      base::FeatureList::IsEnabled(
+          blink::features::kBypassPepcSecurityForTesting)) {
     client->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
   }
 
