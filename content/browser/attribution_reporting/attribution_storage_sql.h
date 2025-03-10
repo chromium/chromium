@@ -381,6 +381,12 @@ class CONTENT_EXPORT AttributionStorageSql {
   int64_t CountUniqueDailyReportingOriginsPerReportingSiteForSource(
       const net::SchemefulSite& reporting_site,
       base::Time source_time);
+  // Returns a negative value on failure.
+  int64_t
+  CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+      const net::SchemefulSite& destination_site,
+      const net::SchemefulSite& reporting_site,
+      base::Time source_time);
 
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in

@@ -150,6 +150,14 @@ class CONTENT_EXPORT RateLimitTable {
       const net::SchemefulSite& reporting_site,
       base::Time source_time);
 
+  // Returns a negative value on failure.
+  int64_t
+  CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+      sql::Database* db,
+      const net::SchemefulSite& destination_site,
+      const net::SchemefulSite& reporting_site,
+      base::Time source_time);
+
   [[nodiscard]] bool DeleteAttributionRateLimit(sql::Database* db,
                                                 Scope scope,
                                                 AttributionReport::Id);

@@ -1429,6 +1429,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.UniqueReportingOriginsPerDestAndReportingSiteForSource"
+    units="reporting origins" expires_after="2025-08-27">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of unique reporting origins per (destination site,
+    reporting site) in the last day. Recorded once per destination site for each
+    successful source registration, including the current source.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.UniqueReportingOriginsPerReportingSiteForSource"
     units="reporting origins" expires_after="2025-08-27">
   <owner>linnan@chromium.org</owner>

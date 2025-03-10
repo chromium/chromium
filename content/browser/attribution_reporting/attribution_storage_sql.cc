@@ -1832,6 +1832,18 @@ int64_t AttributionStorageSql::
           &db_, reporting_site, source_time);
 }
 
+int64_t AttributionStorageSql::
+    CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+        const net::SchemefulSite& destination_site,
+        const net::SchemefulSite& reporting_site,
+        base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return rate_limit_table_
+      .CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+          &db_, destination_site, reporting_site, source_time);
+}
+
 std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {

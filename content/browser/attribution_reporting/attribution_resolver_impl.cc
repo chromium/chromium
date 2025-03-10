@@ -435,13 +435,27 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     return make_result(StoreSourceResult::InternalError());
   }
 
+  const net::SchemefulSite reporting_site(
+      source.common_info().reporting_origin());
   if (int64_t count =
           storage_.CountUniqueDailyReportingOriginsPerReportingSiteForSource(
-              net::SchemefulSite(source.common_info().reporting_origin()),
-              source_time);
+              reporting_site, source_time);
       count >= 0) {
     base::UmaHistogramCounts100(
         "Conversions.UniqueReportingOriginsPerReportingSiteForSource", count);
+  }
+
+  for (const net::SchemefulSite& destination_site :
+       source.registration().destination_set.destinations()) {
+    if (int64_t count =
+            storage_
+                .CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+                    destination_site, reporting_site, source_time);
+        count >= 0) {
+      base::UmaHistogramCounts100(
+          "Conversions.UniqueReportingOriginsPerDestAndReportingSiteForSource",
+          count);
+    }
   }
 
   std::optional<base::Time> min_fake_report_time;

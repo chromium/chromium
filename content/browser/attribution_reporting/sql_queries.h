@@ -279,6 +279,14 @@ inline constexpr const char
         " AND time>?";
 
 inline constexpr const char
+    kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql[] =
+        "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
+        "WHERE " RATE_LIMIT_SOURCE_CONDITION
+        " AND destination_site=?"
+        " AND reporting_site=?"
+        " AND time>?";
+
+inline constexpr const char
     kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql[] =
         "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
         "WHERE " RATE_LIMIT_ATTRIBUTION_CONDITION

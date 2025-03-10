@@ -248,6 +248,14 @@ TEST_F(AttributionSqlQueryPlanTest,
       ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::
+                  kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql),
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectSourceReportingOriginsSql) {
   EXPECT_THAT(
       GetPlan(attribution_queries::kRateLimitSelectSourceReportingOriginsSql),

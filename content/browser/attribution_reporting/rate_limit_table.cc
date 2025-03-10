@@ -798,6 +798,32 @@ RateLimitTable::CountUniqueDailyReportingOriginsPerReportingSiteForSource(
   return statement.ColumnInt64(0);
 }
 
+int64_t RateLimitTable::
+    CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+        sql::Database* db,
+        const net::SchemefulSite& destination_site,
+        const net::SchemefulSite& reporting_site,
+        base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::Time min_timestamp =
+      source_time - delegate_->GetRateLimits().origins_per_site_window;
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::
+          kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql));
+  statement.BindString(0, destination_site.Serialize());
+  statement.BindString(1, reporting_site.Serialize());
+  statement.BindTime(2, min_timestamp);
+
+  if (!statement.Step()) {
+    return -1;
+  }
+
+  return statement.ColumnInt64(0);
+}
+
 bool RateLimitTable::DeleteAttributionRateLimit(
     sql::Database* db,
     Scope scope,
