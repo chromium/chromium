@@ -18,4 +18,4 @@
 OffscreenCanvasRenderingContext2D includes BaseRenderingContext2D;
 OffscreenCanvasRenderingContext2D includes CanvasPath;
 OffscreenCanvasRenderingContext2D includes Canvas2dGPUTransfer;
-OffscreenCanvasRenderingContext2D includes CanvasRecordingContext2D;
+OffscreenCanvasRenderingContext2D includes Canvas2DRecorderContext;
