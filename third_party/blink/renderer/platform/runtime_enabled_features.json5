@@ -2301,6 +2301,14 @@
       name: "HasUAVisualTransition",
       status: "stable",
     },
+    // TODO(crbug.com/333628468): Enables the `headingoffset` and
+    // `headingreset` attributes, which allow for alternate styles of building
+    // structured headings. This is being actively prototyped, starting ~M136.
+    // For more see https://github.com/whatwg/html/issues/5033
+    {
+      name: "HeadingOffset",
+      status: "experimental",
+    },
     {
       name: "HighlightInheritance",
       status: "stable",

@@ -2499,6 +2499,8 @@ interface Element : Node
     getter currentCSSZoom
     getter elementTiming
     getter firstElementChild
+    getter headingOffset
+    getter headingReset
     getter id
     getter innerHTML
     getter lastElementChild
@@ -2642,6 +2644,8 @@ interface Element : Node
     setter className
     setter containerTiming
     setter elementTiming
+    setter headingOffset
+    setter headingReset
     setter id
     setter innerHTML
     setter onbeforecopy
