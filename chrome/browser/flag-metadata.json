@@ -1174,7 +1174,7 @@
   {
     "name": "canvas-2d-hibernation",
     "owners": [ "lizeb@chromium.org", "clank-performance-team@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 138
   },
   {
     "name": "canvas-2d-layers",
