@@ -83,26 +83,26 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
   return std::move(fields);
 }
 
-std::pair<std::u16string, std::optional<FieldType>>
-GetFillValueAndTypeForEntity(const EntityInstance& entity,
-                             const AutofillField& field,
-                             mojom::ActionPersistence action_persistence,
-                             const std::string& app_locale,
-                             AddressNormalizer* address_normalizer) {
+std::u16string GetFillValueForEntity(
+    const EntityInstance& entity,
+    const AutofillField& field,
+    mojom::ActionPersistence action_persistence,
+    const std::string& app_locale,
+    AddressNormalizer* address_normalizer) {
   std::optional<FieldType> field_type =
       field.GetAutofillAiServerTypePredictions();
   if (!field_type) {
-    return {u"", std::nullopt};
+    return u"";
   }
   std::optional<AttributeType> attribute_type =
       AttributeType::FromFieldType(*field_type);
   if (!attribute_type) {
-    return {u"", std::nullopt};
+    return u"";
   }
   base::optional_ref<const AttributeInstance> attribute_instance =
       entity.attribute(*attribute_type);
   if (!attribute_instance) {
-    return {u"", std::nullopt};
+    return u"";
   }
   const bool should_obfuscate =
       action_persistence != mojom::ActionPersistence::kFill &&
@@ -122,12 +122,10 @@ GetFillValueAndTypeForEntity(const EntityInstance& entity,
     attribute_value =
         GetValueForSelectControl(attribute_value, field, address_normalizer);
   }
-  // TODO(crbug.com/397620383): Which type should we return here?
   // TODO(crbug.com/394011769): Investigate whether the obfuscation should
   // should include some of the attribute's value, e.g. the last x characters.
-  return {
-      should_obfuscate ? GetObfuscatedValue(attribute_value) : attribute_value,
-      std::nullopt};
+  return should_obfuscate ? GetObfuscatedValue(attribute_value)
+                          : attribute_value;
 }
 
 }  // namespace autofill

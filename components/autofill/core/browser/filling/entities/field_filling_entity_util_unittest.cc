@@ -111,9 +111,9 @@ TEST_F(GetFieldsFillableByAutofillAiTest, FillableNumber) {
               ElementsAre(field(1)));
 }
 
-class GetFillValueAndTypeForEntityTest : public testing::Test {
+class GetFillValueForEntityTest : public testing::Test {
  public:
-  GetFillValueAndTypeForEntityTest() = default;
+  GetFillValueForEntityTest() = default;
 
  private:
   base::test::ScopedFeatureList feature_list_{
@@ -121,7 +121,7 @@ class GetFillValueAndTypeForEntityTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-TEST_F(GetFillValueAndTypeForEntityTest, UnobfuscatedAttributes) {
+TEST_F(GetFillValueForEntityTest, UnobfuscatedAttributes) {
   AutofillField field;
   {
     FieldPrediction prediction1;
@@ -139,19 +139,17 @@ TEST_F(GetFillValueAndTypeForEntityTest, UnobfuscatedAttributes) {
 
   constexpr char16_t kName[] = u"John";
   EntityInstance passport = test::GetPassportEntityInstance({.name = kName});
-  EXPECT_EQ(GetFillValueAndTypeForEntity(
-                passport, field, mojom::ActionPersistence::kPreview,
-                kAppLocaleUS, /*address_normalizer=*/nullptr)
-                .first,
-            kName);
-  EXPECT_EQ(GetFillValueAndTypeForEntity(
-                passport, field, mojom::ActionPersistence::kFill, kAppLocaleUS,
-                /*address_normalizer=*/nullptr)
-                .first,
+  EXPECT_EQ(
+      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kPreview,
+                            kAppLocaleUS, /*address_normalizer=*/nullptr),
+      kName);
+  EXPECT_EQ(GetFillValueForEntity(passport, field,
+                                  mojom::ActionPersistence::kFill, kAppLocaleUS,
+                                  /*address_normalizer=*/nullptr),
             kName);
 }
 
-TEST_F(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
+TEST_F(GetFillValueForEntityTest, ObfuscatedAttributes) {
   AutofillField field;
   {
     FieldPrediction prediction;
@@ -165,20 +163,18 @@ TEST_F(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
   constexpr char16_t kNumber[] = u"12";
   EntityInstance passport =
       test::GetPassportEntityInstance({.number = kNumber});
-  EXPECT_EQ(GetFillValueAndTypeForEntity(
-                passport, field, mojom::ActionPersistence::kPreview,
-                kAppLocaleUS, /*address_normalizer=*/nullptr)
-                .first,
-            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
-  EXPECT_EQ(GetFillValueAndTypeForEntity(
-                passport, field, mojom::ActionPersistence::kFill, kAppLocaleUS,
-                /*address_normalizer=*/nullptr)
-                .first,
+  EXPECT_EQ(
+      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kPreview,
+                            kAppLocaleUS, /*address_normalizer=*/nullptr),
+      u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
+  EXPECT_EQ(GetFillValueForEntity(passport, field,
+                                  mojom::ActionPersistence::kFill, kAppLocaleUS,
+                                  /*address_normalizer=*/nullptr),
             kNumber);
 }
 
 // Tests that we can correctly fill structured name information into fields.
-TEST_F(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
+TEST_F(GetFillValueForEntityTest, FillingStructuredNames) {
   EntityInstance passport = test::GetPassportEntityInstance();
   for (const auto& [type, expectation] :
        std::vector<std::pair<FieldType, std::u16string>>{
@@ -194,18 +190,17 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
     field.set_server_predictions({prediction});
     field.SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
 
-    EXPECT_EQ(GetFillValueAndTypeForEntity(
-                  passport, field, mojom::ActionPersistence::kFill,
-                  kAppLocaleUS, /*address_normalizer=*/nullptr)
-                  .first,
-              expectation)
+    EXPECT_EQ(
+        GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill,
+                              kAppLocaleUS, /*address_normalizer=*/nullptr),
+        expectation)
         << FieldTypeToStringView(type);
   }
 }
 
 // Tests that we can correctly fill country information into input fields
 // according to various locales.
-TEST_F(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
+TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
   EntityInstance passport =
       test::GetPassportEntityInstance({.country = u"Lebanon"});
   for (const auto& [locale, expectation] :
@@ -224,10 +219,9 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
     field.SetTypeTo(ADDRESS_HOME_COUNTRY,
                     AutofillPredictionSource::kServerCrowdsourcing);
 
-    EXPECT_EQ(GetFillValueAndTypeForEntity(
-                  passport, field, mojom::ActionPersistence::kFill, locale,
-                  /*address_normalizer=*/nullptr)
-                  .first,
+    EXPECT_EQ(GetFillValueForEntity(passport, field,
+                                    mojom::ActionPersistence::kFill, locale,
+                                    /*address_normalizer=*/nullptr),
               expectation)
         << locale;
   }
@@ -236,7 +230,7 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
 // Test that we can correctly fill country information into select fields,
 // regardless of whether the internal representation of the element uses country
 // names or codes.
-TEST_F(GetFillValueAndTypeForEntityTest, FillingSelectControlWithCountries) {
+TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
   EntityInstance passport = test::GetPassportEntityInstance();
   for (const auto& [options, expectation] :
        std::vector<std::pair<std::vector<const char*>, std::u16string>>{
@@ -252,18 +246,16 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingSelectControlWithCountries) {
     field.SetTypeTo(ADDRESS_HOME_COUNTRY,
                     AutofillPredictionSource::kServerCrowdsourcing);
 
-    EXPECT_EQ(GetFillValueAndTypeForEntity(
-                  passport, field, mojom::ActionPersistence::kFill,
-                  kAppLocaleUS, /*address_normalizer=*/nullptr)
-                  .first,
-              expectation);
+    EXPECT_EQ(
+        GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill,
+                              kAppLocaleUS, /*address_normalizer=*/nullptr),
+        expectation);
   }
 }
 
-class GetFillValueAndTypeForEntityStateTest
-    : public GetFillValueAndTypeForEntityTest {
+class GetFillValueForEntityStateTest : public GetFillValueForEntityTest {
  public:
-  GetFillValueAndTypeForEntityStateTest() {
+  GetFillValueForEntityStateTest() {
     base::FilePath file_path;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
     file_path = file_path.Append(FILE_PATH_LITERAL("third_party"))
@@ -292,10 +284,10 @@ class GetFillValueAndTypeForEntityStateTest
     task_environment_.RunUntilIdle();
   }
 
-  GetFillValueAndTypeForEntityStateTest(
-      const GetFillValueAndTypeForEntityStateTest&) = delete;
-  GetFillValueAndTypeForEntityStateTest& operator=(
-      const GetFillValueAndTypeForEntityStateTest&) = delete;
+  GetFillValueForEntityStateTest(const GetFillValueForEntityStateTest&) =
+      delete;
+  GetFillValueForEntityStateTest& operator=(
+      const GetFillValueForEntityStateTest&) = delete;
 
  protected:
   AddressNormalizer* normalizer() { return normalizer_.get(); }
@@ -307,7 +299,7 @@ class GetFillValueAndTypeForEntityStateTest
 
 // Tests that we can correctly fill state information into input fields
 // regardless whether the field is asking for the full name or the abbreviation.
-TEST_F(GetFillValueAndTypeForEntityStateTest, FillingStateValueIntoInput) {
+TEST_F(GetFillValueForEntityStateTest, FillingStateValueIntoInput) {
   EntityInstance drivers_license =
       test::GetDriversLicenseEntityInstance({.region = u"California"});
   for (const auto& [max_length, expectation] :
@@ -324,10 +316,9 @@ TEST_F(GetFillValueAndTypeForEntityStateTest, FillingStateValueIntoInput) {
                     AutofillPredictionSource::kServerCrowdsourcing);
     field.set_max_length(max_length);
 
-    EXPECT_EQ(GetFillValueAndTypeForEntity(drivers_license, field,
-                                           mojom::ActionPersistence::kFill,
-                                           /*app_locale=*/"", normalizer())
-                  .first,
+    EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+                                    mojom::ActionPersistence::kFill,
+                                    /*app_locale=*/"", normalizer()),
               expectation)
         << max_length;
   }
@@ -335,7 +326,7 @@ TEST_F(GetFillValueAndTypeForEntityStateTest, FillingStateValueIntoInput) {
 
 // Tests that we can correctly fill state information into select fields
 // regardless whether the field is asking for the full name or the abbreviation.
-TEST_F(GetFillValueAndTypeForEntityStateTest, FillingSelectControlWithState) {
+TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
   EntityInstance drivers_license =
       test::GetDriversLicenseEntityInstance({.region = u"California"});
   for (const auto& [options, expectation] :
@@ -352,16 +343,15 @@ TEST_F(GetFillValueAndTypeForEntityStateTest, FillingSelectControlWithState) {
     field.SetTypeTo(ADDRESS_HOME_STATE,
                     AutofillPredictionSource::kServerCrowdsourcing);
 
-    EXPECT_EQ(GetFillValueAndTypeForEntity(drivers_license, field,
-                                           mojom::ActionPersistence::kFill,
-                                           /*app_locale=*/"", normalizer())
-                  .first,
+    EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+                                    mojom::ActionPersistence::kFill,
+                                    /*app_locale=*/"", normalizer()),
               expectation);
   }
 }
 
 // Tests that a date is filled into an input according to the format string.
-TEST_F(GetFillValueAndTypeForEntityTest, FillingDateValueIntoTextInput) {
+TEST_F(GetFillValueForEntityTest, FillingDateValueIntoTextInput) {
   EntityInstance drivers_license =
       test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
   AutofillField field;
@@ -375,16 +365,15 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingDateValueIntoTextInput) {
   field.set_format_string_unless_overruled(
       u"DD/MM/YYYY", AutofillField::FormatStringSource::kServer);
 
-  EXPECT_EQ(GetFillValueAndTypeForEntity(drivers_license, field,
-                                         mojom::ActionPersistence::kFill,
-                                         /*app_locale=*/"",
-                                         /*address_normalizer=*/nullptr)
-                .first,
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+                                  mojom::ActionPersistence::kFill,
+                                  /*app_locale=*/"",
+                                  /*address_normalizer=*/nullptr),
             u"16/12/2022");
 }
 
 // Tests that a date is filled into an input according to the format string.
-TEST_F(GetFillValueAndTypeForEntityTest, FillingDateValueIntoMonthInput) {
+TEST_F(GetFillValueForEntityTest, FillingDateValueIntoMonthInput) {
   EntityInstance drivers_license =
       test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
   AutofillField field;
@@ -396,11 +385,10 @@ TEST_F(GetFillValueAndTypeForEntityTest, FillingDateValueIntoMonthInput) {
   field.set_server_predictions({prediction});
   field.set_form_control_type(FormControlType::kInputMonth);
 
-  EXPECT_EQ(GetFillValueAndTypeForEntity(drivers_license, field,
-                                         mojom::ActionPersistence::kFill,
-                                         /*app_locale=*/"",
-                                         /*address_normalizer=*/nullptr)
-                .first,
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+                                  mojom::ActionPersistence::kFill,
+                                  /*app_locale=*/"",
+                                  /*address_normalizer=*/nullptr),
             u"2022-12");
 }
 

@@ -29,12 +29,13 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
     const EntityDataManager& edm);
 
-std::pair<std::u16string, std::optional<FieldType>>
-GetFillValueAndTypeForEntity(const EntityInstance& entity,
-                             const AutofillField& field,
-                             mojom::ActionPersistence action_persistence,
-                             const std::string& app_locale,
-                             AddressNormalizer* address_normalizer);
+// Returns the value from `entity` to fill into `field`.
+std::u16string GetFillValueForEntity(
+    const EntityInstance& entity,
+    const AutofillField& field,
+    mojom::ActionPersistence action_persistence,
+    const std::string& app_locale,
+    AddressNormalizer* address_normalizer);
 
 }  // namespace autofill
 
