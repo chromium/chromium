@@ -369,6 +369,8 @@ component("net") {
     "cert/multi_log_ct_verifier.h",
     "cert/multi_threaded_cert_verifier.cc",
     "cert/multi_threaded_cert_verifier.h",
+    "cert/qwac.cc",
+    "cert/qwac.h",
     "cert/root_cert_list_generated.h",
     "cert/sct_auditing_delegate.h",
     "cert/sct_status_flags.cc",
@@ -2611,17 +2613,21 @@ if (is_ios) {
 if (!is_cronet_build) {
   test("net_fuzztests") {
     sources = [
+      "cert/qwac_fuzztest.cc",
       "cert/x509_certificate_fuzztest.cc",
       "http/http_cookie_indices_fuzztest.cc",
     ]
 
     fuzztests = [
       "CookieIndicesFuzzTest.FuzzParseFromHeader",
+      "QwacFuzzTest.FuzzHasQwacQcStatements",
+      "QwacFuzzTest.FuzzParseQcStatements",
       "X509CertificateFuzzTest.FuzzCreateFromDERCertChain",
     ]
 
     deps = [
       ":net",
+      "//testing/gtest",
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
   }
@@ -2708,6 +2714,7 @@ target(_test_target_type, "net_unittests") {
     "cert/merkle_tree_leaf_unittest.cc",
     "cert/multi_log_ct_verifier_unittest.cc",
     "cert/multi_threaded_cert_verifier_unittest.cc",
+    "cert/qwac_unittest.cc",
     "cert/signed_certificate_timestamp_unittest.cc",
     "cert/test_root_certs_unittest.cc",
     "cert/time_conversions_unittest.cc",
