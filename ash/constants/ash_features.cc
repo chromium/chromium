@@ -2727,6 +2727,12 @@ BASE_FEATURE(kSunfishLensWeb,
              "SunfishLensWeb",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Changes the Sunfish copy text functionality to use the Lens Web API instead
+// of the Chromnient-like query.
+BASE_FEATURE(kSunfishLensWebCopyText,
+             "SunfishLensWebCopyText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the suspend state machine to better handle suspend accelerators.
 BASE_FEATURE(kSuspendStateMachine,
              "SuspendStateMachine",
@@ -4425,6 +4431,11 @@ bool IsSunfishFeatureEnabled() {
 bool IsSunfishLensWebEnabled() {
   return IsSunfishFeatureEnabled() &&
          base::FeatureList::IsEnabled(kSunfishLensWeb);
+}
+
+bool IsSunfishLensWebCopyTextEnabled() {
+  return IsSunfishLensWebEnabled() &&
+         base::FeatureList::IsEnabled(kSunfishLensWebCopyText);
 }
 
 bool IsSuspendStateMachineEnabled() {
