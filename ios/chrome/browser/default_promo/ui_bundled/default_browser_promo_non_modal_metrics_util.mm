@@ -43,6 +43,13 @@ void LogNonModalPromoAction(NonModalPromoAction action,
   std::string histogramString;
 
   switch (impression_number) {
+    // This is temporary fix to unblock crbug.com/399429580.
+    // TODO(crbug.com/401306954): When the app backgrounds in some cases, the
+    // browser becomes null and the impressions from the FET cannot be
+    // retrieved. In this case, return.
+    case -1:
+      return;
+
     case 0:
       histogramString = "IOS.DefaultBrowserPromo.NonModal.FirstImpression";
       break;
