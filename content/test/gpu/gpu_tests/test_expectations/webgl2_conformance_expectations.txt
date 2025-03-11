@@ -513,11 +513,8 @@ crbug.com/949249 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ovr_
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
-# Persistent flaking on Win/Intel UHD 770, NVIDIA GTX 1660, AMD RX 5500 XT and Mac/M1
-crbug.com/365680830 [ win angle-d3d11 amd-0x7340 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ win angle-d3d11 intel-0x4680 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ win angle-d3d11 intel-0x9bc5 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ win angle-d3d11 nvidia-0x2184 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+# Persistent flaking on Windows and Mac/M1
+crbug.com/365680830 [ win angle-d3d11 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 
 
@@ -575,7 +572,6 @@ crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_float.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_int.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_uint.html [ Failure ]
-crbug.com/338348432 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # Graphite
