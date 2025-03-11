@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.IntDef;
@@ -51,6 +52,7 @@ public class ToolbarLongPressMenuHandler {
 
     private PopupWindow mPopupMenu;
     private final int mAppMenuShadowLength;
+    private final int mAdditonalHorizontalPadding;
     private final int mEdgeToTextDistance;
     private final int mUrlBarMargin;
     private final int mMenuOmniboxOverlap;
@@ -98,6 +100,10 @@ public class ToolbarLongPressMenuHandler {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mAppMenuShadowLength =
                 context.getResources().getDimensionPixelSize(R.dimen.app_menu_shadow_length);
+        mAdditonalHorizontalPadding =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_longpress_menu_addtional_horizontal_padding);
 
         // Long press menu layout
         // +----------------------------------+
@@ -117,6 +123,7 @@ public class ToolbarLongPressMenuHandler {
         // mEdgeToTextDistance
         mEdgeToTextDistance =
                 mAppMenuShadowLength
+                        + mAdditonalHorizontalPadding
                         + context.getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
         mUrlBarMargin =
@@ -150,15 +157,23 @@ public class ToolbarLongPressMenuHandler {
                             mPopupMenu.dismiss();
                         });
 
-        View menuListView = listMenu.getContentView();
+        ListView listView = listMenu.getListView();
+        listView.setPaddingRelative(
+                listView.getPaddingStart() + mAdditonalHorizontalPadding,
+                listView.getPaddingTop(),
+                listView.getPaddingEnd() + mAdditonalHorizontalPadding,
+                listView.getPaddingBottom());
 
         mPopupMenu = UiWidgetFactory.getInstance().createPopupWindow(view.getContext());
         mPopupMenu.setFocusable(true);
         mPopupMenu.setOutsideTouchable(true);
-        mPopupMenu.setWidth(listMenu.getMaxItemWidth() + mAppMenuShadowLength * 2);
+        mPopupMenu.setWidth(
+                listMenu.getMaxItemWidth()
+                        + mAdditonalHorizontalPadding * 2
+                        + mAppMenuShadowLength * 2);
         mPopupMenu.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupMenu.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mPopupMenu.setContentView(menuListView);
+        mPopupMenu.setContentView(listMenu.getContentView());
         mPopupMenu.setAnimationStyle(
                 onTop ? R.style.PopupWindowAnimDropdown : R.style.PopupWindowAnimRaiseup);
 
