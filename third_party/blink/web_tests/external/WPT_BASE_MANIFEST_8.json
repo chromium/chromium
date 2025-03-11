@@ -376523,11 +376523,11 @@
       []
      ],
      "styling-commands_styleWithCSS=false-expected.txt": [
-      "c5a5351b9ac5abdd5762ffafd14594ae7ed94c98",
+      "4284c64f0657b390e6d0981fbcedeb9a032a23a0",
       []
      ],
      "styling-commands_styleWithCSS=true-expected.txt": [
-      "c5a5351b9ac5abdd5762ffafd14594ae7ed94c98",
+      "4284c64f0657b390e6d0981fbcedeb9a032a23a0",
       []
      ]
     },
@@ -539124,7 +539124,7 @@
       ]
      ],
      "styling-commands.html": [
-      "2afaf9212ac6439606617e99f4d1be681ff1e853",
+      "40390c642794e4cdaba1d34d09c76cd1dfc1968a",
       [
        "editing/plaintext-only/styling-commands.html?styleWithCSS=false",
        {
