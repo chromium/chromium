@@ -14,11 +14,22 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 
-@interface AutocompleteMatchWrapper () <SearchEngineObserving>
+@interface AutocompleteMatchWrapper () <PedalSectionExtractorDelegate,
+                                        SearchEngineObserving>
+
+/// Redefines "nonPedalSuggestionsGroups" as readwrite.
+@property(nonatomic, strong, readwrite)
+    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestionsGroups;
+
+/// Redefines "pedalSuggestionsGroup" as readwrite.
+@property(nonatomic, strong, readwrite) id<AutocompleteSuggestionGroup>
+    pedalSuggestionsGroup;
+
 @end
 
 @implementation AutocompleteMatchWrapper {
@@ -26,12 +37,139 @@
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Whether the default search engine is Google.
   BOOL _defaultSearchEngineIsGoogle;
+  /// Extracts pedals from AutocompleSuggestions.
+  PedalSectionExtractor* _pedalSectionExtractor;
+}
+
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
+    _pedalSectionExtractor.delegate = self;
+  }
+
+  return self;
 }
 
 - (void)disconnect {
   _searchEngineObserver.reset();
 }
 
+- (void)clearGroups {
+  self.pedalSuggestionsGroup = nil;
+  self.nonPedalSuggestionsGroups = nil;
+}
+
+- (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
+    (const AutocompleteResult&)autocompleteResult {
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
+      [[NSMutableArray alloc] init];
+
+  // Group the suggestions by the section Id.
+  NSMutableArray<AutocompleteMatchFormatter*>* allMatches =
+      [self wrapMatchesFromResult:autocompleteResult];
+  NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
+      [self groupSuggestions:allMatches
+          usingACResultAsHeaderMap:autocompleteResult];
+  [groups addObjectsFromArray:allGroups];
+
+  // Before inserting pedals above all, back up non-pedal suggestions for
+  // debouncing.
+  self.nonPedalSuggestionsGroups = groups;
+
+  // Get pedals, if any. They go at the very top of the list.
+  self.pedalSuggestionsGroup =
+      [_pedalSectionExtractor extractPedals:allMatches];
+  if (self.pedalSuggestionsGroup) {
+    [groups insertObject:self.pedalSuggestionsGroup atIndex:0];
+  }
+
+  return groups;
+}
+
+- (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  _templateURLService = templateURLService;
+  if (self.templateURLService) {
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
+    [self searchEngineChanged];
+  } else {
+    _searchEngineObserver.reset();
+  }
+}
+
+#pragma mark - PedalSectionExtractorDelegate
+
+- (void)invalidatePedals {
+  if (self.nonPedalSuggestionsGroups) {
+    self.pedalSuggestionsGroup = nil;
+    [self.delegate autocompleteMatchWrapper:self
+                        didInvalidatePedals:self.nonPedalSuggestionsGroups];
+  }
+}
+
+#pragma mark - SearchEngineObserving
+
+- (void)searchEngineChanged {
+  TemplateURLService* templateURLService = self.templateURLService;
+  _defaultSearchEngineIsGoogle =
+      templateURLService && templateURLService->GetDefaultSearchProvider() &&
+      templateURLService->GetDefaultSearchProvider()->GetEngineType(
+          templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+}
+
+#pragma mark - Private
+
+/// Wraps `match` with AutocompleteMatchFormatter.
+- (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
+                              fromResult:(const AutocompleteResult&)result {
+  AutocompleteMatchFormatter* formatter =
+      [AutocompleteMatchFormatter formatterWithMatch:match];
+  formatter.starred = [self.delegate isStarredMatch:match];
+  formatter.incognito = self.isIncognito;
+  formatter.defaultSearchEngineIsGoogle = _defaultSearchEngineIsGoogle;
+  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
+  formatter.isMultimodal = self.hasThumbnail;
+
+  if (formatter.suggestionGroupId) {
+    omnibox::GroupId groupId =
+        static_cast<omnibox::GroupId>(formatter.suggestionGroupId.intValue);
+    omnibox::GroupSection sectionId =
+        result.GetSectionForSuggestionGroup(groupId);
+    formatter.suggestionSectionId =
+        [NSNumber numberWithInt:static_cast<int>(sectionId)];
+  }
+
+  NSMutableArray* actions = [[NSMutableArray alloc] init];
+
+  for (auto& action : match.actions) {
+    SuggestAction* suggestAction =
+        [SuggestAction actionWithOmniboxAction:action.get()];
+
+    if (!suggestAction) {
+      continue;
+    }
+
+    if (suggestAction.type != omnibox::ActionInfo_ActionType_CALL) {
+      [actions addObject:suggestAction];
+      continue;
+    }
+
+    BOOL hasDialApp = [[UIApplication sharedApplication]
+        canOpenURL:net::NSURLWithGURL(suggestAction.actionURI)];
+    if (hasDialApp) {
+      [actions addObject:suggestAction];
+    }
+  }
+
+  formatter.actionsInSuggest = actions;
+
+  return formatter;
+}
+
+/// Wraps the autocomplete results from the given AutocompleteResult object into
+/// an array of AutocompleteSuggestion objects.
 - (NSMutableArray<AutocompleteMatchFormatter*>*)wrapMatchesFromResult:
     (const AutocompleteResult&)autocompleteResult {
   NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
@@ -63,6 +201,8 @@
   return wrappedMatches;
 }
 
+/// Take a list of suggestions and break it into groups determined by sectionId
+/// field. Use `headerMap` to extract group names.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)
             groupSuggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
     usingACResultAsHeaderMap:(const AutocompleteResult&)headerMap {
@@ -131,76 +271,6 @@
   startNewGroup();
 
   return groups;
-}
-
-- (void)setTemplateURLService:(TemplateURLService*)templateURLService {
-  _templateURLService = templateURLService;
-  if (self.templateURLService) {
-    _searchEngineObserver =
-        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
-    [self searchEngineChanged];
-  } else {
-    _searchEngineObserver.reset();
-  }
-}
-
-#pragma mark - SearchEngineObserving
-
-- (void)searchEngineChanged {
-  TemplateURLService* templateURLService = self.templateURLService;
-  _defaultSearchEngineIsGoogle =
-      templateURLService && templateURLService->GetDefaultSearchProvider() &&
-      templateURLService->GetDefaultSearchProvider()->GetEngineType(
-          templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
-}
-
-#pragma mark - Private
-
-/// Wraps `match` with AutocompleteMatchFormatter.
-- (AutocompleteMatchFormatter*)wrapMatch:(const AutocompleteMatch&)match
-                              fromResult:(const AutocompleteResult&)result {
-  AutocompleteMatchFormatter* formatter =
-      [AutocompleteMatchFormatter formatterWithMatch:match];
-  formatter.starred = [self.delegate isStarredMatch:match];
-  formatter.incognito = self.isIncognito;
-  formatter.defaultSearchEngineIsGoogle = _defaultSearchEngineIsGoogle;
-  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
-  formatter.isMultimodal = self.hasThumbnail;
-
-  if (formatter.suggestionGroupId) {
-    omnibox::GroupId groupId =
-        static_cast<omnibox::GroupId>(formatter.suggestionGroupId.intValue);
-    omnibox::GroupSection sectionId =
-        result.GetSectionForSuggestionGroup(groupId);
-    formatter.suggestionSectionId =
-        [NSNumber numberWithInt:static_cast<int>(sectionId)];
-  }
-
-  NSMutableArray* actions = [[NSMutableArray alloc] init];
-
-  for (auto& action : match.actions) {
-    SuggestAction* suggestAction =
-        [SuggestAction actionWithOmniboxAction:action.get()];
-
-    if (!suggestAction) {
-      continue;
-    }
-
-    if (suggestAction.type != omnibox::ActionInfo_ActionType_CALL) {
-      [actions addObject:suggestAction];
-      continue;
-    }
-
-    BOOL hasDialApp = [[UIApplication sharedApplication]
-        canOpenURL:net::NSURLWithGURL(suggestAction.actionURI)];
-    if (hasDialApp) {
-      [actions addObject:suggestAction];
-    }
-  }
-
-  formatter.actionsInSuggest = actions;
-
-  return formatter;
 }
 
 @end

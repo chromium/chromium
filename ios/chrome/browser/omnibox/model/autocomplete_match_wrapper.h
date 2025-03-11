@@ -24,7 +24,7 @@ class TemplateURLService;
 @property(nonatomic, weak) id<AutocompleteMatchWrapperDelegate> delegate;
 
 /// The annotator to create pedals for ths mediator.
-@property(nonatomic, weak) OmniboxPedalAnnotator* pedalAnnotator;
+@property(nonatomic, strong) OmniboxPedalAnnotator* pedalAnnotator;
 
 /// Whether or not browser is in incognito mode.
 @property(nonatomic, assign) BOOL isIncognito;
@@ -35,19 +35,25 @@ class TemplateURLService;
 /// Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
 
+/// List of suggestions without the pedal group. Used to debounce pedals.
+@property(nonatomic, strong, readonly)
+    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestionsGroups;
+
+/// Holds the current pedals group.
+@property(nonatomic, strong, readonly) id<AutocompleteSuggestionGroup>
+    pedalSuggestionsGroup;
+
 /// Disconnects the wrapper.
 - (void)disconnect;
 
-/// Wraps the autocomplete results from the given AutocompleteResult object into
-/// an array of AutocompleteSuggestion objects.
-- (NSMutableArray<AutocompleteMatchFormatter*>*)wrapMatchesFromResult:
+/// Organizes the raw autocomplete result into structured groups of suggestions.
+- (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
     (const AutocompleteResult&)autocompleteResult;
 
-/// Take a list of suggestions and break it into groups determined by sectionId
-/// field. Use `headerMap` to extract group names.
-- (NSArray<id<AutocompleteSuggestionGroup>>*)
-            groupSuggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
-    usingACResultAsHeaderMap:(const AutocompleteResult&)headerMap;
+/// (TODO (crbug.com/402105320): Clean up this method after the wrapping is
+/// moved to  this class.
+/// Clears the stored groups.
+- (void)clearGroups;
 
 @end
 

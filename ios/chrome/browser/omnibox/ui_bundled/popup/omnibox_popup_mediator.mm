@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
@@ -66,17 +67,12 @@ const CGFloat kOmniboxIconSize = 16;
 const NSUInteger kMaxSuggestTileTypePosition = 15;
 }  // namespace
 
-@interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
+@interface OmniboxPopupMediator ()
 
 // FET reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 /// Extracts pedals from AutocompleSuggestions.
 @property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
-/// List of suggestions without the pedal group. Used to debouce pedals.
-@property(nonatomic, strong)
-    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
-/// Holds the currently displayed pedals group, if any.
-@property(nonatomic, strong) id<AutocompleteSuggestionGroup> currentPedals;
 /// Index of the group containing AutocompleteSuggestion, first group to be
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
@@ -124,8 +120,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
     _open = NO;
-    _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
-    _pedalSectionExtractor.delegate = self;
     _preselectedGroupIndex = 0;
     _autocompleteController = autocompleteController;
     _remoteSuggestionsService = remoteSuggestionsService;
@@ -182,9 +176,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             (OmniboxPopupController*)popupController
                              hasSuggestions:(BOOL)hasSuggestions
                                  isFocusing:(BOOL)isFocusing {
-  self.nonPedalSuggestions = nil;
-  self.currentPedals = nil;
-
+  [self.autocompleteMatchWrapper clearGroups];
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {
@@ -203,7 +195,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)popupController:(OmniboxPopupController*)popupController
          didSortResults:(const AutocompleteResult&)result {
   NSArray<id<AutocompleteSuggestionGroup>>* groups =
-      [self wrappedMatches:result];
+      [self.autocompleteMatchWrapper wrapAutocompleteResultInGroups:result];
+
+  // Preselect the verbatim match. It's the top match, unless we inserted pedals
+  // and pushed it one section down.
+  self.preselectedGroupIndex =
+      self.autocompleteMatchWrapper.pedalSuggestionsGroup ? MIN(1, groups.count)
+                                                          : 0;
 
   [self.consumer updateMatches:groups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
@@ -456,23 +454,31 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       });
 }
 
-#pragma mark - PedalSectionExtractorDelegate
+#pragma mark - AutocompleteMatchWrapperDelegate
 
-/// Removes the pedal group from suggestions. Pedal are removed from suggestions
-/// with a debouce timer in `PedalSectionExtractor`. When the timer ends the
-/// pedal group is removed.
-- (void)invalidatePedals {
-  if (self.nonPedalSuggestions) {
-    self.currentPedals = nil;
-    [self.consumer updateMatches:self.nonPedalSuggestions
-        preselectedMatchGroupIndex:0];
-  }
+- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
+  return [self.popupController isStarredMatch:match];
+}
+
+- (void)autocompleteMatchWrapper:(AutocompleteMatchWrapper*)wrapper
+             didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                     nonPedalSuggestionsGroups {
+  [self.consumer updateMatches:nonPedalSuggestionsGroups
+      preselectedMatchGroupIndex:0];
 }
 
 #pragma mark - Private methods
 
 - (void)logPedalShownForCurrentResult {
-  for (PedalSuggestionWrapper* pedalMatch in self.currentPedals.suggestions) {
+  id<AutocompleteSuggestionGroup> pedalSuggestionsGroup =
+      self.autocompleteMatchWrapper.pedalSuggestionsGroup;
+
+  if (!pedalSuggestionsGroup) {
+    return;
+  }
+
+  for (PedalSuggestionWrapper* pedalMatch in pedalSuggestionsGroup
+           .suggestions) {
     base::UmaHistogramEnumeration("Omnibox.PedalShown",
                                   (OmniboxPedalId)pedalMatch.innerPedal.type,
                                   OmniboxPedalId::TOTAL_COUNT);
@@ -481,7 +487,14 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 /// Log action in suggest shown but not used for the current result.
 - (void)logActionsInSuggestShownForCurrentResult {
-  for (id<AutocompleteSuggestionGroup> group in self.nonPedalSuggestions) {
+  NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestionsGroups =
+      self.autocompleteMatchWrapper.nonPedalSuggestionsGroups;
+
+  if (!nonPedalSuggestionsGroups) {
+    return;
+  }
+
+  for (id<AutocompleteSuggestionGroup> group in nonPedalSuggestionsGroups) {
     for (id<AutocompleteSuggestion> suggestion in group.suggestions) {
       if (suggestion.actionsInSuggest.count == 0) {
         continue;
@@ -492,38 +505,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       }
     }
   }
-}
-
-/// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
-/// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
-- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches:
-    (const AutocompleteResult&)autocompleteResult {
-  NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
-      [[NSMutableArray alloc] init];
-
-  // Group the suggestions by the section Id.
-  NSMutableArray<AutocompleteMatchFormatter*>* allMatches =
-      [self.autocompleteMatchWrapper wrapMatchesFromResult:autocompleteResult];
-  NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
-      [self.autocompleteMatchWrapper groupSuggestions:allMatches
-                             usingACResultAsHeaderMap:autocompleteResult];
-  [groups addObjectsFromArray:allGroups];
-
-  // Before inserting pedals above all, back up non-pedal suggestions for
-  // debouncing.
-  self.nonPedalSuggestions = groups;
-
-  // Get pedals, if any. They go at the very top of the list.
-  self.currentPedals = [self.pedalSectionExtractor extractPedals:allMatches];
-  if (self.currentPedals) {
-    [groups insertObject:self.currentPedals atIndex:0];
-  }
-
-  // Preselect the verbatim match. It's the top match, unless we inserted pedals
-  // and pushed it one section down.
-  self.preselectedGroupIndex = self.currentPedals ? MIN(1, groups.count) : 0;
-
-  return groups;
 }
 
 - (void)callActionTapped {

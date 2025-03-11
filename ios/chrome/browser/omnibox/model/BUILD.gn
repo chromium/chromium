@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/search_engines",
     "//components/search_engines:test_support",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",

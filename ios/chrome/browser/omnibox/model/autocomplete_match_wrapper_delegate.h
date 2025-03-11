@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_MATCH_WRAPPER_DELEGATE_H_
 
 struct AutocompleteMatch;
+@class AutocompleteMatchWrapper;
+@protocol AutocompleteSuggestionGroup;
 
 // The autocomplete match wrapper delegate.
 @protocol AutocompleteMatchWrapperDelegate
@@ -14,6 +16,11 @@ struct AutocompleteMatch;
 // doesn't rely on its delegate
 /// Whether `match` is a starred/bookmarked match.
 - (BOOL)isStarredMatch:(const AutocompleteMatch&)match;
+
+/// Informs the delegate when pedals are invalidated.
+- (void)autocompleteMatchWrapper:(AutocompleteMatchWrapper*)wrapper
+             didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                     nonPedalSuggestionsGroups;
 
 @end
 

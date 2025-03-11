@@ -11,6 +11,7 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
@@ -66,7 +67,8 @@ class Tracker;
            originView:(UIView*)originView;
 @end
 
-@interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
+@interface OmniboxPopupMediator : NSObject <AutocompleteMatchWrapperDelegate,
+                                            AutocompleteResultConsumerDelegate,
                                             AutocompleteResultDataSource,
                                             OmniboxPopupControllerDelegate,
                                             CarouselItemMenuProvider,

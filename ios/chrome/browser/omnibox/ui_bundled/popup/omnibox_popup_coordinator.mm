@@ -162,7 +162,7 @@
   autocompleteMatchWrapper.pedalAnnotator = annotator;
   autocompleteMatchWrapper.templateURLService = templateURLService;
   autocompleteMatchWrapper.isIncognito = isIncognito;
-  autocompleteMatchWrapper.delegate = _omniboxPopupController;
+  autocompleteMatchWrapper.delegate = self.mediator;
 
   self.mediator.autocompleteMatchWrapper = autocompleteMatchWrapper;
   self.mediator.pedalAnnotator = annotator;
