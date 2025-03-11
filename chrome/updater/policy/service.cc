@@ -214,7 +214,6 @@ void PolicyService::FetchPoliciesDone(
     VLOG(1) << "Failed to refresh policies: " << result;
   }
 
-  last_fetch_result_ = result;
   std::move(fetch_policies_callback_).Run(result);
 }
 
