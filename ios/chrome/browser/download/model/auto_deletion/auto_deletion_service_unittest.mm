@@ -57,7 +57,8 @@ class AutoDeletionServiceTest : public PlatformTest {
 
  protected:
   AutoDeletionServiceTest() {
-    auto_deletion_service_ = std::make_unique<AutoDeletionService>();
+    auto_deletion_service_ =
+        std::make_unique<AutoDeletionService>(local_state());
   }
 
   void SetUp() override {

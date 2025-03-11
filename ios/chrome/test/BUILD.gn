@@ -75,6 +75,7 @@ source_set("test_support") {
     "//components/variations",
     "//components/variations/service",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/download/model/auto_deletion",
     "//ios/chrome/browser/policy/model:model",
     "//ios/chrome/browser/profile/model:ios_thread",
     "//ios/chrome/browser/promos_manager/model:features",
