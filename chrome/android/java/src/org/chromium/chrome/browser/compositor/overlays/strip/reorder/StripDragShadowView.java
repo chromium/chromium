@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
 import android.util.Size;
@@ -34,21 +33,24 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.url.GURL;
 
-public class StripTabDragShadowView extends FrameLayout {
-    private static final FloatProperty<StripTabDragShadowView> PROGRESS =
+public class StripDragShadowView extends FrameLayout {
+    private static final FloatProperty<StripDragShadowView> PROGRESS =
             new FloatProperty<>("progress") {
                 @Override
-                public void setValue(StripTabDragShadowView object, float v) {
+                public void setValue(StripDragShadowView object, float v) {
                     object.setProgress(v);
                 }
 
                 @Override
-                public Float get(StripTabDragShadowView object) {
+                public Float get(StripDragShadowView object) {
                     return object.getProgress();
                 }
             };
@@ -65,8 +67,8 @@ public class StripTabDragShadowView extends FrameLayout {
 
     // Internal State
     private Boolean mIncognito;
-    private int mTabWidthPx;
-    private int mTabHeightPx;
+    private int mSourceWidthPx;
+    private int mSourceHeightPx;
     private int mWidthPx;
     private int mHeightPx;
     private float mProgress;
@@ -78,8 +80,15 @@ public class StripTabDragShadowView extends FrameLayout {
     private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private ShadowUpdateHost mShadowUpdateHost;
 
+    // Thumbnail Providers
+    private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
+    private TabContentManagerThumbnailProvider mSingleThumbnailCardProvider;
+
+    // Current Drag State
     private Tab mTab;
     private TabObserver mFaviconUpdateTabObserver;
+    private ThumbnailProvider mThumbnailProvider;
+    private Runnable mTitleUpdateRunnable;
 
     public interface ShadowUpdateHost {
         /**
@@ -89,12 +98,12 @@ public class StripTabDragShadowView extends FrameLayout {
         void requestUpdate();
     }
 
-    public StripTabDragShadowView(Context context, AttributeSet attrs) {
+    public StripDragShadowView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         Resources resources = context.getResources();
         mWidthPx = (int) (resources.getDisplayMetrics().density * WIDTH_DP);
-        mTabHeightPx =
+        mSourceHeightPx =
                 resources.getDimensionPixelSize(R.dimen.tab_grid_card_header_height)
                         + (2 * resources.getDimensionPixelSize(R.dimen.tab_grid_card_margin));
     }
@@ -113,12 +122,14 @@ public class StripTabDragShadowView extends FrameLayout {
      * Set external dependencies and starting view properties.
      *
      * @param browserControlsStateProvider Provider for top browser controls state.
+     * @param multiThumbnailCardProvider Provider for group thumbnails.
      * @param tabContentManagerSupplier Supplier for the {@link TabContentManager}.
      * @param layerTitleCacheSupplier Supplier for the {@link LayerTitleCache}.
      * @param shadowUpdateHost The host to push updates to.
      */
     public void initialize(
             BrowserControlsStateProvider browserControlsStateProvider,
+            MultiThumbnailCardProvider multiThumbnailCardProvider,
             Supplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             ShadowUpdateHost shadowUpdateHost) {
@@ -126,6 +137,10 @@ public class StripTabDragShadowView extends FrameLayout {
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mShadowUpdateHost = shadowUpdateHost;
+
+        mMultiThumbnailCardProvider = multiThumbnailCardProvider;
+        mSingleThumbnailCardProvider =
+                new TabContentManagerThumbnailProvider(mTabContentManagerSupplier.get());
 
         mCardView.getBackground().mutate();
         mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
@@ -160,12 +175,30 @@ public class StripTabDragShadowView extends FrameLayout {
      * Set state on tab drag start.
      *
      * @param tab The {@link Tab} being dragged.
-     * @param tabWidthPx Width of the source strip tab container in px.
+     * @param sourceWidthPx Width of the source strip tab container in px.
      */
-    public void prepareForDrag(Tab tab, int tabWidthPx) {
+    public void prepareForTabDrag(Tab tab, int sourceWidthPx) {
+        mThumbnailProvider = mSingleThumbnailCardProvider;
+        mTitleUpdateRunnable = this::updateTabTitleAndFavicon;
+        tab.addObserver(mFaviconUpdateTabObserver);
+        prepareForDrag(tab, sourceWidthPx);
+    }
+
+    /**
+     * Set state on group drag start.
+     *
+     * @param tab A {@link Tab} in the group being dragged.
+     * @param sourceWidthPx Width of the source group indicator in px.
+     */
+    public void prepareForGroupDrag(Tab tab, int sourceWidthPx) {
+        mThumbnailProvider = mMultiThumbnailCardProvider;
+        mTitleUpdateRunnable = this::updateGroupTitleAndColor;
+        prepareForDrag(tab, sourceWidthPx);
+    }
+
+    private void prepareForDrag(Tab tab, int sourceWidthPx) {
         mTab = tab;
-        mTab.addObserver(mFaviconUpdateTabObserver);
-        mTabWidthPx = tabWidthPx;
+        mSourceWidthPx = sourceWidthPx;
 
         update();
     }
@@ -174,6 +207,8 @@ public class StripTabDragShadowView extends FrameLayout {
     public void clear() {
         mTab.removeObserver(mFaviconUpdateTabObserver);
         mTab = null;
+        mThumbnailProvider = null;
+        mTitleUpdateRunnable = null;
     }
 
     /** Run the expand animation. */
@@ -204,22 +239,28 @@ public class StripTabDragShadowView extends FrameLayout {
         // Request the thumbnail.
         Size cardSize = new Size(mWidthPx, mHeightPx);
         Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, getContext());
-        mTabContentManagerSupplier
-                .get()
-                .getTabThumbnailWithCallback(
-                        mTab.getId(),
-                        thumbnailSize,
-                        result -> {
-                            if (result != null) {
-                                TabUtils.setDrawableAndUpdateImageMatrix(
-                                        mThumbnailView, new BitmapDrawable(result), thumbnailSize);
-                            } else {
-                                mThumbnailView.setImageDrawable(null);
-                            }
-                            mShadowUpdateHost.requestUpdate();
-                        });
+        mThumbnailProvider.getTabThumbnailWithCallback(
+                mTab.getId(),
+                thumbnailSize,
+                /* isSelected= */ false,
+                result -> {
+                    if (result != null) {
+                        TabUtils.setDrawableAndUpdateImageMatrix(
+                                mThumbnailView, result, thumbnailSize);
+                    } else {
+                        mThumbnailView.setImageDrawable(null);
+                    }
+                    mShadowUpdateHost.requestUpdate();
+                });
 
-        // Update title and set original favicon.
+        // Update title.
+        mTitleUpdateRunnable.run();
+
+        // Update incognito state.
+        setIncognito(mTab.isIncognito());
+    }
+
+    private void updateTabTitleAndFavicon() {
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
 
         mTitleView.setText(
@@ -238,9 +279,10 @@ public class StripTabDragShadowView extends FrameLayout {
                         }
                     });
         }
+    }
 
-        // Update incognito state.
-        setIncognito(mTab.isIncognito());
+    private void updateGroupTitleAndColor() {
+        // TODO(crbug.com/383124686): Implement.
     }
 
     private void setIncognito(boolean incognito) {
@@ -275,8 +317,8 @@ public class StripTabDragShadowView extends FrameLayout {
         mProgress = progress;
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        layoutParams.width = (int) lerp(mTabWidthPx, mWidthPx, progress);
-        layoutParams.height = (int) lerp(mTabHeightPx, mHeightPx, progress);
+        layoutParams.width = (int) lerp(mSourceWidthPx, mWidthPx, progress);
+        layoutParams.height = (int) lerp(mSourceHeightPx, mHeightPx, progress);
         setLayoutParams(layoutParams);
         post(() -> mShadowUpdateHost.requestUpdate());
     }

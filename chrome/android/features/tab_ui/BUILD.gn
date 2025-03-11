@@ -80,7 +80,7 @@ android_resources("java_resources") {
     "java/res/layout/large_message_card_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/resizable_tab_grid_message_card_item.xml",
-    "java/res/layout/strip_tab_drag_shadow_view.xml",
+    "java/res/layout/strip_drag_shadow_view.xml",
     "java/res/layout/tab_card_label_layout.xml",
     "java/res/layout/tab_grid_card_item.xml",
     "java/res/layout/tab_grid_card_item_layout.xml",
