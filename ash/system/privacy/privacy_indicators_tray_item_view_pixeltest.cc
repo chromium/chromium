@@ -80,7 +80,7 @@ TEST_P(PrivacyIndicatorsTrayItemViewPixelTest, Basics) {
   SimulateAnimationEnded(privacy_indicators_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "dot_view" + GetScreenshotNameSuffix(),
-      /*revision_number=*/1, notification_center_tray));
+      /*revision_number=*/2, notification_center_tray));
 }
 
 }  // namespace ash

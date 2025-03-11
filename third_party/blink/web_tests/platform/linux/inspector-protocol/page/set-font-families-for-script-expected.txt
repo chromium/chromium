@@ -26,7 +26,7 @@ Tests Page.setFontFamilies for scripts.
 .standard_font
 [
     [0] : {
-        familyName : Ahem
+        familyName : Ahem (Fontations)
         glyphCount : 8
         isCustomFont : false
         postScriptName : Ahem
@@ -35,7 +35,7 @@ Tests Page.setFontFamilies for scripts.
 .sans_serif_font
 [
     [0] : {
-        familyName : Cousine
+        familyName : Cousine (Fontations)
         glyphCount : 9
         isCustomFont : false
         postScriptName : Cousine-Regular
@@ -44,7 +44,7 @@ Tests Page.setFontFamilies for scripts.
 .fixed_font
 [
     [0] : {
-        familyName : Cousine
+        familyName : Cousine (Fontations)
         glyphCount : 5
         isCustomFont : false
         postScriptName : Cousine-Regular
@@ -53,7 +53,7 @@ Tests Page.setFontFamilies for scripts.
 .standard_font_ru
 [
     [0] : {
-        familyName : Cousine
+        familyName : Cousine (Fontations)
         glyphCount : 8
         isCustomFont : false
         postScriptName : Cousine-Regular
@@ -62,7 +62,7 @@ Tests Page.setFontFamilies for scripts.
 .sans_serif_font_ru
 [
     [0] : {
-        familyName : Ahem
+        familyName : Ahem (Fontations)
         glyphCount : 9
         isCustomFont : false
         postScriptName : Ahem
@@ -71,7 +71,7 @@ Tests Page.setFontFamilies for scripts.
 .fixed_font_ru
 [
     [0] : {
-        familyName : Ahem
+        familyName : Ahem (Fontations)
         glyphCount : 5
         isCustomFont : false
         postScriptName : Ahem
@@ -80,7 +80,7 @@ Tests Page.setFontFamilies for scripts.
 .notgeneric_font
 [
     [0] : {
-        familyName : Ahem
+        familyName : Ahem (Fontations)
         glyphCount : 10
         isCustomFont : false
         postScriptName : Ahem
@@ -89,7 +89,7 @@ Tests Page.setFontFamilies for scripts.
 .notgeneric_font_ru
 [
     [0] : {
-        familyName : Cousine
+        familyName : Cousine (Fontations)
         glyphCount : 10
         isCustomFont : false
         postScriptName : Cousine-Regular

@@ -75,7 +75,7 @@ TEST_P(AudioDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/16, detailed_view));
+      /*revision_number=*/17, detailed_view));
 }
 
 TEST_P(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
@@ -118,7 +118,7 @@ TEST_P(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/8, detailed_view));
+      /*revision_number=*/9, detailed_view));
 }
 
 }  // namespace ash

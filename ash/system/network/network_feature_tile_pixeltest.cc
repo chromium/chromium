@@ -170,7 +170,7 @@ TEST_F(NetworkFeatureTilePixelTest, NoNetworks) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/3, tile_view));
+      /*revision_number=*/4, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
@@ -182,7 +182,7 @@ TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Wifi) {
@@ -194,7 +194,7 @@ TEST_F(NetworkFeatureTilePixelTest, Wifi) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, WifiSecurity) {
@@ -206,7 +206,7 @@ TEST_F(NetworkFeatureTilePixelTest, WifiSecurity) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/1, tile_view));
+      /*revision_number=*/2, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Cellular) {
@@ -218,7 +218,7 @@ TEST_F(NetworkFeatureTilePixelTest, Cellular) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 }  // namespace ash

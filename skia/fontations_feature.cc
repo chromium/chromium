@@ -9,6 +9,6 @@ namespace skia {
 // SkFontMgr instantiation in skia/ext/font_utils.cc
 BASE_FEATURE(kFontationsLinuxSystemFonts,
              "FontationsLinuxSystemFonts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace skia
