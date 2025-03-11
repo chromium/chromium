@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -12,6 +13,22 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
+
+scoped_refptr<PaintWorkletDeferredImage> PaintWorkletDeferredImage::Create(
+    scoped_refptr<PaintWorkletInput> input,
+    const gfx::SizeF& size) {
+  return base::AdoptRef(new PaintWorkletDeferredImage(std::move(input), size));
+}
+
+PaintWorkletDeferredImage::PaintWorkletDeferredImage(
+    scoped_refptr<PaintWorkletInput> input,
+    const gfx::SizeF& size)
+    : GeneratedImage(size) {
+  image_ = PaintImageBuilder::WithDefault()
+               .set_deferred_paint_record(std::move(input))
+               .set_id(paint_image_id())
+               .TakePaintImage();
+}
 
 void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
                                      const cc::PaintFlags& flags,
