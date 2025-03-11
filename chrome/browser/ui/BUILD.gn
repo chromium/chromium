@@ -1382,6 +1382,8 @@ static_library("ui") {
       "webui/chrome_web_contents_handler.h",
       "webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.cc",
       "webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h",
+      "webui/cr_components/history/history_util.cc",
+      "webui/cr_components/history/history_util.h",
       "webui/cr_components/history_clusters/history_clusters_util.cc",
       "webui/cr_components/history_clusters/history_clusters_util.h",
       "webui/cr_components/history_embeddings/history_embeddings_handler.cc",

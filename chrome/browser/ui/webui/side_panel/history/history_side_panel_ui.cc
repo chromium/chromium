@@ -14,6 +14,7 @@
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -22,6 +23,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_embeddings/history_embeddings_features.h"
@@ -59,7 +62,27 @@ std::optional<int> HistorySidePanelUIConfig::GetCommandIdForTesting() {
 }
 
 HistorySidePanelUI::HistorySidePanelUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui) {}
+    : TopChromeWebUIController(web_ui) {
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIHistorySidePanelHost);
+
+  HistoryUtil::PopulateSourceForSidePanelHistory(source, profile);
+
+  HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/true);
+
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  source->AddBoolean(
+      "enableHistoryEmbeddings",
+      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
+          history_embeddings::GetFeatureParameters().enable_side_panel);
+  history_embeddings::PopulateSourceForWebUI(source, profile);
+
+  source->AddResourcePaths(kSidePanelSharedResources);
+}
 
 HistorySidePanelUI::~HistorySidePanelUI() = default;
 
