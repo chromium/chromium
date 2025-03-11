@@ -178,20 +178,8 @@ void ScrollSnapshotTimeline::UpdateSnapshot() {
 
 LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
     Node* resolved_source) {
-  if (!resolved_source) {
-    return nullptr;
-  }
-
-  LayoutBox* layout_box = resolved_source->GetLayoutBox();
-  if (!layout_box) {
-    return nullptr;
-  }
-
-  if (auto* field_set = DynamicTo<LayoutFieldset>(layout_box)) {
-    layout_box = field_set->FindAnonymousFieldsetContentBox();
-  }
-
-  return layout_box->IsScrollContainer() ? layout_box : nullptr;
+  auto* container_node = DynamicTo<ContainerNode>(resolved_source);
+  return container_node ? container_node->GetLayoutBoxForScrolling() : nullptr;
 }
 
 void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {
