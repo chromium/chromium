@@ -362,9 +362,14 @@ inline constexpr const char kDeleteOsRegistrationsRangeSql[] =
     "DELETE FROM os_registrations "
     "WHERE time BETWEEN ?1 AND ?2";
 
-inline constexpr const char kDeleteOsRegistrationSql[] =
+inline constexpr const char kDeleteOsRegistrationAtTimeSql[] =
     "DELETE FROM os_registrations "
     "WHERE registration_origin=? AND time=?";
+
+inline constexpr const char kDeleteOsRegistrationSql[] =
+    "DELETE FROM os_registrations "
+    "WHERE registration_origin=? "
+    "AND time BETWEEN ? AND ?";
 
 inline constexpr const char kGetOsRegistrationDataKeysSql[] =
     "SELECT DISTINCT registration_origin FROM os_registrations";

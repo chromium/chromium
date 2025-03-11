@@ -47,6 +47,10 @@ class CONTENT_EXPORT OsRegistrationsTable {
       base::Time delete_begin,
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter);
+  void ClearDataForRegistrationOrigin(sql::Database* db,
+                                      base::Time delete_begin,
+                                      base::Time delete_end,
+                                      const url::Origin&);
 
   void AppendOsRegistrationDataKeys(
       sql::Database* db,
