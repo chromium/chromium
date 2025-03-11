@@ -9808,6 +9808,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeprecatedExternalPickerFunctionName,
      flag_descriptions::kDeprecatedExternalPickerFunctionDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(ui::kDeprecatedExternalPickerFunction)},
+    {"android-keyboard-a11y", flag_descriptions::kAndroidKeyboardA11yName,
+     flag_descriptions::kAndroidKeyboardA11yDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidKeyboardA11y)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

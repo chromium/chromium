@@ -158,6 +158,15 @@ const char kAndroidBrowserControlsInVizDescription[] =
     "Let viz move browser controls when scrolling. For now, this applies only "
     "to top controls.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidKeyboardA11yName[] =
+    "Keyboard focus and navigation on Android";
+const char kAndroidKeyboardA11yDescription[] =
+    "Improves keyboard focus indication and keyboard navigation (including "
+    "keyboard shortcuts to move keyboard focus to different parts of the UI, "
+    "such as the tab strip, toolbar, and bookmarks bar.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kIgnoreDeviceFlexArcEnabledPolicyName[] =
     "Ignore VPN Apps Enabling on ChromeOS Flex";

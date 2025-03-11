@@ -232,6 +232,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "android-keyboard-a11y",
+    "owners": [ "jhimawan@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-no-surface-sync-for-browser-controls",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 130

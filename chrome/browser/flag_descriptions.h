@@ -112,6 +112,11 @@ extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidKeyboardA11yName[];
+extern const char kAndroidKeyboardA11yDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kIgnoreDeviceFlexArcEnabledPolicyName[];
 extern const char kIgnoreDeviceFlexArcEnabledPolicyDescription[];
