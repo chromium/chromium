@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
 #include "base/files/file_path.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -29,8 +30,15 @@ bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context) {
 }
 
 bool IsUserBrowserContext(content::BrowserContext* browser_context) {
+  // Check `AnnotatedAccountId` as an optimization to avoid creating/destroying
+  // `base::FilePath`, which is cpu intensive. See b:402192521 for more details.
+  //
+  // `IsUserBrowserContextBaseName` is still needed so that profile creation
+  // hook can identify user profiles and call `AnnotatedAccountId::Set` on them.
+  // TODO(b:402192521): Get rid of `IsUserBrowserContextBaseName` check.
   return browser_context &&
-         IsUserBrowserContextBaseName(browser_context->GetPath().BaseName());
+         (AnnotatedAccountId::Get(browser_context) ||
+          IsUserBrowserContextBaseName(browser_context->GetPath().BaseName()));
 }
 
 bool IsUserBrowserContextBaseName(const base::FilePath& base_name) {
