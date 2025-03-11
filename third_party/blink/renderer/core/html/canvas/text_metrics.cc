@@ -189,6 +189,8 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
 
   if (text_painter) {
     DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled());
+    // The CanvasTextNg feature enables obtaining the ShapeResult objects
+    // directly, so we don't need to lazily obtain them again later.
     shaping_needed_ = false;
     const PlainTextNode& node = text_painter->SegmentAndShape(
         TextRun(text_, direction_, /* directional_override */ false,
@@ -218,13 +220,10 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
     return {xpos, glyph_bounds};
   }
   DCHECK(!RuntimeEnabledFeatures::CanvasTextNgEnabled());
-
-  if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
-    // If not enabled, Font::Width is called, which causes a shaping via
-    // CachingWordShaper. Since we still need the ShapeResult objects, these are
-    // lazily created the first time they are required.
-    shaping_needed_ = true;
-  }
+  // If CanvasTextNg is not enabled, Font::Width is called, which causes a
+  // shaping via CachingWordShaper. Since we still need the ShapeResult objects,
+  // these are lazily created the first time they are required.
+  shaping_needed_ = true;
 
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
@@ -247,7 +246,7 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
 
     // Save the run for computing additional metrics. Whether we calculate the
     // ShapeResult objects right away, or lazily when needed, depends on the
-    // Canvas2dTextMetricsShaping feature.
+    // CanvasTextNg feature.
     RunWithOffset run_with_offset = {
         .shape_result_ = nullptr,
         .text_ = text_run.ToStringView().ToString(),
@@ -256,15 +255,8 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
         .num_characters_ = run.Length(),
         .x_position_ = xpos};
 
-    float run_width;
     gfx::RectF run_glyph_bounds;
-    if (RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
-      run_with_offset.shape_result_ = ShapeWord(text_run, *font_);
-      run_width = run_with_offset.shape_result_->Width();
-      run_glyph_bounds = run_with_offset.shape_result_->ComputeInkBounds();
-    } else {
-      run_width = font_->Width(text_run, &run_glyph_bounds);
-    }
+    float run_width = font_->Width(text_run, &run_glyph_bounds);
     runs_with_offset_.push_back(run_with_offset);
 
     // Accumulate the position and the glyph bounding box.
@@ -507,6 +499,8 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
   if (options != nullptr && options->hasBaseline()) {
     cluster_text_baseline = options->baseline();
   }
+
+  ShapeTextIfNeeded();
 
   for (const auto& run_with_offset : runs_with_offset_) {
     HeapVector<TextClusterCallbackContext> clusters_for_run;
