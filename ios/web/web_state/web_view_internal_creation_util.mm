@@ -72,11 +72,4 @@ WKWebView* BuildWKWebView(CGRect frame,
   return web_view;
 }
 
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state) {
-  return BuildWKWebView(frame, configuration, browser_state,
-                        UserAgentType::MOBILE, nil, nil);
-}
-
 }  // namespace web
