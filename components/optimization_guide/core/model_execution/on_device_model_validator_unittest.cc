@@ -31,7 +31,8 @@ class OnDeviceModelValidatorTest : public testing::Test {
 
   mojo::Remote<on_device_model::mojom::Session> StartSession() {
     mojo::Remote<on_device_model::mojom::Session> session_remote;
-    model_remote_->StartSession(session_remote.BindNewPipeAndPassReceiver());
+    model_remote_->StartSession(session_remote.BindNewPipeAndPassReceiver(),
+                                nullptr);
     return session_remote;
   }
 

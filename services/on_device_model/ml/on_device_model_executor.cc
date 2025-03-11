@@ -356,7 +356,7 @@ OnDeviceModelExecutor::ScopedAdaptation::ScopedAdaptation(
 
 OnDeviceModelExecutor::ScopedAdaptation::~ScopedAdaptation() {
   if (executor_) {
-    executor_->base_sessions_.erase(adaptation_id_);
+    executor_->adaptation_params_.erase(adaptation_id_);
   }
 }
 
@@ -392,31 +392,30 @@ OnDeviceModelExecutor::CreateWithResult(
 }
 
 std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
-    const ScopedAdaptation* adaptation) {
+    const ScopedAdaptation* adaptation,
+    on_device_model::mojom::SessionParamsPtr params) {
   std::optional<uint32_t> adaptation_id;
+  on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params;
   if (adaptation) {
     adaptation_id = adaptation->adaptation_id();
+    auto it = adaptation_params_.find(*adaptation_id);
+    CHECK(it != adaptation_params_.end());
+    adaptation_params = it->second->Clone();
   }
-  auto it = base_sessions_.find(adaptation_id);
-  CHECK(it != base_sessions_.end());
-  return std::make_unique<SessionImpl>(*chrome_ml_, model_, it->second->Clone(),
+  auto session = SessionAccessor::Create(
+      *chrome_ml_, model_task_runner_, model_, std::move(params),
+      std::move(adaptation_params), adaptation_id);
+  return std::make_unique<SessionImpl>(*chrome_ml_, model_, std::move(session),
                                        max_tokens_ - kReserveTokensForSafety,
                                        adaptation_id);
 }
 
-DISABLE_CFI_DLSYM
-base::expected<std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>,
-               LoadModelResult>
+std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>
 OnDeviceModelExecutor::LoadAdaptation(
-    on_device_model::mojom::LoadAdaptationParamsPtr params,
-    base::OnceClosure on_complete) {
-  static uint32_t next_id = 0;
-  base_sessions_.insert(
-      {next_id, SessionAccessor::Create(chrome_ml_.get(), model_task_runner_,
-                                        model_, std::move(params))});
-  model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
-  return base::ok(std::make_unique<ScopedAdaptation>(
-      weak_ptr_factory_.GetWeakPtr(), next_id++));
+    on_device_model::mojom::LoadAdaptationParamsPtr params) {
+  adaptation_params_.insert({next_adaptation_id_, std::move(params)});
+  return std::make_unique<ScopedAdaptation>(weak_ptr_factory_.GetWeakPtr(),
+                                            next_adaptation_id_++);
 }
 
 DISABLE_CFI_DLSYM
@@ -453,11 +452,6 @@ LoadModelResult OnDeviceModelExecutor::Init(
   model_ = chrome_ml_->api().SessionCreateModel(
       &descriptor, reinterpret_cast<uintptr_t>(this),
       OnDeviceModelExecutor::Schedule);
-  if (model_) {
-    base_sessions_.insert(
-        {std::nullopt, SessionAccessor::Create(chrome_ml_.get(),
-                                               model_task_runner_, model_)});
-  }
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return (model_ != 0) ? LoadModelResult::kSuccess
                        : LoadModelResult::kFailedToLoadLibrary;

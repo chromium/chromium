@@ -17,7 +17,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
+struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
     StructTraits<on_device_model::mojom::ModelAssetsDataView,
                  on_device_model::ModelAssets> {
   static base::File weights(on_device_model::ModelAssets& assets) {
