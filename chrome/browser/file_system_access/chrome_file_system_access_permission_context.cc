@@ -2238,11 +2238,14 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
     const base::Value::Dict& object_dict = object->value;
     const base::FilePath path =
         base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
-    if (path.empty()) {
+    std::string display_name =
+        StringOrEmpty(object_dict.FindString(kPermissionDisplayNameKey));
+    if (display_name.empty()) {
+      display_name = path.BaseName().AsUTF8Unsafe();
+    }
+    if (path.empty() || display_name.empty()) {
       continue;
     }
-    const std::string display_name =
-        StringOrEmpty(object_dict.FindString(kPermissionDisplayNameKey));
     HandleType handle_type =
         object_dict.FindBool(kPermissionIsDirectoryKey).value()
             ? HandleType::kDirectory
