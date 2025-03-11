@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
-#include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
@@ -168,7 +167,6 @@ CrosapiAsh::CrosapiAsh()
       login_state_ash_(std::make_unique<LoginStateAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
-      native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
@@ -437,11 +435,6 @@ void CrosapiAsh::BindMediaSessionController(
 void CrosapiAsh::BindMultiCaptureService(
     mojo::PendingReceiver<mojom::MultiCaptureService> receiver) {
   multi_capture_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindNativeThemeService(
-    mojo::PendingReceiver<crosapi::mojom::NativeThemeService> receiver) {
-  native_theme_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindNetworkChange(
