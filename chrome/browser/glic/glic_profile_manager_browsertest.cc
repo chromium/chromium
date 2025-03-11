@@ -10,8 +10,12 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
@@ -19,10 +23,11 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ozone_buildflags.h"
 
 namespace glic {
 namespace {
@@ -38,7 +43,9 @@ class MockGlicKeyedService : public GlicKeyedService {
   MOCK_METHOD(void, ClosePanel, (), (override));
 
   bool IsWindowDetached() const override { return detached_; }
+  void SetWindowDetached() { detached_ = true; }
 
+ private:
   bool detached_ = false;
 };
 
@@ -48,117 +55,126 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
         /*disabled_features=*/{features::kDestroyProfileOnBrowserClose});
+
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &GlicProfileManagerBrowserTest::SetTestingFactory,
+                base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ForceSigninAndModelExecutionCapability(browser()->profile());
+  }
+
+  MockGlicKeyedService* GetMockGlicKeyedService(Profile* profile) {
+    auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    return static_cast<MockGlicKeyedService*>(service);
+  }
+
+  Profile* CreateNewProfile() {
+    auto* profile_manager = g_browser_process->profile_manager();
+    auto new_path = profile_manager->GenerateNextProfileDirectoryPath();
+    profiles::testing::CreateProfileSync(profile_manager, new_path);
+    return profile_manager->GetProfile(new_path);
   }
 
  private:
+  void SetTestingFactory(content::BrowserContext* context) {
+    GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(
+                     &GlicProfileManagerBrowserTest::CreateMockGlicKeyedService,
+                     base::Unretained(this)));
+  }
+
+  std::unique_ptr<KeyedService> CreateMockGlicKeyedService(
+      content::BrowserContext* context) {
+    auto* identitity_manager = IdentityManagerFactory::GetForProfile(
+        Profile::FromBrowserContext(context));
+    return std::make_unique<MockGlicKeyedService>(
+        context, identitity_manager, GlicProfileManager::GetInstance());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        SetActiveGlic_SameProfile) {
-  GlicProfileManager profile_manager;
-  signin::IdentityTestEnvironment identity_test_environment;
-  TestingProfile profile;
-  MockGlicKeyedService service(
-      &profile, identity_test_environment.identity_manager(), &profile_manager);
-
-  profile_manager.SetActiveGlic(&service);
-
+  auto* service0 = GetMockGlicKeyedService(browser()->profile());
+  GlicProfileManager::GetInstance()->SetActiveGlic(service0);
   // Opening glic twice for the same profile shouldn't cause it to close.
-  EXPECT_CALL(service, ClosePanel()).Times(0);
-  profile_manager.SetActiveGlic(&service);
+  EXPECT_CALL(*service0, ClosePanel()).Times(0);
+  GlicProfileManager::GetInstance()->SetActiveGlic(service0);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        SetActiveGlic_DifferentProfiles) {
-  GlicProfileManager profile_manager;
-  signin::IdentityTestEnvironment identity_test_environment;
-  TestingProfile profile1;
-  TestingProfile profile2;
-  MockGlicKeyedService service1(&profile1,
-                                identity_test_environment.identity_manager(),
-                                &profile_manager);
-  MockGlicKeyedService service2(&profile2,
-                                identity_test_environment.identity_manager(),
-                                &profile_manager);
+  auto* service0 = GetMockGlicKeyedService(browser()->profile());
 
-  profile_manager.SetActiveGlic(&service1);
+  auto* profile1 = CreateNewProfile();
+  ForceSigninAndModelExecutionCapability(profile1);
+  auto* service1 = GetMockGlicKeyedService(profile1);
+
+  auto* profile_manager = GlicProfileManager::GetInstance();
+  profile_manager->SetActiveGlic(service0);
 
   // Opening glic from a second profile should make the profile manager close
   // the first one.
-  EXPECT_CALL(service1, ClosePanel());
-  profile_manager.SetActiveGlic(&service2);
+  EXPECT_CALL(*service0, ClosePanel());
+  profile_manager->SetActiveGlic(service1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_WithDetachedGlic) {
-  GlicProfileManager profile_manager;
-  signin::IdentityTestEnvironment identity_test_environment;
+  auto* service0 = GetMockGlicKeyedService(browser()->profile());
 
   // Setup Profile 1
-  TestingProfile profile1;
-  ForceSigninAndModelExecutionCapability(&profile1);
-  MockGlicKeyedService service1(&profile1,
-                                identity_test_environment.identity_manager(),
-                                &profile_manager);
-  Browser::CreateParams browser_params1(&profile1, false);
-  auto browser1 = CreateBrowserWithTestWindowForParams(browser_params1);
+  auto* profile1 = CreateNewProfile();
+  ForceSigninAndModelExecutionCapability(profile1);
 
-  // Setup Profile 2
-  TestingProfile profile2;
-  ForceSigninAndModelExecutionCapability(&profile2);
-  MockGlicKeyedService service2(&profile2,
-                                identity_test_environment.identity_manager(),
-                                &profile_manager);
-  Browser::CreateParams browser_params2(&profile2, false);
-  auto browser2 = CreateBrowserWithTestWindowForParams(browser_params2);
+  auto* profile_manager = GlicProfileManager::GetInstance();
+  // Profile 0 is the last used Glic and Profile 1 is the last used window.
+  // Profile 1 should be selected for launch.
+  profile_manager->SetActiveGlic(service0);
+  CreateBrowser(profile1);
+  EXPECT_EQ(profile1, profile_manager->GetProfileForLaunch());
 
-  // Profile 1 is the last used Glic and Profile 2 is the last used window.
-  // Profile 2 should be selected for launch.
-  profile_manager.SetActiveGlic(&service1);
-  BrowserList::SetLastActive(browser2.get());
-  EXPECT_EQ(&profile2, profile_manager.GetProfileForLaunch());
-
-  // Simulate showing detached for Profile 1.
-  // Profile 1 should now be selected for launch.
-  service1.detached_ = true;
-  EXPECT_EQ(&profile1, profile_manager.GetProfileForLaunch());
+  // Simulate showing detached for Profile 0.
+  // Profile 0 should now be selected for launch.
+  service0->SetWindowDetached();
+  EXPECT_EQ(browser()->profile(), profile_manager->GetProfileForLaunch());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_BasedOnActivationOrder) {
-  GlicProfileManager profile_manager;
-  signin::IdentityTestEnvironment identity_test_environment;
-  TestingProfile profile1, profile2, profile3;
+  // Setup Profile 1
+  auto* profile1 = CreateNewProfile();
+  ForceSigninAndModelExecutionCapability(profile1);
 
-  ForceSigninAndModelExecutionCapability(&profile1);
-  ForceSigninAndModelExecutionCapability(&profile2);
+  // Setup Profile 2 (not glic compliant)
+  auto* profile2 = CreateNewProfile();
 
-  Browser::CreateParams browser_params1(&profile1, false);
-  auto browser1 = CreateBrowserWithTestWindowForParams(browser_params1);
-
-  Browser::CreateParams browser_params2(&profile2, false);
-  auto browser2 = CreateBrowserWithTestWindowForParams(browser_params2);
-
-  Browser::CreateParams browser_params3(&profile3, false);
-  auto browser3 = CreateBrowserWithTestWindowForParams(browser_params3);
+  auto* profile_manager = GlicProfileManager::GetInstance();
+  // profile0 is the most recently used profile
+  EXPECT_EQ(browser()->profile(), profile_manager->GetProfileForLaunch());
 
   // profile1 is the most recently used profile
-  BrowserList::SetLastActive(browser1.get());
-  EXPECT_EQ(&profile1, profile_manager.GetProfileForLaunch());
+  [[maybe_unused]] auto* browser1 = CreateBrowser(profile1);
+  EXPECT_EQ(profile1, profile_manager->GetProfileForLaunch());
 
-  // profile2 is the most recently used profile
-  BrowserList::SetLastActive(browser2.get());
-  EXPECT_EQ(&profile2, profile_manager.GetProfileForLaunch());
-
-  // profile1 is the most recently used profile
-  BrowserList::SetLastActive(browser1.get());
-  EXPECT_EQ(&profile1, profile_manager.GetProfileForLaunch());
-
-  // profile3 is the most recently used profile but it isn't
+  // profile2 is the most recently used profile but it isn't
   // compliant, so still using profile1
-  BrowserList::SetLastActive(browser3.get());
-  EXPECT_EQ(&profile1, profile_manager.GetProfileForLaunch());
+  CreateBrowser(profile2);
+  EXPECT_EQ(profile1, profile_manager->GetProfileForLaunch());
+
+#if !(BUILDFLAG(IS_OZONE_WAYLAND))
+  // profile0 is the most recently used profile
+  browser()->window()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
+  EXPECT_EQ(browser()->profile(), profile_manager->GetProfileForLaunch());
+#endif
 }
 
 class GlicProfileManagerPreloadingTest
@@ -181,38 +197,24 @@ class GlicProfileManagerPreloadingTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    profile_manager_ = std::make_unique<GlicProfileManager>();
-    identity_test_environment_ =
-        std::make_unique<signin::IdentityTestEnvironment>();
-    profile_ = std::make_unique<TestingProfile>();
-    GlicProfileManager::ForceProfileForLaunchForTesting(profile());
+    GlicProfileManager::ForceProfileForLaunchForTesting(browser()->profile());
     GlicProfileManager::ForceMemoryPressureForTesting(&memory_pressure_);
-    ForceSigninAndModelExecutionCapability(profile());
+    ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
   void TearDown() override {
     GlicProfileManager::ForceProfileForLaunchForTesting(nullptr);
     GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
-    profile_.reset();
-    identity_test_environment_.reset();
-    profile_manager_.reset();
     InProcessBrowserTest::TearDown();
   }
 
   bool IsPreloadingEnabled() const { return GetParam(); }
 
-  TestingProfile* profile() { return profile_.get(); }
-  GlicProfileManager& profile_manager() { return *profile_manager_; }
   base::MemoryPressureMonitor::MemoryPressureLevel& memory_pressure() {
     return memory_pressure_;
   }
 
-  void DestroyProfile() { profile_.reset(); }
-
  private:
-  std::unique_ptr<GlicProfileManager> profile_manager_;
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   base::MemoryPressureMonitor::MemoryPressureLevel memory_pressure_ = base::
       MemoryPressureMonitor::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -221,31 +223,32 @@ class GlicProfileManagerPreloadingTest
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_Success) {
   const bool should_preload = IsPreloadingEnabled();
+  auto* profile_manager = GlicProfileManager::GetInstance();
   EXPECT_EQ(should_preload,
-            profile_manager().ShouldPreloadForProfile(profile()));
-  DestroyProfile();
+            profile_manager->ShouldPreloadForProfile(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
-                       ShouldPreloadForProfile_NotLaunchProfile) {
+                       ShouldPreloadForProfile_NotSupportedProfile) {
   GlicProfileManager::ForceProfileForLaunchForTesting(nullptr);
-  EXPECT_FALSE(profile_manager().ShouldPreloadForProfile(profile()));
-  DestroyProfile();
+  SetModelExecutionCapability(browser()->profile(), false);
+  auto* profile_manager = GlicProfileManager::GetInstance();
+  EXPECT_FALSE(profile_manager->ShouldPreloadForProfile(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_WillBeDestroyed) {
-  profile()->NotifyWillBeDestroyed();
-  EXPECT_FALSE(profile_manager().ShouldPreloadForProfile(profile()));
-  DestroyProfile();
+  browser()->profile()->NotifyWillBeDestroyed();
+  auto* profile_manager = GlicProfileManager::GetInstance();
+  EXPECT_FALSE(profile_manager->ShouldPreloadForProfile(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_MemoryPressure) {
+  auto* profile_manager = GlicProfileManager::GetInstance();
   memory_pressure() = base::MemoryPressureMonitor::MemoryPressureLevel::
       MEMORY_PRESSURE_LEVEL_MODERATE;
-  EXPECT_FALSE(profile_manager().ShouldPreloadForProfile(profile()));
-  DestroyProfile();
+  EXPECT_FALSE(profile_manager->ShouldPreloadForProfile(browser()->profile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
