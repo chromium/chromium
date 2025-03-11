@@ -404,10 +404,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // Add a primary and secondary user session for the first time. This should
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession({.is_new_profile = true},
-                                            primary_account_id);
-  session_controller_client->AddUserSession({.is_new_profile = true},
-                                            secondary_account_id);
+  SimulateUserLogin({.is_new_profile = true, .activate_session = false},
+                    primary_account_id);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
@@ -440,8 +438,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
   // Switch to the secondary user session and back again. This should *not*
   // trigger the Welcome Tour to start.
-  session_controller_client->SwitchActiveUser(secondary_account_id);
-  session_controller_client->SwitchActiveUser(primary_account_id);
+  SimulateUserLogin({.is_new_profile = true}, secondary_account_id);
+  SwitchActiveUser(primary_account_id);
 
   // Deactivate and then reactivate the primary user session. This should *not*
   // trigger the Welcome Tour to start.
@@ -784,9 +782,9 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
        MaybePreventTourFromStartingIfChromeVoxEnabled) {
   base::HistogramTester histogram_tester;
   TestSessionControllerClient* const session = GetSessionControllerClient();
-  const auto primary_account_id = session->AddUserSession(
-      {.display_email = "primary@test", .is_new_profile = true});
-  session->SwitchActiveUser(primary_account_id);
+  auto primary_account_id = SimulateUserLogin({.display_email = "primary@test",
+                                               .is_new_profile = true,
+                                               .activate_session = false});
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.
