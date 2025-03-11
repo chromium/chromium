@@ -269,14 +269,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.SetDefaultResult2" enum="DefaultWebClientState"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The outcome of an attempt to set Chrome as the user's default browser.
-  </summary>
-</histogram>
-
 <histogram name="DefaultBrowser.State" enum="DefaultBrowserState"
     expires_after="never">
 <!-- expires-never: Used to keep track of desktop browser ecosystem. -->

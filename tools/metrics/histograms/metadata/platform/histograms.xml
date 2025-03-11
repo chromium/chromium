@@ -1612,51 +1612,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.MemuseAnon0" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory 1
-    minute after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon1" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory 5
-    minutes after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon2" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory 30
-    minutes after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon3" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory
-    150 minutes after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon4" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory
-    750 minutes after boot.
-  </summary>
-</histogram>
-
 <histogram name="Platform.MiniDiag.Launch" units="launches"
     expires_after="2025-06-03">
   <owner>roccochen@chromium.org</owner>
@@ -2354,17 +2309,6 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-storage@google.com</owner>
   <summary>
     Chrome OS stateful partition KiB writes per day. Sampled once daily.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Storage.Flash.BadBlocks" units="units"
-    expires_after="M85">
-  <owner>dehrenberg@chromium.org</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    The number of blocks marked bad in an MTD partition. This is relevant for
-    devices with raw NAND flash, such as Chromecast. Sampled once daily, if the
-    Chromecast is on for any significant length of time in the day.
   </summary>
 </histogram>
 

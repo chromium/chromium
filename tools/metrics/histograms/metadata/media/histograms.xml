@@ -1431,11 +1431,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.AudioBitsPerChannel" units="units" expires_after="M85">
-  <owner>dalecurtis@chromium.org</owner>
-  <summary>Bits per channel of HTML5 audio sample data.</summary>
-</histogram>
-
 <histogram name="Media.AudioCapturerAudioGlitches" enum="AudioGlitchResult"
     expires_after="2025-07-13">
   <owner>olka@chromium.org</owner>
@@ -2071,16 +2066,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record the playback speed selected by the user in the list of playback
     speeds on the media controls.
-  </summary>
-</histogram>
-
-<histogram name="Media.CrosBeamformingDeviceState"
-    enum="CrosBeamformingDeviceState" expires_after="M85">
-  <owner>dalecurtis@chromium.org</owner>
-  <summary>
-    The state of the user selected virtual beamforming audio device on CrOS.
-    It's logged whenever the format of the audio input stream is queried, which
-    at least happens on stream startup, but could happen at other times as well.
   </summary>
 </histogram>
 
@@ -5521,13 +5506,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.TotalMBytes" units="MB" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <owner>scherkus@chromium.org</owner>
-  <summary>Size of HTML5 media (when known), in MB.</summary>
-</histogram>
-
 <histogram name="Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.{Type}"
     enum="GetDisplayMediaAudioToggleStatus" expires_after="2026-02-16">
   <owner>eladalon@chromium.org</owner>
@@ -6407,11 +6385,6 @@ chromium-metrics-reviews@google.com.
     GetDeviceStreamCount before getting a result different from
     MF_E_INVALIDREQUEST or giving up.
   </summary>
-</histogram>
-
-<histogram name="Media.VideoCaptureManager" units="ms" expires_after="M85">
-  <owner>mcasas@chromium.org</owner>
-  <summary>Measures the time taken for VideoCaptureManager::</summary>
 </histogram>
 
 <histogram name="Media.VideoCaptureManager.DesktopCaptureImplementationAndType"

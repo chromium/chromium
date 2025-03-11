@@ -645,13 +645,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="RendererSyncIPC.ElapsedTime" units="ms" expires_after="M85">
-  <owner>ppi@chromium.org</owner>
-  <summary>
-    Roundtrip times for synchronous IPC calls from the renderer to browser.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

@@ -197,15 +197,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.InfobarShown" enum="BooleanHit" expires_after="M85">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the translate infobar was shown in the old translate UI
-    on Android. Only true is recorded.
-  </summary>
-</histogram>
-
 <histogram name="Translate.LanguageDetection.ContentLength" units="characters"
     expires_after="2025-06-29">
   <owner>sclittle@chromium.org</owner>
@@ -246,18 +237,6 @@ chromium-metrics-reviews@google.com.
     page language. Unlike Translate.LanguageDeterminedDuration, this metric does
     not record the duration for CDL3 language detection when the TFLite model is
     unavailable.
-  </summary>
-</histogram>
-
-<histogram name="Translate.LanguageDetectionTiming"
-    enum="TranslateLanguageDetectionTiming" expires_after="M85">
-  <owner>andrewhayden@chromium.org</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    For each page load, records whether language detection occurs on time or
-    gets deferred. If deferred language detection later completes, this is also
-    recorded. This allows measuring the UX impact of using a non-static CLD data
-    source.
   </summary>
 </histogram>
 

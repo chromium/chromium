@@ -439,13 +439,6 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Android: Crypto scheme not supported."/>
 </enum>
 
-<enum name="CrosBeamformingDeviceState">
-  <int value="0" label="Default enabled"/>
-  <int value="1" label="User enabled"/>
-  <int value="2" label="Default disabled"/>
-  <int value="3" label="User disabled"/>
-</enum>
-
 <enum name="CrosCdmType">
   <int value="0" label="Chrome CDM"/>
   <int value="1" label="Platform CDM"/>

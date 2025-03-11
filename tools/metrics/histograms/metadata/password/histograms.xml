@@ -481,13 +481,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordHash.CreateTime" units="units" expires_after="M85">
-  <owner>mlerman@chromium.org</owner>
-  <summary>
-    Time required to create the local hash of the user's GAIA password.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AbleToSavePasswordsOnSuccessfulLogin"
     enum="BooleanSuccess" expires_after="2025-08-24">
   <owner>vasilii@chromium.org</owner>
