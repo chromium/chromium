@@ -702,6 +702,11 @@ void GPUDevice::OnPopErrorScopeCallback(
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "No error scopes to pop");
       return;
+    default:
+      // TODO(crbug.com/402220413): Handle Error explicitly.
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       StringFromASCIIAndUTF8(message));
+      return;
   }
   switch (type) {
     case wgpu::ErrorType::NoError:
