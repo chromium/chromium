@@ -559,10 +559,6 @@ class CORE_EXPORT StyleCascade {
                            FunctionContext* function_context,
                            TokenSequence& out);
   bool ResolveArgumentOrLocalInto(const CSSValue* value,
-                                  const TreeScope*,
-                                  CSSParserTokenStream& stream,
-                                  CascadeResolver& resolver,
-                                  const CSSParserContext& context,
                                   const TokenSequence* fallback,
                                   TokenSequence& out);
 
