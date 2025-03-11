@@ -5,7 +5,9 @@
 """Tests for run.py"""
 
 import argparse
+import logging
 import unittest
+from unittest import mock
 
 import run
 
@@ -49,6 +51,28 @@ class ParseArgsTest(unittest.TestCase):
     # No run_mode choice should make the parser error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
+
+  def testPrintSurvey(self):
+    patch_random = mock.patch('random.random')
+    mock_random = patch_random.start()
+    mock_random.return_value = 0.005
+    with self.assertLogs() as info_log:
+      run.maybe_print_survey_link()
+      self.assertIn(
+          'INFO:root:Help us improve by sharing your feedback in this short '
+          'survey: https://forms.gle/tA41evzW5goqR5WF9', info_log.output)
+
+    # No logs to the mock result in an exception trying to assert
+    # Verify nothing new is logged instead
+    mock_random.return_value = 0.02
+    with self.assertLogs() as info_log:
+      logging.info('')
+      run.maybe_print_survey_link()
+      self.assertEqual(
+          ['INFO:root:'],
+          info_log.output,
+      )
+    mock_random.stop()
 
   def testTests(self):
     argv = [
