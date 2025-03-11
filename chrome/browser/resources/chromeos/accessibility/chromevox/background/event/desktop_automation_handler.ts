@@ -752,12 +752,11 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           target.className === 'PopupFooterView' ||
           target.className === 'PopupWarningView' ||
           target.className === 'PopupBaseView' ||
-          target.className === 'PopupRowView' ||
-          target.className === 'PopupRowContentView' ||
-          target.className === 'PopupRowPredictionImprovementsFeedbackView' ||
-          target.className === 'PredictionImprovementsLoadingStateView' ||
           target.className ===
-              'PasswordGenerationPopupViewViews::GeneratedPasswordBox') {
+              'PasswordGenerationPopupViewViews::GeneratedPasswordBox' ||
+          target.className === 'PopupRowView' ||
+          target.className === 'PopupRowWithButtonView' ||
+          target.className === 'PopupRowContentView') {
         override = true;
       }
 
