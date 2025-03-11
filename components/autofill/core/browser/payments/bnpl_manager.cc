@@ -170,7 +170,11 @@ void BnplManager::OnVcnDetailsFetched(
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {
-    // TODO(crbug.com/399449550): Add error dialog.
+    payments_autofill_client().ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsAutofillClient::PaymentsRpcResult::
+                kVcnRetrievalPermanentFailure));
   }
   ongoing_flow_state_.reset();
 }
@@ -222,7 +226,12 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
     }
   }
 
-  // TODO(crbug.com/378518504): Display error dialog.
+  payments_autofill_client().ShowAutofillErrorDialog(
+      AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+          /*is_permanent_error=*/result ==
+          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+
+  ongoing_flow_state_.reset();
 }
 
 void BnplManager::MaybeUpdateSuggestionsWithBnpl(

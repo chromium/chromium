@@ -325,6 +325,41 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
+// Tests that OnVcnDetailsFetched shows an error dialog when there is a
+// PaymentsRpcResult error.
+TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
+  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  // TODO(crbug.com/400500799): Remove test helper method and set arguments from
+  // source.
+  test_api(*bnpl_manager_)
+      .PopulateManagerWithUserAndBnplIssuerDetails(
+          kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
+          kRedirectUrl, kIssuerId);
+  base::MockCallback<BnplManager::OnBnplVcnFetchedCallback>
+      on_bnpl_vcn_fetched_callback;
+  test_api(*bnpl_manager_)
+      .SetOnBnplVcnFetchedCallback(on_bnpl_vcn_fetched_callback.Get());
+
+  BnplFetchVcnResponseDetails response_details;
+  EXPECT_CALL(on_bnpl_vcn_fetched_callback, Run(_)).Times(0);
+  EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+
+  test_api(*bnpl_manager_).FetchVcnDetails();
+  test_api(*bnpl_manager_)
+      .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::
+                               kVcnRetrievalPermanentFailure,
+                           response_details);
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  EXPECT_EQ(autofill_client_->GetPaymentsAutofillClient()
+                ->autofill_error_dialog_context(),
+            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                /*is_permanent_error=*/true));
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
 // Tests that `OnIssuerSelected()` calls with an unlinked BNPL issuer will call
 // the payments network interface with the request details filled out correctly.
 TEST_F(
@@ -405,6 +440,30 @@ TEST_F(BnplManagerTest,
   EXPECT_TRUE(test_api(*bnpl_manager_)
                   .GetOngoingFlowState()
                   ->legal_message_lines.empty());
+}
+
+// Tests that `OnDidGetDetailsForCreateBnplPaymentInstrument` shows an error
+// when there is a PaymentsRpcResult error.
+TEST_F(BnplManagerTest,
+       OnDidGetDetailsForCreateBnplPaymentInstrument_RpcError) {
+  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetDetailsForCreateBnplPaymentInstrument)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
+          kContextToken,
+          /*legal_message=*/nullptr));
+  OnIssuerSelected(unlinked_issuer);
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  EXPECT_EQ(autofill_client_->GetPaymentsAutofillClient()
+                ->autofill_error_dialog_context(),
+            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                /*is_permanent_error=*/false));
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
 // Tests that update suggestions callback is called when suggestions are shown
