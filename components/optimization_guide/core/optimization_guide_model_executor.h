@@ -58,8 +58,6 @@ struct OptimizationGuideModelStreamingExecutionResult {
       base::expected<const StreamingResponse,
                      OptimizationGuideModelExecutionError> response,
       bool provided_by_on_device,
-      // TODO(372535824): remove this parameter.
-      std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr,
       std::unique_ptr<proto::ModelExecutionInfo> execution_info = nullptr);
 
   ~OptimizationGuideModelStreamingExecutionResult();
@@ -70,8 +68,6 @@ struct OptimizationGuideModelStreamingExecutionResult {
       response;
   // True if the response was computed on-device.
   bool provided_by_on_device = false;
-  // The log entry will be null until `StreamingResponse.is_complete` is true.
-  std::unique_ptr<ModelQualityLogEntry> log_entry;
   // The execution info will be null until `StreamingResponse.is_complete` is
   // true.
   std::unique_ptr<proto::ModelExecutionInfo> execution_info;

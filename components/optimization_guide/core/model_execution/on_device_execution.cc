@@ -97,13 +97,16 @@ void InvokeStreamingCallbackWithRemoteResult(
     OptimizationGuideModelExecutionResult result,
     std::unique_ptr<ModelQualityLogEntry> log_entry) {
   OptimizationGuideModelStreamingExecutionResult streaming_result;
-  if (log_entry && log_entry->log_ai_data_request() &&
-      log_entry->log_ai_data_request()->has_model_execution_info()) {
-    streaming_result.execution_info =
-        std::make_unique<proto::ModelExecutionInfo>(
-            log_entry->log_ai_data_request()->model_execution_info());
+  if (log_entry) {
+    // TODO: crbug.com/372535824 - This function should just get execution info.
+    if (log_entry->log_ai_data_request() &&
+        log_entry->log_ai_data_request()->has_model_execution_info()) {
+      streaming_result.execution_info =
+          std::make_unique<proto::ModelExecutionInfo>(
+              log_entry->log_ai_data_request()->model_execution_info());
+    }
+    ModelQualityLogEntry::Drop(std::move(log_entry));
   }
-  streaming_result.log_entry = std::move(log_entry);
   if (result.response.has_value()) {
     streaming_result.response = base::ok(
         StreamingResponse{.response = *result.response, .is_complete = true});
@@ -128,12 +131,9 @@ OnDeviceExecution::OnDeviceExecution(
       histogram_logger_(std::move(logger)),
       callback_(std::move(callback)),
       cleanup_callback_(std::move(cleanup_callback)) {
-  log_.mutable_model_execution_info()
-      ->mutable_on_device_model_execution_info()
-      ->add_execution_infos();
+  exec_log_.mutable_on_device_model_execution_info()->add_execution_infos();
   start_ = base::TimeTicks::Now();
-  *(log_.mutable_model_execution_info()
-        ->mutable_on_device_model_execution_info()
+  *(exec_log_.mutable_on_device_model_execution_info()
         ->mutable_model_versions()) = opts_.model_versions;
   // Note: if on-device fails for some reason, the result will be changed.
   histogram_logger_->set_result(Result::kUsedOnDevice);
@@ -153,12 +153,9 @@ OnDeviceExecution::~OnDeviceExecution() {
 }
 
 proto::OnDeviceModelServiceRequest* OnDeviceExecution::MutableLoggedRequest() {
-  CHECK_GT(log_.model_execution_info()
-               .on_device_model_execution_info()
-               .execution_infos_size(),
+  CHECK_GT(exec_log_.on_device_model_execution_info().execution_infos_size(),
            0);
-  return log_.mutable_model_execution_info()
-      ->mutable_on_device_model_execution_info()
+  return exec_log_.mutable_on_device_model_execution_info()
       ->mutable_execution_infos(0)
       ->mutable_request()
       ->mutable_on_device_model_service_request();
@@ -166,12 +163,9 @@ proto::OnDeviceModelServiceRequest* OnDeviceExecution::MutableLoggedRequest() {
 
 proto::OnDeviceModelServiceResponse*
 OnDeviceExecution::MutableLoggedResponse() {
-  CHECK_GT(log_.model_execution_info()
-               .on_device_model_execution_info()
-               .execution_infos_size(),
+  CHECK_GT(exec_log_.on_device_model_execution_info().execution_infos_size(),
            0);
-  return log_.mutable_model_execution_info()
-      ->mutable_on_device_model_execution_info()
+  return exec_log_.mutable_on_device_model_execution_info()
       ->mutable_execution_infos(0)
       ->mutable_response()
       ->mutable_on_device_model_service_response();
@@ -180,8 +174,7 @@ OnDeviceExecution::MutableLoggedResponse() {
 void OnDeviceExecution::AddModelExecutionLogs(
     google::protobuf::RepeatedPtrField<
         proto::InternalOnDeviceModelExecutionInfo> logs) {
-  log_.mutable_model_execution_info()
-      ->mutable_on_device_model_execution_info()
+  exec_log_.mutable_on_device_model_execution_info()
       ->mutable_execution_infos()
       ->MergeFrom(std::move(logs));
 }
@@ -470,9 +463,12 @@ void OnDeviceExecution::FallbackToRemote(Result result) {
     histogram_logger_->set_result(result);
   }
   auto self = weak_ptr_factory_.GetWeakPtr();
+  // TODO: crbug.com/372535824 - Simplify remote fallback logging.
+  auto log = std::make_unique<proto::LogAiDataRequest>();
+  *log->mutable_model_execution_info() = std::move(exec_log_);
+  exec_log_.Clear();
   execute_remote_fn_.Run(
-      feature_, last_message_.BuildProtoMessage(), std::nullopt,
-      std::make_unique<proto::LogAiDataRequest>(std::move(log_)),
+      feature_, last_message_.BuildProtoMessage(), std::nullopt, std::move(log),
       base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                      std::move(callback_)));
   if (self) {
@@ -490,23 +486,20 @@ void OnDeviceExecution::CancelPendingResponse(Result result,
   }
   OptimizationGuideModelExecutionError og_error =
       OptimizationGuideModelExecutionError::FromModelExecutionError(error);
-  std::unique_ptr<ModelQualityLogEntry> log_entry;
   std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
+  // TODO: crbug.com/372535824 - This probably doesn't need to be conditional?
   if (og_error.ShouldLogModelQuality()) {
-    log_entry = std::make_unique<ModelQualityLogEntry>(opts_.log_uploader);
-    log_entry->log_ai_data_request()->MergeFrom(log_);
-    std::string model_execution_id = GenerateExecutionId();
-    log_entry->set_model_execution_id(model_execution_id);
-    model_execution_info = std::make_unique<proto::ModelExecutionInfo>(
-        log_entry->log_ai_data_request()->model_execution_info());
-    model_execution_info->set_execution_id(model_execution_id);
+    model_execution_info =
+        std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_));
+    exec_log_.Clear();
+    model_execution_info->set_execution_id(GenerateExecutionId());
     model_execution_info->set_model_execution_error_enum(
         static_cast<uint32_t>(og_error.error()));
   }
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
       base::unexpected(og_error), /*provided_by_on_device=*/true,
-      std::move(log_entry), std::move(model_execution_info)));
+      std::move(model_execution_info)));
   if (self) {
     self->Cleanup(/*healthy=*/true);
   }
@@ -517,24 +510,19 @@ void OnDeviceExecution::SendPartialResponseCallback(
   callback_.Run(OptimizationGuideModelStreamingExecutionResult(
       base::ok(StreamingResponse{.response = success_response_metadata,
                                  .is_complete = false}),
-      /*provided_by_on_device=*/true, /*log_entry=*/nullptr));
+      /*provided_by_on_device=*/true));
 }
 
 void OnDeviceExecution::SendSuccessCompletionCallback(
     const proto::Any& success_response_metadata) {
   // Complete the log entry and promise it to the ModelQualityUploaderService.
   std::unique_ptr<ModelQualityLogEntry> log_entry;
-  std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
   MutableLoggedResponse()->set_status(
       proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-  log_entry = std::make_unique<ModelQualityLogEntry>(opts_.log_uploader);
-  log_entry->log_ai_data_request()->MergeFrom(log_);
-  std::string model_execution_id = GenerateExecutionId();
-  log_entry->set_model_execution_id(model_execution_id);
-  model_execution_info =
-      std::make_unique<proto::ModelExecutionInfo>(log_.model_execution_info());
-  model_execution_info->set_execution_id(model_execution_id);
-  log_.Clear();
+  auto model_execution_info =
+      std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_));
+  model_execution_info->set_execution_id(GenerateExecutionId());
+  exec_log_.Clear();
 
   // Return the execution response.
   auto self = weak_ptr_factory_.GetWeakPtr();
@@ -542,8 +530,7 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
       base::ok(StreamingResponse{.response = success_response_metadata,
                                  .is_complete = true,
                                  .output_token_count = output_token_count_}),
-      /*provided_by_on_device=*/true, std::move(log_entry),
-      std::move(model_execution_info)));
+      /*provided_by_on_device=*/true, std::move(model_execution_info)));
   if (self) {
     self->Cleanup(/*healthy=*/true);
   }
@@ -555,7 +542,7 @@ void OnDeviceExecution::Cleanup(bool healthy) {
   receiver_.reset();
   context_receiver_.reset();
   callback_.Reset();
-  log_.Clear();
+  exec_log_.Clear();
   current_response_.clear();
   histogram_logger_.reset();
   std::move(cleanup_callback_).Run(healthy);
