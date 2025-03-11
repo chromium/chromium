@@ -135,6 +135,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
@@ -2932,13 +2933,16 @@ void LayoutObject::UpdateFirstLineImageObservers(
 
   using FirstLineStyleMap =
       HeapHashMap<WeakMember<const LayoutObject>, Member<const ComputedStyle>>;
-  DEFINE_STATIC_LOCAL(Persistent<FirstLineStyleMap>, first_line_style_map,
-                      (MakeGarbageCollected<FirstLineStyleMap>()));
+  using FirstLineStyleMapHolder = DisallowNewWrapper<FirstLineStyleMap>;
+  DEFINE_STATIC_LOCAL(Persistent<FirstLineStyleMapHolder>,
+                      first_line_style_map_holder,
+                      (MakeGarbageCollected<FirstLineStyleMapHolder>()));
+  auto& first_line_style_map = first_line_style_map_holder->Value();
   DCHECK_EQ(bitfields_.RegisteredAsFirstLineImageObserver(),
-            first_line_style_map->Contains(this));
+            first_line_style_map.Contains(this));
   const auto* old_first_line_style =
       bitfields_.RegisteredAsFirstLineImageObserver()
-          ? first_line_style_map->at(this)
+          ? first_line_style_map.at(this)
           : nullptr;
 
   // UpdateFillImages() may indirectly call LayoutBlock::ImageChanged() which
@@ -2965,13 +2969,13 @@ void LayoutObject::UpdateFirstLineImageObservers(
           &FirstLineStyleWithoutFallback()->BackgroundLayers()));
       new_first_line_style = FirstLineStyleWithoutFallback();
       bitfields_.SetRegisteredAsFirstLineImageObserver(true);
-      first_line_style_map->Set(this, std::move(new_first_line_style));
+      first_line_style_map.Set(this, std::move(new_first_line_style));
     } else {
       bitfields_.SetRegisteredAsFirstLineImageObserver(false);
-      first_line_style_map->erase(this);
+      first_line_style_map.erase(this);
     }
     DCHECK_EQ(bitfields_.RegisteredAsFirstLineImageObserver(),
-              first_line_style_map->Contains(this));
+              first_line_style_map.Contains(this));
   }
 }
 

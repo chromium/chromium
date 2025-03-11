@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_type_builder_helper.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
@@ -136,9 +137,10 @@ using EnabledAgentsMultimap =
                 Member<GCedHeapHashSet<Member<InspectorAccessibilityAgent>>>>;
 
 EnabledAgentsMultimap& EnabledAgents() {
-  DEFINE_STATIC_LOCAL(Persistent<EnabledAgentsMultimap>, enabled_agents,
-                      (MakeGarbageCollected<EnabledAgentsMultimap>()));
-  return *enabled_agents;
+  using EnabledAgentsMultimapHolder = DisallowNewWrapper<EnabledAgentsMultimap>;
+  DEFINE_STATIC_LOCAL(Persistent<EnabledAgentsMultimapHolder>, holder,
+                      (MakeGarbageCollected<EnabledAgentsMultimapHolder>()));
+  return holder->Value();
 }
 
 InspectorAccessibilityAgent::InspectorAccessibilityAgent(

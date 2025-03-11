@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -69,9 +70,12 @@ using PresentationAttributeCache =
                 Member<PresentationAttributeCacheEntry>,
                 AlreadyHashedTraits>;
 static PresentationAttributeCache& GetPresentationAttributeCache() {
-  DEFINE_STATIC_LOCAL(Persistent<PresentationAttributeCache>, cache,
-                      (MakeGarbageCollected<PresentationAttributeCache>()));
-  return *cache;
+  using PresentationAttributeCacheHolder =
+      DisallowNewWrapper<PresentationAttributeCache>;
+  DEFINE_STATIC_LOCAL(
+      Persistent<PresentationAttributeCacheHolder>, cache,
+      (MakeGarbageCollected<PresentationAttributeCacheHolder>()));
+  return cache->Value();
 }
 
 static bool AttributeNameSort(const std::pair<StringImpl*, AtomicString>& p1,
