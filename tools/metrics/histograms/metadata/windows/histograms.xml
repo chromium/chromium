@@ -207,6 +207,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.OneDriveSyncState.{SyncedState}" enum="BooleanEnabled"
+    expires_after="2025-12-31">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <summary>
+    Records Windows OneDrive personal sync state. This is recorded once per
+    browser session, on startup.
+  </summary>
+  <token key="SyncedState">
+    <variant name="DesktopSynced"
+        summary="Desktop file path is synced with cloud provided."/>
+    <variant name="Synced"
+        summary="File path storage is synced with cloud provided."/>
+  </token>
+</histogram>
+
 <histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
