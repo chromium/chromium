@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <sstream>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -285,7 +286,7 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
     gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
-  if (absl::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform) !=
+  if (std::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform) !=
       gfx::OVERLAY_TRANSFORM_NONE) {
     DLOG(ERROR) << "Invalid overlay plane transform.";
     return false;
