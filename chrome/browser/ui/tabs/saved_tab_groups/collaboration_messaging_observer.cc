@@ -68,7 +68,9 @@ std::optional<int> GetTabStripIndex(LocalTabID local_tab_id,
 
   TabStripModel* tab_strip_model =
       browser_with_local_group_id->tab_strip_model();
-  CHECK(tab_strip_model && tab_strip_model->SupportsTabGroups());
+  if (!tab_strip_model || !tab_strip_model->SupportsTabGroups()) {
+    return std::nullopt;
+  }
 
   const gfx::Range tab_indices = tab_strip_model->group_model()
                                      ->GetTabGroup(local_tab_group_id)
