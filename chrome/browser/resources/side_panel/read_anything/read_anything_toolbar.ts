@@ -9,26 +9,23 @@ import './menus/color_menu.js';
 import './menus/line_spacing_menu.js';
 import './menus/letter_spacing_menu.js';
 import './menus/highlight_menu.js';
-import './toolbar_styles_shared.css.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/md_select.css.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {emitEvent, getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {SettingsPrefs} from './common.js';
 import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 import type {ColorMenu} from './menus/color_menu.js';
@@ -38,18 +35,19 @@ import type {LineSpacingMenu} from './menus/line_spacing_menu.js';
 import type {MenuStateItem} from './menus/menu_util.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
-import {getTemplate} from './read_anything_toolbar.html.js';
+import {getCss} from './read_anything_toolbar.css.js';
+import {getHtml} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export interface ReadAnythingToolbarElement {
   $: {
-    rateMenu: CrLazyRenderElement<CrActionMenuElement>,
+    rateMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     colorMenu: ColorMenu,
     lineSpacingMenu: LineSpacingMenu,
     letterSpacingMenu: LetterSpacingMenu,
-    fontMenu: CrLazyRenderElement<CrActionMenuElement>,
-    fontSizeMenu: CrLazyRenderElement<CrActionMenuElement>,
-    moreOptionsMenu: CrLazyRenderElement<CrActionMenuElement>,
+    fontMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     highlightMenu: HighlightMenu,
     toolbarContainer: HTMLElement,
@@ -90,41 +88,106 @@ const whiteSpaceTypical = 'nowrap';
 const whiteSpaceOverflow = 'normal';
 
 const ReadAnythingToolbarElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
+
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   static get is() {
     return 'read-anything-toolbar';
   }
-
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      fontOptions_: Array,
-      rateOptions: Array,
-      textStyleOptions_: Array,
-      textStyleToggles_: Array,
-      isSpeechActive: Boolean,
-      isAudioCurrentlyPlaying: Boolean,
-      isReadAloudPlayable: Boolean,
-      selectedVoice: Object,
-      availableVoices: Array,
-      enabledLangs: Array,
-      localeToDisplayName: Object,
-      previewVoicePlaying: Object,
-      areFontsLoaded_: Boolean,
-      settingsPrefs: Object,
-      speechRate_: Number,
-      fontName_: String,
+      rateOptions: {type: Array},
+      isSpeechActive: {type: Boolean},
+      isAudioCurrentlyPlaying: {type: Boolean},
+      isReadAloudPlayable: {type: Boolean},
+      selectedVoice: {type: Object},
+      availableVoices: {type: Array},
+      enabledLangs: {type: Array},
+      localeToDisplayName: {type: Object},
+      previewVoicePlaying: {type: Object},
+      settingsPrefs: {type: Object},
+      areFontsLoaded_: {type: Boolean},
+      fontOptions_: {type: Array},
+      textStyleOptions_: {type: Array},
+      textStyleToggles_: {type: Array},
+      hideSpinner_: {type: Boolean},
+      speechRate_: {type: Number},
+      fontName_: {type: String},
+      moreOptionsButtons_: {type: Array},
     };
   }
 
-  static get observers() {
-    return [
-      'onSpeechPlayingStateChanged_(isSpeechActive, isAudioCurrentlyPlaying)',
-    ];
+  // Reactive properties below
+  availableVoices: SpeechSynthesisVoice[] = [];
+  enabledLangs: string[] = [];
+  // If Read Aloud is playing speech.
+  isSpeechActive: boolean = false;
+  // If speech is actually playing. Due to latency with the TTS engine, there
+  // can be a delay between when the user presses play and speech actually
+  // plays.
+  isAudioCurrentlyPlaying: boolean = false;
+  // If Read Aloud is playable. Certain states, such as when Read Anything does
+  // not have content or when the speech engine is loading should disable
+  // certain toolbar buttons like the play / pause button should be disabled.
+  // This is set from the parent element via one way data binding.
+  isReadAloudPlayable: boolean = false;
+  localeToDisplayName: {[lang: string]: string} = {};
+  previewVoicePlaying?: SpeechSynthesisVoice;
+  rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
+  settingsPrefs: SettingsPrefs = {
+    letterSpacing: 0,
+    lineSpacing: 0,
+    theme: 0,
+    speechRate: 0,
+    font: '',
+    highlightGranularity: 0,
+  };
+  selectedVoice?: SpeechSynthesisVoice;
+  protected fontOptions_: string[] = [];
+  protected hideSpinner_: boolean = true;
+  protected isReadAloudEnabled_: boolean = true;
+  // Overflow buttons on the toolbar that open a menu of options.
+  protected moreOptionsButtons_: MenuButton[] = [];
+  protected speechRate_: number = 1;
+  // Buttons on the toolbar that open a menu of options.
+  protected textStyleOptions_: MenuButton[] = [];
+  protected textStyleToggles_: ToggleButton[] = [
+    {
+      id: LINK_TOGGLE_BUTTON_ID,
+      icon: chrome.readingMode.linksEnabled?
+      LINKS_ENABLED_ICON: LINKS_DISABLED_ICON,
+      title: chrome.readingMode.linksEnabled?
+           loadTimeData.getString('disableLinksLabel'):
+               loadTimeData.getString('enableLinksLabel'),
+    },
+  ];
+  private areFontsLoaded_: boolean = false;
+  private fontName_: string = '';
+
+  // Member variables below
+  private startTime_: number = Date.now();
+  private constructorTime_: number = 0;
+  private currentFocusId_: string = '';
+  private windowResizeCallback_: () => void;
+  // The previous speech active status so we can track when it changes.
+  private wasSpeechActive_: boolean = false;
+  private spinnerDebouncerCallbackHandle_?: number;
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('isSpeechActive') ||
+        changedProperties.has('isAudioCurrentlyPlaying')) {
+      this.onSpeechPlayingStateChanged_();
+    }
   }
 
   private maybeUpdateMoreOptions_() {
@@ -206,71 +269,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     element.style.display = 'inline-block';
   }
 
-  private startTime = Date.now();
-  private constructorTime: number;
-
-  private fontOptions_: string[] = [];
-
-
-  private textStyleToggles_: ToggleButton[] = [
-    {
-      id: LINK_TOGGLE_BUTTON_ID,
-      icon: chrome.readingMode.linksEnabled?
-      LINKS_ENABLED_ICON: LINKS_DISABLED_ICON,
-      title: chrome.readingMode.linksEnabled?
-           loadTimeData.getString('disableLinksLabel'):
-               loadTimeData.getString('enableLinksLabel'),
-    },
-  ];
-
-  rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
-
-  private speechRate_: number = 1;
-  private fontName_: string;
-
-  private moreOptionsButtons_: MenuButton[] = [];
-
-  // Buttons on the toolbar that open a menu of options.
-  private textStyleOptions_: MenuButton[] = [];
-
-  private isReadAloudEnabled_: boolean;
-  private activeButton_: HTMLElement|null;
-  private areFontsLoaded_: boolean = false;
-
-  private currentFocusId_: string = '';
-  private windowResizeCallback_: () => void;
-
-  // If Read Aloud is playing speech. This is set from the parent element via
-  // one way data binding.
-  isSpeechActive: boolean;
-  settingsPrefs: SettingsPrefs;
-
-  // The previous speech active status so we can track when it changes.
-  private wasSpeechActive_: boolean = false;
-
-  // If speech is actually playing. Due to latency with the TTS engine, there
-  // can be a delay between when the user presses play and speech actually
-  // plays.
-  private isAudioCurrentlyPlaying: boolean;
-
-  protected hideSpinner_: boolean = true;
-
-  private spinnerDebouncerCallbackHandle_?: number;
-
-  // If Read Aloud is playable. Certain states, such as when Read Anything does
-  // not have content or when the speech engine is loading should disable
-  // certain toolbar buttons like the play / pause button should be disabled.
-  // This is set from the parent element via one way data binding.
-  isReadAloudPlayable: boolean;
-
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   constructor() {
     super();
-    this.constructorTime = Date.now();
+    this.constructorTime_ = Date.now();
     this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR, this.startTime,
-        this.constructorTime);
+        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR, this.startTime_,
+        this.constructorTime_);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
     // Only add the button to the toolbar if the feature is enabled.
@@ -290,11 +295,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     super.connectedCallback();
     const connectedCallbackTime = Date.now();
     this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK, this.startTime,
+        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK, this.startTime_,
         connectedCallbackTime);
     this.logger_.logTimeBetween(
         TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        this.constructorTime, connectedCallbackTime);
+        this.constructorTime_, connectedCallbackTime);
 
     this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
     window.addEventListener('resize', this.windowResizeCallback_);
@@ -356,9 +361,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           openMenu: (target: HTMLElement) =>
               this.$.letterSpacingMenu.open(target),
         });
+    this.requestUpdate();
   }
 
-  private getHighlightButtonLabel_(): string {
+  protected getHighlightButtonLabel_(): string {
     if (chrome.readingMode.isPhraseHighlightingEnabled) {
       return loadTimeData.getString('voiceHighlightLabel');
     } else {
@@ -393,15 +399,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.areFontsLoaded_ = true;
   }
 
-  private onResetToolbar_() {
+  protected onResetToolbar_() {
     this.$.moreOptionsMenu.getIfExists()?.close();
     this.moreOptionsButtons_ = [];
-    this.updateStyles({
-      '--toolbar-white-space': whiteSpaceTypical,
-    });
+    this.style.setProperty('--toolbar-white-space', whiteSpaceTypical);
   }
 
-  private onToolbarOverflow_(
+  protected onToolbarOverflow_(
       event:
           CustomEvent<{numOverflowButtons: number, overflowLength: number}>) {
     const firstHiddenButton =
@@ -410,9 +414,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // the whole app.
     if (firstHiddenButton < 0 &&
         event.detail.overflowLength < minOverflowLengthToScroll) {
-      this.updateStyles({
-        '--toolbar-white-space': whiteSpaceOverflow,
-      });
+      this.style.setProperty('--toolbar-white-space', whiteSpaceOverflow);
       return;
     }
 
@@ -468,15 +470,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fontOptions_ = Object.assign([], chrome.readingMode.supportedFonts);
   }
 
-  private isFontItemSelected_(item: number): boolean {
+  protected isFontItemSelected_(item: number): boolean {
     return item === this.fontOptions_.indexOf(this.fontName_);
   }
 
-  private isRateItemSelected_(item: number): boolean {
+  protected isRateItemSelected_(item: number): boolean {
     return item === this.rateOptions.indexOf(this.speechRate_);
   }
 
-  private getFontItemLabel_(item: string): string {
+  protected getFontItemLabel_(item: string): string {
     // Before fonts are loaded, append the loading text to the font names
     // so that the names will appear in the font menu like:
     // Poppins (loading).
@@ -485,16 +487,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         `${item}\u00A0${this.i18n('readingModeFontLoadingText')}`;
   }
 
-  private playPauseButtonAriaLabel_() {
+  protected playPauseButtonAriaLabel_() {
     return loadTimeData.getString('playAriaLabel');
   }
 
-  private playPauseButtonTitle_() {
+  protected playPauseButtonTitle_() {
     return loadTimeData.getString(
         this.isSpeechActive ? 'pauseTooltip' : 'playTooltip');
   }
 
-  private playPauseButtonIronIcon_() {
+  protected playPauseButtonIronIcon_() {
     return this.isSpeechActive ? 'read-anything-20:pause' :
                                  'read-anything-20:play';
   }
@@ -504,25 +506,29 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.$.fontMenu.getIfExists()?.close();
   }
 
-  private onNextGranularityClick_() {
+  protected onNextGranularityClick_() {
     this.logger_.logSpeechControlClick(SpeechControls.NEXT);
-    emitEvent(this, ToolbarEvent.NEXT_GRANULARITY);
+    this.fire(ToolbarEvent.NEXT_GRANULARITY);
   }
 
-  private onPreviousGranularityClick_() {
+  protected onPreviousGranularityClick_() {
     this.logger_.logSpeechControlClick(SpeechControls.PREVIOUS);
-    emitEvent(this, ToolbarEvent.PREVIOUS_GRANULARITY);
+    this.fire(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
-  private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
-    event.model.item.openMenu(event.target as HTMLElement);
+  protected onTextStyleMenuButtonClick_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    const menu = this.textStyleOptions_[index];
+
+    menu.openMenu(currentTarget);
   }
 
-  private onShowRateMenuClick_(event: MouseEvent) {
+  protected onShowRateMenuClick_(event: MouseEvent) {
     openMenu(this.$.rateMenu.get(), event.target as HTMLElement);
   }
 
-  private onVoiceSelectionMenuClick_(event: MouseEvent) {
+  protected onVoiceSelectionMenuClick_(event: MouseEvent) {
     const voiceMenu =
         this.$.toolbarContainer.querySelector('#voiceSelectionMenu');
     assert(voiceMenu, 'no voiceMenu element');
@@ -530,19 +536,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         .onVoiceSelectionMenuClick(event.target as HTMLElement);
   }
 
-  private onMoreOptionsClick_(event: MouseEvent) {
+  protected onMoreOptionsClick_(event: MouseEvent) {
     const menu = this.$.moreOptionsMenu.get();
     openMenu(menu, event.target as HTMLElement);
   }
 
-  private onHighlightChange_(event: CustomEvent<{data: number}>) {
+  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
     // Event handler for highlight-change (from highlight-menu).
     const changedHighlight = event.detail.data;
     this.setHighlightButtonIcon_(
         changedHighlight !== chrome.readingMode.noHighlighting);
   }
 
-  private onHighlightClick_(event: MouseEvent) {
+  protected onHighlightClick_(event: MouseEvent) {
     // Click handler for the highlight button. Used both for the
     // highlight menu mode and the toggle button mode.
     if (chrome.readingMode.isPhraseHighlightingEnabled) {
@@ -564,7 +570,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.logger_.logHighlightState(turnOn);
     this.setHighlightButtonIcon_(turnOn);
     this.setHighlightButtonTitle_(turnOn);
-    emitEvent(this, ToolbarEvent.HIGHLIGHT_CHANGE, {
+    this.fire(ToolbarEvent.HIGHLIGHT_CHANGE, {
       data: turnOn ? chrome.readingMode.autoHighlighting :
                      chrome.readingMode.noHighlighting,
     });
@@ -598,47 +604,55 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     button.setAttribute('aria-label', title);
   }
 
-  protected onFontClick_(event: DomRepeatEvent<string>) {
+  protected onFontClick_(e: Event) {
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
-    this.fontName_ = event.model.item;
+
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    this.fontName_ = this.fontOptions_[index];
     this.propagateFontChange_(this.fontName_);
 
     this.closeMenus_();
   }
 
-  private onFontSelectValueChange_(event: Event) {
+  protected onFontSelectValueChange_(event: Event) {
     this.fontName_ = (event.target as HTMLSelectElement).value;
     this.propagateFontChange_(this.fontName_);
   }
 
   private propagateFontChange_(fontName: string) {
     chrome.readingMode.onFontChange(fontName);
-    emitEvent(this, ToolbarEvent.FONT);
+    this.fire(ToolbarEvent.FONT);
     this.style.fontFamily = chrome.readingMode.getValidatedFontName(fontName);
   }
 
-  private onRateClick_(event: DomRepeatEvent<number>) {
+  protected onRateClick_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.VOICE_SPEED_CHANGE);
-    this.speechRate_ = event.model.item;
     // Log which rate is chosen by index rather than the rate value itself.
-    this.logger_.logVoiceSpeed(event.model.index);
+    this.logger_.logVoiceSpeed(index);
+
+    this.speechRate_ = this.rateOptions[index];
     chrome.readingMode.onSpeechRateChange(this.speechRate_);
-    emitEvent(this, ToolbarEvent.RATE);
+    this.fire(ToolbarEvent.RATE);
 
     this.closeMenus_();
   }
 
-  private onFontSizeIncreaseClick_() {
+  protected onFontSizeIncreaseClick_() {
     this.updateFontSize_(true);
   }
 
-  private onFontSizeDecreaseClick_() {
+  protected onFontSizeDecreaseClick_() {
     this.updateFontSize_(false);
   }
 
-  protected onToggleButtonClick_(event: DomRepeatEvent<ToggleButton>) {
-    const toggleMenuId = event.model.item.id;
+  protected onToggleButtonClick_(e: Event) {
+    const toggleMenuId = (e.currentTarget as HTMLElement).id;
+
     if (toggleMenuId === LINK_TOGGLE_BUTTON_ID) {
       this.onToggleLinksClick_();
     } else if (toggleMenuId === IMAGES_TOGGLE_BUTTON_ID) {
@@ -651,7 +665,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
 
     chrome.readingMode.onLinksEnabledToggled();
-    emitEvent(this, ToolbarEvent.LINKS);
+    this.fire(ToolbarEvent.LINKS);
     this.updateLinkToggleButton();
   }
 
@@ -660,12 +674,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
 
     chrome.readingMode.onImagesEnabledToggled();
-    emitEvent(this, ToolbarEvent.IMAGES);
+    this.fire(ToolbarEvent.IMAGES);
     this.updateImagesToggleButton();
   }
 
   private updateLinkToggleButton() {
-    const button = this.shadowRoot?.getElementById(LINK_TOGGLE_BUTTON_ID) as
+    const button = this.shadowRoot.getElementById(LINK_TOGGLE_BUTTON_ID) as
         CrIconButtonElement;
     if (button) {
       button.ironIcon = chrome.readingMode.linksEnabled ? LINKS_ENABLED_ICON :
@@ -692,24 +706,24 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeChanged(increase);
-    emitEvent(this, ToolbarEvent.FONT_SIZE);
+    this.fire(ToolbarEvent.FONT_SIZE);
     // Don't close the menu
   }
 
-  private onFontResetClick_() {
+  protected onFontResetClick_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeReset();
-    emitEvent(this, ToolbarEvent.FONT_SIZE);
+    this.fire(ToolbarEvent.FONT_SIZE);
   }
 
-  private onPlayPauseClick_() {
+  protected onPlayPauseClick_() {
     this.logger_.logSpeechControlClick(
         this.isSpeechActive ? SpeechControls.PAUSE : SpeechControls.PLAY);
-    emitEvent(this, ToolbarEvent.PLAY_PAUSE);
+    this.fire(ToolbarEvent.PLAY_PAUSE);
   }
 
-  private onToolbarKeyDown_(e: KeyboardEvent) {
+  protected onToolbarKeyDown_(e: KeyboardEvent) {
     const toolbar = this.$.toolbarContainer;
     const buttons =
         Array.from(toolbar.querySelectorAll<HTMLElement>('.toolbar-button'));
@@ -745,7 +759,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.onKeyDown_(e, focusableElements);
   }
 
-  private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
+  protected onFontSizeMenuKeyDown_(e: KeyboardEvent) {
     // The font size selection menu is laid out horizontally, so users should be
     // able to navigate it using either up and down arrows, or left and right
     // arrows.
@@ -841,7 +855,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
-
   private updateFocus_(focusableElements: HTMLElement[], newIndex: number) {
     const elementToFocus = focusableElements[newIndex];
     assert(elementToFocus, 'no element to focus');
@@ -870,11 +883,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
   }
 
-  private getRateTabIndex_(isReadAloudPlayable: boolean): number {
-    return (!isReadAloudPlayable || this.currentFocusId_ === 'rate') ? 0 : -1;
+  protected getRateTabIndex_(): number {
+    return (!this.isReadAloudPlayable || this.currentFocusId_ === 'rate') ? 0 :
+                                                                            -1;
   }
 
-  private onFontSelectKeyDown_(e: KeyboardEvent) {
+  protected onFontSelectKeyDown_(e: KeyboardEvent) {
     // The default behavior goes to the next select option. However, we want
     // to instead go to the next toolbar button (handled in onToolbarKeyDown_).
     // ArrowDown and ArrowUp will still move to the next/previous option.
@@ -885,13 +899,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   // When Read Aloud is enabled, we want the aria label of the toolbar
   // convey information about Read Aloud.
-  private getToolbarAriaLabel_(): string {
+  protected getToolbarAriaLabel_(): string {
     return this.isReadAloudEnabled_ ?
         this.i18n('readingModeReadAloudToolbarLabel') :
         this.i18n('readingModeToolbarLabel');
   }
 
-  private getVoiceSpeedLabel_(): string {
+  protected getVoiceSpeedLabel_(): string {
     return loadTimeData.getStringF('voiceSpeedWithRateLabel', this.speechRate_);
   }
 }
@@ -902,4 +916,5 @@ declare global {
   }
 }
 
-customElements.define('read-anything-toolbar', ReadAnythingToolbarElement);
+customElements.define(
+    ReadAnythingToolbarElement.is, ReadAnythingToolbarElement);

@@ -4,10 +4,10 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MetricsBrowserProxyImpl, ReadAnythingLogger, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -20,7 +20,7 @@ suite('NextPrevious', () => {
   let nextEmitted: boolean;
   let previousEmitted: boolean;
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = new TestMetricsBrowserProxy();
@@ -32,11 +32,13 @@ suite('NextPrevious', () => {
 
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
-    flush();
+    toolbar.isSpeechActive = true;
+    toolbar.isReadAloudPlayable = true;
+    await microtasksFinished();
 
-    nextButton = toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
+    nextButton = toolbar.shadowRoot.querySelector<CrIconButtonElement>(
         '#nextGranularity')!;
-    previousButton = toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
+    previousButton = toolbar.shadowRoot.querySelector<CrIconButtonElement>(
         '#previousGranularity')!;
     nextEmitted = false;
     previousEmitted = false;
@@ -48,6 +50,7 @@ suite('NextPrevious', () => {
 
   test('next emits next event', async () => {
     nextButton.click();
+    await microtasksFinished();
     assertTrue(nextEmitted);
     assertFalse(previousEmitted);
     assertEquals(
@@ -57,6 +60,7 @@ suite('NextPrevious', () => {
 
   test('previous emits previous event', async () => {
     previousButton.click();
+    await microtasksFinished();
     assertTrue(previousEmitted);
     assertFalse(nextEmitted);
     assertEquals(
