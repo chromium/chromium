@@ -43,9 +43,10 @@ class MODULES_EXPORT CaptureController final
   void setFocusBehavior(V8CaptureStartFocusBehavior, ExceptionState&);
 
   // Captured Surface Control IDL interface - scrolling
+  // TODO(crbug.com/40276312): Remove sendWheel().
   ScriptPromise<IDLUndefined> sendWheel(ScriptState* script_state,
                                         CapturedWheelAction* action);
-  ScriptPromise<IDLUndefined> captureWheel(ScriptState* script_state,
+  ScriptPromise<IDLUndefined> forwardWheel(ScriptState* script_state,
                                            HTMLElement* element);
 
   // Captured Surface Control IDL interface - zoom controls.
@@ -124,11 +125,11 @@ class MODULES_EXPORT CaptureController final
   class WheelEventListener;
 
   mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
-  void OnCaptureWheelPermissionResult(
+  void OnForwardWheelPermissionResult(
       ScriptPromiseResolver<IDLUndefined>*,
       HTMLElement*,
       mojom::blink::CapturedSurfaceControlResult);
-  bool DoCaptureWheel(ScriptState*, HTMLElement*);
+  bool DoForwardWheel(ScriptState*, HTMLElement*);
 #endif
 
   // Whether this CaptureController has been passed to a getDisplayMedia() call.

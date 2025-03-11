@@ -1129,11 +1129,11 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsWithoutSessionId) {
             "Invalid capture");
 }
 
-class CaptureConstrollerCaptureWheelTest : public PageTestBase,
+class CaptureConstrollerForwardWheelTest : public PageTestBase,
                                            public CaptureControllerTestSupport {
 };
 
-TEST_F(CaptureConstrollerCaptureWheelTest, Success) {
+TEST_F(CaptureConstrollerForwardWheelTest, Success) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1147,7 +1147,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, Success) {
   ScriptState::Scope scope(script_state);
   EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
       .WillOnce(RunOnceCallback<1>(CscResult::kSuccess));
-  auto promise = controller->captureWheel(script_state, element);
+  auto promise = controller->forwardWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1161,7 +1161,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, Success) {
       *WheelEvent::Create(event_type_names::kWheel, WheelEventInit::Create()));
   run_loop.Run();
 
-  promise = controller->captureWheel(script_state, nullptr);
+  promise = controller->forwardWheel(script_state, nullptr);
   ScriptPromiseTester promise_tester2(script_state, promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsFulfilled());
@@ -1177,7 +1177,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, Success) {
   run_loop2.Run();
 }
 
-TEST_F(CaptureConstrollerCaptureWheelTest, DropUntrustedEvent) {
+TEST_F(CaptureConstrollerForwardWheelTest, DropUntrustedEvent) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1192,7 +1192,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, DropUntrustedEvent) {
   EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
       .WillOnce(RunOnceCallback<1>(CscResult::kSuccess));
   ScriptPromiseTester(script_state,
-                      controller->captureWheel(script_state, element))
+                      controller->forwardWheel(script_state, element))
       .WaitUntilSettled();
 
   EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
@@ -1205,7 +1205,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, DropUntrustedEvent) {
   task_environment().RunUntilIdle();
 }
 
-TEST_F(CaptureConstrollerCaptureWheelTest, SuccessWithNoElement) {
+TEST_F(CaptureConstrollerForwardWheelTest, SuccessWithNoElement) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1218,13 +1218,13 @@ TEST_F(CaptureConstrollerCaptureWheelTest, SuccessWithNoElement) {
 
   EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
       .Times(0);
-  auto promise = controller->captureWheel(script_state, nullptr);
+  auto promise = controller->forwardWheel(script_state, nullptr);
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
-TEST_F(CaptureConstrollerCaptureWheelTest, BackendError) {
+TEST_F(CaptureConstrollerForwardWheelTest, BackendError) {
   ExecutionContext* execution_context = GetDocument().GetExecutionContext();
   CaptureController* controller = MakeController(execution_context);
   controller->SetIsBound(true);
@@ -1246,7 +1246,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, BackendError) {
         CscResult::kCapturerNotFocusedError}) {
     EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
         .WillOnce(RunOnceCallback<1>(csc_error_result));
-    const auto promise = controller->captureWheel(script_state, element);
+    const auto promise = controller->forwardWheel(script_state, element);
 
     ScriptPromiseTester promise_tester(script_state, promise);
     promise_tester.WaitUntilSettled();
@@ -1264,7 +1264,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, BackendError) {
   }
 }
 
-TEST_F(CaptureConstrollerCaptureWheelTest, NoSessionId) {
+TEST_F(CaptureConstrollerForwardWheelTest, NoSessionId) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1277,7 +1277,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, NoSessionId) {
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
   ScriptState::Scope scope(script_state);
-  auto promise = controller->captureWheel(script_state, element);
+  auto promise = controller->forwardWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1288,7 +1288,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, NoSessionId) {
             "Invalid capture.");
 }
 
-TEST_F(CaptureConstrollerCaptureWheelTest, NoTrack) {
+TEST_F(CaptureConstrollerForwardWheelTest, NoTrack) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1301,7 +1301,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, NoTrack) {
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
   ScriptState::Scope scope(script_state);
-  auto promise = controller->captureWheel(script_state, element);
+  auto promise = controller->forwardWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1312,7 +1312,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, NoTrack) {
             "Invalid capture.");
 }
 
-TEST_F(CaptureConstrollerCaptureWheelTest, StoppedTrack) {
+TEST_F(CaptureConstrollerForwardWheelTest, StoppedTrack) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1326,7 +1326,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, StoppedTrack) {
 
   ScriptState::Scope scope(script_state);
   track->stopTrack(GetDocument().GetExecutionContext());
-  auto promise = controller->captureWheel(script_state, element);
+  auto promise = controller->forwardWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();

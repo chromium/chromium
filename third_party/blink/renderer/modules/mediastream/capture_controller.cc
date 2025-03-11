@@ -402,7 +402,7 @@ ScriptPromise<IDLUndefined> CaptureController::sendWheel(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-ScriptPromise<IDLUndefined> CaptureController::captureWheel(
+ScriptPromise<IDLUndefined> CaptureController::forwardWheel(
     ScriptState* script_state,
     HTMLElement* element) {
   DCHECK(IsMainThread());
@@ -439,7 +439,7 @@ ScriptPromise<IDLUndefined> CaptureController::captureWheel(
 
   GetMediaStreamDispatcherHost()->RequestCapturedSurfaceControlPermission(
       *session_id,
-      WTF::BindOnce(&CaptureController::OnCaptureWheelPermissionResult,
+      WTF::BindOnce(&CaptureController::OnForwardWheelPermissionResult,
                     WrapWeakPersistent(this), WrapPersistent(resolver),
                     WrapWeakPersistent(element)));
   return promise;
@@ -556,7 +556,7 @@ void CaptureController::SourceChangedZoomLevel(int zoom_level) {
   DispatchEvent(*Event::Create(event_type_names::kZoomlevelchange));
 }
 
-void CaptureController::OnCaptureWheelPermissionResult(
+void CaptureController::OnForwardWheelPermissionResult(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     HTMLElement* element,
     CapturedSurfaceControlResult result) {
