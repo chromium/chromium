@@ -873,6 +873,10 @@ static_library("browser") {
     "//ui/accessibility:accessibility",
   ]
 
+  if (!is_fuchsia) {
+    deps += [ "//components/variations/service" ]
+  }
+
   if (use_blink) {
     deps += [
       "//components/webauthn/core/browser",

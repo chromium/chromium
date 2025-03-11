@@ -19,6 +19,10 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "components/variations/service/google_groups_manager.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 namespace autofill {
 
 namespace {
@@ -45,17 +49,28 @@ namespace {
 
 // Checks whether all requirements for `base::Feature` state are satisfied
 // (`kAutofillAiWithDataSchema`, `kAutofillAiServerModel`).
-// TODO(crbug.com/397881703): Use profile-aware feature check.
-[[nodiscard]] bool SatisfiesFeatureRequirements(AutofillAiAction action) {
+[[nodiscard]] bool SatisfiesFeatureRequirements(
+    const GoogleGroupsManager* google_groups_manager,
+    AutofillAiAction action) {
+  auto is_enabled = [&](const base::Feature& feature) {
+#if !BUILDFLAG(IS_FUCHSIA)
+    return google_groups_manager
+               ? google_groups_manager->IsFeatureEnabledForProfile(feature)
+               : base::FeatureList::IsEnabled(feature);
+#else
+    return base::FeatureList::IsEnabled(feature);
+#endif
+  };
+
   // Everything requires that `kAutofillAiWithDataSchema` is enabled.
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+  if (!is_enabled(features::kAutofillAiWithDataSchema)) {
     return false;
   }
 
   // Only `kServerClassificationModel` requires additional feature permissions.
   switch (action) {
     case AutofillAiAction::kServerClassificationModel:
-      return base::FeatureList::IsEnabled(features::kAutofillAiServerModel);
+      return is_enabled(features::kAutofillAiServerModel);
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
@@ -202,7 +217,7 @@ namespace {
 
 bool MayPerformAutofillAiAction(const AutofillClient& client,
                                 AutofillAiAction action) {
-  if (!SatisfiesFeatureRequirements(action)) {
+  if (!SatisfiesFeatureRequirements(client.GetGoogleGroupsManager(), action)) {
     return false;
   }
 

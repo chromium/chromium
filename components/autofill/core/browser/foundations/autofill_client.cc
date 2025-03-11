@@ -108,6 +108,10 @@ void AutofillClient::ShowPlusAddressAffiliationError(
     std::u16string affiliated_plus_address,
     base::OnceClosure on_accepted) {}
 
+const GoogleGroupsManager* AutofillClient::GetGoogleGroupsManager() const {
+  return nullptr;
+}
+
 payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
 }

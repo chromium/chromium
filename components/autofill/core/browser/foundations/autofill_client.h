@@ -47,6 +47,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+class GoogleGroupsManager;
 class PrefService;
 
 namespace signin {
@@ -343,6 +344,9 @@ class AutofillClient {
   // Gets the IdentityManager associated with the client.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
   virtual const signin::IdentityManager* GetIdentityManager() const = 0;
+
+  // Gets the `GoogleGroupsManager` associated with the client.
+  virtual const GoogleGroupsManager* GetGoogleGroupsManager() const;
 
   // Gets the FormDataImporter instance owned by the client.
   virtual FormDataImporter* GetFormDataImporter() = 0;
