@@ -204,9 +204,10 @@ template("system_webview_apk_or_module_tmpl") {
           if (_include_64_bit_webview) {
             shared_libraries = [ "//android_webview:monochrome" ]
             _include_primary_support = true
+          } else {
+            static_library_provider_use_secondary_abi = true
           }
           secondary_native_lib_placeholders = [ "libplaceholder.so" ]
-          static_library_provider_use_secondary_abi = true
         }
       } else {
         native_lib_placeholders = [ "libplaceholder.so" ]
