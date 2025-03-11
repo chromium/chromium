@@ -473,9 +473,8 @@ void GlicWindowController::Show(Browser* browser, InvocationSource source) {
   if (!contents_) {
     contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
   }
-  glic_service_->NotifyWindowIntentToShow();
   glic_service_->GetAuthController().CheckAuthBeforeShow(
-      AuthController::FallbackBehavior::kNone,
+      AuthController::FallbackBehavior::kShowReauthPage,
       base::BindOnce(&GlicWindowController::AuthCheckDoneBeforeShow,
                      GetWeakPtr(), browser ? browser->AsWeakPtr() : nullptr));
 }
@@ -491,6 +490,8 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
     case AuthController::BeforeShowResult::kSyncFailed:
       break;
   }
+
+  glic_service_->NotifyWindowIntentToShow();
 
   // Since this method is called asynchronously, check that the profile wasn't
   // disabled since the request was made.
