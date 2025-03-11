@@ -56,3 +56,9 @@ export async function setupShardedServerState(testId) {
       document.cookie.split(';').filter(item => item.includes('test_id'))[0];
   return testIdCookie.split('=')[1];
 }
+
+export async function pullServerState() {
+  const response = await fetch('pull_server_state.py');
+  assert_equals(response.status, 200);
+  return await response.json();
+}

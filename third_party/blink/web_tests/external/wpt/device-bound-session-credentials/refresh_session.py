@@ -4,11 +4,12 @@ jwt_helper = importlib.import_module('device-bound-session-credentials.jwt_helpe
 session_manager = importlib.import_module('device-bound-session-credentials.session_manager')
 
 def main(request, response):
+    test_session_manager = session_manager.find_for_request(request)
+    test_session_manager.set_has_called_refresh(True)
     session_id_header = request.headers.get("Sec-Session-Id")
     if session_id_header == None:
         return (400, response.headers, "")
     session_id = session_id_header.decode('utf-8')
-    test_session_manager = session_manager.find_for_request(request)
 
     if test_session_manager.get_should_refresh_end_session():
         response_body = {
