@@ -951,10 +951,19 @@ external/wpt/workers/postMessage_block.https.html
 
 # Tests that exhibit antialiasing differences only on headless shell, not on
 # content_shell, when run under Fontations. See crbug.com/397880053.
+external/wpt/css/css-anchor-position/anchor-position-005-print.html
+external/wpt/css/css-break/abspos-in-clipped-overflow-print.html
 external/wpt/css/css-break/grid/monolithic-overflow-print.html
+external/wpt/css/css-break/table/repeated-section/fixedpos-in-footer-forced-break-print.html
+external/wpt/css/css-break/transform-023-print.html
 external/wpt/css/css-break/transform-024-print.html
 external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html
 external/wpt/css/css-multicol/multicol-height-002-print.xht
+external/wpt/css/css-page/cssom/dynamic-001-print.html
+external/wpt/css/css-page/fixedpos-002-print.html
+external/wpt/css/css-page/fixedpos-004-print.html
+external/wpt/css/css-page/fixedpos-005-print.html
+external/wpt/css/css-page/fixedpos-006-print.html
 external/wpt/css/css-page/fixedpos-009-print.html
 external/wpt/css/css-page/margin-boxes/auto-margins-001-print.html
 external/wpt/css/css-page/margin-boxes/auto-margins-002-print.html
@@ -962,6 +971,7 @@ external/wpt/css/css-page/margin-boxes/auto-margins-003-print.html
 external/wpt/css/css-page/margin-boxes/content-002-print.html
 external/wpt/css/css-page/margin-boxes/dimensions-015-print.tentative.html
 external/wpt/css/css-page/margin-boxes/overconstrained-001-print.html
+external/wpt/css/css-page/media-queries-002-print.html
 external/wpt/css/css-page/monolithic-overflow-023-print.html
 external/wpt/css/css-page/monolithic-overflow-028-print.html
 external/wpt/css/css-page/page-background-001-print.html
