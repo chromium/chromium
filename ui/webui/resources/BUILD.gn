@@ -177,6 +177,7 @@ if (enable_webui_generate_code_cache) {
     grdp_files = [
       "$root_gen_dir/mojo/public/js/code_cache_resources.grdp",
       "$root_gen_dir/third_party/lit/v3_0/code_cache_resources.grdp",
+      "$root_gen_dir/third_party/polymer/v3_0/code_cache_resources.grdp",
       "$target_gen_dir/cr_elements/code_cache_resources.grdp",
     ]
 
@@ -184,6 +185,7 @@ if (enable_webui_generate_code_cache) {
       "cr_elements:build_code_cache_grdp",
       "//mojo/public/js:build_code_cache_grdp",
       "//third_party/lit/v3_0:build_code_cache_grdp",
+      "//third_party/polymer/v3_0:build_code_cache_grdp",
     ]
   }
 

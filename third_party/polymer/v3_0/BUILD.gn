@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 
@@ -85,6 +86,24 @@ generate_grd("build_grdp") {
     input_files += js_files
   }
   resource_path_prefix = "polymer/v3_0"
+}
+
+if (enable_webui_generate_code_cache) {
+  generate_code_cache("build_code_cache") {
+    visibility = [ ":build_code_cache_grdp" ]
+    in_folder = "//third_party/polymer/v3_0/components-chromium/polymer"
+    in_files = [ "polymer_bundled.min.js" ]
+    out_folder = "$target_gen_dir/code_cache"
+    out_manifest = "$target_gen_dir/build_code_cache_manifest.json"
+  }
+
+  generate_grd("build_code_cache_grdp") {
+    grd_prefix = "polymer_v3_0_code_cache"
+    out_grd = "$target_gen_dir/code_cache_resources.grdp"
+    resource_path_prefix = "polymer/v3_0/polymer"
+    manifest_files = [ "$target_gen_dir/build_code_cache_manifest.json" ]
+    deps = [ ":build_code_cache" ]
+  }
 }
 
 ts_library("library") {
