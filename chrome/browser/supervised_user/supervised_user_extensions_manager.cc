@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -398,9 +399,11 @@ std::u16string SupervisedUserExtensionsManager::GetExtensionsLockedMessage()
     const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  std::optional<supervised_user::Custodian> custodian =
+      supervised_user_service->GetCustodian();
   return l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_LOCKED_SUPERVISED_USER,
-      base::UTF8ToUTF16(supervised_user_service->GetCustodianName()));
+      base::UTF8ToUTF16(custodian ? custodian->GetName() : ""));
 }
 
 void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(

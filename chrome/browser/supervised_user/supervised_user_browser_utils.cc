@@ -201,7 +201,7 @@ std::string CreateReauthenticationInterstitialForBlockedSites(
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   bool has_second_custodian =
-      !supervised_user_service->GetSecondCustodianName().empty();
+      supervised_user_service->GetSecondCustodian().has_value();
   GURL request_url = navigation_handle.GetURL();
   bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
                        content::FrameType::kPrimaryMainFrame;

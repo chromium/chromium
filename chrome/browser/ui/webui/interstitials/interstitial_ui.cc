@@ -51,6 +51,7 @@
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -697,10 +698,10 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     allow_access_requests = allow_access_requests_string == "1";
   }
 
-  std::string custodian = "Alice";
-  net::GetValueForKeyInQuery(url, "custodian", &custodian);
-  std::string second_custodian = "Bob";
-  net::GetValueForKeyInQuery(url, "second_custodian", &second_custodian);
+  std::string custodian_name = "Alice";
+  net::GetValueForKeyInQuery(url, "custodian", &custodian_name);
+  std::string second_custodian_name = "Bob";
+  net::GetValueForKeyInQuery(url, "second_custodian", &second_custodian_name);
   std::string custodian_email = "alice.bloggs@gmail.com";
   net::GetValueForKeyInQuery(url, "custodian_email", &custodian_email);
   std::string second_custodian_email = "bob.bloggs@gmail.com";
@@ -724,9 +725,13 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     }
   }
 
+  supervised_user::Custodian first_custodian(custodian_name, custodian_email,
+                                             profile_image_url);
+  supervised_user::Custodian second_custodian(
+      second_custodian_name, second_custodian_email, profile_image_url2);
+
   return supervised_user::BuildErrorPageHtml(
-      allow_access_requests, profile_image_url, profile_image_url2, custodian,
-      custodian_email, second_custodian, second_custodian_email, reason,
+      allow_access_requests, first_custodian, second_custodian, reason,
       g_browser_process->GetApplicationLocale(),
       /*already_sent_remote_request=*/false,
       /*is_main_frame=*/true);

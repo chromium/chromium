@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,14 +59,9 @@ INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
 
 struct BuildHtmlTestParameter {
   bool allow_access_requests;
-  const std::string profile_image_url;
-  const std::string profile_image_url2;
-  const std::string custodian;
-  const std::string custodian_email;
-  const std::string second_custodian;
-  const std::string second_custodian_email;
+  std::optional<Custodian> custodian;
+  std::optional<Custodian> second_custodian;
   FilteringBehaviorReason reason;
-  bool has_two_parents;
 };
 
 class SupervisedUserErrorPageTest_BuildHtml
@@ -75,13 +71,12 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   BuildHtmlTestParameter param = GetParam();
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {supervised_user::kLocalWebApprovals},
-      /* disabled_features */ {});
+      /*enabled_features=*/{supervised_user::kLocalWebApprovals},
+      /*disabled_features=*/{});
 
   std::string result = BuildErrorPageHtml(
-      param.allow_access_requests, param.profile_image_url,
-      param.profile_image_url2, param.custodian, param.custodian_email,
-      param.second_custodian, param.second_custodian_email, param.reason,
+      param.allow_access_requests, param.custodian, param.second_custodian,
+      param.reason,
       /*app_locale=*/"",
       /*already_sent_request=*/false, /*is_main_frame=*/true);
 
@@ -89,13 +84,16 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   // plus scripts that plug values into it. The test can't easily check that the
   // scripts are correct, but can check that the output contains the expected
   // values.
-  EXPECT_THAT(result, testing::HasSubstr(param.profile_image_url));
-  EXPECT_THAT(result, testing::HasSubstr(param.profile_image_url2));
-  EXPECT_THAT(result, testing::HasSubstr(param.custodian));
-  EXPECT_THAT(result, testing::HasSubstr(param.custodian_email));
-  if (param.has_two_parents) {
-    EXPECT_THAT(result, testing::HasSubstr(param.second_custodian));
-    EXPECT_THAT(result, testing::HasSubstr(param.second_custodian_email));
+  EXPECT_THAT(result,
+              testing::HasSubstr(param.custodian->GetProfileImageUrl()));
+  EXPECT_THAT(result, testing::HasSubstr(param.custodian->GetName()));
+  EXPECT_THAT(result, testing::HasSubstr(param.custodian->GetEmailAddress()));
+  if (param.second_custodian.has_value()) {
+    EXPECT_THAT(result, testing::HasSubstr(
+                            param.second_custodian->GetProfileImageUrl()));
+    EXPECT_THAT(result, testing::HasSubstr(param.second_custodian->GetName()));
+    EXPECT_THAT(result,
+                testing::HasSubstr(param.second_custodian->GetEmailAddress()));
   }
 
   // Messages containing parameters aren't tested since they get modified before
@@ -111,7 +109,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
     // request permission for all sites, and MANUAL indicates that the
     // parent(s) specifically blocked this site.
     if (param.reason == FilteringBehaviorReason::DEFAULT) {
-      if (param.has_two_parents) {
+      if (param.second_custodian.has_value()) {
         EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                                 IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT)));
       } else {
@@ -120,7 +118,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
                         IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT)));
       }
       if (param.reason == FilteringBehaviorReason::MANUAL) {
-        if (param.has_two_parents) {
+        if (param.second_custodian.has_value()) {
           EXPECT_THAT(result,
                       testing::HasSubstr(l10n_util::GetStringUTF8(
                           IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT)));
@@ -157,7 +155,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
     EXPECT_THAT(result,
                 testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE)));
-    if (param.has_two_parents) {
+    if (param.second_custodian.has_value()) {
       EXPECT_THAT(
           result,
           testing::HasSubstr(l10n_util::GetStringUTF8(
@@ -171,18 +169,23 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
 }
 
 BuildHtmlTestParameter build_html_test_parameter[] = {
-    {true, "url1", "url2", "custodian", "custodian_email", "", "",
-     FilteringBehaviorReason::DEFAULT, false},
-    {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", FilteringBehaviorReason::DEFAULT, true},
-    {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", FilteringBehaviorReason::DEFAULT, true},
-    {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", FilteringBehaviorReason::DEFAULT, true},
-    {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", FilteringBehaviorReason::DEFAULT, true},
-    {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", FilteringBehaviorReason::ASYNC_CHECKER, true},
+    {true, Custodian("custodian", "custodian_email", "url1"), std::nullopt,
+     FilteringBehaviorReason::DEFAULT},
+    {true, Custodian("custodian", "custodian_email", "url1"),
+     Custodian("custodian2", "custodian2_email", "url2"),
+     FilteringBehaviorReason::DEFAULT},
+    {false, Custodian("custodian", "custodian_email", "url1"),
+     Custodian("custodian2", "custodian2_email", "url2"),
+     FilteringBehaviorReason::DEFAULT},
+    {false, Custodian("custodian", "custodian_email", "url1"),
+     Custodian("custodian2", "custodian2_email", "url2"),
+     FilteringBehaviorReason::DEFAULT},
+    {true, Custodian("custodian", "custodian_email", "url1"),
+     Custodian("custodian2", "custodian2_email", "url2"),
+     FilteringBehaviorReason::DEFAULT},
+    {true, Custodian("custodian", "custodian_email", "url1"),
+     Custodian("custodian2", "custodian2_email", "url2"),
+     FilteringBehaviorReason::ASYNC_CHECKER},
 };
 
 INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,

@@ -699,16 +699,14 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
-  std::u16string primary_parent_email =
-      base::UTF8ToUTF16(service->GetCustodianEmailAddress());
-  if (!primary_parent_email.empty()) {
-    parent_permission_email_addresses_.push_back(primary_parent_email);
+  if (service->GetCustodian()) {
+    parent_permission_email_addresses_.push_back(
+        base::UTF8ToUTF16(service->GetCustodian()->GetEmailAddress()));
   }
 
-  std::u16string secondary_parent_email =
-      base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
-  if (!secondary_parent_email.empty()) {
-    parent_permission_email_addresses_.push_back(secondary_parent_email);
+  if (service->GetSecondCustodian()) {
+    parent_permission_email_addresses_.push_back(
+        base::UTF8ToUTF16(service->GetSecondCustodian()->GetEmailAddress()));
   }
 }
 
@@ -728,14 +726,16 @@ GaiaId ParentPermissionDialogView::GetParentObfuscatedGaiaID(
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
-  if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email)) {
-    return service->GetCustodianObfuscatedGaiaId();
+  if (service->GetCustodian() && service->GetCustodian()->GetEmailAddress() ==
+                                     base::UTF16ToUTF8(parent_email)) {
+    return service->GetCustodian()->GetObfuscatedGaiaId();
   }
 
-  CHECK_EQ(service->GetSecondCustodianEmailAddress(),
-           base::UTF16ToUTF8(parent_email))
+  CHECK(service->GetSecondCustodian() &&
+        service->GetSecondCustodian()->GetEmailAddress() ==
+            base::UTF16ToUTF8(parent_email))
       << "Tried to get obfuscated gaia id for a non-custodian email address";
-  return service->GetSecondCustodianObfuscatedGaiaId();
+  return service->GetSecondCustodian()->GetObfuscatedGaiaId();
 }
 
 void ParentPermissionDialogView::StartReauthAccessTokenFetch(
