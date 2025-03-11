@@ -25,12 +25,12 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -57,12 +57,10 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                id<OmniboxCommands> omnibox_focuser,
                                id<OmniboxFocusDelegate> focus_delegate,
                                id<ToolbarCommands> toolbar_commands_handler,
-                               id<OmniboxViewConsumer> consumer,
                                bool is_lens_overlay)
     : OmniboxView(std::move(client)),
       field_(field),
       focus_delegate_(focus_delegate),
-      consumer_(consumer),
       ignore_popup_updates_(false),
       is_lens_overlay_(is_lens_overlay),
       popup_provider_(nullptr) {
@@ -174,13 +172,7 @@ void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
 }
 
 void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
-  if (!text.length()) {
-    [consumer_ updateAdditionalText:nil];
-    return;
-  }
-
-  NSString* additional_text = base::SysUTF16ToNSString(u" - " + text);
-  [consumer_ updateAdditionalText:additional_text];
+  [omnibox_text_controller_ setAdditionalText:text];
 }
 
 void OmniboxViewIOS::OnBeforePossibleChange() {
@@ -536,13 +528,6 @@ void OmniboxViewIOS::OnDeleteBackward() {
 void OmniboxViewIOS::OnAcceptAutocomplete() {
   current_selection_ = [field_ selectedNSRange];
   OnDidChange(/*processing_user_event=*/true);
-}
-
-void OmniboxViewIOS::OnRemoveAdditionalText() {
-  if (model()) {
-    model()->UpdateInput(/*has_selected_text=*/false,
-                         /*prevent_inline_autocomplete=*/true);
-  }
 }
 
 void OmniboxViewIOS::ClearText() {

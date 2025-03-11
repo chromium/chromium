@@ -405,9 +405,7 @@ using base::UserMetricsAction;
 
 - (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
   base::RecordAction(UserMetricsAction("MobileOmniboxRichInlineRemoved"));
-  if (_textChangeDelegate) {
-    _textChangeDelegate->OnRemoveAdditionalText();
-  }
+  [self.mutator removeAdditionalText];
 }
 
 - (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
@@ -517,12 +515,6 @@ using base::UserMetricsAction;
 
 - (void)updateText:(NSAttributedString*)text {
   [self.textField setText:text userTextLength:text.length];
-}
-
-#pragma mark - OmniboxViewConsumer
-
-- (void)updateAdditionalText:(NSString*)additionalText {
-  [self.textField setAdditionalText:additionalText];
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
@@ -738,9 +730,7 @@ using base::UserMetricsAction;
   // Dismiss any inline autocomplete. The user expectation is to not have it.
   [self.textField clearAutocompleteText];
 
-  if (_textChangeDelegate) {
-    _textChangeDelegate->OnRemoveAdditionalText();
-  }
+  [self.mutator removeAdditionalText];
 }
 
 /// Handles interaction with the thumbnail button. (tap or keyboard delete)
