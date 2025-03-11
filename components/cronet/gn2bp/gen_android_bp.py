@@ -2401,23 +2401,18 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     if module.type == 'cc_library_static':
       module.export_generated_headers = module.generated_headers
 
-    if module.name in [
-        'cronet_aml_components_cronet_android_cronet',
-        'cronet_aml_components_cronet_android_cronet' + gn_utils.TESTING_SUFFIX
-    ]:
-      if target.output_name is None:
-        raise Exception('Failed to get output_name for libcronet name')
-      # .so file name needs to match with CronetLibraryLoader.java (e.g. libcronet.109.0.5386.0.so)
-      # So setting the output name based on the output_name from the desc.json
-      module.stem = 'libmainline' + target.output_name
-    elif module.is_test() and module.type == 'cc_library_shared':
-      if target.output_name:
-        # If we have an output name already declared, use it.
-        module.stem = 'lib' + target.output_name
+    if module.type == 'cc_library_shared':
+      output_name = target.output_name
+      if output_name is None:
+        module.stem = 'lib' + target.get_target_name().removesuffix(
+            gn_utils.TESTING_SUFFIX)
+      elif output_name.startswith("cronet."):
+        # The AOSP version of CronetLibraryLoader looks for the libcronet so
+        # with an extra suffix. Make sure the shared library name matches what
+        # the loader expects.
+        module.stem = 'libmainline' + output_name
       else:
-        # Tests output should be a shared library in the format of 'lib[module_name]'
-        module.stem = 'lib' + target.get_target_name()[:target.get_target_name(
-        ).find(gn_utils.TESTING_SUFFIX)]
+        module.stem = 'lib' + output_name
 
     # dep_name is an unmangled GN target name (e.g. //foo:bar(toolchain)).
     all_deps = [(dep_name, 'common') for dep_name in target.proto_deps]
