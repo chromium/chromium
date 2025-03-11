@@ -75,7 +75,6 @@ class TabStyleViewsImpl : public TabStyleViews {
   TabActive GetApparentActiveState() const override;
   TabStyle::TabColors CalculateTargetColors() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
-  void SetHoverLocation(const gfx::Point& location) override;
   void ShowHover(TabStyle::ShowHoverStyle style) override;
   void HideHover(TabStyle::HideHoverStyle style) override;
 
@@ -603,15 +602,6 @@ void TabStyleViewsImpl::PaintTabBackgroundWithImages(
                          active_tab_y_inset);
       canvas->Restore();
     }
-  }
-}
-
-void TabStyleViewsImpl::SetHoverLocation(const gfx::Point& location) {
-  // There's a "glow" that gets drawn over inactive tabs based on the mouse's
-  // location. There is no glow for the active tab so don't update the hover
-  // controller and incur a redraw.
-  if (hover_controller_ && !tab_->IsActive()) {
-    hover_controller_->SetLocation(location);
   }
 }
 
