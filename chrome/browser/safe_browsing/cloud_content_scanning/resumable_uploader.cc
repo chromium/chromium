@@ -263,9 +263,18 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
           enterprise_connectors::kEnableAsyncUploadAfterVerdict)) {
     if (headers->HasHeader(kUploadIntermediateHeader)) {
       response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
+
+      std::string output;
+      bool is_decoded = base::Base64Decode(response_body.value(), &output);
+
+      if (output.empty() || !is_decoded) {
+        Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::nullopt);
+        return;
+      }
+
       std::move(verdict_received_callback_)
           .Run(IsSuccess(url_loader_->NetError(), response_code), response_code,
-               response_body.value_or(""));
+               output);
     }
   }
 
