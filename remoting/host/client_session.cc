@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -88,7 +89,6 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_frame_pump.h"
 #include "remoting/protocol/webrtc_video_stream.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -1435,7 +1435,7 @@ void ClientSession::BoostFramerateOnInput(
   // on the screen. This includes key, text, and touch events as well as mouse
   // scroll or mouse moves when a button is down.
   auto* mouse_event_ptr =
-      absl::get_if<std::reference_wrapper<const protocol::MouseEvent>>(&event);
+      std::get_if<std::reference_wrapper<const protocol::MouseEvent>>(&event);
   if (mouse_event_ptr) {
     const protocol::MouseEvent& mouse_event = mouse_event_ptr->get();
     if (!mouse_button_down && !mouse_event.has_button() &&
