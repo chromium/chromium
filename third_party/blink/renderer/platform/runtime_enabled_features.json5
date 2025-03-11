@@ -4266,10 +4266,6 @@
       status: "stable",
     },
     {
-      name: "SvgContextPaint",
-      status: "stable",
-    },
-    {
       // Feature for updating SVG presentation attribute style eagerly. This is
       // a kill switch in case we encounter issues with this optimization.
       name: "SvgEagerPresAttrStyleUpdate",

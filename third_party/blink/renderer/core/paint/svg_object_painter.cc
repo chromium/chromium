@@ -98,12 +98,10 @@ SvgContextPaints::ContextPaint SVGObjectPainter::ResolveContextPaint(
     const SVGPaint& initial_paint) {
   switch (initial_paint.type) {
     case SVGPaintType::kContextFill:
-      DCHECK(RuntimeEnabledFeatures::SvgContextPaintEnabled());
       return context_paints_
                  ? context_paints_->fill
                  : SvgContextPaints::ContextPaint(layout_object_, SVGPaint());
     case SVGPaintType::kContextStroke:
-      DCHECK(RuntimeEnabledFeatures::SvgContextPaintEnabled());
       return context_paints_
                  ? context_paints_->stroke
                  : SvgContextPaints::ContextPaint(layout_object_, SVGPaint());
