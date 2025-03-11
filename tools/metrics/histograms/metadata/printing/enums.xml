@@ -26,14 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="ExtensionPrintJobStatus">
-  <int value="0" label="UNKNOWN_FAILURE">Other failures</int>
-  <int value="1" label="OK">The job completed successfully</int>
-  <int value="2" label="FAILED">A general failure</int>
-  <int value="3" label="INVALID_TICKET">The print ticket is invalid</int>
-  <int value="4" label="INVALID_DATA">The document is invalid</int>
-</enum>
-
 <enum name="PrintAttemptOutcome">
   <int value="0" label="Cancelled print button disabled"/>
   <int value="1" label="Cancelled no printers available"/>

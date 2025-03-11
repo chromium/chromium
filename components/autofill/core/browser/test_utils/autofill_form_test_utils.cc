@@ -140,7 +140,16 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   ff.set_is_autofilled(fd.is_autofilled.value_or(false));
   ff.set_should_autocomplete(fd.should_autocomplete);
   ff.set_properties_mask(fd.properties_mask);
-  ff.set_check_status(fd.check_status);
+  if (ff.form_control_type() == FormControlType::kInputCheckbox ||
+      ff.form_control_type() == FormControlType::kInputRadio) {
+    ff.set_check_status(
+        fd.checked ? FormFieldData::CheckStatus::kChecked
+                   : FormFieldData::CheckStatus::kCheckableButUnchecked);
+  }
+  CHECK(!fd.checked ||
+        ff.form_control_type() == FormControlType::kInputCheckbox ||
+        ff.form_control_type() == FormControlType::kInputRadio)
+      << "Only <input type=checkbox> and <input type=radio> are checkable";
   return ff;
 }
 

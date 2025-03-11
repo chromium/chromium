@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -533,6 +534,89 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, ShortVisitNeighbor) {
   ukm_recorder.ExpectEntryMetric(neighbor_entries[8], "IsPreceding", false);
   ukm_recorder.ExpectEntryMetric(neighbor_entries[8], "ShortVisitId",
                                  visit_id5);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       EntranceWasRendererInitiated) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url2));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "EntranceWasRendererInitiated", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "EntranceWasRendererInitiated", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       EntranceHadUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // FYI, the first navigation must be browser-based, because the WebContents
+  // starts on the empty URL, which doesn't support JavaScript. So we need an
+  // extra navigation in order to test renderer-initiated navigations with and
+  // without user gestures.
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const GURL url4 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents(), url2));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents(), url3));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url4));
+
+  UkmEntryVector entries = GetBtmShortVisits(3, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2, url3));
+  ukm_recorder.ExpectEntryMetric(entries[0], "EntranceHadUserGesture", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "EntranceHadUserGesture", 1);
+  ukm_recorder.ExpectEntryMetric(entries[2], "EntranceHadUserGesture", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       EntrancePageTransition) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("a.test", "/title1.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  // Click a link to navigate to url2.
+  TestFrameNavigationObserver nav_observer(web_contents());
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+      const anchor = document.createElement("a");
+      anchor.href = "/title1.html";
+      anchor.click(); )",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  nav_observer.Wait();
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), url2);
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], "EntrancePageTransition",
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  ukm_recorder.ExpectEntryMetric(entries[1], "EntrancePageTransition",
+                                 ui::PAGE_TRANSITION_LINK);
 }
 
 }  // namespace

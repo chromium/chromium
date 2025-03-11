@@ -26,6 +26,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -638,7 +639,9 @@ public class MultiInstanceManager
      */
     public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
         // Should only happen in tests.
-        if (selector == null) return;
+        if (BuildConfig.IS_FOR_TEST && selector == null) return;
+
+        assert selector != null;
 
         TabModelUtils.runOnTabStateInitialized(
                 selector,

@@ -433,7 +433,7 @@ static const float kTestVectorFloat32Invalid[kTestVectorSize] = {
     std::numeric_limits<float>::quiet_NaN()};
 
 static const float kTestVectorFloat32Sanitized[kTestVectorSize] = {
-    -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, -1.0f, -1.0f};
+    -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f};
 
 // Expected results.
 static constexpr size_t kTestVectorFrameCount = kTestVectorSize / 2;

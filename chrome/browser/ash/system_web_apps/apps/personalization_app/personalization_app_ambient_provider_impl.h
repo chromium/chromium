@@ -117,6 +117,10 @@ class PersonalizationAppAmbientProviderImpl
   void FetchPreviewImages();
   void OnPreviewsFetched(const std::vector<GURL>& preview_urls);
 
+  // Notify webUI the current state of ambient theme preview images.
+  void NotifyAmbientThemePreviewImagesChanged();
+  void OnMachineStatisticsReady();
+
   ash::PersonalAlbum* FindPersonalAlbumById(const std::string& album_id);
 
   ash::ArtSetting* FindArtAlbumById(const std::string& album_id);
@@ -180,6 +184,8 @@ class PersonalizationAppAmbientProviderImpl
       read_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       previews_weak_factory_{this};
+  base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
+      ambient_theme_previews_weak_factory_{this};
 };
 
 }  // namespace ash::personalization_app

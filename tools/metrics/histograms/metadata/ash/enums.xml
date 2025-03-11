@@ -579,18 +579,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="4" label="Desk template is too large"/>
 </enum>
 
-<enum name="DeskProfilesSelectProfileSource">
-  <int value="0" label="Profile button"/>
-  <int value="1" label="Desk action context menu"/>
-  <int value="2" label="New desk button drop"/>
-</enum>
-
-<enum name="DeskProfilesUsageStatus">
-  <int value="0" label="Conditions are not met"/>
-  <int value="1" label="Conditions are met"/>
-  <int value="2" label="Desk profiles are enabled"/>
-</enum>
-
 <enum name="DesksAssignToAllDesksSource">
   <int value="0" label="Move to desk menu"/>
   <int value="1" label="Keyboard shortcut"/>
@@ -2329,11 +2317,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Session exit due to shutdown"/>
   <int value="4" label="Session exit due to unspecified reasons"/>
   <int value="5" label="Session exit due to converting to tablet mode"/>
-</enum>
-
-<enum name="SplitViewSwapWindowsSource">
-  <int value="0" label="Double tap"/>
-  <int value="1" label="Swap windows button"/>
 </enum>
 
 <enum name="SwipeHomeToOverviewResult">

@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "build/buildflag.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/ui_features.h"

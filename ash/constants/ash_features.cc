@@ -239,6 +239,11 @@ BASE_FEATURE(kBocaExtensionConsumer,
 // Enables or disables Spotlight for Boca on ChromeOS.
 BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables Boca network restriction for Boca on ChromeOS.
+BASE_FEATURE(kBocaNetworkRestriction,
+             "BocaNetworkRestriction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2463,10 +2468,6 @@ BASE_FEATURE(kReadaheadForLogin,
              "ReadaheadForLogin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSavedDeskUiRevamp,
-             "SavedDeskUiRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kQuickAppAccessTestUI,
              "QuickAppAccessTestUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2729,6 +2730,12 @@ BASE_FEATURE(kSunfishFeature,
 // Chromnient-like query.
 BASE_FEATURE(kSunfishLensWeb,
              "SunfishLensWeb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Changes the Sunfish copy text functionality to use the Lens Web API instead
+// of the Chromnient-like query.
+BASE_FEATURE(kSunfishLensWebCopyText,
+             "SunfishLensWebCopyText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the suspend state machine to better handle suspend accelerators.
@@ -3386,6 +3393,10 @@ bool IsBocaStudentHeartbeatCustomIntervalEnabled() {
 
 bool IsBocaSpotlightEnabled() {
   return base::FeatureList::IsEnabled(kBocaSpotlight);
+}
+
+bool IsBocaNetworkRestrictionEnabled() {
+  return base::FeatureList::IsEnabled(kBocaNetworkRestriction);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
@@ -4327,11 +4338,6 @@ bool IsSameAppWindowCycleEnabled() {
   return base::FeatureList::IsEnabled(kSameAppWindowCycle);
 }
 
-bool IsSavedDeskUiRevampEnabled() {
-  return IsForestFeatureEnabled() &&
-         base::FeatureList::IsEnabled(kSavedDeskUiRevamp);
-}
-
 bool IsScalableIphEnabled() {
   return base::FeatureList::IsEnabled(kScalableIph);
 }
@@ -4434,6 +4440,11 @@ bool IsSunfishFeatureEnabled() {
 bool IsSunfishLensWebEnabled() {
   return IsSunfishFeatureEnabled() &&
          base::FeatureList::IsEnabled(kSunfishLensWeb);
+}
+
+bool IsSunfishLensWebCopyTextEnabled() {
+  return IsSunfishLensWebEnabled() &&
+         base::FeatureList::IsEnabled(kSunfishLensWebCopyText);
 }
 
 bool IsSuspendStateMachineEnabled() {

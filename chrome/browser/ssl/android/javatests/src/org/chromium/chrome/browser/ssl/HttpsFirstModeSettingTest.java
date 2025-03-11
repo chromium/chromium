@@ -70,13 +70,13 @@ public class HttpsFirstModeSettingTest {
         Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);
         Assert.assertNotNull(pref);
 
-        // Check that the expected title is shown and the setting defaults to disabled.
+        // Check that the expected title is shown and the setting defaults to balanced.
         final String prefTitle =
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.settings_https_first_mode_title);
         final String prefSummary =
                 ApplicationProvider.getApplicationContext()
-                        .getString(R.string.settings_https_first_mode_disabled_label);
+                        .getString(R.string.settings_https_first_mode_enabled_balanced_label);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(pref.getTitle().equals(prefTitle));

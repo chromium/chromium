@@ -24,6 +24,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -316,6 +317,12 @@ void CoralDelegateImpl::CheckGenAIAgeAvailability(
 
 bool CoralDelegateImpl::GetGenAILocationAvailability() {
   return ash::IsGenerativeAiAllowedForCountry(GetCountryCode());
+}
+
+bool CoralDelegateImpl::GetLanguageAvailability() {
+  // TODO(zxdan|hcyang): adjust the allow list as needed.
+  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
+         std::string("en");
 }
 
 void CoralDelegateImpl::OnIdentityManagerShutdown(

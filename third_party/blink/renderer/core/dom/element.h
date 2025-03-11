@@ -1383,6 +1383,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   int tabIndex() const;
   int ReadingOrderValue() const;
 
+  void setHeadingReset(bool);
+  bool headingReset() const;
+  int GetComputedHeadingOffset(int max_offset);
+
   void setEditContext(EditContext* editContext, ExceptionState&);
   EditContext* editContext() const;
 

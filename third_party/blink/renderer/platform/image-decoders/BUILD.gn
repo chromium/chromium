@@ -39,6 +39,8 @@ component("image_decoders") {
     "png/png_image_decoder.h",
     "png/png_image_reader.cc",
     "png/png_image_reader.h",
+    "png/png_image_scaler.cc",
+    "png/png_image_scaler.h",
     "rw_buffer.cc",
     "rw_buffer.h",
     "segment_reader.cc",

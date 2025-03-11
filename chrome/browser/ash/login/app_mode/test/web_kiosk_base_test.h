@@ -25,6 +25,8 @@ namespace ash {
 
 class ScopedDeviceSettings;
 
+// DEPRECATED: New tests should use `KioskMixin` instead.
+//
 // Base class for web kiosk browser tests.
 class WebKioskBaseTest : public OobeBaseTest {
  public:

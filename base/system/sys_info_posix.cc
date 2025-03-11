@@ -20,6 +20,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <iostream>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -118,6 +119,24 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
             : base::saturated_cast<int64_t>(stats.f_blocks * stats.f_frsize);
   }
   return true;
+}
+
+void GetKernelVersionNumbers(int32_t* major_version,
+                             int32_t* minor_version,
+                             int32_t* bugfix_version) {
+  struct utsname info;
+  CHECK_EQ(uname(&info), 0);
+  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
+                        bugfix_version);
+  if (num_read < 1) {
+    *major_version = 0;
+  }
+  if (num_read < 2) {
+    *minor_version = 0;
+  }
+  if (num_read < 3) {
+    *bugfix_version = 0;
+  }
 }
 
 }  // namespace
@@ -238,23 +257,21 @@ std::string SysInfo::OperatingSystemVersion() {
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
-  }
-  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
-                        bugfix_version);
-  if (num_read < 1) {
-    *major_version = 0;
-  }
-  if (num_read < 2) {
-    *minor_version = 0;
-  }
-  if (num_read < 3) {
-    *bugfix_version = 0;
-  }
+  GetKernelVersionNumbers(major_version, minor_version, bugfix_version);
 }
 #endif
+
+// static
+SysInfo::KernelVersionNumber SysInfo::KernelVersionNumber::Current() {
+  KernelVersionNumber v;
+  GetKernelVersionNumbers(&v.major, &v.minor, &v.bugfix);
+  return v;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SysInfo::KernelVersionNumber& v) {
+  return out << v.major << "." << v.minor << "." << v.bugfix;
+}
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
 // static

@@ -214,7 +214,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   bool IsModal() const override;
   int GetInitialShowState() const override;
   int GetNonClientComponent(const gfx::Point& point) const override;
-  void GetWindowMask(const gfx::Size& size, SkPath* path) override;
+  void GetWindowMask(const gfx::Size& size_px, SkPath* path) override;
   bool GetClientAreaInsets(gfx::Insets* insets,
                            HMONITOR monitor) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
@@ -316,6 +316,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
 
   // Windows are enlarged to be at least 64x64 pixels, so keep track of the
   // extra added here.
+  // TODO(crbug.com/401996981): This is likely no longer necessary and should be
+  // removed.
   gfx::Vector2d window_enlargement_;
 
   // Whether the window close should be converted to a hide, and then actually

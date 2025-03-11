@@ -36,8 +36,8 @@ bool IsPrefixOfEmailEndingWithAtSign(std::u16string_view full_string,
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
 void SetCheckStatus(FormFieldData* form_field_data,
-                    bool isCheckable,
-                    bool isChecked);
+                    bool is_checkable,
+                    bool is_checked);
 
 // Returns the index of the shortest entry in the given select field of which
 // |value| is a substring. Returns -1 if no such entry exists.

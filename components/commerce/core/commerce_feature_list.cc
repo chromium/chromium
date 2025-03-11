@@ -212,7 +212,7 @@ BASE_FEATURE(kProductSpecificationsCache,
 // enables a new context menu for comparison tables under Bookmarks and Lists.
 BASE_FEATURE(kCompareManagementInterface,
              "CompareManagementInterface",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Discount on navigation
 BASE_FEATURE(kEnableDiscountInfoApi,

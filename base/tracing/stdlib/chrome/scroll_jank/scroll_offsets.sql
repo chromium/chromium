@@ -2,6 +2,8 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
+--- sqlformat file off
+
 -- This file creates two public views:
 --     - chrome_scroll_input_offsets and
 --     - chrome_presented_scroll_offsets

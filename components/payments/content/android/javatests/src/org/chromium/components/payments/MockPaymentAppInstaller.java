@@ -4,67 +4,102 @@
 
 package org.chromium.components.payments;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
- * An installer for fake Android payment apps for testing. Can install either one or more than one
- * payment app.
+ * An installer for fake Android payment apps for testing.
  *
  * <p>Installing fake Android payment apps affects global state, in {@link AndroidPaymentAppFinder}.
  *
- * <p>The first payment app's package name is "test.payments.app". Its signature is
- * "AABBCCDDEEFF001122334455".
+ * <p>Sample usage:
  *
- * <p>If multiple payment apps will be installed, then the second payment app's package name is
- * "test.payments.other.app". Its signature is "001122334455AABBCCDDEEFF".
+ * <pre>
+ *    new MockPaymentAppInstaller()
+ *            .addApp(new MockPaymentApp()
+ *                    .setLabel("Test Payments App")
+ *                    .setPackage("test.payments.app")
+ *                    .setMethod("https://payments.test/web-pay")
+ *                    .setSignature("AABBCCDDEEFF001122334455")
+ *                    .setSha256CertificateFingerprint("79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE")
+ *                    .setHandlesShippingAddress())
+ *            .addApp(new MockPaymentApp()
+ *                    .setLabel("Other Test Payments App")
+ *                    .setPackage("test.payments.other.app")
+ *                    .setMethod("https://other-payments.example/web-pay")
+ *                    .setSignature("001122334455AABBCCDDEEFF")
+ *                    .setSha256CertificateFingerprint("01:9D:A6:93:7D:A2:1D:64:25:D8:D4:93:37:29")
+ *                    .setHandlesContactInformation())
+ *             .install();
+ * </pre>
  */
 public class MockPaymentAppInstaller {
-    private final String mPaymentMethodName;
-    private final String mOtherPaymentMethodName;
+    private final Set<String> mMethodNames = new HashSet<>();
+    private final List<MockPaymentApp> mApps = new ArrayList<>();
 
     /**
-     * Constructs a fake payment app installer.
+     * Adds a mock payment app to the list of apps to be installed.
      *
-     * @param paymentMethodName The method name for the first Android payment app, e.g.,
-     *     "https://payments.test/web-pay".
-     * @param otherPaymentMethodName The method name for the second Android payment app, if multiple
-     *     payment apps will be installed, e.g., "https://other-payments.example/web-pay".
+     * @param app The mock payment app to add to the list of apps to be installed. Each mock payment
+     *     app should have a different payment method name.
+     * @return A refence to this {@link MockPaymentAppInstaller} instance.
      */
-    public MockPaymentAppInstaller(String paymentMethodName, String otherPaymentMethodName) {
-        mPaymentMethodName = paymentMethodName;
-        mOtherPaymentMethodName = otherPaymentMethodName;
+    public MockPaymentAppInstaller addApp(MockPaymentApp app) {
+        assert !mMethodNames.contains(app.getMethod())
+                : "Each mock payment app should have a different payment method name.";
+        mMethodNames.add(app.getMethod());
+        mApps.add(app);
+        return this;
     }
 
     /**
-     * Injects a fake Android payment app into the package manager delegate, with the correct
-     * signature being returned from the downloader. Also turns off connecting to the
-     * IS_READY_TO_PAY service or sending the PAY intent to this app.
-     *
-     * @param multipleApps Whether multiple apps should be installed.
+     * Injects the mock Android payment apps into the package manager delegate, with the correct
+     * signature being returned from the downloader. Turns off connecting to the IS_READY_TO_PAY
+     * service or sending the PAY intent to this app.
      */
-    public void installPaymentApps(boolean multipleApps) {
+    public void install() {
         MockPackageManagerDelegate packageManagerDelegate = new MockPackageManagerDelegate();
-        // The SHA256 of the string "AABBCCDDEEFF001122334455" equals to the fingerprints[0].value
-        // in the "downloaded" manifest file.
-        packageManagerDelegate.installPaymentApp(
-                "Test Payment App",
-                "test.payments.app",
-                mPaymentMethodName,
-                "AABBCCDDEEFF001122334455");
-        if (multipleApps) {
-            // The SHA256 of the string "001122334455AABBCCDDEEFF" equals to the
-            // fingerprints[0].value in the "downloaded" manifest file.
+        MockPaymentManifestDownloader downloader = new MockPaymentManifestDownloader();
+
+        for (MockPaymentApp app : mApps) {
+            downloader.serveManifestFor(app);
             packageManagerDelegate.installPaymentApp(
-                    "Other Test Payment App",
-                    "test.payments.other.app",
-                    mOtherPaymentMethodName,
-                    "001122334455AABBCCDDEEFF");
+                    app.getLabel(),
+                    app.getPackage(),
+                    app.getMethod(),
+                    getSupportedDelegations(app),
+                    app.getSignature());
         }
+
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
-        AndroidPaymentAppFinder.setDownloaderForTest(
-                new MockPaymentManifestDownloader(mPaymentMethodName));
+        AndroidPaymentAppFinder.setDownloaderForTest(downloader);
+
+        // TODO(crbug.com/401576628): Pass the mock payment apps into the mock Android intent
+        // launcher, so it can return shipping address and contact information only for the apps
+        // that support it.
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(
                 new MockAndroidIntentLauncher(
-                        /* returnShippingAddress= */ false, /* returnContactInfo= */ false));
+                        /* returnShippingAddress= */ mApps.get(0).getHandlesShippingAddress(),
+                        /* returnContactInfo= */ mApps.get(0).getHandlesContactInformation()));
+
         AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
+    }
+
+    private static String[] getSupportedDelegations(MockPaymentApp app) {
+        List<String> delegations = new ArrayList<>();
+        if (app.getHandlesShippingAddress()) {
+            delegations.add("shippingAddress");
+        }
+
+        if (app.getHandlesContactInformation()) {
+            delegations.add("payerName");
+            delegations.add("payerEmail");
+            delegations.add("payerPhone");
+        }
+
+        return delegations.isEmpty() ? null : delegations.toArray(new String[0]);
     }
 
     /**
@@ -75,5 +110,6 @@ public class MockPaymentAppInstaller {
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(null);
         AndroidPaymentAppFinder.setDownloaderForTest(null);
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(null);
+        mApps.clear();
     }
 }

@@ -189,7 +189,7 @@ PrivateAggregationPendingContributions::CompileFinalUnmergedContributions(
   ApplyTestBudgeterResults(std::move(test_budgeter_results),
                            pending_report_limit_result, null_report_behavior);
 
-  was_error_triggered_[PAErrorEvent::kAlreadyTriggeredNonInternalError] = true;
+  was_error_triggered_[PAErrorEvent::kAlreadyTriggeredExternalError] = true;
 
   std::set<ContributionMergeKey> accepted_merge_keys;
   std::set<ContributionMergeKey> truncated_merge_keys;

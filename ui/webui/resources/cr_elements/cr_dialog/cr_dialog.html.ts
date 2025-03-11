@@ -29,9 +29,11 @@ export function getHtml(this: CrDialogElement) {
        ` : ''}
     </div>
     <slot name="header"></slot>
-    <div class="body-container" id="container" show-bottom-shadow
+    <div class="body-container cr-scrollable" id="container"
         part="body-container">
+      <div class="cr-scrollable-top"></div>
       <slot name="body"></slot>
+      <div class="cr-scrollable-bottom"></div>
     </div>
     <slot name="button-container"></slot>
     <slot name="footer"></slot>

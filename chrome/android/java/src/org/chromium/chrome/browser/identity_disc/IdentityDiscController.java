@@ -191,7 +191,8 @@ public class IdentityDiscController
                 AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId(),
                 buttonSpec.getHoverTooltipTextId(),
-                buttonSpec.getShouldShowHoverHighlight());
+                buttonSpec.getShouldShowHoverHighlight(),
+                /* hasErrorBadge= */ mIdentityError != SyncError.NO_ERROR);
     }
 
     /**
@@ -328,7 +329,7 @@ public class IdentityDiscController
                     mIdentityError == SyncError.NO_ERROR
                             ? null
                             : ProfileDataCache.createToolbarIdentityDiscBadgeConfig(
-                                    mContext, R.drawable.ic_error_badge_14dp));
+                                    mContext, R.drawable.ic_error_badge_16dp));
         }
     }
 

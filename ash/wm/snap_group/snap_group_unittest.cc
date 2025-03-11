@@ -6792,7 +6792,7 @@ TEST_F(SnapGroupDesksTest, OnlyHideSnapGroupOnActiveDesk) {
 // exiting overview mode. See regression at http://b/335301800.
 TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDeskOld) {
   base::test::ScopedFeatureList disable;
-  disable.InitAndDisableFeature(features::kSavedDeskUiRevamp);
+  disable.InitAndDisableFeature(features::kForestFeature);
 
   OverviewController* overview_controller = OverviewController::Get();
 
@@ -6872,7 +6872,7 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDeskOld) {
 // exiting overview mode. See regression at http://b/335301800.
 TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
   saved_desk_test_helper()->WaitForDeskModels();
-  base::test::ScopedFeatureList enable{features::kSavedDeskUiRevamp};
+  base::test::ScopedFeatureList enable{features::kForestFeature};
 
   OverviewController* overview_controller = OverviewController::Get();
   // Explicitly disable `disable_app_id_check_for_saved_desks_` otherwise "Save

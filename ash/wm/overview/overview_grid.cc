@@ -2427,7 +2427,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // viable to be shown, then we want to record a histogram for holdback
   // purposes.
   if (target_visible && visibility_changed) {
-    if (features::IsSavedDeskUiRevampEnabled()) {
+    if (features::IsForestFeatureEnabled()) {
       base::UmaHistogramBoolean(kShowSavedDeskButtonsRevampEnabledHistogramName,
                                 true);
     } else {
@@ -2437,7 +2437,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   }
 
   // If the UI revamp is enabled, we return as the buttons will not be shown.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     return;
   }
 

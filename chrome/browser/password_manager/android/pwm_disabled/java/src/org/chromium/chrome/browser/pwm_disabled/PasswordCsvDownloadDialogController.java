@@ -18,12 +18,14 @@ import android.view.View;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Controller for the dialog offering the users to download the auto-exported passwords CSV. */
+@NullMarked
 class PasswordCsvDownloadDialogController {
     private final FragmentActivity mActivity;
     private final PasswordCsvDownloadDialogFragment mFragment;

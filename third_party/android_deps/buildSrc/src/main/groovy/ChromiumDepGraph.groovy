@@ -301,6 +301,15 @@ class ChromiumDepGraph {
         return makeModuleIdInner(componentId.group, componentId.module, componentId.version)
     }
 
+    static boolean anyContains(String value, Set<String>... sets) {
+        for (Set<String> curSet : sets) {
+            if (curSet.contains(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void collectDependencies() {
         Set<ResolvedDependency> deps = [] as Set
         Map<String, SortedSet<String>> resolvedDeps = [:]
@@ -317,9 +326,6 @@ class ChromiumDepGraph {
                 'androidTestCompileLatest',
                 'buildCompileNoDeps'
         ]
-        String[] autorolledConfigNames = configNames.findAll { configName ->
-            configName.endsWith('Latest')
-        }
         timeIt('** Resolving all deps') {
             for (Project project : projects) {
                 for (String configName : configNames) {
@@ -356,58 +362,38 @@ class ChromiumDepGraph {
             taskList.each { task -> task.get() }
         }
 
-        topLevelIds.each { id -> dependencies.get(id).visible = true }
-
-        (resolvedDeps['testCompile']).each { id ->
-            DependencyDescription dep = dependencies.get(id)
-            assert dep: "No dependency collected for artifact ${id}"
-            dep.testOnly = true
-            dep.isRobolectric = true
-        }
-        (resolvedDeps['testCompileLatest'] + resolvedDeps['androidTestCompile'] + resolvedDeps['androidTestCompileLatest']).each { id ->
-            DependencyDescription dep = dependencies.get(id)
-            assert dep: "No dependency collected for artifact ${id}"
-            dep.testOnly = true
-        }
-        (resolvedDeps['compile'] + resolvedDeps['compileLatest'] + resolvedDeps['androidTestCompile'] + resolvedDeps['androidTestCompileLatest']).each { id ->
-            DependencyDescription dep = dependencies.get(id)
-            assert dep: "No dependency collected for artifact ${id}"
-            dep.supportsAndroid = true
-            dep.requiresAndroid = true
-            dep.isRobolectric = false
-        }
-
-        (resolvedDeps['buildCompile'] + resolvedDeps['buildCompileNoDeps'] + resolvedDeps['buildCompileLatest']).each { id ->
-            DependencyDescription dep = dependencies.get(id)
-            assert dep: "No dependency collected for artifact ${id}"
-            dep.usedInBuild = true
-            dep.requiresAndroid = false
-            dep.isRobolectric = false
-            dep.testOnly = false
-        }
-
-        (resolvedDeps['compile'] + resolvedDeps['compileLatest']).each { id ->
-            DependencyDescription dep = dependencies.get(id)
-            assert dep: "No dependency collected for artifact ${id}"
-            dep.isShipped = true
-            dep.testOnly = false
-        }
-        autorolledConfigNames.each { configName ->
-            resolvedDeps[configName].each { id ->
-                DependencyDescription dep = dependencies.get(id)
-                dep.isAutorolled = true
+        // Collect these using prefix match to allow variants "Latest", "NoDeps", "Autorolled".
+        Set<String> compileIds = [] as Set
+        Set<String> testIds = [] as Set
+        Set<String> androidTestIds = [] as Set
+        Set<String> buildIds = [] as Set
+        Set<String> autorolledIds = [] as Set
+        resolvedDeps.each { key, values ->
+            if (key.startsWith('compile')) {
+                compileIds.addAll(values);
+            } else if (key.startsWith('testCompile')) {
+                testIds.addAll(values);
+            } else if (key.startsWith('androidTest')) {
+                androidTestIds.addAll(values);
+            } else if (key.startsWith('build')) {
+                buildIds.addAll(values);
+            } else {
+                assert false : 'Unknown config ' + key
+            }
+            if (key.endsWith("Latest")) {
+                autorolledIds.addAll(values)
             }
         }
 
-        // We only add testOnly after constructing the dependencies map, so now go through and see
-        // if we need to add testOnly to anything which depends on testOnly. In theory, this may
-        // need some recursion or looping to deal with multiple levels of unmarked targets, but I
-        // think in practice the only things getting annotated here will be a single level of
-        // synthetic groups which depend on testOnly targets.
-        dependencies.each { _, dep ->
-            dep.testOnly |= dep.children.any { id ->
-                dependencies.get(id).testOnly
-            }
+        dependencies.each { id, dep ->
+            dep.visible = topLevelIds.contains(id)
+            dep.isRobolectric = !anyContains(id, compileIds, androidTestIds, buildIds)
+            dep.testOnly = !anyContains(id, compileIds, buildIds)
+            dep.supportsAndroid = anyContains(id, compileIds, androidTestIds)
+            dep.requiresAndroid = dep.supportsAndroid && !anyContains(id, buildIds)
+            dep.usedInBuild = anyContains(id, buildIds)
+            dep.isShipped = anyContains(id, compileIds)
+            dep.isAutorolled = anyContains(id, autorolledIds)
         }
 
         PROPERTY_OVERRIDES.each { id, overrides ->

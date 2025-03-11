@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -37,11 +38,19 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
 
   ~TranslationManagerImpl() override;
 
+  // Sets an instance of `TranslationManagerImpl` for testing.
+  static base::AutoReset<TranslationManagerImpl*> SetForTesting(
+      TranslationManagerImpl* manager);
+
   static void Bind(
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::TranslationManager> receiver);
+
+ protected:
+  TranslationManagerImpl(content::BrowserContext* browser_context,
+                         const url::Origin& origin);
 
  private:
   friend class TranslationManagerImplTest;
@@ -50,6 +59,15 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin);
+
+  // Overridden for testing.
+  virtual base::TimeDelta GetTranslatorDownloadDelay();
+
+  void CreateTranslatorImpl(
+      mojo::PendingRemote<
+          blink::mojom::TranslationManagerCreateTranslatorClient> client,
+      const std::string& source_language,
+      const std::string& target_language);
 
   // `blink::mojom::TranslationManager` implementation.
   void CanCreateTranslator(blink::mojom::TranslatorLanguageCodePtr source_lang,
@@ -71,6 +89,9 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
                                        const std::string& target_lang);
 
   OnDeviceTranslationServiceController& GetServiceController();
+
+  // Instance of `TranslationManagerImpl` for testing.
+  static TranslationManagerImpl* translation_manager_for_test_;
 
   const base::WeakPtr<content::BrowserContext> browser_context_;
   const url::Origin origin_;

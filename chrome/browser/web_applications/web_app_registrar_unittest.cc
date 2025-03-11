@@ -31,8 +31,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -91,7 +91,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
     web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
     // Set an OS integration state (with shortcuts) to prevent migration to a
     // partially installed status.
-    proto::WebAppOsIntegrationState os_state;
+    proto::os_state::WebAppOsIntegration os_state;
     os_state.mutable_shortcut();
     web_app->SetCurrentOsIntegrationStates(os_state);
 
@@ -1288,7 +1288,7 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
                                      WebAppManagement::kDefault);
   web_app2->SetScope(GURL("https://example_scope.com/nested"));
   web_app2->SetLinkCapturingUserPreference(
-      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+      proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
   const webapps::AppId app_id1 = web_app1->app_id();
   const webapps::AppId app_id2 = web_app2->app_id();
@@ -1632,7 +1632,7 @@ TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
                                      WebAppManagement::kDefault);
   web_app2->SetScope(GURL("https://example_scope.com"));
   web_app2->SetLinkCapturingUserPreference(
-      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+      proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
   const webapps::AppId app_id1 = web_app1->app_id();
   const webapps::AppId app_id2 = web_app2->app_id();
@@ -1659,13 +1659,13 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_OpensInBrowserTab) {
   web_app_1->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   web_app_1->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
   web_app_1->SetLinkCapturingUserPreference(
-      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+      proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
   web_app_2->SetDisplayMode(DisplayMode::kStandalone);
   web_app_2->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app_2->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
   web_app_2->SetLinkCapturingUserPreference(
-      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+      proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
   RegisterAppUnsafe(std::move(web_app_1));
   RegisterAppUnsafe(std::move(web_app_2));

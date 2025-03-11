@@ -87,7 +87,7 @@ void FakeApplicationConfigManager::GetConfig(std::string id,
       sync_ptr.Bind(std::move(*content_directory.mutable_directory()));
       fidl::InterfaceHandle<fuchsia::io::Directory> cloned;
       status =
-          sync_ptr->Clone2(fidl::InterfaceRequest<fuchsia::unknown::Cloneable>(
+          sync_ptr->Clone(fidl::InterfaceRequest<fuchsia::unknown::Cloneable>(
               cloned.NewRequest().TakeChannel()));
       ZX_CHECK(status == ZX_OK, status) << "Clone2 content directory";
       entry.set_directory(std::move(cloned));

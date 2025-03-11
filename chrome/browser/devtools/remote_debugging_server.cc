@@ -122,18 +122,17 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
     DevToolsDebuggingUserDataDirStatus status =
         DevToolsDebuggingUserDataDirStatus::kNotBeingDebugged;
     if (being_debugged) {
-      status = DevToolsDebuggingUserDataDirStatus::
-          kBeingDebuggedErrorObtainingUserDataDir;
-      base::FilePath user_data_dir;
-      if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-        base::FilePath default_user_data_dir;
-        if (chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
-          status = default_user_data_dir == user_data_dir
-                       ? DevToolsDebuggingUserDataDirStatus::
-                             kBeingDebuggedWithDefaultUserDataDir
-                       : DevToolsDebuggingUserDataDirStatus::
-                             kBeingDebuggedWithNonDefaultUserDataDir;
-        }
+      const auto maybe_using_default_user_data_dir =
+          chrome::IsUsingDefaultDataDirectory();
+      if (maybe_using_default_user_data_dir.has_value()) {
+        status = maybe_using_default_user_data_dir.value()
+                     ? DevToolsDebuggingUserDataDirStatus::
+                           kBeingDebuggedWithDefaultUserDataDir
+                     : DevToolsDebuggingUserDataDirStatus::
+                           kBeingDebuggedWithNonDefaultUserDataDir;
+      } else {
+        status = DevToolsDebuggingUserDataDirStatus::
+            kBeingDebuggedErrorObtainingUserDataDir;
       }
     }
     base::UmaHistogramEnumeration("DevTools.DevToolsDebuggingUserDataDirStatus",

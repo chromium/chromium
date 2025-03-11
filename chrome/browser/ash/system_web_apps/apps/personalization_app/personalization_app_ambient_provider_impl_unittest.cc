@@ -9,9 +9,11 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -25,6 +27,7 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -70,6 +73,11 @@ class TestAmbientObserver
  public:
   void OnAmbientModeEnabledChanged(bool ambient_mode_enabled) override {
     ambient_mode_enabled_ = ambient_mode_enabled;
+  }
+
+  void OnAmbientThemePreviewImagesChanged(
+      const base::flat_map<mojom::AmbientTheme, ::GURL>& previews) override {
+    ambient_theme_preview_images_ = previews;
   }
 
   void OnAmbientThemeChanged(mojom::AmbientTheme ambient_theme) override {
@@ -125,6 +133,11 @@ class TestAmbientObserver
     return ambient_mode_enabled_;
   }
 
+  base::flat_map<mojom::AmbientTheme, GURL> ambient_theme_preview_images() {
+    ambient_observer_receiver_.FlushForTesting();
+    return ambient_theme_preview_images_;
+  }
+
   mojom::AmbientTheme ambient_theme() {
     ambient_observer_receiver_.FlushForTesting();
     return ambient_theme_;
@@ -173,6 +186,7 @@ class TestAmbientObserver
   bool ambient_mode_enabled_ = false;
 
   mojom::AmbientTheme ambient_theme_ = mojom::AmbientTheme::kSlideshow;
+  base::flat_map<mojom::AmbientTheme, GURL> ambient_theme_preview_images_;
   uint32_t duration_ = 10;
   mojom::TopicSource topic_source_ = mojom::TopicSource::kArtGallery;
   ash::AmbientModeTemperatureUnit temperature_unit_ =
@@ -265,6 +279,12 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   bool ObservedAmbientModeEnabled() {
     ambient_provider_remote_.FlushForTesting();
     return test_ambient_observer_.is_ambient_mode_enabled();
+  }
+
+  base::flat_map<mojom::AmbientTheme, GURL>
+  ObservedAmbientThemePreviewImages() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.ambient_theme_preview_images();
   }
 
   mojom::AmbientTheme ObservedAmbientTheme() {
@@ -545,7 +565,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
                                        mojom::AmbientTheme::kVideo, 1);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::kDefaultAmbientVideo, 1);
+                                       ash::GetDefaultAmbientVideo(), 1);
 
   SetAmbientObserver();
   FetchSettings();
@@ -564,7 +584,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
                                        mojom::AmbientTheme::kVideo, 2);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
-                                       ash::kDefaultAmbientVideo, 2);
+                                       ash::GetDefaultAmbientVideo(), 2);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
@@ -1259,4 +1279,37 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
             ObservedTemperatureUnit());
 }
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       FetchAmbientThemePreviewImagesForNonNavi) {
+  SetAmbientObserver();
+
+  auto previews = ObservedAmbientThemePreviewImages();
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kSlideshow));
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kFeelTheBreeze));
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kFloatOnBy));
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kVideo));
+  EXPECT_EQ("chrome://personalization/time_of_day/thumbnails/new_mexico.jpg",
+            previews[mojom::AmbientTheme::kVideo]);
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       FetchAmbientThemePreviewImagesForNavi) {
+  auto* fake_statistics_provider = static_cast<system::FakeStatisticsProvider*>(
+      system::StatisticsProvider::GetInstance());
+  fake_statistics_provider->ClearAllMachineStatistics();
+  fake_statistics_provider->SetMachineStatistic(
+      system::kCustomizationIdKey,
+      std::string(kJupiterScreensaverCustomizationId));
+  SetAmbientObserver();
+
+  auto previews = ObservedAmbientThemePreviewImages();
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kSlideshow));
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kFeelTheBreeze));
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kFloatOnBy));
+  EXPECT_TRUE(previews.contains(mojom::AmbientTheme::kVideo));
+  EXPECT_EQ("chrome://personalization/time_of_day/thumbnails/jupiter.jpg",
+            previews[mojom::AmbientTheme::kVideo]);
+}
+
 }  // namespace ash::personalization_app

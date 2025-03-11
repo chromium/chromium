@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/isolation_info_mojom_traits.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/storage_access_api_mojom_traits.h"
 #include "services/network/public/cpp/url_request_param_mojom_traits.h"
@@ -137,7 +138,8 @@ bool StructTraits<
           &out->attribution_reporting_src_token) ||
       !data.ReadKeepaliveToken(&out->keepalive_token) ||
       !data.ReadStorageAccessApiStatus(&out->storage_access_api_status) ||
-      !data.ReadSocketTag(&out->socket_tag)) {
+      !data.ReadSocketTag(&out->socket_tag) ||
+      !data.ReadPermissionsPolicy(&out->permissions_policy)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }

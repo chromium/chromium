@@ -40,6 +40,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_repeating_callback.h"
+#include "net/base/does_url_match_filter.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -14113,6 +14114,31 @@ TEST_P(HttpCacheNoVarySearchTest, HeadMethodSupported) {
   EXPECT_FALSE(info.network_accessed);
   EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
   EXPECT_EQ(info.headers->response_code(), 200);
+}
+
+// Tests for NoVarySearchCache::ClearData() are in the NoVarySearchCache unit
+// tests. This test just verifies that the integration works correctly.
+TEST_P(HttpCacheNoVarySearchTest, ClearNoVarySearchCache) {
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  // kTypicalGET_Transaction, which our transaction is based on, uses a
+  // www.example.com host, so it matches the example.com domain.
+  cache()->ClearNoVarySearchCache(UrlFilterType::kTrueIfMatches, {},
+                                  {"example.com"}, base::Time(),
+                                  base::Time::Max());
+
+  MockTransaction& probe_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  MockHttpRequest probe_request(probe_cache);
+
+  HttpResponseInfo info;
+
+  RunTransactionTestWithRequest(cache(), probe_cache, probe_request, &info);
+
+  // It should not have found the cache entry because of the mismatch in the "a"
+  // param.
+  EXPECT_FALSE(info.was_cached);
+  EXPECT_TRUE(info.network_accessed);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

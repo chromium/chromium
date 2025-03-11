@@ -42,10 +42,8 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.Optional;
@@ -464,7 +462,6 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_CommitText() {
         // User types "hel".
         assertTrue(mInputConnection.commitText("hel", 1));
@@ -607,7 +604,6 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAdditionalTextColor() {
         // User types "hel".
         assertTrue(mInputConnection.commitText("hel", 1));
@@ -648,7 +644,6 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_minimumCharacters() {
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
@@ -736,7 +731,6 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_onSelectionChanged() {
         // User types "hel".
         assertTrue(mInputConnection.commitText("hel", 1));
@@ -795,7 +789,6 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_removeAutocompleteAndAddtionalText() {
         // User types "hello".
         assertTrue(mInputConnection.commitText("hello", 1));
@@ -1396,7 +1389,6 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testPerformEditorAction_withAdditionText() {
         // User types "goo".
         assertTrue(mInputConnection.setComposingText("goo", 1));

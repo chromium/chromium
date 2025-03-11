@@ -22,6 +22,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/size.h"
@@ -47,37 +48,10 @@ std::string NumberToString(uint32_t number) {
   return base::UTF16ToUTF8(base::FormatNumber(number));
 }
 
-struct KernelVersion {
-  int32_t major;
-  int32_t minor;
-  int32_t bugfix;
-};
-
-KernelVersion KernelVersionNumbers() {
-  KernelVersion ver;
-  struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
-  }
-  int num_read =
-      sscanf(info.release, "%d.%d.%d", &ver.major, &ver.minor, &ver.bugfix);
-  if (num_read < 1) {
-    ver.major = 0;
-  }
-  if (num_read < 2) {
-    ver.minor = 0;
-  }
-  if (num_read < 3) {
-    ver.bugfix = 0;
-  }
-  return ver;
-}
-
 bool CheckImportExportFence() {
-  KernelVersion ver = KernelVersionNumbers();
-
   // DMA_BUF_IOCTL_{IMPORT,EXPORT}_SYNC_FILE was added in 6.0
-  return ver.major >= 6;
+  return base::SysInfo::KernelVersionNumber::Current() >=
+         base::SysInfo::KernelVersionNumber(6, 0);
 }
 
 }  // namespace

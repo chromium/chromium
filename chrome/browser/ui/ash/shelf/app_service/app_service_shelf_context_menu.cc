@@ -47,6 +47,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/launch_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/vector_icon_types.h"

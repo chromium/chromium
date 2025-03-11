@@ -32,31 +32,37 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy
     const voices = [
       {
         name: 'Chrome OS US English',
+        displayName: 'Chrome OS US English',
         remote: false,
         extensionId: 'gjjabgpgjpampikjhjpfhneeoapjbjaf',
       },
       {
         name: 'Chrome OS हिन्दी',
+        displayName: 'Chrome OS हिन्दी',
         remote: false,
         extensionId: 'gjjabgpgjpampikjhjpfhneeoapjbjaf',
       },
       {
         name: 'default-coolnet',
+        displayName: 'default-coolnet',
         remote: false,
         extensionId: 'abcdefghijklmnop',
       },
       {
         name: 'bnm',
+        displayName: 'bnm',
         remote: false,
         extensionId: 'abcdefghijklmnop',
       },
       {
         name: 'bnx',
+        displayName: 'bnx',
         remote: true,
         extensionId: 'abcdefghijklmnop',
       },
       {
         name: 'eSpeak Turkish',
+        displayName: 'eSpeak Turkish',
         remote: false,
         extensionId: 'dakbfdmgjiabojdgbiljlhgjbokobjpg',
       },

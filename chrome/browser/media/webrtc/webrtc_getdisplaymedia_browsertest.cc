@@ -40,6 +40,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -48,6 +49,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gl/gl_switches.h"
 
@@ -243,6 +245,28 @@ void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
 #if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
   command_line->AppendSwitch(switches::kUseGpuInTests);
 #endif
+}
+
+// The concept of "zoom level" is overloaded. For clarity, when we mean the
+// "factor times 100," we'll just name it "zoom level percentage," at least
+// in tests.
+int GetZoomLevelPercentage(WebContents* wc) {
+  return std::round(100 * blink::ZoomLevelToZoomFactor(
+                              content::HostZoomMap::GetZoomLevel(wc)));
+}
+
+void SetZoomFactor(WebContents* wc, double zoom_factor) {
+  content::HostZoomMap* const host_zoom_map =
+      content::HostZoomMap::GetForWebContents(wc);
+  CHECK(host_zoom_map);
+
+  host_zoom_map->SetTemporaryZoomLevel(
+      wc->GetPrimaryMainFrame()->GetGlobalId(),
+      blink::ZoomFactorToZoomLevel(zoom_factor));
+
+  if (!blink::ZoomValuesEqual(GetZoomLevelPercentage(wc), 100 * zoom_factor)) {
+    FAIL();  // Abort test, not just the helper method.
+  }
 }
 
 }  // namespace
@@ -1613,6 +1637,21 @@ class CaptureSessionDetails {
     NOTREACHED();
   }
 
+  WebContents* GetCapturedTab() {
+    CHECK_EQ(static_cast<int>(capturing_tab_->IsBeingCaptured()) +
+                 static_cast<int>(initially_captured_tab_->IsBeingCaptured()) +
+                 static_cast<int>(other_tab_->IsBeingCaptured()),
+             1);
+    if (capturing_tab_->IsBeingCaptured()) {
+      return capturing_tab_;
+    } else if (initially_captured_tab_->IsBeingCaptured()) {
+      return initially_captured_tab_;
+    } else if (other_tab_->IsBeingCaptured()) {
+      return other_tab_;
+    }
+    NOTREACHED();
+  }
+
   // Get the tab that's neither capturing nor being captured.
   WebContents* GetNonCapturedTab() {
     CHECK(!capturing_tab_->IsBeingCaptured());
@@ -1650,19 +1689,31 @@ class CaptureSessionDetails {
         "send-wheel-resolved");
   }
 
-  void SetZoomLevel(int zoom_level) {
-    EXPECT_EQ(
-        content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                        base::StringPrintf("setZoomLevel(%d);", zoom_level)),
-        "set-zoom-level-resolved");
+  void UpdateZoomLevel(const std::string& action, bool expect_success = true) {
+    const std::string command =
+        base::StringPrintf("updateZoomLevel(\"%s\");", action);
+    const std::string expected_result = base::StringPrintf(
+        "%s-zoom-level-%s", action, expect_success ? "resolved" : "error");
+
+    EXPECT_EQ(content::EvalJs(capturing_tab_->GetPrimaryMainFrame(), command),
+              expected_result);
   }
 
   int GetZoomLevel() {
+    // TODO(crbug.com/40276312): Deprecate getZoomLevel(), use an attribute.
     const int result = content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
                                        "getZoomLevel();")
                            .ExtractInt();
     EXPECT_GT(result, 0);
     return result;
+  }
+
+  int GetZoomLevelChangeEventsSinceLast() {
+    // Note that ExtractInt() will implicitly ensure the script did not run into
+    // an error.
+    return content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
+                           "zoomLevelChangeEventsSinceLast();")
+        .ExtractInt();
   }
 
   WebContents* initially_captured_tab() const {
@@ -1719,15 +1770,37 @@ class CaptureSessionDetails {
 class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
  public:
   enum class Action {
+    // TODO(crbug.com/40276312): Migrate from sendWheel() to either
+    // forwardWheel() or forwardGestures(), whichever the case may be.
     kSendWheel,
-    kSetZoomLevel,
+    kIncreaseZoomLevel,
+    kDecreaseZoomLevel,
+    kResetZoomLevel,
+    // TODO(crbug.com/40276312): Deprecate kGetZoomLevel.
     kGetZoomLevel,
   };
+
+  static const char* ToZoomLevelAction(Action input) {
+    switch (input) {
+      case Action::kIncreaseZoomLevel:
+        return "increase";
+      case Action::kDecreaseZoomLevel:
+        return "decrease";
+      case Action::kResetZoomLevel:
+        return "reset";
+      case Action::kSendWheel:
+      case Action::kGetZoomLevel:
+        break;
+    }
+    NOTREACHED() << "Not a ZoomLevelAction.";
+  }
 
   static bool IsWriteAccessAction(Action action) {
     switch (action) {
       case Action::kSendWheel:
-      case Action::kSetZoomLevel:
+      case Action::kIncreaseZoomLevel:
+      case Action::kDecreaseZoomLevel:
+      case Action::kResetZoomLevel:
         return true;
       case Action::kGetZoomLevel:
         return false;
@@ -1735,17 +1808,16 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     NOTREACHED();
   }
 
-  GetDisplayMediaCapturedSurfaceControlTest() = default;
-  ~GetDisplayMediaCapturedSurfaceControlTest() override = default;
-
   static void MakeValidApiCall(CaptureSessionDetails& capture_session,
                                Action action) {
     switch (action) {
       case Action::kSendWheel:
         capture_session.SendWheel();
         return;
-      case Action::kSetZoomLevel:
-        capture_session.SetZoomLevel(200);
+      case Action::kIncreaseZoomLevel:
+      case Action::kDecreaseZoomLevel:
+      case Action::kResetZoomLevel:
+        capture_session.UpdateZoomLevel(ToZoomLevelAction(action));
         return;
       case Action::kGetZoomLevel:
         capture_session.GetZoomLevel();
@@ -1753,6 +1825,9 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     }
     NOTREACHED();
   }
+
+  GetDisplayMediaCapturedSurfaceControlTest() = default;
+  ~GetDisplayMediaCapturedSurfaceControlTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
@@ -1773,6 +1848,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+    command_line->AppendSwitch(
+        switches::kAutoGrantCapturedSurfaceControlPrompt);
 
     AdjustCommandLineForZeroCopyCapture(command_line);
   }
@@ -1783,6 +1860,14 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
   // to parameterize the entire test suite.
   void RunChangeSourceWorksOnCorrectCaptureSession(
       size_t session_experiencing_change);
+
+  // Runs the `ChangingCapturedTabZoomChangeEventTest` test.
+  // This is defined as a method in order to test both of the following tests
+  // without the overhead and unclarity of parameterizing a test suite for it.
+  // * ChangingCapturedTabIssuesEventIfDifferentZoomLevels
+  // * ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels
+  void RunChangingCapturedTabZoomChangeEventTest(double zoom_level_first_tab,
+                                                 double zoom_level_second_tab);
 
  protected:
   using CapturedTab = ::CaptureSessionDetails::CapturedTab;
@@ -1800,6 +1885,307 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
 };
 
 using CscAction = GetDisplayMediaCapturedSurfaceControlTest::Action;
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       CorrectlyReportDefaultCapturedSurfaceZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to SetZoomFactor().
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       CorrectlyReportNonDefaultCapturedSurfaceZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  // Start the capture.
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+
+  // The initially reported zoom level is as expected.
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 50);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GetDisplayMediaCapturedSurfaceControlTest,
+    NoZoomLevelChangeEventFiredWhenCaptureStartsWithDefaultZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to SetZoomFactor().
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GetDisplayMediaCapturedSurfaceControlTest,
+    NoZoomLevelChangeEventFiredWhenCaptureStartsWithNonDefaultZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       IncreaseZoomLevelSucceedsBelowMaxValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+
+  capture_session.UpdateZoomLevel("increase");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_GT(actual_zoom_level_percent, 100);
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       IncreaseZoomLevelFailsAtMaxValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  const double max_factor = blink::kPresetBrowserZoomFactors.back();
+  SetZoomFactor(captured_tab, max_factor);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), std::round(100 * max_factor));
+
+  capture_session.UpdateZoomLevel("increase", /*expect_success=*/false);
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_EQ(actual_zoom_level_percent, std::round(100 * max_factor));
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       IncreaseZoomLevelIssuesEvent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  capture_session.UpdateZoomLevel("increase");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       DecreaseZoomLevelSucceedsAboveMinValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+
+  capture_session.UpdateZoomLevel("decrease");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_LT(actual_zoom_level_percent, 100);
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       DecreaseZoomLevelFailsAtMinValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  const double min_factor = blink::kPresetBrowserZoomFactors.front();
+  SetZoomFactor(captured_tab, min_factor);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), std::round(100 * min_factor));
+
+  capture_session.UpdateZoomLevel("decrease", /*expect_success=*/false);
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_EQ(actual_zoom_level_percent, std::round(100 * min_factor));
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       DecreaseZoomLevelIssuesEvent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  capture_session.UpdateZoomLevel("decrease");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
+}
+
+// The "expected" case of resetZoomLevel() - changing *back* to
+// the default value.
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ResetZoomLevelSucceedsIfNonDefaultLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  // Start the capture.
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 50);
+
+  // Reset works as expected.
+  capture_session.UpdateZoomLevel("reset");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+  EXPECT_EQ(capture_session.GetZoomLevel(), 100);
+}
+
+// The less "expected" case of resetZoomLevel() - calling reset...()
+// when already at the default value. Should be no-op but succeed.
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ResetZoomLevelSucceedsIfDefaultLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  capture_session.RunGetDisplayMedia();
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+
+  // Reset works as expected.
+  capture_session.UpdateZoomLevel("reset");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+  EXPECT_EQ(capture_session.GetZoomLevel(), 100);
+}
+
+void GetDisplayMediaCapturedSurfaceControlTest::
+    RunChangingCapturedTabZoomChangeEventTest(double zoom_level_first_tab,
+                                              double zoom_level_second_tab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  WebContents* const first_captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(first_captured_tab, zoom_level_first_tab);
+
+  WebContents* const second_captured_tab =
+      capture_session.GetTab(CapturedTab::kOtherTab);
+  SetZoomFactor(second_captured_tab, zoom_level_second_tab);
+
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(GetZoomLevelPercentage(first_captured_tab),
+            100 * zoom_level_first_tab);
+  ASSERT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+
+  GetDelegate(second_captured_tab)->ShareThisTabInstead();
+  capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
+  ASSERT_EQ(capture_session.GetCapturedTab(), second_captured_tab);
+  ASSERT_EQ(GetZoomLevelPercentage(second_captured_tab),
+            100 * zoom_level_second_tab);
+
+  const int expected_event_count =
+      (zoom_level_first_tab != zoom_level_second_tab) ? 1 : 0;
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(),
+            expected_event_count);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ChangingCapturedTabIssuesEventIfDifferentZoomLevels) {
+  SCOPED_TRACE("ChangingCapturedTabIssuesEventIfDifferentZoomLevels");
+  RunChangingCapturedTabZoomChangeEventTest(0.5, 0.75);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels) {
+  SCOPED_TRACE("ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels");
+  RunChangingCapturedTabZoomChangeEventTest(0.5, 0.5);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ResetZoomLevelOnlyIssuesEventsWhenZoomLevelChanges) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  // Start the capture.
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 50);
+  ASSERT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+
+  // Expectation #1 - the initial reset issues an event.
+  capture_session.UpdateZoomLevel("reset");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
+
+  // Expectation #2 - additional resets don't issue an event.
+  capture_session.UpdateZoomLevel("reset");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+
+  // Expectation #3 - events still generally issued, they just
+  // require actual change of zoom level. (Test is sane.)
+  capture_session.UpdateZoomLevel("increase");
+  capture_session.UpdateZoomLevel("reset");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 2);
+}
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
                        ChangeSourceTriggersUpdateCaptureTarget) {
@@ -1893,7 +2279,9 @@ class GetDisplayMediaCapturedSurfaceControlIndicatorTest
 INSTANTIATE_TEST_SUITE_P(,
                          GetDisplayMediaCapturedSurfaceControlIndicatorTest,
                          Values(CscAction::kSendWheel,
-                                CscAction::kSetZoomLevel,
+                                CscAction::kIncreaseZoomLevel,
+                                CscAction::kDecreaseZoomLevel,
+                                CscAction::kResetZoomLevel,
                                 CscAction::kGetZoomLevel));
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,

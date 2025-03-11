@@ -129,7 +129,7 @@ public final class DialogManager {
      * gracefully ignored but the callback is called in any case.
      * @param callback is asynchronously called as soon as the dialog is no longer visible.
      */
-    public void hide(Runnable callback) {
+    public void hide(@Nullable Runnable callback) {
         if (mActionsConsumer != null) {
             @HideActions final int action;
             if (mBarrierClosure == null) {

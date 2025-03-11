@@ -33,8 +33,6 @@ namespace os_crypt {
 
 namespace {
 
-bool g_non_standard_user_data_dir_supported_for_testing = false;
-
 ProtectionLevel AddFlags(ProtectionLevel protection_level,
                          elevation_service::EncryptFlags flags) {
   // Check protection_level fits into 8-bits.
@@ -67,19 +65,15 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
     return SupportLevel::kNotSystemLevel;
   }
 
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    return SupportLevel::kApiFailed;
-  }
+  const auto maybe_using_default_user_data_dir =
+      chrome::IsUsingDefaultDataDirectory();
 
-  base::FilePath default_user_data_dir;
-  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
+  if (!maybe_using_default_user_data_dir.has_value()) {
     return SupportLevel::kApiFailed;
   }
 
   // User data dir can be overridden by policy or by a command line option.
-  if (user_data_dir != default_user_data_dir &&
-      !g_non_standard_user_data_dir_supported_for_testing) {
+  if (!maybe_using_default_user_data_dir.value()) {
     return SupportLevel::kNotUsingDefaultUserDataDir;
   }
 
@@ -107,6 +101,11 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
     if (profile_type > 0) {
       return SupportLevel::kDisabledByRoamingWindowsProfile;
     }
+  }
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    return SupportLevel::kApiFailed;
   }
 
   // If the user data dir is on a network drive, then maybe it is shared between
@@ -254,10 +253,6 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
 
   last_error = ERROR_SUCCESS;
   return S_OK;
-}
-
-void SetNonStandardUserDataDirSupportedForTesting(bool supported) {
-  g_non_standard_user_data_dir_supported_for_testing = supported;
 }
 
 }  // namespace os_crypt

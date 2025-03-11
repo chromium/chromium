@@ -23,7 +23,7 @@
 namespace extensions {
 
 namespace externally_connectable_errors {
-const char kErrorInvalidMatchPattern[] = "Invalid match pattern '*'";
+const char kErrorInvalidMatchPattern[] = "Invalid match pattern '*' (*)";
 const char kErrorInvalidId[] = "Invalid ID '*'";
 const char kErrorNothingSpecified[] =
     "'externally_connectable' specifies neither 'matches' nor 'ids'; "
@@ -103,9 +103,11 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
       // Safe to use SCHEME_ALL here; externally_connectable gives a page ->
       // extension communication path, not the other way.
       URLPattern pattern(URLPattern::SCHEME_ALL);
-      if (pattern.Parse(*it) != URLPattern::ParseResult::kSuccess) {
+      auto parse_result = pattern.Parse(*it);
+      if (parse_result != URLPattern::ParseResult::kSuccess) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
-            externally_connectable_errors::kErrorInvalidMatchPattern, *it);
+            externally_connectable_errors::kErrorInvalidMatchPattern, *it,
+            URLPattern::GetParseResultString(parse_result));
         return nullptr;
       }
 

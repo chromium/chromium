@@ -15,12 +15,13 @@
 
 #include <cinttypes>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -473,10 +474,10 @@ const char* PolicyDiagnostic::JsonString() {
   dict.Set(kZeroAppShim, zero_appshim_);
   dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 
-  auto json_string = std::make_unique<std::string>();
-  JSONStringValueSerializer to_json(json_string.get());
-  CHECK(to_json.Serialize(dict));
-  json_string_ = std::move(json_string);
+  std::optional<std::string> json_string =
+      base::WriteJson(base::Value(std::move(dict)));
+  CHECK(json_string);
+  json_string_ = std::make_unique<std::string>(std::move(*json_string));
   return json_string_->c_str();
 }
 

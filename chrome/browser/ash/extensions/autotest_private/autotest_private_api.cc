@@ -6881,7 +6881,7 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
   static const base::Feature* const kAllowList[] = {
       // clang-format off
       &ash::features::kFeatureManagementVideoConference,
-      &ash::features::kSavedDeskUiRevamp,
+      &ash::features::kForestFeature,
       &kDisabledFeatureForTest,
       &kEnabledFeatureForTest,
       // clang-format on

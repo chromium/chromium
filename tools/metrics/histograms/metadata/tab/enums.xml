@@ -251,34 +251,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Activate the context menu of a tab"/>
 </enum>
 
-<enum name="TabBackgroundLoadStatus">
-  <int value="0" label="Loaded on creation and shown"/>
-  <int value="1" label="Loaded on creation and lost"/>
-  <int value="2" label="Not loaded on creation"/>
-</enum>
-
 <enum name="TabDeclutterEntryPoint">
   <int value="0" label="Nudge"/>
   <int value="1" label="AppMenu"/>
   <int value="2" label="Selector"/>
 </enum>
-
-<!-- LINT.IfChange(TabGroupEvent) -->
-
-<enum name="TabGroupEvent">
-  <int value="0" label="Tab group created"/>
-  <int value="1" label="Tab group removed"/>
-  <int value="2" label="Tab group opened"/>
-  <int value="3" label="Tab group closed"/>
-  <int value="4" label="Tab group visuals changed"/>
-  <int value="5" label="Tab group tabs reordered"/>
-  <int value="6" label="Tab added"/>
-  <int value="7" label="Tab removed"/>
-  <int value="8" label="Tab navigated"/>
-  <int value="9" label="Tab selected"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:TabGroupEvent) -->
 
 <!-- LINT.IfChange(TabGroupLoadedEmptiness)-->
 

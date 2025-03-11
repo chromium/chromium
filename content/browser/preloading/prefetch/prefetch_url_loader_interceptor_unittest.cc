@@ -460,13 +460,11 @@ namespace {
 
 class PrefetchURLLoaderInterceptorTest
     : public PrefetchURLLoaderInterceptorTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple<PrefetchReusableForTests,
-                     /*should_enable_new_wait_loop*/ bool>> {
+      public ::testing::WithParamInterface<PrefetchReusableForTests> {
   void SetUp() override {
     PrefetchURLLoaderInterceptorTestBase::SetUp();
 
-    switch (std::get<0>(GetParam())) {
+    switch (GetParam()) {
       case PrefetchReusableForTests::kDisabled:
         scoped_feature_list_for_reusable_.InitAndDisableFeature(
             features::kPrefetchReusable);
@@ -476,22 +474,13 @@ class PrefetchURLLoaderInterceptorTest
             features::kPrefetchReusable);
         break;
     }
-
-    if (std::get<1>(GetParam())) {
-      scoped_feature_list_for_new_wait_loop_.InitAndEnableFeature(
-          features::kPrefetchNewWaitLoop);
-    } else {
-      scoped_feature_list_for_new_wait_loop_.InitAndDisableFeature(
-          features::kPrefetchNewWaitLoop);
-    }
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     PrefetchURLLoaderInterceptorTest,
-    testing::Combine(testing::ValuesIn(PrefetchReusableValuesForTests()),
-                     testing::Bool()));
+    testing::ValuesIn(PrefetchReusableValuesForTests()));
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(InterceptNavigationCookieCopyCompleted)) {
@@ -1096,7 +1085,6 @@ class PrefetchURLLoaderInterceptorBecomeNotServableTest
     : public PrefetchURLLoaderInterceptorTestBase,
       public ::testing::WithParamInterface<
           std::tuple<PrefetchReusableForTests,
-                     /*should_enable_new_wait_loop*/ bool,
                      NotServableReason>> {
   void SetUp() override {
     PrefetchURLLoaderInterceptorTestBase::SetUp();
@@ -1110,14 +1098,6 @@ class PrefetchURLLoaderInterceptorBecomeNotServableTest
         scoped_feature_list_for_reusable_.InitAndEnableFeature(
             features::kPrefetchReusable);
         break;
-    }
-
-    if (std::get<1>(GetParam())) {
-      scoped_feature_list_for_new_wait_loop_.InitAndEnableFeature(
-          features::kPrefetchNewWaitLoop);
-    } else {
-      scoped_feature_list_for_new_wait_loop_.InitAndDisableFeature(
-          features::kPrefetchNewWaitLoop);
     }
   }
 };
@@ -1189,7 +1169,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
 
   // Simulate the prefetch becoming not servable anymore.
   PrefetchRequestHandler another_request;
-  switch (std::get<2>(GetParam())) {
+  switch (std::get<1>(GetParam())) {
     case NotServableReason::kOnCompleteFailure:
       producer_handle.reset();
       pending_request.client->OnComplete(
@@ -1236,7 +1216,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
 
   EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
 
-  switch (std::get<2>(GetParam())) {
+  switch (std::get<1>(GetParam())) {
     case NotServableReason::kOnCompleteFailure:
       EXPECT_FALSE(was_intercepted(kTestUrl).value());
       ExpectCorrectUkmLogs({.is_accurate = true}, kTestUrl);
@@ -1283,7 +1263,6 @@ INSTANTIATE_TEST_SUITE_P(
     PrefetchURLLoaderInterceptorBecomeNotServableTest,
     testing::Combine(
         testing::ValuesIn(PrefetchReusableValuesForTests()),
-        testing::Bool(),
         testing::Values(NotServableReason::kOnCompleteFailure,
                         NotServableReason::kAnotherRequest,
                         NotServableReason::kAnotherRequestCompleted)));

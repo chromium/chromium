@@ -31,9 +31,6 @@ const char kDefaultAllowedExtensionIds[] =
     "alhngdkjgnedakdlnamimgfihgkmenbh,"
     "gnddkmpjjjcimefninepfmmddpgaaado";
 
-BASE_FEATURE(kChromeAppsDeprecationExcludeForceInstalls,
-             "ChromeAppsDeprecationExcludeForceInstalls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 base::FeatureParam<std::string> kChromeAppAllowlist{
     &features::kChromeAppsDeprecation, "allow_list",
     kDefaultAllowedExtensionIds};
@@ -126,15 +123,6 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
       extension_id, extensions::ExtensionRegistry::EVERYTHING);
   if (!app || !app->is_app())
     return false;
-
-  bool force_installed =
-      IsExtensionForceInstalled(context, extension_id, nullptr);
-
-  if (base::FeatureList::IsEnabled(
-          kChromeAppsDeprecationExcludeForceInstalls) &&
-      force_installed) {
-    return false;
-  }
 
   // This feature parameter can specify specific extension ids to continue
   // allowing.

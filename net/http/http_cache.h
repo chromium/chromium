@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -37,6 +38,7 @@
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/does_url_match_filter.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -46,6 +48,10 @@
 #include "net/http/no_vary_search_cache.h"
 
 class GURL;
+
+namespace base {
+class Time;
+}
 
 namespace url {
 class Origin;
@@ -222,6 +228,16 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                           const std::string& http_method,
                           const NetworkIsolationKey& network_isolation_key,
                           bool include_credentials);
+
+  // Delete entries matching the criteria `filter_type`, `origins`, `domains`,
+  // `delete_begin` and `delete_end` from the NoVarySearchCache and refresh the
+  // on-disk cache to reflect the removals if necessary. See
+  // no_vary_search_cache.h for the definition of the parameter.
+  void ClearNoVarySearchCache(UrlFilterType filter_type,
+                              const base::flat_set<url::Origin>& origins,
+                              const base::flat_set<std::string>& domains,
+                              base::Time delete_begin,
+                              base::Time delete_end);
 
   // Causes all transactions created after this point to simulate lock timeout
   // and effectively bypass the cache lock whenever there is lock contention.

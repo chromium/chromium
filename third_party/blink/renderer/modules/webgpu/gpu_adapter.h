@@ -46,8 +46,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   bool isFallbackAdapter() const;
   wgpu::BackendType backendType() const;
   bool SupportsMultiPlanarFormats() const;
-  bool isCompatibilityMode() const;
-  String featureLevel() const;
 
   ScriptPromise<GPUDevice> requestDevice(ScriptState* script_state,
                                          GPUDeviceDescriptor* descriptor);
@@ -80,8 +78,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   wgpu::BackendType backend_type_;
   wgpu::AdapterType adapter_type_;
   bool is_consumed_ = false;
-  bool is_compatibility_mode_;
-  String feature_level_ = "";
   bool is_xr_compatible_ = false;
   Member<GPUSupportedLimits> limits_;
   Member<GPUSupportedFeatures> features_;

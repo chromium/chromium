@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/types/pass_key.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"

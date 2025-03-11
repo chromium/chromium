@@ -11,6 +11,7 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/fre_util.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -90,6 +92,7 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
   auth_controller_.CheckAuthBeforeShow(
+      AuthController::FallbackBehavior::kShowReauthPage,
       base::BindOnce(&GlicFreController::ShowFreDialogAfterAuthCheck,
                      GetWeakPtr(), browser->AsWeakPtr()));
 }
@@ -97,9 +100,10 @@ void GlicFreController::ShowFreDialog(Browser* browser) {
 void GlicFreController::ShowFreDialogAfterAuthCheck(
     base::WeakPtr<Browser> browser,
     AuthController::BeforeShowResult result) {
-  if (result == AuthController::BeforeShowResult::kShowingReauthSigninPage) {
+  if (result != AuthController::BeforeShowResult::kReady) {
     return;
   }
+
   // Abort if the browser was closed, to avoid crashing. Note, the user
   // shouldn't have much chance to close the browser between ShowFreDialog() and
   // ShowFreDialogAfterAuthCheck().
@@ -244,6 +248,12 @@ BASE_FEATURE(kGlicFrePreconnect,
              "GlicFrePreconnect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool,
+                   kGlicFrePreconnectToSubresourceDomains,
+                   &kGlicFrePreconnect,
+                   "GlicFrePreconnectToSubresourceDomains",
+                   true);
+
 }  // namespace
 
 void GlicFreController::MaybePreconnect() {
@@ -263,6 +273,14 @@ void GlicFreController::MaybePreconnect() {
   loading_predictor->PreconnectURLIfAllowed(
       glic::GetFreURL(profile_), /*allow_credentials=*/true, anonymization_key,
       kGlicFrePreconnectTrafficAnnotation, &storage_partition_config);
+  if (kGlicFrePreconnectToSubresourceDomains.Get() &&
+      google_util::IsGoogleDomainUrl(fre_url, google_util::ALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
+    loading_predictor->PreconnectURLIfAllowed(
+        GURL("https://www.gstatic.com/"), /*allow_credentials=*/true,
+        anonymization_key, kGlicFrePreconnectTrafficAnnotation,
+        &storage_partition_config);
+  }
 }
 
 // static

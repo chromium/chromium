@@ -220,6 +220,7 @@ class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
       : BocaSessionManager(session_client_impl,
+                           /*pref_service=*/nullptr,
                            AccountId::FromUserEmail(kUserEmail),
                            /*=is_producer*/ false) {}
   MOCK_METHOD(void,

@@ -88,7 +88,7 @@ bool ShouldShowSavedDesksOptions() {
 }
 
 bool ShouldShowSavedDesksOptionsForDesk(Desk* desk, DeskBarViewBase* bar_view) {
-  if (!features::IsSavedDeskUiRevampEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return false;
   }
 

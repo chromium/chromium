@@ -320,7 +320,7 @@ class CORE_EXPORT Animation : public EventTarget,
 
   CompositorAnimations::FailureReasons CheckCanStartAnimationOnCompositor(
       const PaintArtifactCompositor* paint_artifact_compositor,
-      PropertyHandleSet* unsupported_properties = nullptr) const;
+      PropertyHandleSet* unsupported_properties_for_tracing = nullptr) const;
   void StartAnimationOnCompositor(
       const PaintArtifactCompositor* paint_artifact_compositor);
   void CancelAnimationOnCompositor();

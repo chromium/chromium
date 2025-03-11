@@ -23,11 +23,10 @@ class FakeEnvironment : public base::Environment {
 
   void Set(std::string_view name, const std::string& value);
 
-  bool GetVar(std::string_view variable_name, std::string* result) override;
-
+  // base::Environment:
+  std::optional<std::string> GetVar(std::string_view variable_name) override;
   bool SetVar(std::string_view variable_name,
               const std::string& new_value) override;
-
   bool UnSetVar(std::string_view variable_name) override;
 
  private:

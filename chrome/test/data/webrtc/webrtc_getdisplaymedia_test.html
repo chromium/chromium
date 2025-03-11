@@ -7,6 +7,7 @@
   <script>
   'use strict';
   let controller;
+  let zoom_level_event_count = 0;
   let settings;
   let video_track;
   let audio_track;
@@ -48,6 +49,7 @@
     }
 
     controller = new CaptureController;
+    controller.oncapturedzoomlevelchange = (() => ++zoom_level_event_count);
     return navigator.mediaDevices.getDisplayMedia({...constraints, controller}).
       then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
                                               : handleError);
@@ -159,20 +161,37 @@
     return logAndReturn("stopped");
   }
 
+  // TODO(crbug.com/40276312): Deprecate and replace
+  // with either forwardWheel() or forwardGestures().
   async function sendWheel(action) {
     await controller.sendWheel(action);
     return logAndReturn("send-wheel-resolved");
   }
 
-  async function setZoomLevel(zoomLevel) {
+  async function updateZoomLevel(action) {
     try {
-      await controller.setZoomLevel(zoomLevel);
+      if (action === "increase") {
+        await controller.increaseZoomLevel();
+      } else if (action === "decrease") {
+        await controller.decreaseZoomLevel();
+      } else if (action === "reset") {
+        await controller.resetZoomLevel();
+      } else {
+        return logAndReturn("unknown-action-error");
+      }
     } catch (e) {
-      return logAndReturn("set-zoom-level-error");
+      return logAndReturn(`${action}-zoom-level-error`);
     }
-    return logAndReturn("set-zoom-level-resolved");
+    return logAndReturn(`${action}-zoom-level-resolved`);
   }
 
+  function zoomLevelChangeEventsSinceLast() {
+    const result = zoom_level_event_count;
+    zoom_level_event_count = 0;
+    return result;
+  }
+
+  // TODO(crbug.com/40276312): Remove.
   function getZoomLevel() {
     return controller.getZoomLevel();
   }

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_reader.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_scaler.h"
 
 namespace blink {
 
@@ -57,6 +58,12 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   bool SetFailed() override;
+  Vector<SkISize> GetSupportedDecodeSizes() const override;
+  gfx::Size DecodedSize() const override;
+
+  bool IsInterlaced() const;
+  bool IsAnimated() const;
+  wtf_size_t GetBytesPerRawPixel() const;
 
   // Callbacks from libpng
   void HeaderAvailable();
@@ -80,6 +87,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   bool CanReusePreviousFrameBuffer(wtf_size_t) const override;
 
   std::unique_ptr<PNGImageReader> reader_;
+  std::unique_ptr<PNGImageScaler> scaler_;
   const unsigned offset_;
   wtf_size_t current_frame_;
   int repetition_count_;

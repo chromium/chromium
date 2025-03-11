@@ -819,7 +819,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
           constraint->scroll_container_relative_containing_block_rect =
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
+
           constraint->pixel_snap_offset = gfx::Vector2dF(extra_sticky_offset);
+          // gfx::Vector2dF rounds differently than PhysicalOffset at
+          // half-integral negative values. This hack works around that
+          // situation.
+          // See https://issues.chromium.org/issues/401693546#comment6
+          float adjustment_left = 0.0;
+          float adjustment_top = 0.0;
+          if (extra_sticky_offset.left == LayoutUnit(-0.5)) {
+            adjustment_left = 0.001;
+          }
+          if (extra_sticky_offset.top == LayoutUnit(-0.5)) {
+            adjustment_top = 0.001;
+          }
+          constraint->pixel_snap_offset +=
+              gfx::Vector2dF(adjustment_left, adjustment_top);
+
           if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
             constraint->nearest_element_shifting_sticky_box =
@@ -2530,21 +2546,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
         Path& path = state.clip_path.emplace();
         path.AddRoundedRect(paint_clip_rect);
       }
-      auto effective_change = properties_->UpdateInnerBorderRadiusClip(
-          *context_.current.clip, std::move(state));
-      // TODO(crbug.com/401543213): This is a workaround. The proper fix is to
-      // figure out how to construct an effect tree referencing a proper
-      // transform node without also breaking crbug.com/328339028.
-      if (effective_change <
-              PaintPropertyChangeType::kChangedOnlyNonRerasterValues &&
-          IsViewTransitionGroupWithNesting(object_)) {
-        effective_change =
-            PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-      }
-      OnUpdateClip(effective_change);
+      OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
+          *context_.current.clip, std::move(state)));
     } else {
       OnClearClip(properties_->ClearInnerBorderRadiusClip());
     }
+  }
+
+  // TODO(crbug.com/401543213): This is a workaround. The proper fix is to
+  // figure out how to construct an effect tree referencing a proper
+  // transform node without also breaking crbug.com/328339028.
+  // Note that this is intentionally triggering an update whether or not
+  // NeedsPaintPropertyUpdate is true.
+  if (IsViewTransitionGroupWithNesting(object_)) {
+    OnUpdateClip(PaintPropertyChangeType::kChangedOnlyNonRerasterValues);
   }
 
   if (auto* border_radius_clip = properties_->InnerBorderRadiusClip())

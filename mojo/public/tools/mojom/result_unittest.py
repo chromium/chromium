@@ -20,10 +20,12 @@ class ResultTest(MojomParserTestCase):
     a = self.LoadModule(a_mojom)
     self.assertEqual(1, len(a.interfaces))
     self.assertEqual(1, len(a.interfaces[0].methods))
-    self.assertEqual('b', a.interfaces[0].methods[0].result.success_type)
-    self.assertEqual('s', a.interfaces[0].methods[0].result.failure_type)
+    self.assertEqual(mojom.BOOL,
+                     a.interfaces[0].methods[0].result_response.success_kind)
+    self.assertEqual(mojom.STRING,
+                     a.interfaces[0].methods[0].result_response.failure_kind)
 
-  def testResultResponse(self):
+  def testResultResponseStructs(self):
     a_mojom = 'a.mojom'
     self.WriteFile(
         a_mojom, """
@@ -38,7 +40,14 @@ class ResultTest(MojomParserTestCase):
     a = self.LoadModule(a_mojom)
     self.assertEqual(1, len(a.interfaces))
     self.assertEqual(1, len(a.interfaces[0].methods))
-    self.assertEqual('x:Success',
-                     a.interfaces[0].methods[0].result.success_type)
-    self.assertEqual('x:Failure',
-                     a.interfaces[0].methods[0].result.failure_type)
+
+    result_response = a.interfaces[0].methods[0].result_response
+    self.assertIsNotNone(result_response.success_kind)
+    self.assertIsNotNone(result_response.failure_kind)
+
+    name_to_kind = {}
+    for kind in a.structs:
+      name_to_kind[kind.mojom_name] = kind
+
+    self.assertEqual(name_to_kind['Success'], result_response.success_kind)
+    self.assertEqual(name_to_kind['Failure'], result_response.failure_kind)

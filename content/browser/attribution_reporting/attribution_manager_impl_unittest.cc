@@ -1544,11 +1544,41 @@ TEST_F(AttributionManagerImplTest,
 }
 
 TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(metrics::dwa::kDwaFeature);
+
+  metrics::dwa::DwaRecorder::Get()->EnableRecording();
+  metrics::dwa::DwaRecorder::Get()->Purge();
+  ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+              IsEmpty());
+
   base::HistogramTester histograms;
+
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   task_environment_.RunUntilIdle();
   histograms.ExpectUniqueSample("Conversions.SourceStoredStatus8",
                                 StorableSource::Result::kSuccess, 1);
+
+  ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting().size(),
+              1);
+  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()
+                  ->GetEntriesForTesting()
+                  .at(0)
+                  ->event_hash,
+              base::HashMetricName("AttributionConversionsStoreSource"));
+  // The content is set as the attribution source reporting origin. In unit
+  // tests, this value is set to "https://report.test". DWA content sanitization
+  // extracts the eTLD+1 from this value, yielding "report.test".
+  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()
+                  ->GetEntriesForTesting()
+                  .at(0)
+                  ->content_hash,
+              base::HashMetricName("report.test"));
+  EXPECT_THAT(
+      metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting().at(0)->metrics,
+      UnorderedElementsAre(testing::Pair(
+          base::HashMetricName("Status"),
+          static_cast<int64_t>(StorableSource::Result::kSuccess))));
 }
 
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {

@@ -58,8 +58,8 @@ class PrivateAggregationPendingContributionsTest : public testing::Test {
          i <= static_cast<int>(PAErrorEvent::kMaxValue); i++) {
       auto error_event = static_cast<PAErrorEvent>(i);
 
-      // Skip this non-internal event as it will always be triggered.
-      if (error_event == PAErrorEvent::kAlreadyTriggeredNonInternalError) {
+      // Skip this external event as it will always be triggered.
+      if (error_event == PAErrorEvent::kAlreadyTriggeredExternalError) {
         continue;
       }
       pending_contributions.AddConditionalContributions(
@@ -804,15 +804,15 @@ TEST_F(PrivateAggregationPendingContributionsTest,
           {/*bucket=*/static_cast<int>(PAErrorEvent::kEmptyReportDropped),
            /*value=*/1, /*filtering_id=*/0},
           {/*bucket=*/static_cast<int>(
-               PAErrorEvent::kAlreadyTriggeredNonInternalError),
+               PAErrorEvent::kAlreadyTriggeredExternalError),
            /*value=*/1, /*filtering_id=*/0}};
 
   MakeConditionalContributionForEachInternalError(pending_contributions);
 
   pending_contributions.AddConditionalContributions(
-      PAErrorEvent::kAlreadyTriggeredNonInternalError,
+      PAErrorEvent::kAlreadyTriggeredExternalError,
       {{/*bucket=*/static_cast<int>(
-            PAErrorEvent::kAlreadyTriggeredNonInternalError),
+            PAErrorEvent::kAlreadyTriggeredExternalError),
         /*value=*/1, /*filtering_id=*/0}});
 
   pending_contributions.MarkContributionsFinalized(

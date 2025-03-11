@@ -17,10 +17,8 @@ using on_device_translation::CreateFakeDictionaryData;
 using on_device_translation::LanguagePackKey;
 using on_device_translation::MockComponentManager;
 using on_device_translation::TestCreateTranslator;
-using on_device_translation::TestLanguagePairAvailable;
 using on_device_translation::TestSimpleTranslationWorks;
 using on_device_translation::TestTranslationAvailable;
-using on_device_translation::TestTranslatorCapabilitiesAvailable;
 
 namespace policy {
 
@@ -85,8 +83,6 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, DefaultAllowed) {
   NavigateToEmptyPage();
   TestSimpleTranslationWorks(browser(), "en", "ja");
   TestTranslationAvailable(browser(), "en", "ja", "available");
-  TestLanguagePairAvailable(browser(), "en", "ja", "readily");
-  TestTranslatorCapabilitiesAvailable(browser(), "readily");
 }
 
 // Test that set the policy to false will disallow the API.
@@ -97,8 +93,6 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, Disallow) {
                        "NotSupportedError: Unable to create translator for the "
                        "given source and target language.");
   TestTranslationAvailable(browser(), "en", "ja", "unavailable");
-  TestLanguagePairAvailable(browser(), "en", "ja", "no");
-  TestTranslatorCapabilitiesAvailable(browser(), "no");
 }
 
 // Test that set the policy to true will allow the API.
@@ -107,8 +101,6 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, Allow) {
   SetTranslatorAPIAllowedPolicy(true);
   TestSimpleTranslationWorks(browser(), "en", "ja");
   TestTranslationAvailable(browser(), "en", "ja", "available");
-  TestLanguagePairAvailable(browser(), "en", "ja", "readily");
-  TestTranslatorCapabilitiesAvailable(browser(), "readily");
 }
 
 // Test that the policy can be dynamically refreshed.

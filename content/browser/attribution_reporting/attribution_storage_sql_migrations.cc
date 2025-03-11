@@ -654,6 +654,14 @@ bool To68(sql::Database& db) {
   return true;
 }
 
+bool To69(sql::Database& db) {
+  static constexpr char kRateLimitSourceReportingSiteIndexSql[] =
+      "CREATE INDEX rate_limit_source_reporting_site_idx "
+      "ON rate_limits(reporting_site)"
+      "WHERE scope=0";
+  return db.Execute(kRateLimitSourceReportingSiteIndexSql);
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -680,14 +688,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 64, &To65) &&
             MaybeMigrate(db, meta_table, 65, &To66) &&
             MaybeMigrate(db, meta_table, 66, &To67) &&
-            MaybeMigrate(db, meta_table, 67, &To68);
+            MaybeMigrate(db, meta_table, 67, &To68) &&
+            MaybeMigrate(db, meta_table, 68, &To69);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 68,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 69,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

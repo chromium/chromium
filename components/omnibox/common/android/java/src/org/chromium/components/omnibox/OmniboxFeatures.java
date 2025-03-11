@@ -88,9 +88,6 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
                     FeatureState.ENABLED_IN_PROD);
 
-    public static final CachedFlag sRichInlineAutocomplete =
-            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, FeatureState.ENABLED_IN_PROD);
-
     /**
      * Whether GeolocationHeader should use {@link
      * com.google.android.gms.location.FusedLocationProviderClient} to determine the location sent
@@ -341,7 +338,7 @@ public class OmniboxFeatures {
      * @return Whether the rich inline autocomplete URL should be shown.
      */
     public static boolean shouldShowRichInlineAutocompleteUrl(int inputCount) {
-        return sRichInlineAutocomplete.isEnabled() && inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
+        return inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
     }
 
     /** Modifies the output of {@link #shouldRetainOmniboxOnFocus()} for testing. */

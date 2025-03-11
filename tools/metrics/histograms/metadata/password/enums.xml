@@ -248,11 +248,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Set of character class members changed"/>
 </enum>
 
-<enum name="CredentialEditError">
-  <int value="0" label="Empty password"/>
-  <int value="1" label="Duplicate username"/>
-</enum>
-
 <enum name="CredentialEntryAction">
   <int value="0" label="Deleted"/>
   <int value="1" label="Copied username"/>
@@ -492,16 +487,6 @@ chromium-metrics-reviews@google.com.
       label="Should not delete, deleting undecryptable logins was disabled by
              policy"/>
 </enum>
-
-<!-- LINT.IfChange(LoginDbDeprecationExportProgress)-->
-
-<enum name="LoginDbDeprecationExportProgress">
-  <int value="0" label="Scheduled"/>
-  <int value="1" label="Started"/>
-  <int value="2" label="Finished"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/password_manager/core/browser/export/login_db_deprecation_runner.h:LoginDbDeprecationExportProgress)-->
 
 <!-- LINT.IfChange(LoginDbDeprecationExportResult) -->
 
@@ -1020,12 +1005,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Got it button clicked"/>
   <int value="2" label="Manage passwords button clicked"/>
   <int value="3" label="Close button clicked"/>
-</enum>
-
-<enum name="PasswordManager.Store">
-  <int value="0" label="Not set"/>
-  <int value="1" label="Profile store"/>
-  <int value="2" label="Account store"/>
 </enum>
 
 <enum name="PasswordManager.SurfaceVisit">

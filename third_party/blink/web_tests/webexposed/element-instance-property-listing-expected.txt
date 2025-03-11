@@ -143,6 +143,8 @@ namespace http://www.w3.org/1999/xhtml
     property hasAttributes
     property hasChildNodes
     property hasPointerCapture
+    property headingOffset
+    property headingReset
     property hidden
     property hidePopover
     property id
@@ -1414,6 +1416,8 @@ namespace http://www.w3.org/2000/svg
     property hasAttributes
     property hasChildNodes
     property hasPointerCapture
+    property headingOffset
+    property headingReset
     property id
     property innerHTML
     property insertAdjacentElement

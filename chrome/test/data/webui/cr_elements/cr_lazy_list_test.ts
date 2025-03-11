@@ -162,13 +162,14 @@ suite('CrLazyListTest', () => {
     testApp.style.overflowY = 'auto';
     testApp.style.overflowX = 'hidden';
     document.body.appendChild(testApp);
+    lazyList = testApp.shadowRoot.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    const listFilled = eventToPromise('viewport-filled', lazyList);
     testApp.chunkSize = chunkSize;
     testApp.listItems = sampleData;
     testApp.scrollOffset = scrollOffset;
 
-    lazyList = testApp.shadowRoot.querySelector('cr-lazy-list')!;
-    assertTrue(!!lazyList);
-    await eventToPromise('viewport-filled', lazyList);
+    await listFilled;
     await microtasksFinished();
   }
 
@@ -421,6 +422,7 @@ suite('CrLazyListTest', () => {
     const numItems = 2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT;
     await setupTest(getTestItems(numItems), /* scrollOffset = */ 0, 4);
     assertEquals(SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT, queryItems().length);
+
     // 2 chunks holding the items.
     let chunks = lazyList.querySelectorAll('.chunk');
     assertEquals(2, chunks.length);
@@ -428,8 +430,9 @@ suite('CrLazyListTest', () => {
     assertEquals(2, chunks[1]!.querySelectorAll('test-item').length);
 
     // Scrolling 50% of the viewport renders 50% more items.
+    let listFilled = eventToPromise('fill-height-end', testApp);
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT / 2;
-    await eventToPromise('fill-height-end', testApp);
+    await listFilled;
 
     assertEquals(
         3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT / 2, queryItems().length);
@@ -441,8 +444,9 @@ suite('CrLazyListTest', () => {
     assertEquals(1, chunks[2]!.querySelectorAll('test-item').length);
 
     // Scrolling to the end renders remaining items.
+    listFilled = eventToPromise('fill-height-end', testApp);
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT;
-    await eventToPromise('fill-height-end', testApp);
+    await listFilled;
     assertEquals(numItems, queryItems().length);
     // 3 chunks holding the items, now all are full.
     chunks = lazyList.querySelectorAll('.chunk');

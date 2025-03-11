@@ -37,6 +37,10 @@ class GlicScreenshotCapturer : public webrtc::DesktopCapturer::Callback {
   // panel is closed before the screen picker flow completes.
   void CloseScreenPicker();
 
+  // Exposes the internal ConvertFrameToJpeg() function to unit tests.
+  static std::vector<uint8_t> ConvertFrameToJpegForTesting(
+      std::unique_ptr<webrtc::DesktopFrame> frame);
+
  private:
   // Callback triggered when user selects a source to capture.
   void OnSourceSelected(const std::string& err, content::DesktopMediaID id);

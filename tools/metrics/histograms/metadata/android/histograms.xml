@@ -1428,20 +1428,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DownloadManager.Item.OpenFailed"
-    enum="AndroidDownloadFilterType" expires_after="M81">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Recorded when a download fails to open.</summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.Item.OpenSucceeded"
-    enum="AndroidDownloadFilterType" expires_after="M85">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Recorded when a download is opened.</summary>
-</histogram>
-
 <histogram name="Android.DownloadManager.NotificationInteraction"
     enum="DownloadNotificationInteractions" expires_after="2023-01-01">
   <owner>qinmin@chromium.org</owner>
@@ -1500,13 +1486,6 @@ chromium-metrics-reviews@google.com.
     sticky's will indicate how often the service is able to restart due to an
     unexpected stop.
   </summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.SpaceUsed" units="%"
-    expires_after="M81">
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The percentage of total storage downloads consume.</summary>
 </histogram>
 
 <histogram

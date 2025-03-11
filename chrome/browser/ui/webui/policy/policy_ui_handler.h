@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -24,6 +25,12 @@
 #include "extensions/buildflags/buildflags.h"
 
 class PrefChangeRegistrar;
+
+namespace features {
+// If enabled, the banner on the chrome://policy page to be shown only to
+// eligible users passing through the promotion eligibility checker.
+BASE_DECLARE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner);
+}  // namespace features
 
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,

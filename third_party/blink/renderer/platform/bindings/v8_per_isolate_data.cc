@@ -23,11 +23,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 #include <algorithm>
@@ -378,8 +373,7 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     vector = &it->value;
   }
   DCHECK_EQ(vector->size(), names.size());
-  return base::span<const v8::Eternal<v8::Name>>(vector->data(),
-                                                 vector->size());
+  return *vector;
 }
 
 v8::Local<v8::Context> V8PerIsolateData::EnsureScriptRegexpContext() {

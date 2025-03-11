@@ -5,8 +5,11 @@
 #include "chrome/browser/glic/glic_screenshot_capturer.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,11 +46,17 @@ std::vector<uint8_t> ConvertFrameToJpeg(
     return {};
   }
 
+  auto start_time = base::Time::Now();
   auto jpeg_data = gfx::JPEGCodec::Encode(
       sk_bitmap, features::kGlicScreenshotEncodeQuality.Get());
   if (!jpeg_data.has_value()) {
     return {};
   }
+  auto encode_time = base::Time::Now() - start_time;
+  VLOG(1) << "JPEGCodec::Encode() frame size: " << frame->size().width() << "x"
+          << frame->size().height();
+  VLOG(1) << "JPEGCodec::Encode() time: " << encode_time;
+  VLOG(1) << "JPEGCodec::Encode() result file size: " << jpeg_data->size();
   return std::move(*jpeg_data);
 }
 
@@ -160,6 +169,12 @@ void GlicScreenshotCapturer::SignalError(
     glic::mojom::CaptureScreenshotErrorReason error_reason) {
   std::move(capture_callback_)
       .Run(mojom::CaptureScreenshotResult::NewErrorReason(error_reason));
+}
+
+// static
+std::vector<uint8_t> GlicScreenshotCapturer::ConvertFrameToJpegForTesting(
+    std::unique_ptr<webrtc::DesktopFrame> frame) {
+  return ConvertFrameToJpeg(std::move(frame));
 }
 
 }  // namespace glic

@@ -765,6 +765,21 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
   }
 }
 
+bool IsOnFocusZeroSuggestEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  static bool enabled =
+      base::FeatureList::IsEnabled(omnibox::kFocusTriggersWebAndSRPZeroSuggest);
+
+  switch (page_classification) {
+    case metrics::OmniboxEventProto::
+        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+    case metrics::OmniboxEventProto::OTHER:
+      return enabled;
+    default:
+      return false;
+  }
+}
+
 // Rich autocompletion.
 
 bool IsRichAutocompletionEnabled() {

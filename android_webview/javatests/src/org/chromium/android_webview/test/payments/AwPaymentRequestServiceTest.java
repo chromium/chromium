@@ -28,6 +28,7 @@ import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.payments.MockPaymentApp;
 import org.chromium.components.payments.MockPaymentAppInstaller;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.util.TestWebServer;
@@ -54,8 +55,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
-        mMockPaymentAppInstaller =
-                new MockPaymentAppInstaller(PAYMENT_METHOD_NAME, OTHER_PAYMENT_METHOD_NAME);
+        mMockPaymentAppInstaller = new MockPaymentAppInstaller();
 
         mTestContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(new TestAwContentsClient());
@@ -169,7 +169,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCanMakePayments() throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
@@ -186,7 +186,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasEnrolledInstrument() throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(
@@ -202,7 +202,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestLaunchPaymentApp() throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
@@ -224,7 +224,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCanMakePaymentsWhenMerchantSupportsMultiplePaymentMethods()
             throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
@@ -245,7 +245,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasEnrolledInstrumentWhenMerchantSupportsMultiplePaymentMethods()
             throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
 
         JSUtils.clickNodeWithUserGesture(
@@ -266,7 +266,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestLaunchPaymentAppWhenMerchantSupportsMultiplePaymentMethods()
             throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
@@ -288,7 +288,10 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCannotMakePaymentsWithMoreThaOneAppAtOnce() throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ true);
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp())
+                .addApp(createOtherPaymentApp())
+                .install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
@@ -309,7 +312,10 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasNoEnrolledInstrumentWithMoreThaOneAppAtOnce()
             throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ true);
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp())
+                .addApp(createOtherPaymentApp())
+                .install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
 
         JSUtils.clickNodeWithUserGesture(
@@ -330,7 +336,10 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCannotLaunchPaymentAppWithMoreThanOneAppAtOnce()
             throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ true);
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp())
+                .addApp(createOtherPaymentApp())
+                .install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
@@ -345,7 +354,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testCannotRetry() throws Exception {
-        mMockPaymentAppInstaller.installPaymentApps(/* multipleApps= */ false);
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "retryPayment");
@@ -465,5 +474,27 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlAsync(mAwContents, merchantCheckoutPageUrl);
         Data messageFromPage = mWebMessageListener.waitForOnPostMessage();
         Assert.assertEquals("Page loaded.", messageFromPage.getAsString());
+    }
+
+    private MockPaymentApp createPaymentApp() {
+        return new MockPaymentApp()
+                .setLabel("Test Payments App")
+                .setPackage("test.payments.app")
+                .setMethod(PAYMENT_METHOD_NAME)
+                .setSignature("AABBCCDDEEFF001122334455")
+                .setSha256CertificateFingerprint(
+                        "79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE:06:50:CE:E4:75:80:62:65:02:FB:"
+                                + "F6:F9:91:AB:6E:BE:21:7E");
+    }
+
+    private MockPaymentApp createOtherPaymentApp() {
+        return new MockPaymentApp()
+                .setLabel("Other Test Payments App")
+                .setPackage("test.payments.other.app")
+                .setMethod(OTHER_PAYMENT_METHOD_NAME)
+                .setSignature("001122334455AABBCCDDEEFF")
+                .setSha256CertificateFingerprint(
+                        "01:9D:A6:93:7D:A2:1D:64:25:D8:D4:93:37:29:55:20:D9:54:16:A0:99:DD:E3:CA:"
+                                + "31:EE:94:A4:70:AD:BD:70");
     }
 }

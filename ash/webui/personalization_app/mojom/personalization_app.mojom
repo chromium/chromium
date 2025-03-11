@@ -684,6 +684,9 @@ interface AmbientObserver {
   // and Theme* intefaces.
   OnGeolocationPermissionForSystemServicesChanged(bool enabled,
                                                   bool is_user_modifiable);
+
+  // Notifies the JS side about the ambient theme preview images.
+  OnAmbientThemePreviewImagesChanged(map<AmbientTheme, url.mojom.Url> previews);
 };
 
 // Provides APIs to expose Ambient mode settings.

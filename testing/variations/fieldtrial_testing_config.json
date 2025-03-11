@@ -7722,6 +7722,24 @@
             ]
         }
     ],
+    "DefaultProfileEnterpriseBadging": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseProfileBadgingForAvatar",
+                        "EnterpriseProfileBadgingForMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferConciergeStartup": [
         {
             "platforms": [
@@ -10171,6 +10189,25 @@
             ]
         }
     ],
+    "FledgeBiddingAndAuctionNonceSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeBiddingAndAuctionNonceSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "Floss": [
         {
             "platforms": [
@@ -10587,6 +10624,14 @@
             "experiments": [
                 {
                     "name": "GlicEnabled",
+                    "params": {
+                        "BackoffMultiplierBase": "2.0",
+                        "MinPageCountBetweenNudges": "3",
+                        "NudgeCapCount": "10",
+                        "NudgeCapCountPerDomain": "3",
+                        "NudgeCapTime": "8h",
+                        "NudgeCapTimePerDomain": "8h"
+                    },
                     "enable_features": [
                         "ContextualCueing",
                         "Glic"
@@ -11714,7 +11759,8 @@
                 "chromeos",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "android"
             ],
             "experiments": [
                 {
@@ -13053,6 +13099,21 @@
             ]
         }
     ],
+    "InputVizard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputOnViz"
+                    ]
+                }
+            ]
+        }
+    ],
     "InsecureFormSubmissionInterstitial": [
         {
             "platforms": [
@@ -13704,12 +13765,26 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "fuchsia",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LayoutNGShapeCache"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LayoutNGShapeCacheWebview": [
+        {
+            "platforms": [
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -17779,26 +17854,6 @@
             ]
         }
     ],
-    "PrefetchNewWaitLoop": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240909",
-                    "enable_features": [
-                        "PrefetchNewWaitLoop"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrefetchProxyDesktop": [
         {
             "platforms": [
@@ -17831,7 +17886,6 @@
                 {
                     "name": "Enabled_20250129",
                     "params": {
-                        "PrefetchReusableUseNewWaitLoop": "true",
                         "prefetch_reusable_body_size_limit": "4194304"
                     },
                     "enable_features": [
@@ -23761,21 +23815,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabSwitcherForeignFaviconSupport"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabSwitcherFullNewTabButton": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabSwitcherFullNewTabButton"
                     ]
                 }
             ]

@@ -1197,6 +1197,12 @@ const char kEnterpriseProfileBadgingForMenuDescription[] =
     "Enable enterprise profile badging in the profile menu. This includes "
     "showing the enterprise logo and the management disclaimer under the email";
 
+const char kEnterpriseBadgingForNtpFooterName[] =
+    "Enable enterprise badging on the New Tab Page";
+const char kEnterpriseBadgingForNtpFooterDescription[] =
+    "Enable enterprise profile badging in the footer on the New Tab Page. This "
+    "includes showing the enterprise logo and the management disclaimer";
+
 const char kEnterpriseUpdatedProfileCreationScreenName[] =
     "Enable enterprise updated profile creation screens";
 const char kEnterpriseUpdatedProfileCreationScreenDescription[] =
@@ -1876,13 +1882,6 @@ const char kExtensionsToolbarZeroStateVistWebStore[] = "Visit Chrome Web Store";
 const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
     "Explore CWS extensions by category";
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kExtensionWebFileHandlersName[] = "Extensions Web File Handlers";
-const char kExtensionWebFileHandlersDescription[] =
-    "Enable Extension Web File Handlers, which allows extensions to operate on "
-    "the native file system. An extension can register to read and edit files, "
-    "specified in the manifest, by their file extension or mime type.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
@@ -2146,6 +2145,11 @@ const char kCastEnableStreamingWithHiDPIDescription[] =
     "Enables HiDPI tab capture during Cast Streaming mirroring sessions. May "
     "reduce performance on some platforms and also improve quality of video "
     "frames.";
+
+const char kChromeWebStoreNavigationThrottleName[] =
+    "Chrome Web Store navigation throttle";
+const char kChromeWebStoreNavigationThrottleDescription[] =
+    "When enabled, passes DM Token to the Chrome Web Store.";
 
 #if BUILDFLAG(IS_CHROMEOS)
 const char kFlexFirmwareUpdateName[] = "ChromeOS Flex Firmware Updates";
@@ -4679,12 +4683,6 @@ const char kRelatedSearchesSwitchName[] =
 const char kRelatedSearchesSwitchDescription[] =
     "Enables requesting related searches suggestions.";
 
-const char kRichAutocompletionAndroidName[] =
-    "Omnibox rich inline autocompletion on Android";
-const char kRichAutocompletionAndroidDescription[] =
-    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
-    "to any type of input that users repeatedly use to get to specific URLs.";
-
 const char kRightEdgeGoesForwardGestureNavName[] =
     "RightEdgeGoesForwardGestureNav";
 const char kRightEdgeGoesForwardGestureNavDescription[] =
@@ -4829,10 +4827,6 @@ const char kTabStripTransitionInDesktopWindowName[] =
 const char kTabStripTransitionInDesktopWindowDescription[] =
     "Allows hiding / showing the tab strip with varying desktop window widths "
     "by initiating a fade transition.";
-
-const char kTabSwitcherFullNewTabButtonName[] = "Tab Switcher New Tab Button";
-const char kTabSwitcherFullNewTabButtonDescription[] =
-    "Modifies the visual behavior of the new tab button in the tab switcher.";
 
 const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";

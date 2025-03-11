@@ -248,17 +248,6 @@ chromium-metrics-reviews@google.com.
   <int value="86" label="VideoCodecsRtcpFb"/>
 </enum>
 
-<enum name="SocketErrorCode">
-  <int value="0" label="ERR_MSG_TOO_BIG"/>
-  <int value="1" label="ERR_ADDRESS_UNREACHABLE"/>
-  <int value="2" label="ERR_ADDRESS_INVALID"/>
-  <int value="3" label="ERR_INTERNET_DISCONNECTED"/>
-  <int value="4" label="ERR_TIMED_OUT"/>
-  <int value="5" label="ERR_INSUFFICIENT_RESOURCES"/>
-  <int value="6" label="ERR_OUT_OF_MEMORY"/>
-  <int value="7" label="ERR_OTHER"/>
-</enum>
-
 <enum name="SrtpErrorCode">
   <summary>
     Error codes reported by libsrtp (defined in

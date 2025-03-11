@@ -106,15 +106,9 @@ interface AITranslator
     method destroy
     method translate
     method translateStreaming
-interface AITranslatorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languagePairAvailable
 interface AITranslatorFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
 interface AIWriter
@@ -1468,10 +1462,12 @@ interface CaptureController : EventTarget
     getter oncapturedzoomlevelchange
     method captureWheel
     method constructor
+    method decreaseZoomLevel
     method getZoomLevel
+    method increaseZoomLevel
+    method resetZoomLevel
     method sendWheel
     method setFocusBehavior
-    method setZoomLevel
     setter oncapturedmousechange
     setter oncapturedzoomlevelchange
 interface CapturedMouseEvent : Event
@@ -2593,6 +2589,8 @@ interface Element : Node
     getter currentCSSZoom
     getter elementTiming
     getter firstElementChild
+    getter headingOffset
+    getter headingReset
     getter id
     getter innerHTML
     getter lastElementChild
@@ -2736,6 +2734,8 @@ interface Element : Node
     setter className
     setter containerTiming
     setter elementTiming
+    setter headingOffset
+    setter headingReset
     setter id
     setter innerHTML
     setter onbeforecopy
@@ -3157,10 +3157,8 @@ interface GPU
     method requestAdapter
 interface GPUAdapter
     attribute @@toStringTag
-    getter featureLevel
     getter features
     getter info
-    getter isCompatibilityMode
     getter isFallbackAdapter
     getter limits
     method constructor

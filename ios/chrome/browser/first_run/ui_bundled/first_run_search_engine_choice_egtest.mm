@@ -71,7 +71,7 @@
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -113,7 +113,7 @@
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -169,7 +169,7 @@
                                  policy::key::kDefaultSearchProviderEnabled);
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -205,7 +205,7 @@
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface expectTotalCount:0 forHistogram:eventHistogram]);
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];

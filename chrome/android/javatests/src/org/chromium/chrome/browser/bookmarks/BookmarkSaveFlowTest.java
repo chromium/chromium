@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
@@ -86,6 +87,7 @@ public class BookmarkSaveFlowTest {
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     private ChromeTabbedActivity mActivity;
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
@@ -118,7 +120,8 @@ public class BookmarkSaveFlowTest {
                                     mUserEducationHelper,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     mIdentityManager,
-                                    new BookmarkManagerOpenerImpl());
+                                    new BookmarkManagerOpenerImpl(),
+                                    mPriceDropNotificationManager);
                 });
 
         loadBookmarkModel();

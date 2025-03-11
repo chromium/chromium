@@ -48,6 +48,8 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1013,14 +1015,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
         if (shouldRelatedSitesPrefBeVisible) {
             assumeNonNull(rwsInfo);
-            relatedSitesText.setTitle(
-                    getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.allsites_rws_summary,
-                                    rwsInfo.getMembersCount(),
-                                    Integer.toString(rwsInfo.getMembersCount()),
-                                    rwsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(
                     new ForwardingManagedPreferenceDelegate(
                             getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
@@ -1031,10 +1025,24 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                             assumeNonNull(mSite).getAddress().getOrigin());
                         }
                     });
-            relatedSitesHeader.addPreference(relatedSitesText);
 
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-                relatedSitesHeader.removeAll();
+                relatedSitesText.setSummary(
+                        SpanApplier.applySpans(
+                                getContext()
+                                        .getString(R.string.site_settings_rws_description_android),
+                                new SpanApplier.SpanInfo(
+                                        "<link>",
+                                        "</link>",
+                                        new ChromeClickableSpan(
+                                                getContext(),
+                                                (unused) -> {
+                                                    getSiteSettingsDelegate()
+                                                            .launchUrlInCustomTab(
+                                                                    getActivity(),
+                                                                    WebsiteSettingsConstants
+                                                                            .RWS_LEARN_MORE_URL);
+                                                }))));
                 relatedSitesHeader.addPreference(relatedSitesText);
                 for (Website site : rwsInfo.getMembers()) {
                     WebsiteRowPreference preference =
@@ -1045,6 +1053,16 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     getActivity().getLayoutInflater());
                     relatedSitesHeader.addPreference(preference);
                 }
+            } else {
+                relatedSitesText.setTitle(
+                        getContext()
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.allsites_rws_summary,
+                                        rwsInfo.getMembersCount(),
+                                        Integer.toString(rwsInfo.getMembersCount()),
+                                        rwsInfo.getOwner()));
+                relatedSitesHeader.addPreference(relatedSitesText);
             }
         }
     }

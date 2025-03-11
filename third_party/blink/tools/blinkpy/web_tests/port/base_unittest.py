@@ -2337,6 +2337,25 @@ class PortTest(LoggingTestCase):
                                              'passes/text.html\n')
         self.assertTrue(port.skips_test('failures/expected/image.html'))
 
+    def test_skips_test_expands_smoke_tests_file(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        port.default_smoke_test_only = lambda: True
+        port.host.filesystem.write_text_file(
+            port.path_to_smoke_tests_file(),
+            'virtual/virtual_failures/failures/expected/\n'
+            'external/wpt/console/console-is-a-namespace.any.js\n')
+        self.assertTrue(port.skips_test('failures/expected/image.html'))
+        self.assertFalse(
+            port.skips_test(
+                'virtual/virtual_failures/failures/expected/image.html'))
+        self.assertFalse(
+            port.skips_test(
+                'external/wpt/console/console-is-a-namespace.any.html'))
+        self.assertFalse(
+            port.skips_test(
+                'external/wpt/console/console-is-a-namespace.any.worker.html'))
+
     def test_skips_test_no_skip_smoke_tests_file(self):
         port = self.make_port(with_tests=True)
         port.default_smoke_test_only = lambda: True

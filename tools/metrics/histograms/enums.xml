@@ -5388,6 +5388,17 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3" label="Start on NTP"/>
 </enum>
 
+<!-- LINT.IfChange(FrameHandlingType) -->
+
+<enum name="FrameHandlingType">
+  <int value="0" label="None"/>
+  <int value="1" label="InteractionOnly"/>
+  <int value="2" label="AnimationOnly"/>
+  <int value="3" label="InteractionAndAnimation"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/ipc/service/image_transport_surface_overlay_mac.mm:AnimationOrInteractionType) -->
+
 <enum name="FsckResult">
   <summary>
     These correspond to e2fsck exit codes. Note that 0 differs from e2fsck's man
@@ -15108,6 +15119,7 @@ from previous Chrome versions.
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
+  <int value="338061950" label="ChromeWebStoreNavigationThrottle:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
@@ -15410,6 +15422,7 @@ from previous Chrome versions.
   <int value="451196246" label="disable-impl-side-painting"/>
   <int value="452139294" label="VrShellExperimentalRendering:enabled"/>
   <int value="452395990" label="EnablePixDetection:disabled"/>
+  <int value="452628740" label="ChromeWebStoreNavigationThrottle:enabled"/>
   <int value="452950834" label="AISummarizationAPI:enabled"/>
   <int value="452955571" label="EnableFilesystemInIncognito:disabled"/>
   <int value="453017472"
@@ -15942,6 +15955,7 @@ from previous Chrome versions.
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
   <int value="670404276" label="ImeUsEnglishModelUpdate:disabled"/>
+  <int value="670987023" label="kEnterpriseBadgingForNtpFooter:enabled"/>
   <int value="671427343"
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>
   <int value="671541178" label="CrosComponents:disabled"/>
@@ -16417,6 +16431,7 @@ from previous Chrome versions.
   <int value="851085848" label="enable-settings-window"/>
   <int value="851114149" label="SystemTransliterationPhysicalTyping:enabled"/>
   <int value="851238417" label="VirtualKeyboardFloatingResizable:enabled"/>
+  <int value="851408602" label="kEnterpriseBadgingForNtpFooter:disabled"/>
   <int value="851531650" label="PlusAddressFullFormFill:disabled"/>
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
@@ -22566,6 +22581,7 @@ Called by update_net_error_codes.py.-->
   <int value="0"
       label="Tried to record metrics during a pending metrics recording task"/>
   <int value="1" label="Metrics were changed during recording"/>
+  <int value="2" label="Failed to measure a particular metric value"/>
 </enum>
 
 <enum name="PreloadingTriggeringOutcome">

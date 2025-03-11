@@ -77,6 +77,13 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     {url: 'http://preview#'},
   ];
 
+  ambientThemePreviews = {
+    [AmbientTheme.kSlideshow]: {url: 'chrome://1.png'},
+    [AmbientTheme.kFeelTheBreeze]: {url: 'chrome://2.png'},
+    [AmbientTheme.kFloatOnBy]: {url: 'chrome://3.png'},
+    [AmbientTheme.kVideo]: {url: 'chrome://4.png'},
+  };
+
   constructor() {
     super([
       'isAmbientModeEnabled',
@@ -116,6 +123,8 @@ export class TestAmbientProvider extends TestBrowserProxy implements
         /*ambientModeEnabled=*/ true);
 
     this.ambientObserverRemote!.onAlbumsChanged(this.albums);
+    this.ambientObserverRemote!.onAmbientThemePreviewImagesChanged(
+        this.ambientThemePreviews);
     this.ambientObserverRemote!.onAmbientThemeChanged(AmbientTheme.kSlideshow);
     this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
     this.ambientObserverRemote!.onTemperatureUnitChanged(

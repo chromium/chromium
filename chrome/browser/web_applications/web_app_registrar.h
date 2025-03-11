@@ -41,7 +41,9 @@
 class Profile;
 
 namespace apps {
+namespace proto {
 struct ShareTarget;
+}  // namespace proto
 }  // namespace apps
 
 namespace content {
@@ -424,8 +426,8 @@ class WebAppRegistrar {
   // app, if it has tabbed mode enabled.
   bool IsUrlInHomeTabScope(const GURL& url, const webapps::AppId& app_id) const;
 
-  // Returns the current WebAppOsIntegrationState stored in the web_app DB.
-  std::optional<proto::WebAppOsIntegrationState>
+  // Returns the current WebAppOsIntegration stored in the web_app DB.
+  std::optional<proto::os_state::WebAppOsIntegration>
   GetAppCurrentOsIntegrationState(const webapps::AppId& app_id) const;
 
   // Returns the StoragePartitionConfig of all StoragePartitions used by

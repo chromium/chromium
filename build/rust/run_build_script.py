@@ -62,6 +62,30 @@ def host_triple(rustc_path):
   return known_vars["host"]
 
 
+def set_cargo_cfg_target_env_variables(rustc_path, env):
+  """ Sets CARGO_CFG_TARGET_... based on output from rustc. """
+  target_triple = env["TARGET"]
+  assert target_triple
+
+  # TODO(lukasza): Check if command-line flags other `--target` may affect the
+  # output of `--print-cfg`.  If so, then consider also passing extra `args`
+  # (derived from `rustflags` maybe?).
+  args = [rustc_path, "--print=cfg", f"--target={target_triple}"]
+
+  proc = subprocess.Popen(args, stdout=subprocess.PIPE)
+  for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+    line = line.strip()
+    if "=" not in line: continue
+    key, value = line.split("=")
+    if key.startswith("target_"):
+      key = "CARGO_CFG_" + key.upper()
+      value = value.strip('"')
+      if key in env:
+        env[key] = env[key] + f",{value}"
+      else:
+        env[key] = value
+
+
 # Before 1.77, the format was `cargo:rustc-cfg=`. As of 1.77 the format is now
 # `cargo::rustc-cfg=`.
 RUSTC_CFG_LINE = re.compile("cargo::?rustc-cfg=(.*)")
@@ -77,7 +101,6 @@ def main():
                       help='where to write output rustc flags')
   parser.add_argument('--target', help='rust target triple')
   parser.add_argument('--target-abi', help='rust target_abi')
-  parser.add_argument('--pointer-width', help='rust target pointer width')
   parser.add_argument('--features', help='features', nargs='+')
   parser.add_argument('--env', help='environment variable', nargs='+')
   parser.add_argument('--rustflags',
@@ -108,43 +131,11 @@ def main():
     env["OUT_DIR"] = tempdir
     env["CARGO_MANIFEST_DIR"] = os.path.abspath(args.src_dir)
     env["HOST"] = host_triple(rustc_path)
-    env["CARGO_CFG_TARGET_POINTER_WIDTH"] = args.pointer_width
     if args.target is None:
       env["TARGET"] = env["HOST"]
     else:
       env["TARGET"] = args.target
-    target_components = env["TARGET"].split("-")
-    if len(target_components) == 2:
-      env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
-      env["CARGO_CFG_TARGET_VENDOR"] = ''
-      env["CARGO_CFG_TARGET_OS"] = target_components[1]
-      env["CARGO_CFG_TARGET_ENV"] = ''
-    elif len(target_components) == 3:
-      env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
-      env["CARGO_CFG_TARGET_VENDOR"] = target_components[1]
-      env["CARGO_CFG_TARGET_OS"] = target_components[2]
-      env["CARGO_CFG_TARGET_ENV"] = ''
-    elif len(target_components) == 4:
-      env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
-      env["CARGO_CFG_TARGET_VENDOR"] = target_components[1]
-      env["CARGO_CFG_TARGET_OS"] = target_components[2]
-      env["CARGO_CFG_TARGET_ENV"] = target_components[3]
-    else:
-      print(f'Invalid TARGET {env["TARGET"]}')
-      sys.exit(1)
-    # See https://crbug.com/325543500 for background.
-    # Cargo sets CARGO_CFG_TARGET_OS to "android" even when targeting
-    # *-androideabi.
-    if env["CARGO_CFG_TARGET_OS"].startswith("android"):
-      env["CARGO_CFG_TARGET_OS"] = "android"
-    elif env["CARGO_CFG_TARGET_OS"] == "darwin":
-      env["CARGO_CFG_TARGET_OS"] = "macos"
-    env["CARGO_CFG_TARGET_ENDIAN"] = "little"
-    if env["CARGO_CFG_TARGET_OS"] == "windows":
-      env["CARGO_CFG_TARGET_FAMILY"] = "windows"
-    else:
-      env["CARGO_CFG_TARGET_FAMILY"] = "unix"
-    env["CARGO_CFG_TARGET_ABI"] = args.target_abi if args.target_abi else ""
+    set_cargo_cfg_target_env_variables(rustc_path, env)
     if args.features:
       for f in args.features:
         feature_name = f.upper().replace("-", "_")

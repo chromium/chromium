@@ -1471,19 +1471,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuSettingsActionId);
 }
 
-#pragma mark - Promo style view controller
-
-// Returns matcher for the primary action button.
-+ (id<GREYMatcher>)promoStylePrimaryActionButtonMatcher {
-  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
-}
-
-// Returns matcher for the secondary action button.
-+ (id<GREYMatcher>)promoStyleSecondaryActionButtonMatcher {
-  return grey_accessibilityID(
-      kPromoStyleSecondaryActionAccessibilityIdentifier);
-}
-
 #pragma mark - Incognito Interstitial
 
 + (id<GREYMatcher>)incognitoInterstitial {
@@ -1498,7 +1485,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)incognitoInterstitialOpenInChromeIncognitoButton {
   return grey_allOf(
-      [ChromeMatchersAppInterface promoStylePrimaryActionButtonMatcher],
+      [ChromeMatchersAppInterface promoScreenPrimaryButtonMatcher],
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO)),
       nullptr);
@@ -1506,7 +1493,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)incognitoInterstitialOpenInChromeButton {
   return grey_allOf(
-      [ChromeMatchersAppInterface promoStyleSecondaryActionButtonMatcher],
+      [ChromeMatchersAppInterface promoScreenSecondaryButtonMatcher],
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME)),
       nullptr);

@@ -22,6 +22,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/locale_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -434,45 +436,12 @@ void BirchCoralProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool BirchCoralProvider::GetGenAIAvailability() {
-  // Return true, if using a fake backend or group.
-  auto* current_process = base::CommandLine::ForCurrentProcess();
-  if (current_process->HasSwitch(switches::kForceBirchFakeCoralBackend) ||
-      current_process->HasSwitch(switches::kForceBirchFakeCoralGroup)) {
-    return true;
-  }
-
-  auto* coral_delegate = Shell::Get()->coral_delegate();
-  if (!is_gen_ai_location_allow_.has_value()) {
-    is_gen_ai_location_allow_ = coral_delegate->GetGenAILocationAvailability();
-    if (!(*is_gen_ai_location_allow_)) {
-      VLOG(1) << "Coral: location is restricted by GenAI";
-    }
-  }
-
-  if (!(*is_gen_ai_location_allow_)) {
-    return false;
-  }
-
-  // If age availability is not checked and the checking result will be returned
-  // asynchronously, use the pref value.
-  if (!is_gen_ai_age_availability_checked_) {
-    coral_delegate->CheckGenAIAgeAvailability(
-        base::BindOnce(&BirchCoralProvider::OnGenAIAgeAvailabilityReceived,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  return (*is_gen_ai_location_allow_) &&
-         GetPrefService()->GetBoolean(prefs::kCoralGenAIAgeAllowed);
+bool BirchCoralProvider::IsCoralServiceAvailable() {
+  return coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
+         GetLanguageAvailability() && GetGenAIAvailability();
 }
 
 void BirchCoralProvider::RequestBirchDataFetch() {
-  if (!coral_util::IsCoralAllowedByPolicy(GetPrefService())) {
-    // Coral is disabled by policy.
-    Shell::Get()->birch_model()->SetCoralItems({});
-    return;
-  }
-
   // Use the customized fake response if set.
   if (fake_response_) {
     auto fake_response_copy = std::make_unique<CoralResponse>();
@@ -513,7 +482,7 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     return;
   }
 
-  if (!GetGenAIAvailability()) {
+  if (!IsCoralServiceAvailable()) {
     HandleCoralResponse(nullptr);
     return;
   }
@@ -624,6 +593,7 @@ void BirchCoralProvider::OnSessionStateChanged(
     Reset();
     is_gen_ai_age_availability_checked_ = false;
     is_gen_ai_location_allow_.reset();
+    is_language_allow_.reset();
   }
 }
 
@@ -632,11 +602,55 @@ void BirchCoralProvider::OnActiveUserSessionChanged(
   Reset();
   is_gen_ai_age_availability_checked_ = false;
   is_gen_ai_location_allow_.reset();
+  is_language_allow_.reset();
 }
 
 void BirchCoralProvider::OverrideCoralResponseForTest(
     std::unique_ptr<CoralResponse> response) {
   fake_response_ = std::move(response);
+}
+
+bool BirchCoralProvider::GetGenAIAvailability() {
+  // Return true, if using a fake backend or group.
+  auto* current_process = base::CommandLine::ForCurrentProcess();
+  if (current_process->HasSwitch(switches::kForceBirchFakeCoralBackend) ||
+      current_process->HasSwitch(switches::kForceBirchFakeCoralGroup)) {
+    return true;
+  }
+
+  auto* coral_delegate = Shell::Get()->coral_delegate();
+  if (!is_gen_ai_location_allow_.has_value()) {
+    is_gen_ai_location_allow_ = coral_delegate->GetGenAILocationAvailability();
+    if (!(*is_gen_ai_location_allow_)) {
+      VLOG(1) << "Coral: location is restricted by GenAI";
+    }
+  }
+
+  if (!(*is_gen_ai_location_allow_)) {
+    return false;
+  }
+
+  // If age availability is not checked and the checking result will be returned
+  // asynchronously, use the pref value.
+  if (!is_gen_ai_age_availability_checked_) {
+    coral_delegate->CheckGenAIAgeAvailability(
+        base::BindOnce(&BirchCoralProvider::OnGenAIAgeAvailabilityReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  return (*is_gen_ai_location_allow_) &&
+         GetPrefService()->GetBoolean(prefs::kCoralGenAIAgeAllowed);
+}
+
+bool BirchCoralProvider::GetLanguageAvailability() {
+  if (!is_language_allow_.has_value()) {
+    is_language_allow_ =
+        Shell::Get()->coral_delegate()->GetLanguageAvailability();
+    if (!(*is_language_allow_)) {
+      VLOG(1) << "Current language is not supported by Coral.";
+    }
+  }
+  return *is_language_allow_;
 }
 
 bool BirchCoralProvider::HasValidPostLoginData() const {
@@ -818,8 +832,7 @@ void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
       session_controller->GetPrimaryUserPrefService() &&
       session_controller->GetPrimaryUserPrefService()->GetBoolean(
           prefs::kBirchUseCoral) &&
-      coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
-      GetGenAIAvailability() && IsValidTab(tab_item) &&
+      IsCoralServiceAvailable() && IsValidTab(tab_item) &&
       ShouldCreateEmbedding(tab_item)) {
     CacheTabEmbedding(tab_item);
   }

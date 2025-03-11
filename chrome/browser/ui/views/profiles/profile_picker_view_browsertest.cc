@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/cfi_buildflags.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -63,6 +64,7 @@
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
@@ -2414,6 +2416,10 @@ class ProfilePickerEnterpriseCreationFlowBrowserTest
         context, base::BindRepeating(
                      &policy::FakeUserPolicySigninService::BuildForEnterprise));
   }
+  // `GetLocalProfileName` assertions would fail without enabling the feature
+  // in non-fieldtrial tests.
+  base::test::ScopedFeatureList feature_list_{
+      features::kEnterpriseProfileBadgingForAvatar};
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
@@ -2451,7 +2457,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
@@ -2519,7 +2525,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"acme.com");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
@@ -2569,7 +2575,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
           .GetProfileAttributesWithPath(profile_being_created->GetPath());
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
 
   // Sync is disabled.
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
@@ -2627,7 +2633,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
 
   // Sync is getting configured.
   EXPECT_TRUE(entry->IsAuthenticated());

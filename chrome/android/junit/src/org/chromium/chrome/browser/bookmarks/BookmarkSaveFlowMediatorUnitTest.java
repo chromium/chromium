@@ -28,7 +28,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -68,8 +67,8 @@ public class BookmarkSaveFlowMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private IdentityManager mIdentityManager;
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
-    @Mock private PriceDropNotificationManager mMockNotificationManager;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
     @Captor private ArgumentCaptor<SubscriptionsObserver> mSubscriptionsObserverCaptor;
 
     @Before
@@ -80,7 +79,6 @@ public class BookmarkSaveFlowMediatorUnitTest {
 
         MockitoAnnotations.initMocks(this);
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
-        PriceDropNotificationManagerFactory.setInstanceForTesting(mMockNotificationManager);
         mMediator =
                 new BookmarkSaveFlowMediator(
                         mModel,
@@ -91,7 +89,8 @@ public class BookmarkSaveFlowMediatorUnitTest {
                         mBookmarkImageFetcher,
                         mProfile,
                         mIdentityManager,
-                        mBookmarkManagerOpener);
+                        mBookmarkManagerOpener,
+                        mPriceDropNotificationManager);
         mMediator.setSubscriptionForTesting(mSubscription);
         Mockito.verify(mShoppingService)
                 .addSubscriptionsObserver(mSubscriptionsObserverCaptor.capture());
@@ -279,6 +278,6 @@ public class BookmarkSaveFlowMediatorUnitTest {
         // Simulate a successful subscription.
         mSubscriptionsObserverCaptor.getValue().onSubscribe(sub, true);
 
-        Mockito.verify(mMockNotificationManager).createNotificationChannel();
+        Mockito.verify(mPriceDropNotificationManager).createNotificationChannel();
     }
 }

@@ -50,7 +50,7 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec_support{.Codec = codec};
     CHECK_FEATURE_SUPPORT(CODEC, codec_support);
     if (!codec_support.IsSupported) {
-      return {};
+      continue;
     }
     VideoEncodeAccelerator::SupportedProfile supported_profile;
     D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT count{
@@ -66,7 +66,7 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     };
     CHECK_FEATURE_SUPPORT(OUTPUT_RESOLUTION, output_resolution);
     if (!output_resolution.IsSupported) {
-      return {};
+      continue;
     }
     supported_profile.min_resolution =
         gfx::Size(output_resolution.MinResolutionSupported.Width,

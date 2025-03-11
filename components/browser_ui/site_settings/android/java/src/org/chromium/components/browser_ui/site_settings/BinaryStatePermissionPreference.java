@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
@@ -11,22 +13,25 @@ import android.widget.RadioGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingValues;
 
 /** A binary state radio group preference for components/permissions/features.cc */
+@NullMarked
 public class BinaryStatePermissionPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
 
-    private RadioButtonWithDescription mPositive;
-    private RadioButtonWithDescription mNegative;
-    private RadioGroup mRadioGroup;
-    private ManagedPreferenceDelegate mManagedPrefDelegate;
+    private @Nullable RadioButtonWithDescription mPositive;
+    private @Nullable RadioButtonWithDescription mNegative;
+    private @Nullable RadioGroup mRadioGroup;
+    private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
     private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
     private final boolean mHasCustomLayout;
-    private int[] mDescriptionIds;
+    private int @Nullable [] mDescriptionIds;
     private @ContentSettingValues int mDefaultEnabledValue;
     private @ContentSettingValues int mDefaultDisabledValue;
 
@@ -62,8 +67,11 @@ public class BinaryStatePermissionPreference extends Preference
         super.onBindViewHolder(holder);
 
         mPositive = (RadioButtonWithDescription) holder.findViewById(R.id.positive);
+        assumeNonNull(mPositive);
         mNegative = (RadioButtonWithDescription) holder.findViewById(R.id.negative);
+        assumeNonNull(mNegative);
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
+        assumeNonNull(mRadioGroup);
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (mDescriptionIds != null) {
@@ -77,15 +85,15 @@ public class BinaryStatePermissionPreference extends Preference
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (mPositive.isChecked()) {
+        if (assumeNonNull(mPositive).isChecked()) {
             mSetting = mDefaultEnabledValue;
-        } else if (mNegative.isChecked()) {
+        } else if (assumeNonNull(mNegative).isChecked()) {
             mSetting = mDefaultDisabledValue;
         }
         callChangeListener(mSetting == mDefaultEnabledValue);
     }
 
-    public RadioButtonWithDescription findRadioButton(@ContentSettingValues int setting) {
+    public @Nullable RadioButtonWithDescription findRadioButton(@ContentSettingValues int setting) {
         if (setting == mDefaultEnabledValue) {
             return mPositive;
         } else if (setting == mDefaultDisabledValue) {
@@ -99,7 +107,7 @@ public class BinaryStatePermissionPreference extends Preference
         return mSetting == mDefaultEnabledValue;
     }
 
-    public int[] getDescriptionIds() {
+    public int @Nullable [] getDescriptionIds() {
         return mDescriptionIds;
     }
 

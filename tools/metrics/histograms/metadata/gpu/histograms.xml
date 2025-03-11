@@ -1199,6 +1199,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Presentation.FrameHandlesAnimationOrInteraction"
+    enum="FrameHandlingType" expires_after="2025-09-07">
+  <owner>magchen@chromium.org</owner>
+  <owner>vmiura@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Recorded on Mac when a frame is ready to present and GPU Present() is
+    called. It records whether the current frame is handling interaction,
+    animation, both, or none.
+  </summary>
+</histogram>
+
+<histogram
+    name="GPU.Presentation.NonAnimatedOrInteractiveFrameWithPendingFrame"
+    enum="Boolean" expires_after="2025-09-07">
+  <owner>magchen@chromium.org</owner>
+  <owner>vmiura@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Recorded on Mac for frames that are not handling interaction and animation
+    at the time when they are ready to present and GPU Present() is called . If
+    VSyncAlignedPresent and kPresentationDelayForInteractiveFrames are enabled,
+    this type of frames can be swapped immediately. However, they must wait in
+    the queue for VSync when there is a pending frame(s).
+  </summary>
+</histogram>
+
 <histogram name="GPU.Presentation.VSyncCallbackDelay" units="microseconds"
     expires_after="2025-08-10">
   <owner>magchen@chromium.org</owner>

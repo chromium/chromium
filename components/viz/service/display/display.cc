@@ -1115,7 +1115,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
         boost_type);
 
-    bool has_interactive_or_animated_frame = false;
+    bool has_interactive_frame = false;
+    bool has_animated_frame = false;
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
@@ -1125,10 +1126,12 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
           presentation_group_timing.AddPresentationHelper(std::move(helper));
         }
 
-        has_interactive_or_animated_frame |=
+        has_interactive_frame |=
             surface->HasActiveFrame() &&
-            (surface->GetActiveFrameMetadata().is_handling_interaction ||
-             surface->GetActiveFrameMetadata().is_handling_animation);
+            surface->GetActiveFrameMetadata().is_handling_interaction;
+        has_animated_frame |=
+            surface->HasActiveFrame() &&
+            surface->GetActiveFrameMetadata().is_handling_animation;
       }
     }
 
@@ -1164,8 +1167,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     swap_frame_data.ca_layer_error_code =
         overlay_processor_->GetCALayerErrorCode();
 #endif
-    swap_frame_data.is_handling_interaction_or_animation =
-        has_interactive_or_animated_frame;
+    swap_frame_data.is_handling_interaction = has_interactive_frame;
+    swap_frame_data.is_handling_animation = has_animated_frame;
 
     // We must notify scheduler and increase |pending_swaps_| before calling
     // SwapBuffers() as it can call DidReceiveSwapBuffersAck synchronously.

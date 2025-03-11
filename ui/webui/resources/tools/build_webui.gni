@@ -16,6 +16,7 @@ import("//tools/typescript/webui_path_mappings.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
 import("//ui/webui/resources/tools/bundle_js_excludes.gni")
 import("//ui/webui/resources/tools/eslint_ts.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
@@ -78,6 +79,11 @@ template("build_webui") {
   if (defined(invoker.generate_grdp) && invoker.generate_grdp) {
     generate_grdp = true
     generate_grd_target_name = "build_grdp"
+  }
+
+  generate_code_cache = false
+  if (defined(invoker.generate_code_cache)) {
+    generate_code_cache = invoker.generate_code_cache
   }
 
   ### Compute the lists of files that are used across multiple targets.
@@ -507,7 +513,10 @@ template("build_webui") {
 
   if (minify) {
     minify_js("build_min_js") {
-      visibility = [ ":$generate_grd_target_name" ]
+      visibility = [
+        ":$generate_grd_target_name",
+        ":build_code_cache",
+      ]
       in_folder = ts_out_dir
       in_target = ":build_ts"
       if (bundle) {
@@ -523,6 +532,36 @@ template("build_webui") {
       }
 
       deps = [ in_target ]
+    }
+  }
+
+  if (generate_code_cache) {
+    generate_code_cache("build_code_cache") {
+      visibility = [ ":build_code_cache_grdp" ]
+
+      # Rebase the minified file paths under the minified directory.
+      minified_outputs =
+          filter_include(get_target_outputs(":build_min_js"), [ "*.js" ])
+      in_files = []
+      foreach(minified_output, minified_outputs) {
+        in_files += [ rebase_path(minified_output, "$target_gen_dir/minified") ]
+      }
+
+      in_folder = "$target_gen_dir/minified"
+      out_folder = "$target_gen_dir/code_cache"
+      out_manifest = "$target_gen_dir/build_code_cache_manifest.json"
+
+      deps = [ ":build_min_js" ]
+    }
+
+    generate_grd("build_code_cache_grdp") {
+      if (defined(invoker.grd_resource_path_prefix)) {
+        resource_path_prefix = invoker.grd_resource_path_prefix
+      }
+      grd_prefix = grd_prefix + "_code_cache"
+      out_grd = "$target_gen_dir/code_cache_resources.grdp"
+      manifest_files = [ "$target_gen_dir/build_code_cache_manifest.json" ]
+      deps = [ ":build_code_cache" ]
     }
   }
 

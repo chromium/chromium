@@ -153,7 +153,8 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
   // Deal with none parameters.
   for (wtf_size_t i = 0; i < stops_.size(); i++) {
     Color color = stops_[i].color;
-    color.ConvertToColorSpace(color_space_interpolation_space_);
+    color.ConvertToColorSpace(color_space_interpolation_space_,
+                              /*resolve_missing_components=*/false);
     if (color.HasNoneParams()) {
       if (stops_.size() == 1) {
         // If there is only one stop and it has none parameters, we don't need

@@ -554,6 +554,11 @@ class ExtensionsBrowserClient {
   virtual media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context);
 
+  // TODO(crbug.com/399198255): as per rdcronin@: this doesn't belong here,
+  // since extensions shouldn't have knowledge of Controlled Frame.
+  virtual bool HasControlledFrameCapability(content::BrowserContext* context,
+                                            const GURL& url);
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

@@ -21,7 +21,7 @@ namespace blink {
 // the PaintWorklet, which are then stored in the cc::PaintCanvas when 'drawn'.
 //
 // https://drafts.css-houdini.org/css-paint-api-1/
-class CORE_EXPORT PaintWorkletDeferredImage : public GeneratedImage {
+class CORE_EXPORT PaintWorkletDeferredImage final : public GeneratedImage {
  public:
   static scoped_refptr<PaintWorkletDeferredImage> Create(
       scoped_refptr<PaintWorkletInput> input,

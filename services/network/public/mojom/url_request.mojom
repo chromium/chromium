@@ -24,6 +24,7 @@ import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
@@ -587,6 +588,12 @@ struct URLRequest {
   // sessions or process challenges for existing device bound sessions
   // (e.g. due to an Origin Trial).
   bool allows_device_bound_sessions;
+
+  // Permissions Policy of the request.
+  // If it's nullopt then the request's initiator didn't set the permissions
+  // policy.
+  // TODO(crbug.com/382291442): Fill in this field and add here an example cl.
+  network.mojom.PermissionsPolicy? permissions_policy;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

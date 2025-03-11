@@ -1059,13 +1059,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SampleAESCTR"/>
 </enum>
 
-<enum name="ImageCaptureOutcome">
-  <int value="0" label="Succeeded using video stream"/>
-  <int value="1" label="Succeeded using photo stream"/>
-  <int value="2" label="Failed using video stream"/>
-  <int value="3" label="Failed using photo stream"/>
-</enum>
-
 <enum name="MakeAudioStreamStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Had switch fail-audio-stream-creation"/>
@@ -1519,15 +1512,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
-<enum name="MediaVideoHeight">
-  <int value="0" label="~360 or lower"/>
-  <int value="1" label="~480"/>
-  <int value="2" label="~720"/>
-  <int value="3" label="~1080"/>
-  <int value="4" label="~1440"/>
-  <int value="5" label="~2160 or higher"/>
-</enum>
-
 <enum name="MicrophoneMuteResult">
   <int value="0" label="Muted"/>
   <int value="1" label="Not muted"/>
@@ -1753,23 +1737,6 @@ chromium-metrics-reviews@google.com.
 <enum name="ProduceTargetPromiseResult">
   <int value="0" label="PromiseResolved"/>
   <int value="1" label="PromiseRejected"/>
-</enum>
-
-<enum name="QuotaError">
-  <int value="0" label="None"/>
-  <int value="1" label="Unknown Error"/>
-  <int value="2" label="Database Error"/>
-  <int value="3" label="Not Found Error"/>
-  <int value="4" label="Entry Exists Error"/>
-  <int value="5" label="File Operation Error"/>
-  <int value="6" label="Invalid Expiration Error"/>
-  <int value="7" label="Quota Exceeded Error"/>
-  <int value="8" label="Database Disabled">
-    The database failed to bootstrap.
-  </int>
-  <int value="9" label="Storage key error">
-    Deserialization failed on a storage key.
-  </int>
 </enum>
 
 <enum name="ReactionEffectsGesturesState">
@@ -2270,12 +2237,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kStarted"/>
   <int value="1" label="kTimedout"/>
   <int value="2" label="kFailed"/>
-</enum>
-
-<enum name="VideoCaptureWinBackendUsed">
-  <int value="0" label="Using DirectShow as default"/>
-  <int value="1" label="Using MediaFoundation as default"/>
-  <int value="2" label="Using DirectShow as fallback"/>
 </enum>
 
 <enum name="VideoEffectStatus">

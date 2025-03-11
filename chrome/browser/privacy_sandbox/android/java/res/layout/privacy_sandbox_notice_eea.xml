@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:orientation="vertical">
 
     <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_sandbox_notice_eea_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -38,6 +39,7 @@ found in the LICENSE file.
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/privacy_sandbox_notice_eea_logo"
                     android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
                     android:layout_width="@dimen/privacy_sandbox_chrome_logo_width"
                     android:layout_gravity="center"
@@ -57,6 +59,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.Headline.Primary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_notice_eea_description_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_eea_description_1"
@@ -64,6 +67,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
+                    android:id="@+id/privacy_sandbox_notice_eea_illustration"
                     android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
@@ -96,6 +100,7 @@ found in the LICENSE file.
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/privacy_sandbox_notice_eea_learn_more_expand_label"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -119,6 +124,7 @@ found in the LICENSE file.
                     android:visibility="gone" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_notice_eea_description_2"
                     android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

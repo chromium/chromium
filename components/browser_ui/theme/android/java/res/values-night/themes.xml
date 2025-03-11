@@ -25,6 +25,10 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_80</item>
     </style>
@@ -47,6 +51,10 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_80</item>
     </style>
@@ -69,6 +77,10 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_80</item>
     </style>

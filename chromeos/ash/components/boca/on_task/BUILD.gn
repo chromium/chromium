@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/strings:strings_grit",
     "//components/sessions:session_id",
   ]
 }

@@ -35,6 +35,10 @@
 
 namespace media::vector_math {
 
+static constexpr float kClampMin = -1.0f;
+static constexpr float kClampMax = 1.0f;
+static constexpr float kSilence = 0.0f;
+
 void FMAC(base::span<const float> src, float scale, base::span<float> dest) {
   if (src.empty()) {
     return;
@@ -90,6 +94,33 @@ void FMUL(base::span<const float> src, float scale, base::span<float> dest) {
 void FMUL_C(const float src[], float scale, int len, float dest[]) {
   for (int i = 0; i < len; ++i) {
     dest[i] = src[i] * scale;
+  }
+}
+
+void FCLAMP(base::span<const float> src, base::span<float> dest) {
+  if (src.empty()) {
+    return;
+  }
+  CHECK_LE(src.size(), dest.size());
+  CHECK(base::IsAligned(src.data(), kRequiredAlignment));
+  CHECK(base::IsAligned(dest.data(), kRequiredAlignment));
+  static const auto fclamp_func = [] {
+    // TODO(crbug.com/401598584): Add optimized versions of these functions.
+    return FCLAMP_C;
+  }();
+
+  return fclamp_func(src.data(), src.size(), dest.data());
+}
+
+void FCLAMP_C(const float src[], int len, float dest[]) {
+  for (int i = 0; i < len; ++i) {
+    const float sample = src[i];
+    const float temp = std::isnan(sample) ? kSilence : sample;
+    // Using std::max + std::min is faster than std::clamp on official builds.
+    // Indeed, there is an extra instruction to ensure conformity with the C++
+    // standard for some special cases. E.g., `std::clamp(-0.0f, +0.0f, +0.0f)`
+    // must return `-0.0f`.
+    dest[i] = std::max(std::min(temp, kClampMax), kClampMin);
   }
 }
 

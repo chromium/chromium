@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -145,7 +146,8 @@ public class BookmarkPane implements Pane {
                             originalProfile,
                             new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                             mBookmarkOpener,
-                            new BookmarkManagerOpenerImpl());
+                            new BookmarkManagerOpenerImpl(),
+                            PriceDropNotificationManagerFactory.create(originalProfile));
             mBookmarkManager.updateForUrl(UrlConstants.BOOKMARKS_URL);
             mRootView.addView(mBookmarkManager.getView());
         } else if (loadHint == LoadHint.COLD) {

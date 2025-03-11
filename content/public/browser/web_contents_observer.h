@@ -242,11 +242,17 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // This method is invoked when a write-access Captured Surface Control API is
   // successfully invoked by a tab-capturing Web application. These include:
   // * CaptureController.sendWheel()
-  // * CaptureController.setZoomLevel()
+  // * CaptureController.increaseZoomLevel()
+  // * CaptureController.decreaseZoomLevel()
+  // * CaptureController.resetZoomLevel()
   //
   // Observing this occurrence allows us to update the UX accordingly; for
   // example, show the user an indicator that the capturing tab is being
   // controlled by the capturing tab.
+  //
+  // TODO(crbug.com/40276312): Update the sendWheel() portion of the
+  // comment when moving from sendWheel() to forwardWheel() or
+  // to forwardGestures(), whichever the case ends up being.
   virtual void OnCapturedSurfaceControl() {}
 
   // This method is invoked when the `blink::WebView` of the current

@@ -383,7 +383,7 @@ TEST_P(OverviewFocusCyclerTest, TabbingWithSplitview) {
 class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
  public:
   DesksOverviewFocusCyclerTest()
-      : saved_desk_ui_revamp_enabled_(features::IsSavedDeskUiRevampEnabled()) {}
+      : saved_desk_ui_revamp_enabled_(features::IsForestFeatureEnabled()) {}
   DesksOverviewFocusCyclerTest(const DesksOverviewFocusCyclerTest&) = delete;
   DesksOverviewFocusCyclerTest& operator=(const DesksOverviewFocusCyclerTest&) =
       delete;

@@ -199,6 +199,7 @@
     <iron-list id="grid"
         items="[[tiles_]]"
         grid
+        aria-label$="[[i18n('seaPenFreeformResultsLabel')]]"
         aria-setsize$="[[tiles_.length]]"
         role="listbox">
       <template>
@@ -273,6 +274,7 @@
         <iron-list id="historyGrid[[queryHistoryIndex]]"
             items="[[queryHistoryEntry.thumbnails]]"
             grid
+            aria-label$="[[i18n('seaPenFreeformPreviousPrompts')]]"
             aria-setsize$="[[queryHistoryEntry.thumbnails.length]]"
             role="listbox">
           <template>

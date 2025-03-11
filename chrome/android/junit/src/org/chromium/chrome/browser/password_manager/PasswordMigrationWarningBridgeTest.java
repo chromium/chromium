@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.mockito.Mockito.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,11 +37,6 @@ public class PasswordMigrationWarningBridgeTest {
     public void setUp() {
         PostPasswordMigrationSheetCoordinatorFactory.setCoordinatorInstanceForTesting(
                 mPostPasswordMigrationSheetCoordinator);
-    }
-
-    @After
-    public void tearDown() {
-        PostPasswordMigrationSheetCoordinatorFactory.setCoordinatorInstanceForTesting(null);
     }
 
     @Test

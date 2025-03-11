@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_vcn_request.h"
 
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 
 namespace autofill::payments {
 
@@ -12,7 +13,10 @@ namespace {
 using Dict = base::Value::Dict;
 
 const char kGetBnplPaymentInstrumentForFetchingVcnRequestPath[] =
-    "payments/apis-secure/chromepaymentsservice/getpaymentinstrument";
+    "payments/apis-secure/chromepaymentsservice/"
+    "getpaymentinstrument?s7e_suffix=chromewallet";
+const char kGetBnplPaymentInstrumentForFetchingVcnRequestFormat[] =
+    "requestContentType=application/json; charset=utf-8&request=%s";
 }  // namespace
 
 GetBnplPaymentInstrumentForFetchingVcnRequest::
@@ -34,7 +38,7 @@ std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestUrlPath() {
 
 std::string
 GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContentType() {
-  return "application/json";
+  return "application/json/x-www-form-urlencoded";
 }
 
 std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContent() {
@@ -61,7 +65,11 @@ std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContent() {
                                    request_details_.redirect_url.spec())
                               .Set("issuer_id", request_details_.issuer_id)));
 
-  return base::WriteJson(request_dict).value();
+  return base::StringPrintf(
+      kGetBnplPaymentInstrumentForFetchingVcnRequestFormat,
+      base::EscapeUrlEncodedData(base::WriteJson(request_dict).value(),
+                                 /*use_plus=*/true)
+          .c_str());
 }
 
 void GetBnplPaymentInstrumentForFetchingVcnRequest::ParseResponse(

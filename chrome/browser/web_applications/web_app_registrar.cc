@@ -35,9 +35,9 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/proto_helpers.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -617,7 +617,7 @@ bool WebAppRegistrar::IsUrlInHomeTabScope(const GURL& url,
   return false;
 }
 
-std::optional<proto::WebAppOsIntegrationState>
+std::optional<proto::os_state::WebAppOsIntegration>
 WebAppRegistrar::GetAppCurrentOsIntegrationState(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
@@ -1179,7 +1179,7 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
        web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser);
 
   switch (web_app->user_link_capturing_preference()) {
-    case proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT:
+    case proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT:
       if (IsNavigationCapturingSettingOffByDefault(
               {.is_diy_app = web_app->is_diy_app(),
                .is_preinstalled_browser_tab_app =
@@ -1191,9 +1191,9 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
         return false;
       }
       break;
-    case proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS:
+    case proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE:
       return true;
-    case proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS:
+    case proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE:
       return false;
   }
 
@@ -1226,14 +1226,13 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
     }
     const WebApp* other_app = GetAppById(other_app_id);
     switch (other_app->user_link_capturing_preference()) {
-      case proto::LinkCapturingUserPreference::
-          LINK_CAPTURING_PREFERENCE_DEFAULT:
+      case proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT:
         app_and_install_time.emplace_back(other_app_id,
                                           other_app->first_install_time());
         break;
-      case proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS:
+      case proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE:
         return false;
-      case proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS:
+      case proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE:
         continue;
     }
   }
@@ -1858,8 +1857,10 @@ bool IsRegistryEqual(const Registry& registry,
     }
     WebApp web_app2 = WebApp(*registry2.at(web_app.app_id()));
     if (exclude_current_os_integration) {
-      web_app.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
-      web_app2.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
+      web_app.SetCurrentOsIntegrationStates(
+          proto::os_state::WebAppOsIntegration());
+      web_app2.SetCurrentOsIntegrationStates(
+          proto::os_state::WebAppOsIntegration());
       // Tests that want to ignore current os integration state usually also
       // want to ignore the presence/absece of the "user installed" source, as
       // that is something else that is not synced across.

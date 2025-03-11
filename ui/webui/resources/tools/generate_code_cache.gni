@@ -9,6 +9,7 @@ template("generate_code_cache") {
     forward_variables_from(invoker,
                            [
                              "deps",
+                             "visibility",
                              "in_folder",
                              "in_files",
                              "out_folder",

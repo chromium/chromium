@@ -34,12 +34,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Persist failed"/>
 </enum>
 
-<enum name="BooleanCodePathUsage">
-  <summary>The result if a code path is being used.</summary>
-  <int value="0" label="Unused Code Path"/>
-  <int value="1" label="Used Code Path"/>
-</enum>
-
 <enum name="CryptohomeAuthBlockType">
   <int value="0" label="Pin Weaver"/>
   <int value="1" label="Challenge Credential"/>

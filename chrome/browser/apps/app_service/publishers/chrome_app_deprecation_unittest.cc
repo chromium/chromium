@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -33,7 +33,7 @@ class DeprecationControllerTest : public extensions::ExtensionServiceTestBase {
 
     app_ = InstallTestApp(profile());
     ASSERT_TRUE(app_);
-    ASSERT_TRUE(service()->IsExtensionEnabled(app_->id()));
+    ASSERT_TRUE(registrar()->IsExtensionEnabled(app_->id()));
   }
 
   void TearDown() override {

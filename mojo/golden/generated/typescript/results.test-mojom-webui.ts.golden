@@ -157,6 +157,12 @@ export const ResultTestErrorSpec: { $: mojo.internal.MojomType } =
 export const ResultInterface_Method_ParamsSpec: { $: mojo.internal.MojomType } =
     { $: {} as unknown as mojo.internal.MojomType };
 
+export const ResultInterface_Method_ResponseParamsSpec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
+
+export const ResultInterface_Method_ResponseParams_ResultSpec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
+
 
 
 
@@ -201,3 +207,47 @@ mojo.internal.Struct<ResultInterface_Method_ParamsMojoType>(
 
 
 
+
+
+export interface ResultInterface_Method_ResponseParamsMojoType {
+  result: ResultInterface_Method_ResponseParams_Result;
+}
+
+
+export type ResultInterface_Method_ResponseParams = ResultInterface_Method_ResponseParamsMojoType;
+mojo.internal.Struct<ResultInterface_Method_ResponseParamsMojoType>(
+    ResultInterface_Method_ResponseParamsSpec.$,
+    'ResultInterface_Method_ResponseParams',
+    [
+      mojo.internal.StructField<ResultInterface_Method_ResponseParamsMojoType, ResultInterface_Method_ResponseParams_Result>(
+        'result', 0,
+        0,
+        ResultInterface_Method_ResponseParams_ResultSpec.$,
+        null,
+        false /* nullable */,
+        0,
+        undefined,
+        undefined,
+    ),
+    ],
+    [[0, 24],]);
+
+
+
+mojo.internal.Union(
+    ResultInterface_Method_ResponseParams_ResultSpec.$, 'ResultInterface_Method_ResponseParams_Result',
+    {
+      'success': {
+        'ordinal': 0,
+        'type': mojo.internal.Bool,
+      },
+      'failure': {
+        'ordinal': 1,
+        'type': ResultTestErrorSpec.$,
+      },
+    });
+
+export interface ResultInterface_Method_ResponseParams_Result {
+  success?: boolean,
+  failure?: ResultTestError,
+}

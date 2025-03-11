@@ -6,11 +6,14 @@ package org.chromium.components.browser_ui.site_settings;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** {@link SiteSettingsCategory} for dealing with Javascript-optimizer category. */
+@NullMarked
 public class JavascriptOptimizerCategory extends SiteSettingsCategory {
     private boolean mBlockedByOs;
 
@@ -39,7 +42,7 @@ public class JavascriptOptimizerCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected String getMessageForEnablingOsGlobalPermission(Context context) {
+    protected @Nullable String getMessageForEnablingOsGlobalPermission(Context context) {
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         return (provider == null) ? null : provider.getJavascriptOptimizerMessage(context);
     }

@@ -25,7 +25,8 @@
 
 namespace webnn::tflite {
 
-OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
+OpResolver::OpResolver(const mojom::CreateContextOptions& options,
+                       bool graph_requires_fp32_precision) {
   AddBuiltin(::tflite::BuiltinOperator_ABS,
              ::tflite::ops::builtin::Register_ABS());
   AddBuiltin(::tflite::BuiltinOperator_AVERAGE_POOL_2D,
@@ -297,13 +298,19 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
     auto* chrome_ml = ml::ChromeML::Get();
     if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&
         chrome_ml->api().DestroyGpuDelegate) {
-      delegate_creators_.push_back([](TfLiteContext* context) {
-        return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
-            ml::ChromeML::Get()->api().CreateGpuDelegate(),
-            [](TfLiteDelegate* delegate) {
-              ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
-            });
-      });
+      delegate_creators_.push_back(
+          [graph_requires_fp32_precision](TfLiteContext* context) {
+            GpuDelegatePrecision precision = GpuDelegatePrecision::kFp16;
+            if (graph_requires_fp32_precision) {
+              precision = GpuDelegatePrecision::kFp32;
+            }
+            return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
+                ml::ChromeML::Get()->api().CreateGpuDelegateWithPrecision(
+                    precision),
+                [](TfLiteDelegate* delegate) {
+                  ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
+                });
+          });
     }
   }
 #endif

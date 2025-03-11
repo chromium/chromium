@@ -36,7 +36,7 @@ namespace web_app {
 namespace {
 
 bool IsOsIntegrationRemovedForApp(
-    std::optional<proto::WebAppOsIntegrationState> state) {
+    std::optional<proto::os_state::WebAppOsIntegration> state) {
   if (!state.has_value()) {
     return true;
   }

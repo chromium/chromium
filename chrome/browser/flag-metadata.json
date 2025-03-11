@@ -1387,6 +1387,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "chrome-web-store-navigation-throttle",
+    "owners": [ "marissashen@google.com", "chrome-web-store-consumer-eng-team@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "chrome-wide-echo-cancellation",
     "owners": [ "olka@chromium.org", "saza@chromium.org", "fhernqvist@chromium.org" ],
     // TODO(http://crubg.com/1372451): remove when we have a proper solution.
@@ -1490,7 +1495,7 @@
   {
     "name": "compare-management-interface",
     "owners": ["chazzy@chromium.org", "mdjones@chromium.org", "chrome-shopping-eng@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "compose-nudge-display-at-cursor",
@@ -2911,14 +2916,19 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-enterprise-badging-for-ntp-footer",
+    "owners": ["esalma@google.com","cbe-magic@google.com"],
+    "expiry_milestone": 139
+  },
+  {
     "name": "enable-enterprise-profile-badging-for-avatar",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 139
   },
   {
     "name": "enable-enterprise-profile-badging-for-menu",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 139
   },
   {
     "name": "enable-enterprise-profile-required-interstitial",
@@ -6562,11 +6572,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-rich-autocompletion-android",
-    "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 115
@@ -8550,11 +8555,6 @@
   {
     "name": "tab-switcher-color-blend-animate",
     "owners": [ "skym@chromium.org", "mfiaz@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "tab-switcher-full-new-tab-button",
-    "owners": [ "ckitagawa@chromium.org", "skym@chromium.org", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140
   },
   {

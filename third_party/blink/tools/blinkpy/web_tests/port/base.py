@@ -219,6 +219,8 @@ class Port(object):
         ('linux', 'x86_64'),
         ('fuchsia', 'x86_64'),
         ('ios17-simulator', 'x86_64'),
+        ('android', 'x86_64'),
+        ('webview', 'x86_64'),
     )
 
     CONFIGURATION_SPECIFIER_MACROS = {
@@ -230,6 +232,8 @@ class Port(object):
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
         'linux': ['linux'],
         'fuchsia': ['fuchsia'],
+        'android': ['android'],
+        'webview': ['webview'],
     }
 
     # List of ports open on the host that the tests will connect to. When tests
@@ -1895,6 +1899,11 @@ class Port(object):
 
     @memoized
     def tests_from_file(self, filename: str) -> Set[str]:
+        """Read test patterns (URLs, files, or directories) from the given file.
+
+        The returned patterns are not necessarily valid and need to be resolved
+        to URLs by `Port.tests()` at some point.
+        """
         tests = set()
         file_contents = self._filesystem.read_text_file(filename)
         for line in file_contents.splitlines():
@@ -1903,6 +1912,10 @@ class Port(object):
                 continue
             tests.add(line)
         return tests
+
+    @memoized
+    def _resolved_tests_from_file(self, filename: str) -> List[str]:
+        return self.tests(self.tests_from_file(filename))
 
     def skipped_due_to_manual_test(self, test_name):
         """Checks whether a manual test should be skipped."""
@@ -1926,7 +1939,7 @@ class Port(object):
         smoke_test_filename = self.path_to_smoke_tests_file()
         if not self._filesystem.exists(smoke_test_filename):
             return False
-        smoke_tests = self.tests_from_file(smoke_test_filename)
+        smoke_tests = self._resolved_tests_from_file(smoke_test_filename)
         return test not in smoke_tests
 
     def default_smoke_test_only(self):

@@ -2202,8 +2202,10 @@ component("base") {
         sources += [ "process/process_mac.cc" ]
       }
 
-      # We include launch_mac on simulator builds so unittests can fork.
-      if (target_environment == "simulator") {
+      # We include launch_mac on simulator builds so unittests can fork. But,
+      # platforms like tvOS continue to use launch_ios since they do not support
+      # multi-processes.
+      if (target_environment == "simulator" && target_platform == "iphoneos") {
         sources += [
           "process/kill_mac.cc",
           "process/launch_mac.cc",

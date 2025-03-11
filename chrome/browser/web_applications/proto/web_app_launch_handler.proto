@@ -6,13 +6,12 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-// TODO(http://b/307989065) Make this web_app.proto
-package web_app;
+package web_app.proto;
 
 // A proto representing the "launch_handler" manifest field.
 // This mirrors ManifestLaunchHandler in:
 // third_party/blink/public/mojom/manifest/manifest.mojom
-message LaunchHandlerProto {
+message LaunchHandler {
   enum DeprecatedRouteTo {
     UNSPECIFIED_ROUTE = 0;
     AUTO_ROUTE = 1;
@@ -29,11 +28,11 @@ message LaunchHandlerProto {
   }
 
   enum ClientMode {
-    UNSPECIFIED_CLIENT_MODE = 0;
-    AUTO = 1;
-    NAVIGATE_NEW = 2;
-    NAVIGATE_EXISTING = 3;
-    FOCUS_EXISTING = 4;
+    CLIENT_MODE_UNSPECIFIED = 0;
+    CLIENT_MODE_AUTO = 1;
+    CLIENT_MODE_NAVIGATE_NEW = 2;
+    CLIENT_MODE_NAVIGATE_EXISTING = 3;
+    CLIENT_MODE_FOCUS_EXISTING = 4;
   }
 
   optional DeprecatedRouteTo route_to = 1 [deprecated = true];

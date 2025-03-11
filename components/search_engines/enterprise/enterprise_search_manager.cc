@@ -134,29 +134,24 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
 EnterpriseSearchManager::LoadingResult
 EnterpriseSearchManager::LoadSearchAggregator(
     EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines) {
-  // Use the search engines created by policy if the policy is available (e.g.
-  // controlling feature is enabled) and the policy value is set as a valid
-  // search engine.
-  LoadingResult pref_loading_result = LoadSearchEnginesFromPrefs(
-      pref_service_->FindPreference(
-          kEnterpriseSearchAggregatorSettingsPrefName),
-      search_engines);
-  if (pref_loading_result == LoadingResult::kAvailableNonEmpty) {
-    return LoadingResult::kAvailableNonEmpty;
-  }
-
-  // Use pref loading result (either empty or non-empty) if there are no mock
-  // search engines available.
+  // Prefer mock engines over engines from pref.
+  // TODO(crbug.com/402175538): Remove the ability to override pref engines via
+  // feature.
   if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
            .AreMockEnginesValid()) {
-    return pref_loading_result;
+    return LoadSearchEnginesFromPrefs(
+        pref_service_->FindPreference(
+            kEnterpriseSearchAggregatorSettingsPrefName),
+        search_engines);
   }
 
-  auto mock_engines = omnibox_feature_configs::SearchAggregatorProvider::Get()
-                          .CreateMockSearchEngines();
-  CHECK(!mock_engines.empty());
-  for (const base::Value& mock_engine : mock_engines) {
-    search_engines->emplace_back(DictToTemplateURLData(mock_engine));
-  }
+  // NOTE: This function assumes that `search_engines` does not contain any
+  // engines that should be overridden by the feature config.
+  std::ranges::transform(
+      omnibox_feature_configs::SearchAggregatorProvider::Get()
+          .CreateMockSearchEngines(),
+      std::back_inserter(*search_engines), [](const base::Value& mock_engine) {
+        return DictToTemplateURLData(mock_engine);
+      });
   return LoadingResult::kAvailableNonEmpty;
 }

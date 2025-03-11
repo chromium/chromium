@@ -82,7 +82,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
   if (is_glic_dev) {
     // Bump up timeout value, as dev server may be slow.
-    max_loading_time_ms *= 10;
+    max_loading_time_ms *= 100;
   }
   source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
   source->AddBoolean("simulateNoConnection", simulate_no_connection_);
@@ -108,8 +108,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   }
   source->AddString("glicAllowedOrigins", allowed_origins);
 
-  const bool skip_origin_check = is_glic_dev;
-  source->AddBoolean("glicSkipOriginCheck", skip_origin_check);
+  source->AddBoolean("devMode", is_glic_dev);
 
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));

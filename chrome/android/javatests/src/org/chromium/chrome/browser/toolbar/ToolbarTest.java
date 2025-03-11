@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.is;
@@ -319,8 +318,8 @@ public class ToolbarTest {
         // Open a new tab from the tab switcher.
         onViewWaiting(allOf(withId(R.id.tab_switcher_button), isDisplayed()));
         onView(withId(R.id.tab_switcher_button)).perform(click());
-        onView(withText(R.string.menu_new_tab)).check(matches(isDisplayed()));
-        onView(withText(R.string.menu_new_tab)).perform(click());
+        onView(withId(R.id.toolbar_action_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.toolbar_action_button)).perform(click());
 
         LayoutTestUtils.waitForLayout(activity.getLayoutManager(), LayoutType.BROWSING);
 

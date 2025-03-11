@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
@@ -138,6 +139,38 @@ class MockIpProtectionProxyConfigManager
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
+class FakePRTFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
+ public:
+  FakePRTFetcher() = default;
+  ~FakePRTFetcher() override = default;
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override {
+    NOTREACHED();
+  }
+};
+
+class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
+ public:
+  explicit FakePRTManager(
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
+      : IpProtectionProbabilisticRevealTokenManager(std::move(fetcher)) {}
+  ~FakePRTManager() override = default;
+  bool IsTokenAvailable() override { NOTREACHED(); }
+  std::optional<ProbabilisticRevealToken> GetToken(
+      const std::string& top_level,
+      const std::string& third_party) override {
+    return response_;
+  }
+  void SetMockResponse(ProbabilisticRevealToken mock_response) {
+    mock_response_ = mock_response;
+  }
+  // If SetMockResponse() is called and GetTokens() returns nullopt, this
+  // indicates manager did not call RequestTokens().
+  void RequestTokens() override { response_ = mock_response_; }
+  std::optional<ProbabilisticRevealToken> response_ = std::nullopt;
+  std::optional<ProbabilisticRevealToken> mock_response_ = std::nullopt;
+};
+
 class IpProtectionCoreImplTest : public testing::Test {
  protected:
   IpProtectionCoreImplTest()
@@ -156,6 +189,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*ip_protection_proxy_config_manager=*/nullptr,
         std::move(ip_protection_token_managers),
         /*probabilistic_reveal_token_registry=*/nullptr,
+        /*ipp_prt_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
@@ -168,6 +202,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*ip_protection_token_managers=*/
         std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
         /*probabilistic_reveal_token_registry=*/nullptr,
+        /*ipp_prt_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true,
         /*ip_protection_incognito=*/ip_protection_incognito);
   }
@@ -182,6 +217,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         std::move(ip_protection_proxy_config_manager),
         std::move(ip_protection_token_managers),
         /*probabilistic_reveal_token_registry=*/nullptr,
+        /*ipp_prt_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
@@ -754,6 +790,47 @@ TEST_F(
   EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
       GURL(base::StrCat({"http://", example_com})),
       net::NetworkAnonymizationKey()));
+}
+
+TEST_F(IpProtectionCoreImplTest, IncognitoCoreCallsPRTRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  auto ipp_prt_manager =
+      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
+  ProbabilisticRevealToken expected_token{};
+  ipp_prt_manager->SetMockResponse(expected_token);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
+      std::move(ipp_prt_manager),
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
+  ASSERT_TRUE(maybe_token.has_value());
+  EXPECT_EQ(maybe_token.value(), expected_token);
+}
+
+TEST_F(IpProtectionCoreImplTest, RegularCoreDoesNotCallPRTRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  auto ipp_prt_manager =
+      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
+  ProbabilisticRevealToken expected_token{};
+  ipp_prt_manager->SetMockResponse(expected_token);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
+      std::move(ipp_prt_manager),
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/false);
+  auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
+  EXPECT_FALSE(maybe_token.has_value());
 }
 
 }  // namespace

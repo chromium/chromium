@@ -1,0 +1,217 @@
+[
+    {
+        "description": "Width difference: y vs yy",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "two-digit"
+                },
+                "semantic": {
+                    "dateFields": "Y",
+                    "length": "short"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": {
+                    "formatted": "20",
+                    "pattern": "yy"
+                }
+            }
+        }
+    },
+    {
+        "description": "Formatting eras",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "numeric",
+                    "era": "short"
+                },
+                "semantic": {
+                    "dateFields": "Y",
+                    "length": "medium",
+                    "yearStyle": "withEra"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "2020 AD",
+                "en-u-ca-buddhist": "2563 BE",
+                "en-u-ca-coptic": "1736 ERA1",
+                "fr-u-ca-coptic": "1736 ap. D.",
+                "en-u-ca-ethiopic" : "2012 ERA0",
+                "fr-u-ca-ethiopic" : "2012 av. Inc.",
+                "fr-u-ca-ethioaa" : "7512 ERA0"
+            }
+        }
+    },
+    {
+        "description": "Width difference: Y vs YY",
+        "input": {
+            "value": "2002-12-31T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "two-digit-week-of",
+                    "week": "numeric-week-of-year"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "week 53 of 02",
+                "fil": "linggo 53 ng 02"
+            }
+        }
+    },
+    {
+        "description": "Width and symbol difference: yyw + 'week w of Y' -> 'week w of yy'",
+        "input": {
+            "value": "2002-12-31T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "two-digit",
+                    "week": "numeric-week-of-year"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "week 53 of 02",
+                "fil": "linggo 53 ng 02"
+            }
+        }
+    },
+    {
+        "description": "Enumerate month lengths which may need expansion: yMd => M/d/y",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "numeric",
+                    "month": "numeric",
+                    "day": "numeric-day-of-month"
+                },
+                "semantic": {
+                    "dateFields": "YMD",
+                    "length": "short",
+                    "yearStyle": "full"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "1/7/2020",
+                "en-u-ca-buddhist": "1/7/2563 BE",
+                "fr": "07/01/2020",
+                "en-u-ca-coptic": "4/28/1736 ERA1",
+                "fr-u-ca-coptic": "28/04/1736 ap. D."
+            }
+        }
+    },
+    {
+        "description": "Enumerate month lengths which may need expansion: yMMdd => MM/dd/y",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "numeric",
+                    "month": "two-digit",
+                    "day": "two-digit-day-of-month"
+                },
+                "semantic": {
+                    "dateFields": "YMD",
+                    "length": "short",
+                    "alignment": "column"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "01/07/20",
+                "en-u-ca-buddhist": "01/07/2563 BE",
+                "fr": "07/01/2020",
+                "en-u-ca-coptic": "04/28/1736 ERA1",
+                "fr-u-ca-coptic": "28/04/1736 ap. D."
+            }
+        }
+    },
+    {
+        "description": "Enumerate month lengths which may need expansion: yMMMd => MMM d, y",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "numeric",
+                    "month": "short",
+                    "day": "numeric-day-of-month"
+                },
+                "semantic": {
+                    "dateFields": "YMD",
+                    "length": "medium"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "Jan 7, 2020",
+                "en-u-ca-buddhist": "Jan 7, 2563 BE",
+                "fr": "7 janv. 2020",
+                "en-u-ca-coptic": "Kiahk 28, 1736 ERA1",
+                "fr-u-ca-coptic": "28 kya. 1736 ap. D."
+            }
+        }
+    },
+    {
+        "description": "Enumerate month lengths which may need expansion: yMMMMd => MMMM d, y",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "numeric",
+                    "month": "long",
+                    "day": "numeric-day-of-month"
+                },
+                "semantic": {
+                    "dateFields": "YMD",
+                    "length": "long"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "January 7, 2020",
+                "en-u-ca-buddhist": "January 7, 2563 BE",
+                "fr": "7 janvier 2020",
+                "en-u-ca-coptic": "Kiahk 28, 1736 ERA1",
+                "fr-u-ca-coptic": "28 kyahk 1736 ap. D."
+            }
+        }
+    },
+    {
+        "description": "Enumerate month lengths which may need expansion: yMMMMMd => MMMMM d, y",
+        "input": {
+            "value": "2020-01-07T08:25:07.000",
+            "options": {
+                "components": {
+                    "year": "numeric",
+                    "month": "narrow",
+                    "day": "numeric-day-of-month"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "J 7, 2020",
+                "en-u-ca-buddhist": "J 7, 2563 BE",
+                "fr": "7 J 2020",
+                "en-u-ca-coptic": "4 28, 1736 ERA1",
+                "fr-u-ca-coptic": "28 4 1736 ap. D."
+            }
+        }
+    }
+]

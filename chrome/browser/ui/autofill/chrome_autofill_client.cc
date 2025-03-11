@@ -156,6 +156,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"  // nogncheck
@@ -200,7 +201,8 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
 ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
-      return kAutofillPredictionImprovementsIphElementId;
+      return autofill::PopupViewViews::
+          kAutofillPredictionImprovementsIphElementId;
   }
   NOTREACHED();
 }

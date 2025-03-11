@@ -52,6 +52,9 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
   // same user session would return the same result, but in general the result
   // is OK to be persisted for the whole session.
   virtual bool GetGenAILocationAvailability() = 0;
+
+  // Checks whether current language is supported by Coral.
+  virtual bool GetLanguageAvailability() = 0;
 };
 
 }  // namespace ash

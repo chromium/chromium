@@ -138,6 +138,7 @@ import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -647,7 +648,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             mBookmarkModelSupplier,
                             mRootUiCoordinator::getBottomSheetController,
                             this::getSnackbarManager,
-                            new BookmarkManagerOpenerImpl());
+                            new BookmarkManagerOpenerImpl(),
+                            () ->
+                                    PriceDropNotificationManagerFactory.create(
+                                            mTabModelProfileSupplier.get()));
             mTabBookmarkerSupplier.set(tabBookmarker);
 
             mShowContentRunnable =
@@ -2463,7 +2467,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     mSnackbarManager,
                     getResources(),
                     currentTab.getProfile(),
-                    CallbackUtils.emptyCallback());
+                    CallbackUtils.emptyCallback(),
+                    PriceDropNotificationManagerFactory.create(currentTab.getProfile()));
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }

@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -1127,9 +1127,8 @@ IN_PROC_BROWSER_TEST_F(
           .Set("displayMode", "standalone")));
   EXPECT_EQ(
       GetAppUserSettings(InstallableWebAppManifestId()),
-      std::make_tuple(
-          web_app::proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS,
-          web_app::mojom::UserDisplayMode::kStandalone));
+      std::make_tuple(web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE,
+                      web_app::mojom::UserDisplayMode::kStandalone));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -1184,8 +1183,7 @@ IN_PROC_BROWSER_TEST_F(
           .Set("linkCapturing", false)));
   EXPECT_EQ(std::get<web_app::proto::LinkCapturingUserPreference>(
                 GetAppUserSettings(InstallableWebAppManifestId())),
-            web_app::proto::LinkCapturingUserPreference::
-                DO_NOT_CAPTURE_SUPPORTED_LINKS);
+            web_app::proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
 }
 
 // This scenario does not reach the handler itself, but it's worth ensuring that
