@@ -98,8 +98,14 @@
       <message name="IDS_PARENT_WEBSITE_APPROVAL_MANUAL_URL" desc="This text displayed as a subtitle in a bottom sheet asking a parent to allow or not allow a website. This informs the parent that this site was blocked due to a manual blocklist entry.">
       You previously blocked <ph name="BLOCKED_URL">$1<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_PARENT_WEBSITE_LOCAL_WEB_APPROVAL_ERROR" desc="Error message in case of a local web approval failure." translateable="false">
-      An error occurred. Try again later.
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_TITLE" desc="Title of the error dialog that is shown when a supervised user asks for local parental approval, but during the request something went wrong.">
+      Something went wrong
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_DESCRIPTION" desc="Description of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to try again.">
+      Try again
+      </message>
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_BACK_BUTTON" desc="Button of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to go back to the previous screen and try again.">
+      Back
       </message>
       <message name="IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_TITLE" desc="Description of the error snackbar that is shown when a supervised user asks for parental approval, but the request couldn’t be sent. In this scenario, we don’t know why the request didn’t work, so they need to try again.">
         Something went wrong. Try again.
