@@ -9,9 +9,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -20,6 +21,7 @@ import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfi
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
 
 /** A provider that fetches avatar drawables for users from the data sharing backend. */
+@NullMarked
 public class DataSharingAvatarProvider implements RecentActivityListCoordinator.AvatarProvider {
     private final Context mContext;
     private final DataSharingUIDelegate mDataSharingUIDelegate;
