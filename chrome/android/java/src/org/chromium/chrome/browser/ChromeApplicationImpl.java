@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import android.app.Application;
 import android.content.res.Configuration;
 
-import org.chromium.base.AndroidInfo;
 import org.chromium.base.BinderCallsListener;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -58,7 +57,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                     .setAsyncNotificationManagerFlag(
                             ChromeFeatureList.sAsyncNotificationManager.isEnabled());
 
-            if (ChromeFeatureList.sTraceBinderIpc.isEnabled() && AndroidInfo.isDebugAndroid()) {
+            if (ChromeFeatureList.sTraceBinderIpc.isEnabled()) {
+                BinderCallsListener.setExceptionReporter(
+                        ChromePureJavaExceptionReporter::reportJavaException);
                 BinderCallsListener.getInstance().installListener();
             }
 
