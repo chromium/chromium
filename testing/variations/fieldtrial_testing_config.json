@@ -1747,7 +1747,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableCardBenefitsIph"
+                        "AutofillEnableCardBenefitsIph",
+                        "IPH_AutofillCreditCardBenefit"
                     ]
                 }
             ]
