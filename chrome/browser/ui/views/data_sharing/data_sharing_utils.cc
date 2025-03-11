@@ -102,6 +102,24 @@ GURL CreateManageUrl(
 
   return updated_url;
 }
+
+GURL CreateDeleteUrl(
+    const GURL& url,
+    const std::optional<tab_groups::SavedTabGroup> saved_group) {
+  CHECK(saved_group);
+  CHECK(saved_group->collaboration_id());
+
+  GURL updated_url = url;
+
+  // Both variants will use the collaboration id from the saved_group.
+  updated_url =
+      net::AppendQueryParameter(updated_url, kQueryParamFlow, kFlowDelete);
+  updated_url =
+      net::AppendQueryParameter(updated_url, kQueryParamGroupId,
+                                saved_group->collaboration_id()->value());
+
+  return updated_url;
+}
 }  // namespace data_sharing
 
 std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
@@ -128,8 +146,7 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
     for (const tab_groups::SavedTabGroup& group :
          tab_group_service->GetAllGroups()) {
       if (group.collaboration_id() &&
-          data_sharing::GroupId(group.collaboration_id()->value()) ==
-              group_token.group_id) {
+          group.collaboration_id()->value() == group_token.group_id.value()) {
         saved_group = group;
         break;
       }
@@ -150,9 +167,18 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
       url = CreateManageUrl(url, request_info.id, saved_group);
       break;
     }
+    case kDelete: {
+      if (!saved_group || !saved_group->collaboration_id()) {
+        // A shared group must exist for us to delete it.
+        return std::nullopt;
+      }
+
+      url = CreateDeleteUrl(url, saved_group);
+      break;
+    }
   }
 
-  if (saved_group) {
+  if (saved_group && request_info.type != kJoin) {
     // If group is unnamed use default name e.g. "1 tab" / "3 tabs".
     std::string title =
         saved_group->title().empty()
