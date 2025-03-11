@@ -2197,8 +2197,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SubframeRedirectsToWebApp) {
 }
 
 #if BUILDFLAG(IS_MAC)
-
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
+// TODO(crbug.com/402249843): Flaky on Mac. Debug and re-enable.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLED_NewAppWindow) {
   BrowserList* const browser_list = BrowserList::GetInstance();
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
