@@ -245,6 +245,8 @@ public abstract class ChromeFeatureList {
     public static final String BROWSER_CONTROLS_IN_VIZ = "AndroidBrowserControlsInViz";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
+    public static final String CACHE_IS_MULTI_INSTANCE_API_31_ENABLED =
+            "CacheIsMultiInstanceApi31Enabled";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CCT_ADAPTIVE_BUTTON = "CCTAdaptiveButton";
     public static final String CCT_AUTH_TAB = "CCTAuthTab";
@@ -644,6 +646,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
             newCachedFlag(BOOKMARK_PANE_ANDROID, false);
+    public static final CachedFlag sCacheIsMultiInstanceApi31Enabled =
+            newCachedFlag(CACHE_IS_MULTI_INSTANCE_API_31_ENABLED, false);
     public static final CachedFlag sCctAdaptiveButton = newCachedFlag(CCT_ADAPTIVE_BUTTON, false);
     public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, true);
     public static final CachedFlag sCctAuthTabDisableAllExternalIntents =
@@ -883,6 +887,7 @@ public abstract class ChromeFeatureList {
                     sAndroidMinimalUiLargeScreen,
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
+                    sCacheIsMultiInstanceApi31Enabled,
                     sCctAdaptiveButton,
                     sCctAuthTab,
                     sCctAuthTabDisableAllExternalIntents,
