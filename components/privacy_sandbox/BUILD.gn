@@ -119,7 +119,9 @@ source_set("privacy_sandbox_notice_storage") {
   ]
 
   deps = [
+    ":features",
     ":privacy_sandbox_notice_constants",
+    "//base",
     "//base/version_info:version_info",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
