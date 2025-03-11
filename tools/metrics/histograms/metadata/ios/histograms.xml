@@ -2764,6 +2764,15 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
+<histogram name="IOS.Minimap.AddressValidation.Outcome"
+    enum="IOSAddressValidationOutcome" expires_after="2026-03-07">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    The result of the revalidation of the address to avoid false positives.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MiniMap.ConsentOutcome" enum="IOSMiniMapConsentOutcome"
     expires_after="2025-10-09">
   <owner>olivierrobin@chromium.org</owner>
