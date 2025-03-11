@@ -65,7 +65,8 @@ using testing::Property;
 AggregatableReportRequest GenerateReportRequest(
     PrivateAggregationHost::ReportRequestGenerator generator,
     PrivateAggregationPendingContributions::Wrapper contributions) {
-  if (!base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     return std::move(generator).Run(
         std::move(contributions.GetContributionsVector()));
   }
@@ -126,8 +127,8 @@ auto SaveGeneratorAndPendingContributions(
              auto&&...) {
     ASSERT_TRUE(out_generator);
     ASSERT_TRUE(out_contributions);
-    ASSERT_TRUE(
-        base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting));
+    ASSERT_TRUE(base::FeatureList::IsEnabled(
+        blink::features::kPrivateAggregationApiErrorReporting));
     *out_generator = std::move(generator);
     *out_contributions = std::move(contributions.GetPendingContributions());
   };
@@ -189,7 +190,8 @@ void ExpectNumberOfContributionMergeKeysHistogram(
       "PrivacySandbox.PrivateAggregation.NumContributionMergeKeys";
 
   const std::string_view base_histogram =
-      base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)
+      base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)
           ? kBaseHistogramWithErrorReportingFeature
           : kBaseHistogram;
 
@@ -202,7 +204,8 @@ void ExpectNumberOfFinalUnmergedContributionsHistogram(
     size_t value,
     PrivateAggregationCallerApi caller_api,
     bool is_reduced_delay) {
-  if (!base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     return;
   }
 
@@ -215,7 +218,8 @@ void ExpectNumberOfFinalUnmergedContributionsHistogram(
 void ExpectTruncationResultHistogram(
     const base::HistogramTester& tester,
     PrivateAggregationPendingContributions::TruncationResult value) {
-  if (!base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     return;
   }
 
@@ -271,7 +275,8 @@ class PrivateAggregationHostTest : public PrivateAggregationHostTestBase,
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
-        kPrivateAggregationApiErrorReporting, GetErrorReportingEnabledParam());
+        blink::features::kPrivateAggregationApiErrorReporting,
+        GetErrorReportingEnabledParam());
     PrivateAggregationHostTestBase::SetUp();
   }
 
@@ -290,7 +295,7 @@ class PrivateAggregationHostErrorReportingEnabledTest
     : public PrivateAggregationHostTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      kPrivateAggregationApiErrorReporting};
+      blink::features::kPrivateAggregationApiErrorReporting};
 };
 TEST_P(PrivateAggregationHostTest,
        ContributeToHistogram_ReportRequestHasCorrectMembers) {

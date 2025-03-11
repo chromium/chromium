@@ -16,9 +16,9 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 
 namespace content {
@@ -130,7 +130,7 @@ class PrivateAggregationPendingContributionsTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_{
-      kPrivateAggregationApiErrorReporting};
+      blink::features::kPrivateAggregationApiErrorReporting};
 
   base::HistogramTester histogram_tester_;
 };

@@ -19,12 +19,6 @@ namespace content {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiDebugModeRequires3pcEligibility);
 
-// Controls the aggregate error reporting feature, which allows for
-// contributions to be made conditional on error conditions that can be hit when
-// using the API. This also defers contribution merging and modifies the
-// budgeting flow.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApiErrorReporting);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_FEATURES_H_
