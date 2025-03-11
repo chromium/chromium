@@ -144,6 +144,8 @@ static_library("ui") {
     "webid/account_selection_view.h",
     "webid/identity_dialog_controller.cc",
     "webid/identity_dialog_controller.h",
+    "webid/identity_ui_utils.cc",
+    "webid/identity_ui_utils.h",
     "webui/about/about_ui.cc",
     "webui/about/about_ui.h",
     "webui/accessibility/accessibility_ui.cc",

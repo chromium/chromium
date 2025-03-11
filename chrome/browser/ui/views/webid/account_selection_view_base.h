@@ -30,11 +30,6 @@ class FedCmAccountSelectionView;
 inline constexpr int kButtonRadius = 16;
 // The fixed, total width of the bubble.
 inline constexpr int kBubbleWidth = 375;
-// The desired size of the avatars of user accounts.
-inline constexpr int kDesiredAvatarSize = 30;
-// The desired size of the IDP icon used as badge for the user account avatar
-// when there are multiple IDPs.
-inline constexpr int kLargeAvatarBadgeSize = 16;
 // The size of the icon of the identity provider in the bubble.
 inline constexpr int kBubbleIdpIconSize = 20;
 // The desired size of the icon for a "login to IDP" secondary view.
@@ -68,12 +63,8 @@ inline constexpr int kModalIdpIconSize = 32;
 // The size of the icons when they are combined i.e. IDP icon + arrow icon + RP
 // icon is shown at the same time in the modal.
 inline constexpr int kModalCombinedIconSize = 20;
-// The size of avatars in the modal dialog.
-inline constexpr int kModalAvatarSize = 36;
 // The size of the horizontal padding for most elements in the modal.
 inline constexpr int kModalHorizontalSpacing = 8;
-// Size of the IDP icon offset when badging the IDP icon in the account button.
-inline constexpr int kIdpBadgeOffset = 8;
 // The size of the arrow icon.
 inline constexpr int kArrowIconSize = 8;
 // The size of the spinner used in place of the IDP icon while it is being
