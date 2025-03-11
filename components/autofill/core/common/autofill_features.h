@@ -49,8 +49,6 @@ BASE_DECLARE_FEATURE(kAutofillDeduplicateAccountAddresses);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDisambiguateContradictingFieldTypes);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillDoNotHideKeyboardAccessoryOnMainFrameResized);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAccountStorageForIneligibleCountries);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAddressFieldParserNG);
