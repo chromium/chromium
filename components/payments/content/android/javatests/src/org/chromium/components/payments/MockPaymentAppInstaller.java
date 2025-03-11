@@ -62,27 +62,22 @@ public class MockPaymentAppInstaller {
     public void install() {
         MockPackageManagerDelegate packageManagerDelegate = new MockPackageManagerDelegate();
         MockPaymentManifestDownloader downloader = new MockPaymentManifestDownloader();
+        MockAndroidIntentLauncher launcher = new MockAndroidIntentLauncher();
 
         for (MockPaymentApp app : mApps) {
-            downloader.serveManifestFor(app);
             packageManagerDelegate.installPaymentApp(
                     app.getLabel(),
                     app.getPackage(),
                     app.getMethod(),
                     getSupportedDelegations(app),
                     app.getSignature());
+            downloader.serveManifestFor(app);
+            launcher.handleLaunchingApp(app);
         }
 
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
         AndroidPaymentAppFinder.setDownloaderForTest(downloader);
-
-        // TODO(crbug.com/401576628): Pass the mock payment apps into the mock Android intent
-        // launcher, so it can return shipping address and contact information only for the apps
-        // that support it.
-        AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(
-                new MockAndroidIntentLauncher(
-                        /* returnShippingAddress= */ mApps.get(0).getHandlesShippingAddress(),
-                        /* returnContactInfo= */ mApps.get(0).getHandlesContactInformation()));
+        AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(launcher);
 
         AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
     }
