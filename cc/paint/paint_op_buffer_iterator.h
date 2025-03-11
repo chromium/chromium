@@ -12,13 +12,13 @@
 
 #include <iterator>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/debug/alias.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
@@ -172,19 +172,19 @@ class CC_PAINT_EXPORT PaintOpBuffer::CompositeIterator
   CompositeIterator(CompositeIterator&& other);
 
   const PaintOp* get() const {
-    return absl::visit([](const auto& iter) { return iter.get(); }, iter_);
+    return std::visit([](const auto& iter) { return iter.get(); }, iter_);
   }
   const PaintOp* operator->() const { return get(); }
   const PaintOp& operator*() const { return *get(); }
   CompositeIterator begin() const {
-    return absl::holds_alternative<Iterator>(iter_)
-               ? CompositeIterator(absl::get<Iterator>(iter_).begin())
-               : CompositeIterator(absl::get<OffsetIterator>(iter_).begin());
+    return std::holds_alternative<Iterator>(iter_)
+               ? CompositeIterator(std::get<Iterator>(iter_).begin())
+               : CompositeIterator(std::get<OffsetIterator>(iter_).begin());
   }
   CompositeIterator end() const {
-    return absl::holds_alternative<Iterator>(iter_)
-               ? CompositeIterator(absl::get<Iterator>(iter_).end())
-               : CompositeIterator(absl::get<OffsetIterator>(iter_).end());
+    return std::holds_alternative<Iterator>(iter_)
+               ? CompositeIterator(std::get<Iterator>(iter_).end())
+               : CompositeIterator(std::get<OffsetIterator>(iter_).end());
   }
   bool operator==(const CompositeIterator& other) const {
     return iter_ == other.iter_;
@@ -193,7 +193,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::CompositeIterator
     return !(*this == other);
   }
   CompositeIterator& operator++() {
-    absl::visit([](auto& iter) { ++iter; }, iter_);
+    std::visit([](auto& iter) { ++iter; }, iter_);
     return *this;
   }
   CompositeIterator operator++(int) {
@@ -202,14 +202,14 @@ class CC_PAINT_EXPORT PaintOpBuffer::CompositeIterator
     return original;
   }
   explicit operator bool() const {
-    return absl::visit([](const auto& iter) { return !!iter; }, iter_);
+    return std::visit([](const auto& iter) { return !!iter; }, iter_);
   }
 
  private:
   explicit CompositeIterator(OffsetIterator iter) : iter_(std::move(iter)) {}
   explicit CompositeIterator(Iterator iter) : iter_(std::move(iter)) {}
 
-  absl::variant<Iterator, OffsetIterator> iter_;
+  std::variant<Iterator, OffsetIterator> iter_;
 };
 
 class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator
