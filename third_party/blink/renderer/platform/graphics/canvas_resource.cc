@@ -792,11 +792,10 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
-  auto image_info = CreateSkImageInfo();
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u, Size(),
-      GetFormat(), image_info.alphaType(), GetColorSpace(),
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      GetFormat(), GetAlphaType(), GetColorSpace(), context_provider_wrapper_,
+      owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 }
 
