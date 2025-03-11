@@ -145,6 +145,24 @@ GURL CreateDeleteUrl(
 
   return updated_url;
 }
+
+GURL CreateCloseUrl(
+    const GURL& url,
+    const std::optional<tab_groups::SavedTabGroup> saved_group) {
+  CHECK(saved_group);
+  CHECK(saved_group->collaboration_id());
+
+  GURL updated_url = url;
+
+  // Both variants will use the collaboration id from the saved_group.
+  updated_url =
+      net::AppendQueryParameter(updated_url, kQueryParamFlow, kFlowClose);
+  updated_url =
+      net::AppendQueryParameter(updated_url, kQueryParamGroupId,
+                                saved_group->collaboration_id()->value());
+
+  return updated_url;
+}
 }  // namespace data_sharing
 
 std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
@@ -208,6 +226,14 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
       }
 
       url = CreateLeaveUrl(url, request_info.id);
+      break;
+    case kClose:
+      if (!saved_group || !saved_group->collaboration_id()) {
+        // A shared group must exist for us to close it.
+        return std::nullopt;
+      }
+
+      url = CreateCloseUrl(url, saved_group);
       break;
   }
 

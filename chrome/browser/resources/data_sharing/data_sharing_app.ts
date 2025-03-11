@@ -39,6 +39,7 @@ enum FlowValues {
   MANAGE = 'manage',
   DELETE = 'delete',
   LEAVE = 'leave',
+  CLOSE = 'close',
 }
 
 // Events that can be triggered within the DataSharing UI.
@@ -564,6 +565,19 @@ export class DataSharingApp extends CustomElement implements Logger {
         // group_id cannot be null for delete flow.
         this.dataSharingSdk_
             .runDeleteFlow({
+              parent,
+              groupId: groupId!,
+              translatedMessages: this.translationMap_,
+              logger: this,
+            })
+            .then((res) => {
+              this.browserProxy_.closeUi(res.status);
+            });
+        break;
+      case FlowValues.CLOSE:
+        // group_id cannot be null for close flow.
+        this.dataSharingSdk_
+            .runCloseFlow({
               parent,
               groupId: groupId!,
               translatedMessages: this.translationMap_,

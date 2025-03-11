@@ -59,6 +59,8 @@ suite('Start flows', () => {
         'runManageFlow', Promise.resolve({status: Code.OK}));
     testDataSharingSdk.setResultFor(
         'runDeleteFlow', Promise.resolve({status: Code.OK}));
+    testDataSharingSdk.setResultFor(
+        'runCloseFlow', Promise.resolve({status: Code.OK}));
   });
 
   test('Invite flow', async () => {
@@ -116,6 +118,21 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runDeleteFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runDeleteFlow')[0].groupId);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Close flow', async () => {
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=close&group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runCloseFlow'));
+    assertEquals(
+        'fake_id', testDataSharingSdk.getArgs('runCloseFlow')[0].groupId);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
