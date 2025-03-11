@@ -134,7 +134,6 @@ EXPORTS
     ??$PopDead@_J_K_K_KG@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AEAAPEAUHashtablezInfo@container_internal@2@_J_K11G@Z
     ??$Prepend@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@$0A@@Cord@absl@@QEAAX$$QEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ??$Register@AEB_JAEA_KAEA_KAEA_KAEAG@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QEAAPEAUHashtablezInfo@container_internal@2@AEB_JAEA_K11AEAG@Z
-    ??$Run@U?$PerformVisitation@UBufferSizeVisitor@?1??BufferSizeForStructuredProtoField@log_internal@absl@@YA_KUStructuredProtoField@34@@Z@AEAV?$variant@V?$variant@_K_JIH_N@absl@@V?$variant@_K_JN@2@V?$Span@$$CBD@2@V?$variant@IHM@2@@4@@variant_internal@absl@@@?$VisitIndicesSwitch@$03@variant_internal@absl@@SA_K$$QEAU?$PerformVisitation@UBufferSizeVisitor@?1??BufferSizeForStructuredProtoField@log_internal@absl@@YA_KUStructuredProtoField@34@@Z@AEAV?$variant@V?$variant@_K_JIH_N@absl@@V?$variant@_K_JN@2@V?$Span@$$CBD@2@V?$variant@IHM@2@@4@@12@_K@Z
     ??$SNPrintF@DHHH@absl@@YAHPEAD_KAEBV?$FormatSpecTemplate@$0BPPPL@$0JPPPL@$0JPPPL@$0JPPPL@@str_format_internal@0@AEBDAEBH44@Z
     ??$STLStringResizeUninitializedAmortized@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@strings_internal@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@_K@Z
     ??$SharedCompareImpl@VCord@absl@@@absl@@YAHAEBVCord@0@0@Z
@@ -296,7 +295,6 @@ EXPORTS
     ??1SeedGenException@absl@@UEAA@XZ
     ??1TimeZoneIf@cctz@time_internal@absl@@UEAA@XZ
     ??1ZoneInfoSource@cctz@time_internal@absl@@UEAA@XZ
-    ??1bad_variant_access@absl@@UEAA@XZ
     ??4BadStatusOrAccess@absl@@QEAAAEAV01@$$QEAV01@@Z
     ??4BadStatusOrAccess@absl@@QEAAAEAV01@AEBV01@@Z
     ??4Cord@absl@@QEAAAEAV01@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
@@ -1067,7 +1065,6 @@ EXPORTS
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?Restore@FlagState@flags_internal@absl@@EEBAXXZ
     ?RestoreState@FlagImpl@flags_internal@absl@@AEAA_NAEBVFlagState@23@@Z
-    ?Rethrow@variant_internal@absl@@YAXXZ
     ?Retire@flags_internal@absl@@YAXPEBDPEBXPEAD@Z
     ?ReverseConsume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
@@ -1180,7 +1177,6 @@ EXPORTS
     ?TestOnlyRefreshSamplingStateForCurrentThread@container_internal@absl@@YAXXZ
     ?ThreadIsLoggingToLogSink@log_internal@absl@@YA_NXZ
     ?ThrowBadStatusOrAccess@internal_statusor@absl@@YAXVStatus@2@@Z
-    ?ThrowBadVariantAccess@variant_internal@absl@@YAXXZ
     ?ThrowSeedGenException@random_internal@absl@@YAXXZ
     ?ThrowStdBadAlloc@base_internal@absl@@YAXXZ
     ?ThrowStdBadFunctionCall@base_internal@absl@@YAXXZ
@@ -1421,7 +1417,6 @@ EXPORTS
     ?version@time_zone@cctz@time_internal@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?what@BadStatusOrAccess@absl@@UEBAPEBDXZ
     ?what@SeedGenException@absl@@UEBAPEBDXZ
-    ?what@bad_variant_access@absl@@UEBAPEBDXZ
     ?words@?$BigUnsigned@$03@strings_internal@absl@@QEBAPEBIXZ
     ?words@?$BigUnsigned@$0FE@@strings_internal@absl@@QEBAPEBIXZ
     ?xsputn@Streambuf@OStringStream@strings_internal@absl@@MEAA_JPEBD_J@Z

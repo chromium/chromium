@@ -123,7 +123,7 @@
 // absl::variant is a typedef of std::variant, use the feature macro
 // ABSL_USES_STD_VARIANT.
 
-#define ABSL_OPTION_USE_STD_VARIANT 0
+#define ABSL_OPTION_USE_STD_VARIANT 2
 
 // ABSL_OPTION_USE_STD_ORDERING
 //

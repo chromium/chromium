@@ -10,13 +10,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
 
 struct InteractionsStats;
-struct PasswordForm;
 class PasswordStoreInterface;
 
 using LoginsResult = std::vector<PasswordForm>;

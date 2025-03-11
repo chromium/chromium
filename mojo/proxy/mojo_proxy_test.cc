@@ -335,7 +335,7 @@ class LegacyAppLauncher {
 
  private:
   mojo::OutgoingInvitation invitation_;
-  absl::variant<size_t, std::string> attachment_info_{0};
+  absl::variant<size_t, std::string> attachment_info_{0u};
   base::Process app_process_;
   base::Process proxy_process_;
   std::optional<int> exit_code_;
