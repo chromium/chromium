@@ -10,8 +10,16 @@
 #import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/share_extension/share_extension_delegate.h"
 
 namespace {
+
+enum SharedItemType {
+  kURL,
+  kImage,
+  kText,
+};
+
 CGFloat const kInnerViewWidthPadding = 32;
 CGFloat const kMainViewHeightPadding = 34;
 CGFloat const kMainViewCornerRadius = 12;
@@ -35,6 +43,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
   NSString* _primaryString;
   NSString* _secondaryString;
   NSString* _appName;
+  SharedItemType _sharedItemType;
 }
 
 - (instancetype)init {
@@ -47,6 +56,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 }
 
 - (void)viewDidLoad {
+  self.actionHandler = self;
   self.primaryActionString = _primaryString;
   self.secondaryActionString = _secondaryString;
 
@@ -73,6 +83,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 - (void)setSharedURL:(NSURL*)sharedURL {
   CHECK(!_sharedImage && !_sharedText);
   _sharedURL = sharedURL;
+  _sharedItemType = kURL;
   // TODO(crbug.com/398803565): Add strings translation.
   _primaryString = [NSString stringWithFormat:@"%@ %@", @"Open in", _appName];
   _secondaryString = @"More options";
@@ -91,6 +102,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 - (void)setSharedImage:(UIImage*)sharedImage {
   CHECK(!_sharedURL && !_sharedTitle && !_sharedText);
   _sharedImage = sharedImage;
+  _sharedItemType = kImage;
   // TODO(crbug.com/398803565): Add strings translation.
   _primaryString = [NSString stringWithFormat:@"%@ %@", @"Search in", _appName];
   _secondaryString = @"Search in Incognito";
@@ -99,6 +111,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 - (void)setSharedText:(NSString*)sharedText {
   CHECK(!_sharedURL && !_sharedTitle && !_sharedImage);
   _sharedText = sharedText;
+  _sharedItemType = kText;
   // TODO(crbug.com/398803565): Add strings translation.
   _primaryString = [NSString stringWithFormat:@"%@ %@", @"Search in", _appName];
   _secondaryString = @"Search in Incognito";
@@ -106,12 +119,33 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 #pragma mark - ConfirmationAlertActionHandler
 
+- (void)confirmationAlertDismissAction {
+  [self.delegate didTapCloseShareExtensionSheet:self];
+}
+
 - (void)confirmationAlertPrimaryAction {
-  // TODO(crbug.com/398803565): Add the appropriate action.
+  switch (_sharedItemType) {
+    case kURL:
+      [self.delegate didTapOpenInChromeShareExtensionSheet:self];
+      return;
+    case kImage:
+    case kText:
+      // TODO(crbug.com/398803565): Add the search actions for image and text.
+      return;
+  }
 }
 
 - (void)confirmationAlertSecondaryAction {
-  // TODO(crbug.com/398803565): Add the appropriate action.
+  switch (_sharedItemType) {
+    case kURL:
+      [self.delegate didTapMoreOptionsShareExtensionSheet:self];
+      return;
+    case kImage:
+    case kText:
+      // TODO(crbug.com/398803565): Add the incognito search actions for image
+      // and text.
+      return;
+  }
 }
 
 #pragma mark - Private

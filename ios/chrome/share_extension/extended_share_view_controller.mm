@@ -14,6 +14,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/extension_open_url.h"
+#import "ios/chrome/share_extension/share_extension_delegate.h"
 #import "ios/chrome/share_extension/share_extension_sheet.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
@@ -25,7 +26,7 @@ namespace {
 const CGFloat kShareSheetCornerRadius = 20;
 }  // namespace
 
-@interface ExtendedShareViewController ()
+@interface ExtendedShareViewController () <ShareExtensionDelegate>
 
 // The sheet to display when an item is shared.
 @property(nonatomic, strong) ShareExtensionSheet* shareSheet;
@@ -83,6 +84,7 @@ const CGFloat kShareSheetCornerRadius = 20;
   [super viewDidLoad];
 
   self.shareSheet = [[ShareExtensionSheet alloc] init];
+  self.shareSheet.delegate = self;
   self.shareSheet.modalPresentationStyle = UIModalPresentationPageSheet;
   UISheetPresentationController* presentationController =
       self.shareSheet.sheetPresentationController;
@@ -94,6 +96,69 @@ const CGFloat kShareSheetCornerRadius = 20;
   presentationController.preferredCornerRadius = kShareSheetCornerRadius;
 
   [self loadElementsFromContext];
+}
+
+#pragma mark - ShareExtensionDelegate
+
+- (void)didTapCloseShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheetSheet {
+  __weak ExtendedShareViewController* weakSelf = self;
+  [self
+      queueActionItemURL:nil
+                   title:nil
+                  action:app_group::READING_LIST_ITEM  // Ignored
+                  cancel:YES
+              completion:^{
+                [weakSelf
+                    dismissAndReturnItem:nil
+                                   error:
+                                       [NSError
+                                           errorWithDomain:NSCocoaErrorDomain
+                                                      code:NSUserCancelledError
+                                                  userInfo:nil]];
+              }];
+}
+
+- (void)didTapOpenInChromeShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheetSheet {
+  __weak ExtendedShareViewController* weakSelf = self;
+  AppGroupCommand* command = [[AppGroupCommand alloc]
+      initWithSourceApp:app_group::kOpenCommandSourceShareExtension
+         URLOpenerBlock:^(NSURL* openURL) {
+           ExtensionOpenURL(openURL, weakSelf, nil);
+         }];
+  [command prepareToOpenURL:_shareURL];
+  [command executeInApp];
+
+  [self queueActionItemURL:_shareURL
+                     title:_shareTitle
+                    action:app_group::OPEN_IN_CHROME_ITEM
+                    cancel:NO
+                completion:^{
+                  [weakSelf dismissAndReturnItem:weakSelf.shareItem error:nil];
+                }];
+}
+
+- (void)didTapMoreOptionsShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheetSheet {
+  UIAlertController* moreActionsAlertController = [UIAlertController
+      alertControllerWithTitle:nil
+                       message:nil
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  // TODO(crbug.com/398803565): Add strings translation.
+  UIAlertAction* cancelAlertAction =
+      [UIAlertAction actionWithTitle:@"Cancel"
+                               style:UIAlertActionStyleCancel
+                             handler:nil];
+
+  [moreActionsAlertController addAction:[self addToBookmarksAlertAction]];
+  [moreActionsAlertController addAction:[self addToReadingListAlertAction]];
+  [moreActionsAlertController addAction:[self openInIncognitoAlertAction]];
+  [moreActionsAlertController addAction:cancelAlertAction];
+
+  [self.shareSheet presentViewController:moreActionsAlertController
+                                animated:YES
+                              completion:nil];
 }
 
 #pragma mark - Private methods
@@ -369,6 +434,62 @@ const CGFloat kShareSheetCornerRadius = 20;
     [self.extensionContext completeRequestReturningItems:returnItem
                                        completionHandler:nil];
   }
+}
+
+- (UIAlertAction*)addToBookmarksAlertAction {
+  __weak ExtendedShareViewController* weakSelf = self;
+  // TODO(crbug.com/398803565): Add strings translation.
+  return [UIAlertAction actionWithTitle:@"Add to Bookmarks"
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction* action) {
+                                  [weakSelf handleAddingToBookmark];
+                                }];
+}
+
+- (UIAlertAction*)addToReadingListAlertAction {
+  __weak ExtendedShareViewController* weakSelf = self;
+  // TODO(crbug.com/398803565): Add strings translation.
+  return [UIAlertAction actionWithTitle:@"Add to Reading List"
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction* action) {
+                                  [weakSelf handleAddingToReadingList];
+                                }];
+}
+
+- (UIAlertAction*)openInIncognitoAlertAction {
+  __weak ExtendedShareViewController* weakSelf = self;
+  // TODO(crbug.com/398803565): Add strings translation.
+  return [UIAlertAction actionWithTitle:@"Open in Incognitos"
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction* action) {
+                                  [weakSelf handleOpeningInIncognito];
+                                }];
+}
+
+- (void)handleAddingToBookmark {
+  __weak ExtendedShareViewController* weakSelf = self;
+  [self queueActionItemURL:_shareURL
+                     title:_shareTitle
+                    action:app_group::BOOKMARK_ITEM
+                    cancel:NO
+                completion:^{
+                  [weakSelf dismissAndReturnItem:weakSelf.shareItem error:nil];
+                }];
+}
+
+- (void)handleAddingToReadingList {
+  __weak ExtendedShareViewController* weakSelf = self;
+  [self queueActionItemURL:_shareURL
+                     title:_shareTitle
+                    action:app_group::READING_LIST_ITEM
+                    cancel:NO
+                completion:^{
+                  [weakSelf dismissAndReturnItem:weakSelf.shareItem error:nil];
+                }];
+}
+
+- (void)handleOpeningInIncognito {
+  // TODO(crbug.com/402278503): Add the incognito URL opening.
 }
 
 @end
