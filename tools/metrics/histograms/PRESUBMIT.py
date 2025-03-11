@@ -102,7 +102,12 @@ def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
 def GetValidateHistogramsError(input_api: Type, output_api: Type, cwd: str,
                                xml_paths_override: List[str],
                                results: List[Any]):
-  """Validates histograms format and index file.
+  """Validates histograms format using validate_format.py tool.
+
+  This validates things like:
+  - Histograms files are valid XMLs.
+  - Histograms namespaces only span one file
+  - Tokens used in histograms are registered.
 
   Args:
     input_api: An input_api instance that contains information about changes.
@@ -128,6 +133,18 @@ def GetValidateHistogramsError(input_api: Type, output_api: Type, cwd: str,
         'and fix the reported errors.' % cwd)
     results.append(output_api.PresubmitError(error_msg))
 
+
+def _GetValidateHistogramsIndexError(input_api: Type, output_api: Type,
+                                     cwd: str, results: List[Any]):
+  """Validates if index file is up-to-date with current state of the tree using
+  validate_histograms_index.py tool.
+
+  Args:
+    input_api: An input_api instance that contains information about changes.
+    output_api: An output_api instance to create results of the PRESUBMIT check.
+    cwd: Work directory to run the python process in.
+    results: The list of output_api objects to append the check warnings to.
+  """
   exit_code = input_api.subprocess.call([
       input_api.python3_executable,
       os.path.join(input_api.PresubmitLocalPath(),
@@ -221,16 +238,20 @@ def ExecuteCheckHistogramFormatting(input_api, output_api, allow_test_paths,
 
   # Only for changed files, do corresponding checks if the file is
   # histograms.xml or enums.xml.
-  for file_obj in input_api.AffectedFiles():
+  for file_obj in input_api.AffectedFiles(include_deletes=False):
     is_changed = ValidateSingleFile(input_api, output_api, file_obj, cwd,
                                     results, allow_test_paths)
     xml_changed = xml_changed or is_changed
 
-  # Run validate_format.py and validate_histograms_index.py, if changed files
-  # contain histograms.xml or enums.xml.
+  # Run validate_format.py if there were modified xml files.
   if xml_changed:
     GetValidateHistogramsError(input_api, output_api, cwd, xml_paths_override,
                                results)
+
+  # Always run validate_histograms_index.py the condiditon when we need it is
+  # relatively complex and given that this is a fast check (<100ms) it's easier
+  # to just always make that check.
+  _GetValidateHistogramsIndexError(input_api, output_api, cwd, results)
 
   return results
 
@@ -260,7 +281,8 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
                                                    xml_paths_override):
   """Checks that histograms_allowlist.txt contains valid histograms."""
   xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
-  xml_files = input_api.AffectedFiles(file_filter=xml_filter)
+  xml_files = input_api.AffectedFiles(include_deletes=False,
+                                      file_filter=xml_filter)
   if not xml_files:
     return []
 
@@ -316,7 +338,7 @@ def ExecuteCheckBooleansAreEnums(input_api, output_api):
 
   # Only for changed files, do corresponding checks if the file is
   # histograms.xml or enums.xml.
-  for affected_file in input_api.AffectedFiles():
+  for affected_file in input_api.AffectedFiles(include_deletes=False):
     filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
     if 'histograms.xml' in filepath:
       for line_number, line in affected_file.ChangedContents():
