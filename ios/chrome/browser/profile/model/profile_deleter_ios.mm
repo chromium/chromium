@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/profile/model/profile_deleter_ios.h"
 
 #import <optional>
+#import <string>
 
 #import "base/check.h"
 #import "base/files/file_path.h"
@@ -138,7 +139,7 @@ ProfileDeleterIOS::ProfileDeleterIOS() {
 
 ProfileDeleterIOS::~ProfileDeleterIOS() = default;
 
-void ProfileDeleterIOS::DeleteProfile(const std::string& profile_name,
+void ProfileDeleterIOS::DeleteProfile(std::string_view profile_name,
                                       const base::FilePath& storage_dir,
                                       DeletionResultCallback callback) {
   base::FilePath profile_dir = storage_dir.Append(profile_name);

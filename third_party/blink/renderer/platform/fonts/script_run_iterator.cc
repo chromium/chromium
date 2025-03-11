@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -165,7 +161,8 @@ void ICUScriptData::GetScripts(UChar32 ch, UScriptCodeList& dst) const {
     // Not common or primary, with extensions that are not in order. We know
     // the primary, so we insert it at the front and swap the previous front
     // to somewhere else in the list.
-    auto it = std::find(dst.begin() + 1, dst.end(), primary_script);
+    auto it =
+        std::find(UNSAFE_TODO(dst.begin() + 1), dst.end(), primary_script);
     if (it == dst.end()) {
       dst.push_back(primary_script);
       std::swap(dst.front(), dst.back());
@@ -244,7 +241,7 @@ ScriptRunIterator::ScriptRunIterator(base::span<const UChar> text,
     // resolution between current_set_ and next_set_ in MergeSets() leads to
     // choosing the script of the first consumed character.
     current_set_.push_back(USCRIPT_COMMON);
-    U16_NEXT(text_, ahead_pos_, length_, ahead_character_);
+    UNSAFE_TODO(U16_NEXT(text_, ahead_pos_, length_, ahead_character_));
     script_data_->GetScripts(ahead_character_, *ahead_set_);
   }
 }
@@ -359,7 +356,7 @@ bool ScriptRunIterator::MergeSets() {
   auto current_end = current_set_.end();
   // Most of the time, this is the only one.
   // Advance the current iterator, we won't need to check it again later.
-  UScriptCode priority_script = *current_set_it++;
+  UScriptCode priority_script = UNSAFE_TODO(*current_set_it++);
 
   // If next is common or inherited, the only thing that might change
   // is the common preferred script.
@@ -392,7 +389,7 @@ bool ScriptRunIterator::MergeSets() {
     // So try next priority script.
     // Skip the first current script, we already know it's not there.
     // Advance the next iterator, later we won't need to check it again.
-    priority_script = *next_it++;
+    priority_script = UNSAFE_TODO(*next_it++);
     have_priority =
         std::find(current_set_it, current_end, priority_script) != current_end;
   }
@@ -402,16 +399,16 @@ bool ScriptRunIterator::MergeSets() {
   auto current_write_it = current_set_.begin();
   if (have_priority) {
     // keep the priority script.
-    *current_write_it++ = priority_script;
+    UNSAFE_TODO(*current_write_it++ = priority_script);
   }
 
   if (next_it != next_end) {
     // Iterate over the remaining current scripts, and keep them if
     // they occur in the remaining next scripts.
     while (current_set_it != current_end) {
-      UScriptCode sc = *current_set_it++;
+      UScriptCode sc = UNSAFE_TODO(*current_set_it++);
       if (std::find(next_it, next_end, sc) != next_end) {
-        *current_write_it++ = sc;
+        UNSAFE_TODO(*current_write_it++ = sc);
       }
     }
   }
@@ -471,7 +468,7 @@ bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
     return true;
   }
 
-  U16_NEXT(text_, ahead_pos_, length_, ahead_character_);
+  UNSAFE_TODO(U16_NEXT(text_, ahead_pos_, length_, ahead_character_));
 
   if (!next_set_->empty() && next_set_->front() != USCRIPT_COMMON &&
       U_GET_GC_MASK(ahead_character_) & U_GC_M_MASK &&

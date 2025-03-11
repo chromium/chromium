@@ -36,8 +36,9 @@ GlicButtonController::GlicButtonController(
                       base::BindRepeating(&GlicButtonController::OnPrefsChanged,
                                           base::Unretained(this)));
   subscriptions_.push_back(
-      glic_keyed_service_->enabling().RegisterEnableChanged(base::BindRepeating(
-          &GlicButtonController::OnPrefsChanged, base::Unretained(this))));
+      glic_keyed_service_->enabling().RegisterAllowedChanged(
+          base::BindRepeating(&GlicButtonController::OnPrefsChanged,
+                              base::Unretained(this))));
 
   glic_keyed_service_->window_controller().AddStateObserver(this);
 }

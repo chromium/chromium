@@ -210,10 +210,11 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, extracts <input type=date>, which may be filled by Autofill AI.
-// TODO(crbug.com/396325496): Clean up when launched.
+// This is a kill switch.
+// TODO(crbug.com/396325496): Clean up after M137 branch (April 28, 2025).
 BASE_FEATURE(kAutofillExtractInputDate,
              "AutofillExtractInputDate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
@@ -294,6 +295,12 @@ BASE_FEATURE(kAutofillPaymentsFieldSwapping,
 // will affect many correctness metrics.
 BASE_FEATURE(kAutofillRecordCorrectionOfSelectElements,
              "AutofillRecordCorrectionOfSelectElements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, chrome will support home and work addresses from account.
+// TODO: crbug.com/397940269 - Clean up when launched.
+BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
+             "AutofillEnableSupportForHomeAndWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gives precedence to local heuristics if they indicate that a field is an
@@ -415,13 +422,6 @@ BASE_FEATURE(kAutofillDetectFieldVisibility,
 BASE_FEATURE(kAutofillDisambiguateContradictingFieldTypes,
              "AutofillDisambiguateContradictingFieldTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether the `AutofillPopupHideHelper` will hide the keyboard
-// accessory when the Chrome native view is resized on Android.
-BASE_DECLARE_FEATURE(kAutofillDoNotHideKeyboardAccessoryOnMainFrameResized);
-BASE_FEATURE(kAutofillDoNotHideKeyboardAccessoryOnMainFrameResized,
-             "AutofillDoNotHideKeyboardAccessoryOnMainFrameResized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of

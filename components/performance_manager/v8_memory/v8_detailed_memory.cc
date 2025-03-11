@@ -122,7 +122,7 @@ V8DetailedMemoryRequest::~V8DetailedMemoryRequest() {
 
 void V8DetailedMemoryRequest::StartMeasurement(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StartMeasurementImpl(graph, nullptr);
+  StartMeasurementImpl(graph ? graph : PerformanceManager::GetGraph(), nullptr);
 }
 
 void V8DetailedMemoryRequest::StartMeasurementForProcess(

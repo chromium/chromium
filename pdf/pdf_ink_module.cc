@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -1152,11 +1153,11 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
   std::set<InkModeledShapeId> shape_ids;
   for (PdfInkUndoRedoModel::IdType id : ids) {
     bool inserted;
-    if (absl::holds_alternative<InkStrokeId>(id)) {
-      inserted = stroke_ids.insert(absl::get<InkStrokeId>(id)).second;
+    if (std::holds_alternative<InkStrokeId>(id)) {
+      inserted = stroke_ids.insert(std::get<InkStrokeId>(id)).second;
     } else {
-      CHECK(absl::holds_alternative<InkModeledShapeId>(id));
-      inserted = shape_ids.insert(absl::get<InkModeledShapeId>(id)).second;
+      CHECK(std::holds_alternative<InkModeledShapeId>(id));
+      inserted = shape_ids.insert(std::get<InkModeledShapeId>(id)).second;
     }
     CHECK(inserted);
   }

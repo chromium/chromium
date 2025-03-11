@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
+#include "third_party/blink/renderer/core/style/gap_data.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
@@ -1081,17 +1082,29 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     // the responsibilities between these two locations.
     //
     // TODO: There are more properties that contain <color> values than this.
-    if ((BackgroundInternal().AnyLayerUsesCurrentColor() ||
-         BackgroundColor().IsUnresolvedColorFunction() ||
-         InternalVisitedBackgroundColor().IsUnresolvedColorFunction() ||
-         (FillPaint().HasColor() &&
-          FillPaint().GetColor().IsUnresolvedColorFunction()) ||
-         (StrokePaint().HasColor() &&
-          StrokePaint().GetColor().IsUnresolvedColorFunction())) &&
-        (GetCurrentColor() != other.GetCurrentColor() ||
-         GetInternalVisitedCurrentColor() !=
-             other.GetInternalVisitedCurrentColor())) {
-      return true;
+    if (GetCurrentColor() != other.GetCurrentColor() ||
+        GetInternalVisitedCurrentColor() !=
+            other.GetInternalVisitedCurrentColor()) {
+      if (BackgroundInternal().AnyLayerUsesCurrentColor() ||
+          BackgroundColor().IsUnresolvedColorFunction() ||
+          InternalVisitedBackgroundColor().IsUnresolvedColorFunction()) {
+        return true;
+      }
+      if (FillPaint().HasColor() &&
+          FillPaint().GetColor().IsUnresolvedColorFunction()) {
+        return true;
+      }
+      if (StrokePaint().HasColor() &&
+          StrokePaint().GetColor().IsUnresolvedColorFunction()) {
+        return true;
+      }
+      if ((!HasAutoColumnCount() || !HasAutoColumnWidth()) &&
+          ColumnRuleColor().MaybeDependsOnCurrentColor()) {
+        // Repaint only if we are multicol and the column rule maybe depends on
+        // currentcolor.
+        // See https://drafts.csswg.org/css-multicol/#the-multi-column-model
+        return true;
+      }
     }
   }
 

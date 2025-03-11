@@ -50,7 +50,6 @@ class OnDeviceModelAccessController;
 class OnDeviceModelAdaptationMetadata;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
-class ModelQualityLogsUploaderService;
 class OnDeviceModelAdaptationController;
 
 // Controls the lifetime of the on-device model service, loading and unloading
@@ -83,8 +82,6 @@ class OnDeviceModelServiceController
       ModelBasedCapabilityKey feature,
       ExecuteRemoteFn execute_remote_fn,
       base::WeakPtr<OptimizationGuideLogger> logger,
-      base::WeakPtr<ModelQualityLogsUploaderService>
-          model_quality_uploader_service,
       const std::optional<SessionConfigParams>& config_params);
 
   // Starts the service and executes a benchmark to determine the performance

@@ -79,6 +79,7 @@ constexpr char kAppTypeUnsupported[] = "UNSUPPORTED";
 constexpr char kAutoLaunchOnStartup[] = "auto_launch_on_startup";
 constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kCreatedTime[] = "created_time_usec";
+constexpr char kCoralTabAppEntities[] = "coral_tab_app_entities";
 constexpr char kDesk[] = "desk";
 constexpr char kDeskType[] = "desk_type";
 constexpr char kDeskTypeTemplate[] = "TEMPLATE";
@@ -242,6 +243,36 @@ base::Value::Dict ConvertTabGroupInfoToDict(
                      group_info.visual_data.is_collapsed());
 
   return tab_group_dict;
+}
+
+// Convert Coral tab and app entities to a base::Value::Dict.
+base::Value::Dict ConvertCoralTabAppEntitiesToDict(
+    const std::vector<coral::mojom::EntityPtr>& coral_tab_app_entities) {
+  base::Value::List tab_entities;
+  base::Value::List app_entities;
+  for (const auto& entity : coral_tab_app_entities) {
+    if (entity->is_tab()) {
+      const auto& tab = entity->get_tab();
+      auto tab_value = base::Value::Dict()
+                           .Set(kTitle, tab->title)
+                           .Set(kTabUrl, tab->url.possibly_invalid_spec());
+      tab_entities.Append(std::move(tab_value));
+    } else if (entity->is_app()) {
+      const auto& app = entity->get_app();
+      auto app_value =
+          base::Value::Dict().Set(kAppName, app->title).Set(kAppId, app->id);
+      app_entities.Append(std::move(app_value));
+    }
+  }
+
+  base::Value::Dict tab_app_entities_dict;
+  if (!tab_entities.empty()) {
+    tab_app_entities_dict.Set(kTabs, std::move(tab_entities));
+  }
+  if (!app_entities.empty()) {
+    tab_app_entities_dict.Set(kApps, std::move(app_entities));
+  }
+  return tab_app_entities_dict;
 }
 
 bool IsValidGroupColor(const std::string& group_color) {
@@ -483,6 +514,33 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
   // For Chrome apps and PWAs, the `app_id` is sufficient for identification.
 
   return app_launch_info;
+}
+
+std::vector<coral::mojom::EntityPtr> ConvertDictToCoralTabAppEntities(
+    const base::Value::Dict& tab_app_entities_dict) {
+  std::vector<coral::mojom::EntityPtr> tab_app_entities;
+  if (const auto* tab_entities = tab_app_entities_dict.FindList(kTabs)) {
+    for (const auto& tab_entity : *tab_entities) {
+      const std::string* tab_title_ptr =
+          tab_entity.GetDict().FindString(kTitle);
+      const std::string* tab_url_ptr = tab_entity.GetDict().FindString(kTabUrl);
+      tab_app_entities.emplace_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New(tab_title_ptr ? *tab_title_ptr : std::string(),
+                                 tab_url_ptr ? GURL(*tab_url_ptr) : GURL())));
+    }
+  }
+
+  if (const auto* app_entities = tab_app_entities_dict.FindList(kApps)) {
+    for (const auto& app_entity : *app_entities) {
+      const std::string* app_name_ptr =
+          app_entity.GetDict().FindString(kAppName);
+      const std::string* app_id_ptr = app_entity.GetDict().FindString(kAppId);
+      tab_app_entities.emplace_back(coral::mojom::Entity::NewApp(
+          coral::mojom::App::New(app_name_ptr ? *app_name_ptr : std::string(),
+                                 app_id_ptr ? *app_id_ptr : std::string())));
+    }
+  }
+  return tab_app_entities;
 }
 
 bool IsValidWindowState(const std::string& window_state) {
@@ -1874,6 +1932,45 @@ DeskTemplateType GetDeskTemplateTypeFromProtoType(
   }
 }
 
+// Fill a desk template `out_entry_proto` with the Coral tab and app entities.
+void FillCoralTabAppEntities(const DeskTemplate& desk_template,
+                             sync_pb::WorkspaceDeskSpecifics* out_entry_proto) {
+  for (const auto& entity : desk_template.coral_tab_app_entities()) {
+    if (entity->is_tab()) {
+      const auto& tab = entity->get_tab();
+      auto* tab_proto =
+          out_entry_proto->mutable_coral_tab_app_entities()->add_tab_entities();
+      tab_proto->set_tab_title(tab->title);
+      tab_proto->set_tab_url(tab->url.possibly_invalid_spec());
+    } else if (entity->is_app()) {
+      const auto& app = entity->get_app();
+      auto* app_proto =
+          out_entry_proto->mutable_coral_tab_app_entities()->add_app_entities();
+      app_proto->set_app_name(app->title);
+      app_proto->set_app_id(app->id);
+    }
+  }
+}
+
+std::vector<coral::mojom::EntityPtr> GetCoralTabAppEntitiesFromProto(
+    const sync_pb::WorkspaceDeskSpecifics& entry_proto) {
+  std::vector<coral::mojom::EntityPtr> tab_app_entities;
+  for (const auto& tab_proto :
+       entry_proto.coral_tab_app_entities().tab_entities()) {
+    tab_app_entities.emplace_back(
+        coral::mojom::Entity::NewTab(coral::mojom::Tab::New(
+            tab_proto.tab_title(), GURL(tab_proto.tab_url()))));
+  }
+
+  for (const auto& app_proto :
+       entry_proto.coral_tab_app_entities().app_entities()) {
+    tab_app_entities.emplace_back(coral::mojom::Entity::NewApp(
+        coral::mojom::App::New(app_proto.app_name(), app_proto.app_id())));
+  }
+
+  return tab_app_entities;
+}
+
 // Corrects the admin template browser format so that subsequent serialization
 // code stores browsers correctly.
 void CorrectAdminTemplateBrowserFormat(base::Value& app) {
@@ -2130,6 +2227,11 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
 
   desk_template->set_updated_time(updated_time);
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
+  if (const auto* tab_app_entities_dict =
+          value_dict.FindDict(kCoralTabAppEntities)) {
+    desk_template->set_coral_tab_app_entities(
+        ConvertDictToCoralTabAppEntities(*tab_app_entities_dict));
+  }
 
   return base::ok(std::move(desk_template));
 }
@@ -2150,6 +2252,12 @@ base::Value SerializeDeskTemplateAsBaseValue(
 
   if (desk->policy_definition().type() == base::Value::Type::DICT) {
     desk_dict.Set(kPolicy, desk->policy_definition().Clone());
+  }
+
+  if (desk->type() == DeskTemplateType::kCoral &&
+      !desk->coral_tab_app_entities().empty()) {
+    desk_dict.Set(kCoralTabAppEntities, ConvertCoralTabAppEntitiesToDict(
+                                            desk->coral_tab_app_entities()));
   }
 
   return base::Value(std::move(desk_dict));
@@ -2193,6 +2301,11 @@ std::unique_ptr<DeskTemplate> FromSyncProto(
     desk_template->set_device_form_factor(
         syncer::DeviceInfo::FormFactor::kUnknown);
   }
+
+  if (pb_entry.has_coral_tab_app_entities()) {
+    desk_template->set_coral_tab_app_entities(
+        GetCoralTabAppEntitiesFromProto(pb_entry));
+  }
   return desk_template;
 }
 
@@ -2216,6 +2329,11 @@ sync_pb::WorkspaceDeskSpecifics ToSyncProto(const DeskTemplate* desk_template,
     FillWorkspaceDeskSpecifics(cache, desk_template->desk_restore_data(),
                                &pb_entry);
   }
+
+  if (!desk_template->coral_tab_app_entities().empty()) {
+    FillCoralTabAppEntities(*desk_template, &pb_entry);
+  }
+
   if (!desk_template->client_cache_guid().empty()) {
     pb_entry.set_client_cache_guid(desk_template->client_cache_guid());
   }

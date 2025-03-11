@@ -66,7 +66,6 @@
     "canplay",
     "canplaythrough",
     "capturedmousechange",
-    "capturedzoomlevelchange",
     "capturehandlechange",
     "change",
     "characterboundsupdate",
@@ -380,5 +379,6 @@
     "writeend",
     "writestart",
     "zoom",
+    "zoomlevelchange",
   ],
 }

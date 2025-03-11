@@ -584,8 +584,6 @@ function validateTwoInputsFromMultipleBuilders(operatorName) {
 
 function multi_builder_test(func, description) {
   promise_test(async t => {
-    const context = await navigator.ml.createContext();
-
     const builder = new MLGraphBuilder(context);
     const otherBuilder = new MLGraphBuilder(context);
 

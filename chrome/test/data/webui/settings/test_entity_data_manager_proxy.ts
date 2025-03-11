@@ -24,7 +24,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     super([
       'addEntityInstancesChangedListener',
       'addOrUpdateEntityInstance',
-      'getAllAttributeTypesForEntity',
+      'getAllAttributeTypesForEntityTypeName',
       'getAllEntityTypes',
       'getEntityInstanceByGuid',
       'loadEntityInstances',
@@ -46,8 +46,8 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.entityTypes_ = entityTypes;
   }
 
-  setGetAllAttributeTypesForEntityResponse(attributeTypes: AttributeType[]):
-      void {
+  setGetAllAttributeTypesForEntityTypeNameResponse(
+      attributeTypes: AttributeType[]): void {
     this.attributeTypes_ = attributeTypes;
   }
 
@@ -82,8 +82,9 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(structuredClone(this.entityTypes_));
   }
 
-  getAllAttributeTypesForEntity(entityType: number): Promise<AttributeType[]> {
-    this.methodCalled('getAllAttributeTypesForEntity', entityType);
+  getAllAttributeTypesForEntityTypeName(entityTypeName: number):
+      Promise<AttributeType[]> {
+    this.methodCalled('getAllAttributeTypesForEntityTypeName', entityTypeName);
     return Promise.resolve(structuredClone(this.attributeTypes_));
   }
 

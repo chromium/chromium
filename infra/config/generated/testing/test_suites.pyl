@@ -2050,7 +2050,7 @@
       },
     },
 
-    'translatekit_tests': {
+    'translatekit_script_tests': {
       'blink_wpt_tests': {
         'test_common': {
           'mixins': [

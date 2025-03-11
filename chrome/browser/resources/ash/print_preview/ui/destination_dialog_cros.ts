@@ -49,6 +49,14 @@ interface PrintServersChangedEventDetail {
   isSingleServerFetchingMode: boolean;
 }
 
+// The values correspond to which UI should be currently displayed in the
+// dialog.
+enum UiState {
+  THROBBER = 0,
+  DESTINATION_LIST = 1,
+  PRINTER_SETUP_ASSISTANCE = 2,
+}
+
 export interface PrintPreviewDestinationDialogCrosElement {
   $: {
     dialog: CrDialogElement,
@@ -123,22 +131,8 @@ export class PrintPreviewDestinationDialogCrosElement extends
             'loadingDestinations_, loadingServerPrinters_)',
       },
 
-      isShowingPrinterSetupAssistance: {
-        type: Boolean,
-        computed:
-            'computeIsShowingPrinterSetupAssistance(destinations_.length, ' +
-            'showThrobber_)',
-      },
-
-      isShowingDestinationList: {
-        type: Boolean,
-        computed: 'computeIsShowingDestinationList(destinations_.*)',
-      },
-
       showManagePrintersButton: {
         type: Boolean,
-        computed: 'computeShowManagePrintersButton(' +
-            'showManagePrinters, isShowingPrinterSetupAssistance)',
         reflectToAttribute: true,
       },
 
@@ -156,14 +150,28 @@ export class PrintPreviewDestinationDialogCrosElement extends
         readOnly: true,
       },
 
-      showThrobber_: {
-        type: Boolean,
-        computed: 'computeShowThrobber_(' +
-            'minLoadingTimeElapsed_, loadingAnyDestinations_)',
+      minLoadingTimeElapsed_: Boolean,
+
+      uiState_: {
+        type: Number,
+        value: UiState.THROBBER,
       },
 
-      minLoadingTimeElapsed_: Boolean,
+      /**
+       * Mirroring the enum so that it can be used from HTML bindings.
+       */
+      uiStateEnum_: {
+        type: Object,
+        value: UiState,
+      },
     };
+  }
+
+  static get observers() {
+    return [
+      'computeUiState_(minLoadingTimeElapsed_, loadingAnyDestinations_, ' +
+          'destinations_.*)',
+    ];
   }
 
   destinationStore: DestinationStore;
@@ -176,8 +184,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private loadingServerPrinters_: boolean;
   private loadingAnyDestinations_: boolean;
   private metricsContext_: MetricsContext;
-  private isShowingPrinterSetupAssistance: boolean;
-  private isShowingDestinationList: boolean;
   private showManagePrintersButton: boolean;
 
   private tracker_: EventTracker = new EventTracker();
@@ -185,9 +191,9 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private initialized_: boolean = false;
   private printServerStore_: PrintServerStore|null = null;
   private showManagePrinters: boolean = false;
-  private showThrobber_: boolean = true;
   private timerDelay_: number = 0;
   private minLoadingTimeElapsed_: boolean = false;
+  private uiState_: number = UiState.THROBBER;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -268,9 +274,8 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
     // Workaround to force the iron-list in print-preview-destination-list to
     // render all destinations and resize to fill dialog body.
-    if (this.isShowingDestinationList) {
+    if (this.uiState_ === UiState.DESTINATION_LIST) {
       window.dispatchEvent(new CustomEvent('resize'));
-      this.$.searchBox.focus();
     }
   }
 
@@ -364,14 +369,11 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 
   show() {
+    // Before opening the dialog, get the latest destinations from the
+    // destination store.
+    this.updateDestinations_();
+
     this.$.dialog.showModal();
-    const loading = this.destinationStore === undefined ||
-        this.destinationStore.isPrintDestinationSearchInProgress;
-    if (!loading) {
-      // All destinations have already loaded.
-      this.updateDestinations_();
-    }
-    this.loadingDestinations_ = loading;
 
     // Display throbber for a minimum period of time while destinations are
     // still loading to avoid empty state UI flashing.
@@ -420,38 +422,10 @@ export class PrintPreviewDestinationDialogCrosElement extends
         PrintPreviewLaunchSourceBucket.DESTINATION_DIALOG_CROS_HAS_PRINTERS);
   }
 
-  /**
-   * Sets `isShowingPrinterSetupAssistance` state based on flag and
-   * destinations.
-   * If flag is turned off, then do not show.
-   * If flag is turned on and there is only a PDF printer, then show.
-   * Save to drive is already excluded by `getDestinationList_()`.
-   */
-  private computeIsShowingPrinterSetupAssistance(): boolean {
-    return !this.showThrobber_ && !this.printerDestinationExists();
-  }
-
-  /**
-   * Returns true if the search-box and destination-list should be shown. They
-   * should be shown when at least one non-PDF printer destination is available
-   * for the user to select.
-   */
-  private computeIsShowingDestinationList(): boolean {
-    return this.printerDestinationExists();
-  }
-
   private printerDestinationExists(): boolean {
     return this.destinations_.some(
         (destination: Destination): boolean =>
             destination.id !== GooglePromotedDestinationId.SAVE_AS_PDF);
-  }
-
-  private computeShowManagePrintersButton(): boolean {
-    return this.showManagePrinters && !this.isShowingPrinterSetupAssistance;
-  }
-
-  private computeShowThrobber_(): boolean {
-    return !this.minLoadingTimeElapsed_ || this.loadingAnyDestinations_;
   }
 
   // Clear throbber timer if it has not completed yet. Used to ensure throbber
@@ -470,6 +444,39 @@ export class PrintPreviewDestinationDialogCrosElement extends
         this.shadowRoot!.querySelector('print-preview-destination-list');
     assert(destinationList);
     destinationList.updatePrinterStatusIcon(destinationKey);
+  }
+
+  private computeUiState_(): void {
+    // First check if the timer is running since the throbber should always show
+    // until the timer has elapsed.
+    // After the timer has elapsed, if any printers have been detected as
+    // available, display them immediately even if searching for more printers.
+    // If no printers are available, continue showing the spinner until all
+    // printer searches are complete.
+    // Once all searches complete and no printers are found then display the
+    // Printer Setup Assistance UI.
+    if (!this.minLoadingTimeElapsed_) {
+      this.uiState_ = UiState.THROBBER;
+    } else if (this.printerDestinationExists()) {
+      this.uiState_ = UiState.DESTINATION_LIST;
+
+      // Workaround to force the iron-list in print-preview-destination-list to
+      // render all destinations and resize to fill dialog body.
+      window.dispatchEvent(new CustomEvent('resize'));
+      this.$.searchBox.focus();
+    } else if (this.loadingAnyDestinations_) {
+      this.uiState_ = UiState.THROBBER;
+    } else {
+      // If there is only a PDF printer, then show Printer Setup Assistance.
+      // Save to drive is already excluded by `getDestinationList_()`.
+      this.uiState_ = UiState.PRINTER_SETUP_ASSISTANCE;
+    }
+    this.showManagePrintersButton = this.showManagePrinters &&
+        this.uiState_ !== UiState.PRINTER_SETUP_ASSISTANCE;
+  }
+
+  private shouldShowUi_(uiState: UiState) {
+    return this.uiState_ === uiState;
   }
 }
 

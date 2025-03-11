@@ -44,6 +44,7 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   float RootLineHeight(float zoom) const override;
   float CapFontSize(float zoom) const override;
   float RcapFontSize(float zoom) const override;
+  Element* GetElement() const override { return element_.Get(); }
   // Note that ContainerWidth/ContainerHeight are used to resolve
   // container *units*. See `container_sizes_`.
   Element* ContainerElement() const override { return element_.Get(); }

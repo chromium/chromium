@@ -145117,7 +145117,7 @@
        ]
       ],
       "gradient-none-interpolation.html": [
-       "06d7be6e66b6a08132fa9474cd51ea3817300de0",
+       "4fcaf8bb8f8e66b29f3cf2d6b5bc2fe8a20a3179",
        [
         null,
         [
@@ -284394,7 +284394,7 @@
          ]
         ],
         "canvas.2d.lang.dynamic.html": [
-         "ad23b2c23386892a844aa71382f7c96a91bfbd37",
+         "b6bf559c1f985b3352f50739745b12037473227d",
          [
           null,
           [
@@ -284407,7 +284407,7 @@
          ]
         ],
         "canvas.2d.lang.empty.canvas.html": [
-         "d1b6e52f7968adda7fd8f3125c6955ad71d35a88",
+         "d4495194397f809d46771b888fda22b33fbd7fa1",
          [
           null,
           [
@@ -284420,7 +284420,7 @@
          ]
         ],
         "canvas.2d.lang.html": [
-         "372cf8c04cd149f44621ca50e340114cf4289a82",
+         "41e146cf75bb8a212f6ba19a9393096e5ff57d04",
          [
           null,
           [
@@ -284433,7 +284433,7 @@
          ]
         ],
         "canvas.2d.lang.inherit.disconnected.canvas.html": [
-         "7b28b1fb9506565d1b38c02147ba63678e71e134",
+         "dee7326d2449b275981d2cc02a9af6f8874f55d5",
          [
           null,
           [
@@ -284445,13 +284445,13 @@
           {}
          ]
         ],
-        "canvas.2d.lang.inherit.document.disconnected.canvas.html": [
-         "e6a463ae37530351f6fc48c1defc7b73af433d5c",
+        "canvas.2d.lang.inherit.disconnected.canvas.no.lang.html": [
+         "e16b5c50307b5809b09299ec7be964d2df0e6728",
          [
           null,
           [
            [
-            "/html/canvas/element/manual/text/canvas.2d.lang-ref.html",
+            "/html/canvas/element/manual/text/canvas.2d.unknown.lang-ref.html",
             "=="
            ]
           ],
@@ -284459,7 +284459,7 @@
          ]
         ],
         "canvas.2d.lang.inherit.html": [
-         "bb2e655e15ab63e6099abc907574387bcbbd0eca",
+         "41da3d5c442539a4f771790f9bf8fe362dd1d412",
          [
           null,
           [
@@ -288059,7 +288059,7 @@
          ]
         ],
         "canvas.2d.offscreen.lang.html": [
-         "0179dad8fea809594f524e0bebb4cca7ecea1141",
+         "1d34794f75d8e69e80694b6645e75fc07a523cef",
          [
           null,
           [
@@ -288072,7 +288072,7 @@
          ]
         ],
         "canvas.2d.offscreen.lang.inherit.html": [
-         "5b027f6dae05f52aeeaec411034fb0daec1cf580",
+         "8916c5910825147ecf6afc6e4f53b603934d58cb",
          [
           null,
           [
@@ -288111,7 +288111,7 @@
          ]
         ],
         "canvas.2d.offscreen.transferred.lang.html": [
-         "049f5484058cf9461b964816a066aae463414823",
+         "051d21ca7f5e7fb04db1c95a5d6672f22eea6aec",
          [
           null,
           [
@@ -288124,7 +288124,7 @@
          ]
         ],
         "canvas.2d.offscreen.transferred.lang.inherit.document.html": [
-         "732496c93b05f2a93233b4b736365d661e7acd53",
+         "243392874a2e9cdb2f27f104265a4d18f9125b5a",
          [
           null,
           [
@@ -288137,7 +288137,7 @@
          ]
         ],
         "canvas.2d.offscreen.transferred.lang.inherit.html": [
-         "9ffb6a493061fbfa2ffeb21cf3a24191624b334b",
+         "ffd0ae4aae57d2397c57cf04ea855d21c1b9d848",
          [
           null,
           [
@@ -288176,7 +288176,7 @@
          ]
         ],
         "canvas.2d.offscreen.worker.lang.html": [
-         "ed438c68f91c5be020f61e1e6c499edab1ba826a",
+         "8ed884a177539048d8670383c8d586ea4b34173f",
          [
           null,
           [
@@ -288189,7 +288189,7 @@
          ]
         ],
         "canvas.2d.offscreen.worker.lang.inherit.html": [
-         "ca0d0ffeee656bab162d3ef84fbd781d5dc7c081",
+         "43157d54d2b8403011ccb668536439f33453f1d7",
          [
           null,
           [
@@ -346606,7 +346606,7 @@
        []
       ],
       "gradient-none-interpolation-ref.html": [
-       "89a1929e275bac96c2a2e845124e0bd9cecd3cfa",
+       "154112fe612979103ad5f7c3c8fa528c1d434a5b",
        []
       ],
       "gradient-single-stop-longer-hue-hsl-002-ref.html": [
@@ -374350,7 +374350,7 @@
      []
     ],
     "verify_authenticated.py": [
-     "fa81f0f0d2091581aa0a4a9dd1093c0cf3b9814e",
+     "35b309c650062b47b8adbae714b85afa19e7aa74",
      []
     ]
    },
@@ -376523,11 +376523,11 @@
       []
      ],
      "styling-commands_styleWithCSS=false-expected.txt": [
-      "c5a5351b9ac5abdd5762ffafd14594ae7ed94c98",
+      "4284c64f0657b390e6d0981fbcedeb9a032a23a0",
       []
      ],
      "styling-commands_styleWithCSS=true-expected.txt": [
-      "c5a5351b9ac5abdd5762ffafd14594ae7ed94c98",
+      "4284c64f0657b390e6d0981fbcedeb9a032a23a0",
       []
      ]
     },
@@ -388368,15 +388368,19 @@
          []
         ],
         "canvas.2d.lang-ref.html": [
-         "19e283985ccbfadf3ba65193f101b9ddc0c1f143",
+         "0822e6dce16c9c350be4683a0660399c3d06bc47",
          []
         ],
         "canvas.2d.lang.dynamic-ref.html": [
-         "18027189f393223d01a26a1deed2c13bc6988e42",
+         "380162b35660a8c98de294d40abf1325f1d7f3ad",
          []
         ],
         "canvas.2d.lang.empty-ref.html": [
-         "fda8b02a3445a209ea0e490359878717618886c2",
+         "580d9dac442a9c3ae80a773b698c03df8d8c7217",
+         []
+        ],
+        "canvas.2d.unknown.lang-ref.html": [
+         "89a2c92af0945b1b23395e59da15bd96e060d673",
          []
         ],
         "canvas_text_font_001-ref.htm": [
@@ -389448,7 +389452,7 @@
          []
         ],
         "canvas.2d.offscreen.lang-ref.html": [
-         "aa13564fbba4ec4c1f4024ba07cd19c935f7f4e9",
+         "0e54d6a8e2bce7df8f8b8dca1c1c606f7623123a",
          []
         ],
         "canvas.2d.offscreen.worker.direction-ref.html": [
@@ -389456,7 +389460,7 @@
          []
         ],
         "canvas.2d.offscreen.worker.lang-ref.html": [
-         "82b6e7316392d849932dbeb2844cbb45fca1db0c",
+         "551a092b234c3af14ca246434d8a40c111b56fbb",
          []
         ],
         "text-direction-worker-inherit.js": [
@@ -389467,16 +389471,16 @@
          "d85504f524e66fce864ab284da961624e2e3c3a5",
          []
         ],
+        "text-lang-worker-en.js": [
+         "08958811348cde24e0a7052e6b0a78317815b82e",
+         []
+        ],
         "text-lang-worker-inherit.js": [
-         "20d96d94c93b8ddd192c87cd82b38e1e909a3d59",
+         "6bc3371faf27022dbaaa6e99988e6590e112b19f",
          []
         ],
-        "text-lang-worker-ja.js": [
-         "585fc066ac34629dcbb22c409a7db74449a90423",
-         []
-        ],
-        "text-lang-worker-zh-CN.js": [
-         "cbededf338477311973654016f5db2feb42abcc4",
+        "text-lang-worker-tr.js": [
+         "5cf708a4a022e29107d65d02a0fe680f77e59db8",
          []
         ]
        },
@@ -459783,7 +459787,7 @@
       ]
      ],
      "ai_translator_translate.tentative.https.any.js": [
-      "4dfbf874a00c19695cac2c9395671d2eb7a3ce18",
+      "df4086bf8442cb70ccc4bf3cf2aa1704001d9aba",
       [
        "ai/translator/ai_translator_translate.tentative.https.any.html",
        {
@@ -500819,7 +500823,7 @@
        ]
       ],
       "gradient-interpolation-method-invalid.html": [
-       "336a387e3c212bea459e8a3834ca54537b6d2c9d",
+       "a53d5a1b770ab344f6f04b331e8435f616de8eb5",
        [
         null,
         {}
@@ -522130,8 +522134,15 @@
      ],
      "zoom": {
       "parsing": {
+       "zoom-computed-with-sign-expression.html": [
+        "8029fd3a65e542749792a48100161f18fd25fee9",
+        [
+         null,
+         {}
+        ]
+       ],
        "zoom-computed.html": [
-        "b7484169f74b8be8afb7cb8469b51d3acc5c48a5",
+        "c6b4afc92a364bf52be9ba3b38e8292bc397d4e8",
         [
          null,
          {}
@@ -529391,6 +529402,13 @@
     ],
     "create-session.https.html": [
      "cddfd1797978d80f5344740b0224a671acf550b8",
+     [
+      null,
+      {}
+     ]
+    ],
+    "include-site.https.html": [
+     "69d62e4b10e36f35ae7ce3710fba8b8af8491602",
      [
       null,
       {}
@@ -539106,7 +539124,7 @@
       ]
      ],
      "styling-commands.html": [
-      "2afaf9212ac6439606617e99f4d1be681ff1e853",
+      "40390c642794e4cdaba1d34d09c76cd1dfc1968a",
       [
        "editing/plaintext-only/styling-commands.html?styleWithCSS=false",
        {

@@ -1096,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
     EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
     EXPECT_TRUE(
         request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
-    EXPECT_EQ("prefetch",
+    EXPECT_EQ(blink::kSecPurposePrefetchHeaderValue,
               request->cors_exempt_headers.GetHeader(blink::kPurposeHeaderName)
                   .value_or(std::string()));
   }

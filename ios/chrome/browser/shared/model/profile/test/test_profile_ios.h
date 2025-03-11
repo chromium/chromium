@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -19,7 +20,6 @@
 #include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -33,7 +33,7 @@ class UserCloudPolicyManager;
 // This class is the implementation of ProfileIOS used for testing.
 class TestProfileIOS final : public ProfileIOS {
  public:
-  // Wrapper over absl::variant to help type deduction when calling
+  // Wrapper over std::variant to help type deduction when calling
   // AddTestingFactories(). See example call in the method's comment.
   struct TestingFactory {
     TestingFactory(
@@ -49,7 +49,7 @@ class TestProfileIOS final : public ProfileIOS {
 
     ~TestingFactory();
 
-    absl::variant<
+    std::variant<
         std::pair<BrowserStateKeyedServiceFactory*,
                   BrowserStateKeyedServiceFactory::TestingFactory>,
         std::pair<RefcountedBrowserStateKeyedServiceFactory*,

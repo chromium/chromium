@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -76,21 +75,6 @@ bool UnprefixedHexStringToInt(std::string_view input, int* output) {
   }
   return HexStringToInt(input, output);
 }
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ChromiumJsonExtension {
-  kCComment,
-  kCppComment,
-  kXEscape,
-  kVerticalTabEscape,
-  kControlCharacter,
-  kNewlineInString,
-  kMaxValue = kNewlineInString,
-};
-
-const char kExtensionHistogramName[] =
-    "Security.JSONParser.ChromiumExtensionUsage";
 
 }  // namespace
 
@@ -314,8 +298,6 @@ bool JSONParser::EatComment() {
   const bool comments_allowed = options_ & JSON_ALLOW_COMMENTS;
 
   if (comment_start == "//") {
-    UmaHistogramEnumeration(kExtensionHistogramName,
-                            ChromiumJsonExtension::kCppComment);
     if (!comments_allowed) {
       ReportError(JSON_UNEXPECTED_TOKEN, 0);
       return false;
@@ -330,8 +312,6 @@ bool JSONParser::EatComment() {
       ConsumeChar();
     }
   } else if (comment_start == "/*") {
-    UmaHistogramEnumeration(kExtensionHistogramName,
-                            ChromiumJsonExtension::kCComment);
     if (!comments_allowed) {
       ReportError(JSON_UNEXPECTED_TOKEN, 0);
       return false;
@@ -539,8 +519,6 @@ std::optional<std::string> JSONParser::ConsumeStringRaw() {
             // UTF-8 \x escape sequences are not allowed in the spec, but they
             // are supported here for backwards-compatiblity with the old
             // parser.
-            UmaHistogramEnumeration(kExtensionHistogramName,
-                                    ChromiumJsonExtension::kXEscape);
             if (!(options_ & JSON_ALLOW_X_ESCAPES)) {
               ReportError(JSON_INVALID_ESCAPE, -1);
               return std::nullopt;
@@ -600,8 +578,6 @@ std::optional<std::string> JSONParser::ConsumeStringRaw() {
             string.push_back('\t');
             break;
           case 'v':  // Not listed as valid escape sequence in the RFC.
-            UmaHistogramEnumeration(kExtensionHistogramName,
-                                    ChromiumJsonExtension::kVerticalTabEscape);
             if (!(options_ & JSON_ALLOW_VERT_TAB)) {
               ReportError(JSON_INVALID_ESCAPE, -1);
               return std::nullopt;
@@ -662,16 +638,12 @@ JSONParser::ConsumeStringPart() {
     // quotation mark, reverse solidus, and the control characters (U+0000
     // through U+001F)".
     if (*c == '\n' || *c == '\r') {
-      UmaHistogramEnumeration(kExtensionHistogramName,
-                              ChromiumJsonExtension::kNewlineInString);
       if (!(options_ &
             (JSON_ALLOW_NEWLINES_IN_STRINGS | JSON_ALLOW_CONTROL_CHARS))) {
         ReportError(JSON_UNSUPPORTED_ENCODING, -1);
         return {StringResult::kError, {}};  // No need to return consumed data.
       }
     } else if (*c <= 0x1F) {
-      UmaHistogramEnumeration(kExtensionHistogramName,
-                              ChromiumJsonExtension::kControlCharacter);
       if (!(options_ & JSON_ALLOW_CONTROL_CHARS)) {
         ReportError(JSON_UNSUPPORTED_ENCODING, -1);
         return {StringResult::kError, {}};  // No need to return consumed data.

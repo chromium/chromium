@@ -191,6 +191,7 @@ public class TabGridDialogView extends FrameLayout {
         mParent.getViewTreeObserver().addOnGlobalLayoutListener(mParentGlobalLayoutListener);
         updateDialogWithOrientation(mOrientation);
         setVisibility(GONE);
+        notifyVisibilityListenerOnHide();
     }
 
     @Override
@@ -301,9 +302,7 @@ public class TabGridDialogView extends FrameLayout {
                         mCurrentDialogAnimator = null;
                         mDialogContainerView.clearFocus();
                         restoreBackgroundViewAccessibilityImportance();
-                        if (mVisibilityListener != null) {
-                            mVisibilityListener.finishedHidingDialogView();
-                        }
+                        notifyVisibilityListenerOnHide();
                     }
                 };
 
@@ -388,7 +387,17 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     void setVisibilityListener(VisibilityListener visibilityListener) {
+        // Treat the old visibility listener as if it is hiding as it no longer controls the View so
+        // it is effectively hidden.
+        notifyVisibilityListenerOnHide();
+
         mVisibilityListener = visibilityListener;
+    }
+
+    private void notifyVisibilityListenerOnHide() {
+        if (mVisibilityListener != null) {
+            mVisibilityListener.finishedHidingDialogView();
+        }
     }
 
     void setupDialogAnimation(View sourceView) {
@@ -1059,7 +1068,7 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     void setHairlineVisibility(boolean visible) {
-        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mHairline.setVisibility(visible ? VISIBLE : GONE);
     }
 
     /**
@@ -1118,7 +1127,7 @@ public class TabGridDialogView extends FrameLayout {
      * animations.
      */
     void setSendFeedbackVisible(boolean visible) {
-        mSendFeedbackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mSendFeedbackButton.setVisibility(visible ? VISIBLE : GONE);
         updateDialogWithOrientation(mOrientation);
     }
 

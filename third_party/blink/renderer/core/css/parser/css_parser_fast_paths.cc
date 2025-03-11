@@ -1633,7 +1633,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kSub ||
              value_id == CSSValueID::kSuper;
     case CSSPropertyID::kFontVariantEmoji:
-      DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled());
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kText ||
              value_id == CSSValueID::kEmoji || value_id == CSSValueID::kUnicode;
     case CSSPropertyID::kLineBreak:

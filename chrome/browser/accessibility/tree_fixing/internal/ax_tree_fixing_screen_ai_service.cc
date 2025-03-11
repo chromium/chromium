@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
@@ -17,7 +18,9 @@ namespace tree_fixing {
 AXTreeFixingScreenAIService::AXTreeFixingScreenAIService(
     MainNodeIdentificationDelegate& delegate,
     Profile* profile)
-    : main_node_identification_delegate_(delegate), profile_(profile) {}
+    : main_node_identification_delegate_(delegate), profile_(profile) {
+  CHECK(profile_);
+}
 
 AXTreeFixingScreenAIService::~AXTreeFixingScreenAIService() = default;
 

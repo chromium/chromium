@@ -40,6 +40,8 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, true);
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsNetworkRestrictionSetting, false);
+  registry->RegisterIntegerPref(
+      ash::prefs::kClassManagementToolsOOBEAccessCountSetting, 0);
 }
 
 bool IsEnabled(const user_manager::User* user) {

@@ -24,8 +24,6 @@ class MockAutofillAiClient : public AutofillAiClient {
               GetEntityDataManager,
               (),
               (override));
-  MOCK_METHOD(bool, IsAutofillAiEnabledPref, (), (const override));
-  MOCK_METHOD(bool, IsUserEligible, (), (override));
   MOCK_METHOD(autofill::FormStructure*,
               GetCachedFormStructure,
               (const autofill::FormGlobalId& form_id),

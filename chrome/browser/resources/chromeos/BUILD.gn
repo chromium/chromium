@@ -20,6 +20,7 @@ group("resources") {
     "audio:resources",
     "bluetooth_pairing_dialog:resources",
     "borealis_installer:resources",
+    "borealis_motd:resources",
     "cloud_upload:resources",
     "crostini_installer:resources",
     "crostini_upgrader:resources",

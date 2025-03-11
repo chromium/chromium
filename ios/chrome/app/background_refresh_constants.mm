@@ -4,7 +4,4 @@
 
 #import "ios/chrome/app/background_refresh_constants.h"
 
-NSString* const kFeedLastBackgroundRefreshTimestamp =
-    @"FeedLastBackgroundRefreshTimestamp";
-
 NSString* const kAppBackgroundRefreshTaskIdentifier = @"chrome.app.refresh";

@@ -134,6 +134,9 @@ GenerationType* EmptyGeneration() {
 bool CommonFieldsGenerationInfoEnabled::
     should_rehash_for_bug_detection_on_insert(const ctrl_t* ctrl,
                                               size_t capacity) const {
+  // As an optimization, we avoid calling ShouldRehashForBugDetection during the
+  // first two insertions. In these cases, we'll end up rehashing anyways.
+  if (capacity == 0 || (capacity == 1 && IsFull(ctrl[0]))) return false;
   if (reserved_growth_ == kReservedGrowthJustRanOut) return true;
   if (reserved_growth_ > 0) return false;
   return ShouldRehashForBugDetection(ctrl, capacity);

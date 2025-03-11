@@ -9,9 +9,11 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.ScrollView;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Content view class for close confirmation dialog. */
+@NullMarked
 public class CloseConfirmationDialogView extends ScrollView {
     public CloseConfirmationDialogView(Context context) {
         super(context);

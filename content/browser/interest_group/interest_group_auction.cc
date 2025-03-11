@@ -3126,7 +3126,11 @@ InterestGroupAuction::~InterestGroupAuction() {
   }
 
   if (!final_auction_result_) {
-    final_auction_result_ = AuctionResult::kAborted;
+    if (received_abort_signal_) {
+      final_auction_result_ = AuctionResult::kAbortSignal;
+    } else {
+      final_auction_result_ = AuctionResult::kDocumentDestruction;
+    }
   }
 
   std::string uma_prefix = "Ads.InterestGroup.Auction.";
@@ -3136,7 +3140,13 @@ InterestGroupAuction::~InterestGroupAuction() {
 
   // TODO(mmenke): Record histograms for component auctions.
   if (!parent_) {
-    base::UmaHistogramEnumeration(uma_prefix + "Result",
+    base::UmaHistogramEnumeration(
+        uma_prefix + "Result",
+        *final_auction_result_ == AuctionResult::kAbortSignal ||
+                *final_auction_result_ == AuctionResult::kDocumentDestruction
+            ? AuctionResult::kAborted
+            : *final_auction_result_);
+    base::UmaHistogramEnumeration(uma_prefix + "Result2",
                                   *final_auction_result_);
 
     if (HasNonKAnonWinner()) {
@@ -3147,7 +3157,8 @@ InterestGroupAuction::~InterestGroupAuction() {
     // Only record time of full auctions and aborts.
     base::TimeTicks now = base::TimeTicks::Now();
     switch (*final_auction_result_) {
-      case AuctionResult::kAborted:
+      case AuctionResult::kDocumentDestruction:
+      case AuctionResult::kAbortSignal:
         base::UmaHistogramMediumTimes(uma_prefix + "AbortTime",
                                       now - creation_time_);
         break;
@@ -4133,6 +4144,8 @@ bool InterestGroupAuction::HasNonKAnonWinner() const {
     case AuctionResult::kNoBids:
     case AuctionResult::kAllBidsRejected:
       return top_non_kanon_enforced_bid() != nullptr;
+    case AuctionResult::kAbortSignal:
+    case AuctionResult::kDocumentDestruction:
     case AuctionResult::kAborted:
     case AuctionResult::kBadMojoMessage:
     case AuctionResult::kNoInterestGroups:

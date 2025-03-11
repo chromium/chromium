@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/actions/actions.h"
 
 CastToolbarButtonController::CastToolbarButtonController(Profile* profile)
     : CastToolbarButtonController(
@@ -182,6 +183,13 @@ CastToolbarButtonController::CastToolbarButtonController(
       base::BindRepeating(
           &CastToolbarButtonController::MaybeToggleIconVisibility,
           base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    pref_change_registrar_.Add(
+        media_router::prefs::kMediaRouterMediaRemotingEnabled,
+        base::BindRepeating(
+            &CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction,
+            base::Unretained(this)));
+  }
 }
 
 void CastToolbarButtonController::MaybeToggleIconVisibility() {
@@ -227,5 +235,16 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
     for (Observer& observer : observers_) {
       observer.HideIcon();
     }
+  }
+}
+
+void CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction() {
+  bool checked = profile_->GetPrefs()->GetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled);
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    actions::ActionManager::Get()
+        .FindAction(kActionMediaRouterToggleMediaRemoting,
+                    browser->browser_actions()->root_action_item())
+        ->SetChecked(checked);
   }
 }

@@ -439,6 +439,7 @@ void AuctionRunner::Abort() {
   base::UmaHistogramMediumTimes(
       uma_prefix + "SignaledAbortTime",
       base::TimeTicks::Now() - auction_.creation_time());
+  auction_.SetReceivedAbortSignal();
   FailAuction(/*aborted_by_script=*/true);
 }
 
@@ -503,17 +504,19 @@ void AuctionRunner::FailAuction(
   auto [contained_server_auction, contained_on_device_auction] =
       IncludesServerAndOnDeviceAuctions();
 
+  AuctionResult auction_result = auction_.final_auction_result().value_or(
+      aborted_by_script ? AuctionResult::kAbortSignal
+                        : AuctionResult::kDocumentDestruction);
   // When the auction fails, private aggregation requests of non-reserved event
   // types cannot be triggered anyway, so no need to pass it along.
-  std::move(callback_).Run(
-      this, aborted_by_script,
-      /*winning_group_key=*/std::nullopt,
-      /*requested_ad_size=*/std::nullopt,
-      /*ad_descriptor=*/std::nullopt,
-      /*ad_component_descriptors=*/{}, auction_.TakeErrors(),
-      /*reporter=*/nullptr, contained_server_auction,
-      contained_on_device_auction,
-      auction_.final_auction_result().value_or(AuctionResult::kAborted));
+  std::move(callback_).Run(this, aborted_by_script,
+                           /*winning_group_key=*/std::nullopt,
+                           /*requested_ad_size=*/std::nullopt,
+                           /*ad_descriptor=*/std::nullopt,
+                           /*ad_component_descriptors=*/{},
+                           auction_.TakeErrors(),
+                           /*reporter=*/nullptr, contained_server_auction,
+                           contained_on_device_auction, auction_result);
 }
 
 AuctionRunner::AuctionRunner(
@@ -690,7 +693,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
       std::move(component_ad_descriptors_with_replacements), std::move(errors),
       std::move(reporter), contained_server_auction,
       contained_on_device_auction,
-      auction_.final_auction_result().value_or(AuctionResult::kAborted));
+      auction_.final_auction_result().value_or(
+          AuctionResult::kDocumentDestruction));
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {

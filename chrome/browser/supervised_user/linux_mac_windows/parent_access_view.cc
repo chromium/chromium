@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -22,27 +23,36 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
-// TODO(crbug.com/383997522): Configure according to the mocks.
-constexpr int kDialogWidth = 650;
-constexpr int kDialogHeight = 450;
-constexpr int kMaxDialogWidth = 700;
-constexpr int kMaxDialogHeight = 500;
+constexpr int kViewWidth = 448;
+constexpr int kViewHeight = 376;
+constexpr int kMaxWebViewHeight = 500;
+constexpr gfx::Size kViewPreferredSize = gfx::Size(kViewWidth, kViewHeight);
+constexpr gfx::Size kErrorViewPreferredSize =
+    gfx::Size(kViewWidth, kViewHeight);
 
 const GURL GetPacpUrl(
     const GURL& blocked_url,
@@ -147,7 +157,7 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
       std::move(dialog_result_reset_callback));
   const GURL pacp_url = GetPacpUrl(target_url, filtering_reason);
   parent_access_view->Initialize(pacp_url, corner_radius);
-  // Keeps a pointer to the parent access views as it's ownership is transferred
+  // Keeps a pointer to the parent access views as its ownership is transferred
   // to the delegate.
   auto view_weak_ptr = parent_access_view->GetWeakPtr();
   dialog_delegate->SetContentsView(std::move(parent_access_view));
@@ -197,23 +207,37 @@ void ParentAccessView::ShowWebViewAndDestroyTimeoutObserver() {
   content_loader_timeout_observer_.reset();
 }
 
+void ParentAccessView::ChildPreferredSizeChanged(View* child) {
+  // Adjusts the widget's size and position to fit its contents.
+  // Need as the size of the web_view_ can change dynamically once its web
+  // contents are loaded, so the widget size needs adjustment.
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  if (child != web_view_ && child != error_view_) {
+    return;
+  }
+  if (!child->GetVisible()) {
+    return;
+  }
+  // Update the widget's size.
+  CHECK(widget->non_client_view());
+  widget->SetSize(widget->non_client_view()->GetPreferredSize());
+}
+
 void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
   }
-
-  views::Widget* widget = GetWidget();
-  CHECK(widget);
-  // Note: We cannot remove the existing "X" close button,
-  // but we add buttons to dismiss the dialog.
-  widget->widget_delegate()->AsDialogDelegate()->SetButtons(
-      static_cast<int>(ui::mojom::DialogButton::kOk));
 
   // Remove the web view that displays the PACP widget content, and replace it
   // with a view that displays the error message.
   // Assume ownership of the removed view but do not destruct yet,
   // as there may be still content observers for it, which can lead to a
   // crash.
+  views::Widget* widget = GetWidget();
+  CHECK(widget);
   CHECK(web_view_);
   removed_view_holder_ = RemoveChildViewT(web_view_);
   web_view_ = nullptr;
@@ -224,21 +248,76 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   error_view->SetProperty(views::kElementIdentifierKey,
                           kLocalWebParentApprovalDialogErrorId);
 
-  auto layout = std::make_unique<views::BoxLayout>();
-  layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->set_main_axis_alignment(views::LayoutAlignment::kCenter);
-  layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
+  const int border_inset_size = 24;
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::LayoutOrientation::kVertical,
+      /*inside_border_insets=*/
+      gfx::Insets()
+          .set_top_bottom(border_inset_size, border_inset_size)
+          .set_left_right(border_inset_size, border_inset_size));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  auto* layout_ptr = layout.get();
   error_view->SetLayoutManager(std::move(layout));
 
-  error_view->AddChildView(
+  // Add error icon.
+  int top_margin = 60;
+  auto error_icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
-          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
-  // TODO(crbug.com/394842701): Provide new appropriate strings.
-  error_view->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
-      l10n_util::GetStringUTF16(IDS_PARENT_WEBSITE_LOCAL_WEB_APPROVAL_ERROR)));
+          vector_icons::kErrorOutlineIcon, ui::kColorAlertHighSeverity,
+          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorOutlineIcon)));
+  error_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_top(top_margin));
+  error_view->AddChildView(std::move(error_icon_view));
+
+  // Add title.
+  top_margin = 16;
+  auto title_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(
+          IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_TITLE),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
+  title_label->SetProperty(views::kMarginsKey,
+                           gfx::Insets().set_top(top_margin));
+  error_view->AddChildView(std::move(title_label));
+
+  // Add dialog body text.
+  auto description_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(
+          IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_DESCRIPTION),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
+  description_label->SetProperty(views::kMarginsKey,
+                                 gfx::Insets().set_top(top_margin));
+  error_view->AddChildView(std::move(description_label));
+
+  // Create a flexible view, to push the back button towards the bottom of the
+  // view.
+  auto spacer = std::make_unique<views::View>();
+  views::View* spacer_ptr = spacer.get();
+  error_view->AddChildView(std::move(spacer));
+  layout_ptr->SetFlexForView(spacer_ptr, 1);
+
+  // Add Back button that closes the dialog.
+  auto back_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&ParentAccessView::CloseView, GetWeakPtr()),
+      l10n_util::GetStringUTF16(
+          IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_BACK_BUTTON));
+  back_button->SetStyle(ui::ButtonStyle::kProminent);
+  back_button->SetProperty(views::kElementIdentifierKey,
+                           kErrorDialogBackButtonElementId);
+  // Pad the button size on the side.
+  const int preferred_button_width = 155;
+  const int preferred_button_height = 40;
+  back_button->SetPreferredSize(gfx::Size(
+      std::max(back_button->GetPreferredSize().width(), preferred_button_width),
+      std::max(back_button->GetPreferredSize().height(),
+               preferred_button_height)));
+  back_button->SizeToPreferredSize();
+  error_view->AddChildView(std::move(back_button));
 
   error_view_ = AddChildView(std::move(error_view));
+  // Triggers the dialog resizing.
+  error_view_->SetPreferredSize(kErrorViewPreferredSize);
   widget->Show();
 }
 
@@ -264,12 +343,11 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
   web_view_->SetProperty(views::kElementIdentifierKey,
                          kLocalWebParentApprovalDialogId);
 
-  gfx::Size size = gfx::Size(kDialogWidth, kDialogHeight);
-  gfx::Size maxsize = gfx::Size(kMaxDialogWidth, kMaxDialogHeight);
-  web_view_->EnableSizingFromWebContents(size, maxsize);
+  gfx::Size maxsize = gfx::Size(kViewWidth, kMaxWebViewHeight);
+  web_view_->EnableSizingFromWebContents(kViewPreferredSize, maxsize);
   // TODO(crbug.com/394839768): Investigate if `SetPreferredSize` can be
   // replaced by using a layout manager.
-  web_view_->SetPreferredSize(size);
+  web_view_->SetPreferredSize(kViewPreferredSize);
 
   corner_radius_ = corner_radius;
   is_initialized_ = true;
@@ -292,3 +370,6 @@ void ParentAccessView::ShowNativeView() {
 
 BEGIN_METADATA(ParentAccessView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ParentAccessView,
+                                      kErrorDialogBackButtonElementId);

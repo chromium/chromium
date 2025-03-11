@@ -128,6 +128,14 @@
 <translation id="1526389707933164996">Animacja wygaszacza ekranu</translation>
 <translation id="152892567002884378">Zwiększ głośność</translation>
 <translation id="1539864135338521185">lapis-lazuli</translation>
+<translation id="1548555207631326346">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy wygenerowane przez AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gdy tworzysz treści za pomocą AI, prompt jest wysyłany na serwery AI od Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami.</translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kolor podświetlenia</translation>
@@ -1551,6 +1559,15 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plażę</translation>
 <translation id="819278132617411009">Wykorzystaj sztuczną inteligencję Google, aby zwiększyć swoją produktywność</translation>
+<translation id="82003371436638355">Gdy wybierzesz „Utwórz własny”, wpisz niestandardowy prompt. Możesz też kliknąć „Wybierz motyw”, a potem zaznaczyć podkreślone słowa, aby spersonalizować tapetę AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gdy tworzysz własną tapetę, prompt jest wysyłany na serwery Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Warunkami korzystania z usług i Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatywna AI może popełniać błędy, także dotyczące osób, dlatego sprawdzaj uzyskane odpowiedzi. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Więcej informacji<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
@@ -1572,6 +1589,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8312330582793120272">odtwórz multimedia</translation>
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8320910311642849813">las</translation>
+<translation id="8322464149031882595">Kliknij, aby przejść dalej</translation>
 <translation id="8329018942023753850">aplikacja Kalkulator</translation>
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
 <translation id="8339024191194156249">Więcej informacji o automatycznym uruchamianiu</translation>
@@ -1718,6 +1736,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8961025972867871808">pingwiny</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
+<translation id="8972061581514441296">Kliknij, aby wrócić</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}many{Skanuj {NUMBER_OF_PAGES} stron}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
 <translation id="89945434909472341">wieś</translation>

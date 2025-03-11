@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -25,6 +26,21 @@
 
 namespace ash {
 
+namespace {
+
+bool IsLocationEnabledForBrowser(GeolocationAccessLevel access_level) {
+  switch (access_level) {
+    case GeolocationAccessLevel::kAllowed:
+      return true;
+    case GeolocationAccessLevel::kOnlyAllowedForSystem:
+    case GeolocationAccessLevel::kDisallowed:
+      return false;
+    default:
+      NOTREACHED() << "Invalid access level";
+  }
+}
+
+}  // namespace
 class PrivacyHubGeolocationBrowsertestBase : public LoginManagerTest {
  public:
   PrivacyHubGeolocationBrowsertestBase() {
@@ -95,6 +111,9 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
   // overriding secondary user's choice.
   ASSERT_EQ(provider->GetGeolocationAccessLevel(),
             primary_user_geolocation_choice);
+  ASSERT_EQ(privacy_hub_util::ContentBlocked(
+                privacy_hub_util::ContentType::GEOLOCATION),
+            !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 
   // Modify the underlying preference for the secondary user. Check that the
   // effective geolocation setting is unaffected; still following the primary
@@ -102,6 +121,9 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
   SetGeolocationAccessLevelPref(secondary_user_geolocation_choice);
   ASSERT_EQ(provider->GetGeolocationAccessLevel(),
             primary_user_geolocation_choice);
+  ASSERT_EQ(privacy_hub_util::ContentBlocked(
+                privacy_hub_util::ContentType::GEOLOCATION),
+            !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
@@ -130,6 +152,9 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
   // overriding secondary user's choice.
   ASSERT_EQ(provider->GetGeolocationAccessLevel(),
             primary_user_geolocation_choice);
+  ASSERT_EQ(privacy_hub_util::ContentBlocked(
+                privacy_hub_util::ContentType::GEOLOCATION),
+            !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 
   // Modify the underlying preference for the secondary user. Check that the
   // effective geolocation setting is unaffected; still following the primary
@@ -137,6 +162,9 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
   SetGeolocationAccessLevelPref(secondary_user_geolocation_choice);
   ASSERT_EQ(provider->GetGeolocationAccessLevel(),
             primary_user_geolocation_choice);
+  ASSERT_EQ(privacy_hub_util::ContentBlocked(
+                privacy_hub_util::ContentType::GEOLOCATION),
+            !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 
   // Add another secondary user and conduct the same testing.
   ash::UserAddingScreen::Get()->Start();
@@ -145,12 +173,18 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
   // Check initial location access level follows the primary user choice.
   ASSERT_EQ(provider->GetGeolocationAccessLevel(),
             primary_user_geolocation_choice);
+  ASSERT_EQ(privacy_hub_util::ContentBlocked(
+                privacy_hub_util::ContentType::GEOLOCATION),
+            !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 
   // Change the underlying preference for this user too. Check that the
   // effective geolocation setting is unaffected.
   SetGeolocationAccessLevelPref(secondary_user_geolocation_choice);
   ASSERT_EQ(provider->GetGeolocationAccessLevel(),
             primary_user_geolocation_choice);
+  ASSERT_EQ(privacy_hub_util::ContentBlocked(
+                privacy_hub_util::ContentType::GEOLOCATION),
+            !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 }
 
 // std::get<0>(GetParam()) - Location preference of the primary user.

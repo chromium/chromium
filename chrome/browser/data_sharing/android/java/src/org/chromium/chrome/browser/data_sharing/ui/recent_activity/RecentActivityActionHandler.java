@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface for handling click events on recent activity rows. Depending on the type of the
  * activity row, one of the methods listed in the interface will be invoked.
  */
+@NullMarked
 public interface RecentActivityActionHandler {
     /** Called to focus a tab. Invoked for tab added / updated events. */
     void focusTab(int tabId);

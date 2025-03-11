@@ -135,6 +135,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
@@ -872,56 +873,6 @@ bool LayoutObject::IsScrollMarkerGroup() const {
 bool LayoutObject::IsScrollMarkerGroupBefore() const {
   NOT_DESTROYED();
   return GetNode() && GetNode()->IsScrollMarkerGroupBeforePseudoElement();
-}
-
-LayoutObject* LayoutObject::GetScrollMarkerGroup() const {
-  NOT_DESTROYED();
-  if (Style()->ScrollMarkerGroup() == EScrollMarkerGroup::kNone) {
-    return nullptr;
-  }
-  if (IsFieldset()) {
-    const LayoutBlock* fieldset_content =
-        To<LayoutFieldset>(this)->FindAnonymousFieldsetContentBox();
-    if (!fieldset_content || !fieldset_content->IsScrollContainer()) {
-      return nullptr;
-    }
-  } else if (!IsScrollContainer()) {
-    return nullptr;
-  }
-  if (auto* element = DynamicTo<Element>(GetNode())) {
-    if (PseudoElement* pseudo =
-            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
-      return pseudo->GetLayoutObject();
-    }
-    if (PseudoElement* pseudo =
-            element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-      return pseudo->GetLayoutObject();
-    }
-  }
-  return nullptr;
-}
-
-LayoutBlock* LayoutObject::ScrollerFromScrollMarkerGroup() const {
-  NOT_DESTROYED();
-  DCHECK(IsScrollMarkerGroup());
-  auto* pseudo_element = DynamicTo<PseudoElement>(GetNode());
-  if (const Element* originating_element = pseudo_element->parentElement()) {
-    if (LayoutObject* object = originating_element->GetLayoutObject()) {
-      if (object->IsFieldset()) {
-        object = To<LayoutFieldset>(object)->FindAnonymousFieldsetContentBox();
-        if (!object) {
-          return nullptr;
-        }
-      }
-      if (!object->IsScrollContainer()) {
-        // TODO(crbug.com/381444307): This shouldn't happen. If there's a scroll
-        // marker group, the originating element should be a scroll container.
-        return nullptr;
-      }
-      return DynamicTo<LayoutBlock>(object);
-    }
-  }
-  return nullptr;
 }
 
 bool LayoutObject::IsListMarkerForSummary() const {
@@ -2982,13 +2933,16 @@ void LayoutObject::UpdateFirstLineImageObservers(
 
   using FirstLineStyleMap =
       HeapHashMap<WeakMember<const LayoutObject>, Member<const ComputedStyle>>;
-  DEFINE_STATIC_LOCAL(Persistent<FirstLineStyleMap>, first_line_style_map,
-                      (MakeGarbageCollected<FirstLineStyleMap>()));
+  using FirstLineStyleMapHolder = DisallowNewWrapper<FirstLineStyleMap>;
+  DEFINE_STATIC_LOCAL(Persistent<FirstLineStyleMapHolder>,
+                      first_line_style_map_holder,
+                      (MakeGarbageCollected<FirstLineStyleMapHolder>()));
+  auto& first_line_style_map = first_line_style_map_holder->Value();
   DCHECK_EQ(bitfields_.RegisteredAsFirstLineImageObserver(),
-            first_line_style_map->Contains(this));
+            first_line_style_map.Contains(this));
   const auto* old_first_line_style =
       bitfields_.RegisteredAsFirstLineImageObserver()
-          ? first_line_style_map->at(this)
+          ? first_line_style_map.at(this)
           : nullptr;
 
   // UpdateFillImages() may indirectly call LayoutBlock::ImageChanged() which
@@ -3015,13 +2969,13 @@ void LayoutObject::UpdateFirstLineImageObservers(
           &FirstLineStyleWithoutFallback()->BackgroundLayers()));
       new_first_line_style = FirstLineStyleWithoutFallback();
       bitfields_.SetRegisteredAsFirstLineImageObserver(true);
-      first_line_style_map->Set(this, std::move(new_first_line_style));
+      first_line_style_map.Set(this, std::move(new_first_line_style));
     } else {
       bitfields_.SetRegisteredAsFirstLineImageObserver(false);
-      first_line_style_map->erase(this);
+      first_line_style_map.erase(this);
     }
     DCHECK_EQ(bitfields_.RegisteredAsFirstLineImageObserver(),
-              first_line_style_map->Contains(this));
+              first_line_style_map.Contains(this));
   }
 }
 

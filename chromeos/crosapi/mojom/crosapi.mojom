@@ -34,7 +34,6 @@ import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
-import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -44,7 +43,6 @@ import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
-import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
@@ -322,11 +320,7 @@ interface Crosapi {
   // Added in M113.
   [MinVersion=105] BindMediaUI@108(pending_receiver<MediaUI> receiver);
 
-  // Binds the NativeThemeService interface for reading native theme changes.
-  // Added in M93.
-  [MinVersion=33]
-  BindNativeThemeService@38(pending_receiver<NativeThemeService> receiver);
-
+  // BindNativeThemeService@38 was removed.
   // BindMetrics@106 was removed.
 
   // Binds the MultiCaptureService interface that handles multi capture related
@@ -522,9 +516,5 @@ interface Crosapi {
       pending_receiver<GuestOsSkForwarderFactory> receiver);
 
   // OnBrowserStartup@6 was removed.
-
-  // Binds the service containing input method related functionality such
-  // as changing the keyboard input language.
-  [MinVersion=137]
-    BindInputMethods@139(pending_receiver<InputMethods> receiver);
+  // BindInputMethods@139 was removed.
 };

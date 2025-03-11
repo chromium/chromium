@@ -497,8 +497,16 @@ void MediaDevicesManager::EnumerateDevices(
       requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)];
   bool start_video_monitoring =
       requested_types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)];
-  StartMonitoring(DeviceMonitoringMode(start_audio_monitoring),
-                  DeviceMonitoringMode(start_video_monitoring));
+
+  DeviceStartMonitoringMode start_mode = DeviceStartMonitoringMode::kNone;
+  if (start_audio_monitoring && start_video_monitoring) {
+    start_mode = DeviceStartMonitoringMode::kStartAudioAndVideo;
+  } else if (start_audio_monitoring) {
+    start_mode = DeviceStartMonitoringMode::kStartAudio;
+  } else if (start_video_monitoring) {
+    start_mode = DeviceStartMonitoringMode::kStartVideo;
+  }
+  StartMonitoring(start_mode);
 
   client_requests_.emplace_back(requested_types, std::move(callback));
   bool all_results_cached = true;
@@ -602,8 +610,15 @@ uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
       subscribe_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)];
   bool start_video_monitoring =
       subscribe_types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)];
-  StartMonitoring(DeviceMonitoringMode(start_audio_monitoring),
-                  DeviceMonitoringMode(start_video_monitoring));
+  DeviceStartMonitoringMode start_mode = DeviceStartMonitoringMode::kNone;
+  if (start_audio_monitoring && start_video_monitoring) {
+    start_mode = DeviceStartMonitoringMode::kStartAudioAndVideo;
+  } else if (start_audio_monitoring) {
+    start_mode = DeviceStartMonitoringMode::kStartAudio;
+  } else if (start_video_monitoring) {
+    start_mode = DeviceStartMonitoringMode::kStartVideo;
+  }
+  StartMonitoring(start_mode);
 
   uint32_t subscription_id = ++last_subscription_id_;
   mojo::Remote<blink::mojom::MediaDevicesListener> media_devices_listener;
@@ -677,12 +692,18 @@ void MediaDevicesManager::StartMonitoring() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Start monitoring all device types.
-  StartMonitoring(DeviceMonitoringMode(true), DeviceMonitoringMode(true));
+  StartMonitoring(DeviceStartMonitoringMode::kStartAudioAndVideo);
 }
 
 void MediaDevicesManager::StartMonitoring(
-    DeviceMonitoringMode audio_device_monitoring_mode,
-    DeviceMonitoringMode video_device_monitoring_mode) {
+    DeviceStartMonitoringMode start_monitoring_mode) {
+  bool start_audio_device_monitoring =
+      (start_monitoring_mode == DeviceStartMonitoringMode::kStartAudio) ||
+      (start_monitoring_mode == DeviceStartMonitoringMode::kStartAudioAndVideo);
+  bool start_video_device_monitoring_mode =
+      (start_monitoring_mode == DeviceStartMonitoringMode::kStartVideo) ||
+      (start_monitoring_mode == DeviceStartMonitoringMode::kStartAudioAndVideo);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (monitoring_started_for_video_ &&
       base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
@@ -697,7 +718,7 @@ void MediaDevicesManager::StartMonitoring(
     return;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (audio_device_monitoring_mode && !monitoring_started_for_audio_ &&
+  if (start_audio_device_monitoring && !monitoring_started_for_audio_ &&
       base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess)) {
     DCHECK(!audio_service_device_listener_);
 
@@ -718,12 +739,12 @@ void MediaDevicesManager::StartMonitoring(
   }
 
   if (base::FeatureList::IsEnabled(features::kMediaDevicesSystemMonitorCache)) {
-    if (video_device_monitoring_mode && !monitoring_started_for_video_) {
+    if (start_video_device_monitoring_mode && !monitoring_started_for_video_) {
       SetCachePolicy(MediaDeviceType::kMediaVideoInput,
                      CachePolicy::SYSTEM_MONITOR);
     }
 
-    if (audio_device_monitoring_mode && !monitoring_started_for_audio_) {
+    if (start_audio_device_monitoring && !monitoring_started_for_audio_) {
       SetCachePolicy(MediaDeviceType::kMediaAudioInput,
                      CachePolicy::SYSTEM_MONITOR);
       SetCachePolicy(MediaDeviceType::kMediaAudioOutput,
@@ -731,7 +752,7 @@ void MediaDevicesManager::StartMonitoring(
     }
   }
 
-  if (video_device_monitoring_mode && !monitoring_started_for_video_) {
+  if (start_video_device_monitoring_mode && !monitoring_started_for_video_) {
 #if BUILDFLAG(IS_MAC)
     RegisterVideoCaptureDevicesChangedObserver();
 #endif
@@ -747,35 +768,42 @@ void MediaDevicesManager::StartMonitoring(
 #endif
   }
 
-  *monitoring_started_for_video_ |= *video_device_monitoring_mode;
-  *monitoring_started_for_audio_ |= *audio_device_monitoring_mode;
+  monitoring_started_for_video_ |= start_video_device_monitoring_mode;
+  monitoring_started_for_audio_ |= start_audio_device_monitoring;
 }
 
 void MediaDevicesManager::StopMonitoring() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Stop monitoring for the all device types.
-  StopMonitoring(DeviceMonitoringMode(true), DeviceMonitoringMode(true));
+  StopMonitoring(DeviceStopMonitoringMode::kStopAudioAndVideo);
 }
 
 void MediaDevicesManager::StopMonitoring(
-    DeviceMonitoringMode audio_device_monitoring_mode,
-    DeviceMonitoringMode video_device_monitoring_mode) {
-  if (audio_device_monitoring_mode && monitoring_started_for_audio_) {
+    DeviceStopMonitoringMode device_monitoring_mode) {
+  bool stop_audio_device_monitoring =
+      (device_monitoring_mode == DeviceStopMonitoringMode::kStopAudio) ||
+      (device_monitoring_mode == DeviceStopMonitoringMode::kStopAudioAndVideo);
+
+  bool stop_video_device_monitoring_mode =
+      (device_monitoring_mode == DeviceStopMonitoringMode::kStopVideo) ||
+      (device_monitoring_mode == DeviceStopMonitoringMode::kStopAudioAndVideo);
+
+  if (stop_audio_device_monitoring && monitoring_started_for_audio_) {
     audio_service_device_listener_.reset();
-    *monitoring_started_for_audio_ = false;
+    monitoring_started_for_audio_ = false;
     SetCachePolicy(MediaDeviceType::kMediaAudioInput, CachePolicy::NO_CACHE);
     SetCachePolicy(MediaDeviceType::kMediaAudioOutput, CachePolicy::NO_CACHE);
   }
 
-  if (video_device_monitoring_mode && monitoring_started_for_video_) {
+  if (stop_video_device_monitoring_mode && monitoring_started_for_video_) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
       disconnect_video_source_provider_timer_.Stop();
     }
 #endif
     video_capture_service_device_changed_observer_.reset();
-    *monitoring_started_for_video_ = false;
+    monitoring_started_for_video_ = false;
     SetCachePolicy(MediaDeviceType::kMediaVideoInput, CachePolicy::NO_CACHE);
   }
 

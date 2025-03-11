@@ -889,8 +889,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Offer to manage inactive regular tabs iff the regular tabs grid is
   // available. The regular tabs can be disabled by policy, making the grid
   // unavailable.
-  if (IsInactiveTabsAvailable() &&
-      _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly) {
+  if (_pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly) {
     CHECK(_regularGridCoordinator.gridViewController);
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
           initWithConsumer:_regularGridCoordinator.gridViewController
@@ -1002,20 +1001,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
         _remoteGridContainerViewController;
   }
 
-  if (IsInactiveTabsAvailable()) {
-    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:_inactiveBrowser
-                          delegate:self];
-    self.inactiveTabsCoordinator.tabContextMenuDelegate = self;
+  self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:_inactiveBrowser
+                        delegate:self];
+  self.inactiveTabsCoordinator.tabContextMenuDelegate = self;
 
-    [self.inactiveTabsCoordinator start];
+  [self.inactiveTabsCoordinator start];
 
-    self.regularTabsMediator.containedGridToolbarsProvider =
-        self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
-    self.regularTabsMediator.inactiveTabsGridCommands =
-        self.inactiveTabsCoordinator.gridCommandsHandler;
-  }
+  self.regularTabsMediator.containedGridToolbarsProvider =
+      self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
+  self.regularTabsMediator.inactiveTabsGridCommands =
+      self.inactiveTabsCoordinator.gridCommandsHandler;
 
   self.firstPresentation = YES;
 
@@ -1293,7 +1290,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)showInactiveTabs {
-  CHECK(IsInactiveTabsEnabled(_inactiveBrowser->GetProfile()->GetPrefs()));
+  CHECK(!IsInactiveTabsExplicitlyDisabledByUser(
+      _inactiveBrowser->GetProfile()->GetPrefs()));
   [self.inactiveTabsCoordinator show];
 }
 
@@ -1350,7 +1348,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {
-  CHECK(IsInactiveTabsAvailable());
   [self.inactiveTabsCoordinator hide];
 }
 

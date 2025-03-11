@@ -694,6 +694,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       DiaglogShowsDestinationsWhileSearching) {
+  RunTestCase("DiaglogShowsDestinationsWhileSearching");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
                        DialogHasNoDestinations) {
   RunTestCase("DialogHasNoDestinations");
 }

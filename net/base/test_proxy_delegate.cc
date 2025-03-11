@@ -117,4 +117,11 @@ Error TestProxyDelegate::OnTunnelHeadersReceived(
 void TestProxyDelegate::SetProxyResolutionService(
     ProxyResolutionService* proxy_resolution_service) {}
 
+bool TestProxyDelegate::AliasRequiresProxyOverride(
+    const std::string scheme,
+    const std::vector<std::string>& dns_aliases,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  return false;
+}
+
 }  // namespace net

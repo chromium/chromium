@@ -819,6 +819,8 @@ class CONTENT_EXPORT InterestGroupAuction
     return final_auction_result_;
   }
 
+  void SetReceivedAbortSignal() { received_abort_signal_ = true; }
+
   // Gets the buyer experiment ID in `config` for buyer. Public so that
   // InterestGroupAuctionReporter can use it.
   static std::optional<uint16_t> GetBuyerExperimentId(
@@ -1651,6 +1653,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // auctions, their sizes are not included.
   size_t interest_groups_bytes_for_metrics_ = 0u;
   size_t ads_and_ad_components_bytes_for_metrics_ = 0u;
+
+  // If true, indicates that this auction received an abort signal. Used for UMA
+  // only, to differentiate frame destruction from receiving an abort signal in
+  // Auction.Result.
+  bool received_abort_signal_ = false;
 
   base::WeakPtrFactory<InterestGroupAuction> weak_ptr_factory_{this};
 };

@@ -58,7 +58,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
 
   // Observer web contents for the parent approval dialog.
   auto create_observer_callback = base::BindOnce(
-      &SupervisedUserWebContentHandlerImpl::StartObervingPacpContents,
+      &SupervisedUserWebContentHandlerImpl::StartObservingPacpContents,
       weak_ptr_factory_.GetWeakPtr());
   auto abort_dialog_callback = base::BindOnce(
       &SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialogOnTimeout,
@@ -86,7 +86,7 @@ void SupervisedUserWebContentHandlerImpl::MaybeCloseLocalApproval() {
   CloseDialog();
 }
 
-void SupervisedUserWebContentHandlerImpl::StartObervingPacpContents(
+void SupervisedUserWebContentHandlerImpl::StartObservingPacpContents(
     content::WebContents* contents) {
   CHECK(contents);
   CHECK(dialog_web_contents_observer_);

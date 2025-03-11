@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_CONTENT_INIT_IOS_MAIN_DELEGATE_H_
 #define IOS_WEB_CONTENT_INIT_IOS_MAIN_DELEGATE_H_
 
+#include <variant>
+
 #import "build/blink_buildflags.h"
 #import "content/public/app/content_main_delegate.h"
 #import "content/public/browser/browser_main_runner.h"
@@ -37,7 +39,7 @@ class IOSMainDelegate : public content::ContentMainDelegate {
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 
-  absl::variant<int, content::MainFunctionParams> RunProcess(
+  std::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
 

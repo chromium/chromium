@@ -808,14 +808,32 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
 
-  [_groupConsumer
-      setActivitySummaryCellText:
-          base::SysUTF16ToNSString(
-              base::i18n::MessageFormatter::FormatWithNamedArgs(
-                  l10n_util::GetStringUTF16(
-                      IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_TEXT),
-                  "count_tab_added", numOfTabsAdded, "count_tab_removed",
-                  numOfTabsRemoved))];
+  NSString* summary = @"";
+  if (numOfTabsAdded > 0) {
+    summary =
+        [summary stringByAppendingString:
+                     l10n_util::GetPluralNSStringF(
+                         IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_ADDED_TEXT,
+                         numOfTabsAdded)];
+  }
+  if (numOfTabsRemoved > 0) {
+    if (summary.length > 0) {
+      summary = [summary stringByAppendingString:@", "];
+      summary = [summary
+          stringByAppendingString:
+              l10n_util::GetPluralNSStringF(
+                  IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_REMOVED_TEXT,
+                  numOfTabsRemoved)];
+    } else {
+      summary = [summary
+          stringByAppendingString:
+              l10n_util::GetPluralNSStringF(
+                  IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_REMOVED_ONLY_TEXT,
+                  numOfTabsRemoved)];
+    }
+  }
+
+  [_groupConsumer setActivitySummaryCellText:summary];
 }
 
 // Returns YES if the tab specified by `localTabID` exists in the group.

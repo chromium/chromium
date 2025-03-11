@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview 'settings-autofill-ai-add-or-edit-dialog' is the dialog that
- * allows adding and editing entities for Autofill AI.
+ * allows adding and editing entity instances for Autofill AI.
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -44,10 +44,10 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
   static get properties() {
     return {
       /**
-         The entity to be modified. If this is an "add" dialog, the entity has
-         only a type, but no attributes or guid.
+         The entity instance to be modified. If this is an "add" dialog, the
+         entity instance has only a type, but no attribute instances or guid.
        */
-      entity: {
+      entityInstance: {
         type: Object,
         value: null,
       },
@@ -58,11 +58,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
       },
 
       /**
-         Complete list of attributes that are associated with the current
-         entity. If this is an "edit" dialog, some attributes are populated with
-         their already existing values.
+         Complete list of attribute instances that are associated with the
+         current entity instance. If this is an "edit" dialog, some attribute
+         instances are populated with their already existing values.
        */
-      completeAttributeList_: {
+      completeAttributeInstanceList_: {
         type: Array,
         value: () => [],
       },
@@ -80,9 +80,9 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
     };
   }
 
-  entity: EntityInstance|null;
+  entityInstance: EntityInstance|null;
   dialogTitle: string;
-  private completeAttributeList_: AttributeInstance[];
+  private completeAttributeInstanceList_: AttributeInstance[];
   private canSave_: boolean;
   private userClickedSaveButton_: boolean = false;
   private entityDataManager_: EntityDataManagerProxy =
@@ -91,20 +91,24 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    assert(this.entity);
+    assert(this.entityInstance);
     this.entityDataManager_
-        .getAllAttributeTypesForEntity(this.entity.type.typeName)
+        .getAllAttributeTypesForEntityTypeName(
+            this.entityInstance.type.typeName)
         .then((attributeTypes: AttributeType[]) => {
-          this.completeAttributeList_ = attributeTypes.map(attributeType => {
-            assert(this.entity);
-            const existingAttribute = this.entity.attributes.find(
-                existingAttribute =>
-                    existingAttribute.type.typeName === attributeType.typeName);
-            return {
-              type: attributeType,
-              value: existingAttribute?.value || '',
-            };
-          });
+          this.completeAttributeInstanceList_ =
+              attributeTypes.map(attributeType => {
+                assert(this.entityInstance);
+                const existingAttributeInstance =
+                    this.entityInstance.attributeInstances.find(
+                        existingAttributeInstance =>
+                            existingAttributeInstance.type.typeName ===
+                            attributeType.typeName);
+                return {
+                  type: attributeType,
+                  value: existingAttributeInstance?.value || '',
+                };
+              });
         });
   }
 
@@ -120,18 +124,18 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
         bubbles: true,
         composed: true,
         detail: {
-          ...this.entity,
+          ...this.entityInstance,
           // Don't take into consideration empty strings or strings made out
           // only of whitespaces.
-          attributes: this.completeAttributeList_.filter(
-              attribute => attribute.value.trim().length > 0),
+          attributeInstances: this.completeAttributeInstanceList_.filter(
+              attributeInstance => attributeInstance.value.trim().length > 0),
         },
       }));
       this.$.dialog.close();
     }
   }
 
-  private onAttributeFieldInput_(_e: Event): void {
+  private onAttributeInstanceFieldInput_(_e: Event): void {
     if (this.userClickedSaveButton_) {
       this.updateCanSave_();
     }
@@ -140,8 +144,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
   private updateCanSave_(): void {
     // Don't take into consideration empty strings or strings made out only of
     // whitespaces.
-    this.canSave_ = this.completeAttributeList_.some(
-        attribute => attribute.value.trim().length > 0);
+    this.canSave_ = this.completeAttributeInstanceList_.some(
+        attributeInstance => attributeInstance.value.trim().length > 0);
   }
 }
 

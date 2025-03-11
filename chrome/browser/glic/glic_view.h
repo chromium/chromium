@@ -24,6 +24,10 @@ class Profile;
 
 namespace glic {
 
+inline constexpr static float kCornerRadius = 12;
+inline constexpr static SkColor kDefaultBackgroundColor =
+    SkColorSetARGB(255, 27, 28, 29);
+
 class GlicView : public views::View {
   METADATA_HEADER(GlicView, views::View)
 

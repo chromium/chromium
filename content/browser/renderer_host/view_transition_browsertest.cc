@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
+#include "cc/base/features.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -404,7 +405,8 @@ class ViewTransitionCaptureTest
     EnablePixelOutput();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {viz::mojom::EnableVizTestApis},
+        {viz::mojom::EnableVizTestApis,
+         features::kViewTransitionCaptureAndDisplay},
         /*disabled_features=*/{});
   }
 

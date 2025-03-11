@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/account_card_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -155,7 +156,9 @@ void CollaborationControllerDelegateDesktop::ShowJoinDialog(
   controller->SetShowErrorDialogCallback(
       base::BindOnce(&CollaborationControllerDelegateDesktop::ShowErrorDialog,
                      weak_ptr_factory_.GetWeakPtr()));
-  controller->Show(token);
+
+  data_sharing::RequestInfo request_info(token, data_sharing::FlowType::kJoin);
+  controller->Show(request_info);
 }
 
 void CollaborationControllerDelegateDesktop::ShowShareDialog(
@@ -165,8 +168,11 @@ void CollaborationControllerDelegateDesktop::ShowShareDialog(
     return;
   }
   CHECK(std::holds_alternative<tab_groups::LocalTabGroupID>(either_id));
+  data_sharing::RequestInfo request_info(
+      std::get<tab_groups::LocalTabGroupID>(either_id),
+      data_sharing::FlowType::kShare);
   DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Show(
-      std::get<tab_groups::LocalTabGroupID>(either_id));
+      request_info);
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess,
                         std::nullopt);
 }
@@ -183,8 +189,11 @@ void CollaborationControllerDelegateDesktop::ShowManageDialog(
     return;
   }
   CHECK(std::holds_alternative<tab_groups::LocalTabGroupID>(either_id));
+  data_sharing::RequestInfo request_info(
+      std::get<tab_groups::LocalTabGroupID>(either_id),
+      data_sharing::FlowType::kManage);
   DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Show(
-      std::get<tab_groups::LocalTabGroupID>(either_id));
+      request_info);
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
 

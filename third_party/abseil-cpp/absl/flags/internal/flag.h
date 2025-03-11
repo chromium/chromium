@@ -57,7 +57,7 @@ template <typename T>
 using Flag = flags_internal::Flag<T>;
 
 template <typename T>
-ABSL_MUST_USE_RESULT T GetFlag(const absl::Flag<T>& flag);
+[[nodiscard]] T GetFlag(const absl::Flag<T>& flag);
 
 template <typename T>
 void SetFlag(absl::Flag<T>* flag, const T& v);

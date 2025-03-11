@@ -116,8 +116,8 @@ export class SettingsAutofillPageElement extends
     super.connectedCallback();
     if (loadTimeData.getBoolean('autofillAiFeatureEnabled')) {
       EntityDataManagerProxyImpl.getInstance().loadEntityInstances().then(
-          entities => {
-            this.userHasAutofillAiEntries_ = entities.length > 0;
+          entityInstances => {
+            this.userHasAutofillAiEntries_ = entityInstances.length > 0;
           });
     }
   }

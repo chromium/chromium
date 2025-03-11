@@ -108,11 +108,10 @@ void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
       adjusted_dst_rect.set_size(gfx::TransposeSize(adjusted_dst_rect.size()));
   }
 
-  canvas->drawImageRect(
-      image, gfx::RectFToSkRect(adjusted_src_rect),
-      gfx::RectFToSkRect(adjusted_dst_rect), draw_options.sampling_options,
-      &flags,
-      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
+  canvas->drawImageRect(image, gfx::RectFToSkRect(adjusted_src_rect),
+                        gfx::RectFToSkRect(adjusted_dst_rect),
+                        draw_options.sampling_options, &flags,
+                        ToSkiaRectConstraint(draw_options.clamping_mode));
 }
 
 }  // namespace blink

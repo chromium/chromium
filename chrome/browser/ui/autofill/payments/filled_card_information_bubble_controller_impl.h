@@ -59,6 +59,8 @@ class FilledCardInformationBubbleControllerImpl
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   void OnFieldClicked(FilledCardInformationBubbleField field) override;
   bool ShouldShowGooglePayIconInTitle() const override;
+  std::u16string GetMaskedCardNameForDescriptionView() const override;
+  gfx::Image GetCardImageForDescriptionView() const override;
 
  protected:
   explicit FilledCardInformationBubbleControllerImpl(

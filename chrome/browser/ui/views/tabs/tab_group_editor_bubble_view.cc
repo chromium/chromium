@@ -924,8 +924,7 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
   }
 
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    bool is_group_shared = IsGroupShared();
-
+    bool is_group_shared = saved_group->is_shared_tab_group();
     tab_groups::SavedTabGroupUtils::DeleteSavedGroup(browser_,
                                                      saved_group->saved_guid());
     if (is_group_shared) {

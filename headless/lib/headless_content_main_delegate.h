@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
@@ -42,7 +43,7 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   // content::ContentMainDelegate implementation:
   std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
-  absl::variant<int, content::MainFunctionParams> RunProcess(
+  std::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
   std::optional<int> PreBrowserMain() override;

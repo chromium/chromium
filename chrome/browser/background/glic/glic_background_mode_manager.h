@@ -78,7 +78,7 @@ class GlicBackgroundModeManager
   void UnregisterHotkey();
   void UpdateState();
 
-  void OnProfileEnableChanged();
+  void OnProfileAllowedChanged();
 
   bool IsEnabledInAnyLoadedProfile();
 

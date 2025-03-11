@@ -532,12 +532,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           blink::features::kMediaSessionEnterPictureInPicture));
 
-  html_source->AddBoolean(
-      "capturedSurfaceControlEnabled",
-      base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlKillswitch) &&
-          base::FeatureList::IsEnabled(
-              features::kCapturedSurfaceControlStickyPermissions));
+  html_source->AddBoolean("capturedSurfaceControlEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kCapturedSurfaceControlKillswitch));
 
   html_source->AddBoolean("enableAutomaticFullscreenContentSetting",
                           base::FeatureList::IsEnabled(

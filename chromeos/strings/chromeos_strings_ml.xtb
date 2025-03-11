@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">സ്ക്രീൻ സേവർ ആനിമേഷൻ</translation>
 <translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
 <translation id="1539864135338521185">ലാപിസ് ലസുലി</translation>
+<translation id="1548555207631326346">നിങ്ങളുടെ AI ചിത്രങ്ങൾ വ്യക്തിപരമാക്കാൻ ഒരു തീം തിരഞ്ഞെടുത്ത്, അടിവരയിട്ട വാക്കുകൾ തിരഞ്ഞെടുക്കുക.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          കൂടുതൽ തനതും വ്യത്യസ്‌തവുമായ AI ചിത്ര ഓപ്ഷനുകൾ ലഭിക്കുന്നതിന് "എന്നെ പ്രചോദിപ്പിക്കൂ" തിരഞ്ഞെടുക്കുക.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          നിങ്ങൾ AI ഉപയോഗിച്ച് സൃഷ്‌ടിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" /> Google-ന്റെ സ്വകാര്യതാ നയത്തിന്<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി, ചിത്രങ്ങൾ ജനറേറ്റ് ചെയ്യാനും ഉൽപ്പന്നം മെച്ചപ്പെടുത്താനും പ്രോംപ്റ്റ് Google AI സെർവറുകളിലേക്ക് അയയ്ക്കും.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ജനറേറ്റീവ് AI പരീക്ഷണാത്മകവും പ്രാരംഭ ഘട്ടത്തിലുള്ളതുമാണ്, നിലവിൽ ഇതിന്റെ ലഭ്യത പരിമിതമാണ്.</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1561927818299383735">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ബീച്ച്</translation>
 <translation id="819278132617411009">ഉൽപ്പാദനക്ഷമത വർദ്ധിപ്പിക്കാൻ Google AI ഉപയോഗിക്കൂ</translation>
+<translation id="82003371436638355">"നിങ്ങളുടേതായ ഒന്ന് സൃഷ്ടിക്കുക" തിരഞ്ഞെടുക്കുമ്പോൾ, ഒരു ഇഷ്ടാനുസൃത പ്രോംപ്റ്റ് എഴുതുക. അല്ലെങ്കിൽ നിങ്ങളുടെ AI ചിത്രങ്ങൾ വ്യക്തിപരമാക്കാൻ "ഒരു തീം തിരഞ്ഞെടുത്ത്", അടിവരയിട്ട വാക്കുകൾ തിരഞ്ഞെടുക്കുക.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          കൂടുതൽ തനതും വ്യത്യസ്‌തവുമായ AI ചിത്ര ഓപ്ഷനുകൾ ലഭിക്കുന്നതിന് "എന്നെ പ്രചോദിപ്പിക്കൂ" തിരഞ്ഞെടുക്കുക.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          നിങ്ങളുടേതായ വാൾപേപ്പർ സൃഷ്‌ടിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ന്റെ സേവന നിബന്ധനകൾക്കും സ്വകാര്യതാ നയത്തിനും<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി, ചിത്രങ്ങൾ ജനറേറ്റ് ചെയ്യാനും ഉൽപ്പന്നം മെച്ചപ്പെടുത്താനും പ്രോംപ്റ്റ് Google സെർവറുകളിലേക്ക് അയയ്ക്കും. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രസഹ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തരുത്.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ആളുകളെ കുറിച്ച് ഉൾപ്പെടെ, ജനറേറ്റീവ് AI-യ്ക്ക് തെറ്റുകൾ സംഭവിക്കാം, അതിനാൽ ഇത് വീണ്ടും പരിശോധിക്കുക. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />കൂടുതലറിയുക<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">മീഡിയ പ്ലേ ചെയ്യുക</translation>
 <translation id="8318753676953949627">ഇമേജുകളൊന്നുമില്ല</translation>
 <translation id="8320910311642849813">വനം</translation>
+<translation id="8322464149031882595">മുന്നോട്ട് പോകാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8329018942023753850">Calculator ആപ്പ്</translation>
 <translation id="8336739000755212683">ഉപകരണ അക്കൗണ്ട് ചിത്രം മാറ്റുക</translation>
 <translation id="8339024191194156249">സ്വയമേവയുള്ള ലോഞ്ചിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">പെൻഗ്വിനുകൾ</translation>
 <translation id="8968751544471797276">ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="8970109610781093811">വീണ്ടും പ്രവർത്തിപ്പിക്കുക</translation>
+<translation id="8972061581514441296">മടങ്ങാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{സ്‌കാൻ ചെയ്യുക}=1{{NUMBER_OF_PAGES} പേജ് സ്‌കാൻ ചെയ്യുക}other{{NUMBER_OF_PAGES} പേജ് സ്‌കാൻ ചെയ്യുക}}</translation>
 <translation id="89945434909472341">ഗ്രാമം</translation>

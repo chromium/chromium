@@ -633,6 +633,11 @@ public class LoadUrlTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    // This test requires BFCache to be disabled in order to trigger the `onPageFinishedHelper`
+    // so we can test the extra headers. Since the page is loaded with `Cache-control: no-store`, it
+    // was not eligible for BFCache, and now `Cache-control: no-store` is no longer a blocking
+    // reason, so we have to disable BFCache with this command line flag.
+    @CommandLineFlags.Add({"disable-features=WebViewBackForwardCache"})
     public void testRendererNavigationAndGoBackWithExtraHeaders() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =

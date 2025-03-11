@@ -9,7 +9,7 @@
 @interface OmniboxPopupMediator (Testing)
 
 @property(nonatomic, strong, readonly)
-    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
+    NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups;
 
 @end
 

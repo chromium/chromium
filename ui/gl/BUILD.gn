@@ -465,6 +465,7 @@ static_library("test_support") {
   ]
   deps = [
     "//base/test:test_support",
+    "//gpu/config",
     "//testing/gtest",
     "//third_party/angle:includes",
     "//ui/base",

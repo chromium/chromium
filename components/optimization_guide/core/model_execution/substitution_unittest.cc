@@ -135,7 +135,7 @@ proto::PromptApiPrompt RolePrompt(proto::PromptApiRole role,
                                   std::string content) {
   proto::PromptApiPrompt prompt;
   prompt.set_role(role);
-  prompt.set_content(content);
+  prompt.set_text(content);
   return prompt;
 }
 

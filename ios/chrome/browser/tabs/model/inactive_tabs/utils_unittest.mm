@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -112,9 +111,6 @@ class InactiveTabsUtilsTest : public PlatformTest {
 // Ensure that the active tab in the active tab list with date set at "Now" is
 // not added to the inactive tab list.
 TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
 
@@ -140,9 +136,6 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
 // Ensure that inactive tabs are moved from the active tab list to the inactive
 // tab list.
 TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -169,9 +162,6 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
 
 // Ensure there is no active tab in the inactive tab list.
 TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
 
@@ -196,9 +186,6 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
 
 // Ensure that inactive tab stay in inactive list.
 TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -225,10 +212,8 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
 
 // Restore all inactive tab.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
-  // RestoreAllInactive checks that it is called when the feature is disabled,
-  // either via the flag, or via the user pref. Disable in both places.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
+  // RestoreAllInactive checks that it is called when the feature is disabled
+  // via the user pref.
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -256,9 +241,6 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
 // Ensure that all moving functions are working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -338,10 +320,8 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
 // Ensure that restore function is working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
-  // RestoreAllInactive checks that it is called when the feature is disabled,
-  // either via the flag, or via the user pref. Disable in both places.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
+  // RestoreAllInactive checks that it is called when the feature is disabled
+  // via the user pref.
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
@@ -381,9 +361,6 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   // Needed to use the NewTabPageTabHelper and ensure that the tab is an NTP.
   std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
       std::make_unique<web::FakeNavigationManager>();
@@ -437,10 +414,8 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
 // Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
-  // RestoreAllInactive checks that it is called when the feature is disabled,
-  // either via the flag, or via the user pref. Disable in both places.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kInactiveTabsIPadFeature);
+  // RestoreAllInactive checks that it is called when the feature via the user
+  // pref.
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   // Create known identifiers and last_active_time.
@@ -472,9 +447,6 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
 // filters out duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest,
        MoveTabsFromInactiveToActiveRemovesCrossDuplicates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now();
@@ -504,9 +476,6 @@ TEST_F(InactiveTabsUtilsTest,
 // filters out duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest,
        MoveTabsFromActiveToInactiveRemovesCrossDuplicates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now() - base::Days(10);
@@ -533,9 +502,6 @@ TEST_F(InactiveTabsUtilsTest,
 }
 
 TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   prefs()->SetInteger(prefs::kInactiveTabsTimeThreshold, 7);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();

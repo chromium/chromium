@@ -534,6 +534,21 @@ public class TabGridDialogViewTest {
 
     @Test
     @MediumTest
+    public void testInvokeVisibilityListenerOnChange() throws TimeoutException {
+        CallbackHelper visibilityCallback = new CallbackHelper();
+        mTabGridDialogView.setVisibilityListener(
+                new VisibilityListener() {
+                    @Override
+                    public void finishedHidingDialogView() {
+                        visibilityCallback.notifyCalled();
+                    }
+                });
+        mTabGridDialogView.setVisibilityListener(null);
+        visibilityCallback.waitForNext();
+    }
+
+    @Test
+    @MediumTest
     public void testHideDialog_InvokeVisibilityListener() throws TimeoutException {
         CallbackHelper visibilityCallback = new CallbackHelper();
         mTabGridDialogView.setVisibilityListener(

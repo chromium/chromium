@@ -9,12 +9,12 @@
 
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/types/strong_alias.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_ids.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
@@ -36,13 +36,13 @@ class PdfInkUndoRedoModel {
   //   later.
   // - `InkModeledShapeId` is for modeled shapes that are pre-existing and can
   //   be erased.
-  using IdType = absl::variant<InkStrokeId, InkModeledShapeId>;
+  using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
   using DrawCommands =
       base::StrongAlias<class DrawCommandsTag, std::set<IdType>>;
   using EraseCommands =
       base::StrongAlias<class EraseCommandsTag, std::set<IdType>>;
 
-  using Commands = absl::variant<absl::monostate, DrawCommands, EraseCommands>;
+  using Commands = std::variant<std::monostate, DrawCommands, EraseCommands>;
 
   // Set of IDs used for drawing to discard. This does not use `IdType`, because
   // model shapes are pre-existing and cannot be discarded.
@@ -122,7 +122,7 @@ class PdfInkUndoRedoModel {
 
   // Invariants:
   // (1) Never empty.
-  // (2) The last element and only the last element can be `absl::monostate`.
+  // (2) The last element and only the last element can be `std::monostate`.
   // (3) IDs used in `DrawCommands` elements are unique among all `DrawCommands`
   //     elements.
   // (4) IDs added to a `DrawCommands` must not exist in any `EraseCommands`.
@@ -134,7 +134,7 @@ class PdfInkUndoRedoModel {
   //     `DrawCommands` can hold `InkModeledShapeId` is to undo an
   //     `InkModeledShapeId` erasure, where the caller needs to know they need
   //     to draw the shape.
-  std::vector<Commands> commands_stack_ = {absl::monostate()};
+  std::vector<Commands> commands_stack_ = {std::monostate()};
 
   // Invariants:
   // (8) Always less than the size of `commands_stack_`.

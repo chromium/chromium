@@ -111,7 +111,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                   profilePrefService:(PrefService*)prefService
                      snapshotStorage:(SnapshotStorageWrapper*)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser {
-  CHECK(IsInactiveTabsAvailable());
   CHECK(webStateList);
   CHECK(prefService);
   CHECK(snapshotStorage);

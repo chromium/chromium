@@ -79,55 +79,50 @@
 // Returns the list of BestFeaturesItems to be shown, based off the status of
 // the feature flag and the user's eligibility.
 - (NSArray<BestFeaturesItem*>*)bestFeatureItems {
-  NSMutableArray<BestFeaturesItem*>* items = [NSMutableArray array];
   using enum first_run::BestFeaturesScreenVariationType;
   using enum BestFeaturesItemType;
 
+  std::vector<BestFeaturesItemType> itemTypes;
   first_run::BestFeaturesScreenVariationType variation =
       first_run::GetBestFeaturesScreenVariationType();
   switch (variation) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenBeforeDBPromo:
-      [items addObject:[BestFeaturesItem itemForType:kLensSearch]];
-      [items addObject:[BestFeaturesItem itemForType:kEnhancedSafeBrowsing]];
-      [items addObject:[BestFeaturesItem itemForType:kLockedIncognitoTabs]];
+      itemTypes = {kLensSearch, kEnhancedSafeBrowsing, kLockedIncognitoTabs};
       break;
     case kGeneralScreenWithPasswordItemAfterDBPromo:
-      [items addObject:[BestFeaturesItem itemForType:kLensSearch]];
-      [items addObject:[BestFeaturesItem itemForType:kEnhancedSafeBrowsing]];
-      [items
-          addObject:[BestFeaturesItem itemForType:kSaveAndAutofillPasswords]];
+      itemTypes = {kLensSearch, kEnhancedSafeBrowsing,
+                   kSaveAndAutofillPasswords};
       break;
     case kShoppingUsersWithFallbackBeforeDBPromo:
       if (_shoppingUser && _shoppingService->IsShoppingListEligible()) {
-        [items addObject:[BestFeaturesItem itemForType:kTabGroups]];
-        [items addObject:[BestFeaturesItem itemForType:kLockedIncognitoTabs]];
-        [items
-            addObject:[BestFeaturesItem itemForType:kPriceTrackingAndInsights]];
+        itemTypes = {kTabGroups, kLockedIncognitoTabs,
+                     kPriceTrackingAndInsights};
       } else {
         // If the user isn't a shopping user or Price Tracking is not available
         // for them, fallback to other items.
-        [items addObject:[BestFeaturesItem itemForType:kLensSearch]];
-        [items addObject:[BestFeaturesItem itemForType:kEnhancedSafeBrowsing]];
-        [items
-            addObject:[BestFeaturesItem itemForType:kSaveAndAutofillPasswords]];
+        itemTypes = {kLensSearch, kEnhancedSafeBrowsing,
+                     kSaveAndAutofillPasswords};
       }
       break;
     case kSignedInUsersOnlyAfterDBPromo:
-      [items addObject:[BestFeaturesItem itemForType:kLensSearch]];
-      [items addObject:[BestFeaturesItem itemForType:kEnhancedSafeBrowsing]];
       if (password_manager_util::IsCredentialProviderEnabledOnStartup(
               GetApplicationContext()->GetLocalState())) {
-        [items
-            addObject:[BestFeaturesItem itemForType:kSharePasswordsWithFamily]];
+        itemTypes = {kLensSearch, kEnhancedSafeBrowsing,
+                     kSharePasswordsWithFamily};
       } else {
-        [items addObject:[BestFeaturesItem
-                             itemForType:kAutofillPasswordsInOtherApps]];
+        itemTypes = {kLensSearch, kEnhancedSafeBrowsing,
+                     kAutofillPasswordsInOtherApps};
       }
       break;
     case kDisabled:
     case kAddressBarPromoInsteadOfDBPromo:
       NOTREACHED();
+  }
+
+  NSMutableArray<BestFeaturesItem*>* items = [NSMutableArray array];
+  for (BestFeaturesItemType type : itemTypes) {
+    [items addObject:[[BestFeaturesItem alloc] initWithType:type]];
   }
   return items;
 }

@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService>
 AXTreeFixingServicesRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<AXTreeFixingServicesRouter>(
-      Profile::FromBrowserContext(context));
+      *Profile::FromBrowserContext(context));
 }
 
 }  // namespace tree_fixing

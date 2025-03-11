@@ -53,7 +53,7 @@ export class ThemeColorElement extends CrLitElement {
 
   backgroundColor: SkColor = {value: 0};
   foregroundColor: SkColor = {value: 0};
-  baseColor?: SkColor;
+  baseColor: SkColor = {value: 0};
   checked: boolean = false;
   backgroundColorHidden: boolean = false;
 
@@ -79,8 +79,7 @@ export class ThemeColorElement extends CrLitElement {
 
     if (changedProperties.has('baseColor')) {
       this.style.setProperty(
-          '--cr-theme-color-base-color',
-          skColorToRgba(this.baseColor || {value: 0}));
+          '--cr-theme-color-base-color', skColorToRgba(this.baseColor));
     }
   }
 }

@@ -8,12 +8,14 @@
 
 - (instancetype)initWithTitle:(NSString*)title
                   suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
-                 displayStyle:(SuggestionGroupDisplayStyle)displayStyle {
+                 displayStyle:(SuggestionGroupDisplayStyle)displayStyle
+                         type:(SuggestionGroupType)type {
   self = [super init];
   if (self) {
     _title = [title copy];
     _suggestions = suggestions;
     _displayStyle = displayStyle;
+    _type = type;
   }
   return self;
 }
@@ -21,18 +23,22 @@
 + (AutocompleteSuggestionGroupImpl*)
     groupWithTitle:(NSString*)title
        suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
-      displayStyle:(SuggestionGroupDisplayStyle)displayStyle {
+      displayStyle:(SuggestionGroupDisplayStyle)displayStyle
+              type:(SuggestionGroupType)type {
   return [[self alloc] initWithTitle:title
                          suggestions:suggestions
-                        displayStyle:displayStyle];
+                        displayStyle:displayStyle
+                                type:type];
 }
 
 + (AutocompleteSuggestionGroupImpl*)
     groupWithTitle:(NSString*)title
-       suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions {
+       suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+              type:(SuggestionGroupType)type {
   return [[self alloc] initWithTitle:title
                          suggestions:suggestions
-                        displayStyle:SuggestionGroupDisplayStyleDefault];
+                        displayStyle:SuggestionGroupDisplayStyleDefault
+                                type:type];
 }
 
 @end

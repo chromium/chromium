@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 
 namespace blink {
 
@@ -73,12 +72,63 @@ bool PlainTextPainter::DrawWithBidiReorder(
     const gfx::PointF& location,
     const cc::PaintFlags& flags,
     Font::DrawType draw_type) {
-  // TODO(crbug.com/389726691): Implement this without Font::DrawText().
-  TextRunPaintInfo run_info(run);
-  run_info.from = from_index;
-  run_info.to = to_index;
-  return font.DrawBidiText(&canvas, run_info, location, action, flags,
-                           draw_type);
+  // Don't draw anything while we are using custom fonts that are in the process
+  // of loading, except if the 'force' argument is set to true (in which case it
+  // will use a fallback font).
+  if (font.ShouldSkipDrawing() && action == Font::kDoNotPaintIfFontNotReady) {
+    return false;
+  }
+  if (!run.length()) {
+    return true;
+  }
+
+  const PlainTextNode& node = CreateNode(run, font);
+  const bool is_sub_run =
+      (from_index != 0 || to_index != node.TextContent().length());
+
+  gfx::PointF curr_point = location;
+  const ShapeResultBloberizer::Type blob_type =
+      draw_type == Font::DrawType::kGlyphsOnly
+          ? ShapeResultBloberizer::Type::kNormal
+          : ShapeResultBloberizer::Type::kEmitText;
+  const FontDescription& font_desc = font.GetFontDescription();
+  for (const PlainTextItem& item : node.ItemList()) {
+    if (item.EndOffset() <= from_index || to_index <= item.StartOffset()) {
+      continue;
+    }
+
+    wtf_size_t subrun_from = 0;
+    wtf_size_t subrun_to = item.Length();
+    CharacterRange range(0, 0, 0, 0);
+    if (is_sub_run) [[unlikely]] {
+      // Calculate the required indexes for this specific run.
+      subrun_from = std::max(0u, from_index - item.StartOffset());
+      subrun_to = std::min(item.Length(), to_index - item.StartOffset());
+      TextRun subrun(item.Text(), item.Direction());
+      const PlainTextNode& sub_node =
+          CreateNode(subrun, font, /* supports_bidi */ false);
+      // The range provides information required for positioning the subrun.
+      range = sub_node.ComputeCharacterRange(subrun_from, subrun_to);
+    }
+
+    // STACK_UNINITIALIZED fixes regression with
+    // -ftrivial-auto-var-init=pattern. See crbug.com/1055652.
+    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphsNG bloberizer(
+        font_desc, item.Text(), subrun_from, subrun_to, item.EnsureView(),
+        blob_type);
+    if (is_sub_run) [[unlikely]] {
+      // Align the subrun with the point given.
+      curr_point.Offset(-range.start, 0);
+    }
+    DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
+
+    if (is_sub_run) [[unlikely]] {
+      curr_point.Offset(range.Width(), 0);
+    } else {
+      curr_point.Offset(bloberizer.Advance(), 0);
+    }
+  }
+  return true;
 }
 
 float PlainTextPainter::ComputeInlineSize(const TextRun& run,

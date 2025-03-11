@@ -75,7 +75,7 @@ class ScrollMarkerChooser {
   // Compute a ScrollTargetOffsetData for a given element, |scroll_marker|
   // within |scrollable_area|'s content area along the |axis| specified.
   std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
-  GetScrollTargetOffsetData(const Element* scroll_marker);
+  GetScrollTargetOffsetData(Element* scroll_marker);
 
   // Select a scroll marker from the given |candidates| if the
   // |intended_scroll_offset_| is within the region "reserved" so that
@@ -133,8 +133,7 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   CORE_EXPORT bool SetSelected(Element* scroll_marker,
                                bool apply_snap_alignment = true);
   Element* Selected() const;
-  bool UpdateSelectedScrollMarker(const ScrollOffset& offset,
-                                  LayoutBox* scroller);
+  void UpdateSelectedScrollMarker();
 
   Element* FindNextScrollMarker(const Element* current);
   Element* FindPreviousScrollMarker(const Element* current);
@@ -158,7 +157,9 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
  private:
   Element* ChooseMarker(const ScrollOffset& scroll_offset,
                         ScrollableArea* scrollable_area,
-                        LayoutBox* scroller_box);
+                        LayoutBox* scroller_box,
+                        const HeapVector<Member<Element>>& candidates);
+  Element* ChooseMarkerRecursively();
 
   bool UpdateSnapshotInternal();
 

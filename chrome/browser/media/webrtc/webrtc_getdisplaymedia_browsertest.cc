@@ -1699,12 +1699,32 @@ class CaptureSessionDetails {
               expected_result);
   }
 
-  int GetZoomLevel() {
-    // TODO(crbug.com/40276312): Deprecate getZoomLevel(), use an attribute.
-    const int result = content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                                       "getZoomLevel();")
-                           .ExtractInt();
-    EXPECT_GT(result, 0);
+  std::optional<int> GetZoomLevel() {
+    const content::EvalJsResult result = content::EvalJs(
+        capturing_tab_->GetPrimaryMainFrame(), "getZoomLevel();");
+    return (result == nullptr) ? std::nullopt
+                               : std::make_optional<int>(result.ExtractInt());
+  }
+
+  // Call `controller.getSupportedZoomLevels()`.
+  // Returns the result if successful; the error otherwise.
+  base::expected<std::vector<int>, std::string> GetSupportedZoomLevels() {
+    content::EvalJsResult js_result = content::EvalJs(
+        capturing_tab_->GetPrimaryMainFrame(), "getSupportedZoomLevels();");
+
+    base::Value::List list = js_result.ExtractList();
+    EXPECT_GE(list.size(), 1u);
+    if (list.size() == 1u) {
+      // Reserved for an error.
+      return base::unexpected(list[0].GetString());
+    }
+
+    std::vector<int> result;
+    result.reserve(list.size());
+    for (const base::Value& val : list) {
+      EXPECT_TRUE(val.is_int());
+      result.push_back(val.GetInt());
+    }
     return result;
   }
 
@@ -1776,8 +1796,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     kIncreaseZoomLevel,
     kDecreaseZoomLevel,
     kResetZoomLevel,
-    // TODO(crbug.com/40276312): Deprecate kGetZoomLevel.
     kGetZoomLevel,
+    kGetSupportedZoomLevels,
   };
 
   static const char* ToZoomLevelAction(Action input) {
@@ -1790,6 +1810,7 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
         return "reset";
       case Action::kSendWheel:
       case Action::kGetZoomLevel:
+      case Action::kGetSupportedZoomLevels:
         break;
     }
     NOTREACHED() << "Not a ZoomLevelAction.";
@@ -1803,6 +1824,7 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
       case Action::kResetZoomLevel:
         return true;
       case Action::kGetZoomLevel:
+      case Action::kGetSupportedZoomLevels:
         return false;
     }
     NOTREACHED();
@@ -1821,6 +1843,9 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
         return;
       case Action::kGetZoomLevel:
         capture_session.GetZoomLevel();
+        return;
+      case Action::kGetSupportedZoomLevels:
+        (void)capture_session.GetSupportedZoomLevels();
         return;
     }
     NOTREACHED();
@@ -1887,11 +1912,21 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
 using CscAction = GetDisplayMediaCapturedSurfaceControlTest::Action;
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       UnboundCaptureControllerReportNullZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to RunGetDisplayMedia().
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  EXPECT_EQ(capture_session.GetZoomLevel(), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
                        CorrectlyReportDefaultCapturedSurfaceZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Note absence of call to SetZoomFactor().
-
   CaptureSessionDetails capture_session =
       MakeCaptureSessionDetails("capture_session");
   capture_session.RunGetDisplayMedia();
@@ -1921,13 +1956,73 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 50);
 }
 
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsFailsOnUnboundCaptureController) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to RunGetDisplayMedia().
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  const base::expected<std::vector<int>, std::string> result =
+      capture_session.GetSupportedZoomLevels();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsSucceedsIfCapturingTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  EXPECT_TRUE(capture_session.GetSupportedZoomLevels().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsMonotonouslyIncreasing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  const base::expected<std::vector<int>, std::string> result =
+      capture_session.GetSupportedZoomLevels();
+  EXPECT_TRUE(result.has_value());
+  const std::vector<int>& values = result.value();
+  ASSERT_GE(values.size(), 2u);
+  for (size_t i = 0; i < values.size() - 1; ++i) {
+    EXPECT_GT(values[i + 1], values[i]);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsFailsIfTracksStopped) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  ASSERT_TRUE(capture_session.GetSupportedZoomLevels().has_value());
+
+  StopAllTracks(capture_session.capturing_tab());
+
+  const base::expected<std::vector<int>, std::string> result =
+      capture_session.GetSupportedZoomLevels();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
+}
+
 IN_PROC_BROWSER_TEST_F(
     GetDisplayMediaCapturedSurfaceControlTest,
     NoZoomLevelChangeEventFiredWhenCaptureStartsWithDefaultZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Note absence of call to SetZoomFactor().
-
   CaptureSessionDetails capture_session =
       MakeCaptureSessionDetails("capture_session");
   capture_session.RunGetDisplayMedia();
@@ -2282,7 +2377,8 @@ INSTANTIATE_TEST_SUITE_P(,
                                 CscAction::kIncreaseZoomLevel,
                                 CscAction::kDecreaseZoomLevel,
                                 CscAction::kResetZoomLevel,
-                                CscAction::kGetZoomLevel));
+                                CscAction::kGetZoomLevel,
+                                CscAction::kGetSupportedZoomLevels));
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
                        IndicatorNotShownBeforeApiInvocation) {

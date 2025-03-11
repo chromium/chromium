@@ -638,10 +638,10 @@ TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
-// Verify that the time tampering mechanism goes off if the highest seen time is
-// more than one day in the future.
+// Verify that the time tampering mechanism does not go off if the highest seen
+// time is more than one day in the future because we removed the code.
 TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
-       TimeTampering_True) {
+       TimeTampering_True_Disabled) {
   local_state_.SetTime(
       chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime,
       TimeFromString("Thu 31 Oct 2024 14:00"));
@@ -649,9 +649,10 @@ TEST_F(DeviceRestrictionScheduleControllerTestTimeTampering,
 
   SetTime("Tue 29 Oct 2024 14:00");
 
-  // We're outside a restriction schedule, but it should be enabled anyway
-  // because we detected tampering with time.
-  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
+  // We're outside a restriction schedule, and it shouldn't be enabled anyway
+  // because of the "highest seen time logic" because we removed the code for
+  // it.
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
   // Run any pending timers and verify expectations.
@@ -696,6 +697,19 @@ TEST_F(DeviceRestrictionScheduleControllerTest, HandlingDST_SummerToWinter) {
       .WillOnce(EXPECT_TIME_STR("Mon 28 Oct 2024 6:00"));
 
   AdvanceTime(base::Days(2));
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+
+// Test that Run() is not called when the policy is not set and a login event
+// happens.
+TEST_F(DeviceRestrictionScheduleControllerTest, LoginEventDoesntTriggerRun) {
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(_)).Times(0);
+
+  // Perform login.
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
+
   Mock::VerifyAndClearExpectations(&observer_);
 }
 

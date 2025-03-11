@@ -146,7 +146,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
       std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply);
 
   // Stops the migration if currently ongoing.
-  void MaybeStopMigration(CloudProvider previous_provider,
+  void MaybeStopMigration(MigrationDestination previous_destination,
                           bool close_dialog = true,
                           MigrationStoppedCallback = base::DoNothing());
 
@@ -171,9 +171,10 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;
 
-  // Cloud provider to which files are uploaded. If not specified, no migration
-  // happens.
-  CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
+  // Indicates how local files should be handled (upload to the cloud or
+  // delete). If not specified, no migration happens.
+  MigrationDestination migration_destination_ =
+      MigrationDestination::kNotSpecified;
 
   // The name of the device-unique upload root folder on Drive
   std::string upload_root_;

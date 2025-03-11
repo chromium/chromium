@@ -41,7 +41,7 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
   void Dispose() final;
   void Trace(Visitor* v) const final;
 
-  bool UpdateSelectedScrollMarker(const ScrollOffset& offset);
+  void UpdateSelectedScrollMarker();
 
   // When a "targeted" scroll occurs, we should consider the selected scroll
   // marker pinned until a non-targeted scroll occurs.

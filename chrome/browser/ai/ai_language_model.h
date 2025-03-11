@@ -42,6 +42,7 @@ class AIManager;
 class AILanguageModel : public AIContextBoundObject,
                         public blink::mojom::AILanguageModel {
  public:
+  using PromptApiRole = optimization_guide::proto::PromptApiRole;
   using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
   using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
   using PromptApiMetadata = optimization_guide::proto::PromptApiMetadata;
@@ -59,15 +60,14 @@ class AILanguageModel : public AIContextBoundObject,
   // stored in a FIFO and kept below a limited number of tokens.
   class Context {
    public:
-    // The structure storing the text in context and the number of tokens in the
-    // text.
+    // A piece of the prompt history and it's size.
     struct ContextItem {
       ContextItem();
       ContextItem(const ContextItem&);
       ContextItem(ContextItem&&);
       ~ContextItem();
 
-      google::protobuf::RepeatedPtrField<PromptApiPrompt> prompts;
+      std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
       uint32_t tokens = 0;
     };
 

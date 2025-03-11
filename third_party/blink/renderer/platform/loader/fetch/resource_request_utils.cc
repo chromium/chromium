@@ -179,8 +179,9 @@ void UpgradeResourceRequestForLoader(
     // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
     // prerendered pages. Add "Purpose: prefetch" as well for compatibility
     // concerns (See https://github.com/WICG/nav-speculation/issues/133).
-    resource_request.SetHttpHeaderField(http_names::kSecPurpose,
-                                        AtomicString("prefetch;prerender"));
+    resource_request.SetHttpHeaderField(
+        http_names::kSecPurpose,
+        AtomicString(kSecPurposePrefetchPrerenderHeaderValue));
     resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
   }
 

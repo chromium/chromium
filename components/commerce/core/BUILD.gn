@@ -234,7 +234,6 @@ static_library("shopping_service") {
     "//base",
     "//components/bookmarks/browser",
     "//components/commerce/core/compare",
-    "//components/commerce/core/parcel:parcel",
     "//components/commerce/core/product_specifications:product_specifications",
     "//components/history/core/browser",
     "//components/keyed_service/core",
@@ -348,6 +347,7 @@ source_set("shopping_service_unit_tests") {
 
   deps = [
     ":account_checker_test_support",
+    ":commerce_constants",
     ":commerce_info_cache",
     ":discounts_db_content_proto",
     ":feature_utils",
@@ -355,7 +355,6 @@ source_set("shopping_service_unit_tests") {
     ":pref_names",
     ":shopping_service_test_support",
     "compare:unit_tests",
-    "parcel:unit_tests",
     "product_specifications",
     "product_specifications:test_support",
     "subscriptions:test_support",

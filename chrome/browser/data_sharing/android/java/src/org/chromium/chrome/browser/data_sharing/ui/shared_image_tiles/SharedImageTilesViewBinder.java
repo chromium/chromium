@@ -10,10 +10,12 @@ import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.Sha
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.REMAINING_TILES;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.TYPE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for SharedImageTiles component. */
+@NullMarked
 class SharedImageTilesViewBinder {
 
     public static void bind(

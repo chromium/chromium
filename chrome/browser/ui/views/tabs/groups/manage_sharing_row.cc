@@ -27,7 +27,7 @@
 namespace {
 
 // width in dips of the spacing between the icon and the label.
-constexpr int kIconRightSpacing = 12;
+constexpr int kImageLabelSpacing = 12;
 
 gfx::Insets GetControlInsets() {
   const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -77,7 +77,7 @@ void ManageSharingRow::RebuildChildren() {
   manage_group_icon_ = AddChildView(std::make_unique<views::ImageView>(
       ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon)));
   manage_group_icon_->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kIconRightSpacing));
+      views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kImageLabelSpacing));
   manage_group_icon_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -108,6 +108,8 @@ void ManageSharingRow::RebuildChildren() {
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
+  avatar_container_->SetProperty(
+      views::kMarginsKey, gfx::Insets::TLBR(0, kImageLabelSpacing, 0, 0));
   avatar_container_->SetPaintToLayer();
   avatar_container_->layer()->SetFillsBoundsOpaquely(false);
 }

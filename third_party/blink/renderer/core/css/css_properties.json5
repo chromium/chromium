@@ -1605,7 +1605,6 @@
       name: "font-variant-emoji",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
-      runtime_flag: "FontVariantEmoji",
       font: true,
       name_for_methods: "VariantEmoji",
       type_name: "FontDescription::FontVariantEmoji",

@@ -53,6 +53,14 @@ void PrintUsage() {
 const int kExitSuccess = EXIT_SUCCESS;
 const int kExitInvalidArguments = 2;
 
+// As of XCode 16.2, passing --console causes `xcode simctl launch` to block
+// indefinitely if there is stderr output longer than 8192 bytes (e.g. a long
+// stack trace if a (D)CHECK is hit).
+// Apple's documentation is very vague about the differences between --console
+// and --console-pty, but the latter seems to work fine including in the case
+// above.
+constexpr NSString* kSimCtlLaunchConsoleArg = @"--console-pty";
+
 void LogError(NSString* format, ...) {
   va_list list;
   va_start(list, format);
@@ -380,7 +388,7 @@ int RunWebTest(NSString* app_path,
   NSMutableArray* arguments = [NSMutableArray array];
   [arguments addObject:@"simctl"];
   [arguments addObject:@"launch"];
-  [arguments addObject:@"--console"];
+  [arguments addObject:kSimCtlLaunchConsoleArg];
   [arguments addObject:@"--terminate-running-process"];
   [arguments addObject:udid];
   [arguments addObject:GetBundleIdentifierFromPath(app_path)];
@@ -436,7 +444,8 @@ int SimpleRunApplication(NSString* app_path,
   RunSimCtl(@[ @"install", udid, app_path ], verbose);
 
   NSArray* command = [@[
-    @"launch", @"--console", @"--terminate-running-process", udid, bundle_id
+    @"launch", kSimCtlLaunchConsoleArg, @"--terminate-running-process", udid,
+    bundle_id
   ] arrayByAddingObjectsFromArray:cmd_args];
   return RunSimCtl(command, verbose);
 }

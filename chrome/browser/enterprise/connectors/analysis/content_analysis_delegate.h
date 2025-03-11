@@ -36,6 +36,7 @@ namespace enterprise_connectors {
 class ContentAnalysisDialog;
 class FilesRequestHandler;
 class PagePrintRequestHandler;
+class ClipboardRequestHandler;
 
 // A class that performs deep scans of data (for example malicious or sensitive
 // content checks) before allowing a page to access it.
@@ -282,12 +283,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Callbacks from uploading data. Protected so they can be called from
   // testing derived classes.
-  // TODO(crbug.com/40839522): Adapt once TextRequestHandler and
-  // PageRequestHandler are created and move reporting to the RequestHandlers.
-  void StringRequestCallback(safe_browsing::BinaryUploadService::Result result,
-                             ContentAnalysisResponse response);
-  void ImageRequestCallback(safe_browsing::BinaryUploadService::Result result,
-                            ContentAnalysisResponse response);
+  void TextRequestCallback(RequestHandlerResult result);
+  void ImageRequestCallback(RequestHandlerResult result);
   void PageRequestCallback(RequestHandlerResult result);
 
   // Callback called after all files are scanned by the FilesRequestHandler.
@@ -338,7 +335,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Prepares an upload request for the text in `data_`. If `data_.text` is
   // empty, this method does nothing.
-  // TODO(crbug.com/40839522): Move to TextRequestHandler.
   void PrepareTextRequest();
 
   // Prepares an upload request for the image in `data_`. If `data_.image` is
@@ -347,22 +343,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Prepares an upload request for the printed page bytes in `data_`. If there
   // aren't any, this method does nothing.
-  // TODO(crbug.com/40839522): Move to PageRequestHandler.
   void PreparePageRequest();
 
   // Fills the arrays in `result_` with the given boolean status.
   void FillAllResultsWith(bool status);
-
-  // Upload the request for deep scanning using the binary upload service.
-  // These methods exist so they can be overridden in tests as needed.
-  // The `result` argument exists as an optimization to finish the request early
-  // when the result is known in advance to avoid using the upload service.
-  // TODO(crbug.com/40839522): Remove once TextRequestHandler and
-  // PageRequestHandler are created.
-  virtual void UploadTextForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
-  virtual void UploadImageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
   // Updates the tab modal dialog to show the scanning results. Returns false if
   // the UI was not enabled to indicate no action was taken. Virtual to override
@@ -420,14 +404,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   Data data_;
   Result result_;
 
-  // Set to true if the full text got a DLP warning verdict.
-  bool text_warning_ = false;
-  ContentAnalysisResponse text_response_;
-
-  // Set to true if the full image got a DLP warning verdict.
-  bool image_warning_ = false;
-  ContentAnalysisResponse image_response_;
-
   // Indices of warned files.
   std::vector<size_t> warned_file_indices_;
 
@@ -479,6 +455,14 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Always nullptr for non-print content scanning.
   std::unique_ptr<PagePrintRequestHandler> page_print_request_handler_;
 
+  // Responsible for managing the scan of pasted text.
+  // Always nullptr for non-text paste content scanning.
+  std::unique_ptr<ClipboardRequestHandler> text_request_handler_;
+
+  // Responsible for managing the scan of a pasted image.
+  // Always nullptr for non-image paste content scanning.
+  std::unique_ptr<ClipboardRequestHandler> image_request_handler_;
+
   // A mapping of request tokens to ack final actions for all requests that make
   // up the user action represented by this ContentAnalysisDelegate.
   std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
@@ -488,7 +472,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   std::vector<RequestHandlerResult> files_request_results_;
 
   // Result updated in `StringRequestCallback()`.
-  RequestHandlerResult string_request_result_;
+  RequestHandlerResult text_request_result_;
 
   // Result updated in `ImageRequestCallback()`.
   RequestHandlerResult image_request_result_;

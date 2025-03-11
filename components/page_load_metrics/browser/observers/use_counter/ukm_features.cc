@@ -456,6 +456,9 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kAdScriptInStackOnWatchGeoLocation,
           WebFeature::kCrossPartitionSameOriginBlobURLFetch,
           WebFeature::kCSPBlockedWorkerCreation,
+          WebFeature::kCrossOriginOwnerInterestGroupSubframeCheckFailed,
+          WebFeature::kV8Navigator_LeaveAdInterestGroup_Method,
+          WebFeature::kV8Navigator_ClearOriginJoinedAdInterestGroups_Method,
       }));
   return *opt_in_features;
 }

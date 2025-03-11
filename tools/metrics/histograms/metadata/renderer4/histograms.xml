@@ -166,14 +166,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Renderer4.InvalidationRegionApproximateRectCount"
-    units="rects" expires_after="M85">
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of rects inside of a PictureLayer's invalidation region per commit.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.MainThreadGestureScrollReason2"
     enum="MainThreadScrollingReason2" expires_after="2025-07-13">
   <owner>flackr@chromium.org</owner>
@@ -210,17 +202,6 @@ chromium-metrics-reviews@google.com.
     scrolls with a reason would be count(the reason) / (count(&quot;Not
     scrolling on main (no reason)&quot; + count(&quot;Scrolling on main (any
     reason)&quot;)).
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.pixelCountCulled_Draw" units="NormalizedPixels"
-    expires_after="M85">
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of pixels that culling prevented being drawn to the screen, recorded
-    as 10 times the percentage of the viewport that these pixels cover. This is
-    collected once per frame while it is being drawn to the screen in the
-    compositor.
   </summary>
 </histogram>
 
@@ -264,21 +245,6 @@ chromium-metrics-reviews@google.com.
     scroll is: handled unblocked on the compositor thread, handled on the
     compositor thread but blocked on main thread event listeners, or being
     handled on the main thread. Broken down by scroll device.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.TextureCopyLatency" units="microseconds"
-    expires_after="M85">
-  <owner>reveman@chromium.org</owner>
-  <summary>
-    Time between the issue of a texture copy operation and detecting that it has
-    completed as measured by the GPU process.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 

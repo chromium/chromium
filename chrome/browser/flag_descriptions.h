@@ -414,6 +414,9 @@ extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 extern const char kAutofillEnableLoyaltyCardsFillingName[];
 extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
 
+extern const char kAutofillEnableNewFopDisplayDesktopName[];
+extern const char kAutofillEnableNewFopDisplayDesktopDescription[];
+
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
@@ -961,6 +964,11 @@ extern const char kEnablePixelCanvasRecordingDescription[];
 
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdName[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[];
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+extern const char kEnablePrintingMarginsAndScale[];
+extern const char kEnablePrintingMarginsAndScaleDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
 extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
@@ -3292,6 +3300,9 @@ extern const char kUseAngleVulkan[];
 
 extern const char kAndroidMinimalUiLargeScreenName[];
 extern const char kAndroidMinimalUiLargeScreenDescription[];
+
+extern const char kAndroidWindowPopupLargeScreenName[];
+extern const char kAndroidWindowPopupLargeScreenDescription[];
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

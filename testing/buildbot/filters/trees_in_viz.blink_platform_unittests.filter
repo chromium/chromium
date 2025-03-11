@@ -1,4 +1,5 @@
-# TODO(crbug.com/401453195): Diagnose and fix these failures.
+# TODO(crbug.com/402154975): Examine these once single-threaded mode is
+# supported.
 -All/PaintArtifactCompositorTest.DirectlySetScrollOffset/0
 -All/PaintArtifactCompositorTest.DirectlySetScrollOffset/1
 -All/PaintArtifactCompositorTest.DirectlySetScrollOffset/2
@@ -11,4 +12,6 @@
 -All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/1
 -All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/2
 -All/PaintArtifactCompositorTest.RepaintIndirectScrollHitTest/3
+
+# TODO(crbug.com/401453195): Diagnose and fix these failures.
 -VideoFrameCompositorTest.SetIsSurfaceVisible

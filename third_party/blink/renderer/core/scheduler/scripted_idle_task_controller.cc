@@ -312,9 +312,7 @@ void ScriptedIdleTaskController::RunIdleTask(
   // TODO(https://crbug.com/796145): Remove this hack once on-stack objects
   // get supported by either of wrapper-tracing or unified GC.
   auto idle_task_iter = idle_tasks_.find(id);
-  CHECK_NE(idle_task_iter, idle_tasks_.end(), base::NotFatalUntil::M133);
-  if (idle_task_iter == idle_tasks_.end())
-    return;
+  CHECK_NE(idle_task_iter, idle_tasks_.end());
   IdleTask* idle_task = idle_task_iter->value;
   DCHECK(idle_task);
 

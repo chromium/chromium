@@ -190,7 +190,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // If the mutex can be acquired without blocking, does so exclusively and
   // returns `true`. Otherwise, returns `false`. Returns `true` with high
   // probability if the `Mutex` was free.
-  ABSL_MUST_USE_RESULT bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true);
+  [[nodiscard]] bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true);
 
   // Mutex::AssertHeld()
   //
@@ -255,7 +255,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // If the mutex can be acquired without blocking, acquires this mutex for
   // shared access and returns `true`. Otherwise, returns `false`. Returns
   // `true` with high probability if the `Mutex` was free or shared.
-  ABSL_MUST_USE_RESULT bool ReaderTryLock() ABSL_SHARED_TRYLOCK_FUNCTION(true);
+  [[nodiscard]] bool ReaderTryLock() ABSL_SHARED_TRYLOCK_FUNCTION(true);
 
   // Mutex::AssertReaderHeld()
   //
@@ -281,8 +281,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
 
   void WriterUnlock() ABSL_UNLOCK_FUNCTION() { this->Unlock(); }
 
-  ABSL_MUST_USE_RESULT bool WriterTryLock()
-      ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+  [[nodiscard]] bool WriterTryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     return this->TryLock();
   }
 

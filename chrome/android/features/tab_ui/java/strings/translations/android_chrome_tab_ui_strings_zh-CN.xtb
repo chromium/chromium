@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />标签页分组颜色图标</translation>
 <translation id="311432875115153175">标签页分组列表已关闭</translation>
 <translation id="3194464645767632461">评分</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{向分组中添加 <ph name="TABS_COUNT_ONE" /> 个标签页}other{向分组中添加 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3547352561153509682">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 个新标签页}other{<ph name="MANY_ADDED" /> 个新标签页}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">将从此设备打开的标签页的标题和网址分享给操作系统</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
 <translation id="4850886885716139402">查看</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{向分组中添加选中的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{向分组中添加选中的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="4861611890274104875">关闭卡片。</translation>
 <translation id="4861953997778766866">所有人都可以更改您分享的标签页分组</translation>
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6228793724645064692">（商店评分）</translation>
 <translation id="6271513594716432922">关闭所有闲置标签页</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>
 <translation id="6333260925957816943">此商店的相关信息</translation>
 <translation id="6381032505162537930">您的标签页分组会显示在此处</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页取消分组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页取消分组}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">来自其他设备的新分组</translation>
 <translation id="8029301326595421733">此商店的相关信息已全屏打开</translation>
 <translation id="8053770993984522566">标签页分组列表，以一半高度显示</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">上移标签页</translation>

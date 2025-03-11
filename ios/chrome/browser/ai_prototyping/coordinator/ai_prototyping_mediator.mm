@@ -97,7 +97,8 @@
             _enhanced_calendar_service.BindNewPipeAndPassReceiver();
     _enhanced_calendar_service_impl =
         std::make_unique<ai::EnhancedCalendarServiceImpl>(
-            std::move(enhanced_calendar_receiver), browserState);
+            std::move(enhanced_calendar_receiver),
+            _webStateList->GetActiveWebState());
   }
   return self;
 }
@@ -237,40 +238,30 @@
 
 - (void)executeEnhancedCalendarQueryWithPrompt:(NSString*)prompt
                                   selectedText:(NSString*)selectedText {
-  optimization_guide::proto::EnhancedCalendarRequest request;
-
-  // Set the selected text on the request.
-  request.set_selected_text(base::SysNSStringToUTF8(selectedText));
+  // Create and set the request params.
+  ai::mojom::EnhancedCalendarServiceRequestParamsPtr request_params =
+      ai::mojom::EnhancedCalendarServiceRequestParams::New();
+  request_params->selected_text = base::SysNSStringToUTF8(selectedText);
+  request_params->surrounding_text = base::SysNSStringToUTF8(selectedText);
 
   // Set the whitespace-trimmed prompt on the request, if not empty.
   NSString* trimmedPrompt = [prompt
       stringByTrimmingCharactersInSet:[NSCharacterSet
                                           whitespaceAndNewlineCharacterSet]];
   if (trimmedPrompt.length) {
-    request.set_prompt(base::SysNSStringToUTF8(trimmedPrompt));
+    request_params->optional_prompt = base::SysNSStringToUTF8(trimmedPrompt);
   }
 
-  // Callback to execute when the PageContext proto is done being generated.
+  // The response handling callback.
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::PageContext>)>
-      page_context_completion_callback = base::BindOnce(
-          ^void(std::unique_ptr<optimization_guide::proto::PageContext>
-                    page_context) {
-            [weakSelf
-                executeEnhancedCalendarRequestWithPageContext:std::move(
-                                                                  page_context)
-                                                      request:request];
+  base::OnceCallback<void(ai::mojom::EnhancedCalendarResponseResultPtr)>
+      handle_response_callback = base::BindOnce(
+          ^void(ai::mojom::EnhancedCalendarResponseResultPtr result) {
+            [weakSelf handleEnhancedCalendarResponseResult:std::move(result)];
           });
 
-  // Populate the PageContext proto and then execute the query.
-  _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:_webStateList->GetActiveWebState()
-      completionCallback:std::move(page_context_completion_callback)];
-  [_pageContextWrapper setShouldGetInnerText:YES];
-  [_pageContextWrapper setShouldGetSnapshot:YES];
-  [_pageContextWrapper setTextToHighlight:selectedText];
-  [_pageContextWrapper populatePageContextFieldsAsync];
+  _enhanced_calendar_service->ExecuteEnhancedCalendarRequest(
+      std::move(request_params), std::move(handle_response_callback));
 }
 
 #pragma mark - Private
@@ -296,29 +287,6 @@
   ::mojo_base::ProtoWrapper proto_wrapper =
       mojo_base::ProtoWrapper(freeform_request);
   _ai_prototyping_service->ExecuteServerQuery(
-      std::move(proto_wrapper), std::move(handle_response_callback));
-}
-
-// Execute the Enhanced Calendar request with the Page Context.
-- (void)
-    executeEnhancedCalendarRequestWithPageContext:
-        (std::unique_ptr<optimization_guide::proto::PageContext>)page_context
-                                          request:(optimization_guide::proto::
-                                                       EnhancedCalendarRequest)
-                                                      request {
-  _pageContextWrapper = nil;
-  request.set_allocated_page_context(page_context.release());
-
-  // The response handling callback.
-  __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(ai::mojom::EnhancedCalendarResponseResultPtr)>
-      handle_response_callback = base::BindOnce(
-          ^void(ai::mojom::EnhancedCalendarResponseResultPtr result) {
-            [weakSelf handleEnhancedCalendarResponseResult:std::move(result)];
-          });
-
-  ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
-  _enhanced_calendar_service->ExecuteEnhancedCalendarRequest(
       std::move(proto_wrapper), std::move(handle_response_callback));
 }
 

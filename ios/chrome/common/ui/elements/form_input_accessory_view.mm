@@ -33,6 +33,10 @@ constexpr CGFloat kKeyboardHozirontalPadding = 16;
 // Only applies to the iPad version of this button.
 constexpr CGFloat kManualFillTitlePadding = 4;
 
+// The font size used for the title of the manual fill button.
+// Only applies to the iPad version of this button.
+constexpr CGFloat kManualFillTitleFontSize = 18;
+
 // The spacing between the items in the navigation view.
 constexpr CGFloat ManualFillNavigationItemSpacing = 4;
 
@@ -460,25 +464,32 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     return;
   }
 
-  if (_isCompact) {
-    // Remove the title and padding, if any.
-    [manualFillButton setTitle:nil forState:UIControlStateNormal];
-    manualFillButton.configuration =
-        [UIButtonConfiguration plainButtonConfiguration];
-  } else {
+  // The default configuration has no title or padding.
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  // The image should always be set, whether or not there's a title.
+  buttonConfiguration.image = self.manualFillSymbol;
+
+  if (!_isCompact) {
+    // Set the button title with a custom sized font.
     FormInputAccessoryViewTextData* textData =
         [self.delegate textDataforFormInputAccessoryView:self];
-    [manualFillButton setTitle:textData.manualFillButtonTitle
-                      forState:UIControlStateNormal];
+    UIFont* font = [UIFont systemFontOfSize:kManualFillTitleFontSize
+                                     weight:UIFontWeightMedium];
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:textData.manualFillButtonTitle
+            attributes:@{NSFontAttributeName : font}];
+    buttonConfiguration.attributedTitle = attributedTitle;
+
     // If the button has both a title and an image, add padding around the
     // title so that it's not directly next to the image.
     if (self.manualFillSymbol) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
       buttonConfiguration.imagePadding = kManualFillTitlePadding;
-      manualFillButton.configuration = buttonConfiguration;
     }
   }
+
+  manualFillButton.configuration = buttonConfiguration;
 }
 
 // Create the manual fill button.

@@ -16,9 +16,9 @@
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/muxers/box_byte_stream.h"
-#include "media/muxers/constants.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/mp4_type_conversion.h"
 #include "media/muxers/output_position_tracker.h"
@@ -288,8 +288,8 @@ void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
   }
   writer.WriteU16(0);  // reserved.
 
-  for (auto* it = std::begin(kDisplayIdentityMatrix);
-       it != std::end(kDisplayIdentityMatrix); ++it) {
+  for (auto* it = std::begin(box_->matrix); it != std::end(box_->matrix);
+       ++it) {
     writer.WriteU32(*it);
   }
 

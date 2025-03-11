@@ -76,9 +76,13 @@ ABSL_CONST_INIT bool fromenv_needs_processing
 ABSL_CONST_INIT bool tryfromenv_needs_processing
     ABSL_GUARDED_BY(ProcessingChecksMutex()) = false;
 
-ABSL_CONST_INIT absl::Mutex specified_flags_guard(absl::kConstInit);
+absl::Mutex* SpecifiedFlagsMutex() {
+  static absl::NoDestructor<absl::Mutex> mutex;
+  return mutex.get();
+}
+
 ABSL_CONST_INIT std::vector<const CommandLineFlag*>* specified_flags
-    ABSL_GUARDED_BY(specified_flags_guard) = nullptr;
+    ABSL_GUARDED_BY(SpecifiedFlagsMutex()) = nullptr;
 
 // Suggesting at most kMaxHints flags in case of misspellings.
 ABSL_CONST_INIT const size_t kMaxHints = 100;
@@ -640,7 +644,7 @@ void ReportUnrecognizedFlags(
 // --------------------------------------------------------------------
 
 bool WasPresentOnCommandLine(absl::string_view flag_name) {
-  absl::ReaderMutexLock l(&specified_flags_guard);
+  absl::ReaderMutexLock l(SpecifiedFlagsMutex());
   ABSL_INTERNAL_CHECK(specified_flags != nullptr,
                       "ParseCommandLine is not invoked yet");
 
@@ -767,7 +771,7 @@ HelpMode ParseAbseilFlagsOnlyImpl(
   }
   positional_args.push_back(argv[0]);
 
-  absl::MutexLock l(&flags_internal::specified_flags_guard);
+  absl::MutexLock l(flags_internal::SpecifiedFlagsMutex());
   if (specified_flags == nullptr) {
     specified_flags = new std::vector<const CommandLineFlag*>;
   } else {

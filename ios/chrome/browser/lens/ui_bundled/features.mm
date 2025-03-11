@@ -71,3 +71,15 @@ BASE_FEATURE(kLensVsintParamEnabled,
 BASE_FEATURE(kLensUnaryClientDataHeaderEnabled,
              "LensUnaryClientDataHeaderEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake,
+             "LensBlockFetchObjectsInteractionRPCsOnSeparateHandshake",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensPrewarmHardStickinessInInputSelection,
+             "LensPrewarmHardStickinessInInputSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation,
+             "LensPrewarmHardStickinessInQueryFormulation",
+             base::FEATURE_DISABLED_BY_DEFAULT);

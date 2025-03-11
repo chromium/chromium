@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -22,7 +23,6 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "pdf/ui/thumbnail.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
@@ -336,22 +336,22 @@ class PdfInkModule {
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
 
   bool is_drawing_stroke() const {
-    return absl::holds_alternative<DrawingStrokeState>(current_tool_state_);
+    return std::holds_alternative<DrawingStrokeState>(current_tool_state_);
   }
   bool is_erasing_stroke() const {
-    return absl::holds_alternative<EraserState>(current_tool_state_);
+    return std::holds_alternative<EraserState>(current_tool_state_);
   }
   const DrawingStrokeState& drawing_stroke_state() const {
-    return absl::get<DrawingStrokeState>(current_tool_state_);
+    return std::get<DrawingStrokeState>(current_tool_state_);
   }
   DrawingStrokeState& drawing_stroke_state() {
-    return absl::get<DrawingStrokeState>(current_tool_state_);
+    return std::get<DrawingStrokeState>(current_tool_state_);
   }
   const EraserState& erasing_stroke_state() const {
-    return absl::get<EraserState>(current_tool_state_);
+    return std::get<EraserState>(current_tool_state_);
   }
   EraserState& erasing_stroke_state() {
-    return absl::get<EraserState>(current_tool_state_);
+    return std::get<EraserState>(current_tool_state_);
   }
 
   // Returns the current brush. Must be in a drawing stroke state.
@@ -438,7 +438,7 @@ class PdfInkModule {
   std::optional<PendingDrawingBrushState> pending_drawing_brush_state_;
 
   // The state of the current tool that is in use.
-  absl::variant<DrawingStrokeState, EraserState> current_tool_state_;
+  std::variant<DrawingStrokeState, EraserState> current_tool_state_;
 
   // The state of the strokes that have been completed.
   DocumentStrokesMap strokes_;

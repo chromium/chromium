@@ -106,31 +106,19 @@ cc_library(
 )
 
 cc_library(
-    name = "bad_variant_access",
-    srcs = ["bad_variant_access.cc"],
-    hdrs = ["bad_variant_access.h"],
-    copts = ABSL_DEFAULT_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        "//absl/base:config",
-        "//absl/base:raw_logging_internal",
-    ],
-)
-
-cc_library(
     name = "variant",
-    srcs = ["internal/variant.h"],
     hdrs = ["variant.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":bad_variant_access",
-        "//absl/base:base_internal",
         "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/meta:type_traits",
         "//absl/utility",
     ],
+)
+
+cc_library(
+    name = "bad_variant_access",
+    deprecation = "bad_variant_access dependency is empty can be removed",
 )
 
 cc_test(
@@ -141,45 +129,6 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":variant",
-        "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/memory",
-        "//absl/meta:type_traits",
-        "//absl/strings",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "variant_benchmark",
-    srcs = [
-        "variant_benchmark.cc",
-    ],
-    copts = ABSL_TEST_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = ["benchmark"],
-    deps = [
-        ":variant",
-        "//absl/utility",
-        "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
-    ],
-)
-
-cc_test(
-    name = "variant_exception_safety_test",
-    size = "small",
-    srcs = [
-        "variant_exception_safety_test.cc",
-    ],
-    copts = ABSL_TEST_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        ":variant",
-        "//absl/base:config",
-        "//absl/base:exception_safety_testing",
-        "//absl/memory",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

@@ -2612,27 +2612,39 @@ if (!is_robolectric && enable_java_templates) {
     }
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
-        # Do not add a dep on the generated_file target in order to avoid having
-        # to build the native libraries before this target. The dependency is
-        # instead captured via a depfile.
+        if (defined(_shared_library_list_file)) {
+          _use_secondary_abi = false
+        } else if (defined(_secondary_abi_shared_library_list_file)) {
+          _use_secondary_abi = true
+        }
         if (_uses_static_library) {
+          if (defined(_use_secondary_abi)) {
+            # Use the library list in TrichromeWebView instead of TrichromeLibrary.
+            _from_static_library = false
+          } else {
+            _from_static_library = true
+            _use_secondary_abi =
+                defined(invoker.static_library_provider_use_secondary_abi) &&
+                invoker.static_library_provider_use_secondary_abi
+          }
+        } else {
+          _from_static_library = false
+        }
+        if (_from_static_library) {
           _prefix = get_label_info(invoker.static_library_provider,
                                    "target_gen_dir") + "/" +
                     get_label_info(invoker.static_library_provider, "name")
-          if (defined(invoker.static_library_provider_use_secondary_abi) &&
-              invoker.static_library_provider_use_secondary_abi) {
+          if (_use_secondary_abi) {
             native_libraries_list_file = "${_prefix}.secondary_abi_native_libs"
-            _use_secondary_abi = true
           } else {
             native_libraries_list_file = "${_prefix}.native_libs"
-            _use_secondary_abi = false
           }
-        } else if (_native_libs_deps != []) {
-          native_libraries_list_file = _shared_library_list_file
-          _use_secondary_abi = false
-        } else if (_secondary_abi_native_libs_deps != []) {
-          native_libraries_list_file = _secondary_abi_shared_library_list_file
-          _use_secondary_abi = true
+        } else if (defined(_use_secondary_abi)) {
+          if (_use_secondary_abi) {
+            native_libraries_list_file = _secondary_abi_shared_library_list_file
+          } else {
+            native_libraries_list_file = _shared_library_list_file
+          }
         }
 
         if (defined(_use_secondary_abi)) {
@@ -2645,6 +2657,10 @@ if (!is_robolectric && enable_java_templates) {
 
         enable_chromium_linker = _use_chromium_linker
         use_final_fields = true
+
+        # Do not add a dep on the generated_file target in order to avoid having
+        # to build the native libraries before this target. The dependency is
+        # instead captured via a depfile.
       }
       _srcjar_deps += [ ":${_template_name}__native_libraries" ]
     }

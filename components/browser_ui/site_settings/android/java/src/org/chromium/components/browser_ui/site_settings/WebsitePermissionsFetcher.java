@@ -728,10 +728,7 @@ public class WebsitePermissionsFetcher {
                                 var cookieInfo = new CookiesInfo(info.getCookieCount());
                                 website.setCookiesInfo(cookieInfo);
                                 website.addStorageInfo(
-                                        new StorageInfo(
-                                                origin.getHost(),
-                                                /* type= */ 0,
-                                                info.getStorageSize()));
+                                        new StorageInfo(origin.getHost(), info.getStorageSize()));
                                 website.setDomainImportant(info.isDomainImportant());
                             }
                             queue.next();

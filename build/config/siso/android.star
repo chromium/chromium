@@ -385,7 +385,7 @@ def __android_proguard_handler(ctx, cmd):
     inputs = []
     outputs = []
     for i, arg in enumerate(cmd.args):
-        for k in ["--proguard-configs=", "--input-paths="]:
+        for k in ["--proguard-configs=", "--input-paths=", "--feature-jars="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)

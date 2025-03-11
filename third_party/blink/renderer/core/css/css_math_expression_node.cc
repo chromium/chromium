@@ -4530,6 +4530,15 @@ CSSMathExpressionSiblingFunction::PopulateWithTreeScope(
           function_->EnsureScopedValue(tree_scope)));
 }
 
+std::optional<double>
+CSSMathExpressionSiblingFunction::ComputeValueInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  if (length_resolver.GetElement()) {
+    return ComputeDouble(length_resolver);
+  }
+  return std::nullopt;
+}
+
 void CSSMathExpressionSiblingFunction::Trace(Visitor* visitor) const {
   visitor->Trace(function_);
   CSSMathExpressionNode::Trace(visitor);

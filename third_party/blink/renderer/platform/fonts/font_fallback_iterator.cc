@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -27,7 +26,6 @@ FontFallbackIterator::FontFallbackIterator(
       font_fallback_priority_(font_fallback_priority) {}
 
 void FontFallbackIterator::Reset() {
-  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
   current_font_data_index_ = 0;
   segmented_face_index_ = 0;
   fallback_stage_ = kFontGroupFonts;

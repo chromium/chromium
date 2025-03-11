@@ -16,6 +16,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -57,7 +58,6 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy::test {
@@ -223,8 +223,8 @@ class LegacyAppLauncher {
   mojom::TestService* AddInitialRemote() {
     CHECK(!app_process_.IsValid());
     CHECK(!exit_code_);
-    CHECK(absl::holds_alternative<size_t>(attachment_info_));
-    const uint64_t index = absl::get<size_t>(attachment_info_)++;
+    CHECK(std::holds_alternative<size_t>(attachment_info_));
+    const uint64_t index = std::get<size_t>(attachment_info_)++;
     auto remote = std::make_unique<mojo::Remote<mojom::TestService>>(
         mojo::PendingRemote<mojom::TestService>{
             invitation_.AttachMessagePipe(index), 0});
@@ -234,8 +234,8 @@ class LegacyAppLauncher {
   mojom::TestService* CreateNamedRemote(std::string_view name) {
     CHECK(!app_process_.IsValid());
     CHECK(!exit_code_);
-    CHECK(absl::holds_alternative<size_t>(attachment_info_));
-    CHECK_EQ(absl::get<size_t>(attachment_info_), 0u);
+    CHECK(std::holds_alternative<size_t>(attachment_info_));
+    CHECK_EQ(std::get<size_t>(attachment_info_), 0u);
     attachment_info_.emplace<std::string>(name);
     auto remote = std::make_unique<mojo::Remote<mojom::TestService>>(
         mojo::PendingRemote<mojom::TestService>{
@@ -289,16 +289,16 @@ class LegacyAppLauncher {
     proxy_command_line.AppendSwitchASCII(
         switches::kHostIpczTransportFd,
         base::NumberToString(kHostIpczTransportFdValue));
-    absl::visit(base::Overloaded{[&](size_t num_attachments) {
-                                   proxy_command_line.AppendSwitchASCII(
-                                       switches::kNumAttachments,
-                                       base::NumberToString(num_attachments));
-                                 },
-                                 [&](const std::string& name) {
-                                   proxy_command_line.AppendSwitchASCII(
-                                       switches::kAttachmentName, name);
-                                 }},
-                attachment_info_);
+    std::visit(base::Overloaded{[&](size_t num_attachments) {
+                                  proxy_command_line.AppendSwitchASCII(
+                                      switches::kNumAttachments,
+                                      base::NumberToString(num_attachments));
+                                },
+                                [&](const std::string& name) {
+                                  proxy_command_line.AppendSwitchASCII(
+                                      switches::kAttachmentName, name);
+                                }},
+               attachment_info_);
     if (!mojo::core::GetIpczNodeOptions().is_broker) {
       // When connecting though the proxy from a non-broker subprocess, we need
       // to inform the proxy that it must inherit our broker.
@@ -335,7 +335,7 @@ class LegacyAppLauncher {
 
  private:
   mojo::OutgoingInvitation invitation_;
-  absl::variant<size_t, std::string> attachment_info_{0};
+  std::variant<size_t, std::string> attachment_info_{0u};
   base::Process app_process_;
   base::Process proxy_process_;
   std::optional<int> exit_code_;

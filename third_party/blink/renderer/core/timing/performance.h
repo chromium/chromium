@@ -71,6 +71,7 @@ class LayoutShift;
 class MemoryInfo;
 class MemoryMeasurement;
 class Node;
+class PerformanceContainerTiming;
 class PerformanceElementTiming;
 class PerformanceEventTiming;
 class PerformanceMark;
@@ -116,6 +117,7 @@ class CORE_EXPORT Performance : public EventTarget {
       ExceptionState& exception_state) const;
   virtual EventCounts* eventCounts();
   virtual std::uint64_t interactionCount() const = 0;
+  virtual void PopulateContainerTimingEntries() {}
 
   // Reduce the resolution to prevent timing attacks. See:
   // http://www.w3.org/TR/hr-time-2/#privacy-security
@@ -201,6 +203,8 @@ class CORE_EXPORT Performance : public EventTarget {
                          const AtomicString& initiator_type);
 
   void NotifyNavigationTimingToObservers();
+
+  void NotifyObserversOfContainerTiming();
 
   bool IsElementTimingBufferFull() const;
   void AddToElementTimingBuffer(PerformanceElementTiming&);
@@ -373,6 +377,7 @@ class CORE_EXPORT Performance : public EventTarget {
   void FireResourceTimingBufferFull(TimerBase*);
 
   void NotifyObserversOfEntry(PerformanceEntry&) const;
+  void NotifyObserversOfContainerEntry(PerformanceEntry&) const;
 
   void DeliverObservationsTimerFired(TimerBase*);
 

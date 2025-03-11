@@ -2292,6 +2292,7 @@
 <translation id="256517381556987641">Во время синхронизации уже найдены файлы (<ph name="ITEMS_FOUND" />). Поиск в хранилище ещё продолжается. Повторите попытку через несколько минут.</translation>
 <translation id="2565214867520763227">Включите программу чтения с экрана</translation>
 <translation id="2566146433999774844">Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и другие пользователи (<ph name="NUM_OTHER_MEMBERS" />)</translation>
+<translation id="256726287944589768">Показывать нижний колонтитул на странице быстрого доступа</translation>
 <translation id="2568694057933302218">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия на других сайтах. Информация о действиях в браузере не используется для таких целей, как показ персонализированной рекламы. Функции некоторых сайтов могут быть недоступны.</translation>
 <translation id="2568774940984945469">Контейнер панели информации</translation>
 <translation id="2569972178052279830">Название магазина</translation>
@@ -2800,6 +2801,7 @@
 <translation id="2921081876747860777">Введите пароль, чтобы защитить свои локальные данные</translation>
 <translation id="2923006468155067296">Устройство <ph name="DEVICE_TYPE" /> будет заблокировано.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задача: <ph name="OTHER_TASKS" />.}few{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задачи: <ph name="OTHER_TASKS" />.}many{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задач: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задачи: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="2923234477033317484">Удалить этот аккаунт</translation>
 <translation id="2923644930701689793">Доступ к фотографиям с камеры телефона</translation>
 <translation id="292371311537977079">Настройки Chrome</translation>

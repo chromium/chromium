@@ -6,9 +6,8 @@
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_REMOVING_INDEXES_H_
 
 #include <initializer_list>
+#include <variant>
 #include <vector>
-
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class TabGroupRange;
 
@@ -161,7 +160,7 @@ class RemovingIndexes {
   // allow not allocating for the common case of removing one element or
   // a contiguous range.
   using Storage =
-      absl::variant<EmptyStorage, OneIndexStorage, RangeStorage, VectorStorage>;
+      std::variant<EmptyStorage, OneIndexStorage, RangeStorage, VectorStorage>;
 
   // Helper methods to create the storage from a range, a vector or an
   // initializer list.

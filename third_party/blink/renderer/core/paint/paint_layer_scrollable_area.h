@@ -760,7 +760,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
       cc::TargetSnapAreaElementIds);
 
-  ScrollOffset GetScrollOffsetForScrollMarkerUpdate();
   void UpdateScrollMarkers() override;
   ScrollMarkerGroupPseudoElement* GetScrollMarkerGroup() const override;
 

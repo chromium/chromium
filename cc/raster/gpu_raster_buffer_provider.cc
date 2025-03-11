@@ -349,11 +349,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->set_shared_image(sii->CreateSharedImage(
-        {backing_->format(), backing_->size(), backing_->color_space(), flags,
-         "GpuRasterTile"},
-        gpu::kNullSurfaceHandle));
-    CHECK(backing_->shared_image());
+    backing_->CreateSharedImage(sii, flags, "GpuRasterTile");
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
   } else {

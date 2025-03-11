@@ -255,8 +255,8 @@ struct RequestHandlerResult {
   RequestHandlerResult(const RequestHandlerResult&);
   RequestHandlerResult& operator=(const RequestHandlerResult&);
 
-  bool complies;
-  FinalContentAnalysisResult final_result;
+  bool complies = false;
+  FinalContentAnalysisResult final_result = FinalContentAnalysisResult::FAILURE;
   std::string tag;
   std::string request_token;
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage

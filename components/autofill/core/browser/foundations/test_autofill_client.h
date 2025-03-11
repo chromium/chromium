@@ -53,8 +53,13 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
@@ -443,6 +448,41 @@ class TestAutofillClientTemplate : public T {
       // Credit card data is refreshed when this pref is changed.
       GetPersonalDataManager().test_payments_data_manager().ClearCreditCards();
     }
+  }
+
+  // Sets up prefs and identity state to simulate an opted-in AutofillAI user.
+  void SetUpPrefsAndIdentityForAutofillAi() {
+    SetAutofillProfileEnabled(true);
+    // TODO(crbug.com/397881703): Remove feature guards once the pref is
+    // migrated to a GAIA-keyed dictionary.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled, true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+    GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::
+            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+        base::to_underlying(optimization_guide::model_execution::prefs::
+                                ModelExecutionEnterprisePolicyValue::kAllow),
+        PrefRegistry::LOSSY_PREF);
+
+    AccountInfo account_info =
+        identity_test_environment().MakePrimaryAccountAvailable(
+            "foo@gmail.com", signin::ConsentLevel::kSignin);
+    SetCanUseModelExecutionFeatures(true);
+  }
+
+  // Updates whether the currently signed in primary account can use model
+  // execution features. CHECKs that there is a primary account.
+  void SetCanUseModelExecutionFeatures(bool can_use_model_execution) {
+    AccountInfo account_info = GetIdentityManager()->FindExtendedAccountInfo(
+        GetIdentityManager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin));
+    CHECK(!account_info.account_id.empty());
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_can_use_model_execution_features(can_use_model_execution);
+    signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
   }
 
   void set_entity_data_manager(

@@ -15,6 +15,7 @@
 
 #include <cstdlib>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -118,7 +119,7 @@ class FileChooserWindows : public FileChooser,
   void OnObjectSignaled(HANDLE object) override;
 
  private:
-  FileTransferResult<absl::monostate> LaunchChooserProcess();
+  FileTransferResult<std::monostate> LaunchChooserProcess();
 
   ResultCallback callback_;
   base::Process process_;
@@ -132,7 +133,7 @@ FileChooserWindows::FileChooserWindows(
     : callback_(std::move(callback)) {}
 
 void FileChooserWindows::Show() {
-  FileTransferResult<absl::monostate> result = LaunchChooserProcess();
+  FileTransferResult<std::monostate> result = LaunchChooserProcess();
 
   if (!result) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -189,7 +190,7 @@ void FileChooserWindows::OnObjectSignaled(HANDLE object) {
   std::move(callback_).Run(std::move(result));
 }
 
-FileTransferResult<absl::monostate> FileChooserWindows::LaunchChooserProcess() {
+FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
   base::LaunchOptions launch_options;
 
   FileTransferResult<ScopedHandle> current_user =

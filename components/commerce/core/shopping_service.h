@@ -117,7 +117,6 @@ class ScheduledMetricsManager;
 
 class BookmarkUpdateManager;
 class DiscountsStorage;
-class ParcelsManager;
 class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
 class ShoppingPowerBookmarkDataProvider;
@@ -386,30 +385,6 @@ class ShoppingService : public KeyedService,
   // user (ordered by most recent first). This generally aligns with recently
   // viewed tabs.
   virtual const std::vector<UrlInfo> GetUrlInfosForRecentlyViewedWebWrappers();
-
-  // Starts tracking a list of parcels from a given page.
-  void StartTrackingParcels(
-      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-          parcel_identifiers,
-      const std::string& source_page_domain,
-      GetParcelStatusCallback callback);
-
-  // Gets the status of all parcel status stored in the db.
-  virtual void GetAllParcelStatuses(GetParcelStatusCallback callback);
-
-  // Called to stop tracking a given parcel.
-  // DEPRECATED: use StopTrackingParcels() below()
-  virtual void StopTrackingParcel(const std::string& tracking_id,
-                                  base::OnceCallback<void(bool)> callback);
-
-  // Called to stop tracking multiple parcels.
-  void StopTrackingParcels(
-      const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-          parcel_identifiers,
-      base::OnceCallback<void(bool)> callback);
-
-  // Called to stop tracking all parcels.
-  virtual void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
 
   virtual ProductSpecificationsService* GetProductSpecificationsService();
 
@@ -686,9 +661,6 @@ class ShoppingService : public KeyedService,
 
   // The object handling discounts storage.
   std::unique_ptr<DiscountsStorage> discounts_storage_;
-
-  // Object for tracking parcel status.
-  std::unique_ptr<ParcelsManager> parcels_manager_;
 
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.

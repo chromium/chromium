@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SensitiveContent.TabSwitching.{TabSwitchingSurface}.Sensitivity"
-    enum="TabSwitchingSurfaceContentSensitivity" expires_after="2025-07-06">
+    enum="TabSwitchingSurfaceContentSensitivity" expires_after="2025-09-07">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.LatencyUntilSensitive" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.SensitiveTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.SensitivityChanged"
-    enum="ContentSensitivity" expires_after="2025-07-06">
+    enum="ContentSensitivity" expires_after="2025-09-07">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

@@ -119,7 +119,7 @@ struct common_policy_traits {
                                                            old_slot)) {
     return P::transfer(alloc, new_slot, old_slot);
   }
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
+
   // This overload returns true_type for the trait below.
   // The conditional_t is to make the enabler type dependent.
   template <class Alloc,
@@ -135,7 +135,6 @@ struct common_policy_traits {
         static_cast<const void*>(&element(old_slot)), sizeof(value_type));
     return {};
   }
-#endif
 
   template <class Alloc>
   static void transfer_impl(Alloc* alloc, slot_type* new_slot,

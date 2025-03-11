@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Көшөгө анимациясы</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
 <translation id="1539864135338521185">лазурит</translation>
+<translation id="1548555207631326346">Тема тандап, асты сызылган сөздөрдүн жардамы менен ЖИ түзгөн сүрөттөрдү жекелештириңиз.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ЖИ аркылуу контент түзсөңүз, сурам Google ЖИ серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративдүү жасалма интеллект сынамык функция жана иштеп чыгуунун алгачкы баскычында болгондуктан, учурда жеткиликтүүлүгү чектелген.</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="155865706765934889">Тийме такта</translation>
 <translation id="1561927818299383735">баскычтоптун жарыгынын түсү</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жээк</translation>
 <translation id="819278132617411009">Майнаптуу иштөө үчүн Google'дун жасалма интеллектин колдонуңуз</translation>
+<translation id="82003371436638355">"Өзүңүздүкүн түзүңүз" вариантын тандасаңыз, сурамыңызды жазыңыз. Же "Тема тандоо" баскычын тандап, ЖИ тушкагазын жекелештирүү үчүн асты сызылган сөздөрдү тандай аласыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Өзүңүздүн тушкагазыңызды түзсөңүз, сурам Google ЖИ серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Тейлөө шарттарына жана Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат. Жеке же купуя нерселерди кошпоңуз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративдик жасалма интеллект адамдар, ошондой эле башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн, андыктан анын жоопторун эки жолу текшериңиз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Кеңири маалымат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">медианы ойнотуу</translation>
 <translation id="8318753676953949627">Сүрөттөр жок</translation>
 <translation id="8320910311642849813">токой</translation>
+<translation id="8322464149031882595">Алдыга өтүү үчүн чыкылдатыңыз</translation>
 <translation id="8329018942023753850">эсептегич колдонмосу</translation>
 <translation id="8336739000755212683">Түзмөктөгү аккаунттун сүрөтүн өзгөртүү</translation>
 <translation id="8339024191194156249">Автоматтык түрдө иштетүү тууралуу кеңири маалымат</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пингвиндер</translation>
 <translation id="8968751544471797276">Батареянын кубатталышы көрсөткүчү</translation>
 <translation id="8970109610781093811">Кайра сыноо</translation>
+<translation id="8972061581514441296">Кайтуу үчүн басыңыз</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скандоо}=1{{NUMBER_OF_PAGES} бетти скандоо}other{{NUMBER_OF_PAGES} бетти скандоо}}</translation>
 <translation id="89945434909472341">айыл</translation>

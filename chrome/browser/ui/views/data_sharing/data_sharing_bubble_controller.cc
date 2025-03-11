@@ -92,9 +92,7 @@ views::View* GetAnchorViewForShare(const BrowserView* browser_view,
 
 DataSharingBubbleController::~DataSharingBubbleController() = default;
 
-void DataSharingBubbleController::Show(
-    std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>
-        request_info) {
+void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
   if (bubble_view_) {
     return;
   }
@@ -115,7 +113,7 @@ void DataSharingBubbleController::Show(
   views::View* anchor_view_for_share = nullptr;
   if (flow_value == data_sharing::kFlowShare) {
     anchor_view_for_share = GetAnchorViewForShare(
-        browser_view, std::get<tab_groups::TabGroupId>(request_info));
+        browser_view, std::get<tab_groups::TabGroupId>(request_info.id));
     if (!anchor_view_for_share) {
       // The share bubble has nothing to anchor from; return early.
       return;

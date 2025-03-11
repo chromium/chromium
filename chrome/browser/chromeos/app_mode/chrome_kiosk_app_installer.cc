@@ -187,10 +187,10 @@ void ChromeKioskAppInstaller::MaybeInstallSecondaryApps(
 
   auto secondary_app_ids = SecondaryAppIdsOf(primary_app);
 
-  if (!secondary_app_ids.empty()) {
-    ChromeKioskExternalLoaderBroker::Get()->TriggerSecondaryAppInstall(
-        secondary_app_ids);
+  ChromeKioskExternalLoaderBroker::Get()->UpdateSecondaryAppList(
+      secondary_app_ids);
 
+  if (!secondary_app_ids.empty()) {
     auto pending_ids = CopyIdsPendingInstall(profile_.get(), secondary_app_ids);
     if (!pending_ids.empty()) {
       ObserveInstallations(pending_ids);

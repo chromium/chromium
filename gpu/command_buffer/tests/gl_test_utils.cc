@@ -28,6 +28,7 @@
 #include "gpu/config/gpu_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -39,6 +40,10 @@ const uint8_t GLTestHelper::kCheckClearValue;
 #endif
 
 gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  gpu::EnsureNonSoftwareDeviceForTesting(gl::GpuPreference::kDefault);
+#endif
+
   gl::GLDisplay* display = nullptr;
   if (gl_impl == gl::GLImplementation::kGLImplementationNone) {
     display = gl::init::InitializeGLNoExtensionsOneOff(

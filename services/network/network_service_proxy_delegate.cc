@@ -184,6 +184,15 @@ void NetworkServiceProxyDelegate::SetProxyResolutionService(
   proxy_resolution_service_ = proxy_resolution_service;
 }
 
+bool NetworkServiceProxyDelegate::AliasRequiresProxyOverride(
+    const std::string scheme,
+    const std::vector<std::string>& dns_aliases,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  // The `NetworkServiceProxyDelegate` should never check DNS aliases for
+  // overriding a proxy.
+  return false;
+}
+
 void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(
     mojom::CustomProxyConfigPtr proxy_config,
     OnCustomProxyConfigUpdatedCallback callback) {

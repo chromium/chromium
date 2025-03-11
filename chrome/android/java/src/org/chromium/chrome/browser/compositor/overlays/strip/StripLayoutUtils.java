@@ -253,6 +253,26 @@ public class StripLayoutUtils {
         return null;
     }
 
+    /**
+     * @param views The list of {@link StripLayoutView}.
+     * @return An array of the views that have not been dragged off the strip.
+     */
+    public static StripLayoutView[] getViewsOnStrip(StripLayoutView[] views) {
+        int numViewsOnStrip = views.length;
+        for (int i = 0; i < views.length; ++i) {
+            if (views[i].isDraggedOffStrip()) --numViewsOnStrip;
+        }
+
+        int index = 0;
+        StripLayoutView[] viewsOnStrip = new StripLayoutView[numViewsOnStrip];
+        for (int i = 0; i < views.length; ++i) {
+            final StripLayoutView view = views[i];
+            if (!view.isDraggedOffStrip()) viewsOnStrip[index++] = view;
+        }
+
+        return viewsOnStrip;
+    }
+
     // ============================================================================================
     // Array helpers
     // ============================================================================================

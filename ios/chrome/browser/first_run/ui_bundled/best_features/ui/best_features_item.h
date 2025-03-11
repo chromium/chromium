@@ -28,8 +28,10 @@ enum class BestFeaturesItemType {
 @property(nonatomic, assign) BestFeaturesItemType type;
 // Best Features item title.
 @property(nonatomic, copy) NSString* title;
-// Best Features item subtitle.
+// Best Features item subtitle for feature promo.
 @property(nonatomic, copy) NSString* subtitle;
+// Best Features item caption for feature row.
+@property(nonatomic, copy) NSString* caption;
 // Best Features item icon image.
 @property(nonatomic, copy) UIImage* iconImage;
 // Best Features item icon background color.
@@ -39,8 +41,10 @@ enum class BestFeaturesItemType {
 // Best Features item instruction steps.
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
 
-// Returns a configured item for the given `itemType`.
-+ (BestFeaturesItem*)itemForType:(BestFeaturesItemType)itemType;
+// Initializes the item for BestFeaturesItemType `type`.
+- (instancetype)initWithType:(BestFeaturesItemType)type
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

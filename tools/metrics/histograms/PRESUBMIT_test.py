@@ -336,6 +336,73 @@ class MetricsPresubmitTest(unittest.TestCase):
         'Histograms are not well-formatted; please run .*validate_format.py and'
         ' fix the reported errors.')
 
+  def testDeletedFileIsIgnoredByBooleansAreEnumsCheck(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.presubmit_local_path = _BASE_DIR
+    mock_input_api.files = [
+        MockAffectedFile('histograms.xml',
+                         ['<histogram name="Foo" units="Boolean" />'],
+                         action='D'),
+    ]
+
+    results = PRESUBMIT.ExecuteCheckBooleansAreEnums(mock_input_api,
+                                                     MockOutputApi())
+
+    # Zero results mean that there were no errors reported.
+    self.assertEqual(len(results), 0)
+
+  def testDeletedFileIsIgnoredByHistogramFormattingCheck(self):
+    full_path = (f'{os.path.dirname(__file__)}'
+                 '/test_data/non_existing_histograms.xml')
+
+    mock_input_api = MockInputApi()
+    mock_input_api.presubmit_local_path = _BASE_DIR
+    mock_input_api.files = [
+        MockAffectedFile(full_path, [], action='D'),
+    ]
+
+    results = PRESUBMIT.ExecuteCheckHistogramFormatting(
+        mock_input_api,
+        MockOutputApi(),
+        allow_test_paths=True,
+        xml_paths_override=[_TOP_LEVEL_ENUMS_PATH])
+
+    # Zero results mean that there were no errors reported.
+    self.assertEqual(len(results), 0)
+
+  def testDeletedFileIsIgnoredByAllowlistCheck(self):
+    non_existing_histograms_path = (f'{os.path.dirname(__file__)}'
+                                    '/test_data/non_existing_histograms.xml')
+    valid_histograms_path = (f'{os.path.dirname(__file__)}'
+                             '/test_data'
+                             '/example_valid_histograms.xml')
+    valid_enums_path = (f'{os.path.dirname(__file__)}'
+                        '/test_data'
+                        '/example_valid_enums.xml')
+    example_allowlist_path = (f'{os.path.dirname(__file__)}'
+                              '/test_data'
+                              '/allowlist_example.txt')
+
+    with open(valid_histograms_path, 'r') as f:
+      valid_histograms_contents = f.read()
+    mock_input_api = MockInputApi()
+    mock_input_api.presubmit_local_path = _BASE_DIR
+    mock_input_api.files = [
+        MockAffectedFile(non_existing_histograms_path, [], action='D'),
+        MockAffectedFile(valid_histograms_path, [valid_histograms_contents]),
+    ]
+
+    results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
+        mock_input_api,
+        MockOutputApi(),
+        allowlist_path_override=example_allowlist_path,
+        xml_paths_override=[
+            valid_histograms_path, valid_enums_path, _TOP_LEVEL_ENUMS_PATH
+        ])
+
+    # Zero results mean that there were no errors reported.
+    self.assertEqual(len(results), 0)
+
 
 if __name__ == '__main__':
   unittest.main()

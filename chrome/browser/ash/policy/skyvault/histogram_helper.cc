@@ -68,15 +68,18 @@ constexpr base::TimeDelta kReconnectionDurationMax = base::Hours(4);
 // (kMax in h * 60 min/h) / 1 min/bucket = 4 * 60 = 240 buckets
 constexpr int kReconnectionDurationBuckets = 240;
 
-// Converts `provider` to a string representation used to form a metric name.
-std::string GetUMACloudProvider(CloudProvider provider) {
-  switch (provider) {
-    case CloudProvider::kNotSpecified:
+// Converts `destination` to a string representation used to form a metric name.
+std::string GetUMAMigrationDestination(MigrationDestination destination) {
+  switch (destination) {
+    case MigrationDestination::kNotSpecified:
       NOTREACHED();
-    case CloudProvider::kGoogleDrive:
+    case MigrationDestination::kGoogleDrive:
       return kGoogleDriveProvider;
-    case CloudProvider::kOneDrive:
+    case MigrationDestination::kOneDrive:
       return kOneDriveProvider;
+    case MigrationDestination::kDelete:
+      // TODO(402074191): Implement UMA for deletion.
+      return "";
   }
 }
 
@@ -96,14 +99,14 @@ std::string GetUMAAction(UploadTrigger trigger) {
 std::string GetHistogramName(
     const std::string& suffix,
     std::optional<UploadTrigger> trigger = std::nullopt,
-    std::optional<CloudProvider> provider = std::nullopt) {
+    std::optional<MigrationDestination> destination = std::nullopt) {
   std::vector<std::string> parts = {kSkyVaultUMAPrefix};
   if (trigger.has_value()) {
     parts.push_back(GetUMAAction(trigger.value()));
     parts.push_back(".");
   }
-  if (provider.has_value()) {
-    parts.push_back(GetUMACloudProvider(provider.value()));
+  if (destination.has_value()) {
+    parts.push_back(GetUMAMigrationDestination(destination.value()));
     parts.push_back(".");
   }
   parts.push_back(suffix);
@@ -113,16 +116,17 @@ std::string GetHistogramName(
 }  // namespace
 
 void SkyVaultDeleteErrorHistogram(UploadTrigger trigger,
-                                  CloudProvider provider,
+                                  MigrationDestination destination,
                                   bool value) {
   base::UmaHistogramBoolean(
-      GetHistogramName(kDeleteErrorSuffix, trigger, provider), value);
+      GetHistogramName(kDeleteErrorSuffix, trigger, destination), value);
 }
 
 void SkyVaultOneDriveSignInErrorHistogram(UploadTrigger trigger, bool value) {
-  base::UmaHistogramBoolean(GetHistogramName(kOneDriveSignInErrorSuffix,
-                                             trigger, CloudProvider::kOneDrive),
-                            value);
+  base::UmaHistogramBoolean(
+      GetHistogramName(kOneDriveSignInErrorSuffix, trigger,
+                       MigrationDestination::kOneDrive),
+      value);
 }
 
 void SkyVaultLocalStorageEnabledHistogram(bool value) {
@@ -135,18 +139,23 @@ void SkyVaultLocalStorageMisconfiguredHistogram(bool value) {
                             value);
 }
 
-void SkyVaultMigrationEnabledHistogram(CloudProvider provider, bool value) {
+void SkyVaultMigrationEnabledHistogram(MigrationDestination destination,
+                                       bool value) {
+  if (destination == MigrationDestination::kDelete) {
+    // TODO(402074191): Implement UMA for deletion.
+    return;
+  }
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationEnabledSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       value);
 }
 
-void SkyVaultMigrationMisconfiguredHistogram(CloudProvider provider,
+void SkyVaultMigrationMisconfiguredHistogram(MigrationDestination destination,
                                              bool value) {
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationMisconfiguredSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       value);
 }
 
@@ -162,39 +171,49 @@ void SkyVaultMigrationRetryHistogram(int count) {
       1, kMaxRetryCount, kMaxRetryCount);
 }
 
-void SkyVaultMigrationStoppedHistogram(CloudProvider provider, bool value) {
+void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
+                                       bool value) {
+  if (destination == MigrationDestination::kDelete) {
+    // TODO(402074191): Implement UMA for deletion.
+    return;
+  }
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationStoppedSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       value);
 }
 
-void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
+void SkyVaultMigrationWrongStateHistogram(MigrationDestination destination,
                                           StateErrorContext context,
                                           State state) {
+  if (destination == MigrationDestination::kDelete) {
+    // TODO(402074191): Implement UMA for deletion.
+    return;
+  }
   base::UmaHistogramEnumeration(
       GetHistogramName(kMigrationStateErrorContextSuffix,
-                       UploadTrigger::kMigration, provider),
+                       UploadTrigger::kMigration, destination),
       context);
   base::UmaHistogramEnumeration(
       GetHistogramName(kMigrationWrongStateSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       state);
 }
 
-void SkyVaultMigrationDoneHistograms(CloudProvider provider,
+void SkyVaultMigrationDoneHistograms(MigrationDestination destination,
                                      bool success,
                                      base::TimeDelta duration) {
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationFailedSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       !success);
 
   const std::string suffix = success ? kMigrationSuccessDurationSuffix
                                      : kMigrationFailureDurationSuffix;
   base::UmaHistogramCustomTimes(
-      GetHistogramName(suffix, UploadTrigger::kMigration, provider), duration,
-      kMigrationDurationMin, kMigrationDurationMax, kMigrationDurationBuckets);
+      GetHistogramName(suffix, UploadTrigger::kMigration, destination),
+      duration, kMigrationDurationMin, kMigrationDurationMax,
+      kMigrationDurationBuckets);
 }
 
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
@@ -203,43 +222,54 @@ void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
                             value);
 }
 
-void SkyVaultMigrationUploadErrorHistogram(CloudProvider provider,
+void SkyVaultMigrationUploadErrorHistogram(MigrationDestination destination,
                                            MigrationUploadError error) {
   base::UmaHistogramEnumeration(
       GetHistogramName(kMigrationUploadErrorSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       error);
 }
 
-void SkyVaultMigrationWaitForConnectionHistogram(CloudProvider provider,
-                                                 bool waiting_for_connection) {
+void SkyVaultMigrationWaitForConnectionHistogram(
+    MigrationDestination destination,
+    bool waiting_for_connection) {
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationWaitForConnectionSuffix,
-                       UploadTrigger::kMigration, provider),
+                       UploadTrigger::kMigration, destination),
       waiting_for_connection);
 }
 
-void SkyVaultMigrationReconnectionDurationHistogram(CloudProvider provider,
-                                                    base::TimeDelta duration) {
+void SkyVaultMigrationReconnectionDurationHistogram(
+    MigrationDestination destination,
+    base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(
       GetHistogramName(kMigrationReconnectionDurationSuffix,
-                       UploadTrigger::kMigration, provider),
+                       UploadTrigger::kMigration, destination),
       duration, kReconnectionDurationMin, kReconnectionDurationMax,
       kReconnectionDurationBuckets);
 }
 
-void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,
+void SkyVaultMigrationDialogActionHistogram(MigrationDestination destination,
                                             DialogAction action) {
+  if (destination == MigrationDestination::kDelete) {
+    // TODO(402074191): Implement UMA for deletion.
+    return;
+  }
   base::UmaHistogramEnumeration(
       GetHistogramName(kMigrationDialogActionSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       action);
 }
 
-void SkyVaultMigrationDialogShownHistogram(CloudProvider provider, bool value) {
+void SkyVaultMigrationDialogShownHistogram(MigrationDestination destination,
+                                           bool value) {
+  if (destination == MigrationDestination::kDelete) {
+    // TODO(402074191): Implement UMA for deletion.
+    return;
+  }
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationDialogShownSuffix, UploadTrigger::kMigration,
-                       provider),
+                       destination),
       value);
 }
 

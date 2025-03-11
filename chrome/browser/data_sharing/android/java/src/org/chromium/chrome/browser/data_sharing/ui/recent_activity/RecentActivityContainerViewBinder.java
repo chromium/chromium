@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for the recent activity list container view. */
+@NullMarked
 class RecentActivityContainerViewBinder {
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {

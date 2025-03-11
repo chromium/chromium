@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/pref_names.h"
@@ -1655,6 +1657,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                         static_cast<int>(availability.enterprise_policy_value));
   response_dict.Set("aidaAvailability", std::move(aida_availability));
 
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::UNKNOWN) {
+    response_dict.Set("channel", version_info::GetChannelString(channel));
+  }
+
   base::Value::Dict console_insights_dict;
   console_insights_dict.Set(
       "enabled",
@@ -1665,9 +1672,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "temperature", features::kDevToolsConsoleInsightsTemperature.Get());
   response_dict.Set("devToolsConsoleInsights",
                     std::move(console_insights_dict));
-
-  bool devToolsImprovedWorkspacedEnabled =
-      base::FeatureList::IsEnabled(::features::kDevToolsImprovedWorkspaces);
 
   if (base::FeatureList::IsEnabled(::features::kDevToolsFreestyler)) {
     base::Value::Dict freestyler_dict;
@@ -1689,12 +1693,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     freestyler_dict.Set("functionCalling",
                         features::kDevToolsFreestylerFunctionCalling.Get());
     response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));
-
-    if (features::kDevToolsFreestylerPatching.Get()) {
-      // Patching requires kDevToolsImprovedWorkspaces for functioning
-      // correctly.
-      devToolsImprovedWorkspacedEnabled = true;
-    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1764,12 +1762,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       base::FeatureList::IsEnabled(::features::kDevToolsAutomaticFileSystems));
   response_dict.Set("devToolsAutomaticFileSystems",
                     std::move(devtools_automatic_file_systems_dict));
-
-  base::Value::Dict devtools_improved_workspaces_dict;
-  devtools_improved_workspaces_dict.Set("enabled",
-                                        devToolsImprovedWorkspacedEnabled);
-  response_dict.Set("devToolsImprovedWorkspaces",
-                    std::move(devtools_improved_workspaces_dict));
 
   base::Value::Dict devtools_well_known_dict;
   devtools_well_known_dict.Set(

@@ -1375,10 +1375,8 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   // Early out from the tree walk if possible.
   if (!needs_tree_builder_context_update && !ObjectRequiresPrePaint(object) &&
       !ContextRequiresChildPrePaint(parent_context)) {
-    if (!ClipPathClipper::ClipPathStatusResolved(object)) {
-      // crbug.com/374656290: Convert to CHECK or DCHECK when fix is confirmed.
-      base::debug::DumpWithoutCrashing();
-    }
+    // The only time this should occur is if the object is a fragmentless box.
+    DCHECK(ClipPathClipper::ClipPathStatusResolved(object));
     return;
   }
 

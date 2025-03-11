@@ -27,11 +27,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
 #include <unicode/utf16.h>
@@ -40,6 +35,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
@@ -474,7 +470,7 @@ const HanKerning::FontData& SimpleFontData::HanKerningData(
 
   // The cache didn't hit. Shift the list and create a new entry at `[0]`.
   for (wtf_size_t i = 1; i < std::size(han_kerning_cache_); ++i) {
-    han_kerning_cache_[i] = std::move(han_kerning_cache_[i - 1]);
+    UNSAFE_TODO(han_kerning_cache_[i] = std::move(han_kerning_cache_[i - 1]));
   }
   HanKerningCacheEntry& new_entry = han_kerning_cache_[0];
   new_entry = {.locale = &locale,

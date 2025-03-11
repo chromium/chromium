@@ -38,11 +38,15 @@
 // Returns the error context provided to showAutofillErrorDialog.
 - (const std::optional<autofill::AutofillErrorDialogContext>&)
     autofillErrorDialogContext;
+
+// Returns whether showSaveCardBottomSheet was called.
+- (BOOL)showSaveCardBottomSheetCalled;
 @end
 
 @implementation FakeAutofillCommands {
   std::unique_ptr<autofill::VirtualCardEnrollUiModel> _virtualCardEnrollUiModel;
   std::optional<autofill::AutofillErrorDialogContext> _errorContext;
+  BOOL _showSaveCardBottomSheet;
 }
 
 - (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)
@@ -53,6 +57,10 @@
 - (const std::optional<autofill::AutofillErrorDialogContext>&)
     autofillErrorDialogContext {
   return _errorContext;
+}
+
+- (BOOL)showSaveCardBottomSheetCalled {
+  return _showSaveCardBottomSheet;
 }
 
 #pragma mark - AutofillCommands
@@ -68,6 +76,13 @@
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
 }
 - (void)showPlusAddressesBottomSheet {
+}
+
+- (void)showSaveCardBottomSheet {
+  _showSaveCardBottomSheet = YES;
+}
+
+- (void)dismissSaveCardBottomSheet {
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
@@ -194,6 +209,75 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
   AutofillAgent* autofill_agent_;
   std::unique_ptr<TestChromeAutofillClient> autofill_client_;
 };
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       ShowSaveCardBottomSheet_FlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillSaveCardBottomSheet);
+
+  payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_num_strikes(0)
+          .with_show_prompt(true),
+      base::DoNothing());
+  EXPECT_TRUE([autofill_commands() showSaveCardBottomSheetCalled]);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       DoNotShowSaveCardBottomSheet_FlagDisabled) {
+  payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_num_strikes(0)
+          .with_show_prompt(true),
+      base::DoNothing());
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       DoNoShowSaveCardBottomSheet_CardWithMoreThan0Strike) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillSaveCardBottomSheet);
+
+  payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_num_strikes(1)
+          .with_show_prompt(true),
+      base::DoNothing());
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       DoNoShowSaveCardBottomSheet_ForRequestingCardHolderName) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillSaveCardBottomSheet);
+
+  payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_should_request_name_from_user(true)
+          .with_num_strikes(0)
+          .with_show_prompt(true),
+      base::DoNothing());
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       DoNoShowSaveCardBottomSheet_ForRequestingExpiryDate) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillSaveCardBottomSheet);
+
+  payments_client()->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_should_request_expiration_date_from_user(true)
+          .with_num_strikes(0)
+          .with_show_prompt(true),
+      base::DoNothing());
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+}
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        CreditCardUploadCompleted_CardSaved) {

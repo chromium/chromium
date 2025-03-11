@@ -121,8 +121,12 @@ class RedirectURLLoader : public network::mojom::URLLoader {
 void InterceptNavigationDelegate::Associate(
     WebContents* web_contents,
     std::unique_ptr<InterceptNavigationDelegate> delegate) {
-  web_contents->SetUserData(kInterceptNavigationDelegateUserDataKey,
-                            std::move(delegate));
+  if (!delegate) {
+    web_contents->RemoveUserData(kInterceptNavigationDelegateUserDataKey);
+  } else {
+    web_contents->SetUserData(kInterceptNavigationDelegateUserDataKey,
+                              std::move(delegate));
+  }
 }
 
 // static

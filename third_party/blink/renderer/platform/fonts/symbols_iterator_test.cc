@@ -34,8 +34,6 @@ const bool FontVariantEmojiFlagValues[] = {true, false};
 
 class SymbolsIteratorTest : public testing::Test {
  protected:
-  void SetUp() override { ScopedFontVariantEmojiForTest scoped_feature(true); }
-
   void CheckRuns(const Vector<FallbackTestRun>& runs) {
     StringBuilder text;
     text.Ensure16Bit();
@@ -68,9 +66,6 @@ class SymbolsIteratorTest : public testing::Test {
 class SymbolsIteratorWithFontVariantEmojiParamTest
     : public SymbolsIteratorTest,
       public testing::WithParamInterface<bool> {
-  void SetUp() override {
-    ScopedFontVariantEmojiForTest scoped_feature(GetParam());
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(SymbolsIteratorTest,

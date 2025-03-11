@@ -46,6 +46,7 @@
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "stale_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -150,10 +151,10 @@ class StaleHostResolverTest : public testing::Test {
     options_.delay = base::Seconds(stale_delay_sec);
   }
 
-  void SetUseStaleOnNameNotResolved() {
+  void SetUseStaleOnNameNotResolved(bool enabled = true) {
     DCHECK(!resolver_);
 
-    options_.use_stale_on_name_not_resolved = true;
+    options_.use_stale_on_name_not_resolved = enabled;
   }
 
   void SetStaleUsability(int max_expired_time_sec,
@@ -417,6 +418,17 @@ TEST_F(StaleHostResolverTest, FreshCache) {
   WaitForIdle();
 }
 
+// Make sure that the default options are not changed unintentionally.
+// Check with usages owners if this test failed due to your change.
+TEST_F(StaleHostResolverTest, DefaultOptions) {
+  StaleHostResolver::StaleOptions stale_options;
+
+  EXPECT_TRUE(stale_options.allow_other_network);
+  EXPECT_TRUE(stale_options.use_stale_on_name_not_resolved);
+  EXPECT_EQ(base::Hours(6), stale_options.max_expired_time);
+  EXPECT_EQ(1, stale_options.max_stale_uses);
+}
+
 // Flaky on Linux ASan, crbug.com/838524.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_StaleCache DISABLED_StaleCache
@@ -474,6 +486,7 @@ TEST_F(StaleHostResolverTest, StaleCacheNameNotResolvedEnabled) {
 TEST_F(StaleHostResolverTest, StaleCacheNameNotResolvedDisabled) {
   SetStaleDelay(kLongStaleDelaySec);
   SetNetResult(ERR_NAME_NOT_RESOLVED);
+  SetUseStaleOnNameNotResolved(false);
   CreateResolver();
   CreateCacheEntry(kAgeExpiredSec, OK);
 

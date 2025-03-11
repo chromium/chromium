@@ -63,7 +63,7 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
       element));
   for (const auto& accelerator :
        delegate_->GetPaneNavigationAccelerators(element)) {
-    result->bubble_view()->GetFocusManager()->RegisterAccelerator(
+    result->help_bubble_view_->GetFocusManager()->RegisterAccelerator(
         accelerator, ui::AcceleratorManager::HandlerPriority::kNormalPriority,
         result.get());
   }

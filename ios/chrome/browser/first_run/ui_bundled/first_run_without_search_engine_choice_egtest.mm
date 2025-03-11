@@ -74,6 +74,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   return config;
 }
 

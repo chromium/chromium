@@ -1374,7 +1374,7 @@
           'x86-64',
         ],
         'test_suites': {
-           'gtest_tests': 'translatekit_tests',
+           'isolated_scripts': 'translatekit_script_tests',
         },
         'os_type': 'linux',
       },
@@ -1384,7 +1384,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'translatekit_tests',
+           'isolated_scripts': 'translatekit_script_tests',
         },
         'os_type': 'mac',
       },
@@ -1394,7 +1394,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'translatekit_tests',
+           'isolated_scripts': 'translatekit_script_tests',
         },
         'os_type': 'mac',
       },
@@ -1404,7 +1404,7 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'translatekit_tests',
+           'isolated_scripts': 'translatekit_script_tests',
         },
         'os_type': 'win',
       },
@@ -1414,7 +1414,7 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'translatekit_tests',
+           'isolated_scripts': 'translatekit_script_tests',
         },
         'os_type': 'win',
       },

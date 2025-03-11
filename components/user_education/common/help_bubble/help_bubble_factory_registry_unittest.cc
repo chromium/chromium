@@ -246,4 +246,15 @@ TEST_F(HelpBubbleFactoryRegistryTest, OpenSecondBubbleAfterClose) {
   EXPECT_FALSE(help_bubble_factory_registry_.is_any_bubble_showing());
 }
 
+TEST_F(HelpBubbleFactoryRegistryTest, AddAndCloseExternalBubble) {
+  auto bubble =
+      std::make_unique<test::TestHelpBubble>(&test_element_, GetBubbleParams());
+  help_bubble_factory_registry_.AddHelpBubble(bubble.get());
+  EXPECT_EQ(bubble.get(), help_bubble_factory_registry_.GetHelpBubble(
+                              test_element_.context()));
+  bubble->Close();
+  EXPECT_EQ(nullptr, help_bubble_factory_registry_.GetHelpBubble(
+                         test_element_.context()));
+}
+
 }  // namespace user_education

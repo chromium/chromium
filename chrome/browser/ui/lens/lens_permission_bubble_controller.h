@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -25,7 +27,6 @@ namespace views {
 class Widget;
 }
 
-class BrowserWindowInterface;
 class PrefService;
 
 namespace lens {
@@ -35,10 +36,9 @@ inline constexpr char kLensPermissionDialogName[] = "LensPermissionDialog";
 // Manages the Lens Permission Bubble instance for the associated browser.
 class LensPermissionBubbleController {
  public:
-  LensPermissionBubbleController(
-      BrowserWindowInterface* browser_window_interface,
-      PrefService* pref_service,
-      LensOverlayInvocationSource invocation_source);
+  LensPermissionBubbleController(tabs::TabInterface& tab_interface,
+                                 PrefService* pref_service,
+                                 LensOverlayInvocationSource invocation_source);
   LensPermissionBubbleController(const LensPermissionBubbleController&) =
       delete;
   LensPermissionBubbleController& operator=(
@@ -66,17 +66,21 @@ class LensPermissionBubbleController {
   void OnPermissionDialogCancel();
   void OnPermissionDialogClose();
   void OnPermissionPreferenceUpdated(RequestPermissionCallback callback);
+  void TabWillDetach(tabs::TabInterface* tab,
+                     tabs::TabInterface::DetachReason reason);
 
   // Invocation source for the lens overlay.
   LensOverlayInvocationSource invocation_source_;
-  // The associated browser.
-  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  // The associated tab.
+  const raw_ref<tabs::TabInterface> tab_interface_;
   // The pref service associated with the current profile.
   raw_ptr<PrefService> pref_service_ = nullptr;
   // Registrar for pref change notifications.
   PrefChangeRegistrar pref_observer_;
   // Pointer to the widget that contains the current open dialog, if any.
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
+
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   base::WeakPtrFactory<LensPermissionBubbleController> weak_ptr_factory_{this};
 };

@@ -95,7 +95,9 @@ export class OnboardingDialog extends ReactiveLitElement {
 
   private readonly autoFocusItem = createRef<ReactiveLitElement>();
 
-  private readonly selectedLanguage = signal<LanguageCode|null>(null);
+  private readonly selectedLanguage = signal<LanguageCode>(
+    this.platformHandler.getDefaultLanguage(),
+  );
 
   private readonly availableLanguages = computed(() => {
     const languageList = this.platformHandler.getLangPackList();
@@ -251,13 +253,14 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 3: {
-        const onDropdownChange = (ev: CustomEvent<LanguageCode|null>) => {
+        const onDropdownChange = (ev: CustomEvent<LanguageCode>) => {
           this.selectedLanguage.value = ev.detail;
         };
 
         const dialogBody = html`
           ${i18n.onboardingDialogLanguageSelectionDescription}
           <language-dropdown
+            .defaultLanguage=${this.platformHandler.getDefaultLanguage()}
             .languageList=${this.availableLanguages.value}
             @dropdown-changed=${onDropdownChange}
             ${ref(this.autoFocusItem)}

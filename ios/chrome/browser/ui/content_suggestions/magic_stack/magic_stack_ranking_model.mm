@@ -663,8 +663,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcelTrackingFreshnessImpressionCount));
-  // TODO(crbug.com/398173021): Migrate this pref from localstate to profile.
-  int shopCardFreshnessImpressionCount = _localState->GetInteger(
+  int shopCardFreshnessImpressionCount = _prefService->GetInteger(
       prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(
       segmentation_platform::kShopCardFreshness,

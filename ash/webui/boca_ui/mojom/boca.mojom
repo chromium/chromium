@@ -180,6 +180,8 @@ enum BocaValidPref {
   // Default mediastream setting.
   // NOTE: Boca should only get but not set the setting.
   kDefaultMediaStreamSetting = 2,
+  // OOBE page access count.
+  kOOBEAccessCount = 3,
 };
 
 struct Session {

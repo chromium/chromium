@@ -121,11 +121,11 @@ GlicEnabling::GlicEnabling(Profile* profile) : profile_(profile) {
 }
 GlicEnabling::~GlicEnabling() = default;
 
-bool GlicEnabling::IsEnabled() {
+bool GlicEnabling::IsAllowed() {
   return IsEnabledForProfile(profile_);
 }
 
-base::CallbackListSubscription GlicEnabling::RegisterEnableChanged(
+base::CallbackListSubscription GlicEnabling::RegisterAllowedChanged(
     EnableChangedCallback callback) {
   return enable_changed_callback_list_.Add(std::move(callback));
 }

@@ -2494,7 +2494,7 @@ Chromium is unable to recover your settings.
       <!-- UNO Promo strings for extensions -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the extension installed bubble asking the user to enable UNO.">
-          To get your extensions and more on all your computers, sign in to Chromium
+          To get this extension and more on all your computers, sign in to Chromium
         </message>
       </if>
     </messages>

@@ -5,10 +5,11 @@
 #ifndef GPU_IPC_COMMON_GPU_SURFACE_LOOKUP_H_
 #define GPU_IPC_COMMON_GPU_SURFACE_LOOKUP_H_
 
+#include <variant>
+
 #include "base/android/scoped_java_ref.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
@@ -16,7 +17,7 @@
 namespace gpu {
 
 using JavaSurfaceVariant =
-    absl::variant<gl::ScopedJavaSurface, gl::ScopedJavaSurfaceControl>;
+    std::variant<gl::ScopedJavaSurface, gl::ScopedJavaSurfaceControl>;
 
 struct GPU_EXPORT SurfaceRecord {
   SurfaceRecord(

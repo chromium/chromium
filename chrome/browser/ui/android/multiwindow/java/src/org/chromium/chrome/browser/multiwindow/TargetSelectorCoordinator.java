@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,6 +14,8 @@ import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -26,13 +30,14 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Coordinator to construct the move target selector dialog. */
+@NullMarked
 public class TargetSelectorCoordinator {
     private static final int TYPE_ENTRY = 0;
 
     // Last selector dialog instance. This is used to prevent the user from interacting with
     // multiple instances of selector UI.
     @SuppressLint("StaticFieldLeak")
-    static TargetSelectorCoordinator sPrevInstance;
+    static @Nullable TargetSelectorCoordinator sPrevInstance;
 
     private final Context mContext;
     private final Callback<InstanceInfo> mMoveCallback;
@@ -42,8 +47,8 @@ public class TargetSelectorCoordinator {
     private final View mDialogView;
     private final ModalDialogManager mModalDialogManager;
 
-    private PropertyModel mDialog;
-    private InstanceInfo mSelectedItem;
+    private @Nullable PropertyModel mDialog;
+    private @Nullable InstanceInfo mSelectedItem;
     private int mCurrentId; // ID for the current instance.
 
     /**
@@ -114,6 +119,7 @@ public class TargetSelectorCoordinator {
                         switch (buttonType) {
                             case ModalDialogProperties.ButtonType.POSITIVE:
                                 dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                assumeNonNull(mSelectedItem);
                                 mMoveCallback.onResult(mSelectedItem);
                                 break;
                             case ModalDialogProperties.ButtonType.NEGATIVE:
@@ -170,8 +176,10 @@ public class TargetSelectorCoordinator {
 
     private void selectInstance(InstanceInfo clickedItem) {
         int instanceId = clickedItem.instanceId;
+        assumeNonNull(mSelectedItem);
         if (mSelectedItem.instanceId == instanceId) return;
         // Do not allow the target to be the current one.
+        assumeNonNull(mDialog);
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, mCurrentId == instanceId);
         Iterator<ListItem> it = mModelList.iterator();
         while (it.hasNext()) {

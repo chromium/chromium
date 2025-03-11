@@ -17,28 +17,15 @@ CapturedSurfaceControlPermissionContext::
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::CAPTURED_SURFACE_CONTROL,
-          network::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl),
-      sticky_permissions_(base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlStickyPermissions)) {}
-
-bool CapturedSurfaceControlPermissionContext::UsesAutomaticEmbargo() const {
-  return sticky_permissions_;
-}
+          network::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl) {}
 
 void CapturedSurfaceControlPermissionContext::UpdateContentSetting(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     ContentSetting content_setting,
     bool is_one_time) {
-  if (sticky_permissions_) {
-    permissions::PermissionContextBase::UpdateContentSetting(
-        requesting_origin, embedding_origin, content_setting, is_one_time);
-  } else {
-    // Avoid recording the setting; it is not really associated with
-    // the origin, but rather with the individual capture-session.
-    // (A capture-session can only be associated with a single origin,
-    // but an origin might have multiple capture-sessions.)
-  }
+  permissions::PermissionContextBase::UpdateContentSetting(
+      requesting_origin, embedding_origin, content_setting, is_one_time);
 }
 
 }  // namespace permissions

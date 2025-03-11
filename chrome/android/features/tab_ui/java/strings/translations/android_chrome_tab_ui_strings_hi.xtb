@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">टैब ग्रुप के कलर आइकॉन का रंग <ph name="COLOR_NAME" /> है</translation>
 <translation id="311432875115153175">टैब ग्रुप की सूची बंद कर दी गई है</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब को ग्रुप में जोड़ें}one{<ph name="TABS_COUNT_MANY" /> टैब को ग्रुप में जोड़ें}other{<ph name="TABS_COUNT_MANY" /> टैब, ग्रुप में जोड़ें}}</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3547352561153509682">ऐसा करने से यह ग्रुप, <ph name="USER_EMAIL" /> से साइन इन किए गए सभी डिवाइसों से मिट जाएगा</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नया टैब}one{<ph name="MANY_ADDED" /> नया टैब}other{<ph name="MANY_ADDED" /> नए टैब}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">इस डिवाइस से, खुले हुए टैब के टाइटल और यूआरएल को ऑपरेटिंग सिस्टम के साथ शेयर करें</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}one{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं)}}</translation>
 <translation id="4850886885716139402">देखें</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप में जोड़ें}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप में जोड़ें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब, ग्रुप में जोड़ें}}</translation>
 <translation id="4861611890274104875">कार्ड को खारिज करें.</translation>
 <translation id="4861953997778766866">आपके शेयर किए गए टैब ग्रुप में, सभी लोग बदलाव कर सकते हैं</translation>
 <translation id="4870911314065352661">सभी टैब बंद करें?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6271513594716432922">सभी इनऐक्टिव टैब बंद करें</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{नए ग्रुप में टैब को जोड़ें}one{नए ग्रुप में टैब को जोड़ें}other{नए ग्रुप में टैब जोड़ें}}</translation>
 <translation id="6333260925957816943">इस स्टोर के बारे में जानकारी</translation>
 <translation id="6381032505162537930">आपको अपने टैब ग्रुप यहां दिखेंगे</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से अलग करें}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से अलग करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब ग्रुप से अलग करें}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">आपके दूसरे डिवाइस से मिला नया ग्रुप</translation>
 <translation id="8029301326595421733">इस स्टोर के बारे में जानकारी पूरी स्क्रीन पर खुली हुई है</translation>
 <translation id="8053770993984522566">टैब ग्रुप की सूची, आधी स्क्रीन पर खोल दी गई है</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{टैब को ग्रुप में जोड़ें}one{टैब को ग्रुप में जोड़ें}other{टैब ग्रुप में जोड़ें}}</translation>
 <translation id="8076492880354921740">टैब</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को बड़ा करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को बड़ा करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को बड़ा करें.}}</translation>
 <translation id="8205266828577616993">टैब ऊपर भेजें</translation>

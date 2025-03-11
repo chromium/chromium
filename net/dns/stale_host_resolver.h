@@ -108,6 +108,8 @@ class StaleHostResolver : public HostResolver {
   HostCache* GetHostCache() override;
   base::Value::Dict GetDnsConfigAsValue() const override;
   void SetRequestContext(URLRequestContext* request_context) override;
+  bool IsHappyEyeballsV3Enabled() const override;
+  std::unique_ptr<HostResolver::ProbeRequest> CreateDohProbeRequest() override;
 
   // Set `tick_clock_` for testing. Must be set before issuing any requests.
   NET_EXPORT void SetTickClockForTesting(const base::TickClock* tick_clock);

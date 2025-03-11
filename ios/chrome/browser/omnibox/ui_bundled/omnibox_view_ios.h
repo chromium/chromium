@@ -21,8 +21,8 @@ class GURL;
 class OmniboxClient;
 @protocol OmniboxCommands;
 @protocol OmniboxFocusDelegate;
+@class OmniboxTextController;
 @class OmniboxTextFieldIOS;
-@protocol OmniboxViewConsumer;
 class ProfileIOS;
 @protocol ToolbarCommands;
 
@@ -39,13 +39,16 @@ class OmniboxViewIOS : public OmniboxView,
                  id<OmniboxCommands> omnibox_focuser,
                  id<OmniboxFocusDelegate> focus_delegate,
                  id<ToolbarCommands> toolbar_commands_handler,
-                 id<OmniboxViewConsumer> consumer,
                  bool is_lens_overlay);
 
   ~OmniboxViewIOS() override;
 
   void SetPopupProvider(OmniboxPopupProvider* provider) {
     popup_provider_ = provider;
+  }
+
+  void SetOmniboxTextController(OmniboxTextController* controller) {
+    omnibox_text_controller_ = controller;
   }
 
   // OmniboxView implementation.
@@ -99,7 +102,6 @@ class OmniboxViewIOS : public OmniboxView,
   void WillPaste() override;
   void OnDeleteBackward() override;
   void OnAcceptAutocomplete() override;
-  void OnRemoveAdditionalText() override;
 
   // OmniboxTextAcceptDelegate methods
   void OnAccept() override;
@@ -145,9 +147,6 @@ class OmniboxViewIOS : public OmniboxView,
   // focused and defocused.
   __weak id<OmniboxFocusDelegate> focus_delegate_;
 
-  // Consumer for this class.
-  __weak id<OmniboxViewConsumer> consumer_;
-
   State state_before_change_;
   NSString* marked_text_before_change_;
   NSRange current_selection_;
@@ -165,6 +164,10 @@ class OmniboxViewIOS : public OmniboxView,
   bool is_lens_overlay_;
 
   raw_ptr<OmniboxPopupProvider> popup_provider_;  // weak
+
+  /// Controller that will replace OmniboxViewIOS at the end of the refactoring
+  /// crbug.com/390409559.
+  __weak OmniboxTextController* omnibox_text_controller_;
 
   // Used to cancel clipboard callbacks if this is deallocated;
   base::WeakPtrFactory<OmniboxViewIOS> weak_ptr_factory_{this};

@@ -585,8 +585,8 @@ void OnStorageInfoReady(const ScopedJavaGlobalRef<jobject>& java_callback,
       continue;
     ScopedJavaLocalRef<jstring> host = ConvertUTF8ToJavaString(env, i->host);
 
-    Java_WebsitePreferenceBridge_insertStorageInfoIntoList(
-        env, list, host, static_cast<jint>(i->type), i->usage);
+    Java_WebsitePreferenceBridge_insertStorageInfoIntoList(env, list, host,
+                                                           i->usage);
   }
 
   base::android::RunObjectCallbackAndroid(java_callback, list);
@@ -759,7 +759,6 @@ static void JNI_WebsitePreferenceBridge_ClearStorageData(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     const JavaParamRef<jstring>& jhost,
-    jint type,
     const JavaParamRef<jobject>& java_callback) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   std::string host = ConvertJavaStringToUTF8(env, jhost);
@@ -767,9 +766,8 @@ static void JNI_WebsitePreferenceBridge_ClearStorageData(
   auto storage_info_fetcher =
       base::MakeRefCounted<browser_ui::StorageInfoFetcher>(browser_context);
   storage_info_fetcher->ClearStorage(
-      host, static_cast<blink::mojom::StorageType>(type),
-      base::BindOnce(&OnStorageInfoCleared,
-                     ScopedJavaGlobalRef<jobject>(java_callback)));
+      host, base::BindOnce(&OnStorageInfoCleared,
+                           ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
 static void JNI_WebsitePreferenceBridge_ClearCookieData(

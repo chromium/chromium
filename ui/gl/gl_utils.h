@@ -85,6 +85,9 @@ GL_EXPORT void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
 GL_EXPORT void SetGpuPreferenceEGL(GpuPreference preference,
                                    uint64_t system_device_id);
 
+// Return the value for the entry at <preference> from GLDisplayManagerEGL.
+GL_EXPORT uint64_t GetSystemDeviceIdEGLForTesting(GpuPreference preference);
+
 // Remove the entry at <preference> from GLDisplayManagerEGL.
 GL_EXPORT void RemoveGpuPreferenceEGL(GpuPreference preference);
 

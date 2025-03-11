@@ -36,10 +36,10 @@ var ENTITY_INSTANCE = {
   type: {
     typeName: 1,
     typeNameAsString: 'Car',
-    addEntityString: 'Add car',
-    editEntityString: 'Edit car',
+    addEntityTypeString: 'Add car',
+    editEntityTypeString: 'Edit car',
   },
-  attributes: [
+  attributeInstances: [
     {type: {typeName: 6, typeNameAsString: 'License plate'}, value: 'ABCDE'},
   ],
   guid: GUID,
@@ -47,7 +47,7 @@ var ENTITY_INSTANCE = {
 };
 
 var UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);
-UPDATED_ENTITY_INSTANCE.attributes[0].value = 'XYZ';
+UPDATED_ENTITY_INSTANCE.attributeInstances[0].value = 'XYZ';
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -186,8 +186,8 @@ function updateCreditCardForCvc(updatedCvcValue) {
 function entityInstaceToEntityInstanceWithLabels(entityInstance) {
   return ({
     guid: entityInstance.guid,
-    entityLabel: entityInstance.attributes[0].value,
-    entitySubLabel: entityInstance.type.typeNameAsString,
+    entityInstanceLabel: entityInstance.attributeInstances[0].value,
+    entityInstanceSubLabel: entityInstance.type.typeNameAsString,
   });
 };
 
@@ -954,20 +954,20 @@ var availableTests = [
       {
         typeName: 0,
         typeNameAsString: 'Passport',
-        addEntityString: 'Add passport',
-        editEntityString: 'Edit passport'
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport'
       },
       {
         typeName: 1,
         typeNameAsString: 'Car',
-        addEntityString: 'Add car',
-        editEntityString: 'Edit car'
+        addEntityTypeString: 'Add car',
+        editEntityTypeString: 'Edit car'
       },
       {
         typeName: 2,
         typeNameAsString: 'Driver\'s license',
-        addEntityString: 'Add driver\'s license',
-        editEntityString: 'Edit driver\'s license'
+        addEntityTypeString: 'Add driver\'s license',
+        editEntityTypeString: 'Edit driver\'s license'
       },
     ];
     for (const index in expectedEntityTypesList) {
@@ -977,9 +977,9 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  async function getAllAttributeTypesForEntity() {
+  async function getAllAttributeTypesForEntityTypeName() {
     const attributeTypesList =
-        await chrome.autofillPrivate.getAllAttributeTypesForEntity(
+        await chrome.autofillPrivate.getAllAttributeTypesForEntityTypeName(
             /*entityTypeName=*/ 2);
     const expectedAttributeTypesList = [
       {typeName: 10, typeNameAsString: 'Name'},
@@ -1054,7 +1054,8 @@ var TESTS_FOR_CONFIG = {
   'loadUpdatedEntityInstance': ['loadUpdatedEntityInstance'],
   'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
   'getAllEntityTypes': ['getAllEntityTypes'],
-  'getAllAttributeTypesForEntity': ['getAllAttributeTypesForEntity'],
+  'getAllAttributeTypesForEntityTypeName':
+      ['getAllAttributeTypesForEntityTypeName'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
 };
 

@@ -960,9 +960,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
     return std::nullopt;
   }
   std::optional<double> ComputeValueInCanonicalUnit(
-      const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
-  }
+      const CSSLengthResolver& length_resolver) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {
     return std::nullopt;

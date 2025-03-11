@@ -259,7 +259,7 @@ void GlicCookieSynchronizer::BeginCookieSync() {
               this,
               {gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
                {primary_account_id}},
-              gaia::GaiaSource::kChrome,
+              gaia::GaiaSource::kChromeGlic,
               base::BindOnce(&GlicCookieSynchronizer::OnAuthFinished,
                              GetWeakPtr()));
 }

@@ -42,9 +42,9 @@ cc_library(
     deps = [
         ":distributions",
         ":seed_sequences",
+        "//absl/base:config",
         "//absl/random/internal:nonsecure_base",
         "//absl/random/internal:pcg_engine",
-        "//absl/random/internal:pool_urbg",
         "//absl/random/internal:randen_engine",
     ],
 )
@@ -111,7 +111,7 @@ cc_library(
         ":seed_gen_exception",
         "//absl/base:config",
         "//absl/base:nullability",
-        "//absl/random/internal:pool_urbg",
+        "//absl/random/internal:entropy_pool",
         "//absl/random/internal:salted_seed_seq",
         "//absl/random/internal:seed_material",
         "//absl/strings:string_view",
@@ -538,9 +538,7 @@ cc_binary(
     deps = [
         ":distributions",
         ":random",
-        ":seed_sequences",
         "//absl/base:core_headers",
-        "//absl/meta:type_traits",
         "//absl/random/internal:fast_uniform_bits",
         "//absl/random/internal:randen_engine",
         "@google_benchmark//:benchmark_main",

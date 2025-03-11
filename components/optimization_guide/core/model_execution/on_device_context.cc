@@ -22,8 +22,7 @@ OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
       adapter(orig.adapter),
       safety_checker(std::make_unique<SafetyChecker>(*orig.safety_checker)),
       token_limits(orig.token_limits),
-      logger(orig.logger),
-      log_uploader(orig.log_uploader) {}
+      logger(orig.logger) {}
 
 bool OnDeviceOptions::ShouldUse() const {
   return model_client->ShouldUse();

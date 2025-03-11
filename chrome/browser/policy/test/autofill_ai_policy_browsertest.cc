@@ -134,17 +134,5 @@ IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsDisabledByPolicy) {
                                               : chrome::kAutofillAiSubPage}));
 }
 
-// Tests that `AutofillAiDelegate` exists iff it is allowed by the policy.
-IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, DelegateDisabledByPolicy) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/autofill/autofill_address_enabled.html")));
-  ChromeAutofillAiClient* client =
-      CHECK_DEREF(tabs::TabInterface::MaybeGetFromContents(GetWebContents()))
-          .GetTabFeatures()
-          ->chrome_autofill_ai_client();
-  EXPECT_EQ(client == nullptr, disabled_by_policy());
-}
-
 }  // namespace
 }  // namespace policy

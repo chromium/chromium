@@ -594,19 +594,23 @@ class AutofillPrivateGetAllEntityTypesFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetAllAttributeTypesForEntityFunction
+class AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction
     : public AutofillPrivateExtensionFunction {
  public:
-  AutofillPrivateGetAllAttributeTypesForEntityFunction() = default;
-  AutofillPrivateGetAllAttributeTypesForEntityFunction(
-      const AutofillPrivateGetAllAttributeTypesForEntityFunction&) = delete;
-  AutofillPrivateGetAllAttributeTypesForEntityFunction& operator=(
-      const AutofillPrivateGetAllAttributeTypesForEntityFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getAllAttributeTypesForEntity",
-                             AUTOFILLPRIVATE_GETALLATTRIBUTETYPESFORENTITY)
+  AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction() = default;
+  AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction(
+      const AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction&) =
+      delete;
+  AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction& operator=(
+      const AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction&) =
+      delete;
+  DECLARE_EXTENSION_FUNCTION(
+      "autofillPrivate.getAllAttributeTypesForEntityTypeName",
+      AUTOFILLPRIVATE_GETALLATTRIBUTETYPESFORENTITYTYPENAME)
 
  protected:
-  ~AutofillPrivateGetAllAttributeTypesForEntityFunction() override = default;
+  ~AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction() override =
+      default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
