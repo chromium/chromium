@@ -345,22 +345,14 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-bool IsBnplVcn(const AutofillClient& client, const CreditCard& credit_card) {
-  return base::Contains(client.GetPaymentsAutofillClient()
-                            ->GetPaymentsDataManager()
-                            .GetBnplIssuers(),
-                        credit_card.issuer_id(), &BnplIssuer::issuer_id);
-}
-
 // Checks if the `credit_card` needs to be fetched in order to complete the
 // current filling flow.
 // TODO(crbug.com/40227496): Only use parsed data.
 bool ShouldFetchCreditCard(const FormData& form,
                            const FormStructure& form_structure,
                            const AutofillField& autofill_field,
-                           const CreditCard& credit_card,
-                           const AutofillClient& client) {
-  if (IsBnplVcn(client, credit_card)) {
+                           const CreditCard& credit_card) {
+  if (credit_card.is_bnpl_card()) {
     // This is a BNPL VCN, so fetching is not needed because an authentication
     // already happened.
     return false;
@@ -1659,7 +1651,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kKeyboardAccessory:
       case AutofillTriggerSource::kTouchToFillCreditCard:
         return ShouldFetchCreditCard(form, *form_structure, *autofill_field,
-                                     credit_card, client());
+                                     credit_card);
       case AutofillTriggerSource::kScanCreditCard:
       case AutofillTriggerSource::kDevtools:
       case AutofillTriggerSource::kFastCheckout:
@@ -1753,14 +1745,29 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
         credit_card, *form_structure, metrics_->signin_state_for_metrics);
   }
 
-  if (!require_card_fetching) {
-    fill_or_preview(*this, action_persistence, form, field_id, credit_card,
-                    trigger_source);
-  } else {
+  // Represents cases where credit cards are fetched independently of the
+  // typical card unmasking flow. In these cases, the cards already went through
+  // an authentication process, but still require all of the functionality of
+  // `on_fetched`.
+  // TODO(crbug.com/401566102): Move `on_fetched` and fetching logic out of
+  // FillOrPreviewCreditCardForm() and pass it in as a param, so that the moment
+  // FillOrPreviewCreditCardForm() is called, the card is just filled without
+  // side effects, and `on_fetched` logic will be triggered after if present.
+  bool fetched_independently = [&]() { return credit_card.is_bnpl_card(); }();
+
+  if (require_card_fetching) {
     GetCreditCardAccessManager().FetchCreditCard(
         &credit_card,
         base::BindOnce(on_fetched, weak_ptr_factory_.GetWeakPtr(),
                        fill_or_preview, form, field_id, trigger_source));
+  } else if (fetched_independently) {
+    // Cards fetched independently, such as for BNPL, have all of their data on
+    // creation and do not need further fetching.
+    on_fetched(weak_ptr_factory_.GetWeakPtr(), fill_or_preview, form, field_id,
+               trigger_source, credit_card);
+  } else {
+    fill_or_preview(*this, action_persistence, form, field_id, credit_card,
+                    trigger_source);
   }
 }
 

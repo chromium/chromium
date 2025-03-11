@@ -12,12 +12,15 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 
@@ -257,6 +260,39 @@ bool FilledCardInformationBubbleControllerImpl::ShouldShowGooglePayIconInTitle()
   return !IsBnplFlow();
 }
 
+std::u16string
+FilledCardInformationBubbleControllerImpl::GetMaskedCardNameForDescriptionView()
+    const {
+  if (IsBnplFlow()) {
+    if (options_.filled_card.issuer_id() == kBnplAffirmIssuerId) {
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM);
+    }
+
+    if (options_.filled_card.issuer_id() == kBnplZipIssuerId) {
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
+    }
+  }
+
+  return options_.masked_card_name;
+}
+
+gfx::Image
+FilledCardInformationBubbleControllerImpl::GetCardImageForDescriptionView()
+    const {
+  if (IsBnplFlow()) {
+    if (options_.filled_card.issuer_id() == kBnplAffirmIssuerId) {
+      return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          IDR_AUTOFILL_AFFIRM_LINKED);
+    }
+
+    if (options_.filled_card.issuer_id() == kBnplZipIssuerId) {
+      return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          IDR_AUTOFILL_ZIP_LINKED);
+    }
+  }
+  return options_.card_image;
+}
+
 void FilledCardInformationBubbleControllerImpl::UpdateClipboard(
     const std::u16string& text) const {
   // TODO(crbug.com/40176273): Add metrics for user interaction with manual
@@ -372,8 +408,7 @@ GURL FilledCardInformationBubbleControllerImpl::GetLearnMoreUrl() const {
 }
 
 bool FilledCardInformationBubbleControllerImpl::IsBnplFlow() const {
-  return base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
-                        options_.filled_card.issuer_id());
+  return options_.filled_card.is_bnpl_card();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FilledCardInformationBubbleControllerImpl);

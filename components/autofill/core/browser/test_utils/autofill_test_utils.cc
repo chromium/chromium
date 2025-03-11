@@ -454,6 +454,7 @@ CreditCard GetVirtualCard() {
   credit_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   credit_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  credit_card.set_cvc(u"123");
   test_api(credit_card).set_network_for_card(kMasterCard);
   return credit_card;
 }

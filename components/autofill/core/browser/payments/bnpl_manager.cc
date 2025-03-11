@@ -166,6 +166,7 @@ void BnplManager::OnVcnDetailsFetched(
                            base::UTF8ToUTF16(response_details.expiration_year));
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
     credit_card.set_issuer_id(ongoing_flow_state_->issuer_id);
+    credit_card.set_is_bnpl_card(true);
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {

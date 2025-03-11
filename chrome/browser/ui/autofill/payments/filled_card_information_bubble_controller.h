@@ -108,6 +108,13 @@ class FilledCardInformationBubbleController {
 
   // Returns whether the Google Pay icon should be shown in the bubble title.
   virtual bool ShouldShowGooglePayIconInTitle() const = 0;
+
+  // Returns the masked card name to display in the description view of the
+  // bubble.
+  virtual std::u16string GetMaskedCardNameForDescriptionView() const = 0;
+
+  // Returns the image to display in the description view of the bubble.
+  virtual gfx::Image GetCardImageForDescriptionView() const = 0;
 };
 
 }  // namespace autofill
