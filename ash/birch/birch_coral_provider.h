@@ -119,7 +119,6 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
  private:
   FRIEND_TEST_ALL_PREFIXES(CoralControllerTest, RestoreSuppressionContext);
   FRIEND_TEST_ALL_PREFIXES(CoralControllerTest, InSessionSuppressionContext);
-  FRIEND_TEST_ALL_PREFIXES(CoralSavedGroupTest, SaveSuppressionContext);
 
   // Gets if the system language is supported.
   bool GetLanguageAvailability();
