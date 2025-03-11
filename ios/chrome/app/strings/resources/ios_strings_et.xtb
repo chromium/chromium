@@ -91,7 +91,7 @@
 <translation id="1358214951266274152">Külastage kopeeritud linki</translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
 <translation id="1362192716574455663">Olemasolevaid sirvimisandmeid ei teisaldata teie töökontole. Pääsete sellele siiski juurde, logides välja või lisades isikliku konto.</translation>
-<translation id="1363028406613469049">Rada</translation>
+<translation id="1363028406613469049">Jälgi</translation>
 <translation id="1364367057792633742">Uus vaheleht</translation>
 <translation id="1365106417372288489">Teie iPhone taastati hiljuti, mistõttu võis teie vaikebrauseri muutuda.</translation>
 <translation id="1366297852155605523">Minuga jagatud</translation>
@@ -1153,6 +1153,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5898848375214731122">Kaal</translation>
 <translation id="5899314093904173337">Läheduses asuvate inimestega jagamiseks paluge neil kaamera või QR-skannerirakendusega skannida see QR-kood</translation>
 <translation id="5911030830365207728">Google'i tõlge</translation>
+<translation id="5917913282764181683">Allalaaditud failide automaatne kustutamine</translation>
 <translation id="5922999516621365983">Vahelehe kinnitamiseks lohistage see siia.</translation>
 <translation id="5936006948844852401">Salvestusruumi haldamine</translation>
 <translation id="5936065461722368675">Tõlgi kogu leht</translation>
