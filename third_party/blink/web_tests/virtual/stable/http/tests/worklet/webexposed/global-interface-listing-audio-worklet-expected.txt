@@ -69,6 +69,7 @@ CONSOLE MESSAGE:     method addEventListener
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method dispatchEvent
 CONSOLE MESSAGE:     method removeEventListener
+CONSOLE MESSAGE:     method when
 CONSOLE MESSAGE: interface Float16Array : TypedArray
 CONSOLE MESSAGE:     attribute BYTES_PER_ELEMENT
 CONSOLE MESSAGE:     method constructor

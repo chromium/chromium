@@ -343,6 +343,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property when
     property writingSuggestions
 html element a
     property attributionSrc
@@ -1556,6 +1557,7 @@ namespace http://www.w3.org/2000/svg
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property when
 svg element a
     property farthestViewportElement
     property getBBox

@@ -3020,7 +3020,7 @@
     },
     {
       name: "ObservableAPI",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
