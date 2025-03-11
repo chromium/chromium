@@ -237,7 +237,6 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
 }
 
 SkTileMode ComputeTileMode(float left, float right, float min, float max) {
-  DCHECK(left < right);
   return left >= min && right <= max ? SkTileMode::kClamp : SkTileMode::kRepeat;
 }
 
