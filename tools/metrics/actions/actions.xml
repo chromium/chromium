@@ -12279,6 +12279,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.Settings.ShortcutDisabled">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic shortcut (aka hotkey) is disabled from
+    chrome://settings.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.Settings.ShortcutEnabled">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic shortcut (aka hotkey) is enabled from chrome://settings.
+  </description>
+</action>
+
 <action name="GlicResponse">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
