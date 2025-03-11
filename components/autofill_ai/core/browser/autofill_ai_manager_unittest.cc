@@ -774,50 +774,5 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
             u"2020-02-01");
 }
 
-class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
- public:
-  AutofillAiEligibilityTests() {
-    autofill::test::FormDescription form_description = {
-        .fields = {{.role = autofill::NAME_FIRST,
-                    .heuristic_type = autofill::NAME_FIRST}}};
-  }
-
-  void SetPredictionTypesForField(AutofillField& field,
-                                  autofill::FieldTypeSet types) {
-    std::vector<autofill::AutofillQueryResponse::FormSuggestion::
-                    FieldSuggestion::FieldPrediction>
-        predictions;
-    for (autofill::FieldType type : types) {
-      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-          FieldPrediction prediction;
-      prediction.set_type(type);
-      predictions.push_back(prediction);
-    }
-
-    field.set_server_predictions(std::move(predictions));
-  }
-
-  std::unique_ptr<FormStructure> CreateEligibleForm(
-      const GURL& url = GURL("https://example.com")) {
-    autofill::FormData form_data;
-    form_data.set_main_frame_origin(url::Origin::Create(url));
-    auto form = std::make_unique<FormStructure>(form_data);
-    AutofillField& field = test_api(*form).PushField();
-    SetPredictionTypesForField(
-        field, {autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG});
-    return form;
-  }
-};
-
-TEST_F(AutofillAiEligibilityTests,
-       UserNotEligibleForImportingAndFillingIfPrefIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
-
-  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
-  EXPECT_FALSE(manager().IsUserEligibleForFillingAndImporting());
-}
-
 }  // namespace
 }  // namespace autofill_ai

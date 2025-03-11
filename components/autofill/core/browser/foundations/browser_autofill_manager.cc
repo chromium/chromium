@@ -830,11 +830,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
   bool autofill_ai_shows_bubble = false;
-  // Try to import the `form` via the `AutofillAiDelegate`.
-  // `MaybeImportFromSubmittedForm()` will be called if the import was not
-  // successful.
-  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-      delegate && delegate->IsUserEligibleForFillingAndImporting()) {
+  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
     autofill_ai_shows_bubble = delegate->MaybeImportForm(*submitted_form);
   }
 

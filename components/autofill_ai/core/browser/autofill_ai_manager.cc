@@ -286,10 +286,6 @@ bool AutofillAiManager::IsUserEligible() const {
   return client_->IsUserEligible();
 }
 
-bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
-  return client_->IsAutofillAiEnabledPref() && IsUserEligible();
-}
-
 void AutofillAiManager::OnSuggestionsShown(
     const DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormGlobalId& form_id) {
@@ -328,6 +324,11 @@ void AutofillAiManager::OnEditedAutofilledField(
 }
 
 bool AutofillAiManager::MaybeImportForm(const autofill::FormStructure& form) {
+  if (!autofill::MayPerformAutofillAiAction(
+          client_->GetAutofillClient(), autofill::AutofillAiAction::kImport)) {
+    return false;
+  }
+
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     LOG_AF(GetCurrentLogManager())

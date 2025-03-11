@@ -6872,17 +6872,13 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
 }
 
 // Tests that an Autofill profile is not imported into the address data manager
-// when the submitted form was imported into user annotations successfully.
+// when the submitted form was imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest,
        ProfileNotImportedOnSuccessfulUserAnnotationsImport) {
   using optimization_guide::proto::UserAnnotationsEntry;
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligibleForFillingAndImporting)
-      .WillByDefault(Return(true));
 
   // Fill the form.
   FormData response_data =
@@ -6896,22 +6892,19 @@ TEST_F(BrowserAutofillManagerTest,
   // prediction improvements.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(delegate, MaybeImportForm).WillOnce(Return(true));
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), MaybeImportForm)
+      .WillOnce(Return(true));
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
 
 // Tests that an Autofill profile is imported into the address data manager when
-// the submitted form was not imported into user annotations.
+// the submitted form was not imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest,
        ProfileImportedOnFailedUserAnnotationsImport) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligibleForFillingAndImporting)
-      .WillByDefault(Return(true));
 
   // Fill the form.
   FormData response_data =
@@ -6924,32 +6917,10 @@ TEST_F(BrowserAutofillManagerTest,
   // that the profile is imported again.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(delegate, MaybeImportForm).WillOnce(Return(false));
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), MaybeImportForm)
+      .WillOnce(Return(false));
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
-}
-
-// Tests that the filled-in form is not imported into user annotations if
-// the user is not eligible for the improved autofill prediction experience.
-TEST_F(BrowserAutofillManagerTest, CC) {
-  TestAddressDataManager& adm = personal_data().test_address_data_manager();
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(false));
-  EXPECT_CALL(delegate, MaybeImportForm).Times(0);
-
-  // Fill the form.
-  FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
-
-  // Remove the filled profile and simulate form submission. Since the
-  // `personal_data()`'s auto accept imports for testing is enabled, expect
-  // that the profile is imported again.
-  adm.ClearProfiles();
-  ASSERT_TRUE(adm.GetProfiles().empty());
-  FormSubmitted(response_data);
 }
 
 class BrowserAutofillManagerWithAiModelTest
