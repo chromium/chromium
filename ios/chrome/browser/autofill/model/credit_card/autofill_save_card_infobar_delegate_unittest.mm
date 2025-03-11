@@ -4,6 +4,7 @@
 
 #import <memory>
 #import <string>
+#import <variant>
 
 #import "base/functional/bind.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -16,7 +17,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
@@ -69,7 +69,7 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
   }
 
   std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> CreateDelegate(
-      absl::variant<
+      std::variant<
           payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
           payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
           save_card_callback,
