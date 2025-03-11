@@ -20,10 +20,11 @@
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <div slot="title">[[dialogTitle]]</div>
   <div slot="body">
-    <template is="dom-repeat" items="[[completeAttributeList_]]">
-      <cr-input id="attributeField" type="text"
+    <template is="dom-repeat" items="[[completeAttributeInstanceList_]]">
+      <cr-input id="attributeInstanceField" type="text"
           label="[[item.type.typeNameAsString]]" value="{{item.value}}"
-          spellcheck="false" maxlength="1000" on-input="onAttributeFieldInput_">
+          spellcheck="false" maxlength="1000"
+          on-input="onAttributeInstanceFieldInput_">
       </cr-input>
     </template>
     <div id="validationError" hidden="[[canSave_]]">

@@ -138,11 +138,11 @@ suite('PasswordsAndForms', function() {
   let prefs: SettingsPrefsElement;
   let element: SettingsAutofillPageElement;
 
-  const testEntityWithLabels:
+  const testEntityInstanceWithLabels:
       chrome.autofillPrivate.EntityInstanceWithLabels = {
     guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-    entityLabel: 'Toyota',
-    entitySubLabel: 'Car',
+    entityInstanceLabel: 'Toyota',
+    entityInstanceSubLabel: 'Car',
   };
 
   setup(async function() {
@@ -244,15 +244,16 @@ suite('PasswordsAndForms', function() {
   // The Autofill AI button is visible if the user has data saved, but is not
   // eligible.
   test('AutofillAIVisibleIfUserHasDataSaved', async function() {
-    entityDataManager.setLoadEntityInstancesResponse([testEntityWithLabels]);
+    entityDataManager.setLoadEntityInstancesResponse(
+        [testEntityInstanceWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: true,
       userEligibleForAutofillAi: false,
     });
-    // Recreate the element with the new `loadTimeData` and entities.
+    // Recreate the element with the new `loadTimeData` and entity instances.
     element.remove();
     element = createAutofillElement(prefs);
-    // Make sure that the entities were loaded.
+    // Make sure that the entity instances were loaded.
     await flushTasks();
     const autofillAiManagerButton =
         element.shadowRoot!.querySelector<CrLinkRowElement>(

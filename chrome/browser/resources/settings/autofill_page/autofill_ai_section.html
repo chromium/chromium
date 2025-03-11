@@ -97,8 +97,8 @@
   </h2>
   <!-- Disabled: If the user is not eligible for Autofill with Ai or if the
        user opted out by switching the toggle, the user should not be able to
-       add entities. -->
-  <cr-button id="addEntity" class="header-aligned-button"
+       add entity instances. -->
+  <cr-button id="addEntityInstance" class="header-aligned-button"
       disabled$="[[computeDisableAddButton_(ineligibleUser,
           prefs.autofill.prediction_improvements.enabled.value)]]"
       on-click="onAddButtonClick_">
@@ -110,12 +110,12 @@
   <template is="dom-repeat" items="[[entityInstances_]]">
     <li class="list-item">
       <div class="start">
-        [[item.entityLabel]]
-        <div class="cr-secondary-text">[[item.entitySubLabel]]</div>
+        [[item.entityInstanceLabel]]
+        <div class="cr-secondary-text">[[item.entityInstanceSubLabel]]</div>
       </div>
       <cr-icon-button id="moreButton" class="icon-more-vert"
           on-click="onMoreButtonClick_" title="[[getMoreButtonTitle_(
-              item.entityLabel, item.entitySubLabel)]]">
+              item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
       </cr-icon-button>
     </li>
   </template>
@@ -127,8 +127,8 @@
 <cr-lazy-render id="addMenu">
   <template>
     <cr-action-menu role-description="$i18n{menu}">
-      <template is="dom-repeat" items="[[completeEntityList_]]">
-        <button id="addSpecificEntity" class="dropdown-item"
+      <template is="dom-repeat" items="[[completeEntityTypesList_]]">
+        <button id="addSpecificEntityType" class="dropdown-item"
             on-click="onAddEntityInstanceFromDropdownClick_">
           [[item.typeNameAsString]]
         </button>
@@ -140,26 +140,27 @@
 <cr-lazy-render id="actionMenu">
   <template>
     <cr-action-menu role-description="$i18n{menu}">
-      <button id="menuEditEntity" class="dropdown-item"
-          on-click="onMenuEditEntityClick_">$i18n{edit}</button>
-      <button id="menuRemoveEntity" class="dropdown-item"
-          on-click="onMenuRemoveEntityClick_">$i18n{delete}</button>
+      <button id="menuEditEntityInstance" class="dropdown-item"
+          on-click="onMenuEditEntityInstanceClick_">$i18n{edit}</button>
+      <button id="menuRemoveEntityInstance" class="dropdown-item"
+          on-click="onMenuRemoveEntityInstanceClick_">$i18n{delete}</button>
     </cr-action-menu>
   </template>
 </cr-lazy-render>
 
-<template is="dom-if" if="[[showAddOrEditEntityDialog_]]" restamp>
-  <settings-autofill-ai-add-or-edit-dialog id="addOrEditEntityDialog"
-      entity="[[activeEntity_]]" dialog-title="[[addOrEditEntityDialogTitle_]]"
+<template is="dom-if" if="[[showAddOrEditEntityInstanceDialog_]]" restamp>
+  <settings-autofill-ai-add-or-edit-dialog id="addOrEditEntityInstanceDialog"
+      entity-instance="[[activeEntityInstance_]]"
+      dialog-title="[[addOrEditEntityInstanceDialogTitle_]]"
       on-autofill-ai-add-or-edit-done="onAutofillAiAddOrEditDone_"
-      on-close="onAddOrEditEntityDialogClose_">
+      on-close="onAddOrEditEntityInstanceDialogClose_">
   </settings-autofill-ai-add-or-edit-dialog>
 </template>
-<template is="dom-if" if="[[showRemoveEntityDialog_]]" restamp>
-  <settings-simple-confirmation-dialog id="removeEntityDialog"
+<template is="dom-if" if="[[showRemoveEntityInstanceDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="removeEntityInstanceDialog"
       title-text="$i18n{autofillAiDeleteEntityInstanceDialogTitle}"
       body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
       confirm-text="$i18n{delete}"
-      on-close="onRemoveEntityDialogClose_">
+      on-close="onRemoveEntityInstanceDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>

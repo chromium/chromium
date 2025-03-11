@@ -206,8 +206,8 @@ declare global {
       export interface EntityType {
         typeName: number;
         typeNameAsString: string;
-        addEntityString: string;
-        editEntityString: string;
+        addEntityTypeString: string;
+        editEntityTypeString: string;
       }
 
       export interface AttributeInstance {
@@ -217,15 +217,15 @@ declare global {
 
       export interface EntityInstance {
         type: EntityType;
-        attributes: AttributeInstance[];
+        attributeInstances: AttributeInstance[];
         guid: string;
         nickname: string;
       }
 
       export interface EntityInstanceWithLabels {
         guid: string;
-        entityLabel: string;
-        entitySubLabel: string;
+        entityInstanceLabel: string;
+        entityInstanceSubLabel: string;
       }
 
       export interface PayOverTimeIssuerEntry {
@@ -271,8 +271,8 @@ declare global {
       export function getEntityInstanceByGuid(guid: string):
           Promise<EntityInstance>;
       export function getAllEntityTypes(): Promise<EntityType[]>;
-      export function getAllAttributeTypesForEntity(entityTypeName: number):
-          Promise<AttributeType[]>;
+      export function getAllAttributeTypesForEntityTypeName(
+          entityTypeName: number): Promise<AttributeType[]>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],

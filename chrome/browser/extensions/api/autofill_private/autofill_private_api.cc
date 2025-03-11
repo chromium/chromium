@@ -97,8 +97,8 @@ static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorAutofillAiUnavailable[] =
     "Autofill AI data unavailable.";
-static const char kErrorAutofillAiEntityOutOfBounds[] =
-    "The provided Autofill AI entity/attribute is out of bounds.";
+static const char kErrorAutofillAiTypeNameOutOfBounds[] =
+    "The provided Autofill AI entity/attribute type name is out of bounds.";
 static const char kErrorAutofillAiEntityInstanceNotFound[] =
     "The provided Autofill AI entity instance cannot be found.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
@@ -1056,7 +1056,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
           private_api_entity_instance);
   if (!entity_instance.has_value()) {
-    return RespondNow(Error(kErrorAutofillAiEntityOutOfBounds));
+    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -1163,10 +1163,10 @@ AutofillPrivateGetAllEntityTypesFunction::Run() {
             base::to_underlying(entity_type.name());
         private_api_entity_type.type_name_as_string =
             base::UTF16ToUTF8(entity_type.GetNameForI18n());
-        private_api_entity_type.add_entity_string =
-            autofill_ai_util::GetAddEntityStringForI18n(entity_type);
-        private_api_entity_type.edit_entity_string =
-            autofill_ai_util::GetEditEntityStringForI18n(entity_type);
+        private_api_entity_type.add_entity_type_string =
+            autofill_ai_util::GetAddEntityTypeStringForI18n(entity_type);
+        private_api_entity_type.edit_entity_type_string =
+            autofill_ai_util::GetEditEntityTypeStringForI18n(entity_type);
         return private_api_entity_type;
       });
   return RespondNow(ArgumentList(
@@ -1174,20 +1174,19 @@ AutofillPrivateGetAllEntityTypesFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateGetAllAttributeTypesForEntityFunction
+// AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction
 
 ExtensionFunction::ResponseAction
-AutofillPrivateGetAllAttributeTypesForEntityFunction::Run() {
-  std::optional<autofill_private::GetAllAttributeTypesForEntity::Params>
-      parameters =
-          autofill_private::GetAllAttributeTypesForEntity::Params::Create(
-              args());
+AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
+  std::optional<autofill_private::GetAllAttributeTypesForEntityTypeName::Params>
+      parameters = autofill_private::GetAllAttributeTypesForEntityTypeName::
+          Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   std::optional<EntityTypeName> entity_type_name =
       autofill::ToSafeEntityTypeName(parameters->entity_type_name);
   if (!entity_type_name.has_value()) {
-    return RespondNow(Error(kErrorAutofillAiEntityOutOfBounds));
+    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
   }
 
   EntityType entity_type(entity_type_name.value());
@@ -1202,7 +1201,7 @@ AutofillPrivateGetAllAttributeTypesForEntityFunction::Run() {
         return private_api_attribute_type;
       });
   return RespondNow(ArgumentList(
-      autofill_private::GetAllAttributeTypesForEntity::Results::Create(
+      autofill_private::GetAllAttributeTypesForEntityTypeName::Results::Create(
           result)));
 }
 

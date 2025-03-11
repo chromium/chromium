@@ -334,14 +334,16 @@ namespace autofillPrivate {
     long typeName;
     // The type name as a human readable string.
     DOMString typeNameAsString;
-    // The i18n string representation of "Add <entity>". Used in the entity
-    // adding settings UI. The string cannot be constructed dynamically,
-    // because the entity string might need declension in some languages.
-    DOMString addEntityString;
-    // The i18n string representation of "Edit <entity>". Used in the entity
-    // editing settings UI. The string cannot be constructed dynamically,
-    // because the entity string might need declension in some languages.
-    DOMString editEntityString;
+    // The i18n string representation of "Add <entity type>". Used in the entity
+    // instance adding settings UI. The string cannot be constructed
+    // dynamically, because the "<entity type>" string might need declension in
+    // some languages.
+    DOMString addEntityTypeString;
+    // The i18n string representation of "Edit <entity type>". Used in the
+    // entity instance editing settings UI. The string cannot be constructed
+    // dynamically, because the "<entity type>" string might need declension in
+    // some languages.
+    DOMString editEntityTypeString;
   };
 
   // An attribute instance is a typed string value with additional metadata.
@@ -350,7 +352,7 @@ namespace autofillPrivate {
     // Contains the attribute type name and other relevant information about the
     // attribute type.
     AttributeType type;
-    // The attribute value.
+    // The attribute instance value.
     DOMString value;
   };
 
@@ -361,7 +363,7 @@ namespace autofillPrivate {
     // entity type.
     EntityType type;
     // The attribute instances of this entity instance.
-    AttributeInstance[] attributes;
+    AttributeInstance[] attributeInstances;
     // The guid of the entity instance.
     DOMString guid;
     // The nickname of the entity instance.
@@ -375,9 +377,9 @@ namespace autofillPrivate {
     // The guid of the entity instance.
     DOMString guid;
     // The enitity instance label.
-    DOMString entityLabel;
+    DOMString entityInstanceLabel;
     // The enitity instance sublabel.
-    DOMString entitySubLabel;
+    DOMString entityInstanceSubLabel;
   };
 
   // A Pay Over Time Issuer entry which can be displayed in the autofill
@@ -409,10 +411,10 @@ namespace autofillPrivate {
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
-  callback GetEntityInstanceByGuid = void(EntityInstance entity);
-  callback GetAllEntityTypesCallback = void(EntityType[] entities);
-  callback GetAllAttributeTypesForEntityCallback =
-      void(AttributeType[] attributes);
+  callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
+  callback GetAllEntityTypesCallback = void(EntityType[] entityTypes);
+  callback GetAllAttributeTypesForEntityTypeNameCallback =
+      void(AttributeType[] attributeTypes);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
@@ -560,11 +562,12 @@ namespace autofillPrivate {
     // what entity instance to add.
     static void getAllEntityTypes(GetAllEntityTypesCallback callback);
 
-    // Returns a list of all possible attributes that can be set on an entity.
-    // Used for adding/editing a new entity instance.
-    static void getAllAttributeTypesForEntity(
+    // Returns a list of all possible attribute types that can be set on an
+    // entity instance with the respective entity type name. Used for
+    // adding/editing a new entity instance.
+    static void getAllAttributeTypesForEntityTypeName(
         long entityTypeName,
-        GetAllAttributeTypesForEntityCallback callback);
+        GetAllAttributeTypesForEntityTypeNameCallback callback);
   };
 
   interface Events {

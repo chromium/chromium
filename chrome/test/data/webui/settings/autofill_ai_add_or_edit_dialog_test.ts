@@ -17,7 +17,7 @@ import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 suite('AutofillAiAddOrEditDialogUiTest', function() {
   let dialog: SettingsAutofillAiAddOrEditDialogElement;
   let entityDataManager: TestEntityDataManagerProxy;
-  let testEntity: chrome.autofillPrivate.EntityInstance;
+  let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testAttributeTypes: chrome.autofillPrivate.AttributeType[];
 
   setup(function() {
@@ -26,14 +26,14 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
-    testEntity = {
+    testEntityInstance = {
       type: {
         typeName: 2,
         typeNameAsString: 'Car',
-        addEntityString: 'Add car',
-        editEntityString: 'Edit car',
+        addEntityTypeString: 'Add car',
+        editEntityTypeString: 'Edit car',
       },
-      attributes: [
+      attributeInstances: [
         {
           type: {
             typeName: 8,
@@ -74,7 +74,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         typeNameAsString: 'Model',
       },
     ];
-    entityDataManager.setGetAllAttributeTypesForEntityResponse(
+    entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse(
         testAttributeTypes);
 
     dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
@@ -90,48 +90,49 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     title: string;
   }
 
-  const addOrEditEntityParams: AddOrEditParamsInterface[] = [
-    {confirmed: true, add: true, title: 'testAddEntityConfirmed'},
-    {confirmed: true, add: false, title: 'testEditEntityConfirmed'},
-    {confirmed: false, add: true, title: 'testAddEntityCancelled'},
-    {confirmed: false, add: false, title: 'testEditEntityCancelled'},
+  const addOrEditEntityInstanceParams: AddOrEditParamsInterface[] = [
+    {confirmed: true, add: true, title: 'testAddEntityInstanceConfirmed'},
+    {confirmed: true, add: false, title: 'testEditEntityInstanceConfirmed'},
+    {confirmed: false, add: true, title: 'testAddEntityInstanceCancelled'},
+    {confirmed: false, add: false, title: 'testEditEntityInstanceCancelled'},
   ];
 
-  addOrEditEntityParams.forEach(
+  addOrEditEntityInstanceParams.forEach(
       (params) => test(params.title, async function() {
-        const newAttributeValue = 'John Steven';
-        let expectedEntity: chrome.autofillPrivate.EntityInstance;
+        const newAttributeInstanceValue = 'John Steven';
+        let expectedEntityInstance: chrome.autofillPrivate.EntityInstance;
 
-        // Populate the dialog's entity and title and set expectations.
+        // Populate the dialog's entity instance and title and set expectations.
         if (params.add) {
-          expectedEntity = {
-            type: testEntity.type,
-            attributes: [
+          expectedEntityInstance = {
+            type: testEntityInstance.type,
+            attributeInstances: [
               {
                 type: {
                   typeName: 8,
                   typeNameAsString: 'Owner',
                 },
-                value: newAttributeValue,
+                value: newAttributeInstanceValue,
               },
             ],
             guid: '',
             nickname: '',
           };
 
-          dialog.entity = {
-            type: testEntity.type,
-            attributes: [],
+          dialog.entityInstance = {
+            type: testEntityInstance.type,
+            attributeInstances: [],
             guid: '',
             nickname: '',
           };
-          dialog.dialogTitle = testEntity.type.addEntityString;
+          dialog.dialogTitle = testEntityInstance.type.addEntityTypeString;
         } else {
-          expectedEntity = structuredClone(testEntity);
-          expectedEntity.attributes[0]!.value = newAttributeValue;
+          expectedEntityInstance = structuredClone(testEntityInstance);
+          expectedEntityInstance.attributeInstances[0]!.value =
+              newAttributeInstanceValue;
 
-          dialog.entity = structuredClone(testEntity);
-          dialog.dialogTitle = testEntity.type.editEntityString;
+          dialog.entityInstance = structuredClone(testEntityInstance);
+          dialog.dialogTitle = testEntityInstance.type.editEntityTypeString;
         }
         document.body.appendChild(dialog);
         await flushTasks();
@@ -144,10 +145,11 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
                 params.add ? 'Add car' : 'Edit car'));
 
         // Edit first field.
-        const firstAttributeField =
-            dialog.shadowRoot!.querySelector<CrInputElement>('#attributeField');
-        assertTrue(!!firstAttributeField);
-        firstAttributeField.value = newAttributeValue;
+        const firstAttributeInstanceField =
+            dialog.shadowRoot!.querySelector<CrInputElement>(
+                '#attributeInstanceField');
+        assertTrue(!!firstAttributeInstanceField);
+        firstAttributeInstanceField.value = newAttributeInstanceValue;
         await flushTasks();
 
         if (params.confirmed) {
@@ -164,7 +166,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           await flushTasks();
 
           assertFalse(dialog.$.dialog.getNative().open);
-          assertDeepEquals(expectedEntity, dialogConfirmedEvent.detail);
+          assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
         } else {
           // Verify that the entity instance was not changed.
           const cancelButton =
@@ -179,8 +181,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         }
       }));
 
-  test('testAddOrEditEntityValidationError', async function() {
-    dialog.entity = testEntity;
+  test('testAddOrEditEntityInstanceValidationError', async function() {
+    dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
     await flushTasks();
 
@@ -197,13 +199,15 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
     // Simulate that the user writes only one whitespace (' ') character in all
     // fields.
-    const attributeFields =
-        dialog.shadowRoot!.querySelectorAll<CrInputElement>('#attributeField');
-    assertTrue(!!attributeFields);
-    attributeFields.forEach(
-        (attributeField: CrInputElement) => attributeField.value = ' ');
+    const attributeInstanceFields =
+        dialog.shadowRoot!.querySelectorAll<CrInputElement>(
+            '#attributeInstanceField');
+    assertTrue(!!attributeInstanceFields);
+    attributeInstanceFields.forEach(
+        (attributeInstanceField: CrInputElement) =>
+            attributeInstanceField.value = ' ');
     await flushTasks();
-    attributeFields[0]!.dispatchEvent(new Event('input'));
+    attributeInstanceFields[0]!.dispatchEvent(new Event('input'));
     await flushTasks();
 
     // All fields are empty, but the save button was not clicked yet, so there
@@ -218,9 +222,9 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertTrue(isVisible(validationError));
     assertTrue(saveButton.disabled);
 
-    attributeFields[0]!.value = 'something';
+    attributeInstanceFields[0]!.value = 'something';
     await flushTasks();
-    attributeFields[0]!.dispatchEvent(new Event('input'));
+    attributeInstanceFields[0]!.dispatchEvent(new Event('input'));
     await flushTasks();
 
     // One field is not empty, so the validation error should not be visible
