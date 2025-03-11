@@ -6,11 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
-#include "components/version_info/channel.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
@@ -92,12 +88,6 @@ TEST_F(FileHandlersManifestTest, NotPlatformApp) {
 }
 
 class WebFileHandlersTest : public ManifestTest {
- public:
-  WebFileHandlersTest() : channel_(version_info::Channel::BETA) {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
  protected:
   ManifestData GetManifestData(const char* manifest_part) {
     static constexpr char kManifestStub[] =
@@ -112,10 +102,6 @@ class WebFileHandlersTest : public ManifestTest {
     EXPECT_EQ(base::Value::Type::DICT, manifest_value.type());
     return ManifestData(std::move(manifest_value).TakeDict());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel channel_;
 };
 
 // `file_handlers` examples.

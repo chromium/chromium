@@ -124,9 +124,6 @@ BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
 // accessible resource restrictions.
 BASE_DECLARE_FEATURE(kExtensionWARForRedirect);
 
-// File Handlers.
-BASE_DECLARE_FEATURE(kExtensionWebFileHandlers);
-
 // If enabled, only manifest v3 extensions is allowed while v2 will be disabled.
 // Note that this feature is now only checked by `ExtensionManagement` which
 // represents enterprise extension configurations. Flip the feature will block

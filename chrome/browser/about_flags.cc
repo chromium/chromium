@@ -9101,12 +9101,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionManifestV2Unsupported)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"extension-web-file-handlers",
-     flag_descriptions::kExtensionWebFileHandlersName,
-     flag_descriptions::kExtensionWebFileHandlersDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(extensions_features::kExtensionWebFileHandlers)},
-#endif  // IS_CHROMEOS
 #if BUILDFLAG(IS_WIN)
     {"launch-windows-native-hosts-directly",
      flag_descriptions::kLaunchWindowsNativeHostsDirectlyName,

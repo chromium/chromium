@@ -1882,13 +1882,6 @@ const char kExtensionsToolbarZeroStateVistWebStore[] = "Visit Chrome Web Store";
 const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
     "Explore CWS extensions by category";
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kExtensionWebFileHandlersName[] = "Extensions Web File Handlers";
-const char kExtensionWebFileHandlersDescription[] =
-    "Enable Extension Web File Handlers, which allows extensions to operate on "
-    "the native file system. An extension can register to read and edit files, "
-    "specified in the manifest, by their file extension or mime type.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";

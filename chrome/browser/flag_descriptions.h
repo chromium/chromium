@@ -1073,10 +1073,6 @@ extern const char kExtensionDisableUnsupportedDeveloperDescription[];
 extern const char kExtensionTelemetryForEnterpriseName[];
 extern const char kExtensionTelemetryForEnterpriseDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kExtensionWebFileHandlersName[];
-extern const char kExtensionWebFileHandlersDescription[];
-#endif  // IS_CHROMEOS
 #endif  // ENABLE_EXTENSIONS
 
 extern const char kExtensionsOnChromeUrlsName[];
