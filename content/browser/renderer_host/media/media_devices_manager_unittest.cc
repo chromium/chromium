@@ -1751,10 +1751,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Monitor video only.
   media_devices_manager_->StartMonitoring(
-      /*audio_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(false),
-      /*video_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(true));
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::NO_CACHE);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1764,10 +1761,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Monitor audio only on top of the video monitoring.
   media_devices_manager_->StartMonitoring(
-      /*audio_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(true),
-      /*video_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(false));
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartAudio);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1777,8 +1771,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Stop monitoring video only.
   media_devices_manager_->StopMonitoring(
-      MediaDevicesManager::DeviceMonitoringMode(false),
-      MediaDevicesManager::DeviceMonitoringMode(true));
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopVideo);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1788,8 +1781,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Stop audio.
   media_devices_manager_->StopMonitoring(
-      MediaDevicesManager::DeviceMonitoringMode(true),
-      MediaDevicesManager::DeviceMonitoringMode(false));
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopAudio);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::NO_CACHE);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1799,10 +1791,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Start audio and video monitoring.
   media_devices_manager_->StartMonitoring(
-      /*audio_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(true),
-      /*video_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(true));
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartAudioAndVideo);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1812,8 +1801,7 @@ TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
 
   // Stop audio and video will reset all.
   media_devices_manager_->StopMonitoring(
-      MediaDevicesManager::DeviceMonitoringMode(true),
-      MediaDevicesManager::DeviceMonitoringMode(true));
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopAudioAndVideo);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
             MediaDevicesManager::CachePolicy::NO_CACHE);
   EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
@@ -1839,10 +1827,7 @@ TEST_F(MediaDevicesManagerTest, StopMonitoringReleaseVideoChangedObserver) {
   // disconnect video source provider timer.
   auto system_monitor = std::make_unique<base::SystemMonitor>();
   media_devices_manager_->StartMonitoring(
-      /*audio_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(false),
-      /*video_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(true));
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
 
   // Create VideoCaptureDevicesChangedObserver manually.
   InitVideoCaptureDevicesChangedObserver();
@@ -1855,10 +1840,7 @@ TEST_F(MediaDevicesManagerTest, StopMonitoringReleaseVideoChangedObserver) {
   // StopMonitoring will reset VideoCaptureDevicesChangedObserver and
   // disconnect video source provider timer.
   media_devices_manager_->StopMonitoring(
-      /*audio_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(false),
-      /*video_device_monitoring_mode=*/MediaDevicesManager::
-          DeviceMonitoringMode(true));
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopVideo);
 
   EXPECT_FALSE(IsVideoCaptureServiceDeviceChangedObserverInitialized());
   EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
