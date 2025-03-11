@@ -25,6 +25,7 @@ class SessionManager:
         self.registration_sends_challenge = False
         self.cookie_name_and_value = "auth_cookie=abcdef0123"
         self.has_called_refresh = False
+        self.scope_specification_items = []
 
     def create_new_session(self):
         session_id = str(len(self.session_to_key_map))
@@ -72,6 +73,10 @@ class SessionManager:
         if cookie_name_and_value is not None:
             self.cookie_name_and_value = cookie_name_and_value
 
+        scope_specification_items = configuration.get("scopeSpecificationItems")
+        if scope_specification_items is not None:
+            self.scope_specification_items = scope_specification_items
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -113,7 +118,7 @@ class SessionManager:
             "scope": {
                 "origin": scope_origin,
                 "include_site": True,
-                "scope_specification" : [
+                "scope_specification" : self.scope_specification_items + [
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/request_early_challenge.py" },
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/end_session_via_clear_site_data.py" },
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/pull_server_state.py" },
