@@ -239,6 +239,11 @@ BASE_FEATURE(kBocaExtensionConsumer,
 // Enables or disables Spotlight for Boca on ChromeOS.
 BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables Boca network restriction for Boca on ChromeOS.
+BASE_FEATURE(kBocaNetworkRestriction,
+             "BocaNetworkRestriction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3388,6 +3393,10 @@ bool IsBocaStudentHeartbeatCustomIntervalEnabled() {
 
 bool IsBocaSpotlightEnabled() {
   return base::FeatureList::IsEnabled(kBocaSpotlight);
+}
+
+bool IsBocaNetworkRestrictionEnabled() {
+  return base::FeatureList::IsEnabled(kBocaNetworkRestriction);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

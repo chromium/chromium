@@ -85,6 +85,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaSpotlight);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaNetworkRestriction);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraSuperResSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCrosSwitcher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBorealisBigGl);
@@ -1055,6 +1056,7 @@ bool IsBocaStudentHeartbeatEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaStudentHeartbeatCustomIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaSpotlightEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaNetworkRestrictionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

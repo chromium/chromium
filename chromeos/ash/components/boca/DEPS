@@ -13,5 +13,6 @@ include_rules = [
   "+ui/message_center/message_center.h",
   "+ui/message_center/public/cpp/notification.h",
   "+ui/message_center/public/cpp/notification_types.h",
-  "+chromeos/ash/components/channel/channel_info.h"
+  "+chromeos/ash/components/channel/channel_info.h",
+  "+chromeos/ash/components/network/network_ui_data.h"
 ]
