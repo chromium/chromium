@@ -186,6 +186,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         if (mWebContents != null) {
             assumeNonNull(mWebContentsObserver).observe(null);
             mWebContentsObserver = null;
+            InterceptNavigationDelegateImplJni.get().clearWebContentsAssociation(mWebContents);
         }
         mWebContents = webContents;
         if (mWebContents == null) return;
@@ -323,15 +324,20 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void cancelPendingShouldIgnoreCheck() {
-        if (mPendingShouldIgnore == null) return;
-        mPendingShouldIgnore.cancel();
-        mPendingShouldIgnore = null;
-        runResultCallback(false);
+        // Running the result callback could synchronously queue up more checks
+        while (mPendingShouldIgnore != null) {
+            mPendingShouldIgnore.cancel();
+            mPendingShouldIgnore = null;
+            runResultCallback(false);
+        }
+        assert mShouldIgnoreResultCallback == null;
     }
 
     private void runResultCallback(boolean shouldIgnore) {
-        assumeNonNull(mShouldIgnoreResultCallback).onResult(shouldIgnore);
+        RequiredCallback<Boolean> callback = assumeNonNull(mShouldIgnoreResultCallback);
+        // Clear before calling onResult, because onResult could queue up another callback.
         mShouldIgnoreResultCallback = null;
+        callback.onResult(shouldIgnore);
     }
 
     @Override
@@ -770,6 +776,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         void associateWithWebContents(
                 InterceptNavigationDelegateImpl nativeInterceptNavigationDelegateImpl,
                 WebContents webContents);
+
+        void clearWebContentsAssociation(WebContents webContents);
 
         void onSubframeAsyncActionTaken(WebContents webContents, @Nullable GURL url);
     }
