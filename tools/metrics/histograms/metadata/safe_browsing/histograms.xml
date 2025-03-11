@@ -545,7 +545,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult{IsAccessTokenIncluded}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.DeviceConnected.{ConnectionType}"
-    enum="BluetoothDeviceType" expires_after="2025-07-06">
+    enum="BluetoothDeviceType" expires_after="2025-09-07">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

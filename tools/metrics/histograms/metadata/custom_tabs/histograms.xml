@@ -727,7 +727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

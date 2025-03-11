@@ -255,7 +255,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.PermittedExtensions"
-    units="Extension Count" expires_after="2025-07-06">
+    units="Extension Count" expires_after="2025-09-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

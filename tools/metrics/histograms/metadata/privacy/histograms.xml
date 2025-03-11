@@ -224,7 +224,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.ClearBrowsingData.TabsEnabled" enum="BooleanEnabled"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -676,7 +676,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.QuickDelete.TabsEnabled" enum="BooleanEnabled"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>

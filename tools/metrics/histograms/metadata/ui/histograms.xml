@@ -487,7 +487,7 @@ features through Chrome Labs. -->
 
 <histogram
     name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
-    units="providers" expires_after="2025-07-06">
+    units="providers" expires_after="2025-09-07">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -552,7 +552,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>
   <summary>URLs for which Chrome creates WebUIControllers.</summary>

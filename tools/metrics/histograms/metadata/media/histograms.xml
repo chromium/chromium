@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.{CastStreamingSender}.FrameDropped"
-    enum="CastStreamingFrameDropReason" expires_after="2025-07-06">
+    enum="CastStreamingFrameDropReason" expires_after="2025-09-07">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>

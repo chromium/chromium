@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Json.DecodingTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>djmitche@chromium.org</owner>
   <owner>dadrian@chromium.org</owner>
   <summary>

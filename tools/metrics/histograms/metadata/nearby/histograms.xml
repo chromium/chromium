@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Nearby.Connections.BleV2.StartAdvertising.Result{AdvertisementType}"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>dclasson@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.ClassicMedium.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>Records the result of {Operation}.</summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.InstantMessaging.{Direction}Express.Result"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -750,7 +750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.{Medium}.Socket.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1421,7 +1421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Certificates.Storage.{Operation}SuccessRate"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -2098,7 +2098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.StartAdvertising.Result{Mode}"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
