@@ -17,10 +17,14 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/utils/content_script_utils.h"
 
 namespace extensions {
@@ -95,6 +99,29 @@ void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
   for (auto& map_entry : extension_script_loaders_) {
     map_entry.second->SetSourceEnabled(source, enabled);
   }
+}
+
+bool UserScriptManager::AreUserScriptsAllowed(
+    const Extension& extension,
+    content::BrowserContext* browser_context) const {
+  return CanExtensionUseUserScriptsAPI(extension) &&
+         IsUserScriptPrefEnabled(extension.id());
+}
+
+// static
+bool UserScriptManager::CanExtensionUseUserScriptsAPI(
+    const Extension& extension) {
+  // TODO(crbug.com/390138269): Once finch flag is default, remove the
+  // feature restriction.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kUserScriptUserExtensionToggle)) {
+    return false;
+  }
+
+  return extension.permissions_data()->HasAPIPermission(
+             mojom::APIPermissionID::kUserScripts) ||
+         PermissionsParser::GetOptionalPermissions(&extension)
+             .HasAPIPermission(mojom::APIPermissionID::kUserScripts);
 }
 
 bool UserScriptManager::IsUserScriptPrefEnabled(
