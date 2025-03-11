@@ -596,6 +596,9 @@
       <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE" desc="Title for the Price Tracking Chrome iOS Best Features Promo">
         Price tracking and insights
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_CAPTION" desc="Detail text for the Share Passwords row in the Best Features Screen">
+        Share your passwords with your family
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_TITLE" desc="Title for the Share Passwords Chrome iOS Best Features Promo">
         Share passwords
       </message>
