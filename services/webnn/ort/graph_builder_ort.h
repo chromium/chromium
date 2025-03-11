@@ -124,49 +124,49 @@ class GraphBuilderOrt {
   [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
   CreateScalarInitializer(const DataType& value);
 
-  void AddCastNode(std::string_view node_name,
-                   std::string_view input_name,
-                   std::string_view output_name,
+  void AddCastNode(std::string_view node,
+                   std::string_view input,
+                   std::string_view output,
                    ONNXTensorElementDataType to_data_type);
 
   // Insert a cast operation before an operation to convert its input to the
   // target `to_data_type`, return the output name of the cast operation. The
-  // `input_name` specifies the input to be casted.
-  std::string PrependCast(std::string_view input_name,
+  // `input` specifies the input to be casted.
+  std::string PrependCast(std::string_view input,
                           ONNXTensorElementDataType to_data_type);
 
   [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> PrependReshape(
-      std::string_view input_name,
+      std::string_view input,
       base::span<const uint32_t> new_shape);
 
-  std::string PrependTranspose(std::string_view input_name,
+  std::string PrependTranspose(std::string_view input,
                                base::span<const uint32_t> permutation);
 
   // Insert a cast operation after an operation to convert its output to the
-  // target `to_data_type`. The `input_name` specifies the cast operation's
-  // input (the output of the operation to be casted), and the `output_name`
+  // target `to_data_type`. The `input` specifies the cast operation's
+  // input (the output of the operation to be casted), and the `output`
   // specifies the cast operation's output.
-  void AppendCast(std::string_view input_name,
-                  std::string_view output_name,
+  void AppendCast(std::string_view input,
+                  std::string_view output,
                   ONNXTensorElementDataType to_data_type);
 
-  void AppendTranspose(std::string_view input_name,
-                       std::string_view output_name,
+  void AppendTranspose(std::string_view input,
+                       std::string_view output,
                        base::span<const uint32_t> permutation);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AppendReshape(
-      std::string_view input_name,
-      std::string_view output_name,
+      std::string_view input,
+      std::string_view output,
       base::span<const uint32_t> new_shape);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSliceNode(
-      std::string_view node_name,
-      std::string_view input_name,
-      std::string_view output_name,
-      std::string_view axes_name,
-      base::span<const int64_t> starts,
-      base::span<const int64_t> ends,
-      base::span<const int64_t> steps);
+      std::string_view node,
+      std::string_view input,
+      std::string_view output,
+      std::string_view axes,
+      base::span<const int64_t> starts_value,
+      base::span<const int64_t> ends_value,
+      base::span<const int64_t> steps_value);
 
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);

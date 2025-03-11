@@ -78,8 +78,8 @@ class OrtModelEditor {
 
   void AddNode(std::string_view op_type,
                std::string_view node_name,
-               base::span<const char*> input_names,
-               base::span<const char*> output_names,
+               base::span<const char*> input,
+               base::span<const char*> output,
                std::vector<ScopedOrtOpAttr> attributes = {});
 
   std::unique_ptr<ModelInfo> BuildAndTakeModelInfo();

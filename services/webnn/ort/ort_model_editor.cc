@@ -198,8 +198,8 @@ ScopedOrtOpAttr OrtModelEditor::CreateAttribute(std::string_view name,
 
 void OrtModelEditor::AddNode(std::string_view op_type,
                              std::string_view node_name,
-                             base::span<const char*> input_names,
-                             base::span<const char*> output_names,
+                             base::span<const char*> inputs,
+                             base::span<const char*> outputs,
                              std::vector<ScopedOrtOpAttr> attributes) {
   std::vector<OrtOpAttr*> attr_ptrs;
   attr_ptrs.reserve(attributes.size());
@@ -209,9 +209,9 @@ void OrtModelEditor::AddNode(std::string_view op_type,
   // Node will own the attributes.
   ScopedOrtNode node;
   CHECK_STATUS(GetOrtModelEditorApi()->CreateNode(
-      op_type.data(), kOrtDomainName, node_name.data(), input_names.data(),
-      input_names.size(), output_names.data(), output_names.size(),
-      attr_ptrs.data(), attr_ptrs.size(), ScopedOrtNode::Receiver(node).get()));
+      op_type.data(), kOrtDomainName, node_name.data(), inputs.data(),
+      inputs.size(), outputs.data(), outputs.size(), attr_ptrs.data(),
+      attr_ptrs.size(), ScopedOrtNode::Receiver(node).get()));
   // Graph will own the node.
   CHECK_STATUS(
       GetOrtModelEditorApi()->AddNodeToGraph(graph_.get(), node.release()));

@@ -291,147 +291,144 @@ GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
       /*shape=*/{}, base::span_from_ref(value));
 }
 
-void GraphBuilderOrt::AddCastNode(std::string_view node_name,
-                                  std::string_view input_name,
-                                  std::string_view output_name,
+void GraphBuilderOrt::AddCastNode(std::string_view node,
+                                  std::string_view input,
+                                  std::string_view output,
                                   ONNXTensorElementDataType to_data_type) {
-  std::array<const char*, 1> input_names = {input_name.data()};
-  std::array<const char*, 1> output_names = {output_name.data()};
+  std::array<const char*, 1> inputs = {input.data()};
+  std::array<const char*, 1> outputs = {output.data()};
   int64_t attr_to = static_cast<int64_t>(to_data_type);
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"to", attr_to));
-  model_editor_.AddNode(kOpTypeCast, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeCast, node, inputs, outputs,
                         std::move(attributes));
 }
 
 std::string GraphBuilderOrt::PrependCast(
-    std::string_view input_name,
+    std::string_view input,
     ONNXTensorElementDataType to_data_type) {
-  const std::string node_name = GenerateNextOperationName("inserted_cast");
-  const std::string output_name = GenerateNextOperandName();
-  AddCastNode(node_name, input_name, output_name, to_data_type);
-  return output_name;
+  const std::string node = GenerateNextOperationName("inserted_cast");
+  const std::string output = GenerateNextOperandName();
+  AddCastNode(node, input, output, to_data_type);
+  return output;
 }
 
-void GraphBuilderOrt::AppendCast(std::string_view input_name,
-                                 std::string_view output_name,
+void GraphBuilderOrt::AppendCast(std::string_view input,
+                                 std::string_view output,
                                  ONNXTensorElementDataType to_data_type) {
-  const std::string node_name = GenerateNextOperationName("inserted_cast");
-  AddCastNode(node_name, input_name, output_name, to_data_type);
+  const std::string node = GenerateNextOperationName("inserted_cast");
+  AddCastNode(node, input, output, to_data_type);
 }
 
 std::string GraphBuilderOrt::PrependTranspose(
-    std::string_view input_name,
+    std::string_view input,
     base::span<const uint32_t> permutation) {
-  const std::string node_name = GenerateNextOperationName("inserted_transpose");
-  const std::string output_name = GenerateNextOperandName();
+  const std::string node = GenerateNextOperationName("inserted_transpose");
+  const std::string output = GenerateNextOperandName();
 
-  std::array<const char*, 1> input_names = {input_name.data()};
-  std::array<const char*, 1> output_names = {output_name.data()};
+  std::array<const char*, 1> inputs = {input.data()};
+  std::array<const char*, 1> outputs = {output.data()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   std::vector<int64_t> perm(permutation.begin(), permutation.end());
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"perm", perm));
 
-  model_editor_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeTranspose, node, inputs, outputs,
                         std::move(attributes));
-  return output_name;
+  return output;
 }
 
-void GraphBuilderOrt::AppendTranspose(std::string_view input_name,
-                                      std::string_view output_name,
+void GraphBuilderOrt::AppendTranspose(std::string_view input,
+                                      std::string_view output,
                                       base::span<const uint32_t> permutation) {
-  const std::string node_name = GenerateNextOperationName("inserted_transpose");
-  std::array<const char*, 1> input_names = {input_name.data()};
-  std::array<const char*, 1> output_names = {output_name.data()};
+  const std::string node = GenerateNextOperationName("inserted_transpose");
+  std::array<const char*, 1> inputs = {input.data()};
+  std::array<const char*, 1> outputs = {output.data()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   std::vector<int64_t> perm(permutation.begin(), permutation.end());
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"perm", perm));
 
-  model_editor_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeTranspose, node, inputs, outputs,
                         std::move(attributes));
 }
 
 [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
-GraphBuilderOrt::PrependReshape(std::string_view input_name,
+GraphBuilderOrt::PrependReshape(std::string_view input,
                                 base::span<const uint32_t> new_shape) {
-  const std::string node_name = GenerateNextOperationName("inserted_reshape");
-  const std::string output_name = GenerateNextOperandName();
+  const std::string node = GenerateNextOperationName("inserted_reshape");
+  const std::string output = GenerateNextOperandName();
 
   // Shape is an operand with data type int64, not an attribute.
   std::vector<uint32_t> shape_dims = {
       base::checked_cast<uint32_t>(new_shape.size())};
-  std::vector<int64_t> shape(new_shape.begin(), new_shape.end());
-  ASSIGN_OR_RETURN(const std::string shape_name,
-                   CreateInitializer<int64_t>(shape_dims, shape));
+  std::vector<int64_t> shape_value(new_shape.begin(), new_shape.end());
+  ASSIGN_OR_RETURN(const std::string shape,
+                   CreateInitializer<int64_t>(shape_dims, shape_value));
 
-  std::array<const char*, 2> input_names = {input_name.data(),
-                                            shape_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.data(), shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeReshape, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeReshape, node, inputs, outputs);
 
-  return output_name;
+  return output;
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilderOrt::AppendReshape(std::string_view input_name,
-                               std::string_view output_name,
+GraphBuilderOrt::AppendReshape(std::string_view input,
+                               std::string_view output,
                                base::span<const uint32_t> new_shape) {
-  const std::string node_name = GenerateNextOperationName("inserted_reshape");
+  const std::string node = GenerateNextOperationName("inserted_reshape");
 
   // Shape is an operand with data type int64, not an attribute.
   std::vector<uint32_t> shape_dims = {
       base::checked_cast<uint32_t>(new_shape.size())};
-  std::vector<int64_t> shape(new_shape.begin(), new_shape.end());
-  ASSIGN_OR_RETURN(const std::string shape_name,
-                   CreateInitializer<int64_t>(shape_dims, shape));
+  std::vector<int64_t> shape_value(new_shape.begin(), new_shape.end());
+  ASSIGN_OR_RETURN(const std::string shape,
+                   CreateInitializer<int64_t>(shape_dims, shape_value));
 
-  std::array<const char*, 2> input_names = {input_name.data(),
-                                            shape_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.data()};
+  std::array<const char*, 2> inputs = {input.data(), shape.c_str()};
+  std::array<const char*, 1> outputs = {output.data()};
 
-  model_editor_.AddNode(kOpTypeReshape, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeReshape, node, inputs, outputs);
 
   return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilderOrt::AddSliceNode(std::string_view node_name,
-                              std::string_view input_name,
-                              std::string_view output_name,
-                              std::string_view axes_name,
-                              base::span<const int64_t> starts,
-                              base::span<const int64_t> ends,
-                              base::span<const int64_t> steps) {
+GraphBuilderOrt::AddSliceNode(std::string_view node,
+                              std::string_view input,
+                              std::string_view output,
+                              std::string_view axes,
+                              base::span<const int64_t> starts_value,
+                              base::span<const int64_t> ends_value,
+                              base::span<const int64_t> steps_value) {
   // Starts is an operand with data type int64, not an attribute.
   std::vector<uint32_t> starts_shape = {
-      base::checked_cast<uint32_t>(starts.size())};
-  ASSIGN_OR_RETURN(const std::string starts_name,
-                   CreateInitializer<int64_t>(starts_shape, starts));
+      base::checked_cast<uint32_t>(starts_value.size())};
+  ASSIGN_OR_RETURN(const std::string starts,
+                   CreateInitializer<int64_t>(starts_shape, starts_value));
 
   // Ends is an operand with data type int64, not an attribute.
   std::vector<uint32_t> ends_shape = {
-      base::checked_cast<uint32_t>(ends.size())};
-  ASSIGN_OR_RETURN(const std::string ends_name,
-                   CreateInitializer<int64_t>(ends_shape, ends));
+      base::checked_cast<uint32_t>(ends_value.size())};
+  ASSIGN_OR_RETURN(const std::string ends,
+                   CreateInitializer<int64_t>(ends_shape, ends_value));
 
   // Steps is an operand with data type int64, not an attribute.
   std::vector<uint32_t> steps_shape = {
-      base::checked_cast<uint32_t>(steps.size())};
-  ASSIGN_OR_RETURN(const std::string steps_name,
-                   CreateInitializer<int64_t>(steps_shape, steps));
+      base::checked_cast<uint32_t>(steps_value.size())};
+  ASSIGN_OR_RETURN(const std::string steps,
+                   CreateInitializer<int64_t>(steps_shape, steps_value));
 
-  std::array<const char*, 5> input_names = {
-      input_name.data(), starts_name.data(), ends_name.data(), axes_name.data(),
-      steps_name.data()};
-  std::array<const char*, 1> output_names = {output_name.data()};
+  std::array<const char*, 5> inputs = {input.data(), starts.data(), ends.data(),
+                                       axes.data(), steps.data()};
+  std::array<const char*, 1> outputs = {output.data()};
 
-  model_editor_.AddNode(kOpTypeSlice, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeSlice, node, inputs, outputs);
 
   return base::ok();
 }
@@ -495,9 +492,9 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
   const OperandDataType input_data_type =
       GetOperand(batch_normalization.output_operand_id).descriptor.data_type();
 
-  const std::string input_name =
+  const std::string input =
       GetOperandNameById(batch_normalization.input_operand_id);
-  std::vector<const char*> input_names = {input_name.c_str()};
+  std::vector<const char*> inputs = {input.c_str()};
 
   const std::vector<uint32_t>& input_shape =
       GetOperand(batch_normalization.input_operand_id).descriptor.shape();
@@ -511,24 +508,23 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
   uint32_t input_channel = input_shape[1];
   std::vector<uint32_t> constant_dims = {input_channel};
 
-  std::string scale_name, bias_name;
+  std::string scale, bias;
   // ONNX requires scale and bias inputs.
   if (batch_normalization.scale_operand_id) {
-    scale_name =
-        GetOperandNameById(batch_normalization.scale_operand_id.value());
-    input_names.push_back(scale_name.c_str());
+    scale = GetOperandNameById(batch_normalization.scale_operand_id.value());
+    inputs.push_back(scale.c_str());
   } else {
     switch (input_data_type) {
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> scale_data_fp16(input_channel,
                                               fp16_ieee_from_fp32_value(1.0f));
-        ASSIGN_OR_RETURN(scale_name, CreateInitializer<uint16_t>(
-                                         constant_dims, scale_data_fp16));
+        ASSIGN_OR_RETURN(
+            scale, CreateInitializer<uint16_t>(constant_dims, scale_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
         std::vector<float> scale_data(input_channel, 1.0f);
-        ASSIGN_OR_RETURN(scale_name,
+        ASSIGN_OR_RETURN(scale,
                          CreateInitializer<float>(constant_dims, scale_data));
         break;
       }
@@ -537,24 +533,24 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
                         "and float16 data type.";
     }
 
-    input_names.push_back(scale_name.c_str());
+    inputs.push_back(scale.c_str());
   }
 
   if (batch_normalization.bias_operand_id) {
-    bias_name = GetOperandNameById(batch_normalization.bias_operand_id.value());
-    input_names.push_back(bias_name.c_str());
+    bias = GetOperandNameById(batch_normalization.bias_operand_id.value());
+    inputs.push_back(bias.c_str());
   } else {
     switch (input_data_type) {
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> bias_data_fp16(input_channel,
                                              fp16_ieee_from_fp32_value(0.0f));
-        ASSIGN_OR_RETURN(bias_name, CreateInitializer<uint16_t>(
-                                        constant_dims, bias_data_fp16));
+        ASSIGN_OR_RETURN(
+            bias, CreateInitializer<uint16_t>(constant_dims, bias_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
         std::vector<float> bias_data(input_channel, 0.0f);
-        ASSIGN_OR_RETURN(bias_name,
+        ASSIGN_OR_RETURN(bias,
                          CreateInitializer<float>(constant_dims, bias_data));
         break;
       }
@@ -563,29 +559,28 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
                         "and float16 data type.";
     }
 
-    input_names.push_back(bias_name.c_str());
+    inputs.push_back(bias.c_str());
   }
 
-  const std::string mean_name =
+  const std::string mean =
       GetOperandNameById(batch_normalization.mean_operand_id);
-  input_names.push_back(mean_name.c_str());
+  inputs.push_back(mean.c_str());
 
-  const std::string variance_name =
+  const std::string variance =
       GetOperandNameById(batch_normalization.variance_operand_id);
-  input_names.push_back(variance_name.c_str());
+  inputs.push_back(variance.c_str());
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"epsilon", batch_normalization.epsilon));
 
-  const std::string node_name =
-      GenerateNextOperationName(batch_normalization.label);
-  const std::string output_name =
+  const std::string node = GenerateNextOperationName(batch_normalization.label);
+  const std::string output =
       GetOperandNameById(batch_normalization.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-  model_editor_.AddNode(kOpTypeBatchNormalization, node_name, input_names,
-                        output_names, std::move(attributes));
+  std::array<const char*, 1> outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeBatchNormalization, node, inputs, outputs,
+                        std::move(attributes));
 
   return base::ok();
 }
@@ -593,34 +588,33 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
 template <typename T>
 void GraphBuilderOrt::AddBinaryOperation(const T& operation,
                                          std::string_view op_type) {
-  const std::string node_name = GenerateNextOperationName(operation.label);
-  const std::string lhs_name = GetOperandNameById(operation.lhs_operand_id);
-  const std::string rhs_name = GetOperandNameById(operation.rhs_operand_id);
-  const std::string output_name =
-      GetOperandNameById(operation.output_operand_id);
+  const std::string node = GenerateNextOperationName(operation.label);
+  const std::string lhs = GetOperandNameById(operation.lhs_operand_id);
+  const std::string rhs = GetOperandNameById(operation.rhs_operand_id);
+  const std::string output = GetOperandNameById(operation.output_operand_id);
 
-  std::array<const char*, 2> input_names = {lhs_name.c_str(), rhs_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {lhs.c_str(), rhs.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(op_type, node_name, input_names, output_names);
+  model_editor_.AddNode(op_type, node, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddElementWiseLogicalOperation(
     absl::variant<const mojom::ElementWiseBinary*,
                   const mojom::ElementWiseUnary*> operation,
     std::string_view op_type) {
-  const std::string node_name = absl::visit(
+  const std::string node = absl::visit(
       [this](const auto* op) { return GenerateNextOperationName(op->label); },
       operation);
 
-  std::vector<const char*> input_names;
-  std::string lhs_name;
-  std::string rhs_name;
+  std::vector<const char*> inputs;
+  std::string lhs;
+  std::string rhs;
   if (absl::holds_alternative<const mojom::ElementWiseBinary*>(operation)) {
     const mojom::ElementWiseBinary* element_wise_binary =
         absl::get<const mojom::ElementWiseBinary*>(operation);
-    lhs_name = GetOperandNameById(element_wise_binary->lhs_operand_id);
-    rhs_name = GetOperandNameById(element_wise_binary->rhs_operand_id);
+    lhs = GetOperandNameById(element_wise_binary->lhs_operand_id);
+    rhs = GetOperandNameById(element_wise_binary->rhs_operand_id);
 
     // Some ONNX logical operators only support bool input.
     if (element_wise_binary->kind ==
@@ -629,29 +623,29 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
             mojom::ElementWiseBinary::Kind::kLogicalOr ||
         element_wise_binary->kind ==
             mojom::ElementWiseBinary::Kind::kLogicalXor) {
-      lhs_name = PrependCast(lhs_name, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
-      rhs_name = PrependCast(rhs_name, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+      lhs = PrependCast(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+      rhs = PrependCast(rhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
     }
 
-    input_names = {lhs_name.c_str(), rhs_name.c_str()};
+    inputs = {lhs.c_str(), rhs.c_str()};
   } else {
     const mojom::ElementWiseUnary* element_wise_unary =
         absl::get<const mojom::ElementWiseUnary*>(operation);
-    lhs_name = GetOperandNameById(element_wise_unary->input_operand_id);
+    lhs = GetOperandNameById(element_wise_unary->input_operand_id);
 
     // Some ONNX logical operators only support bool input.
     if (element_wise_unary->kind ==
         mojom::ElementWiseUnary::Kind::kLogicalNot) {
-      lhs_name = PrependCast(lhs_name, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+      lhs = PrependCast(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
     }
 
-    input_names = {lhs_name.c_str()};
+    inputs = {lhs.c_str()};
   }
 
-  const std::string bool_output_name = GenerateNextOperandName();
-  std::array<const char*, 1> output_names = {bool_output_name.c_str()};
+  const std::string bool_output = GenerateNextOperandName();
+  std::array<const char*, 1> outputs = {bool_output.c_str()};
 
-  model_editor_.AddNode(op_type, node_name, input_names, output_names);
+  model_editor_.AddNode(op_type, node, inputs, outputs);
 
   // ONNX logical operators only support bool output. To support output with the
   // WebNN data type, it is necessary to insert a cast operator after a logical
@@ -660,8 +654,8 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
       [](const auto* op) { return op->output_operand_id; }, operation);
   OperandDataType output_data_type =
       GetOperand(output_operand_id).descriptor.data_type();
-  std::string output_name = GetOperandNameById(output_operand_id);
-  AppendCast(bool_output_name, output_name,
+  std::string output = GetOperandNameById(output_operand_id);
+  AppendCast(bool_output, output,
              OperandTypeToONNXTensorElementDataType(output_data_type));
 }
 
@@ -669,25 +663,23 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
 void GraphBuilderOrt::AddElementWiseLogicalNotEqualOperation(
     const mojom::ElementWiseBinary& not_equal) {
   // Step 1: calculate `equal(a, b)`.
-  const std::string equal_node_name =
+  const std::string equal_node =
       GenerateNextOperationName("inserted_equal_to_emulate_" + not_equal.label);
-  std::string lhs_name = GetOperandNameById(not_equal.lhs_operand_id);
-  std::string rhs_name = GetOperandNameById(not_equal.rhs_operand_id);
-  const std::string equal_output_name = GenerateNextOperandName();
+  std::string lhs = GetOperandNameById(not_equal.lhs_operand_id);
+  std::string rhs = GetOperandNameById(not_equal.rhs_operand_id);
+  const std::string equal_output = GenerateNextOperandName();
 
-  std::array<const char*, 1> equal_output_names = {equal_output_name.c_str()};
-  std::array<const char*, 2> equal_input_names = {lhs_name.c_str(),
-                                                  rhs_name.c_str()};
-  model_editor_.AddNode(kOpTypeEqual, equal_node_name, equal_input_names,
-                        equal_output_names);
+  std::array<const char*, 1> equal_outputs = {equal_output.c_str()};
+  std::array<const char*, 2> equal_inputs = {lhs.c_str(), rhs.c_str()};
+  model_editor_.AddNode(kOpTypeEqual, equal_node, equal_inputs, equal_outputs);
 
   // Step 2: calculate `logicalNot(equal_output)`
-  const std::string not_output_name = GenerateNextOperandName();
-  std::array<const char*, 1> not_output_names = {not_output_name.c_str()};
-  const std::string not_node_name =
+  const std::string not_output = GenerateNextOperandName();
+  std::array<const char*, 1> not_outputs = {not_output.c_str()};
+  const std::string not_node =
       GenerateNextOperationName("inserted_not_to_emulate_" + not_equal.label);
-  model_editor_.AddNode(kOpTypeLogicalNot, not_node_name, equal_output_names,
-                        not_output_names);
+  model_editor_.AddNode(kOpTypeLogicalNot, not_node, equal_outputs,
+                        not_outputs);
 
   // ONNX logical operators only support bool output. To support output with the
   // WebNN data type, it is necessary to insert a cast operator after a logical
@@ -695,8 +687,8 @@ void GraphBuilderOrt::AddElementWiseLogicalNotEqualOperation(
   uint64_t output_operand_id = not_equal.output_operand_id;
   OperandDataType output_data_type =
       GetOperand(output_operand_id).descriptor.data_type();
-  std::string output_name = GetOperandNameById(output_operand_id);
-  AppendCast(not_output_name, output_name,
+  std::string output = GetOperandNameById(output_operand_id);
+  AppendCast(not_output, output,
              OperandTypeToONNXTensorElementDataType(output_data_type));
 }
 
@@ -778,15 +770,14 @@ GraphBuilderOrt::AddElementWiseBinaryOperation(
 template <typename T>
 void GraphBuilderOrt::AddUnaryOperation(const T& operation,
                                         std::string_view op_type) {
-  const std::string node_name = GenerateNextOperationName(operation.label);
-  const std::string input_name = GetOperandNameById(operation.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(operation.output_operand_id);
+  const std::string node = GenerateNextOperationName(operation.label);
+  const std::string input = GetOperandNameById(operation.input_operand_id);
+  const std::string output = GetOperandNameById(operation.output_operand_id);
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(op_type, node_name, input_names, output_names);
+  model_editor_.AddNode(op_type, node, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddElementWiseUnaryOperation(
@@ -845,11 +836,9 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
 
 void GraphBuilderOrt::AddArgMinMaxOperation(
     const mojom::ArgMinMax& arg_min_max) {
-  const std::string node_name = GenerateNextOperationName(arg_min_max.label);
-  const std::string input_name =
-      GetOperandNameById(arg_min_max.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(arg_min_max.output_operand_id);
+  const std::string node = GenerateNextOperationName(arg_min_max.label);
+  const std::string input = GetOperandNameById(arg_min_max.input_operand_id);
+  const std::string output = GetOperandNameById(arg_min_max.output_operand_id);
 
   std::vector<ScopedOrtOpAttr> attributes;
 
@@ -869,67 +858,65 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
       GetOperand(arg_min_max.output_operand_id).descriptor.data_type();
   bool need_cast = output_data_type != OperandDataType::kInt64;
 
-  const std::string int64_output_name =
-      need_cast ? GenerateNextOperandName() : output_name;
+  const std::string int64_output =
+      need_cast ? GenerateNextOperandName() : output;
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {int64_output_name.c_str()};
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {int64_output.c_str()};
 
   switch (arg_min_max.kind) {
     case mojom::ArgMinMax::Kind::kMax: {
-      model_editor_.AddNode(kOpTypeArgMax, node_name, input_names, output_names,
+      model_editor_.AddNode(kOpTypeArgMax, node, inputs, outputs,
                             std::move(attributes));
       break;
     }
     case mojom::ArgMinMax::Kind::kMin: {
-      model_editor_.AddNode(kOpTypeArgMin, node_name, input_names, output_names,
+      model_editor_.AddNode(kOpTypeArgMin, node, inputs, outputs,
                             std::move(attributes));
       break;
     }
   }
 
   if (need_cast) {
-    AppendCast(int64_output_name, output_name,
+    AppendCast(int64_output, output,
                OperandTypeToONNXTensorElementDataType(output_data_type));
   }
 }
 
 void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
-  const std::string node_name = GenerateNextOperationName(cast.label);
-  const std::string input_name = GetOperandNameById(cast.input_operand_id);
-  const std::string output_name = GetOperandNameById(cast.output_operand_id);
+  const std::string node = GenerateNextOperationName(cast.label);
+  const std::string input = GetOperandNameById(cast.input_operand_id);
+  const std::string output = GetOperandNameById(cast.output_operand_id);
   const OperandDataType output_data_type =
       GetOperand(cast.output_operand_id).descriptor.data_type();
-  AddCastNode(node_name, input_name, output_name,
+  AddCastNode(node, input, output,
               OperandTypeToONNXTensorElementDataType(output_data_type));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
-  const std::string node_name = GenerateNextOperationName(clamp.label);
-  const std::string input_name = GetOperandNameById(clamp.input_operand_id);
-  const std::string output_name = GetOperandNameById(clamp.output_operand_id);
+  const std::string node = GenerateNextOperationName(clamp.label);
+  const std::string input = GetOperandNameById(clamp.input_operand_id);
+  const std::string output = GetOperandNameById(clamp.output_operand_id);
 
   const OperandDataType input_data_type =
       GetOperand(clamp.output_operand_id).descriptor.data_type();
 
   // Min and max are 0-D operands with the same data type of input.
 
-  std::string min_name;
-  std::string max_name;
+  std::string min;
+  std::string max;
   switch (input_data_type) {
     case OperandDataType::kFloat32: {
-      ASSIGN_OR_RETURN(min_name, CreateScalarInitializer(clamp.min_value));
-      ASSIGN_OR_RETURN(max_name, CreateScalarInitializer(clamp.max_value));
+      ASSIGN_OR_RETURN(min, CreateScalarInitializer(clamp.min_value));
+      ASSIGN_OR_RETURN(max, CreateScalarInitializer(clamp.max_value));
       break;
     }
     case OperandDataType::kFloat16: {
-      ASSIGN_OR_RETURN(
-          min_name,
-          CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.min_value)));
-      ASSIGN_OR_RETURN(
-          max_name,
-          CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.max_value)));
+      ASSIGN_OR_RETURN(min, CreateScalarInitializer(
+                                fp16_ieee_from_fp32_value(clamp.min_value)));
+      ASSIGN_OR_RETURN(max, CreateScalarInitializer(
+                                fp16_ieee_from_fp32_value(clamp.max_value)));
       break;
     }
     // TODO(https://github.com/shiyi9801/chromium/issues/60): Add other data
@@ -939,54 +926,53 @@ GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
           << "[WebNN] Clamp only supports float32 and float16 data type.";
   }
 
-  std::array<const char*, 3> input_names = {input_name.c_str(),
-                                            min_name.c_str(), max_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 3> inputs = {input.c_str(), min.c_str(), max.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeClamp, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeClamp, node, inputs, outputs);
 
   return base::ok();
 }
 
 void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
-  const std::string node_name = GenerateNextOperationName(concat.label);
+  const std::string node = GenerateNextOperationName(concat.label);
 
-  std::vector<std::string> input_names_string;
-  input_names_string.reserve(concat.input_operand_ids.size());
-  std::vector<const char*> input_names;
-  input_names.reserve(concat.input_operand_ids.size());
+  std::vector<std::string> inputs_string;
+  inputs_string.reserve(concat.input_operand_ids.size());
+  std::vector<const char*> inputs;
+  inputs.reserve(concat.input_operand_ids.size());
   for (uint64_t input_operand_id : concat.input_operand_ids) {
-    input_names_string.push_back(GetOperandNameById(input_operand_id));
-    input_names.push_back(input_names_string.back().c_str());
+    inputs_string.push_back(GetOperandNameById(input_operand_id));
+    inputs.push_back(inputs_string.back().c_str());
   }
 
-  const std::string output_name = GetOperandNameById(concat.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const std::string output = GetOperandNameById(concat.output_operand_id);
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"axis", base::checked_cast<int64_t>(concat.axis)));
 
-  model_editor_.AddNode(kOpTypeConcat, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeConcat, node, inputs, outputs,
                         std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
-  const std::string node_name = GenerateNextOperationName(conv2d.label);
-  const std::string input_name = GetOperandNameById(conv2d.input_operand_id);
-  const std::string filter_name = GetOperandNameById(conv2d.filter_operand_id);
-  const std::string output_name = GetOperandNameById(conv2d.output_operand_id);
-  std::vector<const char*> input_names;
-  std::string bias_name;
+  const std::string node = GenerateNextOperationName(conv2d.label);
+  const std::string input = GetOperandNameById(conv2d.input_operand_id);
+  const std::string filter = GetOperandNameById(conv2d.filter_operand_id);
+  const std::string output = GetOperandNameById(conv2d.output_operand_id);
+  std::vector<const char*> inputs;
+  std::string bias;
   if (conv2d.bias_operand_id) {
-    bias_name = GetOperandNameById(conv2d.bias_operand_id.value());
-    input_names = {input_name.c_str(), filter_name.c_str(), bias_name.c_str()};
+    bias = GetOperandNameById(conv2d.bias_operand_id.value());
+    inputs = {input.c_str(), filter.c_str(), bias.c_str()};
   } else {
-    input_names = {input_name.c_str(), filter_name.c_str()};
+    inputs = {input.c_str(), filter.c_str()};
   }
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
 
@@ -1014,7 +1000,7 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
 
   switch (conv2d.kind) {
     case mojom::Conv2d::Kind::kDirect:
-      model_editor_.AddNode(kOpTypeConv2d, node_name, input_names, output_names,
+      model_editor_.AddNode(kOpTypeConv2d, node, inputs, outputs,
                             std::move(attributes));
       break;
     case mojom::Conv2d::Kind::kTransposed:
@@ -1075,8 +1061,8 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
       attributes.push_back(model_editor_.CreateAttribute(
           /*name=*/"output_padding", output_padding));
 
-      model_editor_.AddNode(kOpTypeConvTranspose2d, node_name, input_names,
-                            output_names, std::move(attributes));
+      model_editor_.AddNode(kOpTypeConvTranspose2d, node, inputs, outputs,
+                            std::move(attributes));
       break;
   }
 
@@ -1086,16 +1072,14 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddCumulativeSumOperation(
     const mojom::CumulativeSum& cumulative_sum) {
-  const std::string node_name = GenerateNextOperationName(cumulative_sum.label);
-  const std::string input_name =
-      GetOperandNameById(cumulative_sum.input_operand_id);
-  const std::string output_name =
+  const std::string node = GenerateNextOperationName(cumulative_sum.label);
+  const std::string input = GetOperandNameById(cumulative_sum.input_operand_id);
+  const std::string output =
       GetOperandNameById(cumulative_sum.output_operand_id);
 
-  std::string axis_name;
-  ASSIGN_OR_RETURN(axis_name,
-                   CreateScalarInitializer<int64_t>(
-                       base::checked_cast<int64_t>(cumulative_sum.axis)));
+  std::string axis;
+  ASSIGN_OR_RETURN(axis, CreateScalarInitializer<int64_t>(
+                             base::checked_cast<int64_t>(cumulative_sum.axis)));
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(2);
@@ -1106,20 +1090,19 @@ GraphBuilderOrt::AddCumulativeSumOperation(
       /*name=*/"reverse",
       base::checked_cast<int64_t>(cumulative_sum.reversed)));
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            axis_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-  model_editor_.AddNode(kOpTypeCumulativeSum, node_name, input_names,
-                        output_names, std::move(attributes));
+  std::array<const char*, 2> inputs = {input.c_str(), axis.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeCumulativeSum, node, inputs, outputs,
+                        std::move(attributes));
 
   return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
-  const std::string node_name = GenerateNextOperationName(elu.label);
-  std::string input_name = GetOperandNameById(elu.input_operand_id);
-  const std::string output_name = GetOperandNameById(elu.output_operand_id);
+  const std::string node = GenerateNextOperationName(elu.label);
+  std::string input = GetOperandNameById(elu.input_operand_id);
+  const std::string output = GetOperandNameById(elu.output_operand_id);
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
@@ -1132,25 +1115,25 @@ GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
   // Elu only supports 1-D input tensor, so we need to prepend a reshape node to
   // convert the input tensor to 1-D tensor.
   bool need_reshape = input_descriptor.Rank() != 1;
-  std::string elu_output_name = output_name;
+  std::string elu_output = output;
   if (need_reshape) {
     base::CheckedNumeric<uint32_t> checked_input_size =
         std::accumulate(input_shape.begin(), input_shape.end(),
                         base::CheckedNumeric<uint32_t>(1), std::multiplies());
     std::array<uint32_t, 1> new_shape = {checked_input_size.ValueOrDie()};
-    ASSIGN_OR_RETURN(input_name, PrependReshape(input_name, new_shape));
-    elu_output_name = GenerateNextOperandName();
+    ASSIGN_OR_RETURN(input, PrependReshape(input, new_shape));
+    elu_output = GenerateNextOperandName();
   }
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {elu_output_name.c_str()};
-  model_editor_.AddNode(kOpTypeElu, node_name, input_names, output_names,
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {elu_output.c_str()};
+  model_editor_.AddNode(kOpTypeElu, node, inputs, outputs,
                         std::move(attributes));
 
   // Append a reshape node to convert the output tensor back to the original
   // shape.
   if (need_reshape) {
-    return AppendReshape(elu_output_name, output_name, input_shape);
+    return AppendReshape(elu_output, output, input_shape);
   }
 
   return base::ok();
@@ -1158,9 +1141,9 @@ GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
-  const std::string node_name = GenerateNextOperationName(expand.label);
-  const std::string input_name = GetOperandNameById(expand.input_operand_id);
-  const std::string output_name = GetOperandNameById(expand.output_operand_id);
+  const std::string node = GenerateNextOperationName(expand.label);
+  const std::string input = GetOperandNameById(expand.input_operand_id);
+  const std::string output = GetOperandNameById(expand.output_operand_id);
 
   const OperandDescriptor& output_descriptor =
       GetOperand(expand.output_operand_id).descriptor;
@@ -1172,14 +1155,13 @@ GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   std::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
-  ASSIGN_OR_RETURN(const std::string shape_name,
+  ASSIGN_OR_RETURN(const std::string shape,
                    CreateInitializer<int64_t>(shape_dims, shape_values));
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            shape_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeExpand, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeExpand, node, inputs, outputs);
 
   return base::ok();
 }
@@ -1192,12 +1174,11 @@ template <typename DequantizeOrQuantizeLinear>
 GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
     std::string_view op_type,
     const DequantizeOrQuantizeLinear& operation) {
-  const std::string node_name = GenerateNextOperationName(operation.label);
-  std::string input_name = GetOperandNameById(operation.input_operand_id);
-  std::string scale_name = GetOperandNameById(operation.scale_operand_id);
-  std::string zero_point_name =
-      GetOperandNameById(operation.zero_point_operand_id);
-  std::string output_name = GetOperandNameById(operation.output_operand_id);
+  const std::string node = GenerateNextOperationName(operation.label);
+  std::string input = GetOperandNameById(operation.input_operand_id);
+  std::string scale = GetOperandNameById(operation.scale_operand_id);
+  std::string zero_point = GetOperandNameById(operation.zero_point_operand_id);
+  std::string output = GetOperandNameById(operation.output_operand_id);
 
   const OperandDescriptor& input_descriptor =
       GetOperand(operation.input_operand_id).descriptor;
@@ -1234,17 +1215,15 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
   } else if (not_one_value_dim_count == 0) {
     // The numbers in scale shape are all 1., scale and zeroPoint should be
     // reshaped to a scalar.
-    ASSIGN_OR_RETURN(scale_name, PrependReshape(scale_name, {}));
-    ASSIGN_OR_RETURN(zero_point_name, PrependReshape(zero_point_name, {}));
+    ASSIGN_OR_RETURN(scale, PrependReshape(scale, {}));
+    ASSIGN_OR_RETURN(zero_point, PrependReshape(zero_point, {}));
   } else if (is_per_axis) {
     // For per-axis dequantization, scale and zeroPoint must be a 1-D
     // Tensor.
     CHECK(axis.has_value());
-    ASSIGN_OR_RETURN(scale_name,
-                     PrependReshape(scale_name, {input_shape[axis.value()]}));
-    ASSIGN_OR_RETURN(
-        zero_point_name,
-        PrependReshape(zero_point_name, {input_shape[axis.value()]}));
+    ASSIGN_OR_RETURN(scale, PrependReshape(scale, {input_shape[axis.value()]}));
+    ASSIGN_OR_RETURN(zero_point,
+                     PrependReshape(zero_point, {input_shape[axis.value()]}));
   } else if (scale_shape.size() == input_shape.size()) {
     // For blocked dequantization it has the same shape as the input, except for
     // one dimension in which blocking is performed.
@@ -1279,9 +1258,9 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
             "Currently ORT OpenVINO only support 2D scale for block_wise "
             "dequantizeLinear.");
       } else if (axis == 1) {
-        input_name = PrependTranspose(input_name, {1, 0});
-        scale_name = PrependTranspose(scale_name, {1, 0});
-        zero_point_name = PrependTranspose(zero_point_name, {1, 0});
+        input = PrependTranspose(input, {1, 0});
+        scale = PrependTranspose(scale, {1, 0});
+        zero_point = PrependTranspose(zero_point, {1, 0});
         axis = 0;
         need_transpose = true;
       }
@@ -1295,12 +1274,12 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
         "dequantizeLinear and quantizeLinear");
   }
 
-  const std::string transposed_output_name =
-      need_transpose ? GenerateNextOperandName() : output_name;
+  const std::string transposed_output =
+      need_transpose ? GenerateNextOperandName() : output;
 
-  base::FixedArray<const char*> input_names = {
-      input_name.c_str(), scale_name.c_str(), zero_point_name.c_str()};
-  base::FixedArray<const char*> output_names = {transposed_output_name.c_str()};
+  base::FixedArray<const char*> inputs = {input.c_str(), scale.c_str(),
+                                          zero_point.c_str()};
+  base::FixedArray<const char*> outputs = {transposed_output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   if (axis.has_value()) {
@@ -1314,21 +1293,19 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
         base::checked_cast<int64_t>(block_size.value())));
   }
 
-  model_editor_.AddNode(op_type, node_name, input_names, output_names,
-                        std::move(attributes));
+  model_editor_.AddNode(op_type, node, inputs, outputs, std::move(attributes));
 
   if (need_transpose) {
-    AppendTranspose(transposed_output_name, output_name, {1, 0});
+    AppendTranspose(transposed_output, output, {1, 0});
   }
   return base::ok();
 }
 
 void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
-  const std::string node_name = GenerateNextOperationName(gather.label);
-  const std::string input_name = GetOperandNameById(gather.input_operand_id);
-  const std::string indices_name =
-      GetOperandNameById(gather.indices_operand_id);
-  const std::string output_name = GetOperandNameById(gather.output_operand_id);
+  const std::string node = GenerateNextOperationName(gather.label);
+  const std::string input = GetOperandNameById(gather.input_operand_id);
+  const std::string indices = GetOperandNameById(gather.indices_operand_id);
+  const std::string output = GetOperandNameById(gather.output_operand_id);
 
   // TODO(https://github.com/shiyi9801/chromium/issues/82): Clamp the indices
   // operand to ensure it won't be out-of-bound.
@@ -1338,23 +1315,21 @@ void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            indices_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), indices.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeGather, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeGather, node, inputs, outputs,
                         std::move(attributes));
 }
 
 void GraphBuilderOrt::AddGatherElementsOperation(
     const mojom::GatherElements& gather_elements) {
-  const std::string node_name =
-      GenerateNextOperationName(gather_elements.label);
-  const std::string input_name =
+  const std::string node = GenerateNextOperationName(gather_elements.label);
+  const std::string input =
       GetOperandNameById(gather_elements.input_operand_id);
-  const std::string indices_name =
+  const std::string indices =
       GetOperandNameById(gather_elements.indices_operand_id);
-  const std::string output_name =
+  const std::string output =
       GetOperandNameById(gather_elements.output_operand_id);
 
   // TODO(https://github.com/shiyi9801/chromium/issues/149): Clamp the indices
@@ -1365,23 +1340,20 @@ void GraphBuilderOrt::AddGatherElementsOperation(
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            indices_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), indices.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeGatherElements, node_name, input_names,
-                        output_names, std::move(attributes));
+  model_editor_.AddNode(kOpTypeGatherElements, node, inputs, outputs,
+                        std::move(attributes));
 }
 
 void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
-  const std::string node_name = GenerateNextOperationName(gather_nd.label);
-  const std::string input_name = GetOperandNameById(gather_nd.input_operand_id);
-  const std::string indices_name =
-      GetOperandNameById(gather_nd.indices_operand_id);
-  const std::string output_name =
-      GetOperandNameById(gather_nd.output_operand_id);
+  const std::string node = GenerateNextOperationName(gather_nd.label);
+  const std::string input = GetOperandNameById(gather_nd.input_operand_id);
+  const std::string indices = GetOperandNameById(gather_nd.indices_operand_id);
+  const std::string output = GetOperandNameById(gather_nd.output_operand_id);
 
-  std::string int64_indices_name;
+  std::string int64_indices;
   const OperandDataType indices_data_type =
       GetOperand(gather_nd.indices_operand_id).descriptor.data_type();
 
@@ -1391,14 +1363,14 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
   // ONNX GatherND only supports int64 indices.
   switch (indices_data_type) {
     case OperandDataType::kInt64: {
-      int64_indices_name = indices_name;
+      int64_indices = indices;
       break;
     }
     case OperandDataType::kInt32:
     case OperandDataType::kUint32: {
-      int64_indices_name = GenerateNextOperandName();
+      int64_indices = GenerateNextOperandName();
       AppendCast(
-          indices_name, int64_indices_name,
+          indices, int64_indices,
           ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
       break;
     }
@@ -1407,29 +1379,27 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
           << "[WebNN] GatherND only supports int32, uint32 and int64 indices.";
   }
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            int64_indices_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), int64_indices.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeGatherND, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeGatherND, node, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
-  const std::string node_name = GenerateNextOperationName(gemm.label);
-  const std::string input_a_name = GetOperandNameById(gemm.a_operand_id);
-  const std::string input_b_name = GetOperandNameById(gemm.b_operand_id);
-  const std::string output_name = GetOperandNameById(gemm.output_operand_id);
+  const std::string node = GenerateNextOperationName(gemm.label);
+  const std::string input_a = GetOperandNameById(gemm.a_operand_id);
+  const std::string input_b = GetOperandNameById(gemm.b_operand_id);
+  const std::string output = GetOperandNameById(gemm.output_operand_id);
 
-  std::vector<const char*> input_names;
-  std::string input_c_name;
+  std::vector<const char*> inputs;
+  std::string input_c;
   if (gemm.c_operand_id.has_value()) {
-    input_c_name = GetOperandNameById(gemm.c_operand_id.value());
-    input_names = {input_a_name.c_str(), input_b_name.c_str(),
-                   input_c_name.c_str()};
+    input_c = GetOperandNameById(gemm.c_operand_id.value());
+    inputs = {input_a.c_str(), input_b.c_str(), input_c.c_str()};
   } else {
-    input_names = {input_a_name.c_str(), input_b_name.c_str()};
+    inputs = {input_a.c_str(), input_b.c_str()};
   }
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(4);
@@ -1442,19 +1412,17 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"transB", static_cast<int64_t>(gemm.b_transpose)));
 
-  model_editor_.AddNode(kOpTypeGemm, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeGemm, node, inputs, outputs,
                         std::move(attributes));
 }
 
 void GraphBuilderOrt::AddHardSigmoidOperation(
     const mojom::HardSigmoid& hard_sigmoid) {
-  const std::string node_name = GenerateNextOperationName(hard_sigmoid.label);
-  const std::string input_name =
-      GetOperandNameById(hard_sigmoid.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(hard_sigmoid.output_operand_id);
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const std::string node = GenerateNextOperationName(hard_sigmoid.label);
+  const std::string input = GetOperandNameById(hard_sigmoid.input_operand_id);
+  const std::string output = GetOperandNameById(hard_sigmoid.output_operand_id);
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(2);
@@ -1463,8 +1431,8 @@ void GraphBuilderOrt::AddHardSigmoidOperation(
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"beta", hard_sigmoid.beta));
 
-  model_editor_.AddNode(kOpTypeHardSigmoid, node_name, input_names,
-                        output_names, std::move(attributes));
+  model_editor_.AddNode(kOpTypeHardSigmoid, node, inputs, outputs,
+                        std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -1474,9 +1442,9 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
       GetOperand(instance_normalization.output_operand_id)
           .descriptor.data_type();
 
-  const std::string input_name =
+  const std::string input =
       GetOperandNameById(instance_normalization.input_operand_id);
-  std::vector<const char*> input_names = {input_name.c_str()};
+  std::vector<const char*> inputs = {input.c_str()};
 
   const std::vector<uint32_t>& input_shape =
       GetOperand(instance_normalization.input_operand_id).descriptor.shape();
@@ -1490,24 +1458,23 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
   uint32_t input_channel = input_shape[1];
   std::vector<uint32_t> constant_dims = {input_channel};
 
-  std::string scale_name, bias_name;
+  std::string scale, bias;
   // ONNX requires scale and bias inputs.
   if (instance_normalization.scale_operand_id) {
-    scale_name =
-        GetOperandNameById(instance_normalization.scale_operand_id.value());
-    input_names.push_back(scale_name.c_str());
+    scale = GetOperandNameById(instance_normalization.scale_operand_id.value());
+    inputs.push_back(scale.c_str());
   } else {
     std::vector<float> scale_data(input_channel, 1.0f);
     switch (input_data_type) {
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> scale_data_fp16(input_channel,
                                               fp16_ieee_from_fp32_value(1.0f));
-        ASSIGN_OR_RETURN(scale_name, CreateInitializer<uint16_t>(
-                                         constant_dims, scale_data_fp16));
+        ASSIGN_OR_RETURN(
+            scale, CreateInitializer<uint16_t>(constant_dims, scale_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
-        ASSIGN_OR_RETURN(scale_name,
+        ASSIGN_OR_RETURN(scale,
                          CreateInitializer<float>(constant_dims, scale_data));
         break;
       }
@@ -1516,25 +1483,24 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
                         "and float16 data type.";
     }
 
-    input_names.push_back(scale_name.c_str());
+    inputs.push_back(scale.c_str());
   }
 
   if (instance_normalization.bias_operand_id) {
-    bias_name =
-        GetOperandNameById(instance_normalization.bias_operand_id.value());
-    input_names.push_back(bias_name.c_str());
+    bias = GetOperandNameById(instance_normalization.bias_operand_id.value());
+    inputs.push_back(bias.c_str());
   } else {
     std::vector<float> bias_data(input_channel, 0.0f);
     switch (input_data_type) {
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> bias_data_fp16(input_channel,
                                              fp16_ieee_from_fp32_value(0.0f));
-        ASSIGN_OR_RETURN(bias_name, CreateInitializer<uint16_t>(
-                                        constant_dims, bias_data_fp16));
+        ASSIGN_OR_RETURN(
+            bias, CreateInitializer<uint16_t>(constant_dims, bias_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
-        ASSIGN_OR_RETURN(bias_name,
+        ASSIGN_OR_RETURN(bias,
                          CreateInitializer<float>(constant_dims, bias_data));
         break;
       }
@@ -1543,7 +1509,7 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
                         "and float16 data type.";
     }
 
-    input_names.push_back(bias_name.c_str());
+    inputs.push_back(bias.c_str());
   }
 
   std::vector<ScopedOrtOpAttr> attributes;
@@ -1551,13 +1517,13 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"epsilon", instance_normalization.epsilon));
 
-  const std::string node_name =
+  const std::string node =
       GenerateNextOperationName(instance_normalization.label);
-  const std::string output_name =
+  const std::string output =
       GetOperandNameById(instance_normalization.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-  model_editor_.AddNode(kOpTypeInstanceNormalization, node_name, input_names,
-                        output_names, std::move(attributes));
+  std::array<const char*, 1> outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeInstanceNormalization, node, inputs, outputs,
+                        std::move(attributes));
 
   return base::ok();
 }
@@ -1568,17 +1534,16 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
   const OperandDataType input_data_type =
       GetOperand(layer_normalization.input_operand_id).descriptor.data_type();
 
-  const std::string input_name =
+  const std::string input =
       GetOperandNameById(layer_normalization.input_operand_id);
-  std::vector<const char*> input_names = {input_name.c_str()};
+  std::vector<const char*> inputs = {input.c_str()};
   const std::vector<uint32_t>& input_shape =
       GetOperand(layer_normalization.input_operand_id).descriptor.shape();
 
-  const std::string node_name =
-      GenerateNextOperationName(layer_normalization.label);
-  const std::string output_name =
+  const std::string node = GenerateNextOperationName(layer_normalization.label);
+  const std::string output =
       GetOperandNameById(layer_normalization.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   auto axes = layer_normalization.axes;
   // ONNX doesn't support empty axes. When axes is empty, the mean equals to
@@ -1591,18 +1556,18 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
       if (!checked_input_size.IsValid()) {
         return NewNotSupportedError("The size of input is too large.");
       }
-      std::string zero_name;
+      std::string zero;
       switch (input_data_type) {
         case OperandDataType::kFloat16: {
           std::vector<uint16_t> zero_data_fp16(checked_input_size.ValueOrDie(),
                                                fp16_ieee_from_fp32_value(0.0f));
-          ASSIGN_OR_RETURN(zero_name, CreateInitializer<uint16_t>(
-                                          input_shape, zero_data_fp16));
+          ASSIGN_OR_RETURN(
+              zero, CreateInitializer<uint16_t>(input_shape, zero_data_fp16));
           break;
         }
         case OperandDataType::kFloat32: {
           std::vector<float> zero_data(checked_input_size.ValueOrDie(), 0.0f);
-          ASSIGN_OR_RETURN(zero_name,
+          ASSIGN_OR_RETURN(zero,
                            CreateInitializer<float>(input_shape, zero_data));
           break;
         }
@@ -1610,17 +1575,13 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
           NOTREACHED() << "[WebNN] InstanceNormalization only supports float32 "
                           "and float16 data type.";
       }
-      const std::string bias_name =
+      const std::string bias =
           GetOperandNameById(layer_normalization.bias_operand_id.value());
-      std::array<const char*, 2> binary_input_names = {bias_name.c_str(),
-                                                       zero_name.c_str()};
-      model_editor_.AddNode(kOpTypeAdd, node_name, binary_input_names,
-                            output_names);
+      std::array<const char*, 2> binary_inputs = {bias.c_str(), zero.c_str()};
+      model_editor_.AddNode(kOpTypeAdd, node, binary_inputs, outputs);
     } else {
-      std::array<const char*, 2> binary_input_names = {input_name.c_str(),
-                                                       input_name.c_str()};
-      model_editor_.AddNode(kOpTypeSub, node_name, binary_input_names,
-                            output_names);
+      std::array<const char*, 2> binary_inputs = {input.c_str(), input.c_str()};
+      model_editor_.AddNode(kOpTypeSub, node, binary_inputs, outputs);
     }
     return base::ok();
   }
@@ -1642,7 +1603,7 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
         "as axes.");
   }
   uint32_t axis = axes[0];
-  std::string scale_name;
+  std::string scale;
   base::CheckedNumeric<uint32_t> checked_scale_size =
       std::accumulate(input_shape.begin() + axis, input_shape.end(),
                       base::CheckedNumeric<uint32_t>(1), std::multiplies());
@@ -1657,21 +1618,20 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
       [&input_shape](uint32_t axis) { return input_shape[axis]; });
 
   if (layer_normalization.scale_operand_id) {
-    scale_name =
-        GetOperandNameById(layer_normalization.scale_operand_id.value());
-    input_names.push_back(scale_name.c_str());
+    scale = GetOperandNameById(layer_normalization.scale_operand_id.value());
+    inputs.push_back(scale.c_str());
   } else {
     switch (input_data_type) {
       case OperandDataType::kFloat16: {
         std::vector<uint16_t> scale_data_fp16(checked_scale_size.ValueOrDie(),
                                               fp16_ieee_from_fp32_value(1.0f));
-        ASSIGN_OR_RETURN(scale_name, CreateInitializer<uint16_t>(
-                                         scale_dims, scale_data_fp16));
+        ASSIGN_OR_RETURN(
+            scale, CreateInitializer<uint16_t>(scale_dims, scale_data_fp16));
         break;
       }
       case OperandDataType::kFloat32: {
         std::vector<float> scale_data(checked_scale_size.ValueOrDie(), 1.0f);
-        ASSIGN_OR_RETURN(scale_name,
+        ASSIGN_OR_RETURN(scale,
                          CreateInitializer<float>(scale_dims, scale_data));
         break;
       }
@@ -1680,13 +1640,13 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
                         "and float16 data type.";
     }
 
-    input_names.push_back(scale_name.c_str());
+    inputs.push_back(scale.c_str());
   }
 
-  std::string bias_name;
+  std::string bias;
   if (layer_normalization.bias_operand_id) {
-    bias_name = GetOperandNameById(layer_normalization.bias_operand_id.value());
-    input_names.push_back(bias_name.c_str());
+    bias = GetOperandNameById(layer_normalization.bias_operand_id.value());
+    inputs.push_back(bias.c_str());
   }
 
   std::vector<ScopedOrtOpAttr> attributes;
@@ -1696,28 +1656,26 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"epsilon", layer_normalization.epsilon));
 
-  model_editor_.AddNode(kOpTypeLayerNormalization, node_name, input_names,
-                        output_names, std::move(attributes));
+  model_editor_.AddNode(kOpTypeLayerNormalization, node, inputs, outputs,
+                        std::move(attributes));
 
   return base::ok();
 }
 
 void GraphBuilderOrt::AddLeakyReluOperation(
     const mojom::LeakyRelu& leaky_relu) {
-  const std::string node_name = GenerateNextOperationName(leaky_relu.label);
-  const std::string input_name =
-      GetOperandNameById(leaky_relu.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(leaky_relu.output_operand_id);
+  const std::string node = GenerateNextOperationName(leaky_relu.label);
+  const std::string input = GetOperandNameById(leaky_relu.input_operand_id);
+  const std::string output = GetOperandNameById(leaky_relu.output_operand_id);
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(
       model_editor_.CreateAttribute(/*name=*/"alpha", leaky_relu.alpha));
-  model_editor_.AddNode(kOpTypeLeakyRelu, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeLeakyRelu, node, inputs, outputs,
                         std::move(attributes));
 }
 
@@ -1728,17 +1686,15 @@ GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
   const mojom::Operand& input_operand = GetOperand(linear.input_operand_id);
   const OperandDataType input_data_type = input_operand.descriptor.data_type();
 
-  std::string alpha_name;
+  std::string alpha;
   switch (input_data_type) {
     case OperandDataType::kFloat16: {
-      ASSIGN_OR_RETURN(alpha_name,
-                       CreateScalarInitializer<uint16_t>(
-                           fp16_ieee_from_fp32_value(linear.alpha)));
+      ASSIGN_OR_RETURN(alpha, CreateScalarInitializer<uint16_t>(
+                                  fp16_ieee_from_fp32_value(linear.alpha)));
       break;
     }
     case OperandDataType::kFloat32: {
-      ASSIGN_OR_RETURN(alpha_name,
-                       CreateScalarInitializer<float>(linear.alpha));
+      ASSIGN_OR_RETURN(alpha, CreateScalarInitializer<float>(linear.alpha));
       break;
     }
     default:
@@ -1747,24 +1703,22 @@ GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
   }
   const std::string linear_mul_label =
       base::JoinString({linear.label, "mul"}, kUnderscore);
-  const std::string mul_node_name = GenerateNextOperationName(linear_mul_label);
-  const std::string input_name = GetOperandNameById(linear.input_operand_id);
-  std::array<const char*, 2> mul_input_names = {input_name.c_str(),
-                                                alpha_name.c_str()};
-  const std::string mul_output_name = GenerateNextOperandName();
-  std::array<const char*, 1> mul_output_names = {mul_output_name.c_str()};
-  model_editor_.AddNode(kOpTypeMul, mul_node_name, mul_input_names,
-                        mul_output_names);
+  const std::string mul_node = GenerateNextOperationName(linear_mul_label);
+  const std::string input = GetOperandNameById(linear.input_operand_id);
+  std::array<const char*, 2> mul_inputs = {input.c_str(), alpha.c_str()};
+  const std::string mul_output = GenerateNextOperandName();
+  std::array<const char*, 1> mul_outputs = {mul_output.c_str()};
+  model_editor_.AddNode(kOpTypeMul, mul_node, mul_inputs, mul_outputs);
 
-  std::string beta_name;
+  std::string beta;
   switch (input_data_type) {
     case OperandDataType::kFloat16: {
-      ASSIGN_OR_RETURN(beta_name, CreateScalarInitializer<uint16_t>(
-                                      fp16_ieee_from_fp32_value(linear.beta)));
+      ASSIGN_OR_RETURN(beta, CreateScalarInitializer<uint16_t>(
+                                 fp16_ieee_from_fp32_value(linear.beta)));
       break;
     }
     case OperandDataType::kFloat32: {
-      ASSIGN_OR_RETURN(beta_name, CreateScalarInitializer<float>(linear.beta));
+      ASSIGN_OR_RETURN(beta, CreateScalarInitializer<float>(linear.beta));
       break;
     }
     default:
@@ -1773,80 +1727,77 @@ GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
   }
   const std::string linear_add_label =
       base::JoinString({linear.label, "add"}, kUnderscore);
-  const std::string add_node_name = GenerateNextOperationName(linear_add_label);
-  std::array<const char*, 2> add_input_names = {mul_output_name.c_str(),
-                                                beta_name.c_str()};
-  const std::string output_name = GetOperandNameById(linear.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-  model_editor_.AddNode(kOpTypeAdd, add_node_name, add_input_names,
-                        output_names);
+  const std::string add_node = GenerateNextOperationName(linear_add_label);
+  std::array<const char*, 2> add_inputs = {mul_output.c_str(), beta.c_str()};
+  const std::string output = GetOperandNameById(linear.output_operand_id);
+  std::array<const char*, 1> outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeAdd, add_node, add_inputs, outputs);
 
   return base::ok();
 }
 
 void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
-  const std::string node_name = GenerateNextOperationName(matmul.label);
-  const std::string input_a_name = GetOperandNameById(matmul.a_operand_id);
-  const std::string input_b_name = GetOperandNameById(matmul.b_operand_id);
-  const std::string output_name = GetOperandNameById(matmul.output_operand_id);
+  const std::string node = GenerateNextOperationName(matmul.label);
+  const std::string input_a = GetOperandNameById(matmul.a_operand_id);
+  const std::string input_b = GetOperandNameById(matmul.b_operand_id);
+  const std::string output = GetOperandNameById(matmul.output_operand_id);
 
-  std::array<const char*, 2> input_names = {input_a_name.c_str(),
-                                            input_b_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input_a.c_str(), input_b.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeMatMul, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeMatMul, node, inputs, outputs);
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
-  const std::string node_name = GenerateNextOperationName(pad.label);
-  const std::string input_name = GetOperandNameById(pad.input_operand_id);
+  const std::string node = GenerateNextOperationName(pad.label);
+  const std::string input = GetOperandNameById(pad.input_operand_id);
   const OperandDataType input_data_type =
       GetOperand(pad.output_operand_id).descriptor.data_type();
-  std::vector<const char*> input_names = {input_name.c_str()};
+  std::vector<const char*> inputs = {input.c_str()};
 
   CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
   auto padding_length =
       pad.beginning_padding.size() + pad.ending_padding.size();
 
   // paddings is an operand with data type int64, not an attribute.
-  std::vector<int64_t> paddings;
-  paddings.reserve(padding_length);
+  std::vector<int64_t> paddings_value;
+  paddings_value.reserve(padding_length);
   std::ranges::transform(
-      pad.beginning_padding, std::back_inserter(paddings),
+      pad.beginning_padding, std::back_inserter(paddings_value),
       [](uint32_t value) { return base::checked_cast<int64_t>(value); });
   std::ranges::transform(
-      pad.ending_padding, std::back_inserter(paddings),
+      pad.ending_padding, std::back_inserter(paddings_value),
       [](uint32_t value) { return base::checked_cast<int64_t>(value); });
 
   std::vector<uint32_t> paddings_dims = {
       base::checked_cast<uint32_t>(padding_length)};
-  ASSIGN_OR_RETURN(const std::string paddings_name,
-                   CreateInitializer<int64_t>(paddings_dims, paddings));
-  input_names.push_back(paddings_name.c_str());
+  ASSIGN_OR_RETURN(const std::string paddings,
+                   CreateInitializer<int64_t>(paddings_dims, paddings_value));
+  inputs.push_back(paddings.c_str());
 
   std::string mode;
-  std::string constant_name;
+  std::string constant;
   switch (pad.mode->which()) {
     case mojom::PaddingMode::Tag::kConstant: {
       mode = "constant";
-      auto constant = pad.mode->get_constant()->value;
+      auto constant_value = pad.mode->get_constant()->value;
       switch (input_data_type) {
         case OperandDataType::kFloat32: {
-          ASSIGN_OR_RETURN(constant_name, CreateScalarInitializer(constant));
+          ASSIGN_OR_RETURN(constant, CreateScalarInitializer(constant_value));
           break;
         }
         case OperandDataType::kFloat16: {
-          ASSIGN_OR_RETURN(
-              constant_name,
-              CreateScalarInitializer(fp16_ieee_from_fp32_value(constant)));
+          ASSIGN_OR_RETURN(constant,
+                           CreateScalarInitializer(
+                               fp16_ieee_from_fp32_value(constant_value)));
           break;
         }
         default:
           NOTREACHED() << "[WebNN] Pad only supports float32 "
                           "and float16 data type.";
       }
-      input_names.push_back(constant_name.c_str());
+      inputs.push_back(constant.c_str());
       break;
     }
     case mojom::PaddingMode::Tag::kSymmetric:
@@ -1865,10 +1816,10 @@ GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"mode", mode));
 
-  const std::string output_name = GetOperandNameById(pad.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const std::string output = GetOperandNameById(pad.output_operand_id);
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypePad, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypePad, node, inputs, outputs,
                         std::move(attributes));
 
   return base::ok();
@@ -1940,49 +1891,47 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
     }
   }
 
-  const std::string node_name = GenerateNextOperationName(pool2d.label);
-  const std::string input_name = GetOperandNameById(pool2d.input_operand_id);
-  const std::string output_name = GetOperandNameById(pool2d.output_operand_id);
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const std::string node = GenerateNextOperationName(pool2d.label);
+  const std::string input = GetOperandNameById(pool2d.input_operand_id);
+  const std::string output = GetOperandNameById(pool2d.output_operand_id);
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(op_type, node_name, input_names, output_names,
-                        std::move(attributes));
+  model_editor_.AddNode(op_type, node, inputs, outputs, std::move(attributes));
 }
 
 void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
-  const std::string node_name = GenerateNextOperationName(prelu.label);
-  const std::string input_name = GetOperandNameById(prelu.input_operand_id);
+  const std::string node = GenerateNextOperationName(prelu.label);
+  const std::string input = GetOperandNameById(prelu.input_operand_id);
   // ONNX Prelu requires slope's shape must be unidirectional broadcastable to
   // input when the shape of slope is smaller than the input. While WebNN allows
   // input and slope to be bidirectionally broadcastable.
   // TODO(https://github.com/shiyi9801/chromium/issues/153): Consider to emulate
   // if slope is not unidirectional broadcastable to input.
-  const std::string slope_name = GetOperandNameById(prelu.slope_operand_id);
-  const std::string output_name = GetOperandNameById(prelu.output_operand_id);
+  const std::string slope = GetOperandNameById(prelu.slope_operand_id);
+  const std::string output = GetOperandNameById(prelu.output_operand_id);
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            slope_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), slope.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypePRelu, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypePRelu, node, inputs, outputs);
 }
 
 // TODO(https://github.com/shiyi9801/chromium/issues/53): 'reduceSumSquare
 // float32 1D tensor with empty axes' test case fails
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
-  const std::string input_name = GetOperandNameById(reduce.input_operand_id);
-  std::vector<const char*> input_names = {input_name.c_str()};
+  const std::string input = GetOperandNameById(reduce.input_operand_id);
+  std::vector<const char*> inputs = {input.c_str()};
 
-  std::vector<int64_t> axes(reduce.axes.begin(), reduce.axes.end());
-  std::string axes_name;
+  std::vector<int64_t> axes_value(reduce.axes.begin(), reduce.axes.end());
+  std::string axes;
   if (!axes.empty()) {
     // axes is an operand with data type int64, not an attribute.
     std::vector<uint32_t> axes_dims = {
         base::checked_cast<uint32_t>(axes.size())};
-    ASSIGN_OR_RETURN(axes_name, CreateInitializer<int64_t>(axes_dims, axes));
-    input_names.push_back(axes_name.c_str());
+    ASSIGN_OR_RETURN(axes, CreateInitializer<int64_t>(axes_dims, axes_value));
+    inputs.push_back(axes.c_str());
   }
 
   std::vector<ScopedOrtOpAttr> attributes;
@@ -1999,12 +1948,12 @@ GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"noop_with_empty_axes", noop_with_empty_axes));
 
-  const std::string node_name = GenerateNextOperationName(reduce.label);
-  const std::string output_name = GetOperandNameById(reduce.output_operand_id);
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const std::string node = GenerateNextOperationName(reduce.label);
+  const std::string output = GetOperandNameById(reduce.output_operand_id);
+  std::array<const char*, 1> outputs = {output.c_str()};
   std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
 
-  model_editor_.AddNode(reduce_op_type, node_name, input_names, output_names,
+  model_editor_.AddNode(reduce_op_type, node, inputs, outputs,
                         std::move(attributes));
 
   return base::ok();
@@ -2012,23 +1961,21 @@ GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
-  const std::string node_name = GenerateNextOperationName(resample2d.label);
-  const std::string input_name =
-      GetOperandNameById(resample2d.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(resample2d.output_operand_id);
+  const std::string node = GenerateNextOperationName(resample2d.label);
+  const std::string input = GetOperandNameById(resample2d.input_operand_id);
+  const std::string output = GetOperandNameById(resample2d.output_operand_id);
   const std::vector<uint32_t>& input_shape =
       GetOperand(resample2d.input_operand_id).descriptor.shape();
   const std::vector<uint32_t>& output_shape =
       GetOperand(resample2d.output_operand_id).descriptor.shape();
-  std::vector<const char*> input_names = {input_name.c_str()};
+  std::vector<const char*> inputs = {input.c_str()};
 
   // ROI only takes effect when ONNX Resize op's attribute
   // coordinate_transformation_mode is “tf_crop_and_resize” and the default
   // value of coordinate_transformation_mode is "half_pixel". Currently, WebNN
   // only supports "half_pixel".
-  const std::string roi_name = "";
-  input_names.push_back(roi_name.c_str());
+  const std::string roi = "";
+  inputs.push_back(roi.c_str());
 
   // When axes != [2, 3], webnn blink side will insert transpose before and
   // after resample2d -
@@ -2038,8 +1985,8 @@ GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
   CHECK_EQ(resample2d.axes[1], 3u);
 
   CHECK_EQ(input_shape.size(), 4u);
-  std::string scales_name;
-  std::string sizes_name;
+  std::string scales;
+  std::string sizes;
   // Here we using default axes([0,..., R-1]) due to this issue-
   // https://github.com/shiyi9801/chromium/issues/92.
   if (resample2d.scales) {
@@ -2047,8 +1994,8 @@ GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
     // or axes.
     std::array<float, 4> scales_data = {1, 1, resample2d.scales->at(0),
                                         resample2d.scales->at(1)};
-    ASSIGN_OR_RETURN(scales_name, CreateInitializer<float>({4}, scales_data));
-    sizes_name = "";
+    ASSIGN_OR_RETURN(scales, CreateInitializer<float>({4}, scales_data));
+    sizes = "";
   } else {
     // The number of elements of sizes should be the same as the rank of input
     // or axes.
@@ -2058,11 +2005,11 @@ GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
         base::checked_cast<int64_t>(output_shape[1]),
         base::checked_cast<int64_t>(output_shape[2]),
         base::checked_cast<int64_t>(output_shape[3])};
-    ASSIGN_OR_RETURN(sizes_name, CreateInitializer<int64_t>({4}, sizes_data));
-    scales_name = "";
+    ASSIGN_OR_RETURN(sizes, CreateInitializer<int64_t>({4}, sizes_data));
+    scales = "";
   }
-  input_names.push_back(scales_name.c_str());
-  input_names.push_back(sizes_name.c_str());
+  inputs.push_back(scales.c_str());
+  inputs.push_back(sizes.c_str());
 
   std::string mode;
   switch (resample2d.mode) {
@@ -2077,9 +2024,9 @@ GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"mode", mode));
 
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeResample2d, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeResample2d, node, inputs, outputs,
                         std::move(attributes));
 
   return base::ok();
@@ -2087,9 +2034,9 @@ GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
-  const std::string node_name = GenerateNextOperationName(reshape.label);
-  const std::string input_name = GetOperandNameById(reshape.input_operand_id);
-  const std::string output_name = GetOperandNameById(reshape.output_operand_id);
+  const std::string node = GenerateNextOperationName(reshape.label);
+  const std::string input = GetOperandNameById(reshape.input_operand_id);
+  const std::string output = GetOperandNameById(reshape.output_operand_id);
 
   const OperandDescriptor& output_descriptor =
       GetOperand(reshape.output_operand_id).descriptor;
@@ -2101,14 +2048,13 @@ GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   std::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
-  ASSIGN_OR_RETURN(const std::string shape_name,
+  ASSIGN_OR_RETURN(const std::string shape,
                    CreateInitializer<int64_t>(shape_dims, shape_values));
 
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            shape_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeReshape, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeReshape, node, inputs, outputs);
 
   return base::ok();
 }
@@ -2116,9 +2062,9 @@ GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
 // Emulate it by slice operation since there is no reserve operation in ONNX.
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
-  const std::string node_name = GenerateNextOperationName(reverse.label);
-  const std::string input_name = GetOperandNameById(reverse.input_operand_id);
-  const std::string output_name = GetOperandNameById(reverse.output_operand_id);
+  const std::string node = GenerateNextOperationName(reverse.label);
+  const std::string input = GetOperandNameById(reverse.input_operand_id);
+  const std::string output = GetOperandNameById(reverse.output_operand_id);
 
   // Axes can be empty, which means no dimensions are reversed.
   std::vector<int64_t> reverse_axes(reverse.axes.begin(), reverse.axes.end());
@@ -2132,27 +2078,25 @@ GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
   // Axes is an operand with data type int64, not an attribute.
   std::vector<uint32_t> axes_dims = {
       base::checked_cast<uint32_t>(reverse_axes_size)};
-  ASSIGN_OR_RETURN(std::string axes_name,
+  ASSIGN_OR_RETURN(std::string axes,
                    CreateInitializer<int64_t>(axes_dims, reverse_axes));
 
-  return AddSliceNode(node_name, input_name, output_name, axes_name, starts,
-                      ends, steps);
+  return AddSliceNode(node, input, output, axes, starts, ends, steps);
 }
 
 void GraphBuilderOrt::AddScatterElementsOperation(
     const mojom::ScatterElements& scatter_elements) {
-  const std::string node_name =
-      GenerateNextOperationName(scatter_elements.label);
-  const std::string input_name =
+  const std::string node = GenerateNextOperationName(scatter_elements.label);
+  const std::string input =
       GetOperandNameById(scatter_elements.input_operand_id);
-  const std::string indices_name =
+  const std::string indices =
       GetOperandNameById(scatter_elements.indices_operand_id);
-  const std::string updates_name =
+  const std::string updates =
       GetOperandNameById(scatter_elements.updates_operand_id);
-  const std::string output_name =
+  const std::string output =
       GetOperandNameById(scatter_elements.output_operand_id);
 
-  std::string cast_indices_name;
+  std::string cast_indices;
   const OperandDataType indices_data_type =
       GetOperand(scatter_elements.indices_operand_id).descriptor.data_type();
 
@@ -2160,13 +2104,13 @@ void GraphBuilderOrt::AddScatterElementsOperation(
   switch (indices_data_type) {
     case OperandDataType::kInt32:
     case OperandDataType::kInt64: {
-      cast_indices_name = indices_name;
+      cast_indices = indices;
       break;
     }
     case OperandDataType::kUint32: {
-      cast_indices_name = GenerateNextOperandName();
+      cast_indices = GenerateNextOperandName();
       AppendCast(
-          indices_name, cast_indices_name,
+          indices, cast_indices,
           ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
       break;
     }
@@ -2180,41 +2124,37 @@ void GraphBuilderOrt::AddScatterElementsOperation(
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"axis", base::checked_cast<int64_t>(scatter_elements.axis)));
 
-  std::array<const char*, 3> input_names = {
-      input_name.c_str(), cast_indices_name.c_str(), updates_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 3> inputs = {input.c_str(), cast_indices.c_str(),
+                                       updates.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeScatterElements, node_name, input_names,
-                        output_names, std::move(attributes));
+  model_editor_.AddNode(kOpTypeScatterElements, node, inputs, outputs,
+                        std::move(attributes));
 }
 
 void GraphBuilderOrt::AddScatterNDOperation(
     const mojom::ScatterND& scatter_nd) {
-  const std::string node_name = GenerateNextOperationName(scatter_nd.label);
-  const std::string input_name =
-      GetOperandNameById(scatter_nd.input_operand_id);
-  const std::string indices_name =
-      GetOperandNameById(scatter_nd.indices_operand_id);
-  const std::string updates_name =
-      GetOperandNameById(scatter_nd.updates_operand_id);
-  const std::string output_name =
-      GetOperandNameById(scatter_nd.output_operand_id);
+  const std::string node = GenerateNextOperationName(scatter_nd.label);
+  const std::string input = GetOperandNameById(scatter_nd.input_operand_id);
+  const std::string indices = GetOperandNameById(scatter_nd.indices_operand_id);
+  const std::string updates = GetOperandNameById(scatter_nd.updates_operand_id);
+  const std::string output = GetOperandNameById(scatter_nd.output_operand_id);
 
-  std::string int64_indices_name;
+  std::string int64_indices;
   const OperandDataType indices_data_type =
       GetOperand(scatter_nd.indices_operand_id).descriptor.data_type();
 
   // ONNX ScatterND only supports int64 indices.
   switch (indices_data_type) {
     case OperandDataType::kInt64: {
-      int64_indices_name = indices_name;
+      int64_indices = indices;
       break;
     }
     case OperandDataType::kInt32:
     case OperandDataType::kUint32: {
-      int64_indices_name = GenerateNextOperandName();
+      int64_indices = GenerateNextOperandName();
       AppendCast(
-          indices_name, int64_indices_name,
+          indices, int64_indices,
           ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
       break;
     }
@@ -2223,18 +2163,18 @@ void GraphBuilderOrt::AddScatterNDOperation(
           << "[WebNN] ScatterND only supports int32, uint32 and int64 indices.";
   }
 
-  std::array<const char*, 3> input_names = {
-      input_name.c_str(), int64_indices_name.c_str(), updates_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 3> inputs = {input.c_str(), int64_indices.c_str(),
+                                       updates.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeScatterND, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeScatterND, node, inputs, outputs);
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
-  const std::string node_name = GenerateNextOperationName(slice.label);
-  const std::string input_name = GetOperandNameById(slice.input_operand_id);
-  const std::string output_name = GetOperandNameById(slice.output_operand_id);
+  const std::string node = GenerateNextOperationName(slice.label);
+  const std::string input = GetOperandNameById(slice.input_operand_id);
+  const std::string output = GetOperandNameById(slice.output_operand_id);
 
   auto range = slice.ranges;
   base::FixedArray<int64_t> starts(slice.ranges.size());
@@ -2250,57 +2190,54 @@ GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
   // Axes is an optional input, if not provided, it is an empty string and will
   // be treated as [0, 1, …, len(starts) - 1]:
   // https://onnx.ai/onnx/operators/onnx__Slice.html#inputs
-  const std::string axes_name = "";
-  return AddSliceNode(node_name, input_name, output_name, axes_name, starts,
-                      ends, steps);
+  const std::string axes = "";
+  return AddSliceNode(node, input, output, axes, starts, ends, steps);
 }
 
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
-  const std::string node_name = GenerateNextOperationName(softmax.label);
-  const std::string input_name = GetOperandNameById(softmax.input_operand_id);
-  const std::string output_name = GetOperandNameById(softmax.output_operand_id);
+  const std::string node = GenerateNextOperationName(softmax.label);
+  const std::string input = GetOperandNameById(softmax.input_operand_id);
+  const std::string output = GetOperandNameById(softmax.output_operand_id);
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"axis", static_cast<int64_t>(softmax.axis)));
 
-  model_editor_.AddNode(kOpTypeSoftmax, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeSoftmax, node, inputs, outputs,
                         std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddTileOperation(const mojom::Tile& tile) {
-  const std::string node_name = GenerateNextOperationName(tile.label);
-  const std::string input_name = GetOperandNameById(tile.input_operand_id);
-  const std::string output_name = GetOperandNameById(tile.output_operand_id);
+  const std::string node = GenerateNextOperationName(tile.label);
+  const std::string input = GetOperandNameById(tile.input_operand_id);
+  const std::string output = GetOperandNameById(tile.output_operand_id);
 
   std::vector<int64_t> repetitions(tile.repetitions.begin(),
                                    tile.repetitions.end());
   ASSIGN_OR_RETURN(
-      const std::string repeats_name,
+      const std::string repeats,
       CreateInitializer<int64_t>(
           {base::checked_cast<uint32_t>(repetitions.size())}, repetitions));
 
-  std::array<const char*, 2> input_names = {input_name.data(),
-                                            repeats_name.data()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-  model_editor_.AddNode(kOpTypeTile, node_name, input_names, output_names);
+  std::array<const char*, 2> inputs = {input.data(), repeats.data()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeTile, node, inputs, outputs);
 
   return base::ok();
 }
 
 void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
-  const std::string node_name = GenerateNextOperationName(transpose.label);
-  const std::string input_name = GetOperandNameById(transpose.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(transpose.output_operand_id);
+  const std::string node = GenerateNextOperationName(transpose.label);
+  const std::string input = GetOperandNameById(transpose.input_operand_id);
+  const std::string output = GetOperandNameById(transpose.output_operand_id);
 
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
@@ -2309,14 +2246,14 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   attributes.push_back(
       model_editor_.CreateAttribute(/*name=*/"perm", permutation));
 
-  model_editor_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeTranspose, node, inputs, outputs,
                         std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
-  const std::string node_name = GenerateNextOperationName(split.label);
-  const std::string input_name = GetOperandNameById(split.input_operand_id);
+  const std::string node = GenerateNextOperationName(split.label);
+  const std::string input = GetOperandNameById(split.input_operand_id);
 
   const auto output_nums = split.output_operand_ids.size();
   // 'split' is a optional input which specifies the length of each output. Sum
@@ -2331,17 +2268,16 @@ GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
     split_sizes[i] = base::checked_cast<int64_t>(output_shape[split.axis]);
   }
   ASSIGN_OR_RETURN(
-      const std::string split_name,
+      const std::string split_input,
       CreateInitializer<int64_t>(
           {base::checked_cast<uint32_t>(split_sizes.size())}, split_sizes));
-  base::FixedArray<const char*> input_names = {input_name.c_str(),
-                                               split_name.c_str()};
+  base::FixedArray<const char*> inputs = {input.c_str(), split_input.c_str()};
 
-  base::FixedArray<std::string> output_names_string(output_nums);
-  base::FixedArray<const char*> output_names(output_nums);
+  base::FixedArray<std::string> outputs_string(output_nums);
+  base::FixedArray<const char*> outputs(output_nums);
   for (size_t i = 0; i < output_nums; i++) {
-    output_names_string[i] = GetOperandNameById(split.output_operand_ids[i]);
-    output_names[i] = output_names_string[i].c_str();
+    outputs_string[i] = GetOperandNameById(split.output_operand_ids[i]);
+    outputs[i] = outputs_string[i].c_str();
   }
 
   std::vector<ScopedOrtOpAttr> attributes;
@@ -2349,7 +2285,7 @@ GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"axis", base::checked_cast<int64_t>(split.axis)));
 
-  model_editor_.AddNode(kOpTypeSplit, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeSplit, node, inputs, outputs,
                         std::move(attributes));
 
   return base::ok();
@@ -2357,51 +2293,47 @@ GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddTriangularOperation(const mojom::Triangular& triangular) {
-  const std::string node_name = GenerateNextOperationName(triangular.label);
-  const std::string input_name =
-      GetOperandNameById(triangular.input_operand_id);
-  const std::string output_name =
-      GetOperandNameById(triangular.output_operand_id);
-  std::vector<const char*> input_names = {input_name.c_str()};
+  const std::string node = GenerateNextOperationName(triangular.label);
+  const std::string input = GetOperandNameById(triangular.input_operand_id);
+  const std::string output = GetOperandNameById(triangular.output_operand_id);
+  std::vector<const char*> inputs = {input.c_str()};
 
   // K is an operand with data type int64, not an attribute.;
-  ASSIGN_OR_RETURN(const std::string k_name,
+  ASSIGN_OR_RETURN(const std::string k,
                    CreateScalarInitializer<int64_t>(
                        static_cast<int64_t>(triangular.diagonal)));
-  input_names.push_back(k_name.c_str());
+  inputs.push_back(k.c_str());
 
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"upper", static_cast<int64_t>(triangular.upper)));
 
-  model_editor_.AddNode(kOpTypeTriangular, node_name, input_names, output_names,
+  model_editor_.AddNode(kOpTypeTriangular, node, inputs, outputs,
                         std::move(attributes));
 
   return base::ok();
 }
 
 void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
-  const std::string node_name = GenerateNextOperationName(where.label);
+  const std::string node = GenerateNextOperationName(where.label);
   // ONNX only supports bool data type for the condition input of Where, insert
   // a Cast node to convert the condition input to bool.
-  std::string condition_name = GetOperandNameById(where.condition_operand_id);
-  condition_name =
-      PrependCast(condition_name, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  std::string condition = GetOperandNameById(where.condition_operand_id);
+  condition = PrependCast(condition, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
 
-  const std::string true_value_name =
+  const std::string true_value =
       GetOperandNameById(where.true_value_operand_id);
-  const std::string false_value_name =
+  const std::string false_value =
       GetOperandNameById(where.false_value_operand_id);
-  const std::string output_name = GetOperandNameById(where.output_operand_id);
-  std::array<const char*, 3> input_names = {condition_name.c_str(),
-                                            true_value_name.c_str(),
-                                            false_value_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
+  const std::string output = GetOperandNameById(where.output_operand_id);
+  std::array<const char*, 3> inputs = {condition.c_str(), true_value.c_str(),
+                                       false_value.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeWhere, node_name, input_names, output_names);
+  model_editor_.AddNode(kOpTypeWhere, node, inputs, outputs);
 }
 
 [[nodiscard]] base::expected<std::unique_ptr<OrtModelEditor::ModelInfo>,
