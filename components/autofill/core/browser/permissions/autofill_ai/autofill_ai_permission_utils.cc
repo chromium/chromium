@@ -16,6 +16,8 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace autofill {
 
@@ -126,9 +128,33 @@ namespace {
 }
 
 // Checks whether all requirements for `IdentityManager` state are required.
-[[nodiscard]] bool SatisfiesAccountRequirements(AutofillAiAction action) {
-  // TODO(crbug.com/397881703): Implement.
-  return true;
+[[nodiscard]] bool SatisfiesAccountRequirements(
+    const signin::IdentityManager* identity_manager,
+    bool has_entity_data_saved,
+    AutofillAiAction action) {
+  if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
+    return true;
+  }
+
+  // The user is signed out.
+  if (!identity_manager) {
+    return false;
+  }
+
+  // The user is only signed in on the web.
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  // All other states (sign-in and sync including their paused/error states)
+  // are sufficient for us to validate the user's account information.
+  // TODO(crbug.com/397881703): Decide whether to implement overrides similar
+  // to `kModelExecutionCapabilityDisable`.
+  return identity_manager
+             ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+                 signin::ConsentLevel::kSignin))
+             .capabilities.can_use_model_execution_features() ==
+         signin::Tribool::kTrue;
 }
 
 // Checks whether miscellaneous "other" requirements (OTR, app-locale, Geo-IP)
@@ -190,7 +216,8 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
     return false;
   }
 
-  if (!SatisfiesAccountRequirements(action)) {
+  if (!SatisfiesAccountRequirements(client.GetIdentityManager(),
+                                    has_entity_data_saved, action)) {
     return false;
   }
 

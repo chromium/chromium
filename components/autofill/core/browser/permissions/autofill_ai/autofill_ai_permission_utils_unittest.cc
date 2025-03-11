@@ -19,6 +19,9 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,6 +84,12 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
             kAutofillPredictionImprovementsEnterprisePolicyAllowed,
         kAutofillPredictionSettingsAllow, PrefRegistry::LOSSY_PREF);
 
+    // Account-level state.
+    AccountInfo account_info =
+        client().identity_test_environment().MakePrimaryAccountAvailable(
+            "foo@gmail.com", signin::ConsentLevel::kSignin);
+    SetCanUseExecutionFeatures(true);
+
     // Other.
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
@@ -90,6 +99,17 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
   void AddEntity() {
     edm().AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
     webdata_helper_.WaitUntilIdle();
+  }
+
+  // Updates whether the currently signed in primary can use model execution
+  // features. Assumes that there is a primary account.
+  void SetCanUseExecutionFeatures(bool can_use_model_execution) {
+    signin::IdentityManager* identity_manager = client().GetIdentityManager();
+    AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_can_use_model_execution_features(can_use_model_execution);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
   TestAutofillClient& client() { return client_; }
@@ -201,6 +221,32 @@ TEST_P(AutofillAiPermissionUtilsTest,
   const bool is_allowed =
       (GetParam() == AutofillAiAction::kOptIn) ||
       (GetParam() == AutofillAiAction::kIphForOptIn) ||
+      (GetParam() ==
+       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
+      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
+// Tests that every action other than listing and editing data requires the user
+// to be signed in.
+TEST_P(AutofillAiPermissionUtilsTest, SignedOut) {
+  AddEntity();
+  client().identity_test_environment().ClearPrimaryAccount();
+  const bool is_allowed =
+      (GetParam() ==
+       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
+      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Tests that every action other than listing and editing data requires that
+// user's account capabilities include running a model.
+TEST_P(AutofillAiPermissionUtilsTest, MayNotRunModel) {
+  AddEntity();
+  SetCanUseExecutionFeatures(false);
+  const bool is_allowed =
       (GetParam() ==
        AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
       (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
