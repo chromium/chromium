@@ -456,6 +456,7 @@ android_library("test_support_java") {
     "javatests/src/org/chromium/components/payments/MockPaymentApp.java",
     "javatests/src/org/chromium/components/payments/MockPaymentAppInstaller.java",
     "javatests/src/org/chromium/components/payments/MockPaymentManifestDownloader.java",
+    "javatests/src/org/chromium/components/payments/PaymentRequestTestWebPageContents.java",
   ]
   deps = [
     ":full_java",

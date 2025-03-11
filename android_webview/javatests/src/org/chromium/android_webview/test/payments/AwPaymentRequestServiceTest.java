@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.payments.MockPaymentApp;
 import org.chromium.components.payments.MockPaymentAppInstaller;
+import org.chromium.components.payments.PaymentRequestTestWebPageContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -48,6 +49,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     private AwContents mAwContents;
     private TestWebMessageListener mWebMessageListener;
     private TestWebServer mMerchantServer;
+    private PaymentRequestTestWebPageContents mPageContents;
 
     public AwPaymentRequestServiceTest(AwSettingsMutation params) {
         this.mActivityTestRule = new AwActivityTestRule(params.getMutation());
@@ -67,6 +69,9 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mAwContents, "resultListener", new String[] {"*"}, mWebMessageListener);
 
         mMerchantServer = TestWebServer.start();
+        mPageContents =
+                new PaymentRequestTestWebPageContents(
+                        PAYMENT_METHOD_NAME, OTHER_PAYMENT_METHOD_NAME);
     }
 
     @After
@@ -371,105 +376,10 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
      *     PaymentRequest API call.
      */
     private void loadMerchantCheckoutPage(boolean multiplePaymentMethods) throws Exception {
-        String checkoutPageHtmlFormat =
-                """
-            <!doctype html>
-            <button id="checkPaymentRequestDefined">Check defined</button>
-            <button id="checkCanMakePayment">Check can make payment</button>
-            <button id="checkHasEnrolledInstrument">Check has enrolled instrument</button>
-            <button id="launchPaymentApp">Launch payment app</button>
-            <button id="retryPayment">Retry payment</button>
-
-            <script>
-              function createPaymentRequest() {
-                const firstMethod = '%s';
-                const secondMethod = '%s';
-                const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
-                return secondMethod
-                       ? new PaymentRequest([{supportedMethods: firstMethod},
-                                             {supportedMethods: secondMethod}], {total})
-                       : new PaymentRequest([{supportedMethods: firstMethod}], {total});
-              }
-
-              function checkPaymentRequestDefined() {
-                if (!window.PaymentRequest) {
-                  resultListener.postMessage('PaymentRequest is not defined.');
-                } else {
-                  resultListener.postMessage('PaymentRequest is defined.');
-                }
-              }
-
-              async function checkCanMakePayment() {
-                try {
-                  const request = createPaymentRequest();
-                  if (await request.canMakePayment()) {
-                    resultListener.postMessage('PaymentRequest can make payments.');
-                  } else {
-                    resultListener.postMessage('PaymentRequest cannot make payments.');
-                  }
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
-
-              async function checkHasEnrolledInstrument() {
-                try {
-                  const request = createPaymentRequest();
-                  if (await request.hasEnrolledInstrument()) {
-                    resultListener.postMessage('PaymentRequest has enrolled instrument.');
-                  } else {
-                    resultListener.postMessage('PaymentRequest does not have enrolled instrument.');
-                  }
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
-
-              async function launchPaymentApp() {
-                try {
-                  const request = createPaymentRequest();
-                  const response = await request.show();
-                  await response.complete('success');
-                  resultListener.postMessage(JSON.stringify(response));
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
-
-              async function retryPayment() {
-                try {
-                  const request = createPaymentRequest();
-                  let response = await request.show();
-                  response = await response.retry();
-                  await response.complete('success');
-                  resultListener.postMessage(JSON.stringify(response));
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
-
-              document.getElementById('checkPaymentRequestDefined')
-                  .addEventListener('click', checkPaymentRequestDefined);
-              document.getElementById('checkCanMakePayment')
-                  .addEventListener('click', checkCanMakePayment);
-              document.getElementById('checkHasEnrolledInstrument')
-                  .addEventListener('click', checkHasEnrolledInstrument);
-              document.getElementById('launchPaymentApp')
-                  .addEventListener('click', launchPaymentApp);
-              document.getElementById('retryPayment')
-                  .addEventListener('click', retryPayment);
-
-              resultListener.postMessage('Page loaded.');
-            </script>
-            """;
-
         String merchantCheckoutPageUrl =
                 mMerchantServer.setResponse(
                         "/checkout",
-                        String.format(
-                                checkoutPageHtmlFormat,
-                                PAYMENT_METHOD_NAME,
-                                multiplePaymentMethods ? OTHER_PAYMENT_METHOD_NAME : ""),
+                        mPageContents.build(multiplePaymentMethods),
                         /* responseHeaders= */ null);
         mActivityTestRule.loadUrlAsync(mAwContents, merchantCheckoutPageUrl);
         Data messageFromPage = mWebMessageListener.waitForOnPostMessage();
