@@ -3699,6 +3699,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-printing-margins-and-scale",
+    "owners": [ "msisov@igalia.com", "nmuggli@google.com", "poromov@chromium.org" ],
+    "expiry_milestone": 141
+  },
+  {
     "name": "enable-process-per-site-up-to-main-frame-threshold",
     "owners": [ "dtapuska@chromium.org", "blink-network-stack@google.com" ],
     "expiry_milestone": 145

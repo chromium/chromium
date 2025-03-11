@@ -9722,6 +9722,7 @@ from previous Chrome versions.
       label="InternalServerSideSpeechRecognition:disabled"/>
   <int value="-1703308540" label="disable-webaudio"/>
   <int value="-1702323888" label="MediaAppPdfSignature:disabled"/>
+  <int value="-1701760225" label="ApiPrintingMarginsAndScale:disabled"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
   <int value="-1700227008" label="EnterpriseProfileBadgingForMenu:disabled"/>
@@ -17094,6 +17095,7 @@ from previous Chrome versions.
       label="ComputePressureBreakCalibrationMitigation:enabled"/>
   <int value="1199500202" label="PanelSelfRefresh2:enabled"/>
   <int value="1199648187" label="BypassAppBannerEngagementChecks:enabled"/>
+  <int value="1199746915" label="ApiPrintingMarginsAndScale:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
   <int value="1200946197" label="ConfirmationChip:disabled"/>
   <int value="1201008500"
