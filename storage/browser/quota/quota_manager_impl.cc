@@ -1760,13 +1760,12 @@ void QuotaManagerImpl::GetGlobalUsage(StorageType type,
 }
 
 void QuotaManagerImpl::GetGlobalUsageForInternals(
-    blink::mojom::StorageType storage_type,
     GetGlobalUsageForInternalsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
 
-  UsageTracker* usage_tracker = GetUsageTracker(storage_type);
+  UsageTracker* usage_tracker = GetUsageTracker(StorageType::kTemporary);
   DCHECK(usage_tracker);
   usage_tracker->GetGlobalUsage(std::move(callback));
 }

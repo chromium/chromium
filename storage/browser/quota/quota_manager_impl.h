@@ -399,7 +399,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetStatistics(GetStatisticsCallback callback) override;
   void RetrieveBucketsTable(RetrieveBucketsTableCallback callback) override;
   void GetGlobalUsageForInternals(
-      blink::mojom::StorageType storage_type,
       GetGlobalUsageForInternalsCallback callback) override;
   // Used from quota-internals page to test behavior of the storage pressure
   // callback.
