@@ -922,9 +922,11 @@
     "prefix": "wide-gamut",
     "owners": ["aaronhk@chromium.org", "ccameron@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
+    "bases": [
+      "external/wpt/css/css-images/gradient"
+    ],
     "args": ["--force-color-profile=display-p3-d65"],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "split-cache-by-include-credentials",
