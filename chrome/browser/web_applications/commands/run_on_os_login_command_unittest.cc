@@ -126,15 +126,17 @@ class RunOnOsLoginCommandTest : public WebAppTest {
   }
 
   // Error modes or the ROOL mode not set is returned as UNSPECIFIED.
-  proto::RunOnOsLoginMode GetRunOnOsLoginMode(const webapps::AppId& app_id) {
+  proto::os_state::RunOnOsLogin::Mode GetRunOnOsLoginMode(
+      const webapps::AppId& app_id) {
     auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
     if (!state.has_value()) {
-      return proto::RunOnOsLoginMode::RUN_ON_OS_LOGIN_MODE_UNSPECIFIED;
+      return proto::os_state::RunOnOsLogin::MODE_UNSPECIFIED;
     }
 
-    const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+    const proto::os_state::WebAppOsIntegration& os_integration_state =
+        state.value();
     if (!os_integration_state.has_run_on_os_login()) {
-      return proto::RunOnOsLoginMode::RUN_ON_OS_LOGIN_MODE_UNSPECIFIED;
+      return proto::os_state::RunOnOsLogin::MODE_UNSPECIFIED;
     }
 
     return os_integration_state.run_on_os_login().run_on_os_login_mode();
@@ -154,7 +156,8 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
   EXPECT_EQ(RunOnOsLoginMode::kNotRun,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
 
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
+            GetRunOnOsLoginMode(app_id));
   tester.ExpectBucketCount(
       "WebApp.RunOnOsLogin.CommandCompletionState",
       RunOnOsLoginCommandCompletionState::kSuccessfulCompletion, 0);
@@ -168,7 +171,8 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
 
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
-  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
+            GetRunOnOsLoginMode(app_id));
 
   InitSetRunOnOsLoginCommandAndAwaitCompletion(app_id,
                                                RunOnOsLoginMode::kMinimized);
@@ -179,7 +183,8 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
 
   EXPECT_EQ(RunOnOsLoginMode::kMinimized,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
-  EXPECT_EQ(proto::RunOnOsLoginMode::MINIMIZED, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_MINIMIZED,
+            GetRunOnOsLoginMode(app_id));
 }
 
 TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
@@ -210,13 +215,13 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
 
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
             GetRunOnOsLoginMode(app_id_default));
-  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
             GetRunOnOsLoginMode(app_id_default2));
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
             GetRunOnOsLoginMode(app_id_windowed));
-  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
             GetRunOnOsLoginMode(app_id_allowed));
 
   const char kWebAppSettingWithDefaultConfiguration[] = R"([
@@ -256,13 +261,13 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
 
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
             GetRunOnOsLoginMode(app_id_default));
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
             GetRunOnOsLoginMode(app_id_default2));
-  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
             GetRunOnOsLoginMode(app_id_windowed));
-  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED,
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
             GetRunOnOsLoginMode(app_id_allowed));
 }
 
@@ -273,7 +278,8 @@ TEST_F(RunOnOsLoginCommandTest, SyncCommandAndUninstallOSHooks) {
       InstallNonLocallyInstalledApp(GURL("https://example.com/"));
 
   InitSyncRunOnOsLoginCommandAndAwaitCompletion(app_id);
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
+            GetRunOnOsLoginMode(app_id));
 }
 
 TEST_F(RunOnOsLoginCommandTest, AbortOnAppNotLocallyInstalled) {
@@ -356,11 +362,13 @@ TEST_F(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
 
   InitSetRunOnOsLoginCommandAndAwaitCompletion(app_id,
                                                RunOnOsLoginMode::kNotRun);
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
+            GetRunOnOsLoginMode(app_id));
 
   InitSetRunOnOsLoginCommandAndAwaitCompletion(app_id,
                                                RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(proto::RunOnOsLoginMode::WINDOWED, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
+            GetRunOnOsLoginMode(app_id));
 }
 
 TEST_F(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
@@ -380,7 +388,8 @@ TEST_F(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
   policy_manager.RefreshPolicySettingsForTesting();
 
   InitSyncRunOnOsLoginCommandAndAwaitCompletion(app_id);
-  EXPECT_EQ(proto::RunOnOsLoginMode::NOT_RUN, GetRunOnOsLoginMode(app_id));
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
+            GetRunOnOsLoginMode(app_id));
 }
 
 }  // namespace

@@ -37,15 +37,15 @@ namespace web_app {
 
 namespace {
 
-proto::RunOnOsLoginMode ConvertWebAppRunOnOsLoginModeToProto(
+proto::os_state::RunOnOsLogin::Mode ConvertWebAppRunOnOsLoginModeToProto(
     RunOnOsLoginMode mode) {
   switch (mode) {
     case RunOnOsLoginMode::kMinimized:
-      return proto::RunOnOsLoginMode::MINIMIZED;
+      return proto::os_state::RunOnOsLogin::MODE_MINIMIZED;
     case RunOnOsLoginMode::kWindowed:
-      return proto::RunOnOsLoginMode::WINDOWED;
+      return proto::os_state::RunOnOsLogin::MODE_WINDOWED;
     case RunOnOsLoginMode::kNotRun:
-      return proto::RunOnOsLoginMode::NOT_RUN;
+      return proto::os_state::RunOnOsLogin::MODE_NOT_RUN;
   }
 }
 
@@ -62,13 +62,13 @@ bool DoesRunOnOsLoginRequireExecution() {
 }
 
 bool ShouldTriggerRunOnOsLoginRegistration(
-    const proto::WebAppOsIntegrationState& state) {
+    const proto::os_state::WebAppOsIntegration& state) {
   if (!state.has_run_on_os_login()) {
     return false;
   }
   DCHECK(state.run_on_os_login().has_run_on_os_login_mode());
   return (state.run_on_os_login().run_on_os_login_mode() ==
-          proto::RunOnOsLoginMode::WINDOWED);
+          proto::os_state::RunOnOsLogin::MODE_WINDOWED);
 }
 
 }  // namespace
@@ -81,7 +81,7 @@ RunOnOsLoginSubManager::~RunOnOsLoginSubManager() = default;
 
 void RunOnOsLoginSubManager::Configure(
     const webapps::AppId& app_id,
-    proto::WebAppOsIntegrationState& desired_state,
+    proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_run_on_os_login());
 
@@ -91,7 +91,7 @@ void RunOnOsLoginSubManager::Configure(
     return;
   }
 
-  proto::RunOnOsLogin* run_on_os_login =
+  proto::os_state::RunOnOsLogin* run_on_os_login =
       desired_state.mutable_run_on_os_login();
 
   const auto login_mode =
@@ -105,8 +105,8 @@ void RunOnOsLoginSubManager::Configure(
 void RunOnOsLoginSubManager::Execute(
     const webapps::AppId& app_id,
     const std::optional<SynchronizeOsOptions>& synchronize_options,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure execute_done) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!DoesRunOnOsLoginRequireExecution()) {
@@ -161,8 +161,8 @@ void RunOnOsLoginSubManager::ForceUnregister(const webapps::AppId& app_id,
 
 void RunOnOsLoginSubManager::StartUnregistration(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& current_state,
-    const proto::WebAppOsIntegrationState& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure registration_callback) {
   if (!current_state.has_run_on_os_login()) {
     std::move(registration_callback).Run();
@@ -186,7 +186,7 @@ void RunOnOsLoginSubManager::StartUnregistration(
 
 void RunOnOsLoginSubManager::CreateShortcutInfoWithFavicons(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure execute_done) {
   if (!ShouldTriggerRunOnOsLoginRegistration(desired_state)) {
     std::move(execute_done).Run();
@@ -209,7 +209,7 @@ void RunOnOsLoginSubManager::CreateShortcutInfoWithFavicons(
 
 void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure execute_done,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   DCHECK(ShouldTriggerRunOnOsLoginRegistration(desired_state));

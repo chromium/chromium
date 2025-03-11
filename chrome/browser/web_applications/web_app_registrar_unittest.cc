@@ -91,7 +91,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
     web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
     // Set an OS integration state (with shortcuts) to prevent migration to a
     // partially installed status.
-    proto::WebAppOsIntegrationState os_state;
+    proto::os_state::WebAppOsIntegration os_state;
     os_state.mutable_shortcut();
     web_app->SetCurrentOsIntegrationStates(os_state);
 

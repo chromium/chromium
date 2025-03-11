@@ -337,7 +337,8 @@ class WebApp {
     return always_show_toolbar_in_fullscreen_;
   }
 
-  const proto::WebAppOsIntegrationState& current_os_integration_states() const {
+  const proto::os_state::WebAppOsIntegration& current_os_integration_states()
+      const {
     return current_os_integration_states_;
   }
 
@@ -461,7 +462,7 @@ class WebApp {
       ExternalConfigMap management_to_external_config_map);
   void SetTabStrip(std::optional<blink::Manifest::TabStrip> tab_strip);
   void SetCurrentOsIntegrationStates(
-      proto::WebAppOsIntegrationState current_os_integration_states);
+      proto::os_state::WebAppOsIntegration current_os_integration_states);
   void SetIsolationData(IsolationData isolation_data);
   void SetLinkCapturingUserPreference(
       proto::LinkCapturingUserPreference user_link_capturing_preference);
@@ -594,7 +595,7 @@ class WebApp {
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen_ = true;
 
-  proto::WebAppOsIntegrationState current_os_integration_states_;
+  proto::os_state::WebAppOsIntegration current_os_integration_states_;
 
   std::optional<IsolationData> isolation_data_;
 
@@ -662,15 +663,15 @@ bool operator==(const WebApp::ExternalManagementConfig& management_config1,
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2);
 
-namespace proto {
+namespace proto::os_state {
 
-bool operator==(const WebAppOsIntegrationState& os_integration_state1,
-                const WebAppOsIntegrationState& os_integration_state2);
+bool operator==(const WebAppOsIntegration& os_integration_state1,
+                const WebAppOsIntegration& os_integration_state2);
 
-bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
-                const WebAppOsIntegrationState& os_integration_state2);
+bool operator!=(const WebAppOsIntegration& os_integration_state1,
+                const WebAppOsIntegration& os_integration_state2);
 
-}  // namespace proto
+}  // namespace proto::os_state
 
 std::vector<std::string> GetSerializedAllowedOrigins(
     const network::ParsedPermissionsPolicyDeclaration

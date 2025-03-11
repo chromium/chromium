@@ -95,21 +95,22 @@ std::string ApiApprovalStateToString(ApiApprovalState state) {
   }
 }
 
-std::string GetRunOnOsLoginMode(const proto::RunOnOsLoginMode& mode) {
+std::string GetRunOnOsLoginMode(
+    const proto::os_state::RunOnOsLogin::Mode& mode) {
   switch (mode) {
-    case proto::RunOnOsLoginMode::RUN_ON_OS_LOGIN_MODE_UNSPECIFIED:
+    case proto::os_state::RunOnOsLogin::MODE_UNSPECIFIED:
       return "unspecified";
-    case proto::RunOnOsLoginMode::NOT_RUN:
+    case proto::os_state::RunOnOsLogin::MODE_NOT_RUN:
       return "not_run";
-    case proto::RunOnOsLoginMode::WINDOWED:
+    case proto::os_state::RunOnOsLogin::MODE_WINDOWED:
       return "windowed";
-    case proto::RunOnOsLoginMode::MINIMIZED:
+    case proto::os_state::RunOnOsLogin::MODE_MINIMIZED:
       return "minimized";
   }
 }
 
 base::Value OsStatesDebugValue(
-    const proto::WebAppOsIntegrationState& current_states) {
+    const proto::os_state::WebAppOsIntegration& current_states) {
   base::Value::Dict debug_dict;
 
   if (current_states.has_shortcut()) {
@@ -145,7 +146,7 @@ base::Value OsStatesDebugValue(
 
   if (current_states.has_uninstall_registration()) {
     base::Value::Dict state;
-    proto::OsUninstallRegistration os_uninstall =
+    proto::os_state::OsUninstallRegistration os_uninstall =
         current_states.uninstall_registration();
     if (os_uninstall.has_registered_with_os()) {
       state.Set("registered_with_os", os_uninstall.registered_with_os());
@@ -762,7 +763,7 @@ void WebApp::SetTabStrip(std::optional<blink::Manifest::TabStrip> tab_strip) {
 }
 
 void WebApp::SetCurrentOsIntegrationStates(
-    proto::WebAppOsIntegrationState current_os_integration_states) {
+    proto::os_state::WebAppOsIntegration current_os_integration_states) {
   current_os_integration_states_ = std::move(current_os_integration_states);
 }
 
@@ -1263,20 +1264,20 @@ bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
   return !(management_config1 == management_config2);
 }
 
-namespace proto {
+namespace proto::os_state {
 
-bool operator==(const WebAppOsIntegrationState& os_integration_state1,
-                const WebAppOsIntegrationState& os_integration_state2) {
+bool operator==(const WebAppOsIntegration& os_integration_state1,
+                const WebAppOsIntegration& os_integration_state2) {
   return os_integration_state1.SerializeAsString() ==
          os_integration_state2.SerializeAsString();
 }
 
-bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
-                const WebAppOsIntegrationState& os_integration_state2) {
+bool operator!=(const WebAppOsIntegration& os_integration_state1,
+                const WebAppOsIntegration& os_integration_state2) {
   return !(os_integration_state1 == os_integration_state2);
 }
 
-}  // namespace proto
+}  // namespace proto::os_state
 
 std::vector<std::string> GetSerializedAllowedOrigins(
     const network::ParsedPermissionsPolicyDeclaration

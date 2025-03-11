@@ -88,7 +88,7 @@ void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
     needs_os_integration_sync = true;
   }
 
-  std::optional<proto::WebAppOsIntegrationState> os_integration =
+  std::optional<proto::os_state::WebAppOsIntegration> os_integration =
       lock_->registrar().GetAppCurrentOsIntegrationState(params_.app_id);
   CHECK(os_integration);
   GetMutableDebugValue().Set("needs_os_integration_sync",

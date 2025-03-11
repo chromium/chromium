@@ -83,17 +83,17 @@ namespace {
 proto::ShareTarget_Method MethodToProto(apps::ShareTarget::Method method) {
   switch (method) {
     case apps::ShareTarget::Method::kGet:
-      return proto::ShareTarget_Method_GET;
+      return proto::ShareTarget::METHOD_GET;
     case apps::ShareTarget::Method::kPost:
-      return proto::ShareTarget_Method_POST;
+      return proto::ShareTarget::METHOD_POST;
   }
 }
 
 apps::ShareTarget::Method ProtoToMethod(proto::ShareTarget_Method method) {
   switch (method) {
-    case proto::ShareTarget_Method_GET:
+    case proto::ShareTarget::METHOD_GET:
       return apps::ShareTarget::Method::kGet;
-    case proto::ShareTarget_Method_POST:
+    case proto::ShareTarget::METHOD_POST:
       return apps::ShareTarget::Method::kPost;
   }
 }
@@ -101,17 +101,17 @@ apps::ShareTarget::Method ProtoToMethod(proto::ShareTarget_Method method) {
 proto::ShareTarget_Enctype EnctypeToProto(apps::ShareTarget::Enctype enctype) {
   switch (enctype) {
     case apps::ShareTarget::Enctype::kFormUrlEncoded:
-      return proto::ShareTarget_Enctype_FORM_URL_ENCODED;
+      return proto::ShareTarget::ENCTYPE_FORM_URL_ENCODED;
     case apps::ShareTarget::Enctype::kMultipartFormData:
-      return proto::ShareTarget_Enctype_MULTIPART_FORM_DATA;
+      return proto::ShareTarget::ENCTYPE_MULTIPART_FORM_DATA;
   }
 }
 
 apps::ShareTarget::Enctype ProtoToEnctype(proto::ShareTarget_Enctype enctype) {
   switch (enctype) {
-    case proto::ShareTarget_Enctype_FORM_URL_ENCODED:
+    case proto::ShareTarget::ENCTYPE_FORM_URL_ENCODED:
       return apps::ShareTarget::Enctype::kFormUrlEncoded;
-    case proto::ShareTarget_Enctype_MULTIPART_FORM_DATA:
+    case proto::ShareTarget::ENCTYPE_MULTIPART_FORM_DATA:
       return apps::ShareTarget::Enctype::kMultipartFormData;
   }
 }
@@ -322,9 +322,9 @@ proto::TabStrip::Visibility TabStripVisibilityToProto(
     TabStrip::Visibility visibility) {
   switch (visibility) {
     case TabStrip::Visibility::kAuto:
-      return proto::TabStrip_Visibility_AUTO;
+      return proto::TabStrip::VISIBILITY_AUTO;
     case TabStrip::Visibility::kAbsent:
-      return proto::TabStrip_Visibility_ABSENT;
+      return proto::TabStrip::VISIBILITY_ABSENT;
   }
 }
 

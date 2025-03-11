@@ -617,7 +617,7 @@ bool WebAppRegistrar::IsUrlInHomeTabScope(const GURL& url,
   return false;
 }
 
-std::optional<proto::WebAppOsIntegrationState>
+std::optional<proto::os_state::WebAppOsIntegration>
 WebAppRegistrar::GetAppCurrentOsIntegrationState(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
@@ -1857,8 +1857,10 @@ bool IsRegistryEqual(const Registry& registry,
     }
     WebApp web_app2 = WebApp(*registry2.at(web_app.app_id()));
     if (exclude_current_os_integration) {
-      web_app.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
-      web_app2.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
+      web_app.SetCurrentOsIntegrationStates(
+          proto::os_state::WebAppOsIntegration());
+      web_app2.SetCurrentOsIntegrationStates(
+          proto::os_state::WebAppOsIntegration());
       // Tests that want to ignore current os integration state usually also
       // want to ignore the presence/absece of the "user installed" source, as
       // that is something else that is not synced across.

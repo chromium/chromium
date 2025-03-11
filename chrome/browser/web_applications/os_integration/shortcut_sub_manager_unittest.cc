@@ -137,7 +137,7 @@ TEST_F(ShortcutSubManagerConfigureTest, ConfigureAppInstall) {
     ASSERT_THAT(state.value().shortcut().icon_data_any_size(),
                 testing::Eq(kTotalIconSizes));
 
-    for (const proto::ShortcutIconData& icon_time_map_data :
+    for (const proto::os_state::ShortcutIconData& icon_time_map_data :
          state.value().shortcut().icon_data_any()) {
       ASSERT_THAT(
           syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),

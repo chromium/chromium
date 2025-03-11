@@ -181,7 +181,8 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
   if (HasShortcutsOsIntegration()) {
     ASSERT_FALSE(os_integration_state.has_shortcut());
@@ -195,7 +196,7 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   auto updated_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_state.has_value());
-  const proto::WebAppOsIntegrationState& updated_os_states =
+  const proto::os_state::WebAppOsIntegration& updated_os_states =
       updated_state.value();
   ASSERT_TRUE(updated_os_states.has_shortcut());
 

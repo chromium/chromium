@@ -397,7 +397,7 @@ message WebApp {
 
   // Contains customisations to the web app tab strip. Only present when the
   // display_mode is tabbed.
-  optional proto.TabStrip tab_strip = 57;
+  optional TabStrip tab_strip = 57;
 
   // Only used on Mac OS, stores whether the app should always show the
   // toolbar when in fullscreen mode.
@@ -406,11 +406,11 @@ message WebApp {
   // Contains the os_integration_state currently deployed for a web_app.
   // This will be populated from the fields in this proto when ran for the first
   // time after OS hooks have been registered.
-  optional proto.WebAppOsIntegrationState current_os_integration_states = 59;
+  optional os_state.WebAppOsIntegration current_os_integration_states = 59;
 
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
-  optional proto.IsolationData isolation_data = 60;
+  optional IsolationData isolation_data = 60;
 
   // Contains web origins that are part of the app's extended scope.
   repeated WebAppScopeExtension scope_extensions = 61;
@@ -423,8 +423,7 @@ message WebApp {
 
   // Stores whether the current web app is set as the default app to capture
   // links.
-  optional proto.LinkCapturingUserPreference user_link_capturing_preference =
-      63;
+  optional LinkCapturingUserPreference user_link_capturing_preference = 63;
 
   // Time the app was updated as part of a full install. For example when a
   // policy installs an app that is already in the DB installed as a

@@ -33,15 +33,15 @@ message ShareTarget {
   // Proto version of apps::ShareTarget::Method.
   // NEVER change these numbers or re-use old ones; only add new ones.
   enum Method {
-    GET = 0;
-    POST = 1;
+    METHOD_GET = 0;
+    METHOD_POST = 1;
   };
 
   // Proto version of apps::ShareTarget::Enctype.
   // NEVER change these numbers or re-use old ones; only add new ones.
   enum Enctype {
-    FORM_URL_ENCODED = 0;
-    MULTIPART_FORM_DATA = 1;
+    ENCTYPE_FORM_URL_ENCODED = 0;
+    ENCTYPE_MULTIPART_FORM_DATA = 1;
   };
 
   // The URL to be resolved when sharing.
