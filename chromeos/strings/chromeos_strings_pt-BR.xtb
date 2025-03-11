@@ -1031,7 +1031,7 @@
 <translation id="5907649332524363701">cor da tecla</translation>
 <translation id="5908813850962688338">A instalação da atualização vai levar alguns minutos. Deixe o dispositivo conectado e ligado enquanto a atualização estiver sendo baixada. O dispositivo pode ser reiniciado várias vezes e mostrar uma tela preta durante o processo. Você vai receber uma solicitação para reiniciar o dispositivo e concluir a instalação.</translation>
 <translation id="5916084858004523819">Proibido</translation>
-<translation id="5916664084637901428">Ativada</translation>
+<translation id="5916664084637901428">Ativado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os arquivos foram digitalizados e salvos em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Botão "Excluir" para o atalho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Paisagem dos sonhos</translation>
