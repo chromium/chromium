@@ -298,10 +298,11 @@ void GraphBuilderOrt::AddCastNode(std::string_view node_name,
   std::array<const char*, 1> input_names = {input_name.data()};
   std::array<const char*, 1> output_names = {output_name.data()};
   int64_t attr_to = static_cast<int64_t>(to_data_type);
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"to", attr_to).release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"to", attr_to));
   model_editor_.AddNode(kOpTypeCast, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 std::string GraphBuilderOrt::PrependCast(
@@ -329,12 +330,13 @@ std::string GraphBuilderOrt::PrependTranspose(
   std::array<const char*, 1> input_names = {input_name.data()};
   std::array<const char*, 1> output_names = {output_name.data()};
 
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
   std::vector<int64_t> perm(permutation.begin(), permutation.end());
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"perm", perm).release()};
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"perm", perm));
 
   model_editor_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
   return output_name;
 }
 
@@ -345,12 +347,13 @@ void GraphBuilderOrt::AppendTranspose(std::string_view input_name,
   std::array<const char*, 1> input_names = {input_name.data()};
   std::array<const char*, 1> output_names = {output_name.data()};
 
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
   std::vector<int64_t> perm(permutation.begin(), permutation.end());
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"perm", perm).release()};
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"perm", perm));
 
   model_editor_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
@@ -571,10 +574,10 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
       GetOperandNameById(batch_normalization.variance_operand_id);
   input_names.push_back(variance_name.c_str());
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_
-          .CreateAttribute(/*name=*/"epsilon", batch_normalization.epsilon)
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"epsilon", batch_normalization.epsilon));
 
   const std::string node_name =
       GenerateNextOperationName(batch_normalization.label);
@@ -582,7 +585,7 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
       GetOperandNameById(batch_normalization.output_operand_id);
   std::array<const char*, 1> output_names = {output_name.c_str()};
   model_editor_.AddNode(kOpTypeBatchNormalization, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 
   return base::ok();
 }
@@ -848,16 +851,14 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
   const std::string output_name =
       GetOperandNameById(arg_min_max.output_operand_id);
 
+  std::vector<ScopedOrtOpAttr> attributes;
+
   int64_t axis = static_cast<int64_t>(arg_min_max.axis);
-  ScopedOrtOpAttr attr_axis =
-      model_editor_.CreateAttribute(/*name=*/"axis", axis);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
   int64_t keep_dimensions = static_cast<int64_t>(arg_min_max.keep_dimensions);
-  ScopedOrtOpAttr attr_keepdims =
-      model_editor_.CreateAttribute(/*name=*/"keepdims", keep_dimensions);
-
-  std::array<OrtOpAttr*, 2> attributes = {attr_axis.release(),
-                                          attr_keepdims.release()};
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"keepdims", keep_dimensions));
 
   // Onnx ArgMin/Max only supports int64 output. To support int32 output, it is
   // necessary to insert a cast operator after ArgMin/Max. To cast Argmin/Max
@@ -877,12 +878,12 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
   switch (arg_min_max.kind) {
     case mojom::ArgMinMax::Kind::kMax: {
       model_editor_.AddNode(kOpTypeArgMax, node_name, input_names, output_names,
-                            attributes);
+                            std::move(attributes));
       break;
     }
     case mojom::ArgMinMax::Kind::kMin: {
       model_editor_.AddNode(kOpTypeArgMin, node_name, input_names, output_names,
-                            attributes);
+                            std::move(attributes));
       break;
     }
   }
@@ -962,12 +963,13 @@ void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
   const std::string output_name = GetOperandNameById(concat.output_operand_id);
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  ScopedOrtOpAttr attr_axis = model_editor_.CreateAttribute(
-      /*name=*/"axis", base::checked_cast<int64_t>(concat.axis));
-  std::array<OrtOpAttr*, 1> attributes = {attr_axis.release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(concat.axis)));
 
   model_editor_.AddNode(kOpTypeConcat, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -986,41 +988,34 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   }
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
+  std::vector<ScopedOrtOpAttr> attributes;
+
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(conv2d.dilations->height),
       base::checked_cast<int64_t>(conv2d.dilations->width)};
-  ScopedOrtOpAttr attr_dilations =
-      model_editor_.CreateAttribute(/*name=*/"dilations", dilations);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"dilations", dilations));
 
   int64_t group = base::checked_cast<int64_t>(conv2d.groups);
-  ScopedOrtOpAttr attr_group =
-      model_editor_.CreateAttribute(/*name=*/"group", group);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"group", group));
 
   std::array<int64_t, 4> pads = {
       base::checked_cast<int64_t>(conv2d.padding->beginning->height),
       base::checked_cast<int64_t>(conv2d.padding->beginning->width),
       base::checked_cast<int64_t>(conv2d.padding->ending->height),
       base::checked_cast<int64_t>(conv2d.padding->ending->width)};
-  ScopedOrtOpAttr attr_pads =
-      model_editor_.CreateAttribute(/*name=*/"pads", pads);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"pads", pads));
 
   std::array<int64_t, 2> strides = {
       base::checked_cast<int64_t>(conv2d.strides->height),
       base::checked_cast<int64_t>(conv2d.strides->width)};
-  ScopedOrtOpAttr attr_strides =
-      model_editor_.CreateAttribute(/*name=*/"strides", strides);
-
-  std::vector<OrtOpAttr*> attributes = {
-      attr_dilations.release(),
-      attr_group.release(),
-      attr_pads.release(),
-      attr_strides.release(),
-  };
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"strides", strides));
 
   switch (conv2d.kind) {
     case mojom::Conv2d::Kind::kDirect:
       model_editor_.AddNode(kOpTypeConv2d, node_name, input_names, output_names,
-                            attributes);
+                            std::move(attributes));
       break;
     case mojom::Conv2d::Kind::kTransposed:
       const OperandDescriptor& output_descriptor =
@@ -1032,9 +1027,8 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
       std::array<int64_t, 2> output_size = {
           base::checked_cast<int64_t>(output_shape[2]),
           base::checked_cast<int64_t>(output_shape[3])};
-      ScopedOrtOpAttr attr_output_shape =
-          model_editor_.CreateAttribute(/*name=*/"output_shape", output_size);
-      attributes.push_back(attr_output_shape.release());
+      attributes.push_back(
+          model_editor_.CreateAttribute(/*name=*/"output_shape", output_size));
 
       // According to the ONNX ConvTranspose2d documentation, the shape of the
       // output_padding is calculated as:
@@ -1078,12 +1072,11 @@ GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
       // output_padding to ensure that the pads value automatically calculated
       // is correct.
       // https://onnx.ai/onnx/operators/onnx__ConvTranspose.html#attributes
-      ScopedOrtOpAttr attr_output_padding = model_editor_.CreateAttribute(
-          /*name=*/"output_padding", output_padding);
-      attributes.push_back(attr_output_padding.release());
+      attributes.push_back(model_editor_.CreateAttribute(
+          /*name=*/"output_padding", output_padding));
 
       model_editor_.AddNode(kOpTypeConvTranspose2d, node_name, input_names,
-                            output_names, attributes);
+                            output_names, std::move(attributes));
       break;
   }
 
@@ -1104,19 +1097,20 @@ GraphBuilderOrt::AddCumulativeSumOperation(
                    CreateScalarInitializer<int64_t>(
                        base::checked_cast<int64_t>(cumulative_sum.axis)));
 
-  ScopedOrtOpAttr attr_exclusive = model_editor_.CreateAttribute(
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(2);
+  attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"exclusive",
-      base::checked_cast<int64_t>(cumulative_sum.exclusive));
-  ScopedOrtOpAttr attr_reverse = model_editor_.CreateAttribute(
-      /*name=*/"reverse", base::checked_cast<int64_t>(cumulative_sum.reversed));
-  std::array<OrtOpAttr*, 2> attributes = {attr_exclusive.release(),
-                                          attr_reverse.release()};
+      base::checked_cast<int64_t>(cumulative_sum.exclusive)));
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"reverse",
+      base::checked_cast<int64_t>(cumulative_sum.reversed)));
 
   std::array<const char*, 2> input_names = {input_name.c_str(),
                                             axis_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
   model_editor_.AddNode(kOpTypeCumulativeSum, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 
   return base::ok();
 }
@@ -1127,8 +1121,10 @@ GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
   std::string input_name = GetOperandNameById(elu.input_operand_id);
   const std::string output_name = GetOperandNameById(elu.output_operand_id);
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"alpha", elu.alpha).release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"alpha", elu.alpha));
 
   const OperandDescriptor& input_descriptor =
       GetOperand(elu.input_operand_id).descriptor;
@@ -1149,7 +1145,7 @@ GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
   std::array<const char*, 1> input_names = {input_name.c_str()};
   std::array<const char*, 1> output_names = {elu_output_name.c_str()};
   model_editor_.AddNode(kOpTypeElu, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   // Append a reshape node to convert the output tensor back to the original
   // shape.
@@ -1306,25 +1302,20 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
       input_name.c_str(), scale_name.c_str(), zero_point_name.c_str()};
   base::FixedArray<const char*> output_names = {transposed_output_name.c_str()};
 
-  std::vector<OrtOpAttr*> attributes;
+  std::vector<ScopedOrtOpAttr> attributes;
   if (axis.has_value()) {
-    attributes.push_back(
-        model_editor_
-            .CreateAttribute(/*name=*/"axis",
-                             base::checked_cast<int64_t>(axis.value()))
-            .release());
+    attributes.push_back(model_editor_.CreateAttribute(
+        /*name=*/"axis", base::checked_cast<int64_t>(axis.value())));
   }
 
   if (block_size.has_value()) {
-    attributes.push_back(
-        model_editor_
-            .CreateAttribute(/*name=*/"block_size",
-                             base::checked_cast<int64_t>(block_size.value()))
-            .release());
+    attributes.push_back(model_editor_.CreateAttribute(
+        /*name=*/"block_size",
+        base::checked_cast<int64_t>(block_size.value())));
   }
 
   model_editor_.AddNode(op_type, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   if (need_transpose) {
     AppendTranspose(transposed_output_name, output_name, {1, 0});
@@ -1343,15 +1334,16 @@ void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
   // operand to ensure it won't be out-of-bound.
 
   int64_t axis = static_cast<int64_t>(gather.axis);
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"axis", axis).release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
   std::array<const char*, 2> input_names = {input_name.c_str(),
                                             indices_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_editor_.AddNode(kOpTypeGather, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 void GraphBuilderOrt::AddGatherElementsOperation(
@@ -1369,15 +1361,16 @@ void GraphBuilderOrt::AddGatherElementsOperation(
   // operand to ensure it won't be out-of-bound.
 
   int64_t axis = static_cast<int64_t>(gather_elements.axis);
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"axis", axis).release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
   std::array<const char*, 2> input_names = {input_name.c_str(),
                                             indices_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_editor_.AddNode(kOpTypeGatherElements, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 }
 
 void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
@@ -1438,21 +1431,19 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   }
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  ScopedOrtOpAttr attr_alpha =
-      model_editor_.CreateAttribute(/*name=*/"alpha", gemm.alpha);
-  ScopedOrtOpAttr attr_beta =
-      model_editor_.CreateAttribute(/*name=*/"beta", gemm.beta);
-  ScopedOrtOpAttr attr_trans_a = model_editor_.CreateAttribute(
-      /*name=*/"transA", static_cast<int64_t>(gemm.a_transpose));
-  ScopedOrtOpAttr attr_trans_b = model_editor_.CreateAttribute(
-      /*name=*/"transB", static_cast<int64_t>(gemm.b_transpose));
-
-  std::array<OrtOpAttr*, 4> attributes = {
-      attr_alpha.release(), attr_beta.release(), attr_trans_a.release(),
-      attr_trans_b.release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(4);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"alpha", gemm.alpha));
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"beta", gemm.beta));
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"transA", static_cast<int64_t>(gemm.a_transpose)));
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"transB", static_cast<int64_t>(gemm.b_transpose)));
 
   model_editor_.AddNode(kOpTypeGemm, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 void GraphBuilderOrt::AddHardSigmoidOperation(
@@ -1465,18 +1456,15 @@ void GraphBuilderOrt::AddHardSigmoidOperation(
   std::array<const char*, 1> input_names = {input_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  std::array<OrtOpAttr*, 2> attributes = {
-      model_editor_
-          .CreateAttribute(
-              /*name=*/"alpha", hard_sigmoid.alpha)
-          .release(),
-      model_editor_
-          .CreateAttribute(
-              /*name=*/"beta", hard_sigmoid.beta)
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(2);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"alpha", hard_sigmoid.alpha));
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"beta", hard_sigmoid.beta));
 
   model_editor_.AddNode(kOpTypeHardSigmoid, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -1558,11 +1546,10 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
     input_names.push_back(bias_name.c_str());
   }
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_
-          .CreateAttribute(
-              /*name=*/"epsilon", instance_normalization.epsilon)
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"epsilon", instance_normalization.epsilon));
 
   const std::string node_name =
       GenerateNextOperationName(instance_normalization.label);
@@ -1570,7 +1557,7 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
       GetOperandNameById(instance_normalization.output_operand_id);
   std::array<const char*, 1> output_names = {output_name.c_str()};
   model_editor_.AddNode(kOpTypeInstanceNormalization, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 
   return base::ok();
 }
@@ -1702,16 +1689,15 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
     input_names.push_back(bias_name.c_str());
   }
 
-  ScopedOrtOpAttr attr_axis = model_editor_.CreateAttribute(
-      /*name=*/"axis", base::checked_cast<int64_t>(axis));
-  ScopedOrtOpAttr attr_epsilon = model_editor_.CreateAttribute(
-      /*name=*/"epsilon", layer_normalization.epsilon);
-
-  std::array<OrtOpAttr*, 2> attributes = {attr_axis.release(),
-                                          attr_epsilon.release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(2);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(axis)));
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"epsilon", layer_normalization.epsilon));
 
   model_editor_.AddNode(kOpTypeLayerNormalization, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 
   return base::ok();
 }
@@ -1727,11 +1713,12 @@ void GraphBuilderOrt::AddLeakyReluOperation(
   std::array<const char*, 1> input_names = {input_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"alpha", leaky_relu.alpha)
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"alpha", leaky_relu.alpha));
   model_editor_.AddNode(kOpTypeLeakyRelu, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -1874,36 +1861,39 @@ GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
       break;
   }
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"mode", mode).release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"mode", mode));
 
   const std::string output_name = GetOperandNameById(pad.output_operand_id);
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_editor_.AddNode(kOpTypePad, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   return base::ok();
 }
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
+  std::vector<ScopedOrtOpAttr> attributes;
+
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(pool2d.dilations->height),
       base::checked_cast<int64_t>(pool2d.dilations->width)};
-  ScopedOrtOpAttr attr_dilations =
-      model_editor_.CreateAttribute(/*name=*/"dilations", dilations);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"dilations", dilations));
 
   std::array<int64_t, 2> strides = {
       base::checked_cast<int64_t>(pool2d.strides->height),
       base::checked_cast<int64_t>(pool2d.strides->width)};
-  ScopedOrtOpAttr attr_strides =
-      model_editor_.CreateAttribute(/*name=*/"strides", strides);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"strides", strides));
 
   std::array<int64_t, 2> window_dimensions = {
       base::checked_cast<int64_t>(pool2d.window_dimensions->height),
       base::checked_cast<int64_t>(pool2d.window_dimensions->width)};
-  ScopedOrtOpAttr attr_kernel_shape = model_editor_.CreateAttribute(
-      /*name=*/"kernel_shape", window_dimensions);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"kernel_shape", window_dimensions));
 
   // ONNX's pads are [beginning_height, beginning_width, ending_height,
   // ending_width]
@@ -1912,8 +1902,7 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       base::checked_cast<int64_t>(pool2d.padding->beginning->width),
       base::checked_cast<int64_t>(pool2d.padding->ending->height),
       base::checked_cast<int64_t>(pool2d.padding->ending->width)};
-  ScopedOrtOpAttr attr_pads =
-      model_editor_.CreateAttribute(/*name=*/"pads", pads);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"pads", pads));
 
   // Calculate the ceil_mode.
   const std::vector<uint32_t>& input_shape =
@@ -1930,13 +1919,8 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   CHECK(float_output_height.has_value());
 
   int64_t ceil_mode = float_output_height.value() < output_height ? 1 : 0;
-  ScopedOrtOpAttr attr_ceil_mode =
-      model_editor_.CreateAttribute(/*name=*/"ceil_mode", ceil_mode);
-
-  std::vector<OrtOpAttr*> attributes = {
-      attr_dilations.release(), attr_strides.release(),
-      attr_kernel_shape.release(), attr_pads.release(),
-      attr_ceil_mode.release()};
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"ceil_mode", ceil_mode));
 
   std::string op_type;
   switch (pool2d.kind) {
@@ -1951,8 +1935,7 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
     case mojom::Pool2d::Kind::kL2Pool2d: {
       op_type = kOpTypeLpPool2d;
       attributes.push_back(
-          model_editor_.CreateAttribute(/*name=*/"p", static_cast<int64_t>(2))
-              .release());
+          model_editor_.CreateAttribute(/*name=*/"p", static_cast<int64_t>(2)));
       break;
     }
   }
@@ -1964,7 +1947,7 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_editor_.AddNode(op_type, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
@@ -2002,25 +1985,27 @@ GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
     input_names.push_back(axes_name.c_str());
   }
 
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(2);
+
   int64_t keepdims = reduce.keep_dimensions ? 1 : 0;
-  ScopedOrtOpAttr attr_keepdims =
-      model_editor_.CreateAttribute(/*name=*/"keepdims", keepdims);
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"keepdims", keepdims));
 
   // According to
   // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reduce, if
   // axes is empty, the operation is a noop, no dimensions are reduced.
   int64_t noop_with_empty_axes = 1;
-  ScopedOrtOpAttr attr_noop_with_empty_axes = model_editor_.CreateAttribute(
-      /*name=*/"noop_with_empty_axes", noop_with_empty_axes);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"noop_with_empty_axes", noop_with_empty_axes));
 
   const std::string node_name = GenerateNextOperationName(reduce.label);
   const std::string output_name = GetOperandNameById(reduce.output_operand_id);
   std::array<const char*, 1> output_names = {output_name.c_str()};
   std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
-  std::array<OrtOpAttr*, 2> attributes = {attr_keepdims.release(),
-                                          attr_noop_with_empty_axes.release()};
+
   model_editor_.AddNode(reduce_op_type, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   return base::ok();
 }
@@ -2088,13 +2073,14 @@ GraphBuilderOrt::AddResample2dOperation(const mojom::Resample2d& resample2d) {
       mode = "nearest";
       break;
   }
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"mode", mode).release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(/*name=*/"mode", mode));
 
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_editor_.AddNode(kOpTypeResample2d, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   return base::ok();
 }
@@ -2189,16 +2175,17 @@ void GraphBuilderOrt::AddScatterElementsOperation(
                       "int64 indices.";
   }
 
-  ScopedOrtOpAttr attr_axis = model_editor_.CreateAttribute(
-      /*name=*/"axis", base::checked_cast<int64_t>(scatter_elements.axis));
-  std::array<OrtOpAttr*, 1> attributes = {attr_axis.release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(scatter_elements.axis)));
 
   std::array<const char*, 3> input_names = {
       input_name.c_str(), cast_indices_name.c_str(), updates_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_editor_.AddNode(kOpTypeScatterElements, node_name, input_names,
-                        output_names, attributes);
+                        output_names, std::move(attributes));
 }
 
 void GraphBuilderOrt::AddScatterNDOperation(
@@ -2276,13 +2263,13 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   std::array<const char*, 1> input_names = {input_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_
-          .CreateAttribute(/*name=*/"axis", static_cast<int64_t>(softmax.axis))
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"axis", static_cast<int64_t>(softmax.axis)));
 
   model_editor_.AddNode(kOpTypeSoftmax, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -2315,13 +2302,15 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   std::array<const char*, 1> input_names = {input_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
   std::vector<int64_t> permutation(transpose.permutation.begin(),
                                    transpose.permutation.end());
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_.CreateAttribute(/*name=*/"perm", permutation).release()};
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"perm", permutation));
 
   model_editor_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -2355,14 +2344,13 @@ GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
     output_names[i] = output_names_string[i].c_str();
   }
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_
-          .CreateAttribute(/*name=*/"axis",
-                           base::checked_cast<int64_t>(split.axis))
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(split.axis)));
 
   model_editor_.AddNode(kOpTypeSplit, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   return base::ok();
 }
@@ -2384,14 +2372,13 @@ GraphBuilderOrt::AddTriangularOperation(const mojom::Triangular& triangular) {
 
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  std::array<OrtOpAttr*, 1> attributes = {
-      model_editor_
-          .CreateAttribute(/*name=*/"upper",
-                           static_cast<int64_t>(triangular.upper))
-          .release()};
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(1);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"upper", static_cast<int64_t>(triangular.upper)));
 
   model_editor_.AddNode(kOpTypeTriangular, node_name, input_names, output_names,
-                        attributes);
+                        std::move(attributes));
 
   return base::ok();
 }

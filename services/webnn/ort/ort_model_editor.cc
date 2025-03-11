@@ -4,6 +4,8 @@
 
 #include "services/webnn/ort/ort_model_editor.h"
 
+#include <ranges>
+
 #include "base/notreached.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
@@ -198,13 +200,18 @@ void OrtModelEditor::AddNode(std::string_view op_type,
                              std::string_view node_name,
                              base::span<const char*> input_names,
                              base::span<const char*> output_names,
-                             base::span<OrtOpAttr*> attributes) {
+                             std::vector<ScopedOrtOpAttr> attributes) {
+  std::vector<OrtOpAttr*> attr_ptrs;
+  attr_ptrs.reserve(attributes.size());
+  std::ranges::transform(attributes, std::back_inserter(attr_ptrs),
+                         [](auto& attr) { return attr.release(); });
+
+  // Node will own the attributes.
   ScopedOrtNode node;
   CHECK_STATUS(GetOrtModelEditorApi()->CreateNode(
       op_type.data(), kOrtDomainName, node_name.data(), input_names.data(),
       input_names.size(), output_names.data(), output_names.size(),
-      attributes.data(), attributes.size(),
-      ScopedOrtNode::Receiver(node).get()));
+      attr_ptrs.data(), attr_ptrs.size(), ScopedOrtNode::Receiver(node).get()));
   // Graph will own the node.
   CHECK_STATUS(
       GetOrtModelEditorApi()->AddNodeToGraph(graph_.get(), node.release()));

@@ -76,12 +76,11 @@ class OrtModelEditor {
                                       base::span<const char*>>;
   ScopedOrtOpAttr CreateAttribute(std::string_view name, OrtOpAttrData data);
 
-  // Node will own attributes.
   void AddNode(std::string_view op_type,
                std::string_view node_name,
                base::span<const char*> input_names,
                base::span<const char*> output_names,
-               base::span<OrtOpAttr*> attributes = {});
+               std::vector<ScopedOrtOpAttr> attributes = {});
 
   std::unique_ptr<ModelInfo> BuildAndTakeModelInfo();
 
