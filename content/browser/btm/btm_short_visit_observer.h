@@ -37,10 +37,19 @@ class CONTENT_EXPORT BtmShortVisitObserver
 
   static const base::Clock* SetDefaultClockForTesting(const base::Clock* clock);
 
+  // WebContentsObserver overrides:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
+  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
+                         const CookieAccessDetails& details) override;
+  void OnCookiesAccessed(NavigationHandle* navigation_handle,
+                         const CookieAccessDetails& details) override;
+  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
+                             blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override;
 
  private:
   // Called with the result of reading the BTM state for a page.
@@ -59,6 +68,10 @@ class CONTENT_EXPORT BtmShortVisitObserver
     bool had_user_gesture = false;
     ui::PageTransition page_transition = ui::PAGE_TRANSITION_LINK;
   } last_navigation;
+  // Whether the current page has received a keydown event.
+  bool had_keydown_event_ = false;
+  // Whether the current page has accessed storage (cookies, localStorage, etc).
+  bool page_accessed_storage_ = false;
   // The time the current page committed.
   base::Time last_committed_at_;
   // The source ID of the current page -- used in DidFinishNavigation() to emit

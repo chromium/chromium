@@ -70,12 +70,11 @@ found in the LICENSE file.
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"/>
     </RelativeLayout>
-    <View
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/dialog_frame"
-        android:alpha="0.0"
-        android:background="@drawable/tab_grid_dialog_background"/>
+        android:alpha="0.0"/>
     <FrameLayout
         android:id="@+id/dialog_animation_clip"
         android:layout_width="match_parent"

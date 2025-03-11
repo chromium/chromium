@@ -123,6 +123,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SegmentationMetricsData"
         summary="Segmentation metrics data"/>
     <variant name="ShoppingData" summary="Shopping data"/>
+    <variant name="TabEventsData" summary="Tab events data"/>
   </token>
 </histogram>
 

@@ -15,8 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.ScrollableFacility;
-import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -120,7 +118,7 @@ public class TabbedAppMenuPTTest {
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
         mRenderTestRule.render(menu.getView(), "regular_ntp_app_menu");
-        verifyPresentItems(menu);
+        menu.verifyPresentItems();
         assertFinalDestination(newTabPage, menu);
 
         // Clean up for next tests in batch
@@ -140,7 +138,7 @@ public class TabbedAppMenuPTTest {
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
         mRenderTestRule.render(menu.getView(), "incognito_ntp_app_menu");
-        verifyPresentItems(menu);
+        menu.verifyPresentItems();
         assertFinalDestination(incognitoNewTabPage, menu);
 
         // Clean up for next tests in batch
@@ -159,7 +157,7 @@ public class TabbedAppMenuPTTest {
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
         mRenderTestRule.render(menu.getView(), "regular_webpage_app_menu");
-        verifyPresentItems(menu);
+        menu.verifyPresentItems();
         assertFinalDestination(blankPage, menu);
 
         // Clean up for next tests in batch
@@ -184,23 +182,11 @@ public class TabbedAppMenuPTTest {
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
         mRenderTestRule.render(menu.getView(), "incognito_webpage_app_menu");
-        verifyPresentItems(menu);
+        menu.verifyPresentItems();
         assertFinalDestination(pageOne, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
-    }
-
-    /**
-     * Scroll to each declared menu item and check they are there with the expected enabled state.
-     */
-    private static <T extends ScrollableFacility<?>> void verifyPresentItems(T menu) {
-        for (ScrollableFacility<?>.Item<?> item : menu.getItems()) {
-            if (item.getPresence() == Presence.PRESENT_AND_ENABLED
-                    || item.getPresence() == Presence.PRESENT_AND_DISABLED) {
-                item.scrollTo();
-            }
-        }
     }
 
     /** Tests that entering the Tab Switcher causes the app menu to close. */

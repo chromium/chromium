@@ -7,6 +7,7 @@ import collections
 import dataclasses
 import datetime
 import json
+import logging
 import os
 import re
 import statistics
@@ -306,11 +307,15 @@ class JsonUtil:
     key = key_from_builder_details(builder_details, benchmark_key)
     return merged_results, links, key
 
-  def process(self, builder_details: PerfBuilderDetails) -> Dict[str, Any]:
+  def process(
+      self, builder_details: PerfBuilderDetails, benchmark_name: str=""
+      ) -> Dict[str, Any]:
     """Processes the result2 jsons and returns a skia json.
 
     Args:
       builder_details: The perf builder details.
+      benchmark_name: The optional benchmark name, if present, replace the
+        key[json_constants.BENCHMARK] with the given benchmark name.
     Returns:
       The skia json data.
     """
@@ -324,6 +329,16 @@ class JsonUtil:
 
     # diagnostics_map = {}
     merged_results, links, key = self._merge(builder_details)
+    logging.info("key has an original benchmark name: %s",
+                 key[json_constants.BENCHMARK])
+    if benchmark_name:
+      # A few example is that "resource_sizes (TrichromeGoogle)" uses
+      # "resource_sizes" in the result2 json, and "resource_sizes" is used
+      # as the benchmark name. Replace it with the proper benchmark name
+      # instead.
+      key[json_constants.BENCHMARK] = benchmark_name
+      logging.info("key has a new benchmark name: %s",
+                   key[json_constants.BENCHMARK])
 
     output[json_constants.KEY] = key
     output[json_constants.LINKS] = links

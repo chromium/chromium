@@ -274,20 +274,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   friend BrowserFeaturePromoController2xTestBase;
   friend FeaturePromoLifecycleUiTest;
 
-  struct ShowPromoBubbleParams {
-    ShowPromoBubbleParams();
-    ShowPromoBubbleParams(ShowPromoBubbleParams&& other) noexcept;
-    ~ShowPromoBubbleParams();
-
-    raw_ptr<const FeaturePromoSpecification> spec = nullptr;
-    raw_ptr<ui::TrackedElement> anchor_element = nullptr;
-    FeaturePromoSpecification::FormatParameters body_format;
-    FeaturePromoSpecification::FormatParameters screen_reader_format;
-    FeaturePromoSpecification::FormatParameters title_format;
-    bool screen_reader_prompt_available = false;
-    bool can_snooze = false;
-  };
-
   enum class ShowSource { kNormal, kQueue, kDemo };
 
   // Records when and why an IPH was not shown.
@@ -299,7 +285,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Method that creates the bubble for a feature promo. May return null if the
   // bubble cannot be shown.
   std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
-      ShowPromoBubbleParams show_params);
+      FeaturePromoSpecification::BuildHelpBubbleParams build_params);
 
   // Does the work of ending a promo with the specified `close_reason`.
   bool EndPromo(const base::Feature& iph_feature,
@@ -502,6 +488,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   BubbleCloseCallback bubble_closed_callback_;
   base::CallbackListSubscription bubble_closed_subscription_;
+  base::CallbackListSubscription custom_ui_result_subscription_;
 
   const raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
   const raw_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry_;

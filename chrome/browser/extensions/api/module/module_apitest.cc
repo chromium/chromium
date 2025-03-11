@@ -4,30 +4,19 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "content/public/test/browser_test.h"
-
-#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
+#include "content/public/test/browser_test.h"
 
 namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionModuleApiTestBase = ExtensionPlatformApiTest;
-#else
-using ExtensionModuleApiTestBase = ExtensionApiTest;
-#endif
-
 using ContextType = extensions::browser_test_util::ContextType;
 
-class ExtensionModuleApiTest : public ExtensionModuleApiTestBase,
+class ExtensionModuleApiTest : public ExtensionPlatformApiTest,
                                public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionModuleApiTest() : ExtensionModuleApiTestBase(GetParam()) {}
+  ExtensionModuleApiTest() : ExtensionPlatformApiTest(GetParam()) {}
   ~ExtensionModuleApiTest() override = default;
   ExtensionModuleApiTest(const ExtensionModuleApiTest&) = delete;
   ExtensionModuleApiTest& operator=(const ExtensionModuleApiTest&) = delete;

@@ -42,7 +42,7 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     "//ui/android:ui_java_test_support",
   ]
   data = [
-    "//third_party/chromium-variations",
+    "//components/variations/test_data/cipd",
     "test/data/",
   ]
 

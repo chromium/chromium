@@ -133,7 +133,7 @@ void OsRegistrationsTable::ClearDataForOriginsInRange(
   }
 
   sql::Statement delete_statement(db->GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kDeleteOsRegistrationSql));
+      SQL_FROM_HERE, attribution_queries::kDeleteOsRegistrationAtTimeSql));
 
   sql::Statement select_statement(db->GetCachedStatement(
       SQL_FROM_HERE,
@@ -165,6 +165,21 @@ void OsRegistrationsTable::ClearAllDataInRange(sql::Database* db,
       SQL_FROM_HERE, attribution_queries::kDeleteOsRegistrationsRangeSql));
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
+  statement.Run();
+}
+
+void OsRegistrationsTable::ClearDataForRegistrationOrigin(
+    sql::Database* db,
+    base::Time delete_begin,
+    base::Time delete_end,
+    const url::Origin& registration_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kDeleteOsRegistrationSql));
+  statement.BindString(0, registration_origin.Serialize());
+  statement.BindTime(1, delete_begin);
+  statement.BindTime(2, delete_end);
   statement.Run();
 }
 

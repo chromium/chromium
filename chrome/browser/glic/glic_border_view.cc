@@ -316,6 +316,10 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
   if (!compositor_) {
     return;
   }
+  // We shouldn't have any border.
+  CHECK(GetInsets().IsEmpty());
+  const auto& bounds = GetLocalBounds();
+
   float corner_radius = 0.0f;
 #if BUILDFLAG(IS_MAC)
   if (!browser_->window()->IsFullscreen()) {
@@ -328,8 +332,8 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
       {.name = SkString("u_corner_radius"), .value = SkScalar(corner_radius)}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
       {.name = SkString("u_resolution"),
-       .value = SkV2{static_cast<float>(bounds().width()),
-                     static_cast<float>(bounds().height())}}};
+       .value = SkV2{static_cast<float>(bounds.width()),
+                     static_cast<float>(bounds.height())}}};
   std::vector<cc::PaintShader::IntUniform> int_uniforms = {
       {.name = SkString("u_dark"),
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
@@ -340,9 +344,44 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
       shader_, std::move(float_uniforms), std::move(float2_uniforms),
       /*float4_uniforms=*/{}, std::move(int_uniforms)));
 
-  // The border view shouldn't have a border.
-  CHECK(GetInsets().IsEmpty());
-  canvas->DrawRect(gfx::RectF(GetLocalBounds()), flags);
+  // TODO(liuwilliam): This will create a hard clip at the boundary. Figure out
+  // a better way of the falloff.
+  constexpr static int kMaxEffectWidth = 100;
+  //
+  // Four-patch method. This is superior to setting the clip rect on the
+  // SkCanvas.
+  //
+  // ┌─────┬─────────────────────────────┬─────┐
+  // │     │            top              │     │
+  // │     ├─────────────────────────────┤     │
+  // │     │                             │     │
+  // │     │                             │     │
+  // │     │                             │     │
+  // │     │                             │     │
+  // │     │                             │     │
+  // │left │                             │right│
+  // │     │                             │     │
+  // │     │                             │     │
+  // │     │                             │     │
+  // │     │                             │     │
+  // │     ├─────────────────────────────┤     │
+  // │     │           bottom            │     │
+  // └─────┴─────────────────────────────┴─────┘
+  gfx::Rect left(bounds.origin(), gfx::Size(kMaxEffectWidth, bounds.height()));
+  gfx::Rect right =
+      left + gfx::Vector2d(bounds.size().width() - kMaxEffectWidth, 0);
+
+  gfx::Point top_origin = bounds.origin() + gfx::Vector2d(kMaxEffectWidth, 0);
+  gfx::Size top_size(bounds.size().width() - 2 * kMaxEffectWidth,
+                     kMaxEffectWidth);
+  gfx::Rect top(top_origin, top_size);
+  gfx::Rect bottom =
+      top + gfx::Vector2d(0, bounds.size().height() - kMaxEffectWidth);
+
+  canvas->DrawRect(gfx::RectF(left), flags);
+  canvas->DrawRect(gfx::RectF(right), flags);
+  canvas->DrawRect(gfx::RectF(top), flags);
+  canvas->DrawRect(gfx::RectF(bottom), flags);
 }
 
 void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {

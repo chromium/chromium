@@ -2409,6 +2409,7 @@ static_library("browser") {
     "//components/vector_icons",
     "//components/version_info",
     "//components/visited_url_ranking/internal",
+    "//components/visited_url_ranking/internal:internal_url_grouping",
     "//components/visited_url_ranking/public",
     "//components/visitedlink/browser",
     "//components/visitedlink/common",

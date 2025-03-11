@@ -12,10 +12,12 @@
 #include "base/scoped_observation.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -51,6 +53,8 @@ class HelpBubbleViews : public HelpBubble,
   const auto* bubble_view_for_testing() const {
     return help_bubble_view_.get();
   }
+
+  static views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow);
 
  protected:
   HelpBubbleViews(views::BubbleDialogDelegateView* help_bubble_view,
@@ -96,13 +100,20 @@ class HelpBubbleViews : public HelpBubble,
 };
 
 // Help bubble that wraps a custom help bubble view.
+//
+// Rather than using this directly, prefer
+// `CreateCustomHelpBubbleViewFactoryCallback()` as it removes a significant
+// amount of boilerplate.
 class CustomHelpBubbleViews : public HelpBubbleViews, public CustomHelpBubble {
  public:
   template <typename T>
     requires(std::derived_from<T, views::BubbleDialogDelegateView> &&
              std::derived_from<T, CustomHelpBubbleUi>)
   CustomHelpBubbleViews(T* bubble, ui::TrackedElement* anchor_element)
-      : HelpBubbleViews(bubble, anchor_element), CustomHelpBubble(*bubble) {}
+      : HelpBubbleViews(bubble, anchor_element), CustomHelpBubble(*bubble) {
+    // Help bubbles should not close on deactivate.
+    bubble->set_close_on_deactivate(false);
+  }
   ~CustomHelpBubbleViews() override = default;
 };
 

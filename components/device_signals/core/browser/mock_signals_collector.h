@@ -25,6 +25,7 @@ class MockSignalsCollector : public SignalsCollector {
   MOCK_METHOD(void,
               GetSignal,
               (SignalName signal_name,
+               UserPermission permission,
                const SignalsAggregationRequest& request,
                SignalsAggregationResponse& response,
                base::OnceClosure done_closure),

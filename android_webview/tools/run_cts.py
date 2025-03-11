@@ -566,7 +566,7 @@ def main():
                       'Defaults to: ' + _DEFAULT_TRADEFED_ADB_PATH)
 
   # The variations test seed file should be in JSON format. Please look
-  # in //third_party/chromium-variations for examples of variations
+  # in //components/variations/test_data/cipd for examples of variations
   # test seeds.
   parser.add_argument('--variations-test-seed-path',
                       type=os.path.relpath,

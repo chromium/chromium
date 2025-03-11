@@ -38,7 +38,11 @@ struct CallbackCancellationTraits<
           controller,
       const blink::ScriptedIdleTaskController::CallbackId& id,
       const DecrementOnDelete&) {
-    return !controller || !controller->HasCallback(id);
+    if (!controller) {
+      return true;
+    }
+    controller->OnCheckSchedulerIdleTaskIsCancelled();
+    return !controller->HasCallback(id);
   }
 
   static bool MaybeValid(
@@ -120,14 +124,21 @@ void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
 }
 
 int ScriptedIdleTaskController::NextCallbackId() {
+  CHECK(!IsValidCallbackId(0));
+  CHECK(!IsValidCallbackId(-1));
+
   while (true) {
     ++next_callback_id_;
 
-    if (!IsValidCallbackId(next_callback_id_))
+    if (!IsValidCallbackId(next_callback_id_)) {
+      CHECK_EQ(next_callback_id_, -1, base::NotFatalUntil::M138);
+      next_callback_id_wrapped_around_ = true;
       next_callback_id_ = 1;
+    }
 
-    if (!idle_tasks_.Contains(next_callback_id_))
+    if (!idle_tasks_.Contains(next_callback_id_)) {
       return next_callback_id_;
+    }
   }
 }
 
@@ -196,7 +207,6 @@ void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
   // 2. `timeout_millis` is page-originated and doesn't have any reasonable
   //    limit. When a callback is processed, it's critical to remove the timeout
   //    task from the queue. Failure to do so is likely to result in OOM.
-  base::DelayedTaskHandle delayed_task_handle;
   if (timeout_millis > 0) {
     auto callback =
         WTF::BindOnce(&ScriptedIdleTaskController::SchedulerTimeoutTask,
@@ -209,7 +219,7 @@ void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
                                         base::Milliseconds(timeout_millis));
   }
 
-  PostSchedulerIdleTask(id);
+  PostSchedulerIdleTask(it);
 }
 
 void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
@@ -227,15 +237,26 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   RemoveIdleTask(id);
 
   // Sweep the queue to remove cancelled idle tasks when 1000 are accumulated.
-  //
-  // Note: When tasks are in `idle_tasks_to_reschedule_`, it is possible for
-  // `num_scheduler_idle_tasks_` to be less than `idle_tasks_.size()`.
   if (num_scheduler_idle_tasks_->data > idle_tasks_.size() &&
       num_scheduler_idle_tasks_->data - idle_tasks_.size() > 1000 &&
       base::FeatureList::IsEnabled(kRemoveCancelledScriptedIdleTasks)) {
+    const uint64_t num_scheduler_idle_tasks_before =
+        num_scheduler_idle_tasks_->data;
+    const uint64_t num_is_cancelled_checks_before = num_is_cancelled_checks_;
+
     scheduler_->RemoveCancelledIdleTasks();
+
+    // IsCancelled() should be called exactly once per "scheduler idle task".
+    // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
+    CHECK_EQ(num_is_cancelled_checks_ - num_is_cancelled_checks_before,
+             num_scheduler_idle_tasks_before, base::NotFatalUntil::M138);
+
+    // There should be at most one "scheduler idle task" per IdleTask.
+    // Note: When tasks are in `idle_tasks_to_reschedule_`, it is possible to
+    // have less "scheduler idle tasks" than IdleTasks.
     CHECK_LE(num_scheduler_idle_tasks_->data, idle_tasks_.size(),
-             base::NotFatalUntil::M136);
+             base::NotFatalUntil::M138)
+        << " Wrapped: " << next_callback_id_wrapped_around_;
   }
 }
 
@@ -243,11 +264,19 @@ bool ScriptedIdleTaskController::HasCallback(CallbackId id) const {
   return idle_tasks_.Contains(id);
 }
 
-void ScriptedIdleTaskController::PostSchedulerIdleTask(CallbackId id) {
+void ScriptedIdleTaskController::PostSchedulerIdleTask(
+    IdleTaskMap::iterator it) {
+  // Track that there is a "scheduler idle task" queued for the IdleTask.
+  CHECK(!it->value->has_scheduler_idle_task_, base::NotFatalUntil::M138);
+  it->value->has_scheduler_idle_task_ = true;
+
+  // Track the number of outstanding "scheduler idle tasks".
   ++num_scheduler_idle_tasks_->data;
+
+  // Post the scheduler idle task.
   scheduler_->PostIdleTask(
       FROM_HERE, WTF::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
-                               WrapWeakPersistent(this), id,
+                               WrapWeakPersistent(this), it->key,
                                DecrementOnDelete(num_scheduler_idle_tasks_)));
 }
 
@@ -265,9 +294,14 @@ void ScriptedIdleTaskController::SchedulerIdleTask(
   // `idle_tasks_.size()`.
   decrement_on_delete.DecrementNow();
 
-  if (!idle_tasks_.Contains(id)) {
+  auto it = idle_tasks_.find(id);
+  if (it == idle_tasks_.end()) {
     return;
   }
+
+  // Track that there is no more "scheduler idle task" queued for this IdleTask.
+  CHECK(it->value->has_scheduler_idle_task_, base::NotFatalUntil::M138);
+  it->value->has_scheduler_idle_task_ = false;
 
   if (paused_) {
     // Reschedule when unpaused.
@@ -277,7 +311,7 @@ void ScriptedIdleTaskController::SchedulerIdleTask(
 
   // If we are going to yield immediately, reschedule the callback for later.
   if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
-    PostSchedulerIdleTask(id);
+    PostSchedulerIdleTask(it);
     return;
   }
 
@@ -289,6 +323,9 @@ void ScriptedIdleTaskController::SchedulerIdleTask(
 }
 
 void ScriptedIdleTaskController::SchedulerTimeoutTask(CallbackId id) {
+  // The timeout task is cancelled when the IdleTask is removed from
+  // `idle_tasks_`, so this should only run if the task is in `idle_tasks_`.
+  CHECK(idle_tasks_.Contains(id), base::NotFatalUntil::M138);
   if (!idle_tasks_.Contains(id)) {
     return;
   }
@@ -370,6 +407,10 @@ void ScriptedIdleTaskController::ContextLifecycleStateChanged(
     ContextUnpaused();
 }
 
+void ScriptedIdleTaskController::OnCheckSchedulerIdleTaskIsCancelled() {
+  ++num_is_cancelled_checks_;
+}
+
 void ScriptedIdleTaskController::ContextPaused() {
   paused_ = true;
 }
@@ -384,7 +425,7 @@ void ScriptedIdleTaskController::ContextUnpaused() {
     if (it == idle_tasks_.end()) {
       continue;
     }
-    PostSchedulerIdleTask(id);
+    PostSchedulerIdleTask(it);
   }
   idle_tasks_to_reschedule_.clear();
 }

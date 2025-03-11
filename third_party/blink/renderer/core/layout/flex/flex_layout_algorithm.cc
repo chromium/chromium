@@ -638,8 +638,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
                                        /* is_new_fc */ true);
   builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
   builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
-  builder.SetReplacedPercentageResolutionBlockSize(
-      child_percentage_size_.block_size);
   if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child, alignment)) {
     builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
   }
@@ -681,9 +679,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     space_builder.SetAvailableSize(ChildAvailableSize());
   }
   space_builder.SetPercentageResolutionSize(child_percentage_size);
-  // TODO(dgrogan): The SetReplacedPercentageResolutionSize calls in this file
-  // may be untested. Write a test or determine why they're unnecessary.
-  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size);
   return space_builder.ToConstraintSpace();
 }
 
@@ -698,7 +693,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
   // need the available and percentage sizes.
   space_builder.SetAvailableSize(ChildAvailableSize());
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
-  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
   return space_builder.ToConstraintSpace();
 }
 
@@ -777,7 +771,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
 
   space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
-  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
   return space_builder.ToConstraintSpace();
 }
 

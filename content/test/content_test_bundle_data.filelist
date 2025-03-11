@@ -5062,6 +5062,9 @@ data/accessibility/html/select-open-expected-blink.txt
 data/accessibility/html/select-open-expected-fuchsia.txt
 data/accessibility/html/select-open-expected-win.txt
 data/accessibility/html/select-open.html
+data/accessibility/html/select-slowly-build-expected-auralinux.txt
+data/accessibility/html/select-slowly-build-expected-blink.txt
+data/accessibility/html/select-slowly-build.html
 data/accessibility/html/select.html
 data/accessibility/html/selection-container-expected-android-assist-data.txt
 data/accessibility/html/selection-container-expected-android-external.txt
@@ -6884,6 +6887,7 @@ data/forms/form_controls_browsertest_textarea_ios.png
 data/forms/form_controls_browsertest_textarea_linux.png
 data/forms/form_controls_browsertest_textarea_mac.png
 data/forms/form_controls_browsertest_textarea_win.png
+data/fragment.html
 data/frame-ancestors-none.html
 data/frame-ancestors-none.html.mock-http-headers
 data/frame-src-self-and-b.html

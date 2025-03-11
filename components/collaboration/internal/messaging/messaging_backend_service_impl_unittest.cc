@@ -436,7 +436,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogAcceptsMaxLength) {
       collaboration_group_id,
       collaboration_pb::EventType::COLLABORATION_MEMBER_REMOVED,
       DirtyType::kNone, now + base::Seconds(3));
-  message2.set_affected_user_gaia_id("gaia_1");
+  message2.set_affected_user_gaia_id("gaia_2");
   collaboration_pb::Message message3 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
       DirtyType::kNone, now + base::Seconds(2));
@@ -458,6 +458,12 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogAcceptsMaxLength) {
       .WillRepeatedly(
           Return(CreatePartialMember(GaiaId("gaia_1"), "gaia1@gmail.com",
                                      "Display Name", "Given Name 1")));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_2"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
+                                     "Display Name 2", "Given Name 2")));
 
   ActivityLogQueryParams params;
   params.collaboration_id = collaboration_group_id;

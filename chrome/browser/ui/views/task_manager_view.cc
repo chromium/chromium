@@ -42,6 +42,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -307,6 +308,11 @@ void TaskManagerView::OnKeyDown(ui::KeyboardCode keycode) {
   }
 }
 
+void TaskManagerView::OnWidgetInitialized() {
+  GetOkButton()->GetViewAccessibility().SetDescription(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME));
+}
+
 void TaskManagerView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
@@ -556,19 +562,6 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
   return search_bar_container;
 }
 
-std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndProcessButton(
-    const gfx::Insets& margins) {
-  auto button = std::make_unique<views::MdTextButton>();
-  button->SetText(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
-  button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME));
-  button->SetStyle(ui::ButtonStyle::kProminent);
-  button->SetProperty(views::kMarginsKey, margins);
-  button->SetCallback(base::BindRepeating(&TaskManagerView::EndSelectedProcess,
-                                          base::Unretained(this)));
-  return button;
-}
-
 std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(
     std::unique_ptr<views::TableView> tab_table,
     bool table_has_border,
@@ -623,7 +616,9 @@ void TaskManagerView::Init() {
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
+                 l10n_util::GetStringUTF16(table_config_.layout_refresh
+                                               ? IDS_TASK_MANAGER_KILL_V2
+                                               : IDS_TASK_MANAGER_KILL));
 
   if (table_config_.header_style) {
     views::TableHeaderStyle header_style = {

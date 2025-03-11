@@ -112,6 +112,11 @@ extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidKeyboardA11yName[];
+extern const char kAndroidKeyboardA11yDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kIgnoreDeviceFlexArcEnabledPolicyName[];
 extern const char kIgnoreDeviceFlexArcEnabledPolicyDescription[];
@@ -1095,6 +1100,9 @@ extern const char kFedCmAuthzDescription[];
 extern const char kFedCmButtonModeName[];
 extern const char kFedCmButtonModeDescription[];
 
+extern const char kFedCmCooldownOnIgnoreName[];
+extern const char kFedCmCooldownOnIgnoreDescription[];
+
 extern const char kFedCmDelegationName[];
 extern const char kFedCmDelegationDescription[];
 
@@ -1109,6 +1117,9 @@ extern const char kFedCmMetricsEndpointDescription[];
 
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
+
+extern const char kFedCmQuietUiName[];
+extern const char kFedCmQuietUiDescription[];
 
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
@@ -3887,12 +3898,6 @@ extern const char kFirstPartyVietnameseInputDescription[];
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 
-extern const char kFocusModeName[];
-extern const char kFocusModeDescription[];
-
-extern const char kFocusModeYTMName[];
-extern const char kFocusModeYTMDescription[];
-
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 
@@ -4289,9 +4294,6 @@ extern const char kMacAddressRandomizationDescription[];
 
 extern const char kSysUiShouldHoldbackDriveIntegrationName[];
 extern const char kSysUiShouldHoldbackDriveIntegrationDescription[];
-
-extern const char kSysUiShouldHoldbackFocusModeName[];
-extern const char kSysUiShouldHoldbackFocusModeDescription[];
 
 extern const char kSysUiShouldHoldbackForestName[];
 extern const char kSysUiShouldHoldbackForestDescription[];

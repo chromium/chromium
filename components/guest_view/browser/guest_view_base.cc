@@ -469,7 +469,14 @@ WebContents* GuestViewBase::GetTopLevelWebContents(WebContents* web_contents) {
     return web_contents;
   } else {
     while (GuestViewBase* guest = FromWebContents(web_contents)) {
-      web_contents = guest->owner_web_contents();
+      content::WebContents* owner_web_contents = guest->owner_web_contents();
+      // If the embedder contents is shutdown before guest attachment,
+      // `owner_web_contents()` will be null.
+      // This is seen in WebViewTest.ShutdownBeforeAttach.
+      if (!owner_web_contents) {
+        break;
+      }
+      web_contents = owner_web_contents;
     }
     return web_contents;
   }

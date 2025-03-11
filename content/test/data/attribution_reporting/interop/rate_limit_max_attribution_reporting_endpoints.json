@@ -286,8 +286,8 @@
           }
         ]
       },
-      // Should result in an event-level report as the first report is outside
-      // the rate limit window.
+      // Should not result in an event-level report due to the reporting origin
+      // limit which is based on attributed source time instead of trigger time.
       {
         "timestamp": "2592002000",
         "registration_request": {
@@ -301,6 +301,46 @@
                 "event_trigger_data": [
                   {
                     "trigger_data": "3"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2592002001",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "555"
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an event-level report because the first report falls
+      // outside the rate limit window based on attributed source time.
+      {
+        "timestamp": "2592002002",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "4"
                   }
                 ]
               }
@@ -397,14 +437,14 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "2592010",
-          "source_event_id": "444",
-          "source_type": "event",
-          "trigger_data": "1"
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "2764802",
+          "source_event_id": "555",
+          "source_type": "navigation",
+          "trigger_data": "4"
         },
-        "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "2592010000"
+        "report_time": "2764802001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]
   }

@@ -39,8 +39,6 @@ const tests = [
   function testShowSearchifyProgress() {
     sendShowSearchifyProgress(true);
     chrome.test.assertTrue(viewer.$.searchifyProgress.open);
-    chrome.test.assertNe(
-        viewer.$.searchifyProgress.getAttribute('aria-hidden'), 'true');
     chrome.test.succeed();
   },
 
@@ -49,8 +47,6 @@ const tests = [
   function testHideSearchifyProgress() {
     sendShowSearchifyProgress(false);
     chrome.test.assertFalse(viewer.$.searchifyProgress.open);
-    chrome.test.assertEq(
-        viewer.$.searchifyProgress.getAttribute('aria-hidden'), 'true');
     chrome.test.succeed();
   },
 
@@ -59,8 +55,6 @@ const tests = [
     sendShowSearchifyProgress(false);
     sendShowSearchifyProgress(true);
     chrome.test.assertTrue(viewer.$.searchifyProgress.open);
-    chrome.test.assertNe(
-        viewer.$.searchifyProgress.getAttribute('aria-hidden'), 'true');
     chrome.test.succeed();
   },
 

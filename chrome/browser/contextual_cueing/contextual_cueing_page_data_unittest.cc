@@ -56,6 +56,32 @@ TEST_F(ContextualCueingPageDataTest, Basic) {
   EXPECT_EQ("basic label", future.Get().value());
 }
 
+TEST_F(ContextualCueingPageDataTest, EarlyDestruction) {
+  base::test::TestFuture<
+      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_cue_label("basic label");
+  // Use a page content condition to prevent the callback from being invoked
+  // immediately.
+  auto* condition = config->add_conditions();
+  condition->set_signal(
+      optimization_guide::proto::ContextualCueingClientSignal::
+          CONTEXTUAL_CUEING_CLIENT_SIGNAL_CONTENT_LENGTH_WORD_COUNT);
+  condition->set_cueing_operator(
+      optimization_guide::proto::ContextualCueingOperator::
+          CONTEXTUAL_CUEING_OPERATOR_GREATER_THAN_OR_EQUAL_TO);
+  condition->set_int64_threshold(1000);
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ContextualCueingPageData::DeleteForPage(web_contents_->GetPrimaryPage());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(NudgeDecision::kNudgeDecisionInterrupted, future.Get().error());
+}
+
 TEST_F(ContextualCueingPageDataTest, NonPdfPageFails) {
   base::test::TestFuture<
       base::expected<std::string, contextual_cueing::NudgeDecision>>

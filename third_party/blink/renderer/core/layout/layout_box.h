@@ -524,7 +524,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // Get the scroll marker group associated with this box, if any.
-  LayoutBlock* GetScrollMarkerGroup() const;
+  LayoutBlock* GetScrollMarkerGroup();
 
   // Get the scroller that owns this scroll marker group.
   LayoutBlock* ScrollerFromScrollMarkerGroup() const;
@@ -984,6 +984,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutObject*) const {
     NOT_DESTROYED();
     NOTREACHED();
+  }
+
+  // Get the LayoutBox for the actual content. That's usually `this`, but if the
+  // element creates multiple boxes (e.g. fieldsets and their anonymous content
+  // child box), it may return something else. The box returned will be the one
+  // that's created according to display type, scrollable overflow, and so on.
+  virtual LayoutBox* ContentLayoutBox() {
+    NOT_DESTROYED();
+    return this;
   }
 
   ShapeOutsideInfo* GetShapeOutsideInfo() const;

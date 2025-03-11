@@ -34,15 +34,18 @@ import org.chromium.build.annotations.Nullable;
  * A custom {@link ImageView} that is able to render bitmaps and colors with rounded off corners.
  * The corner radii should be set through attributes. E.g.
  *
- *   <org.chromium.components.browser_ui.widget.RoundedCornerImageView
- *      app:cornerRadiusTopStart="8dp"
- *      app:cornerRadiusTopEnd="8dp"
- *      app:cornerRadiusBottomStart="8dp"
- *      app:cornerRadiusBottomEnd="8dp"
- *      app:roundedfillColor="@android:color/white"/>
+ * <pre>
+ *     <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+ *        app:cornerRadiusTopStart="8dp"
+ *        app:cornerRadiusTopEnd="8dp"
+ *        app:cornerRadiusBottomStart="8dp"
+ *        app:cornerRadiusBottomEnd="8dp"
+ *        app:roundedfillColor="@android:color/white"/>
+ * </pre>
  *
  * Note : This does not properly handle padding. Padding will not be taken into account when rounded
- * corners are used.
+ * corners are used. DO NOT use android:background with {@link RoundedCornerImageView}, as corner
+ * radius will not be applied in that case.
  */
 @NullMarked
 public class RoundedCornerImageView extends AppCompatImageView {

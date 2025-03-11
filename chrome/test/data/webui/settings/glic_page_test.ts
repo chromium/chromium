@@ -4,15 +4,17 @@
 
 import 'chrome://settings/settings.js';
 
-import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 const POLICY_ENABLED_VALUE = 0;
 const POLICY_DISABLED_VALUE = 1;
@@ -22,6 +24,28 @@ suite('GlicPage', function() {
   let settingsPrefs: SettingsPrefsElement;
   let glicBrowserProxy: TestGlicBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  function createGlicPage(initialShortcut: string) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    glicBrowserProxy = new TestGlicBrowserProxy();
+    glicBrowserProxy.setGlicShortcutResponse(initialShortcut);
+    GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
+
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    page = document.createElement('settings-glic-page');
+    page.prefs = settingsPrefs.prefs;
+    Router.getInstance().navigateTo(routes.GEMINI);
+    document.body.appendChild(page);
+
+    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
+    return flushTasks();
+  }
 
   function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
     return page.shadowRoot!.querySelector<T>(`#${id}`);
@@ -51,21 +75,7 @@ suite('GlicPage', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    glicBrowserProxy = new TestGlicBrowserProxy();
-    glicBrowserProxy.setGlicShortcutResponse('⌃A');
-    GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
-
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-
-    page = document.createElement('settings-glic-page');
-    page.prefs = settingsPrefs.prefs;
-    Router.getInstance().navigateTo(routes.GEMINI);
-    document.body.appendChild(page);
-
-    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
-    return flushTasks();
+    return createGlicPage(/*initialShortcut=*/ '⌃A');
   });
 
   test('LauncherToggleEnabled', () => {
@@ -102,8 +112,8 @@ suite('GlicPage', function() {
       glicBrowserProxy.reset();
     });
 
-    // Test that the keyboard shortcut is collapsed/invisible when the launcher
-    // is disabled and shown when the launcher is enabled.
+    // Test that the keyboard shortcut is collapsed/invisible when the
+    // launcher is disabled and shown when the launcher is enabled.
     test('KeyboardShortcutVisibility' + clickTypeName, async () => {
       const keyboardShortcutSetting = $('keyboardShortcutSetting');
 
@@ -288,9 +298,9 @@ suite('GlicPage', function() {
     page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_DISABLED_VALUE);
     await flushTasks();
 
-    // Now that the policy is disabled, the shortcut edit, info card expand, and
-    // activity button should be removed. Toggles should all show "off" and be
-    // disabled.
+    // Now that the policy is disabled, the shortcut edit, info card expand,
+    // and activity button should be removed. Toggles should all show "off"
+    // and be disabled.
     assertFalse(!!$('shortcutInput'));
     assertFalse(!!$('activityButton'));
     assertFalse(!!$('tabAccessExpandButton'));
@@ -339,8 +349,8 @@ suite('GlicPage', function() {
     assertEquals(page.i18n('glicActivityButtonUrl'), url);
   });
 
-  // Ensure that the info collapse is initialized correctly when the tab context
-  // pref is enabled when the page is created.
+  // Ensure that the info collapse is initialized correctly when the tab
+  // context pref is enabled when the page is created.
   test('InfoCollapseInitializiedOpen', async () => {
     // Clear and re-create a new page rather than using the one initialized in
     // setup().
@@ -371,5 +381,83 @@ suite('GlicPage', function() {
     const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse');
     assertTrue(!!infoCard);
     assertFalse(infoCard.opened);
+  });
+
+  suite('Metrics', () => {
+    let booleanHistograms: Array<[string, boolean]> = [];
+    let userActions: string[] = [];
+
+    function verifyBooleanMetric(histogramName: string, visible: boolean) {
+      assertTrue(booleanHistograms.some(
+          histogram =>
+              histogramName === histogram[0] && visible === histogram[1]));
+    }
+
+    function verifyUserAction(userAction: string) {
+      assertTrue(userActions.includes(userAction));
+    }
+
+    test('clear shortcut', async () => {
+      // Arrange.
+      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
+      assertTrue(!!shortcutInput);
+      const field = shortcutInput.$.input;
+      assertEquals('⌃A', field.value);
+      // Open toggle, to allow focus on the shortcut input.
+      clickToggle();
+      await waitAfterNextRender(field);
+      // Clear any toggle-related metrics.
+      metricsBrowserProxy.reset();
+
+      // Act.
+      glicBrowserProxy.setGlicShortcutResponse('');
+      shortcutInput.$.edit.click();
+      await flushTasks();
+      keyDownOn(field, 27);  // Escape key.
+      await flushTasks();
+      assertEquals('', field.value);
+
+      // Assert.
+      booleanHistograms =
+          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+      assertEquals(1, booleanHistograms.length);
+      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
+      verifyBooleanMetric(hasValue, false);
+      userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(1, userActions.length);
+      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutDisabled');
+    });
+
+    test('set shortcut', async () => {
+      // Arrange.
+      await createGlicPage(/*initialShortcut=*/ '');
+      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
+      assertTrue(!!shortcutInput);
+      const field = shortcutInput.$.input;
+      assertEquals('', field.value);
+      // Open toggle, to allow focus on the shortcut input.
+      clickToggle();
+      await waitAfterNextRender(field);
+      // Clear any toggle-related metrics.
+      metricsBrowserProxy.reset();
+
+      // Act.
+      glicBrowserProxy.setGlicShortcutResponse('⌃A');
+      shortcutInput.$.edit.click();
+      await flushTasks();
+      keyDownOn(field, 65, ['ctrl']);
+      await flushTasks();
+
+      // Assert.
+      booleanHistograms =
+          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+      assertEquals(2, booleanHistograms.length);
+      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
+      verifyBooleanMetric(hasValue, false);
+      verifyBooleanMetric(hasValue, true);
+      userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(1, userActions.length);
+      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEnabled');
+    });
   });
 });

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/image_view.h"

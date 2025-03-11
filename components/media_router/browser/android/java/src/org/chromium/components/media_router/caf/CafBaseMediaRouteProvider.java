@@ -18,7 +18,6 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.media_router.DiscoveryCallback;
 import org.chromium.components.media_router.DiscoveryDelegate;
 import org.chromium.components.media_router.FlingingController;
@@ -44,7 +43,7 @@ public abstract class CafBaseMediaRouteProvider
     private static final String TAG = "CafMR";
 
     protected static final List<MediaSink> NO_SINKS = Collections.emptyList();
-    private final @Nullable MediaRouter mAndroidMediaRouter;
+    private final MediaRouter mAndroidMediaRouter;
     protected final MediaRouteManager mManager;
     protected final Map<String, DiscoveryCallback> mDiscoveryCallbacks =
             new HashMap<String, DiscoveryCallback>();
@@ -53,8 +52,7 @@ public abstract class CafBaseMediaRouteProvider
 
     private @Nullable CreateRouteRequestInfo mPendingCreateRouteRequestInfo;
 
-    protected CafBaseMediaRouteProvider(
-            @Nullable MediaRouter androidMediaRouter, MediaRouteManager manager) {
+    protected CafBaseMediaRouteProvider(MediaRouter androidMediaRouter, MediaRouteManager manager) {
         mAndroidMediaRouter = androidMediaRouter;
         mManager = manager;
     }
@@ -133,7 +131,6 @@ public abstract class CafBaseMediaRouteProvider
 
                             // Query Android media router for sinks that have been discovered and
                             // send sink updates to the browser.
-                            assumeNonNull(mAndroidMediaRouter);
                             List<MediaSink> knownSinks =
                                     getKnownSinksFromAndroidMediaRouter(routeSelector);
                             discovery_callback.setAndUpdateSinks(knownSinks);
@@ -159,7 +156,6 @@ public abstract class CafBaseMediaRouteProvider
         callback.removeSourceUrn(sourceId);
 
         if (callback.isEmpty()) {
-            assumeNonNull(mAndroidMediaRouter);
             mAndroidMediaRouter.removeCallback(callback);
             mDiscoveryCallbacks.remove(applicationId);
         }
@@ -186,7 +182,6 @@ public abstract class CafBaseMediaRouteProvider
             cancelPendingRequest("Request replaced");
         }
 
-        assumeNonNull(mAndroidMediaRouter);
         MediaSink sink = MediaSink.fromSinkId(sinkId, mAndroidMediaRouter);
         if (sink == null) {
             mManager.onCreateRouteRequestError("No sink", nativeRequestId);
@@ -344,7 +339,6 @@ public abstract class CafBaseMediaRouteProvider
         }
         sessionController().onSessionEnded();
         sessionController().detachFromCastSession();
-        assumeNonNull(mAndroidMediaRouter);
         mAndroidMediaRouter.selectRoute(mAndroidMediaRouter.getDefaultRoute());
         terminateAllRoutes();
         CastUtils.getCastContext()
@@ -359,7 +353,6 @@ public abstract class CafBaseMediaRouteProvider
         mPendingCreateRouteRequestInfo = null;
     }
 
-    @RequiresNonNull("mAndroidMediaRouter")
     private List<MediaSink> getKnownSinksFromAndroidMediaRouter(MediaRouteSelector routeSelector) {
         List<MediaSink> knownSinks = new ArrayList<MediaSink>();
         for (RouteInfo route : mAndroidMediaRouter.getRoutes()) {
@@ -370,7 +363,7 @@ public abstract class CafBaseMediaRouteProvider
         return knownSinks;
     }
 
-    public @Nullable MediaRouter getAndroidMediaRouter() {
+    public MediaRouter getAndroidMediaRouter() {
         return mAndroidMediaRouter;
     }
 

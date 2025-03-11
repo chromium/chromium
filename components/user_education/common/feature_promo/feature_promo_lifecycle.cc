@@ -111,6 +111,7 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
         case PromoType::kCustomAction:
         case PromoType::kSnooze:
         case PromoType::kTutorial:
+        case PromoType::kCustomUi:
           result = CanShowSnoozePromo(*data);
           break;
         case PromoType::kRotating:
@@ -158,6 +159,7 @@ bool FeaturePromoLifecycle::CanSnooze() const {
     case PromoType::kCustomAction:
     case PromoType::kSnooze:
     case PromoType::kTutorial:
+    case PromoType::kCustomUi:
       // Only enforce snooze count in V2 to avoid breaking backwards behavior.
       return storage_service_->GetSnoozeCount(*iph_feature_) <
              features::GetMaxSnoozeCount();
@@ -448,6 +450,9 @@ void FeaturePromoLifecycle::RecordShown() {
       break;
     case PromoType::kCustomAction:
       type_action_name.append("CustomAction");
+      break;
+    case PromoType::kCustomUi:
+      type_action_name.append("CustomUi");
       break;
     case PromoType::kSnooze:
       type_action_name.append("Snooze");

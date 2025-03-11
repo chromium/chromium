@@ -142,4 +142,8 @@ constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdCCTVisit{
     /*name=*/"cct_visit_score_threshold",
     /*default_value=*/0};
 
+BASE_FEATURE(kGroupSuggestionService,
+             "GroupSuggestionService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace visited_url_ranking::features

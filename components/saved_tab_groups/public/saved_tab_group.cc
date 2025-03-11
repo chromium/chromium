@@ -463,6 +463,10 @@ void SavedTabGroup::MarkTransitionedToShared() {
   is_transitioning_to_shared_ = false;
 }
 
+void SavedTabGroup::MarkTransitioningToSharedForTesting() {
+  is_transitioning_to_shared_ = true;
+}
+
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
                                   bool allow_empty_groups) {
   std::optional<size_t> index = GetIndexOfTab(saved_tab_guid);

@@ -127,9 +127,6 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
     case ProxyResolutionResult::kNoMdlMatch:
       eligibility = ProtectionEligibility::kIneligible;
       break;
-    case ProxyResolutionResult::kFeatureDisabled:
-      eligibility = ProtectionEligibility::kEligible;
-      break;
     case ProxyResolutionResult::kSettingDisabled:
       eligibility = ProtectionEligibility::kEligible;
       break;
@@ -157,8 +154,6 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
           /*are_auth_tokens_available=*/true,
           /*is_proxy_list_available=*/true);
       break;
-    default:
-      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(

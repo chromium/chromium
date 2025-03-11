@@ -800,7 +800,10 @@
     "contexts": [ "privileged_extension" ],
     // TODO(crbug.com/390138269): Remove developer mode only restriction once
     // per extension toggle is launched.
-    "developer_mode_only": true
+    "developer_mode_only": true,
+    // TODO(crbug.com/390138269): This condition is only respected when
+    // extensions_features::kUserScriptUserExtensionToggle is enabled.
+    "requires_delegated_availability_check": true
   },
   "userScripts.getWorldConfigurations": {
     "dependencies": [ "permission:userScripts" ],

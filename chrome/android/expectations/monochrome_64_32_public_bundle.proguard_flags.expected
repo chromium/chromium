@@ -870,6 +870,10 @@
 -dontwarn com.google.auto.value.AutoValue
 -dontwarn com.google.auto.value.AutoValue$Builder
 
+# File: obj/third_party/android_deps/google_android_datatransport_transport_backend_cct_java/proguard.txt
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
 # File: obj/third_party/android_deps/google_firebase_firebase_common_java/proguard.txt
 -dontwarn com.google.firebase.platforminfo.KotlinDetector
 -dontwarn com.google.auto.value.AutoValue
@@ -880,18 +884,13 @@
 -dontwarn com.google.firebase.components.Component$ComponentType
 
 -keep class * implements com.google.firebase.components.ComponentRegistrar
-
-# File: obj/third_party/android_deps/google_firebase_firebase_messaging_java/proguard.txt
-# Analytics library is optional.
-# Access to this class is protected by try/catch(NoClassDefFoundError e)
-# b/35686744 Don't fail during proguard if the class is missing from the APK.
--dontwarn com.google.android.gms.measurement.AppMeasurement*
+-keep,allowshrinking interface com.google.firebase.components.ComponentRegistrar
 
 # File: obj/third_party/android_deps/google_play_services_auth_base_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
 # rule, fields may be removed that would cause runtime failures.
--keepclassmembers class * extends com.google.android.gms.internal.auth.zzev {
+-keepclassmembers class * extends com.google.android.gms.internal.auth.zzew {
   <fields>;
 }
 
@@ -978,7 +977,29 @@
 }
 
 # File: obj/third_party/android_deps/google_play_services_cast_framework_java/proguard.txt
--keep public class * implements com.google.android.gms.cast.framework.OptionsProvider
+-keep public class * implements com.google.android.gms.cast.framework.OptionsProvider {
+  public <methods>;
+}
+
+# Don't warn about the auto value in Cast SDK Proguard.
+# This is due to the dependency on transport-api:2.0.0.
+# Can be removed after transport-api exposes this in their proguard rule.
+-dontwarn com.google.auto.value.**
+
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zztx {
+  <fields>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_cast_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zztx {
+  <fields>;
+}
 
 # File: obj/third_party/android_deps/google_play_services_clearcut_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses
@@ -1132,7 +1153,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.8.1.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.10.1.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro
@@ -1147,7 +1168,7 @@
     volatile <fields>;
 }
 
-# These classes are only required by kotlinx.coroutines.debug.AgentPremain, which is only loaded when
+# These classes are only required by kotlinx.coroutines.debug.internal.AgentPremain, which is only loaded when
 # kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
 -dontwarn java.lang.instrument.ClassFileTransformer
 -dontwarn sun.misc.SignalHandler

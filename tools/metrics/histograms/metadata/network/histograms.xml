@@ -5265,15 +5265,16 @@ chromium-metrics-reviews@google.com.
   <owner>djmitche@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
-    The result of IpProtectionProxyDelegate::OnResolveProxy's analysis of a
-    request. The enum values are in the order the checks occur, so for example
-    if the request does not match the MDL and the feature is not enabled,
-    `kNoMdlMatch` will be recorded, as that is checked first.
-
-    When the `MaskedDomainList` feature is disabled, this will always be
-    `kMdlNotPopulated`. Otherwise, when `EnableIpPrivacyProxy` is disabled, this
-    will be `kNoMdlMatch` or `kFeatureDisabled`, depending on whether the
-    request matches the MDL.
+    The result of determining whether a request should be proxied (as
+    implemented in IpProtectionProxyDelegate::ClassifyRequest). The enum values
+    are in the order the checks occur, so for example, if the MaskedDomainList
+    feature is disabled, &quot;The MDL is not populated&quot; value will be
+    emitted because that is checked first. If that feature is enabled and the
+    request does not match the MDL, then the &quot;The request did not match the
+    MDL&quot; value will be recorded. &quot;The IP Protection setting is
+    disabled&quot; value will be recorded if the feature is enabled and the
+    request matched the MDL, but IP Protection was disabled via user settings or
+    enterprise policy, and so on.
 
     This histogram is emitted for every request that undergoes proxy resolution.
   </summary>

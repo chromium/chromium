@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -188,9 +189,7 @@ class TabDragController : public views::WidgetObserver,
   // the user is dragging a tab group header, not an individual tab or tabs
   // from a group.
   const std::optional<tab_groups::TabGroupId> group() const {
-    return group_drag_data_.has_value()
-               ? std::make_optional(group_drag_data_.value().group)
-               : std::nullopt;
+    return drag_data_.group();
   }
 
   bool IsRemovingLastTabForRevert() const {
@@ -298,65 +297,6 @@ class TabDragController : public views::WidgetObserver,
   // in an attempt to detach a tab.
   enum DetachBehavior { DETACHABLE, NOT_DETACHABLE };
 
-  struct GroupDragData {
-    // The group that is being dragged.
-    tab_groups::TabGroupId group;
-
-    // The index of the tab within the group, if any, that was active when the
-    // drag began. Defaults to 0 if the active tab was outside the group, as we
-    // should fall back on activating the first tab during/after the drag.
-    int active_tab_index_within_group;
-
-    GroupDragData(tab_groups::TabGroupId group,
-                  int active_tab_index_within_group)
-        : group(group),
-          active_tab_index_within_group(active_tab_index_within_group) {}
-  };
-
-  // Stores the date associated with a single tab that is being dragged.
-  struct TabDragData {
-    TabDragData();
-    TabDragData(const TabDragData&) = delete;
-    TabDragData& operator=(const TabDragData&) = delete;
-    ~TabDragData();
-    TabDragData(TabDragData&&);
-
-    // The WebContents being dragged.
-    raw_ptr<content::WebContents> contents;
-
-    // There is a brief period of time when a tab is being moved from one tab
-    // strip to another [after Detach but before Attach] that the TabDragData
-    // owns the WebContents.
-    std::unique_ptr<tabs::TabModel> owned_tab;
-
-    // This is the index of the tab in |source_context_| when the drag
-    // began. This is used to restore the previous state if the drag is aborted.
-    // Nullopt if this is a group header.
-    std::optional<int> source_model_index;
-
-    // If attached this is the view in |attached_context_|.
-    raw_ptr<TabSlotView, DanglingUntriaged> attached_view;
-
-    // Is the tab pinned?
-    bool pinned;
-
-    // Contains the information for the tab's group at the start of the drag.
-    struct TabGroupData {
-      tab_groups::TabGroupId group_id;
-      tab_groups::TabGroupVisualData group_visual_data;
-    };
-
-    // Stores the information of the group the tab is in, or nullopt if tab is
-    // not grouped.
-    std::optional<TabGroupData> tab_group_data;
-  };
-
-  typedef std::vector<TabDragData> DragData;
-
-  // Sets |drag_data| from |view|. This also registers for necessary
-  // notifications and resets the delegate of the WebContents.
-  void InitDragData(TabSlotView* view, TabDragData* drag_data);
-
   // Overridden from views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
@@ -451,8 +391,10 @@ class TabDragController : public views::WidgetObserver,
   // Insert the dragged tabs into `attached_context` and attach the drag session
   // to it. The newly attached context will have capture, and will take
   // ownership of `controller` (which must be `this`).
-  void AttachToNewContext(TabDragContext* attached_context,
-                          std::unique_ptr<TabDragController> controller);
+  void AttachToNewContext(
+      TabDragContext* attached_context,
+      std::unique_ptr<TabDragController> controller,
+      std::vector<std::unique_ptr<tabs::TabModel>> owned_tabs);
 
   // Sets up dragging in `attached_context_`. The dragged tabs must already
   // be present.
@@ -462,7 +404,9 @@ class TabDragController : public views::WidgetObserver,
   // ownership of the owned controller, which must be |this|, if
   // |attached_context_| currently owns a controller. Otherwise returns
   // nullptr.
-  std::unique_ptr<TabDragController> Detach(ReleaseCapture release_capture);
+  std::tuple<std::unique_ptr<TabDragController>,
+             std::vector<std::unique_ptr<tabs::TabModel>>>
+  Detach(ReleaseCapture release_capture);
 
   // Detach from |attached_context_| and attach to |target_context| instead.
   // See Detach/Attach for parameter documentation. Transfers ownership of
@@ -533,30 +477,14 @@ class TabDragController : public views::WidgetObserver,
 
   [[nodiscard]] Liveness SetCapture(TabDragContext* context);
 
-  // Convenience for getting the TabDragData corresponding to the source view
-  // that the user started dragging.
-  TabDragData* source_view_drag_data() {
-    return &(drag_data_[source_view_index_]);
-  }
-
-  // Convenience for |source_view_drag_data()->contents|.
-  content::WebContents* source_dragged_contents() {
-    return source_view_drag_data()->contents;
-  }
-
-  // Returns the number of Tab views currently dragging.
-  // Excludes the TabGroupHeader view, if any.
-  int num_dragging_tabs() {
-    return group_drag_data_.has_value() ? drag_data_.size() - 1
-                                        : drag_data_.size();
-  }
-
   // Returns true if currently dragging a tab with |contents|.
   bool IsDraggingTab(content::WebContents* contents) const;
 
   // Returns the index of the first Tab, since the first dragging view may
   // instead be a TabGroupHeader.
-  int first_tab_index() { return group_drag_data_.has_value() ? 1 : 0; }
+  int first_tab_index() {
+    return drag_data_.group_drag_data_.has_value() ? 1 : 0;
+  }
 
   // Returns the Widget of the currently attached TabDragContext's
   // BrowserView.
@@ -691,18 +619,7 @@ class TabDragController : public views::WidgetObserver,
   // brought to front.
   base::OneShotTimer bring_to_front_timer_;
 
-  DragData drag_data_;
-
-  // Index of the source view in |drag_data_|.
-  size_t source_view_index_;
-
-  // The attached views. Also found in |drag_data_|, but cached for convenience.
-  std::vector<raw_ptr<TabSlotView, VectorExperimental>> attached_views_;
-
-  // Data related to the dragged tab group, if any. This is only set if the
-  // drag originated from a group header, indicating that the entire group is
-  // being dragged together.
-  std::optional<GroupDragData> group_drag_data_;
+  DragSessionData drag_data_;
 
   // Used to pause observation of all open SavedTabGroups when a drag is
   // occurring. This object is assigned when MaybePauseTrackingSavedTabGroup()

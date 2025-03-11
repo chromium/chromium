@@ -347,6 +347,14 @@ class JsonUtilTest(unittest.TestCase):
       got = agent.process(details)
       self.assertDictEqual(got, expected)
 
+    with self.subTest(name='no_synthetic_measurements_with_benchmark_name'):
+      expected2 = copy.deepcopy(expected)
+      expected2['key']['benchmark'] = 'speedometer3_modified'
+      agent = json_util.JsonUtil(generate_synthetic_measurements=False)
+      agent.add(result2_json)
+      got = agent.process(details, benchmark_name='speedometer3_modified')
+      self.assertDictEqual(got, expected2)
+
     with self.subTest(name='generate_synthetic_measurements'):
       agent = json_util.JsonUtil(generate_synthetic_measurements=True)
       agent.add(result2_json)

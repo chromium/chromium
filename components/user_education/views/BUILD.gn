@@ -7,6 +7,7 @@ import("//build/config/ui.gni")
 
 source_set("views") {
   sources = [
+    "custom_help_bubble_view.h",
     "help_bubble_delegate.h",
     "help_bubble_event_relay.cc",
     "help_bubble_event_relay.h",

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -144,6 +145,11 @@ Element* GetNextInCarouselOrDomOrder(const Element& current,
     should_continue_search = false;
     return scroller;
   }
+
+  if (auto* column_pseudo = DynamicTo<ColumnPseudoElement>(current)) {
+    return column_pseudo->FirstChildInDOMOrder();
+  }
+
   // If `current` has a ::scroll-marker-group(before) or a ::scroll-button(), we
   // need to move to the next element in DOM order.
   // Note: We can only get here when `current` has preceding

@@ -261,8 +261,7 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
                                            ? sk_colorspace::kOKLabGamutMap
                                            : sk_colorspace::kOKLab;
       } else {
-        // TODO(crbug.com/1379462): This should be kSRGB.
-        sk_interpolation.fColorSpace = sk_colorspace::kDestination;
+        sk_interpolation.fColorSpace = sk_colorspace::kSRGB;
       }
       break;
     case Color::ColorSpace::kDisplayP3:

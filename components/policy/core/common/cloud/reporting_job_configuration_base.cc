@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/features.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,6 +43,12 @@ const char
         "osPlatform";
 const char ReportingJobConfigurationBase::DeviceDictionaryBuilder::kName[] =
     "name";
+const char
+    ReportingJobConfigurationBase::DeviceDictionaryBuilder::kDeviceFqdn[] =
+        "deviceFqdn";
+const char
+    ReportingJobConfigurationBase::DeviceDictionaryBuilder::kNetworkName[] =
+        "networkName";
 
 // static
 base::Value::Dict
@@ -54,6 +61,11 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceDictionary(
   device_dictionary.Set(kOSVersion, GetOSVersion());
   device_dictionary.Set(kOSPlatform, GetOSPlatform());
   device_dictionary.Set(kName, GetDeviceName());
+  if (base::FeatureList::IsEnabled(
+          policy::features::kEnhancedSecurityEventFields)) {
+    device_dictionary.Set(kDeviceFqdn, GetDeviceFqdn());
+    device_dictionary.Set(kNetworkName, GetNetworkName());
+  }
   return device_dictionary;
 }
 
@@ -68,6 +80,11 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceProto(
   device.set_os_version(GetOSVersion());
   device.set_os_platform(GetOSPlatform());
   device.set_name(GetDeviceName());
+  if (base::FeatureList::IsEnabled(
+          policy::features::kEnhancedSecurityEventFields)) {
+    device.set_device_fqdn(GetDeviceFqdn());
+    device.set_network_name(GetNetworkName());
+  }
   return device;
 }
 
@@ -99,6 +116,18 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetOSPlatformPath() {
 std::string
 ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNamePath() {
   return GetStringPath(kName);
+}
+
+//static
+std::string
+ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetDeviceFqdnPath() {
+  return GetStringPath(kDeviceFqdn);
+}
+
+// static
+std::string
+ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNetworkNamePath() {
+  return GetStringPath(kNetworkName);
 }
 
 // static

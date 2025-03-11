@@ -17,17 +17,18 @@ component("cpp") {
   ]
   public_deps = [
     ":buildflags",
-    ":model_assets",
+    ":types",
     "//base",
     "//services/on_device_model/public/mojom",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
 
-component("model_assets") {
+component("types") {
   sources = [
     "adaptation_assets_mojom_traits.cc",
     "adaptation_assets_mojom_traits.h",
+    "capabilities.h",
     "model_assets.cc",
     "model_assets.h",
     "model_assets_mojom_traits.cc",
@@ -39,7 +40,7 @@ component("model_assets") {
     "//services/on_device_model/public/mojom:mojom_shared",
     "//skia",
   ]
-  defines = [ "IS_ON_DEVICE_MODEL_ASSETS_CPP_IMPL" ]
+  defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }
 
 buildflag_header("buildflags") {

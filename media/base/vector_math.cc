@@ -105,8 +105,12 @@ void FCLAMP(base::span<const float> src, base::span<float> dest) {
   CHECK(base::IsAligned(src.data(), kRequiredAlignment));
   CHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fclamp_func = [] {
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+    return FCLAMP_SSE;
+#else
     // TODO(crbug.com/401598584): Add optimized versions of these functions.
     return FCLAMP_C;
+#endif
   }();
 
   return fclamp_func(src.data(), src.size(), dest.data());
@@ -279,6 +283,30 @@ __attribute__((target("avx2,fma"))) void FMAC_AVX2(const float src[],
   // Handle any remaining values that wouldn't fit in an SSE pass.
   for (int i = last_index; i < len; ++i) {
     dest[i] += src[i] * scale;
+  }
+}
+void FCLAMP_SSE(const float src[], int len, float dest[]) {
+  const int rem = len % 4;
+  const int last_index = len - rem;
+  const __m128 m_min = _mm_set_ps1(kClampMin);
+  const __m128 m_max = _mm_set_ps1(kClampMax);
+  for (int i = 0; i < last_index; i += 4) {
+    const __m128 values = _mm_load_ps(src + i);
+    // Compare each value with itself. Since NaN != NaN, we end up with a mask
+    // with 0s instead of NaNs, and 1s for the original values.
+    const __m128 comparisons = _mm_cmpeq_ps(values, values);
+    // Zero-out all NaNs by applying the mask with a logical AND.
+    const __m128 sanitized_values = _mm_and_ps(comparisons, values);
+    _mm_store_ps(dest + i,
+                 _mm_min_ps(_mm_max_ps(sanitized_values, m_min), m_max));
+  }
+
+  // Handle any remaining values that wouldn't fit in an SSE pass.
+  for (int i = last_index; i < len; ++i) {
+    const float sample = src[i];
+    const float temp = std::isnan(sample) ? kSilence : sample;
+    // Using std::max + std::min is faster than std::clamp on official builds.
+    dest[i] = std::max(std::min(temp, kClampMax), kClampMin);
   }
 }
 

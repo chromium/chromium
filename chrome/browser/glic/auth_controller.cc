@@ -4,11 +4,13 @@
 
 #include "chrome/browser/glic/auth_controller.h"
 
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 
@@ -44,12 +46,23 @@ void AuthController::CheckAuthBeforeLoad(
 void AuthController::CheckAuthBeforeShow(
     FallbackBehavior fallback_behavior,
     base::OnceCallback<void(BeforeShowResult)> callback) {
+  // If automation is enabled skip auth check.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAutomation)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), BeforeShowResult::kReady));
+    return;
+  }
+
   CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   // If the user is signed-out, Glic shouldn't be running. Return an error
   // to avoid crashing if sign-out happens while Glic is loading.
   if (account_id.empty()) {
-    std::move(callback).Run(BeforeShowResult::kSyncFailed);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), BeforeShowResult::kSyncFailed));
     return;
   }
 
@@ -59,7 +72,9 @@ void AuthController::CheckAuthBeforeShow(
     // make it clear the sign-in is for Glic.
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
         profile_, signin_metrics::AccessPoint::kGlicLaunchButton);
-    std::move(callback).Run(kShowingReauthSigninPage);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  BeforeShowResult::kShowingReauthSigninPage));
   } else {
     SyncCookiesIfRequired(base::BindOnce(&AuthController::DoFallback,
                                          GetWeakPtr(), fallback_behavior,
@@ -111,7 +126,8 @@ void AuthController::SyncCookiesIfRequired(
   if (last_cookie_sync_time_ &&
       base::TimeTicks::Now() - *last_cookie_sync_time_ <
           kCookieSyncRepeatTime) {
-    std::move(callback).Run(true);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
   last_cookie_sync_time_ = std::nullopt;

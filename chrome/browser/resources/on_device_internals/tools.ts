@@ -364,7 +364,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.contextLength_ = 0;
     this.session_ = new SessionRemote();
-    this.model_.startSession(this.session_.$.bindNewPipeAndPassReceiver());
+    this.model_.startSession(
+        this.session_.$.bindNewPipeAndPassReceiver(), null);
   }
 
   private onCancelClick_() {

@@ -405,7 +405,7 @@ public class TabGridDialogViewBinderTest {
         // animations.
         mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, sourceView);
         assertEquals(
-                6,
+                7,
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
     }
 

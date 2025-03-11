@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,14 +25,21 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "components/user_education/test/test_custom_help_bubble_view.h"
+#include "components/user_education/views/custom_help_bubble_view.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/view.h"
@@ -58,6 +66,9 @@ BASE_FEATURE(kCustomActionTestFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegalNoticeTestFeature,
              "LegalNoticeTestFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCustomUiTestFeature,
+             "TEST_CustomUiTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
@@ -116,6 +127,31 @@ class BrowserFeaturePromoController2xUiTest
                 .set_promo_subtype_for_testing(
                     user_education::FeaturePromoSpecification::PromoSubtype::
                         kLegalNotice)));
+    RegisterTestFeature(
+        browser(),
+        user_education::FeaturePromoSpecification::CreateForCustomUi(
+            kCustomUiTestFeature, kToolbarAppMenuButtonElementId,
+            user_education::CreateCustomHelpBubbleViewFactoryCallback(
+                base::BindRepeating([](ui::ElementContext reference_context,
+                                       user_education::HelpBubbleArrow arrow,
+                                       FeaturePromoSpecification::
+                                           BuildHelpBubbleParams build_params) {
+                  auto* const anchor_element =
+                      build_params.anchor_element.get();
+                  return std::make_unique<
+                      user_education::test::TestCustomHelpBubbleView>(
+                      anchor_element->AsA<views::TrackedElementViews>()->view(),
+                      user_education::HelpBubbleViews::TranslateArrow(arrow));
+                })),
+            base::BindRepeating(
+                &BrowserFeaturePromoController2xUiTest::OnCustomUiCustomAction,
+                weak_ptr_factory_.GetWeakPtr())));
+  }
+
+  void OnCustomUiCustomAction(ui::ElementContext context,
+                              user_education::FeaturePromoHandle promo_handle) {
+    EXPECT_EQ(browser()->window()->GetElementContext(), context);
+    continued_promo_handle_ = std::move(promo_handle);
   }
 
   // Verifies that `CanShowPromo()` returns `expected_result`.
@@ -204,9 +240,14 @@ class BrowserFeaturePromoController2xUiTest
     return browser()->window()->GetFeaturePromoControllerForTesting();
   }
 
- private:
-  base::HistogramTester histogram_tester_;
+ protected:
   base::UserActionTester user_action_tester_;
+  base::HistogramTester histogram_tester_;
+  user_education::FeaturePromoHandle continued_promo_handle_;
+
+ private:
+  base::WeakPtrFactory<BrowserFeaturePromoController2xUiTest> weak_ptr_factory_{
+      this};
 };
 
 INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xUiTest);
@@ -321,6 +362,79 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                      user_education::FeaturePromoResult::Success()),
       PressNonDefaultPromoButton(), CheckVariable(called, true),
       CheckVariable(close_reason, FeaturePromoClosedReason::kAction));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       ShowCustomHelpBubble) {
+  const auto kBubbleId =
+      user_education::test::TestCustomHelpBubbleView::kBubbleId;
+  RunTestSequence(
+      MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      WithView(kBubbleId,
+               [](views::View* view) { view->GetWidget()->Close(); }),
+      WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
+      CheckMetrics(kCustomUiTestFeature, 0, 0, 0, 0, 0),
+      CheckResult(
+          [this]() {
+            return user_action_tester_.GetActionCount(
+                std::string(
+                    "UserEducation.MessageAction.AbortedByBubbleDestroyed.")
+                    .append(kCustomUiTestFeature.name));
+          },
+          1));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       ShowCustomHelpBubble_Dismiss) {
+  const auto kBubbleId =
+      user_education::test::TestCustomHelpBubbleView::kBubbleId;
+  RunTestSequence(
+      MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      PressButton(
+          user_education::test::TestCustomHelpBubbleView::kDismissButtonId),
+      WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
+      CheckMetrics(kCustomUiTestFeature, 1, 0, 0, 0, 0));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       ShowCustomHelpBubble_Snooze) {
+  const auto kBubbleId =
+      user_education::test::TestCustomHelpBubbleView::kBubbleId;
+  RunTestSequence(
+      MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      PressButton(
+          user_education::test::TestCustomHelpBubbleView::kSnoozeButtonId),
+      WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
+      CheckMetrics(kCustomUiTestFeature, 0, 1, 0, 0, 0));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       ShowCustomHelpBubble_Cancel) {
+  const auto kBubbleId =
+      user_education::test::TestCustomHelpBubbleView::kBubbleId;
+  RunTestSequence(
+      MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      PressButton(
+          user_education::test::TestCustomHelpBubbleView::kCancelButtonId),
+      WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
+      CheckMetrics(kCustomUiTestFeature, 0, 0, 0, 0, 0));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       ShowCustomHelpBubble_Action) {
+  const auto kBubbleId =
+      user_education::test::TestCustomHelpBubbleView::kBubbleId;
+  RunTestSequence(
+      MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      PressButton(
+          user_education::test::TestCustomHelpBubbleView::kActionButtonId),
+      WaitForHide(kBubbleId), Check([this]() {
+        const bool result = continued_promo_handle_.is_valid();
+        continued_promo_handle_.Release();
+        return result;
+      }),
+      CheckPromoRequested(kCustomUiTestFeature, false),
+      CheckMetrics(kCustomUiTestFeature, 0, 0, 0, 0, 1));
 }
 
 class BrowserFeaturePromoController2xLiveTrackerUiTest

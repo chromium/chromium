@@ -281,7 +281,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
                         - mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding)
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen
+                                                .omnibox_longpress_menu_addtional_horizontal_padding),
                 location[0]);
         assertEquals(
                 URLBAR_BOTTOM
@@ -303,7 +308,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
                         - mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding)
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen
+                                                .omnibox_longpress_menu_addtional_horizontal_padding),
                 location[0]);
         assertEquals(
                 URLBAR_TOP
@@ -327,7 +337,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
                         + mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding)
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen
+                                                .omnibox_longpress_menu_addtional_horizontal_padding),
                 location[0]);
         assertEquals(
                 URLBAR_BOTTOM
@@ -350,7 +365,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getDimensionPixelSize(R.dimen.app_menu_shadow_length)
                         + mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
+                                .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding)
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen
+                                                .omnibox_longpress_menu_addtional_horizontal_padding),
                 location[0]);
         assertEquals(
                 URLBAR_TOP

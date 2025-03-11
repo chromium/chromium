@@ -104,9 +104,6 @@ bool BlockSizeMayChange(const BlockNode& node,
       if (new_space.PercentageResolutionBlockSize() !=
           old_space.PercentageResolutionBlockSize())
         return true;
-      if (new_space.ReplacedPercentageResolutionBlockSize() !=
-          old_space.ReplacedPercentageResolutionBlockSize())
-        return true;
     }
   }
 
@@ -353,9 +350,6 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       DCHECK(is_old_initial_block_size_indefinite);
       if (new_space.PercentageResolutionBlockSize() !=
           old_space.PercentageResolutionBlockSize())
-        return LayoutCacheStatus::kNeedsLayout;
-      if (new_space.ReplacedPercentageResolutionBlockSize() !=
-          old_space.ReplacedPercentageResolutionBlockSize())
         return LayoutCacheStatus::kNeedsLayout;
     }
   }

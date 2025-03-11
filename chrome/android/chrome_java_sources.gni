@@ -339,7 +339,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ReorderStrategy.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ReorderStrategyBase.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/SourceViewDragDropReorderStrategy.java",
-  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/StripTabDragShadowView.java",
+  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/StripDragShadowView.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabDragSource.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/StaticResourcePreloads.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/SystemResourcePreloads.java",

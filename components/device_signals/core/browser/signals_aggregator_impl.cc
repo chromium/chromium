@@ -88,8 +88,8 @@ void SignalsAggregatorImpl::GetSignalsForUser(
   auto* response_ptr = response.get();
   auto done_closure = base::BindOnce(OnSignalRetrieved, std::move(response),
                                      std::move(callback));
-  GetSignal(*request.signal_names.begin(), std::move(request), response_ptr,
-            std::move(done_closure));
+  GetSignal(*request.signal_names.begin(), permission, std::move(request),
+            response_ptr, std::move(done_closure));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -103,7 +103,8 @@ void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
 
   const auto permission = permission_service_->CanCollectSignals();
   LogUserPermissionChecked(permission);
-  if (permission != UserPermission::kGranted) {
+  if (permission != UserPermission::kGranted &&
+      permission != UserPermission::kMissingConsent) {
     RespondWithError(PermissionToError(permission), std::move(callback));
     return;
   }
@@ -117,11 +118,12 @@ void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
       base::BindOnce(OnSignalRetrieved, std::move(response),
                      std::move(callback)));
   for (const auto signal_name : request.signal_names) {
-    GetSignal(signal_name, request, response_ptr, barrier_closure);
+    GetSignal(signal_name, permission, request, response_ptr, barrier_closure);
   }
 }
 
 void SignalsAggregatorImpl::GetSignal(SignalName signal_name,
+                                      UserPermission permission,
                                       const SignalsAggregationRequest& request,
                                       SignalsAggregationResponse* response,
                                       base::OnceClosure done_closure) {
@@ -133,7 +135,7 @@ void SignalsAggregatorImpl::GetSignal(SignalName signal_name,
     }
 
     // Signal is supported by current collector.
-    collector->GetSignal(signal_name, request, *response,
+    collector->GetSignal(signal_name, permission, request, *response,
                          std::move(done_closure));
     return;
   }

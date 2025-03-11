@@ -35,6 +35,16 @@ class FileTypePoliciesTestOverlay;
 //
 // This is thread safe. We assume it is updated at most every few hours.
 
+// Note: Although this class is used in Android download protection, for
+// historical reasons the current list of file types is only technically
+// applicable to Safe Browsing download protection on desktop platforms. Android
+// download protection (besides generic file type warnings) mostly bypasses
+// FileTypePolicies and hard-codes its own policies for which files to check via
+// DownloadProtectionDelegateAndroid.
+// TODO(chlily): Refactor DownloadFileType and DownloadFileTypeConfig to support
+// unifying platform-specific file type policy logic into this class. In
+// particular, we should support different values of ping_setting and
+// inspection_type per platform.
 class FileTypePolicies {
  public:
   FileTypePolicies(const FileTypePolicies&) = delete;

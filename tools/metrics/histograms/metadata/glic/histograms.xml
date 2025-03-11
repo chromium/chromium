@@ -118,8 +118,22 @@ chromium-metrics-reviews@google.com.
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
-    After the user the glic launcher shortcut, logs a boolean that reflects
-    whether a shortcut is set.
+    After the user modifies the glic launcher shortcut, logs a boolean that
+    reflects whether a shortcut is set.
+
+    Note: When setting a shortcut, 'disabled' will always be logged, then
+    'enabled'. This is because the edit process first clears the existing value.
+    If the shortcut is cleared, only a single 'disabled' log entry is generated.
+  </summary>
+</histogram>
+
+<histogram name="Glic.OsEntrypoint.Settings.ShortcutStatus"
+    enum="BooleanEnabled" expires_after="2026-01-15">
+  <owner>erikchen@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
+  <summary>
+    Rough estimate of whether a user has a shortcut set. Recorded every 15
+    minutes, but only if the glic feature flag is enabled.
   </summary>
 </histogram>
 

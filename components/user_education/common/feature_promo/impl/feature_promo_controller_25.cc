@@ -363,14 +363,14 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   }
 
   // Construct the parameters for the promotion.
-  ShowPromoBubbleParams show_params;
-  show_params.spec = display_spec;
-  show_params.anchor_element = anchor_element;
-  show_params.body_format = std::move(promo_data.params().body_params);
-  show_params.screen_reader_format =
+  FeaturePromoSpecification::BuildHelpBubbleParams build_params;
+  build_params.spec = display_spec;
+  build_params.anchor_element = anchor_element;
+  build_params.body_format = std::move(promo_data.params().body_params);
+  build_params.screen_reader_format =
       std::move(promo_data.params().screen_reader_params);
-  show_params.title_format = std::move(promo_data.params().title_params);
-  show_params.can_snooze = promo_data.GetLifecycle()->CanSnooze();
+  build_params.title_format = std::move(promo_data.params().title_params);
+  build_params.can_snooze = promo_data.GetLifecycle()->CanSnooze();
 
   // If the session policy allows overriding the current promo, abort it.
   if (current_promo()) {
@@ -387,9 +387,12 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
 
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
-  show_params.screen_reader_prompt_available =
-      CheckExtendedPropertiesPromptAvailable(promo_data.for_demo ||
-                                             in_demo_mode);
+  if (build_params.spec->promo_type() !=
+      FeaturePromoSpecification::PromoType::kCustomUi) {
+    build_params.screen_reader_prompt_available =
+        CheckExtendedPropertiesPromptAvailable(promo_data.for_demo ||
+                                               in_demo_mode);
+  }
 
   // When not explicitly for a demo, notify the tracker that the promo is
   // starting. Since this is also one of the preconditions for the promo,
@@ -403,7 +406,7 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
   set_current_promo(std::move(lifecycle));
 
   // Try to show the bubble and bail out if we cannot.
-  auto bubble = ShowPromoBubbleImpl(std::move(show_params));
+  auto bubble = ShowPromoBubbleImpl(std::move(build_params));
   if (!bubble) {
     set_current_promo(nullptr);
     if (!promo_data.for_demo) {

@@ -54,6 +54,7 @@ class CORE_EXPORT IdleTask : public GarbageCollected<IdleTask>,
   probe::AsyncTaskContext async_task_context_;
   // Handle to the associated "scheduler timeout task".
   base::DelayedTaskHandle delayed_task_handle_;
+  bool has_scheduler_idle_task_ = false;
 };
 
 // `ScriptedIdleTaskController` manages scheduling and running `IdleTask`s. This
@@ -111,13 +112,19 @@ class CORE_EXPORT ScriptedIdleTaskController
   void ContextDestroyed() override;
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
 
+  // Invoked when IsCancelled() is called on a "scheduler idle task" from this.
+  // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
+  void OnCheckSchedulerIdleTaskIsCancelled();
+
  private:
+  using IdleTaskMap = HeapHashMap<CallbackId, Member<IdleTask>>;
+
   // Posts a "scheduler idle task" and a "scheduler timeout task" to run the
   // `IdleTask` identified by `id`.
   void PostSchedulerIdleAndTimeoutTasks(CallbackId id, uint32_t timeout_millis);
 
-  // Posts a "scheduler idle task" to run the `IdleTask` identified by `id`.
-  void PostSchedulerIdleTask(CallbackId id);
+  // Posts a "scheduler idle task" to run the `IdleTask` identified by `it`.
+  void PostSchedulerIdleTask(IdleTaskMap::iterator it);
 
   void SchedulerIdleTask(CallbackId id,
                          DecrementOnDelete decrement_on_delete,
@@ -138,7 +145,7 @@ class CORE_EXPORT ScriptedIdleTaskController
 
   int NextCallbackId();
 
-  bool IsValidCallbackId(int id) {
+  static bool IsValidCallbackId(int id) {
     using Traits = HashTraits<CallbackId>;
     return !WTF::IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
   }
@@ -147,7 +154,7 @@ class CORE_EXPORT ScriptedIdleTaskController
   ThreadScheduler* scheduler_;
 
   // Pending `IdleTask`s.
-  HeapHashMap<CallbackId, Member<IdleTask>> idle_tasks_;
+  IdleTaskMap idle_tasks_;
 
   // `IdleTask`s for which `SchedulerIdleTask` ran while paused. They'll be
   // rescheduled when unpaused.
@@ -159,9 +166,17 @@ class CORE_EXPORT ScriptedIdleTaskController
   // Whether the execution context is paused.
   bool paused_ = false;
 
-  // Number of outstanding scheduler idle tasks.
+  // Number of outstanding "scheduler idle tasks".
   scoped_refptr<base::RefCountedData<size_t>> num_scheduler_idle_tasks_ =
       base::MakeRefCounted<base::RefCountedData<size_t>>(0);
+
+  // Number of calls to `IsCancelled()` on "scheduler idle tasks" from this.
+  // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
+  uint64_t num_is_cancelled_checks_ = 0;
+
+  // Whether `next_callback_id_` wrapped around.
+  // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
+  bool next_callback_id_wrapped_around_ = false;
 
  public:
   // Type of SchedulerIdleTask(), used to define callback cancellation traits in

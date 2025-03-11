@@ -82,19 +82,9 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   // - The token cache is not available.
   // - The token cache does not have tokens.
   // - No proxy list is available.
-  // - `kEnableIpProtection` is `false`.
   // - `is_ip_protection_enabled_` is `false` (in other words, the user has
-  //   disabled IP Protection via user settings).
+  //   disabled IP Protection via user settings or enterprise policy).
   // - `kIpPrivacyDirectOnly` is `true`.
-
-  // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
-  // done and IpProtectionProxyDelegate is only created in cases where IP
-  // Protection should be used, remove this check.
-  if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
-    vlog("ip protection proxy cannot be enabled");
-    return ProxyResolutionResult::kFeatureDisabled;
-  }
-
   if (!ip_protection_core_->IsIpProtectionEnabled()) {
     vlog("ip protection proxy is not currently enabled");
     return ProxyResolutionResult::kSettingDisabled;

@@ -23,6 +23,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -51,6 +52,11 @@ namespace content {
 
 namespace {
 
+// Kill switch.
+BASE_FEATURE(kAttributionReportingRateLimitCheckSourceTime,
+             "AttributionReportingRateLimitCheckSourceTime",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsAttribution(RateLimitTable::Scope scope) {
   switch (scope) {
     case RateLimitTable::Scope::kSource:
@@ -66,7 +72,9 @@ bool IsAttribution(RateLimitTable::Scope scope) {
 }  // namespace
 
 RateLimitTable::RateLimitTable(const AttributionResolverDelegate* delegate)
-    : delegate_(
+    : rate_limit_check_source_time_enabled_(base::FeatureList::IsEnabled(
+          kAttributionReportingRateLimitCheckSourceTime)),
+      delegate_(
           raw_ref<const AttributionResolverDelegate>::from_ptr(delegate)) {}
 
 RateLimitTable::~RateLimitTable() {
@@ -301,7 +309,12 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_attributions, 0);
 
-  base::Time min_timestamp = attribution_info.time - rate_limits.time_window;
+  // Note that we intentionally use source time to bound the limit for any
+  // source, which is consistent with the time stored in `AddRateLimit()`.
+  base::Time min_timestamp =
+      (rate_limit_check_source_time_enabled_ ? source.source_time()
+                                             : attribution_info.time) -
+      rate_limits.time_window;
 
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kRateLimitAttributionAllowedSql));
@@ -681,8 +694,12 @@ RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
     const AttributionInfo& attribution_info,
     const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Note that we intentionally use source time to bound the limit for any
+  // source, which is consistent with the time stored in `AddRateLimit()`.
   return AllowedForReportingOriginLimit(
-      db, /*is_source=*/false, source.common_info(), attribution_info.time,
+      db, /*is_source=*/false, source.common_info(),
+      rate_limit_check_source_time_enabled_ ? source.source_time()
+                                            : attribution_info.time,
       base::span_from_ref(net::SchemefulSite(attribution_info.context_origin)));
 }
 

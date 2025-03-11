@@ -81,7 +81,9 @@ class DownloadProtectionService {
       SafeBrowsingServiceImpl* sb_service,
       std::unique_ptr<DownloadProtectionDelegate> delegate);
 
-  // Same as above, but creates the default delegate instance.
+  // Same as above, but creates the default delegate instance. This is meant as
+  // a convenience for tests. Prefer the constructor above that explicitly
+  // provides the delegate, if possible.
   explicit DownloadProtectionService(SafeBrowsingServiceImpl* sb_service);
 
   DownloadProtectionService(const DownloadProtectionService&) = delete;
@@ -127,6 +129,8 @@ class DownloadProtectionService {
   // delivered asynchronously via the given callback.  This method must be
   // called on the UI thread, and the callback will also be invoked on the UI
   // thread.  Pre-condition: !info.download_url_chain.empty().
+  // The caller should check ShouldCheckDownloadUrl() beforehand; this is not
+  // verified in this method.
   virtual void CheckDownloadUrl(download::DownloadItem* item,
                                 CheckDownloadCallback callback);
 
@@ -285,6 +289,7 @@ class DownloadProtectionService {
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
+  template <bool UseMockDbManager>
   friend class DownloadProtectionServiceTestBase;
   friend class DownloadDangerPromptTest;
   friend class CheckClientDownloadRequestBase;

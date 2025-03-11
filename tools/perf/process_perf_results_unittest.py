@@ -416,7 +416,8 @@ class ProcessPerfResults_PerfSkiaJsonUnittest(unittest.TestCase):
     self.assertEqual(got, 0)
     mock_process_skia_json.assert_called_once_with(
         results_filename=results_filename,
-        builder_details=builder_details)
+        builder_details=builder_details,
+        benchmark_name=benchmark_name)
     mock_get_gcs_prefix_path.assert_called_once_with(
         build_properties=build_properties,
         builder_details=builder_details,

@@ -11,7 +11,7 @@ import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.AppMenuFacility;
+import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -24,7 +24,7 @@ import java.util.List;
  * <p>Differs significantly from the app menu normally shown; the options are operations to change
  * the tab selection or to do something with the selected tabs.
  */
-public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
+public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation> {
 
     private final TabSwitcherListEditorFacility mListEditor;
     private Item<Void> mCloseMenuItem;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 // Error when messaging is not allowed.
 const noConnectionError =
@@ -61,6 +62,8 @@ async function cleanUpState() {
 }
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   async function UserScriptWorld_worldIdValidation() {
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.configureWorld({csp: '', worldId: '_foobar'}),

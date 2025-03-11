@@ -39,8 +39,7 @@ enum class ProxyResolutionResult {
   kMdlNotPopulated = 0,
   // The request did not match the MDL.
   kNoMdlMatch = 1,
-  // The EnableIpProtectionProxy feature is not enabled.
-  kFeatureDisabled = 2,
+  // Deprecated: kFeatureDisabled = 2,
   // The IP Protection setting is disabled.
   kSettingDisabled = 3,
   // The proxy list is not available. This disposition does not imply that

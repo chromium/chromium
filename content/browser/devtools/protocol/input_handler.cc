@@ -1491,8 +1491,8 @@ float InputHandler::ScaleFactor() {
     }
   }
   // Pinch zoom
-  // TODO(376084060): Investigate if this should also be host_->GetPage() when
-  // `host_` is available.
+  // TODO(crbug.com/400860567): Investigate if this should also be
+  // host_->GetPage() when `host_` is available.
   scale_factor *= web_contents_->GetPrimaryPage().GetPageScaleFactor();
 
   return scale_factor;

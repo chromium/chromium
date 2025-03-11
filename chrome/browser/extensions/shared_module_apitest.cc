@@ -5,20 +5,11 @@
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
-
-#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
 
 namespace extensions {
 
-#if BUILDFLAG(IS_ANDROID)
 using SharedModuleTest = ExtensionPlatformApiTest;
-#else
-using SharedModuleTest = ExtensionApiTest;
-#endif
 
 // NB: We use LoadExtension instead of InstallExtension for shared modules so
 // the public-keys in their manifests are used to generate the extension ID, so

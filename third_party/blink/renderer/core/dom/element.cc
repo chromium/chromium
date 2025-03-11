@@ -2128,14 +2128,6 @@ double Element::currentCSSZoom() {
   return 1.0;
 }
 
-LayoutBox* Element::GetLayoutBoxForScrolling() const {
-  LayoutBox* box = GetLayoutBox();
-  if (!box || !box->IsScrollContainer()) {
-    return nullptr;
-  }
-  return box;
-}
-
 double Element::scrollLeft() {
   if (!InActiveDocument()) {
     return 0;

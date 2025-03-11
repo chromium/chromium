@@ -232,31 +232,19 @@ class CORE_EXPORT ConstraintSpace final {
     return {PercentageResolutionInlineSize(), PercentageResolutionBlockSize()};
   }
 
-  LayoutUnit ReplacedPercentageResolutionInlineSize() const {
-    return PercentageResolutionInlineSize();
-  }
-
-  LayoutUnit ReplacedPercentageResolutionBlockSize() const {
-    switch (static_cast<PercentageStorage>(
-        bitfields_.replaced_percentage_block_storage)) {
-      case kSameAsAvailable:
-        return available_size_.block_size;
-      case kZero:
-        return LayoutUnit();
-      case kIndefinite:
-        return kIndefiniteSize;
-      case kRareDataPercentage:
-        DCHECK(rare_data_);
-        return rare_data_->replaced_percentage_resolution_block_size;
-      default:
-        NOTREACHED();
+  // Returns the percentage resolution size to use with a replaced child.
+  // NOTE: This should only be used within inline layout, within a table-cell.
+  LayoutUnit ReplacedChildPercentageResolutionBlockSize() const {
+    if (rare_data_ &&
+        rare_data_->replaced_child_percentage_resolution_block_size !=
+            kIndefiniteSize) {
+      return rare_data_->replaced_child_percentage_resolution_block_size;
     }
+    return PercentageResolutionBlockSize();
   }
-
-  // The size to use for percentage resolution of replaced elements.
-  LogicalSize ReplacedPercentageResolutionSize() const {
-    return {ReplacedPercentageResolutionInlineSize(),
-            ReplacedPercentageResolutionBlockSize()};
+  LogicalSize ReplacedChildPercentageResolutionSize() const {
+    return {PercentageResolutionInlineSize(),
+            ReplacedChildPercentageResolutionBlockSize()};
   }
 
   // Return the size to use for percentage resolution for margin/padding.
@@ -872,10 +860,6 @@ class CORE_EXPORT ConstraintSpace final {
         other.bitfields_.percentage_block_storage)
       return false;
 
-    if (bitfields_.replaced_percentage_block_storage !=
-        other.bitfields_.replaced_percentage_block_storage)
-      return false;
-
     // The rest of this method just checks the percentage resolution sizes. If
     // neither space has rare data, we know that they must equal now.
     if (!rare_data_ && !other.rare_data_) {
@@ -892,13 +876,6 @@ class CORE_EXPORT ConstraintSpace final {
         other.bitfields_.percentage_block_storage == kRareDataPercentage &&
         rare_data_->percentage_resolution_size.block_size !=
             other.rare_data_->percentage_resolution_size.block_size)
-      return false;
-
-    if (bitfields_.replaced_percentage_block_storage == kRareDataPercentage &&
-        other.bitfields_.replaced_percentage_block_storage ==
-            kRareDataPercentage &&
-        rare_data_->replaced_percentage_resolution_block_size !=
-            other.rare_data_->replaced_percentage_resolution_block_size)
       return false;
 
     return true;
@@ -946,9 +923,9 @@ class CORE_EXPORT ConstraintSpace final {
     RareData() {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
-          replaced_percentage_resolution_block_size(
-              other.replaced_percentage_resolution_block_size),
           block_start_annotation_space(other.block_start_annotation_space),
+          replaced_child_percentage_resolution_block_size(
+              other.replaced_child_percentage_resolution_block_size),
           page_name(other.page_name),
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset(other.fragmentainer_offset),
@@ -1053,7 +1030,9 @@ class CORE_EXPORT ConstraintSpace final {
     void Trace(Visitor*) const {}
 
     bool MaySkipLayout(const RareData& other) const {
-      if (data_union_type != other.data_union_type ||
+      if (replaced_child_percentage_resolution_block_size !=
+              other.replaced_child_percentage_resolution_block_size ||
+          data_union_type != other.data_union_type ||
           is_pushed_by_floats != other.is_pushed_by_floats ||
           is_restricted_block_size_table_cell !=
               other.is_restricted_block_size_table_cell ||
@@ -1115,7 +1094,8 @@ class CORE_EXPORT ConstraintSpace final {
 
     // Must be kept in sync with members checked within |MaySkipLayout|.
     bool IsInitialForMaySkipLayout() const {
-      if (page_name || fragmentainer_block_size != kIndefiniteSize ||
+      if (replaced_child_percentage_resolution_block_size != kIndefiniteSize ||
+          page_name || fragmentainer_block_size != kIndefiniteSize ||
           fragmentainer_offset || is_pushed_by_floats ||
           is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
@@ -1373,8 +1353,10 @@ class CORE_EXPORT ConstraintSpace final {
     }
 
     LogicalSize percentage_resolution_size;
-    LayoutUnit replaced_percentage_resolution_block_size;
     LayoutUnit block_start_annotation_space;
+
+    LayoutUnit replaced_child_percentage_resolution_block_size =
+        kIndefiniteSize;
 
     AtomicString page_name;
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
@@ -1684,8 +1666,6 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned percentage_inline_storage : 2 =
         static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
     unsigned percentage_block_storage : 2 =
-        static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
-    unsigned replaced_percentage_block_storage : 2 =
         static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
   };
 
