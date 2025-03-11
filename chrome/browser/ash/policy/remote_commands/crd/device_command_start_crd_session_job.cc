@@ -259,29 +259,24 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
 }
 
 void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
-    base::OnceClosure on_success) {
-  if (!curtain_local_user_session_) {
-    // No need to check for managed networks if we are not going to curtain
-    // off the local session.
-    std::move(on_success).Run();
-    return;
-  }
-
+    base::OnceCallback<void(bool)> on_success) {
   CalculateIsInManagedEnvironmentAsync(base::BindOnce(
-      [](base::OnceClosure on_success, ErrorCallback on_error,
-         bool is_in_managed_environment) {
-        if (is_in_managed_environment) {
-          std::move(on_success).Run();
-        } else {
+      [](base::OnceCallback<void(bool)> on_success, ErrorCallback on_error,
+         bool require_managed_environment, bool is_in_managed_environment) {
+        if (require_managed_environment && !is_in_managed_environment) {
           std::move(on_error).Run(
               ExtendedStartCrdSessionResultCode::kFailureUnmanagedEnvironment,
               /*error_messages=*/"");
+        } else {
+          std::move(on_success).Run(is_in_managed_environment);
         }
       },
-      std::move(on_success), GetErrorCallback()));
+      std::move(on_success), GetErrorCallback(),
+      /*require_managed_environment=*/curtain_local_user_session_));
 }
 
-void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode() {
+void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
+    bool is_in_managed_environment) {
   CRD_VLOG(1) << "Starting CRD host and retrieving CRD access code";
   SessionParameters parameters;
   parameters.user_name = robot_account_id_;

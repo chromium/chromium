@@ -580,6 +580,32 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassAdminEmailToDelegate) {
   EXPECT_EQ("email@admin.com", delegate().session_parameters().admin_email);
 }
 
+TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldCheckNetworkManagedStatus) {
+  LogInAsKioskUser();
+
+  MockCrosNetworkConfig network_config_mock;
+  ash::network_config::OverrideInProcessInstanceForTesting(
+      &network_config_mock);
+
+  TestFuture<chromeos::network_config::mojom::NetworkFilterPtr,
+             MockCrosNetworkConfig::GetNetworkStateListCallback>
+      network_check_future;
+  EXPECT_CALL(network_config_mock, GetNetworkStateList)
+      .WillOnce([&](auto filter, auto callback) {
+        network_check_future.SetValue(std::move(filter), std::move(callback));
+      });
+
+  DeviceCommandStartCrdSessionJob job{CreateJob()};
+  InitializeJob(job);
+  RunJob(job);
+
+  ASSERT_TRUE(network_check_future.Wait());
+
+  auto callback = std::get<1>(network_check_future.Take());
+  // We must invoke the callback to satisfy the Mojom contract
+  std::move(callback).Run({});
+}
+
 TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
        ShouldPassAllowTroubleshootingToolsToDelegateForKiosk) {
   LogInAsKioskUser();
