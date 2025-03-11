@@ -185,3 +185,13 @@ void MutableProfileAttributesStorageIOS::EnsurePersonalProfileExists() {
       },
       std::ref(*this)));
 }
+
+std::set<std::string>
+MutableProfileAttributesStorageIOS::GetProfilesMarkedForDeletion() const {
+  std::set<std::string> result;
+  std::ranges::transform(
+      prefs_->GetList(prefs::kProfilesToRemove),
+      std::inserter(result, result.end()),
+      [](const base::Value& value) { return value.GetString(); });
+  return result;
+}

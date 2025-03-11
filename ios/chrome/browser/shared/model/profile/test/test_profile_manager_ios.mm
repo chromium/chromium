@@ -163,6 +163,11 @@ bool TestProfileManagerIOS::IsProfileMarkedForDeletion(
   return false;
 }
 
+void TestProfileManagerIOS::PurgeProfilesMarkedForDeletion(
+    base::OnceClosure callback) {
+  NOTREACHED();
+}
+
 ProfileAttributesStorageIOS*
 TestProfileManagerIOS::GetProfileAttributesStorage() {
   return &profile_attributes_storage_;

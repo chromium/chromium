@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_DELETER_IOS_H_
 #define IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_DELETER_IOS_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -34,7 +34,7 @@ class ProfileDeleterIOS {
   // Deletes a profile given its name, and the directory where the profiles
   // are stored. Invokes `callback` asynchronously on the current sequence
   // with the result of the operation on completion.
-  void DeleteProfile(const std::string& profile_name,
+  void DeleteProfile(std::string_view profile_name,
                      const base::FilePath& storage_dir,
                      DeletionResultCallback callback);
 
