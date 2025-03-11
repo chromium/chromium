@@ -65,11 +65,14 @@ class FakeTabSlotController : public TabSlotController {
                         const ui::LocatedEvent& event) override;
   bool EndDrag(EndDragReason reason) override;
   Tab* GetTabAt(const gfx::Point& point) override;
-  const Tab* GetAdjacentTab(const Tab* tab, int offset) override;
+  Tab* GetAdjacentTab(const Tab* tab, int offset) override;
+  Tab* GetAdjacentSplitTab(const Tab* tab) override;
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override {}
   void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override {}
   bool HoverCardIsShowingForTab(Tab* tab) override;
+  void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override {}
+  void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}
   int GetBackgroundOffset() const override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
