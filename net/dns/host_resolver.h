@@ -355,6 +355,10 @@ class NET_EXPORT HostResolver {
     // An experimental options for features::kUseDnsHttpsSvcb
     // and features::kUseDnsHttpsSvcbAlpn.
     std::optional<HostResolver::HttpsSvcbOptions> https_svcb_options;
+
+    // Optional boolean to enable or disable the Happy Eyeballs V3 explicitly.
+    // Used for respecting policies.
+    std::optional<bool> enable_happy_eyeballs_v3;
   };
 
   // Factory class. Useful for classes that need to inject and override resolver
@@ -557,6 +561,9 @@ class NET_EXPORT HostResolver {
   // URLRequestContextBuilder on passing ownership of |this| to a context. May
   // only be called once.
   virtual void SetRequestContext(URLRequestContext* request_context);
+
+  // Returns true when HappyEyeballs V3 algorithm is enabled.
+  virtual bool IsHappyEyeballsV3Enabled() const = 0;
 
   virtual HostResolverManager* GetManagerForTesting();
   virtual const URLRequestContext* GetContextForTesting() const;

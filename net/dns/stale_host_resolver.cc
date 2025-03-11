@@ -387,6 +387,10 @@ void StaleHostResolver::SetRequestContext(URLRequestContext* request_context) {
   inner_resolver_->SetRequestContext(request_context);
 }
 
+bool StaleHostResolver::IsHappyEyeballsV3Enabled() const {
+  return inner_resolver_->IsHappyEyeballsV3Enabled();
+}
+
 void StaleHostResolver::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;

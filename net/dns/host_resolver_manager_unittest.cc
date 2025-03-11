@@ -15258,4 +15258,28 @@ TEST_F(HostResolverManagerTest,
   IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(false);
 }
 
+TEST_F(HostResolverManagerTest, EnableHappyEyeballsV3ViaManagerOptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
+  HostResolver::ManagerOptions options;
+  options.enable_happy_eyeballs_v3 = true;
+  auto manager =
+      std::make_unique<TestHostResolverManager>(options, /*notifier=*/nullptr,
+                                                /*net_log=*/nullptr);
+  ASSERT_TRUE(manager->IsHappyEyeballsV3Enabled());
+}
+
+TEST_F(HostResolverManagerTest, DisableHappyEyeballsV3ViaManagerOptions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHappyEyeballsV3);
+
+  HostResolver::ManagerOptions options;
+  options.enable_happy_eyeballs_v3 = false;
+  auto manager =
+      std::make_unique<TestHostResolverManager>(options, /*notifier=*/nullptr,
+                                                /*net_log=*/nullptr);
+  ASSERT_FALSE(manager->IsHappyEyeballsV3Enabled());
+}
+
 }  // namespace net

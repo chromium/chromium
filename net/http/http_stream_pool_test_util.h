@@ -146,6 +146,7 @@ class FakeServiceEndpointResolver : public HostResolver {
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       ResolveHostParameters parameters) override;
+  bool IsHappyEyeballsV3Enabled() const override;
 
  private:
   std::list<std::unique_ptr<FakeServiceEndpointRequest>> requests_;

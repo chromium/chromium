@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -890,6 +891,10 @@ HostCache* MockHostResolverBase::GetHostCache() {
   return cache_.get();
 }
 
+bool MockHostResolverBase::IsHappyEyeballsV3Enabled() const {
+  return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
+}
+
 int MockHostResolverBase::LoadIntoCache(
     absl::variant<url::SchemeHostPort, HostPortPair> endpoint,
     const NetworkAnonymizationKey& network_anonymization_key,
@@ -1679,6 +1684,10 @@ HangingHostResolver::CreateDohProbeRequest() {
 
 void HangingHostResolver::SetRequestContext(
     URLRequestContext* url_request_context) {}
+
+bool HangingHostResolver::IsHappyEyeballsV3Enabled() const {
+  return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
+}
 
 //-----------------------------------------------------------------------------
 

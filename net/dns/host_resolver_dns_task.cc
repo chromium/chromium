@@ -128,9 +128,10 @@ void RecordResolveTimeDiff(const char* histogram_variant,
 // TODO(crbug.com/40269419): Delete once results are always sorted as individual
 // transactions complete.
 std::vector<IPEndPoint> ExtractAddressResultsForSort(
-    HostResolverDnsTask::Results& results) {
+    HostResolverDnsTask::Results& results,
+    bool is_happy_eyeballs_v3_enabled) {
   CHECK(!base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
-        !base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
+        !is_happy_eyeballs_v3_enabled);
 
   // To simplify processing, assume no more than one result per address query
   // type.
@@ -654,7 +655,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
   }
 
   if (base::FeatureList::IsEnabled(features::kUseHostResolverCache) ||
-      base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      delegate_->IsHappyEyeballsV3Enabled()) {
     SortTransactionAndHandleResults(std::move(transaction_info),
                                     std::move(results).value());
   } else {
@@ -901,9 +902,9 @@ void HostResolverDnsTask::OnTransactionsFinished(
   // If using HostResolverCache or Happy Eyeballs v3, transactions are already
   // invidvidually sorted on completion.
   if (!base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
-      !base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
-    std::vector<IPEndPoint> endpoints_to_sort =
-        ExtractAddressResultsForSort(saved_results_);
+      !delegate_->IsHappyEyeballsV3Enabled()) {
+    std::vector<IPEndPoint> endpoints_to_sort = ExtractAddressResultsForSort(
+        saved_results_, delegate_->IsHappyEyeballsV3Enabled());
 
     // Need to sort if results contain at least one IPv6 address.
     if (!endpoints_to_sort.empty()) {
@@ -927,7 +928,7 @@ void HostResolverDnsTask::OnSortComplete(base::TimeTicks sort_start_time,
                                          bool success,
                                          std::vector<IPEndPoint> sorted) {
   CHECK(!base::FeatureList::IsEnabled(features::kUseHostResolverCache));
-  CHECK(!base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
+  CHECK(!delegate_->IsHappyEyeballsV3Enabled());
 
   if (!success) {
     OnFailure(ERR_DNS_SORT_ERROR, /*allow_fallback=*/true, &results);

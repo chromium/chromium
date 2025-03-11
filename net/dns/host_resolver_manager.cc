@@ -437,6 +437,7 @@ HostResolverManager::HostResolverManager(
       check_ipv6_on_wifi_(options.check_ipv6_on_wifi),
       ipv6_reachability_override_(base::FeatureList::IsEnabled(
           features::kEnableIPv6ReachabilityOverride)),
+      is_happy_eyeballs_v3_enabled_(options.enable_happy_eyeballs_v3),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       https_svcb_options_(
           options.https_svcb_options
@@ -683,6 +684,13 @@ void HostResolverManager::SetTickClockForTesting(
 void HostResolverManager::SetIPv6ReachabilityOverride(
     bool reachability_override) {
   ipv6_reachability_override_ = reachability_override;
+}
+
+bool HostResolverManager::IsHappyEyeballsV3Enabled() const {
+  if (is_happy_eyeballs_v3_enabled_.has_value()) {
+    return *is_happy_eyeballs_v3_enabled_;
+  }
+  return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
 }
 
 void HostResolverManager::SetMaxQueuedJobsForTesting(size_t value) {

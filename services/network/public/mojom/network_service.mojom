@@ -135,6 +135,12 @@ struct NetworkServiceParams {
   // case the system DNS resolver cannot always run sandboxed.
   pending_remote<SystemDnsResolver>? system_dns_resolver;
 
+  // A boolean provided by the Browser Process in order to enable or disable
+  // the HappyEyeballs V3 feature explicitly during
+  // NetworkService::Initialize().
+  // TODO(crbug.com/401410305): Consider using boolean without std::optional.
+  bool? happy_eyeballs_v3_enabled;
+
   // The policy used for bypassing requests that are eligible for IP Protection.
   // Even if a domain is part of the masked domain list, the bypass policy can
   // be used to bypass certain network requests from IP Protection.
