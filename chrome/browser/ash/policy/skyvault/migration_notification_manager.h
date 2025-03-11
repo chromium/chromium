@@ -49,27 +49,28 @@ class MigrationNotificationManager : public KeyedService {
   // user can select to start the migration immediately which executes the
   // `migration_callback`.
   // Virtual to override in tests.
-  virtual void ShowMigrationInfoDialog(CloudProvider provider,
+  virtual void ShowMigrationInfoDialog(MigrationDestination destination,
                                        base::Time migration_start_time,
                                        base::OnceClosure migration_callback);
 
   // Shows the migration in progress notification.
-  void ShowMigrationProgressNotification(CloudProvider provider);
+  void ShowMigrationProgressNotification(MigrationDestination destination);
 
   // Shows the migration completed successfully notification with a button to
   // open the folder specified by `destination_path`.
   void ShowMigrationCompletedNotification(
-      CloudProvider provider,
+      MigrationDestination destination,
       const base::FilePath& destination_path);
 
   // Shows a notification that migration completed with errors.
-  void ShowMigrationErrorNotification(CloudProvider provider,
+  void ShowMigrationErrorNotification(MigrationDestination destination,
                                       const std::string& folder_name,
                                       const base::FilePath& error_log_path);
 
   // Shows the policy configuration error notification.
   // Virtual to override in tests.
-  virtual void ShowConfigurationErrorNotification(CloudProvider provider);
+  virtual void ShowConfigurationErrorNotification(
+      MigrationDestination destination);
 
   // Displays a single notification prompting the user to sign in to OneDrive.
   // Queues any subsequent sign-in requests until the user responds which

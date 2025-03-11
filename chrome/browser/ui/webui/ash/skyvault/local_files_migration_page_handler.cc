@@ -20,14 +20,17 @@ namespace policy::local_user_files {
 namespace {
 
 // Converts a CloudProvider enum value to its corresponding Mojo representation.
-mojom::CloudProvider ConvertCloudProviderToMojo(CloudProvider cloud_provider) {
-  switch (cloud_provider) {
-    case CloudProvider::kNotSpecified:
+mojom::CloudProvider ConvertCloudProviderToMojo(
+    MigrationDestination destination) {
+  switch (destination) {
+    case MigrationDestination::kNotSpecified:
+    // TODO(399392370): Adapt dialog for the delete case.
+    case MigrationDestination::kDelete:
       NOTREACHED()
           << "Case should not be reached, cloud provider must be specified.";
-    case CloudProvider::kGoogleDrive:
+    case MigrationDestination::kGoogleDrive:
       return mojom::CloudProvider::kGoogleDrive;
-    case CloudProvider::kOneDrive:
+    case MigrationDestination::kOneDrive:
       return mojom::CloudProvider::kOneDrive;
   }
 }
@@ -85,14 +88,14 @@ mojom::TimeUnitAndValuePtr ConvertRemainingTimeToMojo(
 LocalFilesMigrationPageHandler::LocalFilesMigrationPageHandler(
     content::WebUI* web_ui,
     Profile* profile,
-    CloudProvider cloud_provider,
+    MigrationDestination destination,
     base::Time migration_start_time,
     DialogActionCallback callback,
     mojo::PendingRemote<mojom::Page> page,
     mojo::PendingReceiver<mojom::PageHandler> receiver)
     : profile_(profile),
       web_ui_(web_ui),
-      cloud_provider_(cloud_provider),
+      destination_(destination),
       migration_start_time_(migration_start_time),
       callback_(std::move(callback)),
       receiver_(this, std::move(receiver)),
@@ -116,7 +119,7 @@ void LocalFilesMigrationPageHandler::GetInitialDialogInfo(
   }
 
   mojom::CloudProvider cloud_provider =
-      ConvertCloudProviderToMojo(cloud_provider_);
+      ConvertCloudProviderToMojo(destination_);
   mojom::TimeUnitAndValuePtr remaining_time_ptr =
       ConvertRemainingTimeToMojo(remaining_time);
   std::string formatted_date_time = base::UTF16ToUTF8(

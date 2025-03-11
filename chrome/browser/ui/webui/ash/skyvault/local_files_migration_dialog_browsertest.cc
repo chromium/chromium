@@ -76,8 +76,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
   base::MockCallback<StartMigrationCallback> mock_cb;
   EXPECT_CALL(mock_cb, Run).Times(0);
   const base::TimeDelta delay = base::Hours(1);
-  ASSERT_TRUE(LocalFilesMigrationDialog::Show(
-      CloudProvider::kOneDrive, base::Time::Now() + delay, mock_cb.Get()));
+  ASSERT_TRUE(LocalFilesMigrationDialog::Show(MigrationDestination::kOneDrive,
+                                              base::Time::Now() + delay,
+                                              mock_cb.Get()));
 
   // Wait for chrome://local-files-migration to load.
   navigation_observer_dialog.Wait();
@@ -105,8 +106,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
   navigation_observer_dialog_2.StartWatchingNewWebContents();
 
   // Show dialog again - should be shown on top.
-  ASSERT_TRUE(LocalFilesMigrationDialog::Show(
-      CloudProvider::kOneDrive, base::Time::Now() + delay, base::DoNothing()));
+  ASSERT_TRUE(LocalFilesMigrationDialog::Show(MigrationDestination::kOneDrive,
+                                              base::Time::Now() + delay,
+                                              base::DoNothing()));
 
   // Wait for chrome://local-files-migration to load.
   navigation_observer_dialog_2.Wait();
@@ -152,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_UploadNow) {
   base::MockCallback<StartMigrationCallback> mock_cb;
   EXPECT_CALL(mock_cb, Run).Times(1);
   ASSERT_TRUE(LocalFilesMigrationDialog::Show(
-      CloudProvider::kGoogleDrive, base::Time::Now() + base::Hours(1),
+      MigrationDestination::kGoogleDrive, base::Time::Now() + base::Hours(1),
       mock_cb.Get()));
 
   // Wait for chrome://local-files-migration to load.

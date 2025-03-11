@@ -23,11 +23,13 @@ enum class FileSaveDestination {
   kMaxValue = kOneDrive,
 };
 
-// Supported cloud providers.
-enum class CloudProvider {
-  kNotSpecified,  // Not set by the policy.
-  kGoogleDrive,   // Google Drive.
-  kOneDrive,      // Microsoft OneDrive.
+// Supported migration destination options.
+enum class MigrationDestination {
+  kNotSpecified,
+  kGoogleDrive,
+  kOneDrive,
+  kDelete,
+  kMaxValue = kDelete,
 };
 
 // Categories of errors that can occur during the file upload process.
@@ -114,9 +116,13 @@ enum class DialogAction {
 // policy.
 bool LocalUserFilesAllowed();
 
-// If SkyVault migration is enabled, returns the `CloudProvider` to which local
-// files should be uploaded, and `kNotSpecified` otherwise.
-CloudProvider GetMigrationDestination();
+// Returns the `MigrationDestination` indicating where local files should be
+// moved, or that they should be deleted. Returns `kNotSpecified` if the
+// migration policy is unset or explicitly set to "read-only".
+MigrationDestination GetMigrationDestination();
+
+// Returns true if `destination` is set to a cloud location.
+bool IsCloudDestination(MigrationDestination destination);
 
 // Get the destination where downloads are saved.
 FileSaveDestination GetDownloadsDestination(Profile* profile);
