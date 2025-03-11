@@ -1037,6 +1037,7 @@ ci.builder(
             "libcxx_modules",
             "linux",
             "release_builder",
+            "remoteexec",
             "x64",
         ],
     ),
