@@ -34,7 +34,6 @@ import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
-import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -522,9 +521,5 @@ interface Crosapi {
       pending_receiver<GuestOsSkForwarderFactory> receiver);
 
   // OnBrowserStartup@6 was removed.
-
-  // Binds the service containing input method related functionality such
-  // as changing the keyboard input language.
-  [MinVersion=137]
-    BindInputMethods@139(pending_receiver<InputMethods> receiver);
+  // BindInputMethods@139 was removed.
 };

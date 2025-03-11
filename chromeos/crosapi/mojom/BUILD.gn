@@ -35,7 +35,6 @@ mojom("mojom") {
     "fullscreen_controller.mojom",
     "guest_os_sk_forwarder.mojom",
     "identity_manager.mojom",
-    "input_methods.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
     "kiosk_session_service.mojom",

@@ -65,7 +65,6 @@ class ForceInstalledTrackerAsh;
 class FullRestoreAsh;
 class FullscreenControllerAsh;
 class IdentityManagerAsh;
-class InputMethodsAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
@@ -161,8 +160,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindIdentityManager(
       mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
-  void BindInputMethods(
-      mojo::PendingReceiver<mojom::InputMethods> receiver) override;
   void BindInSessionAuth(
       mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver)
       override;
@@ -294,8 +291,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return fullscreen_controller_ash_.get();
   }
 
-  InputMethodsAsh* input_methods_ash() { return input_methods_ash_.get(); }
-
   KeystoreServiceAsh* keystore_service_ash() {
     return keystore_service_ash_.get();
   }
@@ -382,7 +377,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FullRestoreAsh> full_restore_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
-  std::unique_ptr<InputMethodsAsh> input_methods_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
