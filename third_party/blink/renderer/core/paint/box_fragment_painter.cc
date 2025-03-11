@@ -693,13 +693,6 @@ void BoxFragmentPainter::PaintObject(const PaintInfo& paint_info,
     }
     if (is_visible && fragment.HasExtraMathMLPainting())
       MathMLPainter(fragment).Paint(paint_info, paint_offset);
-
-    // When a reference filter applies to the box, ensure a chunk is generated
-    // even if it's an empty chunk, so that the filter paints even if no other
-    // content is painted by the box (see `SVGContainerPainter::Paint`).
-    if (style.Filter().HasReferenceFilter()) {
-      paint_info.context.GetPaintController().EnsureChunk();
-    }
   }
 
   // Paint children.
