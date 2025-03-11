@@ -56,11 +56,6 @@
   _searchEngineObserver.reset();
 }
 
-- (void)clearGroups {
-  self.pedalSuggestionsGroup = nil;
-  self.nonPedalSuggestionsGroups = nil;
-}
-
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
     (const AutocompleteResult&)autocompleteResult {
   NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =

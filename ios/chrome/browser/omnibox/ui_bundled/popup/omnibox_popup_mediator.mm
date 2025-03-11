@@ -176,7 +176,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             (OmniboxPopupController*)popupController
                              hasSuggestions:(BOOL)hasSuggestions
                                  isFocusing:(BOOL)isFocusing {
-  [self.autocompleteMatchWrapper clearGroups];
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {

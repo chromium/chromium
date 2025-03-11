@@ -50,11 +50,6 @@ class TemplateURLService;
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
     (const AutocompleteResult&)autocompleteResult;
 
-/// (TODO (crbug.com/402105320): Clean up this method after the wrapping is
-/// moved to  this class.
-/// Clears the stored groups.
-- (void)clearGroups;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_MATCH_WRAPPER_H_
