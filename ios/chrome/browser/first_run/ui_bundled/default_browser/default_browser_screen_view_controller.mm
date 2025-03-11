@@ -70,7 +70,6 @@
   instructionView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.specificContentView addSubview:instructionView];
-  [self.specificContentView addSubview:instructionView];
 
   [NSLayoutConstraint activateConstraints:@[
     [instructionView.centerXAnchor
@@ -96,7 +95,6 @@
                                                    .topAnchor],
     ]];
   }
-
   [super viewDidLoad];
 }
 

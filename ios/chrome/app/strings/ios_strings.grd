@@ -5887,6 +5887,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHOW_LINK_PREVIEWS" desc="Title for the view and option in Settings for showing link previews. [Length: unlimited] [iOS only]" meaning="Title for the Chrome Settings option for showing link previews. [Length: unlimited]">
         Show link previews
       </message>
+      <message name="IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE" desc="Tertiary action button text that leads to a list of instructions">
+          Show me how
+      </message>
       <message name="IDS_IOS_SHOW_PASSKEY_CREATION_DATE" desc="Label indicating that the text displayed below is the date at which the passkey was created. [Length: 20em] [iOS only]">
         Passkey
       </message>

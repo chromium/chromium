@@ -12,6 +12,9 @@ NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
 NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
     @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
 
+NSString* const kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier =
+    @"firstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier";
+
 NSString* const kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier =
     @"firstRunOmniboxPositionChoiceScreenAccessibilityIdentifier";
 

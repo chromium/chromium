@@ -718,6 +718,42 @@
             ]
         }
     ],
+    "AnimatedDefaultBrowserPromoInFRE": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithActionButtons",
+                    "params": {
+                        "AnimatedDefaultBrowserPromoInFREExperimentType": "0"
+                    },
+                    "enable_features": [
+                        "AnimatedDefaultBrowserPromoInFRE"
+                    ]
+                },
+                {
+                    "name": "EnabledWithShowMeHow",
+                    "params": {
+                        "AnimatedDefaultBrowserPromoInFREExperimentType": "1"
+                    },
+                    "enable_features": [
+                        "AnimatedDefaultBrowserPromoInFRE"
+                    ]
+                },
+                {
+                    "name": "EnabledWithInstructions",
+                    "params": {
+                        "AnimatedDefaultBrowserPromoInFREExperimentType": "2"
+                    },
+                    "enable_features": [
+                        "AnimatedDefaultBrowserPromoInFRE"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnimationForDesktopCapturePermissionChecker": [
         {
             "platforms": [

@@ -320,6 +320,11 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
 
+  // Disable AnimatedDefaultBrowserPromoInFRE because it introduces a new
+  // Default Browser screen with a different ID.
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
+
   // Enable the FRE.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
