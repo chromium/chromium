@@ -1515,6 +1515,11 @@ void MenuController::OnWidgetDestroying(Widget* widget) {
   owner_->RemoveObserver(this);
   owner_ = nullptr;
   native_view_for_gestures_ = nullptr;
+
+#if BUILDFLAG(IS_MAC)
+  menu_closure_animation_.reset();
+#endif
+
   // Exit menu to ensure that we are not holding on to resources when the
   // widget has been destroyed.
   ExitMenu();
