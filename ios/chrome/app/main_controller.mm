@@ -994,8 +994,15 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
       case ProfileInitStage::kChoiceScreen:
       case ProfileInitStage::kNormalUI:
-      case ProfileInitStage::kFinal:
         // Nothing to do.
+        break;
+
+      case ProfileInitStage::kFinal:
+        // Request the deletion of the data for all profiles marked for
+        // deletion when the first profile is successfully loaded.
+        GetApplicationContext()
+            ->GetProfileManager()
+            ->PurgeProfilesMarkedForDeletion(base::DoNothing());
         break;
     }
   }
