@@ -223,6 +223,14 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
       std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
       fake_tab_group_title);
 
+  auto expected_leave_flow_url = GURL(
+      std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
+      std::string(data_sharing::kQueryParamFlow) + "=" +
+      std::string(data_sharing::kFlowLeave) + "&" +
+      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
+      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+      fake_tab_group_title);
+
   auto expected_join_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
       std::string(data_sharing::kQueryParamFlow) + "=" +
@@ -277,6 +285,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
                                               data_sharing::FlowType::kJoin);
   url = data_sharing::GenerateWebUIUrl(request_info_join, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_join_flow_url);
+
+  data_sharing::RequestInfo request_info_leave(token,
+                                               data_sharing::FlowType::kLeave);
+  url =
+      data_sharing::GenerateWebUIUrl(request_info_leave, browser()->profile());
+  EXPECT_EQ(url.value().spec(), expected_leave_flow_url);
 
   data_sharing::RequestInfo request_info_delete_with_tab_group_id(
       group_id, data_sharing::FlowType::kDelete);

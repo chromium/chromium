@@ -83,10 +83,8 @@ GURL CreateManageUrl(
         group_id,
     const std::optional<tab_groups::SavedTabGroup> saved_group) {
   GURL updated_url = url;
+  CHECK(saved_group->is_shared_tab_group());
   if (std::holds_alternative<tab_groups::LocalTabGroupID>(group_id)) {
-    tab_groups::TabGroupId local_group_id = std::get<0>(group_id);
-
-    CHECK(saved_group->is_shared_tab_group());
     // Return manage flow url which requires a group_id for webui to fetch
     // people info.
     updated_url =
@@ -94,10 +92,37 @@ GURL CreateManageUrl(
     updated_url =
         net::AppendQueryParameter(updated_url, kQueryParamGroupId,
                                   saved_group->collaboration_id()->value());
+    tab_groups::TabGroupId local_group_id = std::get<0>(group_id);
+
     updated_url = net::AppendQueryParameter(updated_url, kQueryParamTabGroupId,
                                             local_group_id.ToString());
   } else {
+    // Return manage flow url which requires a group_id for webui to fetch
+    // people info.
+    GroupToken group_token = std::get<1>(group_id);
+    updated_url =
+        net::AppendQueryParameter(updated_url, kQueryParamFlow, kFlowManage);
+    updated_url = net::AppendQueryParameter(updated_url, kQueryParamGroupId,
+                                            group_token.group_id.value());
+  }
+
+  return updated_url;
+}
+
+GURL CreateLeaveUrl(const GURL& url,
+                    const std::variant<tab_groups::LocalTabGroupID,
+                                       data_sharing::GroupToken>& group_id) {
+  GURL updated_url = url;
+  if (std::holds_alternative<tab_groups::LocalTabGroupID>(group_id)) {
     NOTREACHED();
+  } else {
+    // Return manage flow url which requires a group_id for webui to fetch
+    // people info.
+    GroupToken group_token = std::get<1>(group_id);
+    updated_url =
+        net::AppendQueryParameter(updated_url, kQueryParamFlow, kFlowLeave);
+    updated_url = net::AppendQueryParameter(updated_url, kQueryParamGroupId,
+                                            group_token.group_id.value());
   }
 
   return updated_url;
@@ -176,6 +201,14 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
       url = CreateDeleteUrl(url, saved_group);
       break;
     }
+    case kLeave:
+      if (!saved_group || !saved_group->collaboration_id()) {
+        // A shared group must exist for us to leave it.
+        return std::nullopt;
+      }
+
+      url = CreateLeaveUrl(url, request_info.id);
+      break;
   }
 
   if (saved_group && request_info.type != kJoin) {

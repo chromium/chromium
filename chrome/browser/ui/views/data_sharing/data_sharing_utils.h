@@ -28,13 +28,15 @@ inline std::string_view kFlowShare = "share";
 inline std::string_view kFlowJoin = "join";
 inline std::string_view kFlowManage = "manage";
 inline std::string_view kFlowDelete = "delete";
+inline std::string_view kFlowLeave = "leave";
 
 enum FlowType {
   kShare,
   kJoin,
   kManage,
   kDelete,
-  kMaxValue = kDelete,
+  kLeave,
+  kMaxValue = kLeave,
 };
 
 // Metadata used to determine the which WebUI we should return when
