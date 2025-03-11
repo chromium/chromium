@@ -18,12 +18,15 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.IOException;
 import java.util.UUID;
 
 /** Records UMA about the size of data, cache, and code size on disk for Android. */
+@NullMarked
 public class PackageMetrics {
     private static final String TAG = "PackageMetrics";
 
@@ -34,7 +37,7 @@ public class PackageMetrics {
     }
 
     @RequiresApi(26)
-    private static PackageMetricsData getPackageStatsForAndroidO() {
+    private static @Nullable PackageMetricsData getPackageStatsForAndroidO() {
         Context context = ContextUtils.getApplicationContext();
         StorageManager storageManager = context.getSystemService(StorageManager.class);
         StorageStatsManager storageStatsManager =
