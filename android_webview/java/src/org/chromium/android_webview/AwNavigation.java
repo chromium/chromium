@@ -12,10 +12,20 @@ public class AwNavigation extends AwSupportLibIsomorphic {
     private final NavigationHandle mNavigationHandle;
     // The Page that the navigation commits into. Set to null if the navigation doesn't commit or
     // result in a Page (e.g. 204/download)
-    private final @Nullable AwPage mPage;
+    private @Nullable AwPage mPage;
 
     public AwNavigation(NavigationHandle navigationHandle, @Nullable AwPage page) {
         mNavigationHandle = navigationHandle;
+        mPage = page;
+    }
+
+    void setPage(@Nullable AwPage page) {
+        if (mPage != page) {
+            // We can only change the page associated with the navigation if it was null before
+            // (e.g. the AwNavigation was constructed when the navigation just started, then
+            // the navigation eventually committed a page).
+            assert mPage == null;
+        }
         mPage = page;
     }
 

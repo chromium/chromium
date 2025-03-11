@@ -70,6 +70,8 @@ public class AwWebContentsObserver extends WebContentsObserver
         super(webContents);
         mAwContents = new WeakReference<>(awContents);
         mAwContentsClient = new WeakReference<>(awContentsClient);
+        mNavigationMap = new WeakHashMap<>();
+        mPageMap = new WeakHashMap<>();
     }
 
     private AwContentsClient getClientIfNeedToFireCallback(String validatedUrl) {
@@ -83,11 +85,16 @@ public class AwWebContentsObserver extends WebContentsObserver
         return null;
     }
 
-    private AwNavigation getAwNavigationFor(NavigationHandle navigation) {
+    private AwNavigation getOrUpdateAwNavigationFor(NavigationHandle navigation) {
         WeakReference<AwNavigation> awNavigationRef = mNavigationMap.get(navigation);
         if (awNavigationRef != null) {
             AwNavigation awNavigation = awNavigationRef.get();
             if (awNavigation != null) {
+                // We're reusing an existing AwNavigation, but the AwPage associated with it might
+                // have changed (e.g. if the AwNavigation was created at navigation start it will
+                // be constructed with a null page value, but then it commits a page and needs to
+                // be updated).
+                awNavigation.setPage(getAwPageFor(navigation.getCommittedPage()));
                 return awNavigation;
             }
         }
@@ -235,7 +242,7 @@ public class AwWebContentsObserver extends WebContentsObserver
         if (awContents != null) {
             AwNavigationClient client = awContents.getNavigationClient();
             if (client != null) {
-                client.onNavigationStarted(getAwNavigationFor(navigation));
+                client.onNavigationStarted(getOrUpdateAwNavigationFor(navigation));
             }
         }
     }
@@ -246,7 +253,7 @@ public class AwWebContentsObserver extends WebContentsObserver
         if (awContents != null) {
             AwNavigationClient client = awContents.getNavigationClient();
             if (client != null && navigation.isInPrimaryMainFrame()) {
-                client.onNavigationRedirected(getAwNavigationFor(navigation));
+                client.onNavigationRedirected(getOrUpdateAwNavigationFor(navigation));
             }
         }
     }
@@ -284,7 +291,7 @@ public class AwWebContentsObserver extends WebContentsObserver
         if (awContents != null) {
             AwNavigationClient navClient = awContents.getNavigationClient();
             if (navClient != null && navigation.isInPrimaryMainFrame()) {
-                navClient.onNavigationCompleted(getAwNavigationFor(navigation));
+                navClient.onNavigationCompleted(getOrUpdateAwNavigationFor(navigation));
             }
         }
 

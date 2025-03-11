@@ -17,4 +17,8 @@ public class AwPage extends AwSupportLibIsomorphic {
     public boolean isPrerendering() {
         return mPage.isPrerendering();
     }
+
+    public Page getInternalPageForTesting() {
+        return mPage;
+    }
 }
