@@ -224,6 +224,19 @@ void PinnedToolbarActionsContainer::ShowActionEphemerallyInToolbar(
   }
 }
 
+void PinnedToolbarActionsContainer::UpdatePinnedStateAndAnnounce(
+    actions::ActionId id,
+    bool pin) {
+  // If already in the desired state or not pinnable, do nothing.
+  if (pin == IsActionPinned(id) ||
+      !GetActionItemFor(id)->GetProperty(actions::kActionItemPinnableKey)) {
+    return;
+  }
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      pin ? IDS_TOOLBAR_BUTTON_PINNED : IDS_TOOLBAR_BUTTON_UNPINNED));
+  model_->UpdatePinnedState(id, pin);
+}
+
 void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
                                                        int delta) {
   DCHECK(IsActionPinned(id));

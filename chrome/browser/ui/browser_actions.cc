@@ -40,10 +40,12 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
@@ -54,6 +56,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/grit/branded_strings.h"
@@ -570,6 +574,7 @@ void BrowserActions::InitializeBrowserActions() {
           .Build());
 
   if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    actions::ActionItem* media_router_action;
     root_action_item_->AddChild(
         StatefulChromeMenuAction(
             base::BindRepeating(
@@ -585,7 +590,9 @@ void BrowserActions::InitializeBrowserActions() {
             kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
             IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
             .SetEnabled(chrome::CanRouteMedia(browser))
+            .CopyAddressTo(&media_router_action)
             .Build());
+    CastToolbarButtonUtil::AddCastChildActions(media_router_action, browser);
   }
 
   if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton) &&
@@ -624,7 +631,66 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  AddListeners();
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* toolbar_button_provider =
+                    BrowserView::GetBrowserViewForBrowser(browser)
+                        ->toolbar_button_provider();
+                if (toolbar_button_provider) {
+                  toolbar_button_provider->GetPinnedToolbarActionsContainer()
+                      ->UpdatePinnedStateAndAnnounce(
+                          context.GetProperty(kActionIdKey), true);
+                }
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionPinActionToToolbar)
+          .SetImage(ui::ImageModel::FromVectorIcon(kKeepIcon, ui::kColorIcon))
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(
+                  IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN)))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* toolbar_button_provider =
+                    BrowserView::GetBrowserViewForBrowser(browser)
+                        ->toolbar_button_provider();
+                if (toolbar_button_provider) {
+                  toolbar_button_provider->GetPinnedToolbarActionsContainer()
+                      ->UpdatePinnedStateAndAnnounce(
+                          context.GetProperty(kActionIdKey), false);
+                }
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionUnpinActionFromToolbar)
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kKeepOffIcon, ui::kColorIcon))
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(
+                  IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN)))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ExecuteCommand(browser,
+                                       IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionSidePanelShowCustomizeChromeToolbar)
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kSettingsMenuIcon, ui::kColorIcon))
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHOW_CUSTOMIZE_CHROME_TOOLBAR)))
+          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
@@ -673,6 +739,8 @@ void BrowserActions::InitializeBrowserActions() {
               base::Unretained(browser)))
           .SetActionId(actions::kActionPaste)
           .Build());
+
+  AddListeners();
 }
 
 void BrowserActions::RemoveListeners() {

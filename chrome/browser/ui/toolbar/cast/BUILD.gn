@@ -8,6 +8,7 @@ source_set("cast") {
   sources = [
     "cast_contextual_menu.h",
     "cast_toolbar_button_controller.h",
+    "cast_toolbar_button_util.h",
   ]
   public_deps = [
     "//base",
@@ -24,6 +25,7 @@ source_set("impl") {
   sources = [
     "cast_contextual_menu.cc",
     "cast_toolbar_button_controller.cc",
+    "cast_toolbar_button_util.cc",
   ]
   deps = [
     ":cast",
