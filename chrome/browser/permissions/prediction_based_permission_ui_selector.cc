@@ -398,6 +398,8 @@ void PredictionBasedPermissionUiSelector::AiOnDeviceModelExecutionCallback(
         permissions::PermissionRequestRelevance::kUnspecified;
   }
   features.permission_relevance = last_permission_request_relevance_.value();
+  permissions::PermissionUmaUtil::RecordPermissionRequestRelevance(
+      features.permission_relevance);
   InquireServerModel(features, request_type,
                      /*record_source=*/!response.has_value());
 }

@@ -341,6 +341,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.AIv1.PermissionRequestRelevance"
+    enum="PermissionRequestRelevance" expires_after="2026-03-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the generated relevance signal after a successful execution of the
+    AIv1 model.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.AIv1.PreviousSessionFinishedInTime"
     enum="BooleanSuccess" expires_after="2026-01-11">
   <owner>elklm@chromium.org</owner>

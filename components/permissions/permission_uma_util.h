@@ -883,6 +883,9 @@ class PermissionUmaUtil {
       RequestTypeForUma request_type,
       base::TimeDelta time_delta);
 
+  static void RecordPermissionRequestRelevance(
+      PermissionRequestRelevance permission_request_relevance);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).
