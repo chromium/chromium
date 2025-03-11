@@ -193,6 +193,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidToolbarScrollAblation,
+    &kAndroidWindowPopupLargeScreen,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
     &kAsyncNotificationManager,
@@ -553,6 +554,10 @@ BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,
              "AndroidToolbarScrollAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidWindowPopupLargeScreen,
+             "AndroidWindowPopupLargeScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnimatedImageDragShadow,

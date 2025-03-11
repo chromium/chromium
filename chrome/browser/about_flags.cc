@@ -11704,6 +11704,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(webapps::features::kAndroidMinimalUiLargeScreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-android-window-popup-large-screen",
+     flag_descriptions::kAndroidWindowPopupLargeScreenName,
+     flag_descriptions::kAndroidWindowPopupLargeScreenDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidWindowPopupLargeScreen)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"web-authentication-align-error-type-for-payment-credential-create",
      flag_descriptions::
          kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName,
