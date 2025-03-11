@@ -41,6 +41,8 @@ enum class URLVisitAggregatesTransformType {
   // expand to other platforms when they need filtering based on browser
   // type as well.
   kHistoryBrowserTypeFilter = 8,
+  // Set tab events related data in the visits.
+  kTabEventsData = 9,
 };
 
 // The options that may be specified when fetching URL visit data.
