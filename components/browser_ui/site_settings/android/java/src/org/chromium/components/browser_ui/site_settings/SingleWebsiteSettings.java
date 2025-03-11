@@ -984,7 +984,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             assumeNonNull(osWarning);
             Preference osWarningExtra = findPreference(PREF_OS_PERMISSIONS_WARNING_EXTRA);
             assumeNonNull(osWarningExtra);
-            categoryWithWarning.configurePermissionIsOffPreferences(
+            categoryWithWarning.configureWarningPreferences(
                     osWarning,
                     osWarningExtra,
                     getContext(),
@@ -1130,6 +1130,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         } else if (showWarningFor(SiteSettingsCategory.Type.AUGMENTED_REALITY)) {
             return SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.AUGMENTED_REALITY);
+        } else if (showWarningFor(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER)) {
+            return SiteSettingsCategory.createFromType(
+                    browserContextHandle, SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
         }
         return null;
     }

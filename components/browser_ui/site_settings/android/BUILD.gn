@@ -69,6 +69,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/FileEditingInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesSettings.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/JavascriptOptimizerCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocalStorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocationCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/NfcCategory.java",

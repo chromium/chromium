@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -127,9 +128,9 @@ public class FamilyLinkControlsTest {
     @SmallTest
     public void testDeletingOnDeviceDataAllowedForSupervisedUsers() throws InterruptedException {
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
-        when(mWebsitePreferenceBridgeJniMock.isContentSettingManagedByCustodian(
+        when(mWebsitePreferenceBridgeJniMock.getDefaultContentSettingProviderSource(
                         any(), eq(ContentSettingsType.COOKIES)))
-                .thenReturn(false);
+                .thenReturn(ContentSettingSource.USER);
         when(mWebsitePreferenceBridgeJniMock.isContentSettingEnabled(
                         any(), eq(ContentSettingsType.COOKIES)))
                 .thenReturn(false);

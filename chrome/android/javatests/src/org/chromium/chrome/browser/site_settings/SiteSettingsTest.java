@@ -73,6 +73,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -136,6 +137,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -218,6 +220,26 @@ public class SiteSettingsTest {
         "anti_abuse_things_to_consider_header",
         "anti_abuse_things_to_consider_section_one"
     };
+
+    private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
+        public static String TEST_MESSAGE = "testJavascriptOptimizerMessage";
+
+        private boolean mIsJavascriptOptimizerPermissionGranted;
+
+        public TestPermissionProvider(boolean isJavascriptOptimizerPermissionGranted) {
+            mIsJavascriptOptimizerPermissionGranted = isJavascriptOptimizerPermissionGranted;
+        }
+
+        @Override
+        public boolean hasJavascriptOptimizerPermission() {
+            return mIsJavascriptOptimizerPermissionGranted;
+        }
+
+        @Override
+        public String getJavascriptOptimizerMessage(Context context) {
+            return TestPermissionProvider.TEST_MESSAGE;
+        }
+    }
 
     @Before
     public void setUp() throws TimeoutException {
@@ -632,6 +654,12 @@ public class SiteSettingsTest {
             settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(type);
         }
 
+        checkPreferencesForSettingsActivity(settingsActivity, expectedKeys);
+        settingsActivity.finish();
+    }
+
+    private void checkPreferencesForSettingsActivity(
+            SettingsActivity settingsActivity, String[] expectedKeys) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PreferenceFragmentCompat preferenceFragment =
@@ -653,7 +681,6 @@ public class SiteSettingsTest {
                             actualKeys,
                             expectedKeys.length == 0 ? emptyIterable() : contains(expectedKeys));
                 });
-        settingsActivity.finish();
     }
 
     private void testExpectedPreferences(
@@ -2392,6 +2419,155 @@ public class SiteSettingsTest {
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testOsBlocksJavascriptOptimizer() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleCategorySettings singleCategorySettings =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
+
+                    checkPreferencesForSettingsActivity(
+                            settingsActivity,
+                            new String[] {
+                                SingleCategorySettings.INFO_TEXT_KEY,
+                                SingleCategorySettings.BINARY_TOGGLE_KEY,
+                                SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA
+                            });
+
+                    ChromeSwitchPreference binaryToggle =
+                            (ChromeSwitchPreference)
+                                    singleCategorySettings.findPreference(
+                                            SingleCategorySettings.BINARY_TOGGLE_KEY);
+                    Assert.assertFalse(binaryToggle.isChecked());
+                    Assert.assertFalse(binaryToggle.isEnabled());
+
+                    Preference osWarningPreference =
+                            singleCategorySettings.findPreference(
+                                    SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
+                    Assert.assertEquals(
+                            TestPermissionProvider.TEST_MESSAGE, osWarningPreference.getTitle());
+
+                    settingsActivity.finish();
+                });
+    }
+
+    /**
+     * Test that if the Javascript-optimizer is enabled by enterprise policy but disabled by the
+     * Android OS setting that the enterprise policy is given precedence.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({@Policies.Item(key = "DefaultJavaScriptOptimizerSetting", string = "1")})
+    public void testPolicyHigherPriorityThanOsBlockingJavascriptOptimizer() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleCategorySettings singleCategorySettings =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
+
+                    // TODO(crbug.com/399933929) Do not show "Add Exception" button.
+                    checkPreferencesForSettingsActivity(
+                            settingsActivity,
+                            new String[] {
+                                SingleCategorySettings.INFO_TEXT_KEY,
+                                SingleCategorySettings.BINARY_TOGGLE_KEY,
+                                SingleCategorySettings.ADD_EXCEPTION_KEY
+                            });
+
+                    ChromeSwitchPreference binaryToggle =
+                            (ChromeSwitchPreference)
+                                    singleCategorySettings.findPreference(
+                                            SingleCategorySettings.BINARY_TOGGLE_KEY);
+                    Assert.assertTrue(binaryToggle.isChecked());
+                    Assert.assertFalse(binaryToggle.isEnabled());
+
+                    onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
+                            .inAdapterView(
+                                    allOf(
+                                            withContentDescription(
+                                                    R.string.managed_by_your_organization),
+                                            withText(R.string.managed_by_your_organization),
+                                            isDisplayed()));
+
+                    settingsActivity.finish();
+                });
+    }
+
+    /**
+     * Test that when: - Javascript-optimizer permission toggle is present on the {@link
+     * SingleWebsiteSettings} screen AND - Javascript-optimizer permission is denied by the
+     * operating system THAT the toggle is disabled.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testOsBlocksJavascriptOptimizerSingleWebsite() throws Exception {
+        final String pageUrl = mPermissionRule.getURL("/chrome/test/data/android/simple.html");
+        String pageOrigin = mPermissionRule.getOrigin();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            new GURL(pageOrigin),
+                            new GURL(pageOrigin),
+                            ContentSettingValues.ALLOW);
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent =
+                settingsNavigation.createSettingsIntent(
+                        context,
+                        SingleWebsiteSettings.class,
+                        SingleWebsiteSettings.createFragmentArgsForSite(pageUrl));
+        final SettingsActivity settingsActivity =
+                (SettingsActivity)
+                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    Preference javascriptOptimizerPreference =
+                            websitePreferences.findPreference("javascript_optimizer");
+                    Assert.assertFalse(javascriptOptimizerPreference.isEnabled());
+                });
+        settingsActivity.finish();
     }
 
     @Test
