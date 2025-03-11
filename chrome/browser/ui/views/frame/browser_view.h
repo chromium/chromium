@@ -937,7 +937,6 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
-  class AccessibilityModeObserver;
 
   // BrowserUserEducationInterface private methods:
   user_education::FeaturePromoControllerCommon* GetFeaturePromoControllerImpl()
@@ -1180,13 +1179,6 @@ class BrowserView : public BrowserWindow,
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
-
-  // Allows us to react to changes in accessibility mode.
-  // TODO(dfried): this is only used to disable WebUI tabstrip (see above) while
-  // that mode has accessibile mode issues (e.g. crbug.com/1136185,
-  // crbug.com/1136236). Having an observer object allows for the browser to
-  // change mode if it enters or leaves accessibility mode.
-  std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
 
   // The Toolbar containing the navigation buttons, menus and the address bar.
   raw_ptr<ToolbarView> toolbar_ = nullptr;
