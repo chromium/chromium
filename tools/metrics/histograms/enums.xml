@@ -100,24 +100,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Custom"/>
 </enum>
 
-<enum name="AccessibilityId">
-  <int value="1" label="SpokenFeedback"/>
-  <int value="2" label="SelectToSpeak"/>
-  <int value="3" label="Dictation"/>
-  <int value="4" label="HighContrast"/>
-  <int value="5" label="Magnifier"/>
-  <int value="6" label="DockedMagnifier"/>
-  <int value="7" label="LargeCursor"/>
-  <int value="8" label="AutoClick"/>
-  <int value="9" label="VirtualKeyboard"/>
-  <int value="10" label="SwitchAccess"/>
-  <int value="11" label="CaretHighlight"/>
-  <int value="12" label="MonoAudio"/>
-  <int value="13" label="HighlightMouseCursor"/>
-  <int value="14" label="HighlightKeyboardFocus"/>
-  <int value="15" label="StickyKeys"/>
-</enum>
-
 <enum name="AccessibilityModeFlagEnum">
   <summary>Track individual accessibility mode flags that are enabled.</summary>
   <int value="0" label="Native APIs"/>
@@ -953,31 +935,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="196623" label="kEmbedder-kExtensionSentMessageToCachedFrame"/>
 </enum>
 
-<enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">
-  <int value="4520" label="PopupBlockerTabHelper"/>
-  <int value="8169" label="SafeBrowsingTriggeredPopupBlocker"/>
-  <int value="12795" label="banners::AppBannerManager"/>
-  <int value="14149" label="OfflinePage"/>
-  <int value="15533" label="WebAuthenticationAPI"/>
-  <int value="17667" label="PermissionServiceContext"/>
-  <int value="25206" label="Serial"/>
-  <int value="26854" label="OomInterventionTabHelper"/>
-  <int value="29532" label="MediaSessionImpl::OnServiceCreated"/>
-  <int value="30041" label="NativeFileSystem"/>
-  <int value="31177" label="safe_browsing::ThreatDetails"/>
-  <int value="31230" label="autofill::ContentAutofillDriver"/>
-  <int value="36734" label="RenderFrameDevToolsAgentHost"/>
-  <int value="36798" label="WebBluetooth"/>
-  <int value="37928" label="content::protocol::SecurityHandler"/>
-  <int value="41719"
-      label="ChromePasswordManagerClient::BindCredentialManager"/>
-  <int value="44443" label="PermissionRequestManager"/>
-  <int value="49166" label="password_manager::ContentPasswordManagerDriver"/>
-  <int value="51814" label="MixedContentSettingsTabHelper"/>
-  <int value="55334" label="WebUSB"/>
-  <int value="58230" label="MediaWebContentsObserver::OnMediaPlaying"/>
-</enum>
-
 <enum name="BackgroundColorChangeOrigin">
   <int value="0" label="Web content background changed"/>
   <int value="1" label="Custom view set"/>
@@ -1394,12 +1351,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BooleanDetected">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
-</enum>
-
-<enum name="BooleanDirection">
-  <int value="0" label="Predicted direction was the same as real trajectory"/>
-  <int value="1"
-      label="Predicted direction was not the same as real trajectory"/>
 </enum>
 
 <enum name="BooleanEligible">
@@ -2486,27 +2437,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Clicked"/>
 </enum>
 
-<enum name="Companion.VisualQuery.InitStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Empty render frame"/>
-  <int value="3" label="Already started"/>
-  <int value="4" label="Model unavailable"/>
-  <int value="5" label="Mismatched URL"/>
-  <int value="6" label="IPC not made"/>
-  <int value="7" label="Ongoing classification"/>
-  <int value="8" label="Fetch model request"/>
-  <int value="9" label="Callback cancelled"/>
-  <int value="10" label="Query cancelled"/>
-</enum>
-
-<enum name="CompanionSidePanelAvailabilityChanged">
-  <int value="0" label="Changed from Unavailable To Unavailable"/>
-  <int value="1" label="Changed from Unavailable To Available"/>
-  <int value="2" label="Changed from Available To Unavailable"/>
-  <int value="3" label="Changed from Available To Available"/>
-</enum>
-
 <enum name="ComponentAvailability">
   <int value="0" label="Availble"/>
   <int value="1" label="Unavailble with Network"/>
@@ -2764,51 +2694,6 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
-
-<enum name="ContextMenuOptionAndroid">
-  <summary>The item selected from a context menu on Android.</summary>
-  <int value="0" label="Open in new tab"/>
-  <int value="1" label="Open in incognito tab"/>
-  <int value="2" label="Copy link address"/>
-  <int value="3" label="Copy email address"/>
-  <int value="4" label="Copy link text"/>
-  <int value="5" label="Save link"/>
-  <int value="6" label="Save image"/>
-  <int value="7" label="Open image"/>
-  <int value="8" label="Open image in new tab"/>
-  <int value="9" label="Search by image"/>
-  <int value="10" label="Load original image"/>
-  <int value="11" label="Save video"/>
-  <int value="12" label="Share image"/>
-  <int value="13" label="Open in new/other window"/>
-  <int value="14" label="Send email"/>
-  <int value="15" label="Add to contacts"/>
-  <int value="16" label="Call"/>
-  <int value="17" label="Send text message"/>
-  <int value="18" label="Copy phone number"/>
-  <int value="19" label="Open in new Chrome tab (CCT)"/>
-  <int value="20" label="Open in Chrome incognito tab (CCT)"/>
-  <int value="21" label="Open in browser (CCT)"/>
-  <int value="22" label="Open in Chrome (Fullscreen)"/>
-  <int value="23" label="Share link"/>
-  <int value="24" label="Preview page (Ephemeral tab)"/>
-  <int value="25" label="Preview image (Ephemeral tab)"/>
-  <int value="26" label="Share Link (DirectShare)"/>
-  <int value="27" label="Share Image (DirectShare)"/>
-  <int value="28" label="Search Image with Google Lens"/>
-  <int value="29" label="Copy image"/>
-  <int value="30" label="Shop Similar Products"/>
-  <int value="31" label="Shop image with Google Lens"/>
-  <int value="32" label="Search Similar Products"/>
-  <int value="33" label="Read later"/>
-  <int value="34" label="Shop with Google Lens Chip"/>
-  <int value="35" label="Translate with Google Lens Chip"/>
-  <int value="36" label="Share an highlighted text"/>
-  <int value="37" label="Remove an highlighted text"/>
-  <int value="38" label="Learn more about the shared highlighting feature"/>
-  <int value="39" label="Open in new tab in group"/>
-  <int value="40" label="Open in new window"/>
-</enum>
 
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
 
@@ -3955,14 +3840,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="44" label="Unknown owner no key, no policy"/>
 </enum>
 
-<enum name="DeviceThermalState">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Nominal"/>
-  <int value="2" label="Fair"/>
-  <int value="3" label="Serious"/>
-  <int value="4" label="Critical"/>
-</enum>
-
 <enum name="DIPSDeletionAction">
   <int value="0" label="Disallowed"/>
   <int value="1" label="ExceptedAs1p"/>
@@ -4022,16 +3899,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="0" label="Network service fetch"/>
   <int value="1" label="Cache"/>
   <int value="2" label="Coalesced"/>
-</enum>
-
-<enum name="DirectSocketPermissionFailureType">
-  <int value="0" label="PermissionsPolicy"/>
-  <int value="1" label="TransientActivation"/>
-  <int value="2" label="UserDialog"/>
-  <int value="3" label="ResolvingToNonPublic"/>
-  <int value="4" label="RateLimiting"/>
-  <int value="5" label="CORS"/>
-  <int value="6" label="EnterprisePolicy"/>
 </enum>
 
 <enum name="DiskCacheError">
@@ -5836,39 +5703,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="9" label="kErrorDeserializingJSonLogs"/>
 </enum>
 
-<enum name="GooglePlayServicesConnectionResult">
-  <summary>
-    Results of attempting a connection to Google Play Services. See Javadoc for
-    com.google.android.gms.common.ConnectionResult at
-    http://developer.android.com/reference for more information.
-  </summary>
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="SERVICE_MISSING"/>
-  <int value="2" label="SERVICE_VERSION_UPDATE_REQUIRED"/>
-  <int value="3" label="SERVICE_DISABLED"/>
-  <int value="4" label="SIGN_IN_REQUIRED"/>
-  <int value="5" label="INVALID_ACCOUNT"/>
-  <int value="6" label="RESOLUTION_REQUIRED"/>
-  <int value="7" label="NETWORK_ERROR"/>
-  <int value="8" label="INTERNAL_ERROR"/>
-  <int value="9" label="SERVICE_INVALID"/>
-  <int value="10" label="DEVELOPER_ERROR"/>
-  <int value="11" label="LICENSE_CHECK_FAILED"/>
-  <int value="12" label="DATE_INVALID"/>
-  <int value="13" label="CANCELED"/>
-  <int value="14" label="TIMEOUT"/>
-  <int value="15" label="INTERRUPTED"/>
-  <int value="16" label="API_UNAVAILABLE"/>
-  <int value="17" label="SIGN_IN_FAILED"/>
-  <int value="18" label="SERVICE_UPDATING"/>
-  <int value="1500" label="DRIVE_EXTERNAL_STORAGE_REQUIRED"/>
-  <int value="12000" label="SAFE_BROWSING_UNSUPPORTED_THREAT_TYPES"/>
-  <int value="12001" label="SAFE_BROWSING_MISSING_API_KEY"/>
-  <int value="12002" label="SAFE_BROWSING_API_NOT_AVAILABLE"/>
-  <int value="12006" label="UNSUPPORTED_SDK_VERSION"/>
-  <int value="12009" label="SAFE_BROWSING_API_NOT_INITIALIZED"/>
-</enum>
-
 <enum name="GoogleRpcCode">
   <summary>Canonical error codes for gRPC APIs.</summary>
   <int value="0" label="OK"/>
@@ -6992,13 +6826,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="0" label="Unknown"/>
   <int value="1" label="Snooze"/>
   <int value="2" label="Dismiss"/>
-</enum>
-
-<enum name="InputEventTypeForResponsivenessMetric">
-  <int value="0" label="mousedown"/>
-  <int value="1" label="click"/>
-  <int value="2" label="keydown"/>
-  <int value="3" label="pointerup"/>
 </enum>
 
 <enum name="InputHintInitializationResult">
@@ -8419,30 +8246,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="4" label="Cancelled due to tab crash."/>
   <int value="5" label="Cancelled due to time out"/>
   <int value="6" label="Empty selector"/>
-</enum>
-
-<enum name="LiteVideoBlocklistReason">
-  <int value="0" label="None"/>
-  <int value="1" label="Allowed"/>
-  <int value="2" label="Navigation not eligibile"/>
-  <int value="3" label="Blocklisted due to rebuffers"/>
-  <int value="4" label="Blocklisted due to frequent reloads/back-forwards"/>
-  <int value="5" label="Blocklisted because page transition was a reload"/>
-  <int value="6" label="Blocklisted because page transition was back-forwards"/>
-  <int value="7" label="Blocklisted because the host was permanently blocked"/>
-</enum>
-
-<enum name="LiteVideoDecision">
-  <int value="0" label="None"/>
-  <int value="1" label="Allowed"/>
-  <int value="2" label="Not Allowed"/>
-  <int value="3" label="Holdback"/>
-</enum>
-
-<enum name="LiteVideoThrottleResult">
-  <int value="0" label="None"/>
-  <int value="1" label="Throttled without stopping"/>
-  <int value="2" label="Throttled but stopped due to rebuffer"/>
 </enum>
 
 <enum name="LoadingPredictorOptimizationHintsReceiveStatus">
@@ -19809,24 +19612,6 @@ from previous Chrome versions.
   <int value="2147448086" label="OmniboxUniformRowHeight:enabled"/>
 </enum>
 
-<enum name="LoginDetectionType">
-  <summary>
-    Enumerates the different types of user log-in that can be detected on a page
-    based on the site (effective TLD+1).
-  </summary>
-  <int value="0" label="No login"/>
-  <int value="1" label="(Deprecated) OAuth login"/>
-  <int value="2" label="OAuth first time login flow"/>
-  <int value="3" label="(Deprecated) Password entered login"/>
-  <int value="4" label="(Deprecated) Preloaded password sites list"/>
-  <int value="5" label="(Deprecated) Field trial logged-in site"/>
-  <int value="6" label="(Deprecated) Password manager saved site"/>
-  <int value="7" label="OAuth popup based first time login flow"/>
-  <int value="8"
-      label="(Deprecated) Common logged-in site received from optimization
-             guide hints"/>
-</enum>
-
 <enum name="LoginFailureReason">
   <int value="0" label="None"/>
   <int value="1" label="Could not mount cryptohome"/>
@@ -20715,13 +20500,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="5g"/>
 </enum>
 
-<enum name="NetworkStatus">
-  <int value="1" label="Offline"/>
-  <int value="2" label="OnlineWifi"/>
-  <int value="3" label="OnlineCellular"/>
-  <int value="4" label="OnlineOther"/>
-</enum>
-
 <enum name="NewUserPriorityPrefsSyncResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Timed out"/>
@@ -21091,24 +20869,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Good"/>
   <int value="1" label="Revoked"/>
   <int value="2" label="Unknown"/>
-</enum>
-
-<enum name="OfflineMeasurementsHttpProbeResult">
-  <int value="0" label="Invalid"/>
-  <int value="1" label="No internet"/>
-  <int value="2" label="Server error"/>
-  <int value="3" label="Unexpected response"/>
-  <int value="4" label="Validated"/>
-  <int value="5" label="Cancelled"/>
-  <int value="6" label="Multiple HttpURLConnections open, probe failed"/>
-</enum>
-
-<enum name="OfflineMeasurementsUserState">
-  <int value="0" label="Invalid"/>
-  <int value="1" label="Phone is off"/>
-  <int value="2" label="Phone is on, but screen is off"/>
-  <int value="3" label="Screen is on, Chrome is not in the foreground"/>
-  <int value="4" label="Screen is on, Chrome is in the foreground"/>
 </enum>
 
 <enum name="OfflinePagesNamespaceEnumeration">
@@ -21876,13 +21636,6 @@ Called by update_net_error_codes.py.-->
   <int value="26" label="PIPELINE_ERROR_OUT_OF_MEMORY"/>
 </enum>
 
-<enum name="PixCodeDetectionResult">
-  <int value="0" label="Failure: PIX code detection was not run"/>
-  <int value="1" label="Failure: A PIX code was not found"/>
-  <int value="2" label="Failure: An invalid PIX code was found"/>
-  <int value="3" label="Success: A valid PIX code was found"/>
-</enum>
-
 <enum name="PlatformFileError">
   <summary>Errors from base::File::Error</summary>
   <int value="0" label="OK"/>
@@ -22266,11 +22019,6 @@ Called by update_net_error_codes.py.-->
     Threshold parameter was not supplied or same as the default value. In either
     case, the default value was used.
   </int>
-</enum>
-
-<enum name="PowerMLSmartDimWebPageInfoSource">
-  <int value="0" label="Ash">Web page info comes from ash chrome.</int>
-  <int value="1" label="Lacros">Web page info comes from lacros chrome.</int>
 </enum>
 
 <enum name="PowerSupplyType">
@@ -22713,56 +22461,6 @@ Called by update_net_error_codes.py.-->
   <int value="85" label="kV8OptimizerDisabled (obsoleted)"/>
   <int value="86" label="kPrerenderFailedDuringPrefetch"/>
   <int value="87" label="kBrowsingDataRemoved"/>
-</enum>
-
-<enum name="PreviewsCoinFlipResult">
-  <int value="0" label="No preview attempted or coinflip disabled"/>
-  <int value="1" label="Preview attempted, allowed by coin flip"/>
-  <int value="2" label="Preview attempted, held back by coin flip"/>
-</enum>
-
-<enum name="PreviewsEligibilityReason">
-  <int value="0" label="Preview Allowed."/>
-  <int value="1" label="Blacklist not created."/>
-  <int value="2" label="Blacklist data not loaded yet from disk."/>
-  <int value="3"
-      label="User opted out of a preview recently or reloaded on a preview
-             page recently."/>
-  <int value="4" label="User is blacklisted for all hosts."/>
-  <int value="5" label="User is blacklisted for the specific host."/>
-  <int value="6" label="The network quality estimate is not available."/>
-  <int value="7" label="Network is not slow per preview threshold."/>
-  <int value="8"
-      label="The page was being reloaded and the preview type can not be
-             shown on a reload."/>
-  <int value="9"
-      label="Host blacklisted by server rules provided to the client
-             (obsolete)."/>
-  <int value="10"
-      label="Host not whitelisted by server rules provided to the client
-             (obsolete)."/>
-  <int value="11"
-      label="Preview Allowed without server rule check (obsolete)."/>
-  <int value="12" label="Committed Preview."/>
-  <int value="13" label="Received cache-control:no-transform directive."/>
-  <int value="14"
-      label="Network is not slow per session threshold (obsolete)."/>
-  <int value="15" label="Device was reported as offline."/>
-  <int value="16"
-      label="URL contained Basic Authentication, i.e.: a username or
-             password."/>
-  <int value="17" label="Optimization hints not loaded."/>
-  <int value="18" label="The navigation URL had an excluded media suffix."/>
-  <int value="19" label="Not allowed by server rules provided to the client."/>
-  <int value="20" label="Coin flip holdback encountered."/>
-  <int value="21" label="Redirect loop detected."/>
-  <int value="22" label="URL matched deny list."/>
-  <int value="23" label="Page load not predicted to be painful."/>
-</enum>
-
-<enum name="PriceNotificationTrackingSource">
-  <int value="0" label="Price tracking"/>
-  <int value="1" label="Price insights"/>
 </enum>
 
 <enum name="PrimaryButtonRight">
@@ -23723,17 +23421,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="DEPRECATED_HASH_CHECKS_MALWARE"/>
 </enum>
 
-<enum name="SB2RemoteCallResult">
-  <int value="0" label="INTERNAL_ERROR"/>
-  <int value="1" label="TIMEOUT"/>
-  <int value="2" label="SAFE"/>
-  <int value="3" label="MATCH"/>
-  <int value="4" label="JSON_EMPTY"/>
-  <int value="5" label="JSON_FAILED_TO_PARSE"/>
-  <int value="6" label="JSON_UNKNOWN_THREAT"/>
-  <int value="7" label="UNSUPPORTED"/>
-</enum>
-
 <enum name="SBClientDownloadExtensions">
   <int value="-1" label="File extension not categorized"/>
   <int value="0" label="EXE"/>
@@ -24391,22 +24078,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Warm start of ServiceManager only"/>
 </enum>
 
-<enum name="SettingId">
-  <int value="1" label="Wifi"/>
-  <int value="2" label="Cellular"/>
-  <int value="3" label="Bluetooth"/>
-  <int value="4" label="NightLight"/>
-  <int value="5" label="DoNotDisturb"/>
-  <int value="6" label="Accessibility"/>
-  <int value="7" label="Volume"/>
-  <int value="8" label="Brightness"/>
-</enum>
-
-<enum name="SettingType">
-  <int value="1" label="QuickSettings"/>
-  <int value="2" label="OsSettings"/>
-</enum>
-
 <enum name="ShareOrigin">
   <int value="0" label="OVERFLOW_MENU"/>
   <int value="1" label="TOP_TOOLBAR"/>
@@ -24480,11 +24151,6 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="5"/>
   <int value="6" label="6"/>
   <int value="7" label="7"/>
-</enum>
-
-<enum name="SharingHubSharesheetResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Canceled"/>
 </enum>
 
 <enum name="SharingMessageType">
@@ -24584,16 +24250,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="PDP with cluster ID"/>
 </enum>
 
-<enum name="ShortcutActionSource">
-  <int value="0" label="Launcher"/>
-  <int value="1" label="Shelf"/>
-</enum>
-
-<enum name="ShortcutPinAction">
-  <int value="0" label="Pin"/>
-  <int value="1" label="Unpin"/>
-</enum>
-
 <enum name="ShortProcessType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Browser"/>
@@ -24665,21 +24321,6 @@ Called by update_net_error_codes.py.-->
   <int value="18" label="Opened from an extension"/>
   <int value="19" label="Opened from the New Tab Page"/>
   <int value="20" label="Opened from the Reading List toast"/>
-</enum>
-
-<enum name="SideSearchAvailabilityChangeType">
-  <int value="0" label="Become available"/>
-  <int value="1" label="Become unavailable"/>
-</enum>
-
-<enum name="SideSearchNavigationType">
-  <int value="0" label="Navigation committed within side search"/>
-  <int value="1" label="Redirection to tab"/>
-</enum>
-
-<enum name="SideSearchPageActionLabelVisibility">
-  <int value="0" label="Label not visible"/>
-  <int value="1" label="Label visible"/>
 </enum>
 
 <enum name="SignedExchangeLoadResult">
@@ -24935,13 +24576,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="DOM modification condition not met"/>
   <int value="6" label="No paint or DOM modification"/>
   <int value="7" label="No conditions met"/>
-</enum>
-
-<enum name="SpecialLocalePromoAction">
-  <int value="0" label="Use Sogou"/>
-  <int value="1" label="Keep Google"/>
-  <int value="2" label="Settings"/>
-  <int value="3" label="Back key"/>
 </enum>
 
 <enum name="SpeculationEagerness">
@@ -25382,40 +25016,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="ACTION_ADDED_ANOTHER_ACCOUNT"/>
 </enum>
 
-<enum name="StartSurfaceState">
-  <int value="0" label="NOT_SHOWN">
-    (obsolete) The Start surface isn't shown.
-  </int>
-  <int value="1" label="SHOWN_HOMEPAGE">
-    (obsolete) The Start surface homepage is visible.
-  </int>
-  <int value="2" label="SHOWN_TABSWITCHER">
-    (obsolete) The grid Tab switcher is visible.
-  </int>
-  <int value="3" label="DISABLED">
-    (obsolete) The Start surface is disabled.
-  </int>
-  <int value="4" label="SHOWING_TABSWITCHER">
-    The Tab switcher is shown when the Tab switcher button on the toolbar is
-    clicked.
-  </int>
-  <int value="5" label="SHOWING_START">
-    The Start surface is shown when users are back to Chrome. It includes cold
-    or warm startup, or users bringing Chrome from background to foreground.
-  </int>
-  <int value="6" label="SHOWING_HOMEPAGE">
-    The Start surface is shown via back operations from a restored Tab, or a
-    background Tab created from Start surface, or tapping the home button on the
-    toolbar (deprecated).
-  </int>
-  <int value="7" label="SHOWING_PREVIOUS">
-    The Start surface is shown via back operations from a foreground Tab created
-    from the Start surface, with tab launch type &quot;FROM_START_SURFACE&quot;.
-    However, when &quot;Previous&quot; is used, either Grid tab switcher or
-    Start surface can be shown, i.e., the Tab returns to the last overview page.
-  </int>
-</enum>
-
 <enum name="StartupProfilingFinishReason">
   <int value="0" label="Done (all metrics gathered)"/>
   <int value="1"
@@ -25612,15 +25212,6 @@ Called by update_net_error_codes.py.-->
   <int value="36" label="L3T3h"/>
 </enum>
 
-<enum name="SyncDownloadStatusWaitingForUpdatesReason">
-  <int value="0" label="Refresh tokens not loaded"/>
-  <int value="1" label="Sync engine not initialized"/>
-  <int value="2" label="Data type not active"/>
-  <int value="3" label="Invalidations are not initialized"/>
-  <int value="4" label="Incoming invalidation"/>
-  <int value="5" label="Poll request scheduled"/>
-</enum>
-
 <enum name="TabForegroundState">
   <int value="0" label="Foreground (app in foreground)"/>
   <int value="1" label="Background (app in foreground)"/>
@@ -25738,13 +25329,6 @@ Called by update_net_error_codes.py.-->
 
 <!--LINT.ThenChange(//components/feature_engagement/internal/stats.h:TriggerHelpUIResult) -->
 
-<enum name="TrustedWebActivityQualityEnforcementViolationType">
-  <int value="0" label="Error 404"/>
-  <int value="1" label="Error 5xx"/>
-  <int value="2" label="Page unavailable offline"/>
-  <int value="3" label="Digital assetlinks verification failure"/>
-</enum>
-
 <enum name="TrustSafetySentimentFeatureArea">
   <int value="0" label="Ineligible"/>
   <int value="1" label="Privacy Settings"/>
@@ -25787,13 +25371,6 @@ Called by update_net_error_codes.py.-->
              HTTPS load succeeded or failed."/>
 </enum>
 
-<enum name="Ui.SystemTheme">
-  <summary>This enum corresponds to ui::SystemTheme.</summary>
-  <int value="0" label="Default"/>
-  <int value="1" label="GTK"/>
-  <int value="2" label="QT"/>
-</enum>
-
 <enum name="UnifiedConsentSyncDataTypesOffAfterAdvancedOptIn">
   <int value="0" label="None"/>
   <int value="1" label="Apps"/>
@@ -25828,21 +25405,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Set numeric badge"/>
   <int value="1" label="Set flag badge"/>
   <int value="2" label="Clear badge"/>
-</enum>
-
-<enum name="UpdateClientBackgroundDownloaderMacStartDownloadOutcome">
-  <int value="0" label="Immediate error"/>
-  <int value="1" label="Download recovered from cache"/>
-  <int value="2" label="Session has ongoing download"/>
-  <int value="3" label="New download task created"/>
-  <int value="4" label="Rejected (too many tasks)"/>
-</enum>
-
-<enum name="UpdateClientCanUpdateResult">
-  <int value="0" label="Updates Disabled"/>
-  <int value="1" label="Canceled"/>
-  <int value="2" label="Check for Updates Only"/>
-  <int value="3" label="Can Update"/>
 </enum>
 
 <enum name="UpdateClientErrors">
@@ -26048,11 +25610,6 @@ Called by update_net_error_codes.py.-->
   <int value="69" label="kErrorCodeUpdateIgnoredRollbackVersion"/>
 </enum>
 
-<enum name="UpdateEngineInstallDateProvisioningSource">
-  <int value="0" label="Omaha Response"/>
-  <int value="1" label="OOBE Marker"/>
-</enum>
-
 <enum name="UpdateEnginePayloadFormat">
   <int value="0" label="Full"/>
   <int value="1" label="Delta"/>
@@ -26062,12 +25619,6 @@ Called by update_net_error_codes.py.-->
 <enum name="UpgradeDetectorRollbackReason">
   <int value="0" label="Channel switch to more stable channel"/>
   <int value="1" label="Admin-initiated enterprise rollback"/>
-</enum>
-
-<enum name="URLContent">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="FullUrl"/>
-  <int value="2" label="Scope"/>
 </enum>
 
 <enum name="UsageStatsEvents">
