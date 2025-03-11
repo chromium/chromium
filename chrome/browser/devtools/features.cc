@@ -140,9 +140,10 @@ BASE_FEATURE(kDevToolsAutomaticFileSystems,
 
 // Whether DevTools will attempt to load project settings from a well-known
 // URI. See https://goo.gle/devtools-json-design for additional details.
+// This is enabled by default starting with M-136.
 BASE_FEATURE(kDevToolsWellKnown,
              "DevToolsWellKnown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether DevTools will offer the new CSS value tracing UI.
 BASE_FEATURE(kDevToolsCssValueTracing,
