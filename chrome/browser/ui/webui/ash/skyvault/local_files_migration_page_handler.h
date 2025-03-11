@@ -30,7 +30,7 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
   LocalFilesMigrationPageHandler(
       content::WebUI* web_ui,
       Profile* profile,
-      CloudProvider cloud_provider,
+      MigrationDestination destination,
       base::Time migration_start_time,
       DialogActionCallback callback,
       mojo::PendingRemote<mojom::Page> page,
@@ -57,7 +57,7 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
-  CloudProvider cloud_provider_;
+  MigrationDestination destination_;
   base::Time migration_start_time_;
   base::WallClockTimer ui_update_timer_;
   DialogActionCallback callback_;

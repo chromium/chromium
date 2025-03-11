@@ -25,6 +25,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
 }

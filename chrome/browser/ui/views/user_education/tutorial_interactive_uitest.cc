@@ -128,9 +128,11 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          static_cast<HelpBubbleViews*>(
-              GetTutorialService()->currently_displayed_bubble_for_testing())
-              ->bubble_view()
+          AsViewClass<user_education::HelpBubbleView>(
+              GetTutorialService()
+                  ->currently_displayed_bubble_for_testing()
+                  ->AsA<HelpBubbleViews>()
+                  ->bubble_view_for_testing())
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
 

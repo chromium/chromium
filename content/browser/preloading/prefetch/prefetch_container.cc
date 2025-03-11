@@ -269,15 +269,6 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
                            body_length);
 }
 
-// TODO(crbug.com/353490734): Inline it. We made it a method due to
-// this rule:
-// https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/histograms/README.md#don_t-use-same-inline-string-in-multiple-places
-// If callsite is only one, we can inline it again.
-void RecordAfterClickRedirectChainSize(size_t redirect_chain_size) {
-  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
-                           redirect_chain_size);
-}
-
 bool CalculateIsLikelyAheadOfPrerender(
     const PreloadPipelineInfoImpl& preload_pipeline_info) {
   if (!base::FeatureList::IsEnabled(
@@ -1281,7 +1272,7 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
   }
 }
 
-void PrefetchContainer::OnDeterminedHead2() {
+void PrefetchContainer::OnDeterminedHead() {
   // Propagates the header to `no_vary_search_data_` if a non-redirect response
   // header is got.
   MaybeSetNoVarySearchData();
@@ -1560,30 +1551,15 @@ void PrefetchContainer::SimulatePrefetchFailedIneligibleForTest(
   SetLoadState(LoadState::kFailedIneligible);
 }
 
-void PrefetchContainer::OnDetectedCookiesChange() {
-  CHECK_NE(GetPrefetchStatus(), PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-  SetPrefetchStatus(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-  on_detected_cookies_change_called_ = true;
-  UpdateServingPageMetrics();
-  CancelStreamingURLLoaderIfNotServing();
-}
-
-void PrefetchContainer::OnDetectedCookiesChange2(
+void PrefetchContainer::OnDetectedCookiesChange(
     std::optional<bool>
         is_unblock_for_cookies_changed_triggered_by_this_prefetch_container) {
-  // If `kPrefetchNewWaitLoop` is enabled, multiple `PrefetchMatchResolver` can
-  // wait the same `PrefetchContainer`. So, `OnDetectedCookiesChange2()` can be
-  // called multiple times, unlike `OnDetectedCookiesChange()`.
-  //
-  // TODO(crbug.com/353490734): Remove this comment and merge
-  // `OnDetectedCookiesChange()` to it when removing `kPrefetchNewWaitLoop` as
-  // this comment is just a note about the difference to the old path.
-  //
-  // Do not call `OnDetectedCookiesChange()` multiple times even if
-  // `OnDetectedCookiesChange2()` is called multiple times.
+  // Multiple `PrefetchMatchResolver` can wait the same `PrefetchContainer`. So,
+  // `OnDetectedCookiesChange()` can be called multiple times,
   if (on_detected_cookies_change_called_) {
     return;
   }
+  on_detected_cookies_change_called_ = true;
 
   // There are cases that `prefetch_status_` is failure but this method is
   // called. For more details, see
@@ -1606,7 +1582,10 @@ void PrefetchContainer::OnDetectedCookiesChange2(
     return;
   }
 
-  OnDetectedCookiesChange();
+  CHECK_NE(GetPrefetchStatus(), PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+  SetPrefetchStatus(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+  UpdateServingPageMetrics();
+  CancelStreamingURLLoaderIfNotServing();
 }
 
 void PrefetchContainer::OnPrefetchStarted() {
@@ -1969,7 +1948,9 @@ void PrefetchContainer::OnUnregisterCandidate(
 
   if (is_served) {
     navigated_to_ = true;
-    RecordAfterClickRedirectChainSize(redirect_chain_.size());
+
+    UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
+                             redirect_chain_.size());
   }
 
   RecordPrefetchMatchingBlockedNavigationWithPrefetchHistogram(

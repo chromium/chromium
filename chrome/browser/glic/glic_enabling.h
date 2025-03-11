@@ -50,7 +50,7 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   static bool IsProfileEligible(const Profile* profile);
 
   // This is a convenience method for code outside of //chrome/browser/glic.
-  // Code inside should use instance method IsEnabled() instead.
+  // Code inside should use instance method IsAllowed() instead.
   static bool IsEnabledForProfile(Profile* profile);
 
   // Returns true if the given profile has Glic enabled and has completed the
@@ -73,8 +73,6 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   explicit GlicEnabling(Profile* profile);
   ~GlicEnabling() override;
 
-  // TODO(crbug.com/390487066): This method is misnamed. It would be more
-  // accurate to call it `IsAllowed()`.
   // Returns true if the given profile is allowed to use glic. This means that
   // IsProfileEligible() returns true and:
   //   * the profile is signed in
@@ -90,11 +88,11 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   //   * Entry point specific flags (e.g. kGlicPinnedToTabstrip).
   //   * Profile is not paused.
   // If all entry-points have been disabled, then glic is functionally disabled.
-  bool IsEnabled();
+  bool IsAllowed();
 
-  // This is called anytime IsEnabled() might return a different value.
+  // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;
-  base::CallbackListSubscription RegisterEnableChanged(
+  base::CallbackListSubscription RegisterAllowedChanged(
       EnableChangedCallback callback);
 
  private:

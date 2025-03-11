@@ -14,6 +14,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/fourccs.h"
 #include "media/media_buildflags.h"
@@ -335,6 +336,7 @@ struct MEDIA_EXPORT TrackHeader : FullBox {
   base::TimeDelta duration;
   bool is_audio;
   gfx::Size natural_size;
+  int32_t matrix[9] = {};
 };
 
 // Track (`trak`) box.

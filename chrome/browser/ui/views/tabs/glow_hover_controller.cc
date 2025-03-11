@@ -29,13 +29,6 @@ void GlowHoverController::SetAnimationContainer(
   animation_.SetContainer(container);
 }
 
-void GlowHoverController::SetLocation(const gfx::Point& location) {
-  location_ = location;
-  if (ShouldDraw()) {
-    view_->SchedulePaint();
-  }
-}
-
 void GlowHoverController::SetSubtleOpacityScale(double opacity_scale) {
   subtle_opacity_scale_ = opacity_scale;
 }

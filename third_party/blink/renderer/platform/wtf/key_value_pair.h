@@ -77,6 +77,8 @@ struct KeyValuePairHashTraits
       KeyTraits::kCanTraceConcurrently &&
       (ValueTraits::kCanTraceConcurrently ||
        !IsTraceable<typename ValueTraits::TraitType>::value);
+  static constexpr bool kSupportsCompaction =
+      KeyTraits::kSupportsCompaction && ValueTraits::kSupportsCompaction;
 };
 
 template <typename Key, typename Value>

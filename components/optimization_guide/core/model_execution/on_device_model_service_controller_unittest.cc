@@ -46,7 +46,6 @@
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/model_info.h"
-#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -337,7 +336,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession() {
     return test_controller_->CreateSession(kFeature, FailOnRemoteFallback(),
-                                           logger_.GetWeakPtr(), nullptr,
+                                           logger_.GetWeakPtr(),
                                            /*config_params=*/std::nullopt);
   }
 
@@ -435,32 +434,12 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
   EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_TRUE(*response_.provided_by_on_device());
   EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
-  EXPECT_TRUE(response_.log_entry());
-  auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  auto model_version = logged_on_device_model_execution_info.model_versions()
-                           .on_device_model_service_version();
-  EXPECT_EQ(model_version.component_version(), "0.0.1");
-  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
-            "Test");
-  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
-            "0.0.1");
-  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
-  EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
-  EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
-                .response()
-                .on_device_model_service_response()
-                .status(),
-            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
 
   EXPECT_TRUE(response_.model_execution_info());
-  logged_on_device_model_execution_info =
+  auto logged_on_device_model_execution_info =
       response_.model_execution_info()->on_device_model_execution_info();
-  model_version = logged_on_device_model_execution_info.model_versions()
-                      .on_device_model_service_version();
+  auto model_version = logged_on_device_model_execution_info.model_versions()
+                           .on_device_model_service_version();
   EXPECT_EQ(model_version.component_version(), "0.0.1");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
             "Test");
@@ -538,14 +517,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&compose_asset, &test_asset},
   });
 
-  auto session_compose = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
-      logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session_compose =
+      test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
+                                      base::DoNothing(), logger_.GetWeakPtr(),
+                                      /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_compose);
   auto session_test = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
-      nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_test);
 
@@ -600,14 +578,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
       .adaptations = {&compose_asset, &test_asset},
   });
 
-  auto session_compose = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
-      logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session_compose =
+      test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
+                                      base::DoNothing(), logger_.GetWeakPtr(),
+                                      /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_compose);
   auto session_test = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
-      nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_test);
 
@@ -650,10 +627,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
-      logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session =
+      test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
+                                      base::DoNothing(), logger_.GetWeakPtr(),
+                                      /*config_params=*/std::nullopt);
   EXPECT_FALSE(session);
 
   histogram_tester.ExpectUniqueSample(
@@ -768,7 +745,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
 
   EXPECT_FALSE(test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
-      nullptr, /*config_params=*/std::nullopt));
+      /*config_params=*/std::nullopt));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -879,13 +856,13 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   // Compose capability can't start because it's missing safety model.
   EXPECT_FALSE(test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, FailOnRemoteFallback(),
-      logger_.GetWeakPtr(), nullptr,
+      logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt));
 
   // Test capability starts because it doesn't require a safety model.
   auto test_session = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, FailOnRemoteFallback(),
-      logger_.GetWeakPtr(), nullptr,
+      logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(test_session);
 
@@ -906,7 +883,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
   auto compose_session = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, FailOnRemoteFallback(),
-      logger_.GetWeakPtr(), nullptr,
+      logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(compose_session);
 
@@ -1112,7 +1089,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1120,14 +1097,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
   session->ExecuteModel(PageUrlRequest("safe_url"),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "request_check: safe_url"),
-                          ResultOf("check text", &GetCheckText,
-                                   "raw_output_check: safe_output")));
-
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
                   ->on_device_model_execution_info()
@@ -1166,7 +1135,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1177,13 +1146,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "request_check: unsafe_url")
-                          // Raw output check not done.
-                          ));
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
@@ -1224,7 +1186,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1246,7 +1208,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "remote response");
-  EXPECT_FALSE(response_.log_entry());
   ASSERT_FALSE(response_.model_execution_info());
 }
 
@@ -1277,7 +1238,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1288,13 +1249,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "request_check: safe_url"),
-                          ResultOf("check text", &GetCheckText,
-                                   "raw_output_check: unsafe_output")));
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
@@ -1334,7 +1288,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
 
   ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1357,7 +1311,6 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
 
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "remote response");
-  EXPECT_FALSE(response_.log_entry());
   EXPECT_FALSE(response_.model_execution_info());
 }
 
@@ -1389,7 +1342,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1397,11 +1350,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   session->ExecuteModel(PageUrlRequest("url_very_"),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "response_check: url_very_safe_output")));
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
                   ->on_device_model_execution_info()
@@ -1439,7 +1387,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1450,11 +1398,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "response_check: url_unsafe_output")));
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
                   ->on_device_model_execution_info()
@@ -1493,7 +1436,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1515,7 +1458,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "remote response");
-  EXPECT_FALSE(response_.log_entry());
   EXPECT_FALSE(response_.model_execution_info());
 }
 
@@ -1553,16 +1495,6 @@ TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   // Make sure T&S logged.
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(
-      response_.logged_executions(),
-      ElementsAre(
-          testing::_,  // Base Model Execution
-          ResultOf("check text", &GetCheckText, "request_check: unsafe_url"),
-          ResultOf("check text", &GetCheckText,  // partial check
-                   "raw_output_check: unsafe_output"),
-          ResultOf("check text", &GetCheckText,  // complete check
-                   "raw_output_check: unsafe_output")));
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(
       response_.model_execution_info()
@@ -1623,14 +1555,13 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
-  ASSERT_FALSE(response_.log_entry());
   ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
@@ -1839,7 +1770,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
       kFeature, base::BindRepeating(BadRequestRemote), logger_.GetWeakPtr(),
-      nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
@@ -1851,7 +1781,6 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   fake_launcher_.CrashService();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_.value());
-  ASSERT_FALSE(response_.log_entry());
   ASSERT_FALSE(response_.model_execution_info());
 }
 
@@ -1889,7 +1818,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1925,7 +1854,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
                                                bad_compose_asset.metadata());
 
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   {
@@ -1962,7 +1891,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
                                                bad_compose_asset.metadata());
 
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   base::HistogramTester histogram_tester;
@@ -1978,7 +1907,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
        FallbackToServerOnDisconnectWhileWaitingForExecute) {
   Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
@@ -2139,23 +2068,6 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   // Although we send an error, we should be sending a log entry back so the
   // filtering can be logged.
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_GT(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_EQ(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos(0)
-                .response()
-                .on_device_model_service_response()
-                .status(),
-            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
                 ->on_device_model_execution_info()
@@ -2256,22 +2168,6 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
             expected_responses.back() + " some more repeating text");
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_GT(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_TRUE(response_.log_entry()
-                  ->log_ai_data_request()
-                  ->model_execution_info()
-                  .on_device_model_execution_info()
-                  .execution_infos(0)
-                  .response()
-                  .on_device_model_service_response()
-                  .has_repeats());
-
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
                 ->on_device_model_execution_info()
@@ -2317,22 +2213,6 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
   ASSERT_TRUE(response_.error());
   EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kResponseLowQuality);
-
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_GT(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_TRUE(response_.log_entry()
-                  ->log_ai_data_request()
-                  ->model_execution_info()
-                  .on_device_model_execution_info()
-                  .execution_infos(0)
-                  .response()
-                  .on_device_model_service_response()
-                  .has_repeats());
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
@@ -2385,22 +2265,6 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
   EXPECT_EQ(*response_.value(), partial_responses.back() + "repeating text");
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
 
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_GT(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_TRUE(response_.log_entry()
-                  ->log_ai_data_request()
-                  ->model_execution_info()
-                  .on_device_model_execution_info()
-                  .execution_infos(0)
-                  .response()
-                  .on_device_model_service_response()
-                  .has_repeats());
-
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
                 ->on_device_model_execution_info()
@@ -2451,22 +2315,6 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
   EXPECT_EQ(*response_.value(), expected_responses.back());
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_GT(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_FALSE(response_.log_entry()
-                   ->log_ai_data_request()
-                   ->model_execution_info()
-                   .on_device_model_execution_info()
-                   .execution_infos(0)
-                   .response()
-                   .on_device_model_service_response()
-                   .has_repeats());
-
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
                 ->on_device_model_execution_info()
@@ -2513,9 +2361,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
       .adaptations = {&compose_asset},
   });
 
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                                 logger_.GetWeakPtr(), nullptr,
-                                                 SessionConfigParams{});
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), SessionConfigParams{});
   EXPECT_TRUE(session);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
@@ -2543,7 +2390,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   });
 
   auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
       SessionConfigParams{.sampling_params = SamplingParams{
                               .top_k = 3,
                               .temperature = 2,
@@ -2854,22 +2701,6 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
   EXPECT_TRUE(response_.value());
   EXPECT_EQ(*response_.value(),
             "some text some more repeating text some more repeating text");
-
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_GT(response_.log_entry()
-                ->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_TRUE(response_.log_entry()
-                  ->log_ai_data_request()
-                  ->model_execution_info()
-                  .on_device_model_execution_info()
-                  .execution_infos(0)
-                  .response()
-                  .on_device_model_service_response()
-                  .has_repeats());
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
@@ -3388,23 +3219,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
-  TestModelQualityLogsUploaderService test_uploader(&pref_service_);
-  Initialize(standard_assets_);
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
-      test_uploader.GetWeakPtr(),
-      SessionConfigParams{
-          .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable});
-  ASSERT_TRUE(session);
-  ResponseHolder response_holder;
-  session->ExecuteModel(UserInputRequest("input"),
-                        response_holder.GetStreamingCallback());
-  EXPECT_TRUE(response_holder.GetFinalStatus());
-  response_holder.ClearLogEntry();
-  EXPECT_EQ(0u, test_uploader.uploaded_logs().size());
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
   // Low performance class should use fastest inference.
   pref_service_.SetInteger(
@@ -3544,9 +3358,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesAdapterTopKAndTemperature) {
       .adaptations = {&compose_asset},
   });
 
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                                 logger_.GetWeakPtr(), nullptr,
-                                                 SessionConfigParams{});
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), SessionConfigParams{});
   EXPECT_TRUE(session);
   auto clone = session->Clone();
   EXPECT_TRUE(clone);
@@ -3589,7 +3402,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   auto clone = session->Clone();
@@ -3602,13 +3415,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "request_check: unsafe_url")
-                          // Raw output check not done.
-                          ));
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()

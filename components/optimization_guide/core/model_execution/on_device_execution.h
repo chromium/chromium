@@ -234,7 +234,7 @@ class OnDeviceExecution final
   // Used to log the result of ExecuteModel().
   std::unique_ptr<ResultLogger> histogram_logger_;
   // Used to log execution information for the request.
-  proto::LogAiDataRequest log_;
+  proto::ModelExecutionInfo exec_log_;
 
   // Response received so far.
   std::string current_response_;

@@ -302,6 +302,16 @@ TEST_P(Mp4MuxerDelegateTest, AddVideoFrame) {
     EXPECT_EQ(track_boxes[0].header.width, kWidth);
     EXPECT_EQ(track_boxes[0].header.height, kHeight);
 
+    // Track header display_matrix validation. Use
+    // VideoTransformation.GetMatrix() to create the matrix for
+    // no-rotation-no-mirroring display matrix.
+    std::array<int32_t, 4> mat =
+        VideoTransformation(VIDEO_ROTATION_0, false).GetMatrix();
+    EXPECT_EQ(track_boxes[0].header.display_matrix[0], mat[0]);
+    EXPECT_EQ(track_boxes[0].header.display_matrix[1], mat[1]);
+    EXPECT_EQ(track_boxes[0].header.display_matrix[3], mat[2]);
+    EXPECT_EQ(track_boxes[0].header.display_matrix[4], mat[3]);
+
     // Media Header validation.
     EXPECT_NE(track_boxes[0].media.header.creation_time, 0u);
     EXPECT_NE(track_boxes[0].media.header.modification_time, 0u);

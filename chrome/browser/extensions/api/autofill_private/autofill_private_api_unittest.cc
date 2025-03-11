@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
-  // Test that loading, adding, editing and deleting entities works.
+  // Test that loading, adding, editing and deleting entity instances works.
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
   ASSERT_TRUE(RunAutofillSubtest("addEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("getEntityInstanceByGuid"));
@@ -353,9 +353,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
   ASSERT_TRUE(RunAutofillSubtest("loadUpdatedEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("removeEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
-  //  Test that retrieving general entity information works.
+  //  Test that retrieving general entity type information works.
   ASSERT_TRUE(RunAutofillSubtest("getAllEntityTypes"));
-  ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntity"));
+  ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntityTypeName"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,

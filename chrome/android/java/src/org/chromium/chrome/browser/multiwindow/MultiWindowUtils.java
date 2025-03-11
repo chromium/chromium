@@ -72,6 +72,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
+    static final String HISTOGRAM_SINGLE_INSTANCE_PER_TASK_CONFIGURED =
+            "Android.MultiInstance.IsSingleInstancePerTaskConfigured";
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";
     static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW =
@@ -87,6 +89,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     private final boolean mMultiInstanceApi31Enabled;
     private static Boolean sMultiInstanceApi31EnabledForTesting;
+    private static Boolean sIsMultiInstanceApi31Enabled;
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -147,21 +150,34 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @return Whether the new launch mode 'singleInstancePerTask' is configured to allow
-     *         multiple instantiation of Chrome instance.
+     * @return Whether the new launch mode 'singleInstancePerTask' is configured to allow multiple
+     *     instantiation of Chrome instance.
      */
     public static boolean isMultiInstanceApi31Enabled() {
         if (sMultiInstanceApi31EnabledForTesting != null) {
             return sMultiInstanceApi31EnabledForTesting;
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
+        if (ChromeFeatureList.sCacheIsMultiInstanceApi31Enabled.isEnabled()
+                && sIsMultiInstanceApi31Enabled != null) {
+            return sIsMultiInstanceApi31Enabled;
+        }
+
         Context context = ContextUtils.getApplicationContext();
         String packageName = context.getPackageName();
         String className = ChromeTabbedActivity.class.getCanonicalName();
         ComponentName comp = new ComponentName(packageName, className);
         try {
             int launchMode = context.getPackageManager().getActivityInfo(comp, 0).launchMode;
-            return launchMode == ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+            boolean isSingleInstancePerTaskConfigured =
+                    launchMode == ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+            if (sIsMultiInstanceApi31Enabled == null) {
+                RecordHistogram.recordBooleanHistogram(
+                        HISTOGRAM_SINGLE_INSTANCE_PER_TASK_CONFIGURED,
+                        isSingleInstancePerTaskConfigured);
+            }
+            sIsMultiInstanceApi31Enabled = isSingleInstancePerTaskConfigured;
+            return isSingleInstancePerTaskConfigured;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }

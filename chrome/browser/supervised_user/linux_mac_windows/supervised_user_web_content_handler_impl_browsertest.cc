@@ -20,7 +20,10 @@
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_view.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -475,4 +478,48 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   histogram_tester.ExpectTotalCount(
       supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
 }
+
+class SupervisedUserParentAccessViewErrorScreenUiTest
+    : public InteractiveBrowserTestT<SupervisedUserWebContentHandlerImplTest> {
+ public:
+  SupervisedUserParentAccessViewErrorScreenUiTest() {
+    // Override PACP timeout to 0 ms.
+    int timeout_ms = 0;
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{supervised_user::kLocalWebApprovals,
+          {{supervised_user::kLocalWebApprovalBottomSheetLoadTimeoutMs.name,
+            base::NumberToString(timeout_ms)}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserParentAccessViewErrorScreenUiTest,
+                       ShowAndCloseErrorScreen) {
+  CHECK(contents());
+  auto handler = std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      contents(), content::FrameTreeNodeId(), 0);
+
+  supervised_user::UrlFormatter url_formatter(
+      *GetUrlFilter(), supervised_user::FilteringBehaviorReason::DEFAULT);
+  GURL blocked_url("https://www.example.com/");
+
+  // Makes a local approval request that times out immediately
+  // and checks that the error dialog is shown and can be dismissed by the
+  // "Back" button.
+  RunTestSequence(InAnyContext(
+      Do([&handler, &url_formatter, &blocked_url]() -> void {
+        handler->RequestLocalApproval(
+            blocked_url, u"child_display_name", url_formatter,
+            supervised_user::FilteringBehaviorReason::MANUAL,
+            /*callback=*/ base::DoNothing());
+      }),
+      WaitForShow(kLocalWebParentApprovalDialogErrorId),
+      WaitForShow(ParentAccessView::kErrorDialogBackButtonElementId),
+      PressButton(ParentAccessView::kErrorDialogBackButtonElementId),
+      WaitForHide(kLocalWebParentApprovalDialogErrorId)));
+}
+
 }  // namespace

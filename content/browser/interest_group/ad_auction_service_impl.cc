@@ -852,6 +852,28 @@ bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
     return false;
   }
 
+  // join/leaveAdInterestGroup allows igs to be written to `owner` which might
+  // be x-origin. Could the owner origin have called join/leaveAdInterestGroup
+  // in its own iframe with allow=join-ad-interest-group? If not, we should not
+  // allow it in this context either.
+  auto* permissions_policy =
+      static_cast<RenderFrameHostImpl*>(&render_frame_host())
+          ->GetPermissionsPolicy();
+
+  if (!permissions_policy->IsFeatureEnabledForOrigin(
+          network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup, owner,
+          /*override_default_policy_to_all=*/true)) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &render_frame_host(),
+        blink::mojom::WebFeature::
+            kCrossOriginOwnerInterestGroupSubframeCheckFailed);
+
+    if (base::FeatureList::IsEnabled(
+            features::kFledgeModifyInterestGroupPolicyCheckOnOwner)) {
+      return false;
+    }
+  }
+
   return true;
 }
 

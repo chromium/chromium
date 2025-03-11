@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 
@@ -49,8 +48,7 @@ class OmniboxTextChangeDelegate;
 
 @interface OmniboxViewController : UIViewController <EditViewAnimatee,
                                                      LocationBarOffsetProvider,
-                                                     OmniboxConsumer,
-                                                     OmniboxViewConsumer>
+                                                     OmniboxConsumer>
 
 /// Mutator of the omnibox.
 @property(nonatomic, weak) id<OmniboxMutator> mutator;

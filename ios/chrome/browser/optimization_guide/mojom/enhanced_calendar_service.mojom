@@ -6,6 +6,20 @@ module ai.mojom;
 
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 
+// Represents an Enhanced Calendar Service request parameters.
+struct EnhancedCalendarServiceRequestParams {
+  // The text that was selected by the user for which this Enhanced Calendar
+  // request is for.
+  string selected_text;
+
+  // Text surrounding the `selected text`, to help uniquely identify it within
+  // the page's innerText.
+  string surrounding_text;
+
+  // An optional prompt to override the default one.
+  string? optional_prompt;
+};
+
 // Represents the result of an Enhanced Calendar response. Only one of these
 // fields can hold a value.
 union EnhancedCalendarResponseResult {
@@ -22,7 +36,7 @@ interface EnhancedCalendarService {
     // Executes an enhanced calendar feature request. The result can either
     // hold a wrapper of the EnhancedCalendarResponse proto, or an error
     // string.
-    ExecuteEnhancedCalendarRequest(mojo_base.mojom.ProtoWrapper request)
+    ExecuteEnhancedCalendarRequest(EnhancedCalendarServiceRequestParams request_params)
         => (EnhancedCalendarResponseResult result);
 
 };

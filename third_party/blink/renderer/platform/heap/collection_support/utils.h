@@ -19,6 +19,9 @@ class DisallowNewBaseForHeapCollections {
   DISALLOW_NEW();
 };
 
+template <typename T>
+struct CompactionTraits;
+
 }  // namespace blink::internal
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_UTILS_H_

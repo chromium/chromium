@@ -75,6 +75,12 @@ BASE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders,
              "FledgeFacilitatedTestingSignalsHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Check if the owner of joinAdInterestGroup would be able to call
+// joinAdInterestGroup in its own subframe with allow=join-ad-interest-group.
+BASE_FEATURE(kFledgeModifyInterestGroupPolicyCheckOnOwner,
+             "FledgeModifyInterestGroupPolicyCheckOnOwner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Provides a configurable limit on the number of
 // `selectableBuyerAndSellerReportingIds` for which the browser fetches k-anon
 // keys. If the `SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` is

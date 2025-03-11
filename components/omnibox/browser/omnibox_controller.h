@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 
 class OmniboxClient;
 class OmniboxView;
@@ -68,6 +69,10 @@ class OmniboxController : public AutocompleteController::Observer {
 
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
+
+  // Called when keyword mode is entered for a starter pack template URL.
+  void OnStarterPackKeywordModeEntered(
+      TemplateURLStarterPackData::StarterPackID id) const;
 
   // Returns the header string associated with `suggestion_group_id`, or an
   // empty string if `suggestion_group_id` is not found in the results.

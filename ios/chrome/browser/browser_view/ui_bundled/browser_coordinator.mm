@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/infobar_autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/error_dialog/autofill_error_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_coordinator.h"
@@ -433,6 +434,9 @@ enum class ToolbarKind {
 @property(nonatomic, strong) AutofillEditProfileBottomSheetCoordinator*
     autofillEditProfileBottomSheetCoordinator;
 
+@property(nonatomic, strong)
+    SaveCardBottomSheetCoordinator* saveCardBottomSheetCoordinator;
+
 @property(nonatomic, strong) VirtualCardEnrollmentBottomSheetCoordinator*
     virtualCardEnrollmentBottomSheetCoordinator;
 
@@ -798,6 +802,8 @@ enum class ToolbarKind {
 
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
+
+  [self dismissSaveCardBottomSheet];
 
   [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
@@ -1370,6 +1376,9 @@ enum class ToolbarKind {
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
+  /* saveCardBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
+
   /* virtualCardEnrollmentBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1502,6 +1511,8 @@ enum class ToolbarKind {
 
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
+
+  [self dismissSaveCardBottomSheet];
 
   [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
@@ -1932,6 +1943,22 @@ enum class ToolbarKind {
           initWithBaseViewController:self.viewController
                              browser:self.browser];
   [self.plusAddressBottomSheetCoordinator start];
+}
+
+- (void)showSaveCardBottomSheet {
+  if (self.saveCardBottomSheetCoordinator) {
+    [self.saveCardBottomSheetCoordinator stop];
+  }
+
+  self.saveCardBottomSheetCoordinator = [[SaveCardBottomSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.saveCardBottomSheetCoordinator start];
+}
+
+- (void)dismissSaveCardBottomSheet {
+  [self.saveCardBottomSheetCoordinator stop];
+  self.saveCardBottomSheetCoordinator = nil;
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:

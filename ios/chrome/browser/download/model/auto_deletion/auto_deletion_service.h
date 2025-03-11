@@ -15,6 +15,7 @@ namespace base {
 class Time;
 }  // namespace base
 class PrefRegistrySimple;
+class PrefService;
 namespace web {
 class DownloadTask;
 }  // namespace web
@@ -26,7 +27,7 @@ class Scheduler;
 // the auto-deletion system.
 class AutoDeletionService {
  public:
-  AutoDeletionService();
+  explicit AutoDeletionService(PrefService* local_state);
   ~AutoDeletionService();
 
   // Registers the auto deletion Chrome settings status.

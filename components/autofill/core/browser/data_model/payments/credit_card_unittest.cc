@@ -1827,6 +1827,18 @@ TEST(CreditCardTest, FullDigitsForDisplay) {
   ASSERT_EQ(u"3489", card.FullDigitsForDisplay());
 }
 
+TEST(CreditCardTest, IsBnplCard) {
+  CreditCard card;
+
+  EXPECT_FALSE(card.is_bnpl_card());
+
+  card.set_is_bnpl_card(true);
+  EXPECT_TRUE(card.is_bnpl_card());
+
+  card.set_is_bnpl_card(false);
+  EXPECT_FALSE(card.is_bnpl_card());
+}
+
 // Verifies that a credit card should be updated.
 struct ShouldUpdateExpirationTestCase {
   bool should_update_expiration;

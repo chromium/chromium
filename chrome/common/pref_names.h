@@ -1463,6 +1463,10 @@ inline constexpr char kOverscrollHistoryNavigationEnabled[] =
     "settings.a11y.overscroll_history_navigation";
 #endif
 
+// Whether AX tree fixing is enabled.
+inline constexpr char kAccessibilityAXTreeFixingEnabled[] =
+    "settings.a11y.enable_ax_tree_fixing";
+
 // Whether main node annotations are enabled.
 inline constexpr char kAccessibilityMainNodeAnnotationsEnabled[] =
     "settings.a11y.enable_main_node_annotations";

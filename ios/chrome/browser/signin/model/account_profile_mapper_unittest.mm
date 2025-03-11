@@ -289,6 +289,10 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     return profile_attributes_storage_.IsProfileMarkedForDeletion(name);
   }
 
+  void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override {
+    NOTREACHED();
+  }
+
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
     return &profile_attributes_storage_;
   }

@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkGUIDSource2" enum="BookmarkGUIDSource"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -739,7 +739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeCount{SyncDataType}" units="entries"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -751,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeEntityChange{SyncDataType}"
-    enum="SyncEntityChange" expires_after="2025-07-06">
+    enum="SyncEntityChange" expires_after="2025-09-07">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1126,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.IdentityErrorCard{SyncErrorReason}"
-    enum="SyncErrorUiAction" expires_after="2025-07-06">
+    enum="SyncErrorUiAction" expires_after="2025-09-07">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1142,7 +1142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.IdentityErrorMessage{SyncErrorReason}"
-    enum="SyncErrorUiAction" expires_after="2025-07-06">
+    enum="SyncErrorUiAction" expires_after="2025-09-07">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1299,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2{SyncDataType}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1614,6 +1614,50 @@ chromium-metrics-reviews@google.com.
     Before 08/2024, the bucket &quot;Upgrade client error&quot; used to record
     other events too (any call to the old StopAndClear() API, removed in
     crbug.com/40797392).
+  </summary>
+</histogram>
+
+<histogram name="Sync.SearchEngine.AccountDefaultSearchEngineCopiedToLocal"
+    enum="Boolean" expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Recorded whenever search engines sync is being stopped, for example, upon
+    signout and there exists an account-only search engine which is set as the
+    default search engine. Such a search engine is copied to local storage.
+  </summary>
+</histogram>
+
+<histogram name="Sync.SearchEngine.AddedKeywordHasAccountData" enum="Boolean"
+    expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Recorded whenever a new keyword is added. This records whether the keyword
+    has account data. If it does not, the local value is copied to the account.
+  </summary>
+</histogram>
+
+<histogram name="Sync.SearchEngine.DuplicateIsDefaultSearchProvider"
+    enum="Boolean" expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Recorded upon every initial merge/startup if there exists a local search
+    engine that is a duplicate of a remote search engine. Records whether the
+    conflicting local search engine is the default search provider, which if so,
+    ignores the account value.
+  </summary>
+</histogram>
+
+<histogram name="Sync.SearchEngine.HasLocalDataDuringStopSyncing"
+    enum="Boolean" expires_after="2026-03-07">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Recorded whenever search engines sync is being stopped, for example, upon
+    signout. For each search engine with account data, records whether there
+    exists local data.
   </summary>
 </histogram>
 

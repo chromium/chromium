@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animacija čuvara ekrana</translation>
 <translation id="152892567002884378">Pojačavanje zvuka</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Odaberite temu, a zatim podcrtane riječi da biste personalizirali svoje AI slike.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Odaberite Nadahni me da biste dobili jedinstvenije i raznolikije opcije AI slika.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kad izrađujete sadržaj pomoću umjetne inteligencije, poslužiteljima Googleovog AI-ja šalje se upit radi generiranja slika i poboljšanja proizvoda, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativni AI u eksperimentalnoj je fazi, odnosno u ranom razvoju, a dostupnost je trenutačno ograničena.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna podloga</translation>
 <translation id="1561927818299383735">boja pozadinskog osvjetljenja</translation>
@@ -1553,6 +1562,16 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
 <translation id="819278132617411009">Koristite Google AI da budete produktivniji</translation>
+<translation id="82003371436638355">Kad odaberete Izradite vlastitu, napišite prilagođeni upit. Možete odabrati i opciju Odaberi temu, a zatim odabrati podcrtane riječi da biste personalizirali svoju AI pozadinu.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Odaberite Nadahni me da biste dobili jedinstvenije i raznolikije opcije AI slika.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kad izradite vlastitu pozadinu, upit se šalje Googleovim poslužiteljima radi generiranja slika i poboljšanja proizvoda, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim uvjetima pružanja usluge i pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativni AI može pogriješiti, uključujući kada daje informacije o osobama, stoga provjerite njegove odgovore. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Saznajte više<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8206859287963243715">Mobilna mreža</translation>
 <translation id="8208861521865154048">Privilegije</translation>
@@ -1574,6 +1593,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8312330582793120272">reproduciranje medija</translation>
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8320910311642849813">šuma</translation>
+<translation id="8322464149031882595">Kliknite da biste nastavili</translation>
 <translation id="8329018942023753850">aplikacija kalkulator</translation>
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
 <translation id="8339024191194156249">Saznajte više o automatskom pokretanju</translation>
@@ -1720,6 +1740,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8961025972867871808">Pingvini</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
+<translation id="8972061581514441296">Kliknite za povratak</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
 <translation id="89945434909472341">selo</translation>

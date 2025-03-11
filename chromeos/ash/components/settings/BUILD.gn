@@ -33,10 +33,26 @@ component("settings") {
   ]
 }
 
+# This target should be conceptually `testonly = true`, but unfortunately
+# some of the testing code is written in a way to inject in non-test code.
+# TODO(hidehiko): Mark testonly.
+static_library("test_support") {
+  deps = [
+    ":settings",
+    "//base",
+    "//components/prefs",
+  ]
+  sources = [
+    "fake_cros_settings_provider.cc",
+    "fake_cros_settings_provider.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":settings",
+    ":test_support",
     "//base",
     "//base:i18n",
     "//base/test:test_support",

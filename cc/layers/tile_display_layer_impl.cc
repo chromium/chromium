@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/overloaded.h"
@@ -18,7 +19,6 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
@@ -53,7 +53,7 @@ TileDisplayLayerImpl::Tile::Tile() = default;
 
 TileDisplayLayerImpl::Tile::Tile(const TileContents& contents)
     : contents_(contents) {
-  DCHECK(!absl::holds_alternative<NoContents>(contents_));
+  DCHECK(!std::holds_alternative<NoContents>(contents_));
 }
 
 TileDisplayLayerImpl::Tile::Tile(Tile&&) = default;
@@ -106,7 +106,7 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(
     const TileIndex& key,
     const TileContents& contents) {
   std::unique_ptr<Tile> old_tile;
-  if (absl::holds_alternative<NoContents>(contents)) {
+  if (std::holds_alternative<NoContents>(contents)) {
     auto it = tiles_.find(key);
     if (it != tiles_.end()) {
       old_tile = std::move(it->second);
@@ -117,7 +117,7 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(
   }
 
   if (old_tile) {
-    if (auto* resource = absl::get_if<TileResource>(&old_tile->contents())) {
+    if (auto* resource = std::get_if<TileResource>(&old_tile->contents())) {
       layer_->discarded_resources_.push_back(resource->resource);
     }
   }

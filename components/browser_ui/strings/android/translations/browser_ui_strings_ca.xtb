@@ -519,6 +519,7 @@
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Mou a la part superior</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8284326494547611709">Subtítols</translation>
@@ -585,6 +586,7 @@
 <translation id="8993853206419610596">Desplega totes les sol·licituds</translation>
 <translation id="9002538116239926534">Quan aquesta opció està activada, els llocs web poden desar dades al teu dispositiu. Quan aquesta opció està desactivada, els llocs web no poden desar dades al teu dispositiu.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permès</translation>
+<translation id="9017522656123387064">S'ha sortit del mode de selecció</translation>
 <translation id="9019902583201351841">Gestionat pels pares</translation>
 <translation id="902236149563113779">Els llocs web solen fer un seguiment de la posició de la càmera per a funcions de realitat augmentada, com ara jocs o indicacions en pantalles de visualització frontal</translation>
 <translation id="9039697262778250930">És possible que se't tanqui la sessió d'aquests llocs web</translation>

@@ -514,7 +514,6 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
       return nullptr;
     case CSSSyntaxType::kString:
       // Smooth interpolation not supported for <string> type.
-      DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
       return nullptr;
     default:
       NOTREACHED();

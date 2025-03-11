@@ -4,6 +4,8 @@
 
 #import "ios/web/content/init/ios_main_delegate.h"
 
+#import <variant>
+
 #import "content/public/app/initialize_mojo_core.h"
 #import "content/public/renderer/content_renderer_client.h"
 #import "ios/web/content/init/ios_content_browser_client.h"
@@ -19,7 +21,7 @@ IOSMainDelegate::~IOSMainDelegate() {}
 bool IOSMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   // The //content layer is always responsible for creating the FeatureList in
   // child processes.
-  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in)) {
+  if (std::holds_alternative<InvokedInChildProcess>(invoked_in)) {
     return true;
   }
 
@@ -54,7 +56,7 @@ content::ContentRendererClient* IOSMainDelegate::CreateContentRendererClient() {
   return renderer_client_.get();
 }
 
-absl::variant<int, content::MainFunctionParams> IOSMainDelegate::RunProcess(
+std::variant<int, content::MainFunctionParams> IOSMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
   CHECK_EQ(process_type, "");

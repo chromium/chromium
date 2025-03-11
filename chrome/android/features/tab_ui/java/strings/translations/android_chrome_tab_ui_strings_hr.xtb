@@ -66,6 +66,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona boje grupe kartica</translation>
 <translation id="311432875115153175">Popis grupa kartica je zatvoren</translation>
 <translation id="3194464645767632461">ocjena</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> karticu u grupu}one{Dodaj <ph name="TABS_COUNT_MANY" /> karticu u grupu}few{Dodaj <ph name="TABS_COUNT_MANY" /> kartice u grupu}other{Dodaj <ph name="TABS_COUNT_MANY" /> kartica u grupu}}</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>
 <translation id="3547352561153509682">Time će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova kartica}one{<ph name="MANY_ADDED" /> nova kartica}few{<ph name="MANY_ADDED" /> nove kartice}other{<ph name="MANY_ADDED" /> novih kartica}}</translation>
@@ -98,6 +99,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="4783638485675352219">Dijeli naslove i URL-ove otvorenih kartica s ovog uređaja s operativnim sustavom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> odabranu karticu u grupu}one{Dodaj <ph name="TABS_COUNT_MANY" /> odabranu karticu u grupu}few{Dodaj <ph name="TABS_COUNT_MANY" /> odabrane kartice u grupu}other{Dodaj <ph name="TABS_COUNT_MANY" /> odabranih kartica u grupu}}</translation>
 <translation id="4861611890274104875">Odbacite karticu.</translation>
 <translation id="4861953997778766866">Svi mogu unositi promjene u vaše dijeljene grupe kartica</translation>
 <translation id="4870911314065352661">Želite li zatvoriti sve kartice?</translation>
@@ -134,6 +136,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="6193448654517602979">Odaberite kartice</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6271513594716432922">Zatvori sve anonimne kartice</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj karticu novoj grupi}one{Dodaj kartice novoj grupi}few{Dodaj kartice novoj grupi}other{Dodaj kartice novoj grupi}}</translation>
 <translation id="6333260925957816943">Informacije o ovoj trgovini</translation>
 <translation id="6381032505162537930">Ovdje ćete pronaći svoje grupe kartica</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poništite grupiranje <ph name="TABS_COUNT_ONE" /> odabrane kartice}one{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}few{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
@@ -186,6 +189,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="799469866974412355">Nova grupa s drugog uređaja</translation>
 <translation id="8029301326595421733">Informacije o ovoj trgovini otvorene su u punoj visini</translation>
 <translation id="8053770993984522566">Popis grupa kartica, otvoren na pola visine</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Dodaj karticu grupi}one{Dodaj kartice grupi}few{Dodaj kartice grupi}other{Dodaj kartice grupi}}</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> karticom, <ph name="COLOR_NAME" /> boja.}one{Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karticom, <ph name="COLOR_NAME" /> boja.}few{Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartice, <ph name="COLOR_NAME" /> boja.}other{Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja.}}</translation>
 <translation id="8205266828577616993">Premjestite karticu gore</translation>

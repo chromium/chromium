@@ -36,10 +36,7 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryRegistry::CreateHelpBubble(
     if (bubble_factory.CanBuildBubbleForTrackedElement(element)) {
       auto result = bubble_factory.CreateBubble(element, std::move(params));
       if (result) {
-        help_bubbles_.emplace(
-            result.get(), result->AddOnCloseCallback(base::BindOnce(
-                              &HelpBubbleFactoryRegistry::OnHelpBubbleClosed,
-                              base::Unretained(this))));
+        AddHelpBubble(result.get());
       }
       return result;
     }
@@ -75,6 +72,15 @@ HelpBubble* HelpBubbleFactoryRegistry::GetHelpBubble(
     }
   }
   return nullptr;
+}
+
+void HelpBubbleFactoryRegistry::AddHelpBubble(HelpBubble* help_bubble) {
+  CHECK(help_bubble);
+  CHECK(help_bubble->is_open());
+  help_bubbles_.emplace(help_bubble,
+                        help_bubble->AddOnCloseCallback(base::BindOnce(
+                            &HelpBubbleFactoryRegistry::OnHelpBubbleClosed,
+                            base::Unretained(this))));
 }
 
 void HelpBubbleFactoryRegistry::OnHelpBubbleClosed(HelpBubble* bubble,

@@ -40,7 +40,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (instancetype)init {
-  CHECK(IsInactiveTabsAvailable());
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);
@@ -64,12 +63,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
 
-  if (IsInactiveTabsAvailable()) {
-    [model addSectionWithIdentifier:SectionIdentifierInactiveTabs];
-    [model addItem:[self moveInactiveTabsItem]
-        toSectionWithIdentifier:SectionIdentifierInactiveTabs];
-    [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierInactiveTabs];
+  [model addItem:[self moveInactiveTabsItem]
+      toSectionWithIdentifier:SectionIdentifierInactiveTabs];
+  [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
 }
 
 #pragma mark - SettingsControllerProtocol

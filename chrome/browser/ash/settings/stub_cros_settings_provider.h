@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
 #include "components/prefs/pref_value_map.h"
 
 namespace ash {
@@ -18,8 +19,8 @@ namespace ash {
 // CrosSettingsProvider implementation that stores settings in memory unsigned.
 class StubCrosSettingsProvider : public CrosSettingsProvider {
  public:
-  explicit StubCrosSettingsProvider(const NotifyObserversCallback& notify_cb);
-  StubCrosSettingsProvider();
+  explicit StubCrosSettingsProvider(
+      const NotifyObserversCallback& notify_cb = {});
 
   StubCrosSettingsProvider(const StubCrosSettingsProvider&) = delete;
   StubCrosSettingsProvider& operator=(const StubCrosSettingsProvider&) = delete;
@@ -50,8 +51,8 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
   // Initializes settings to their defaults.
   void SetDefaults();
 
-  // In-memory settings storage.
-  PrefValueMap values_;
+  // Called when the value in `fake_provider_` is updated.
+  void OnValueChanged(const std::string& path);
 
   // Some tests imply that calling Set() as non-owner doesn't change the actual
   // value but still trigger a notification. For such cases, it is possible to
@@ -59,10 +60,9 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
   // |SetCurrentUserIsOwner(false)|.
   bool current_user_is_owner_ = true;
 
-  TrustedStatus trusted_status_ = CrosSettingsProvider::TRUSTED;
-
-  // Pending callbacks to invoke when switching away from TEMPORARILY_UNTRUSTED.
-  std::vector<base::OnceClosure> callbacks_;
+  // TODO(crbug.com/402266244): Migrated StubCrosSettingsProvider into
+  // FakeCrosSettingsProvider.
+  FakeCrosSettingsProvider fake_provider_;
 };
 
 }  // namespace ash

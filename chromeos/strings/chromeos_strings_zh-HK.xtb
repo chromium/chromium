@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">螢幕保護程式動畫</translation>
 <translation id="152892567002884378">調高音量</translation>
 <translation id="1539864135338521185">青金石</translation>
+<translation id="1548555207631326346">選擇主題並選取加上底線的字詞，即可個人化 AI 圖片。<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          選取 [給我驚喜] 即可取得更多獨特多變的 AI 圖片選項。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          運用 AI 製作內容時，系統會將提示傳送至 Google AI 伺服器，以便生成圖片及提升產品品質。在處理資料的過程中須遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 私隱權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 是實驗版功能，仍在初期開發階段，目前僅供部分使用者使用。</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1561927818299383735">背光顏色</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8183975772394450380">海灘</translation>
 <translation id="819278132617411009">使用 Google AI 提升生產力</translation>
+<translation id="82003371436638355">如果選取 [自行建立]，請自行輸入提示；另可點擊 [選擇主題] 再選取加上底線的字詞，以個人化 AI 圖片。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          選取 [給我驚喜] 即可取得更多獨特多變的 AI 圖片選項。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          自製桌布時，系統會將提示傳送至 Google 伺服器，以便生成圖像及提升產品品質。在處理資料的過程中須遵守 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服務條款》及《私隱權政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />。請勿加入任何個人、敏感或機密內容。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 可能會出錯 (包括人物資料)，請加以複查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />瞭解詳情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">播媒體</translation>
 <translation id="8318753676953949627">沒有圖片</translation>
 <translation id="8320910311642849813">森林</translation>
+<translation id="8322464149031882595">點擊即可繼續使用</translation>
 <translation id="8329018942023753850">計算機應用程式</translation>
 <translation id="8336739000755212683">變更裝置的帳戶圖片</translation>
 <translation id="8339024191194156249">進一步瞭解自動啟動功能</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">企鵝</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再次執行</translation>
+<translation id="8972061581514441296">按一下即可返回</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{掃瞄}=1{掃瞄第 {NUMBER_OF_PAGES} 頁}other{掃瞄第 {NUMBER_OF_PAGES} 頁}}</translation>
 <translation id="89945434909472341">村莊</translation>

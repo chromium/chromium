@@ -792,11 +792,10 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
-  auto image_info = CreateSkImageInfo();
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u, Size(),
-      GetFormat(), image_info.alphaType(), GetColorSpace(),
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      GetFormat(), GetAlphaType(), GetColorSpace(), context_provider_wrapper_,
+      owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 }
 
@@ -909,8 +908,6 @@ bool CanvasResourceSwapChain::IsValid() const {
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
-  SkImageInfo image_info = CreateSkImageInfo();
-
   // It's safe to share the back buffer texture id if we're on the same thread
   // since the |release_callback| ensures this resource will be alive.
   GLuint shared_texture_id = !is_cross_thread() ? back_buffer_texture_id_ : 0u;
@@ -925,8 +922,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, Size(),
-      GetFormat(), image_info.alphaType(), image_info.refColorSpace(),
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      GetFormat(), GetAlphaType(), GetColorSpace(), context_provider_wrapper_,
+      owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 }
 

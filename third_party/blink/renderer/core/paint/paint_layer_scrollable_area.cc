@@ -3366,17 +3366,6 @@ void PaintLayerScrollableArea::SetSnappedQueryTargetIds(
   EnsureRareData().snapped_query_target_ids_ = ids;
 }
 
-ScrollOffset PaintLayerScrollableArea::GetScrollOffsetForScrollMarkerUpdate() {
-  ScrollOffset offset_for_scroll_marker_update = GetScrollOffset();
-  if (GetScrollAnimator().HasRunningAnimation()) {
-    offset_for_scroll_marker_update = GetScrollAnimator().DesiredTargetOffset();
-  } else if (GetProgrammaticScrollAnimator().HasRunningAnimation()) {
-    offset_for_scroll_marker_update =
-        GetProgrammaticScrollAnimator().TargetOffset();
-  }
-  return offset_for_scroll_marker_update;
-}
-
 ScrollMarkerGroupPseudoElement* PaintLayerScrollableArea::GetScrollMarkerGroup()
     const {
   if (Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
@@ -3395,8 +3384,7 @@ ScrollMarkerGroupPseudoElement* PaintLayerScrollableArea::GetScrollMarkerGroup()
 
 void PaintLayerScrollableArea::UpdateScrollMarkers() {
   if (ScrollMarkerGroupPseudoElement* marker_group = GetScrollMarkerGroup()) {
-    ScrollOffset scroll_offset = GetScrollOffsetForScrollMarkerUpdate();
-    marker_group->UpdateSelectedScrollMarker(scroll_offset);
+    marker_group->UpdateSelectedScrollMarker();
   }
 }
 

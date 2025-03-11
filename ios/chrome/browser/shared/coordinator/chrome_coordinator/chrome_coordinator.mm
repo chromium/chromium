@@ -46,9 +46,7 @@
 }
 
 - (BOOL)isOffTheRecord {
-  if (!self.profile) {
-    return NO;
-  }
+  CHECK(self.profile);
   return self.profile->IsOffTheRecord();
 }
 

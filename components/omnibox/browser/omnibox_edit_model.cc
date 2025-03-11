@@ -933,6 +933,12 @@ bool OmniboxEditModel::AcceptKeyword(
           keyword_);
   EmitEnteredKeywordModeHistogram(entry_method, turl);
 
+  if (turl && turl->starter_pack_id() > 0) {
+    controller_->OnStarterPackKeywordModeEntered(
+        static_cast<TemplateURLStarterPackData::StarterPackID>(
+            turl->starter_pack_id()));
+  }
+
   return true;
 }
 

@@ -263,8 +263,54 @@ suite('DestinationDialogCrosTest', function() {
       });
 
   // Test that the correct elements are displayed when the destination store is
-  // still searching but has returned valid destinations.
+  // still searching and has no valid destinations.
   test('DiaglogShowsThrobberWhileSearching', async () => {
+    nativeLayer.setSimulateNoResponseForGetPrinters(true);
+    await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
+
+    document.body.appendChild(dialog);
+    await nativeLayer.whenCalled('getPrinterCapabilities');
+    dialog.show();
+    flush();
+
+    // Move timer forward to clear delay.
+    mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
+
+    // Throbber should show while still searching because there are no valid
+    // destinations.
+    const throbber =
+        dialog.shadowRoot!.querySelector<HTMLElement>('.throbber-container');
+    assertTrue(!!throbber);
+    assertFalse(
+        throbber.hidden,
+        'Loading UI should display while DestinationStore is searching');
+
+    // Manage printers button hidden when there are valid destinations.
+    const managePrintersButton = dialog.shadowRoot!.querySelector<HTMLElement>(
+        'cr-button:not(.cancel-button)');
+    assertTrue(isVisible(managePrintersButton));
+
+    // Printer setup element should not be displayed when there are
+    // valid destinations.
+    const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
+        'print-preview-printer-setup-info-cros')!;
+    assertTrue(printerSetupInfo.hidden);
+
+    // Destination list should not display if there aren't valid destinations.
+    const destinationList =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#printList');
+    assertFalse(isVisible(destinationList));
+
+    // Destination search box should not be shown if there aren't valid
+    // destinations.
+    const searchBox = dialog.shadowRoot!.querySelector<HTMLElement>(
+        'print-preview-search-box');
+    assertFalse(isVisible(searchBox));
+  });
+
+  // Test that the correct elements are displayed when the destination store is
+  // still searching but has returned valid destinations.
+  test('DiaglogShowsDestinationsWhileSearching', async () => {
     nativeLayer.setSimulateNoResponseForGetPrinters(true);
 
     document.body.appendChild(dialog);
@@ -273,13 +319,17 @@ suite('DestinationDialogCrosTest', function() {
     dialog.show();
     flush();
 
-    // Throbber should show while DestinationStore is still searching.
+    // Move timer forward to clear delay.
+    mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
+
+    // Throbber should not show while still searching because there are
+    // valid destinations.
     const throbber =
         dialog.shadowRoot!.querySelector<HTMLElement>('.throbber-container');
     assertTrue(!!throbber);
-    assertFalse(
+    assertTrue(
         throbber.hidden,
-        'Loading UI should display while DestinationStore is searching');
+        'Loading UI should not display while there are valid destinations');
 
     // Manage printers button hidden when there are valid destinations.
     const managePrintersButton = dialog.shadowRoot!.querySelector<HTMLElement>(
@@ -440,15 +490,6 @@ suite('DestinationDialogCrosTest', function() {
 
         // Move timer forward to clear delay.
         mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
-
-        // Dialog should be visible with loading UI displayed.
-        assertFalse(
-            throbber.hidden,
-            'Loading UI should display while destinations have not loaded');
-
-        // Get destinations.
-        await nativeLayer.whenCalled('getPrinters');
-        flush();
 
         // Loading UI should be hidden. Destination list and search box should
         // be visible.

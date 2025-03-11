@@ -116,6 +116,11 @@ class ProfileManagerIOS {
   // still not fully deleted.
   virtual bool IsProfileMarkedForDeletion(std::string_view name) const = 0;
 
+  // Deletes the storage for all profiles marked for deletion (except if
+  // they are still loaded) and invokes `callback` when the operation is
+  // complete.
+  virtual void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) = 0;
+
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;
 

@@ -11,12 +11,9 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "build/config/cuttlefish/buildflags.h"
@@ -432,10 +429,8 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   return nullptr;
 }
 
-using GetSystemPropertiesCallback = base::OnceCallback<void(base::Value)>;
-
-void GetSystemProperties(const std::vector<std::string>& property_names,
-                         GetSystemPropertiesCallback callback) {
+base::Value GetSystemProperties(
+    const std::vector<std::string>& property_names) {
   base::Value::Dict result;
   for (const std::string& property_name : property_names) {
     std::unique_ptr<base::Value> value = GetValue(property_name);
@@ -444,9 +439,7 @@ void GetSystemProperties(const std::vector<std::string>& property_names,
                  base::Value::FromUniquePtrValue(std::move(value)));
     }
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::Value(std::move(result))));
+  return base::Value(std::move(result));
 }
 
 void SetTimezone(const std::string& value) {
@@ -463,29 +456,14 @@ void SetTimezone(const std::string& value) {
   }
 }
 
-using SetBoolCallback = base::OnceCallback<void(bool)>;
-
-void SetBool(const std::string& property_name,
-             bool value,
-             SetBoolCallback callback) {
-  bool found = false;
+bool SetBool(const std::string& property_name, bool value) {
   const char* pref_name = GetBoolPrefNameForApiProperty(property_name.c_str());
-  if (pref_name) {
-    ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(pref_name,
-                                                                    value);
-    found = true;
+  if (!pref_name) {
+    return false;
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(found)));
-}
-
-using IsTabletModeEnabledCallback = base::OnceCallback<void(bool)>;
-
-void IsTabletModeEnabled(IsTabletModeEnabledCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                display::Screen::GetScreen()->InTabletMode()));
+  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(pref_name,
+                                                                  value);
+  return true;
 }
 
 }  // namespace
@@ -506,14 +484,9 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
     std::string property_name = property.GetString();
     property_names.push_back(std::move(property_name));
   }
-  auto callback =
-      base::BindOnce(&ChromeosInfoPrivateGetFunction::RespondWithResult, this);
-  GetSystemProperties(std::move(property_names), std::move(callback));
-  return RespondLater();
-}
 
-void ChromeosInfoPrivateGetFunction::RespondWithResult(base::Value result) {
-  Respond(WithArguments(std::move(result)));
+  base::Value result = GetSystemProperties(std::move(property_names));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 ChromeosInfoPrivateSetFunction::ChromeosInfoPrivateSetFunction() = default;
@@ -537,19 +510,10 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
   bool param_value = args()[1].GetBool();
 
-  auto callback =
-      base::BindOnce(&ChromeosInfoPrivateSetFunction::RespondWithResult, this);
-  SetBool(param_name_, param_value, std::move(callback));
-
-  return RespondLater();
-}
-
-void ChromeosInfoPrivateSetFunction::RespondWithResult(bool found) {
-  if (found) {
-    Respond(NoArguments());
-  } else {
-    Respond(Error(kPropertyNotFound, param_name_));
+  if (!SetBool(param_name_, param_value)) {
+    return RespondNow(Error(kPropertyNotFound, param_name_));
   }
+  return RespondNow(NoArguments());
 }
 
 ChromeosInfoPrivateIsTabletModeEnabledFunction::
@@ -560,15 +524,8 @@ ChromeosInfoPrivateIsTabletModeEnabledFunction::
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
-  auto callback = base::BindOnce(
-      &ChromeosInfoPrivateIsTabletModeEnabledFunction::RespondWithResult, this);
-  IsTabletModeEnabled(std::move(callback));
-  return RespondLater();
-}
-
-void ChromeosInfoPrivateIsTabletModeEnabledFunction::RespondWithResult(
-    bool enabled) {
-  Respond(WithArguments(enabled));
+  return RespondNow(
+      WithArguments(display::Screen::GetScreen()->InTabletMode()));
 }
 
 }  // namespace extensions

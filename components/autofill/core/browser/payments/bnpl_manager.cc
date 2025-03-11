@@ -166,10 +166,15 @@ void BnplManager::OnVcnDetailsFetched(
                            base::UTF8ToUTF16(response_details.expiration_year));
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
     credit_card.set_issuer_id(ongoing_flow_state_->issuer_id);
+    credit_card.set_is_bnpl_card(true);
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {
-    // TODO(crbug.com/399449550): Add error dialog.
+    payments_autofill_client().ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsAutofillClient::PaymentsRpcResult::
+                kVcnRetrievalPermanentFailure));
   }
   ongoing_flow_state_.reset();
 }
@@ -178,7 +183,10 @@ void BnplManager::OnIssuerSelected(const BnplIssuer& selected_issuer) {
   ongoing_flow_state_->issuer_id = selected_issuer.issuer_id();
 
   if (selected_issuer.payment_instrument().has_value()) {
-    // TODO(crbug.com/378518488): Add server calls for getting redirect url.
+    ongoing_flow_state_->instrument_id = base::NumberToString(
+        selected_issuer.payment_instrument()->instrument_id());
+
+    LoadRiskDataForFetchingRedirectUrl();
   } else {
     GetDetailsForCreateBnplPaymentInstrument();
   }
@@ -221,7 +229,85 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
     }
   }
 
-  // TODO(crbug.com/378518504): Display error dialog.
+  payments_autofill_client().ShowAutofillErrorDialog(
+      AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+          /*is_permanent_error=*/result ==
+          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+
+  ongoing_flow_state_.reset();
+}
+
+void BnplManager::LoadRiskDataForFetchingRedirectUrl() {
+  if (ongoing_flow_state_->risk_data.empty()) {
+    payments_autofill_client().LoadRiskData(base::BindOnce(
+        &BnplManager::OnRiskDataLoadedAfterIssuerSelectionDialogAcceptance,
+        weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  FetchRedirectUrl();
+}
+
+void BnplManager::OnRiskDataLoadedAfterIssuerSelectionDialogAcceptance(
+    const std::string& risk_data) {
+  ongoing_flow_state_->risk_data = risk_data;
+  FetchRedirectUrl();
+}
+
+void BnplManager::FetchRedirectUrl() {
+  GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details;
+  request_details.billing_customer_number =
+      ongoing_flow_state_->billing_customer_number;
+  request_details.instrument_id = ongoing_flow_state_->instrument_id;
+  request_details.risk_data = ongoing_flow_state_->risk_data;
+  request_details.merchant_domain =
+      autofill_client_->GetLastCommittedPrimaryMainFrameURL();
+  request_details.total_amount = ongoing_flow_state_->final_checkout_amount;
+  // Only `USD` is supported for MVP.
+  request_details.currency = "USD";
+
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
+      ->GetBnplPaymentInstrumentForFetchingUrl(
+          std::move(request_details),
+          base::BindOnce(&BnplManager::OnRedirectUrlFetched,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnRedirectUrlFetched(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    const BnplFetchUrlResponseDetails& response) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    ongoing_flow_state_->redirect_url = std::move(response.redirect_url);
+    ongoing_flow_state_->context_token = std::move(response.context_token);
+
+    PaymentsWindowManager::BnplContext bnpl_context;
+    bnpl_context.initial_url = ongoing_flow_state_->redirect_url;
+    bnpl_context.success_url_prefix = std::move(response.success_url_prefix);
+    bnpl_context.failure_url_prefix = std::move(response.failure_url_prefix);
+    bnpl_context.completion_callback = base::BindOnce(
+        &BnplManager::OnPopupWindowCompleted, weak_factory_.GetWeakPtr());
+
+    payments_autofill_client().GetPaymentsWindowManager()->InitBnplFlow(
+        std::move(bnpl_context));
+  } else {
+    // TODO(crbug.com/378518504): Display error dialog.
+  }
+}
+
+void BnplManager::OnPopupWindowCompleted(
+    PaymentsWindowManager::BnplFlowResult result) {
+  switch (result) {
+    case PaymentsWindowManager::BnplFlowResult::kUserClosed:
+      ongoing_flow_state_.reset();
+      break;
+    case PaymentsWindowManager::BnplFlowResult::kSuccess:
+      FetchVcnDetails();
+      break;
+    case PaymentsWindowManager::BnplFlowResult::kFailure:
+      // TODO(crbug.com/378518504): Display error dialog.
+      break;
+  }
 }
 
 void BnplManager::MaybeUpdateSuggestionsWithBnpl(

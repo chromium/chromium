@@ -119,6 +119,7 @@ extern NSString* const kCameraFillSymbol;
 
 // Default symbol names.
 extern NSString* const kChartBarXAxisSymbol;
+extern NSString* const kChartLineDowntrendXYAxisSymbol;
 extern NSString* const kCircleSymbol;
 extern NSString* const kCircleFillSymbol;
 extern NSString* const kSyncEnabledSymbol;

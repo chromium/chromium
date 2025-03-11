@@ -8,6 +8,7 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/string_value.proto";
 import "components/optimization_guide/proto/on_device_model_execution_config.proto";
+import "components/optimization_guide/proto/features/media.proto";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
@@ -28,7 +29,10 @@ enum PromptApiRole {
 
 message PromptApiPrompt {
   PromptApiRole role = 1;
-  string content = 2;
+  oneof kind {
+    string text = 2;
+    Media media = 3;
+  }
 }
 
 // A request from PromptApi for prompt execution call.

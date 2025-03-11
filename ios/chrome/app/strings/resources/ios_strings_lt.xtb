@@ -156,6 +156,7 @@
 <translation id="1605658421715042784">Kopijuoti vaizdą</translation>
 <translation id="1612754831519568745">Saugus naršymas šiuo metu išjungtas. Gaukite apsaugą nuo pavojingų svetainių, atsisiuntimų ir plėtinių.</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622195983844804153">Esami naršymo duomenys nebus perkelti į darbo paskyrą. Vis tiek galite juos pasiekti atsijungę arba pridėję asmeninę paskyrą.</translation>
 <translation id="1622717322707146952">Pasirinkite „Pridėti prie „Google“ kalendoriaus“ arba „Pridėti prie „Apple Calendar“.</translation>
 <translation id="1629162218487290695">Patvirtinkite savo tapatybę…</translation>
 <translation id="1636234353664774105">Gaukite nuoseklias nuorodas į kelionės tikslą naudodami navigacijos funkciją</translation>
@@ -283,7 +284,6 @@
 <translation id="2122754583996902531">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Ieškoti nukopijuoto teksto</translation>
 <translation id="2147127444698817042">Pasiekiama tik „iPhone“</translation>
-<translation id="2148716181193084225">Šiandien</translation>
 <translation id="2148799636999124959">Sparčiai prisijunkite prie svetainių ir programų naudodami išsaugotus slaptažodžius.</translation>
 <translation id="2149968176347646218">Ryšys nėra saugus</translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
@@ -324,7 +324,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Šis adresas bus ištrintas iš šio įrenginio.}one{Šie adresai bus ištrinti iš šio įrenginio.}few{Šie adresai bus ištrinti iš šio įrenginio.}many{Šie adresai bus ištrinti iš šio įrenginio.}other{Šie adresai bus ištrinti iš šio įrenginio.}}</translation>
 <translation id="2297989278479054870">Kai atsijungsite, „Google“ paskyroje esantys slaptažodžiai, žymės ir kt. bus pašalinti iš šio įrenginio.</translation>
 <translation id="2299218006564889602">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
-<translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Uždaryti skirtuką</translation>
 <translation id="2311077293164383652">Uždaryti prisegtą skirtuką</translation>
 <translation id="2316129865977710310">Ne, ačiū</translation>
@@ -462,7 +461,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2883151425485251736">Peržiūrėkite ir redaguokite temas, kurias paslėpėte paskyroje</translation>
 <translation id="288655811176831528">Uždaryti skirtuką</translation>
 <translation id="2888631381369839306">Kainų stebėjimo pranešimai įjungti</translation>
-<translation id="288902476966286676">Grąžinti siuntėjui</translation>
 <translation id="2893168226686371498">Numatytoji naršyklė</translation>
 <translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
 <translation id="2902312830803030883">Daugiau veiksmų</translation>
@@ -593,7 +591,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3530767473765895035">Tvarkyti paskyras šiame įrenginyje…</translation>
 <translation id="3533436815740441613">Naujas skirtukas</translation>
 <translation id="3547356470684043247">Perskaitykite klientų pateiktus produktų, paslaugų ar funkcijų įvertinimus, kurie padės priimti sprendimus</translation>
-<translation id="3549391962818677448">Bandyta pristatyti. Bus bandoma iš naujo</translation>
 <translation id="3557336313807607643">Pridėti prie kontaktų</translation>
 <translation id="355765753469272474">Anuliuoti</translation>
 <translation id="3562379378751492229">Pasirinkite jums tinkamiausią poziciją.</translation>
@@ -883,7 +880,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4803185665210547709">Valdo jūsų organizacija.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Kortelėje nurodytas vardas ir pavardė</translation>
-<translation id="4808646838864186379">Pristatymas atšauktas</translation>
 <translation id="4808744395915275922">Naujiniai</translation>
 <translation id="4813345808229079766">Ryšys</translation>
 <translation id="4821595350501541683">Skirtukai uždaryti ir naršymo duomenys ištrinti</translation>
@@ -912,7 +908,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4894963374040315706">Galite ieškoti balsu</translation>
 <translation id="4895540042460820904">Paskutinį kartą atidaryta</translation>
 <translation id="4896467949657706481">Skirtukai buvo uždaryti, buvote atjungti</translation>
-<translation id="490709372351071121">Gaunama siuntinio būsena</translation>
 <translation id="4913626501929406101">Galite saugiai bendrinti slaptažodžio kopiją su kitu šeimos grupės nariu. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Priimti</translation>
 <translation id="4936354130727646074">Niekada neperkelti</translation>
@@ -1079,7 +1074,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5633237939819267663">{count,plural, =1{Žymė išsaugota skiltyje „{title}“}one{{count} žymė išsaugota skiltyje „{title}“}few{{count} žymės išsaugotos skiltyje „{title}“}many{{count} žymės išsaugota skiltyje „{title}“}other{{count} žymių išsaugota skiltyje „{title}“}}</translation>
 <translation id="564170563478022912">Atsijungti? Neišsaugoti paskyros duomenys bus ištrinti.</translation>
 <translation id="5642707040609478753">Pažymėti kaip neperskaitytą</translation>
-<translation id="5646284034397250191">Etiketė sukurta. Laukiama datos</translation>
 <translation id="5647096944343801045">Didelis įėjimo taškas</translation>
 <translation id="5647193778876139879">Palieskite ir palaikykite adresą.</translation>
 <translation id="5647702255748985085">Išeiti iš grupės?</translation>
@@ -1112,7 +1106,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5740123193752401435">Ieškokite skirtukų…</translation>
 <translation id="5744274077973758795">„<ph name="FEATURE_NAME" />“ pranešimai įjungti</translation>
 <translation id="574762237186762643">Įvykiai</translation>
-<translation id="5748177854685749242">Bus pristatyta: <ph name="DATE" /></translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
 <translation id="5753021559215751319">Išsaugoti slaptažodį</translation>
 <translation id="5756525336488841345">Slėpti žymes</translation>
@@ -1145,6 +1138,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5898848375214731122">Masė</translation>
 <translation id="5899314093904173337">Norėdami bendrinti su netoliese esančiais žmonėmis, leiskite jiems nuskaityti šį QR kodą savo fotoaparatu ar QR kodų skaitytuvo programa</translation>
 <translation id="5911030830365207728">„Google“ vertėjas</translation>
+<translation id="5917913282764181683">Automatinis atsisiuntimų ištrynimas</translation>
 <translation id="5922999516621365983">Nuvilkite skirtuką čia, kad prisegtumėte.</translation>
 <translation id="5936006948844852401">Tvarkyti saugyklą</translation>
 <translation id="5936065461722368675">Versti visą puslapį</translation>
@@ -1164,7 +1158,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="598634819525651074">Sritis</translation>
 <translation id="5988097621740394599">Žr. sumažintas kainas skirtukuose.</translation>
 <translation id="5988851877894965432">Atidaryti URL naršyklėje „Chrome“</translation>
-<translation id="5996189683621529225">Galima atsiimti</translation>
 <translation id="6001839398155993679">Pradėkime</translation>
 <translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
 <translation id="6012140227487808125">Šifruojama...</translation>
@@ -1231,7 +1224,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
 <translation id="6251835855431997163">Automatiškai pildyti „<ph name="VALUE" />“</translation>
 <translation id="6254066287920239840">Atidarykite nuorodas programoje, o ne naršyklėje.</translation>
-<translation id="6266039999629596120">Reikia atkreipti dėmesį</translation>
 <translation id="6268773951964630964">Ieškoti nukopijuoto vaizdo</translation>
 <translation id="6271462272606946663">Slėpti parinktį „Pateikti užklausą dėl svetainės mobiliesiems“</translation>
 <translation id="6271824294945464304">Bendrinamas slaptažodis</translation>
@@ -1263,6 +1255,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6368102751067608420">Jei norite ištrinti visus slaptažodžių tvarkyklės duomenis</translation>
 <translation id="6374469231428023295">Bandyti dar kartą</translation>
 <translation id="6387994324662817823">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
+<translation id="6393156038355142111">Siūlyti sudėtingą slaptažodį</translation>
 <translation id="6404422529625928907">Atidaryti „Google“ diske</translation>
 <translation id="6404511346730675251">Redaguoti žymę</translation>
 <translation id="6406506848690869874">Sinchronizavimas</translation>
@@ -1523,7 +1516,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7476548258282096076">Šioje kortelėje rodomi dažniausiai lankomos svetainės.</translation>
 <translation id="7484645889979462775">Niekada šiam puslapiui</translation>
 <translation id="7486006552035434095">Įrenginių sinchronizavimas</translation>
-<translation id="7488874549363591659">Pristatyta</translation>
 <translation id="7491131399623468277">Eikite į skiltį „Nustatymai“…</translation>
 <translation id="7498234416455752244">Toliau redaguoti</translation>
 <translation id="7500244509706269886">Automatiškai užpildyti formą</translation>

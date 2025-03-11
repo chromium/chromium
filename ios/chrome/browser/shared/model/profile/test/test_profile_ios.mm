@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 
 #import <tuple>
+#import <variant>
 
 #import "base/base_paths.h"
 #import "base/files/file_util.h"
@@ -39,7 +40,7 @@ void AssignTestingFactories(
     TestProfileIOS* profile,
     TestProfileIOS::TestingFactories testing_factories) {
   for (auto& item : testing_factories) {
-    absl::visit(
+    std::visit(
         [profile](auto& p) {
           p.first->SetTestingFactory(profile, std::move(p.second));
         },

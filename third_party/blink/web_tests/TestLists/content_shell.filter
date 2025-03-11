@@ -950,11 +950,71 @@ external/wpt/workers/baseurl/alpha/sharedworker-in-worker.html
 external/wpt/workers/postMessage_block.https.html
 
 # Tests that exhibit antialiasing differences only on headless shell, not on
-# content_shell, when run under Fontations. See crbug.com/397880053.
+# content_shell, when run under Fontations.
+# See crbug.com/397880053 and crbug.com/339041663.
+external/wpt/css/css-anchor-position/anchor-position-005-print.html
+external/wpt/css/css-break/abspos-in-clipped-overflow-print.html
+external/wpt/css/css-break/break-inside-avoid-multicol-iframe-crash-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-066-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069d-print.html
+external/wpt/css/css-break/grid/monolithic-overflow-print.html
+external/wpt/css/css-break/table/repeated-section/fixedpos-in-footer-forced-break-print.html
+external/wpt/css/css-break/table/table-fragmentation-002a-print.html
+external/wpt/css/css-break/transform-023-print.html
+external/wpt/css/css-break/transform-024-print.html
+external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html
 external/wpt/css/css-multicol/multicol-height-002-print.xht
+external/wpt/css/css-overflow/keyboard-scroll.html
+external/wpt/css/css-page/cssom/dynamic-001-print.html
+external/wpt/css/css-page/fixedpos-001-print.html
+external/wpt/css/css-page/fixedpos-002-print.html
+external/wpt/css/css-page/fixedpos-003-print.html
+external/wpt/css/css-page/fixedpos-004-print.html
+external/wpt/css/css-page/fixedpos-005-print.html
+external/wpt/css/css-page/fixedpos-006-print.html
+external/wpt/css/css-page/fixedpos-007-print.html
+external/wpt/css/css-page/fixedpos-008-print.html
+external/wpt/css/css-page/fixedpos-009-print.html
+external/wpt/css/css-page/fixedpos-011-print.html
+external/wpt/css/css-page/fixedpos-with-abspos-with-link-print.html
+external/wpt/css/css-page/fixedpos-with-iframe-print.html
+external/wpt/css/css-page/fixedpos-with-link-with-inline-child-print.html
 external/wpt/css/css-page/margin-boxes/auto-margins-001-print.html
 external/wpt/css/css-page/margin-boxes/auto-margins-002-print.html
+external/wpt/css/css-page/margin-boxes/auto-margins-003-print.html
+external/wpt/css/css-page/margin-boxes/content-002-print.html
+external/wpt/css/css-page/margin-boxes/dimensions-015-print.tentative.html
+external/wpt/css/css-page/margin-boxes/overconstrained-001-print.html
+external/wpt/css/css-page/media-queries-002-print.html
+external/wpt/css/css-page/media-queries-003-print.html
+external/wpt/css/css-page/monolithic-overflow-023-print.html
+external/wpt/css/css-page/monolithic-overflow-028-print.html
+external/wpt/css/css-page/monolithic-overflow-030-print.html
+external/wpt/css/css-page/page-background-001-print.html
+external/wpt/css/css-page/page-box-002-print.html
+external/wpt/css/css-page/page-box-003-print.html
+external/wpt/css/css-page/page-box-006-print.html
+external/wpt/css/css-page/page-box-007-print.html
+external/wpt/css/css-page/page-box-008-print.html
 external/wpt/css/css-page/page-box-009-print.html
+external/wpt/css/css-page/page-box-011-print.html
+external/wpt/css/css-page/page-margin-006-print.html
+external/wpt/css/css-page/page-margin-007-print.html
+external/wpt/css/css-page/page-size-010-print.html
+external/wpt/css/css-page/page-size-013-print.html
+external/wpt/css/css-page/page-size-014-print.html
+external/wpt/css/css-page/page-size-016-print.tentative.html
+external/wpt/css/css-page/page-size-017-print.tentative.html
+external/wpt/css/css-position/sticky/position-sticky-offset-print.html
+external/wpt/css/printing/animations-print.html
+external/wpt/css/printing/animations-shadow-print.html
+external/wpt/css/printing/pseudo-animations-print.html
+external/wpt/html/rendering/non-replaced-elements/tables/table-row-pagination-002-print.html
+external/wpt/html/semantics/embedded-content/the-object-element/object-image-display-none-loading-for-print.html
+virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html
+virtual/scalefactor200/external/wpt/css/printing/animations-print.html
+virtual/scalefactor200/external/wpt/css/printing/zero-size-002-print.tentative.html
+virtual/scalefactor200/external/wpt/css/printing/zero-size-003-print.tentative.html
 
 virtual/atomic-move-range-preservation/external/wpt/dom/nodes/moveBefore/tentative/selection-preserve.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html

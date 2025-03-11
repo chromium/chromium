@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">ภาพเคลื่อนไหวของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1539864135338521185">ลาพิส ลาซูลี</translation>
+<translation id="1548555207631326346">เลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนรูปภาพ AI ในแบบของคุณ<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เมื่อสร้างด้วย AI ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI เป็นเวอร์ชันทดลองที่อยู่ในช่วงการพัฒนาขั้นต้น และมีให้บริการจํากัดในขณะนี้</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1561927818299383735">สีเรืองแสง</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ชายหาด</translation>
 <translation id="819278132617411009">ใช้ AI ของ Google เพื่อทำงานอย่างมีประสิทธิภาพมากขึ้น</translation>
+<translation id="82003371436638355">เมื่อเลือก "สร้างของคุณเอง" ให้เขียนพรอมต์ที่กำหนดเอง หรือเลือก "เลือกธีม" แล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณ
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เมื่อสร้างวอลเปเปอร์ของคุณเอง ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ข้อกำหนดในการให้บริการและนโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">เล่นสื่อ</translation>
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
 <translation id="8320910311642849813">ป่า</translation>
+<translation id="8322464149031882595">คลิกเพื่อดำเนินการต่อ</translation>
 <translation id="8329018942023753850">แอปเครื่องคิดเลข</translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
 <translation id="8339024191194156249">ดูข้อมูลเพิ่มเติมเกี่ยวกับการเปิดใช้งานอัตโนมัติ</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">เพนกวิน</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
+<translation id="8972061581514441296">คลิกเพื่อย้อนกลับ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{สแกน}=1{สแกนหน้า {NUMBER_OF_PAGES}}other{สแกนหน้า {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">หมู่บ้าน</translation>

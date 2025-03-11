@@ -1459,8 +1459,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       state_.StyleBuilder().SetHasAttrFunction();
       success &= ResolveAttrInto(stream, tree_scope, resolver, context,
                                  function_context, out);
-    } else if (token.FunctionId() ==
-               CSSValueID::kInternalAutoBase) {
+    } else if (token.FunctionId() == CSSValueID::kInternalAutoBase) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &=
           ResolveAutoBaseInto(stream, tree_scope, resolver, context, out);
@@ -1562,16 +1561,14 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
       if (std::optional<const CSSValue*> local_variable =
               FindOrNullopt(frame->locals, var_name)) {
         return ResolveArgumentOrLocalInto(
-            local_variable.value(), function_context->tree_scope, stream,
-            resolver, context, (has_fallback ? &fallback : nullptr), out);
+            local_variable.value(), (has_fallback ? &fallback : nullptr), out);
       }
       // Note that there is no "lookup and apply" step for arguments; one
       // argument cannot reference another using var() or similar.
       if (std::optional<const CSSValue*> argument =
               FindOrNullopt(frame->arguments, var_name)) {
         return ResolveArgumentOrLocalInto(
-            argument.value(), function_context->tree_scope, stream, resolver,
-            context, (has_fallback ? &fallback : nullptr), out);
+            argument.value(), (has_fallback ? &fallback : nullptr), out);
       }
     }
   }
@@ -1866,10 +1863,6 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
 }
 
 bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
-                                              const TreeScope* tree_scope,
-                                              CSSParserTokenStream& stream,
-                                              CascadeResolver& resolver,
-                                              const CSSParserContext& context,
                                               const TokenSequence* fallback,
                                               TokenSequence& out) {
   // Note: `value` may be nullptr when a local variable became invalid

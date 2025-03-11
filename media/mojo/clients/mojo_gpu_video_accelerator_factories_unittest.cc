@@ -534,6 +534,7 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   scoped_refptr<MockContextProviderCommandBuffer> mock_context_provider_;
   std::unique_ptr<gpu::CommandBufferProxyImpl> gpu_command_buffer_proxy_;
+  NullMediaLog media_log_;
   FakeVEAProviderImpl fake_vea_provider_;
 
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
@@ -638,7 +639,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesDeathTest, CreateVideoDecoderFailed) {
 
   EXPECT_DCHECK_DEATH({
     EXPECT_EQ(gpu_video_accelerator_factories->CreateVideoDecoder(
-                  nullptr, std::move(mock_cb)),
+                  &media_log_, std::move(mock_cb)),
               nullptr);
   });
 }
@@ -725,7 +726,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, CreateVideoDecoder) {
       CreateGpuVideoAcceleratorFactories(true, false);
 
   EXPECT_NE(gpu_video_accelerator_factories->CreateVideoDecoder(
-                nullptr, std::move(mock_cb)),
+                &media_log_, std::move(mock_cb)),
             nullptr);
 }
 #else

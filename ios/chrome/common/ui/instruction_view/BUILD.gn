@@ -18,6 +18,26 @@ source_set("instruction_view") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("instructions_half_sheet") {
+  sources = [
+    "instructions_half_sheet_coordinator.h",
+    "instructions_half_sheet_coordinator.mm",
+    "instructions_half_sheet_view_controller.h",
+    "instructions_half_sheet_view_controller.mm",
+  ]
+  deps = [
+    ":instruction_view",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("constants") {
   sources = [
     "constants.h",

@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
@@ -74,8 +73,6 @@ class TabSharingInfoBarDelegateTest
   TabSharingInfoBarDelegateTest()
       : captured_surface_control_active_(testing::get<0>(GetParam())),
         favicons_used_for_switch_to_tab_button_(testing::get<1>(GetParam())) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCapturedSurfaceControlStickyPermissions);
   }
 
   infobars::InfoBar* CreateInfobar(const Preferences& prefs) {
@@ -122,8 +119,6 @@ class TabSharingInfoBarDelegateTest
  protected:
   const bool captured_surface_control_active_;
   const bool favicons_used_for_switch_to_tab_button_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   MockTabSharingUIViews mock_ui;

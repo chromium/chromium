@@ -703,22 +703,16 @@ void VideoResourceUpdater::AppendQuad(
 
 void VideoResourceUpdater::ClearFrameResources() {
   // Delete recycled resources that are not in use anymore.
-  bool cleared_resources = std::erase_if(
-      all_resources_, [](const std::unique_ptr<FrameResource>& resource) {
-        // Resources that are still being used can't be deleted.
-        return !resource->has_refs();
-      });
+  std::erase_if(all_resources_,
+                [](const std::unique_ptr<FrameResource>& resource) {
+                  // Resources that are still being used can't be deleted.
+                  return !resource->has_refs();
+                });
 
-  // May have destroyed resources above, make sure that it gets to the other
-  // side. SharedImage destruction (which may be triggered by the removal of
-  // canvas resources above) is a deferred message, we need to flush pending
-  // work to ensure that it is not merely queued, but is executed on the service
-  // side.
-  if (cleared_resources && context_provider_) {
-    if (auto* context_support = context_provider_->ContextSupport()) {
-      context_support->FlushPendingWork();
-    }
-  }
+  // May have destroyed resources above that contains shared images.
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request from above is flushed. Thus,
+  // SharedImageInterface::Flush in not needed here explicitly.
 }
 
 VideoFrameExternalResource

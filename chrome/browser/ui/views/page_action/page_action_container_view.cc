@@ -11,15 +11,22 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace page_actions {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageActionContainerView,
+                                      kPageActionContainerViewElementId);
 
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
     const PageActionViewParams& params) {
+  SetProperty(views::kElementIdentifierKey, kPageActionContainerViewElementId);
+
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
 

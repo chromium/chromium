@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
 
+#import <variant>
+
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/uuid.h"
@@ -19,15 +21,15 @@ MockAutofillSaveCardInfoBarDelegateMobile::
         autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
             options,
         const autofill::CreditCard& card,
-        absl::variant<autofill::payments::PaymentsAutofillClient::
-                          LocalSaveCardPromptCallback,
-                      autofill::payments::PaymentsAutofillClient::
-                          UploadSaveCardPromptCallback> callback,
+        std::variant<autofill::payments::PaymentsAutofillClient::
+                         LocalSaveCardPromptCallback,
+                     autofill::payments::PaymentsAutofillClient::
+                         UploadSaveCardPromptCallback> callback,
         const autofill::LegalMessageLines& legal_message_lines,
         const AccountInfo& displayed_target_account)
     : AutofillSaveCardInfoBarDelegateIOS(
-          absl::holds_alternative<autofill::payments::PaymentsAutofillClient::
-                                      UploadSaveCardPromptCallback>(callback)
+          std::holds_alternative<autofill::payments::PaymentsAutofillClient::
+                                     UploadSaveCardPromptCallback>(callback)
               ? autofill::AutofillSaveCardUiInfo::CreateForUploadSave(
                     options,
                     card,
@@ -59,7 +61,7 @@ MockAutofillSaveCardInfoBarDelegateMobileFactory::
         autofill::CreditCard card,
         autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
             options) {
-  using Variant = absl::variant<
+  using Variant = std::variant<
       autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
       autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback

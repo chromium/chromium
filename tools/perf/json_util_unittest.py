@@ -312,10 +312,10 @@ class JsonUtilTest(unittest.TestCase):
         'win-222-e504',
         'Chromium Commit Position':
         'https://crrev.com/1405221',
-        'V8 Git Hash': ('https://chromium.googlesource.com/v8/v8/+/'
-                        '60e67b93909a1c858305b27111d9988f94fff0f8'),
-        'WebRTC Git Hash': ('https://webrtc.googlesource.com/src/+/'
-                            '1e19045eaa63d00a3b4017fd43c5b502c6ed73a2'),
+        'V8': ('https://chromium.googlesource.com/v8/v8/+/'
+               '60e67b93909a1c858305b27111d9988f94fff0f8'),
+        'WebRTC': ('https://webrtc.googlesource.com/src/+/'
+                   '1e19045eaa63d00a3b4017fd43c5b502c6ed73a2'),
     }
     expected = {
         'version': 1,
@@ -1002,10 +1002,10 @@ class JsonUtilTest(unittest.TestCase):
         'win-222-e504, win-223-e504, win-224-e504',
         'Chromium Commit Position':
         'https://crrev.com/1405221',
-        'V8 Git Hash': ('https://chromium.googlesource.com/v8/v8/+/'
-                        '60e67b93909a1c858305b27111d9988f94fff0f8'),
-        'WebRTC Git Hash': ('https://webrtc.googlesource.com/src/+/'
-                            '1e19045eaa63d00a3b4017fd43c5b502c6ed73a2'),
+        'V8': ('https://chromium.googlesource.com/v8/v8/+/'
+               '60e67b93909a1c858305b27111d9988f94fff0f8'),
+        'WebRTC': ('https://webrtc.googlesource.com/src/+/'
+                   '1e19045eaa63d00a3b4017fd43c5b502c6ed73a2'),
     }
     self.assertDictEqual(got, expected)
 

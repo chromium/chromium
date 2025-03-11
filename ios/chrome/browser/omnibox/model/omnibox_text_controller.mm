@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
@@ -38,7 +39,26 @@
   _omniboxViewIOS = nullptr;
 }
 
+#pragma mark - Autocomplete events
+
+- (void)setAdditionalText:(const std::u16string&)text {
+  if (!text.length()) {
+    self.textField.additionalText = nil;
+    return;
+  }
+
+  [self.textField setAdditionalText:[NSString cr_fromString16:u" - " + text]];
+}
+
 #pragma mark - Omnibox text events
+
+- (void)onUserRemoveAdditionalText {
+  [self setAdditionalText:u""];
+  if (_omniboxEditModel) {
+    _omniboxEditModel->UpdateInput(/*has_selected_text=*/false,
+                                   /*prevent_inline_autocomplete=*/true);
+  }
+}
 
 - (void)onThumbnailSet:(BOOL)hasThumbnail {
   [self.omniboxAutocompleteController.omniboxPopupController

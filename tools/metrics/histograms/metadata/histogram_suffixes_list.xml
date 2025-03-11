@@ -433,27 +433,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Download.HttpResponseCode"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BadBlockCounts" separator=".">
-  <suffix name="Backupsys" label="backupsys partition"/>
-  <suffix name="Bbt" label="bbt partition"/>
-  <suffix name="Block0" label="block0 partition"/>
-  <suffix name="Bootloader" label="bootloader partition"/>
-  <suffix name="Cache" label="cache partition"/>
-  <suffix name="Factory_store" label="factory_store partition"/>
-  <suffix name="Fts" label="fts partition"/>
-  <suffix name="Kernel" label="kernel partition"/>
-  <suffix name="Postbootloader" label="postbootloader partition"/>
-  <suffix name="Postbootloader-B" label="postbootloader-B partition"/>
-  <suffix name="Prebootloader" label="prebootloader partition"/>
-  <suffix name="Recovery" label="recovery partition"/>
-  <suffix name="Rootfs" label="rootfs partition"/>
-  <suffix name="Total" label="total partition"/>
-  <suffix name="TZ" label="TZ partition"/>
-  <suffix name="TZ-B" label="TZ-B partition"/>
-  <suffix name="Userdata" label="userdata partition"/>
-  <affected-histogram name="Platform.Storage.Flash.BadBlocks"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlinkUpdateTimeSuffixes" separator=".">
   <suffix name="AggregatedPreFCP"
       label="All the time spent Pre First Contentful Paint in this component"/>
@@ -3906,14 +3885,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Server" label="Server"/>
   <suffix name="Unknown" label="Unknown"/>
   <affected-histogram name="Sharing.SendMessageResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SharingClickToCallUi" separator=".">
-  <suffix name="ContextMenu" label="Context menu"/>
-  <suffix name="Dialog" label="Dialog"/>
-  <affected-histogram name="Sharing.ClickToCallDevicesToShow"/>
-  <affected-histogram name="Sharing.ClickToCallSelectedAppIndex"/>
-  <affected-histogram name="Sharing.ClickToCallSelectedDeviceIndex"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SharingDevicePlatform" separator=".">

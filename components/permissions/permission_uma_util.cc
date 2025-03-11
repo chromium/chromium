@@ -2149,4 +2149,11 @@ void PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
       time_delta);
 }
 
+// static
+void PermissionUmaUtil::RecordPermissionRequestRelevance(
+    PermissionRequestRelevance permission_request_relevance) {
+  base::UmaHistogramEnumeration("Permissions.AIv1.PermissionRequestRelevance",
+                                permission_request_relevance);
+}
+
 }  // namespace permissions

@@ -6,6 +6,7 @@
 
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
@@ -136,6 +137,10 @@ FakeServiceEndpointResolver::CreateServiceEndpointRequest(
   requests_.pop_front();
   request->set_priority(parameters.initial_priority);
   return request;
+}
+
+bool FakeServiceEndpointResolver::IsHappyEyeballsV3Enabled() const {
+  return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
 }
 
 ServiceEndpointBuilder::ServiceEndpointBuilder() = default;

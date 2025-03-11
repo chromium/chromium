@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animació de l'estalvi de pantalla</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
 <translation id="1539864135338521185">lapislàtzuli</translation>
+<translation id="1548555207631326346">Tria un tema i selecciona les paraules subratllades per personalitzar les teves imatges d'IA.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Per obtenir més opcions d'imatges d'IA úniques i variades, selecciona Inspira'm.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quan crees contingut amb IA, la indicació s'envia als servidors de la IA de Google per generar imatges i millorar el producte, de conformitat amb la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />política de privadesa de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          La IA generativa és experimental, està en fase primerenca de desenvolupament i actualment té una disponibilitat limitada.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
 <translation id="1561927818299383735">color de la retroil·luminació</translation>
@@ -1553,6 +1562,16 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8183975772394450380">una platja</translation>
 <translation id="819278132617411009">Utilitza la IA de Google per augmentar la productivitat</translation>
+<translation id="82003371436638355">Si selecciones Crea el teu, escriu una indicació personalitzada. També pots seleccionar Tria un tema i, a continuació, seleccionar les paraules subratllades per personalitzar el teu fons de pantalla IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Per obtenir més opcions d'imatges d'IA úniques i variades, selecciona Inspira'm.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quan crees el teu propi fons de pantalla, la indicació s'envia als servidors de Google per generar imatges i millorar el producte, de conformitat amb les <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />condicions del servei i la política de privadesa de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. No hi incloguis informació personal, sensible ni confidencial.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Més informació<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
@@ -1574,6 +1593,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8312330582793120272">reprodueix el contingut multimèdia</translation>
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8320910311642849813">un bosc</translation>
+<translation id="8322464149031882595">Fes clic per anar endavant</translation>
 <translation id="8329018942023753850">aplicació Calculadora</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
 <translation id="8339024191194156249">Obtén més informació sobre l'inici automàtic</translation>
@@ -1720,6 +1740,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8961025972867871808">pingüins</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
+<translation id="8972061581514441296">Fes clic per tornar enrere</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="89945434909472341">un poble</translation>

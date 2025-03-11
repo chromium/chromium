@@ -244,22 +244,6 @@ struct ProductSpecifications {
   std::vector<Product> products;
 };
 
-// Information returned by Parcels API.
-struct ParcelTrackingStatus {
- public:
-  ParcelTrackingStatus();
-  explicit ParcelTrackingStatus(const ParcelStatus&);
-  ParcelTrackingStatus(const ParcelTrackingStatus&);
-  ParcelTrackingStatus& operator=(const ParcelTrackingStatus&);
-  ~ParcelTrackingStatus();
-
-  ParcelIdentifier::Carrier carrier = ParcelIdentifier::UNKNOWN;
-  std::string tracking_id;
-  ParcelStatus::ParcelState state = ParcelStatus::UNKNOWN;
-  GURL tracking_url;
-  std::optional<base::Time> estimated_delivery_time;
-};
-
 // Class representing the tap strip entry point.
 struct EntryPointInfo {
   EntryPointInfo(const std::string& title,
@@ -295,9 +279,6 @@ using ProductSpecificationsCallback =
                             std::optional<ProductSpecifications>)>;
 using IsShoppingPageCallback =
     base::OnceCallback<void(const GURL&, std::optional<bool>)>;
-using GetParcelStatusCallback = base::OnceCallback<
-    void(bool /*success*/, std::unique_ptr<std::vector<ParcelTrackingStatus>>)>;
-using StopParcelTrackingCallback = base::OnceCallback<void(bool /*success*/)>;
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_TYPES_H_

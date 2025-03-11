@@ -198,10 +198,6 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
   node.backdrop_filters = wire.backdrop_filters;
 
-  node.subtree_has_copy_request = wire.subtree_has_copy_request;
-  node.closest_ancestor_with_copy_request_id =
-      wire.closest_ancestor_with_copy_request_id;
-
   return base::ok();
 }
 

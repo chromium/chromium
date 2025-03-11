@@ -175,8 +175,7 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
       self.textField, std::move(_client), self.browser->GetProfile(),
-      omniboxHandler, self.focusDelegate, _toolbarHandler, self.viewController,
-      _isLensOverlay);
+      omniboxHandler, self.focusDelegate, _toolbarHandler, _isLensOverlay);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -224,6 +223,7 @@
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
 
   self.mediator.omniboxTextController = _omniboxTextController;
+  _editView->SetOmniboxTextController(_omniboxTextController);
 
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
   [self.popupCoordinator start];

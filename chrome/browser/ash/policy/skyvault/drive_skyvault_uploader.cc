@@ -119,8 +119,8 @@ void DriveSkyvaultUploader::Run() {
 
   waiting_for_connection_ =
       drive_status != drive::util::ConnectionStatus::kConnected;
-  SkyVaultMigrationWaitForConnectionHistogram(CloudProvider::kGoogleDrive,
-                                              waiting_for_connection_);
+  SkyVaultMigrationWaitForConnectionHistogram(
+      MigrationDestination::kGoogleDrive, waiting_for_connection_);
   if (waiting_for_connection_) {
     LOG(ERROR) << "Waiting for connection to Drive";
     connection_wait_start_time_ = base::Time::Now();
@@ -267,7 +267,7 @@ void DriveSkyvaultUploader::OnEndCopy(
 void DriveSkyvaultUploader::OnEndUpload() {
   observed_relative_drive_path_.clear();
   SkyVaultDeleteErrorHistogram(UploadTrigger::kMigration,
-                               CloudProvider::kGoogleDrive,
+                               MigrationDestination::kGoogleDrive,
                                error_ == MigrationUploadError::kDeleteFailed);
   std::move(callback_).Run(error_, upload_root_path_);
 }
@@ -441,7 +441,7 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
       waiting_for_connection_ = false;
       CHECK(connection_wait_start_time_.has_value());
       SkyVaultMigrationReconnectionDurationHistogram(
-          CloudProvider::kGoogleDrive,
+          MigrationDestination::kGoogleDrive,
           base::Time::Now() - connection_wait_start_time_.value());
       connection_wait_start_time_.reset();
       reconnection_timer_.Stop();

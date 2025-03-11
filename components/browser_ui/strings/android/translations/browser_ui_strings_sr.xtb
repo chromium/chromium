@@ -519,6 +519,7 @@
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8206354486702514201">Ово подешавање примењује администратор.</translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Премести на врх</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8284326494547611709">Титл</translation>
@@ -585,6 +586,7 @@
 <translation id="8993853206419610596">Прошири све захтеве</translation>
 <translation id="9002538116239926534">Када је укључено, сајтови могу да чувају податке на уређају. Када је искључено, сајтови не могу да чувају податке на уређају.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> је дозвољен</translation>
+<translation id="9017522656123387064">Изашли сте из режима избора</translation>
 <translation id="9019902583201351841">Овим управљају твоји родитељи</translation>
 <translation id="902236149563113779">Сајтови обично прате положај камере за потребе функција проширене реалности, попут игара или путања</translation>
 <translation id="9039697262778250930">Можда ћете бити одјављени са ових сајтова</translation>

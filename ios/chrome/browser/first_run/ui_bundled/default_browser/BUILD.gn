@@ -13,6 +13,8 @@ source_set("default_browser") {
     "//base",
     "//components/feature_engagement/public",
     "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings:ios_branded_strings",
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
@@ -32,6 +34,7 @@ source_set("default_browser") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/instruction_view:instructions_half_sheet",
     "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -39,21 +42,29 @@ source_set("default_browser") {
 
 source_set("default_browser_ui") {
   sources = [
+    "default_browser_animated_screen_view_controller.h",
+    "default_browser_animated_screen_view_controller.mm",
     "default_browser_screen_view_controller.h",
     "default_browser_screen_view_controller.mm",
   ]
   deps = [
     ":default_browser_mediator",
     "//base",
+    "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/instruction_view",
+    "//ios/chrome/common/ui/instruction_view:instructions_half_sheet",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util:util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

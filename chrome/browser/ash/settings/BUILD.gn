@@ -66,6 +66,10 @@ static_library("settings") {
     "//crypto",
     "//net",
     "//third_party/re2:re2",
+
+    # Work around of stub_cros_settings_provider injection.
+    # TODO(hidehiko): Move the test support code to test_support target.
+    "//chromeos/ash/components/settings:test_support",
   ]
 }
 

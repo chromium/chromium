@@ -63,14 +63,14 @@ using std::rotr;
 
 // Rotating functions
 template <class T>
-ABSL_MUST_USE_RESULT constexpr
+[[nodiscard]] constexpr
     typename std::enable_if<std::is_unsigned<T>::value, T>::type
     rotl(T x, int s) noexcept {
   return numeric_internal::RotateLeft(x, s);
 }
 
 template <class T>
-ABSL_MUST_USE_RESULT constexpr
+[[nodiscard]] constexpr
     typename std::enable_if<std::is_unsigned<T>::value, T>::type
     rotr(T x, int s) noexcept {
   return numeric_internal::RotateRight(x, s);

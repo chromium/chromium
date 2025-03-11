@@ -18286,6 +18286,155 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   }
 }
 
+class ExtraJoinPermissionsInterestGroupBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  ExtraJoinPermissionsInterestGroupBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kFledgeModifyInterestGroupPolicyCheckOnOwner},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// When features::kFledgeJoinAdInterestGroupExtraPolicyCheck is enabled, a
+// declared policy of (self) should prevent a x-origin owner from joining in the
+// top frame.
+IN_PROC_BROWSER_TEST_F(
+    ExtraJoinPermissionsInterestGroupBrowserTest,
+    JoinAdInterestGroupFailsForCrossOriginWithSelfDeclaredPolicy) {
+  const char kGroup[] = "aardvarks";
+  GURL join_declared_self_url = embedded_https_test_server().GetURL(
+      "b.test", "/interest_group/join_declared_self.html");
+  network_responder_->RegisterNetworkResponse(
+      join_declared_self_url.path(), "", "text/html",
+      {{"Permissions-Policy", "join-ad-interest-group=(self)"}});
+
+  url::Origin allow_join_origin = url::Origin::Create(
+      GURL(embedded_https_test_server().GetURL("allow-join.a.test", "/")));
+  url::Origin allow_leave_origin =
+      embedded_https_test_server().GetOrigin("allow-leave.a.test");
+
+  // Navigate to a cross-origin URL that declares Permissions-Policy:
+  // join-ad-interest-group=(self)
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "b.test", join_declared_self_url.path())));
+
+  // Joining a group cross-origin should fail.
+  EXPECT_EQ("NotAllowedError: Permission to join interest group denied.",
+            JoinInterestGroupAndVerify(allow_join_origin, kGroup));
+
+  // Leaving a group cross-origin should fail.
+  EXPECT_EQ("NotAllowedError: Permission to leave interest group denied.",
+            LeaveInterestGroupAndVerify(allow_leave_origin, kGroup));
+
+  // Clearing a cross-origin's igs should fail.
+  EXPECT_EQ("NotAllowedError: Permission to leave interest groups denied.",
+            ClearOriginJoinedInterestGroupsAndVerify(allow_leave_origin));
+}
+
+class ExtraJoinPermissionsAndDefaultSelfInterestGroupBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  ExtraJoinPermissionsAndDefaultSelfInterestGroupBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kFledgeModifyInterestGroupPolicyCheckOnOwner,
+         network::features::kAdInterestGroupAPIRestrictedPolicyByDefault},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// When default self and features::kFledgeJoinAdInterestGroupExtraPolicyCheck
+// are enabled, a x-origin join should be possible from the top-frame.
+IN_PROC_BROWSER_TEST_F(
+    ExtraJoinPermissionsAndDefaultSelfInterestGroupBrowserTest,
+    JoinAdInterestGroupFailsForCrossOriginWithSelfDeclaredPolicy) {
+  const char kGroup[] = "aardvarks";
+  GURL join_declared_self_url = embedded_https_test_server().GetURL(
+      "b.test", "/interest_group/empty.html");
+  network_responder_->RegisterNetworkResponse(join_declared_self_url.path(), "",
+                                              "text/html", {{}});
+
+  url::Origin allow_join_origin = url::Origin::Create(
+      GURL(embedded_https_test_server().GetURL("allow-join.a.test", "/")));
+  url::Origin allow_leave_origin =
+      embedded_https_test_server().GetOrigin("allow-leave.a.test");
+
+  // Navigate to a URL without a document policy.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "b.test", join_declared_self_url.path())));
+
+  // Joining a group cross-origin should succeed.
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(allow_join_origin, kGroup));
+
+  // Leaving a group cross-origin should succeed.
+  EXPECT_EQ(kSuccess, LeaveInterestGroupAndVerify(allow_leave_origin, kGroup));
+
+  // Clearing a cross-origin's igs should succeed.
+  EXPECT_EQ(kSuccess,
+            ClearOriginJoinedInterestGroupsAndVerify(allow_leave_origin));
+}
+
+// Delete this class and the test using it once
+// kFledgeJoinAdInterestGroupExtraPolicyCheck is enabled by default. It is
+// simply verifying the existing broken behavior.
+class NoExtraJoinPermissionsInterestGroupBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  NoExtraJoinPermissionsInterestGroupBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kFledgeModifyInterestGroupPolicyCheckOnOwner});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// When features::kFledgeJoinAdInterestGroupExtraPolicyCheck is disabled, a
+// declared policy of (self) won't prevent a x-origin owner from joining in the
+// top frame. Delete this test and the associated class once
+// kFledgeJoinAdInterestGroupExtraPolicyCheck is enabled by default.
+IN_PROC_BROWSER_TEST_F(
+    NoExtraJoinPermissionsInterestGroupBrowserTest,
+    JoinAdInterestGroupFailsForCrossOriginWithSelfDeclaredPolicy) {
+  const char kGroup[] = "aardvarks";
+  GURL join_declared_self_url = embedded_https_test_server().GetURL(
+      "b.test", "/interest_group/join_declared_self.html");
+  network_responder_->RegisterNetworkResponse(
+      join_declared_self_url.path(), "", "text/html",
+      {{"Permissions-Policy", "join-ad-interest-group=(self)"}});
+
+  url::Origin allow_join_origin = url::Origin::Create(
+      GURL(embedded_https_test_server().GetURL("allow-join.a.test", "/")));
+  url::Origin allow_leave_origin =
+      embedded_https_test_server().GetOrigin("allow-leave.a.test");
+
+  // Navigate to a cross-origin URL that declares Permissions-Policy:
+  // join-ad-interest-group=(self)
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "b.test", join_declared_self_url.path())));
+
+  // Joining a group cross-origin should work.
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(allow_join_origin, kGroup));
+
+  // Leaving a group cross-origin should work.
+  EXPECT_EQ(kSuccess, LeaveInterestGroupAndVerify(allow_leave_origin, kGroup));
+
+  // Clearing a cross-origin's igs should work.
+  EXPECT_EQ(kSuccess,
+            ClearOriginJoinedInterestGroupsAndVerify(allow_leave_origin));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        LotsOfInterestGroupsEpsilonTimeout) {
   GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
@@ -24633,7 +24782,7 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   {
     base::HistogramTester histogram_tester;
     auto result = RunAuctionAndWait(auction_config);
-    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                         AuctionResult::kNoBids, 1);
     histogram_tester.ExpectUniqueSample(
         "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
@@ -24664,7 +24813,7 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   {
     base::HistogramTester histogram_tester;
     auto result = RunAuctionAndWait(auction_config);
-    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                         AuctionResult::kNoBids, 1);
     histogram_tester.ExpectUniqueSample(
         "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
@@ -26994,7 +27143,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   // We have no interest groups & nothing cached at this point.
   base::HistogramTester histogram_tester;
   auto result1 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                       AuctionResult::kNoInterestGroups, 1);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 0, 1);
@@ -27029,7 +27178,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   EXPECT_EQ(cached_signals_origin, signals_origin);
 
   auto result2 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                       AuctionResult::kNoInterestGroups, 2);
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 1, 1);
@@ -27049,8 +27198,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
                           interest_group.owner, "interest_group"}});
 
   auto result3 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 3);
-  histogram_tester.ExpectBucketCount("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result2", 3);
+  histogram_tester.ExpectBucketCount("Ads.InterestGroup.Auction.Result2",
                                      AuctionResult::kNoInterestGroups, 2);
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 1, 2);

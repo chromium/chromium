@@ -14,6 +14,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/task/thread_pool.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
@@ -52,6 +56,22 @@ std::vector<base::FilePath> GetAppSupportDirectoriesForScope(
   return app_support_dirs;
 }
 
+// Returns all directories under "Application Support/<company name>" for the
+// given scope.
+std::vector<base::FilePath> GetAppDirectoriesForScope(UpdaterScope scope) {
+  std::vector<base::FilePath> all_apps;
+  for (const base::FilePath& app_support_dir :
+       GetAppSupportDirectoriesForScope(scope)) {
+    base::FileEnumerator(app_support_dir.Append(COMPANY_SHORTNAME_STRING),
+                         /*recursive=*/false,
+                         base::FileEnumerator::FileType::DIRECTORIES)
+        .ForEach([&all_apps](const base::FilePath& app) {
+          all_apps.push_back(app);
+        });
+  }
+  return all_apps;
+}
+
 // Returns true if the directory contains a crashpad database with uploads
 // enabled.
 bool AppAllowsUsageStats(const base::FilePath& app_directory) {
@@ -70,50 +90,26 @@ bool AppAllowsUsageStats(const base::FilePath& app_directory) {
 
 }  // namespace
 
-class UsageStatsProviderImpl : public UsageStatsProvider {
- public:
-  explicit UsageStatsProviderImpl(const base::FilePath& install_directory)
-      : install_directory_(install_directory) {}
-
-  // Returns true if any app directory under
-  // "Application Support/<install_directory_>" for the given scope has
-  // usage stats enabled.
-  bool AnyAppEnablesUsageStats(UpdaterScope scope) override {
-    return std::ranges::any_of(
-        GetAppDirectories(scope), [](const base::FilePath& app_dir) {
-          return app_dir.BaseName().value() != PRODUCT_FULLNAME_STRING &&
-                 AppAllowsUsageStats(app_dir);
-        });
-  }
-
-  std::vector<base::FilePath> GetAppDirectories(UpdaterScope scope) {
-    std::vector<base::FilePath> all_apps;
-    for (const base::FilePath& app_support_dir :
-         GetAppSupportDirectoriesForScope(scope)) {
-      base::FileEnumerator(app_support_dir.Append(install_directory_),
-                           /*recursive=*/false,
-                           base::FileEnumerator::FileType::DIRECTORIES)
-          .ForEach([&all_apps](const base::FilePath& app) {
-            all_apps.push_back(app);
-          });
-    }
-    return all_apps;
-  }
-
- private:
-  base::FilePath install_directory_;
-};
-
-// Returns a UsageStatsProvider that checks usage stats opt in for apps found
-// under "Application Support/<COMPANY_NAME>." Google Chrome channels all follow
-// this pattern.
-std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create() {
-  return UsageStatsProvider::Create(base::FilePath(COMPANY_SHORTNAME_STRING));
+// Returns true if any app directory under "Application Support/<company name>"
+// for the given scope has usage stats enabled. Google Chrome channels all
+// follow this pattern.
+bool AnyAppUsageStatsAllowed(UpdaterScope scope) {
+  return std::ranges::any_of(
+      GetAppDirectoriesForScope(scope), [](const base::FilePath& app_dir) {
+        return app_dir.BaseName().value() != PRODUCT_FULLNAME_STRING &&
+               AppAllowsUsageStats(app_dir);
+      });
 }
 
-std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
-    const base::FilePath& install_directory) {
-  return std::make_unique<UsageStatsProviderImpl>(install_directory);
+void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&AnyAppUsageStatsAllowed, scope_),
+      base::BindOnce(&UpdateUsageStatsTask::SetUsageStatsEnabled, this,
+                     persisted_data_)
+          .Then(std::move(callback)));
 }
 
 }  // namespace updater

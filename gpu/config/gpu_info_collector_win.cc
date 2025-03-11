@@ -285,6 +285,9 @@ void CollectNPUInformation(GPUInfo* gpu_info) {
       LUID instance_luid;
       if (SUCCEEDED(dxcore_adapter->GetProperty(
               DXCoreAdapterProperty::InstanceLuid, &instance_luid))) {
+        device.system_device_id =
+            (static_cast<uint64_t>(instance_luid.HighPart) << 32) |
+            static_cast<uint64_t>(instance_luid.LowPart);
         device.luid =
             CHROME_LUID{instance_luid.LowPart, instance_luid.HighPart};
       }
@@ -318,6 +321,9 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     GPUInfo::GPUDevice device;
     device.vendor_id = desc.VendorId;
     device.device_id = desc.DeviceId;
+    device.system_device_id =
+        (static_cast<uint64_t>(desc.AdapterLuid.HighPart) << 32) |
+        static_cast<uint64_t>(desc.AdapterLuid.LowPart);
     device.sub_sys_id = desc.SubSysId;
     device.revision = desc.Revision;
     device.luid =

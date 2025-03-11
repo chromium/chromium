@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Κινούμενη εικόνα προφύλαξης οθόνης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
 <translation id="1539864135338521185">λάπις λάζουλι</translation>
+<translation id="1548555207631326346">Επιλέξτε ένα θέμα και έπειτα επιλέξτε τις υπογραμμισμένες λέξεις, για να εξατομικεύσετε τις εικόνες AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Επιλέξτε Δώσε μου έμπνευση, για να λάβετε περισσότερες μοναδικές και διαφορετικές επιλογές εικόνων AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Όταν δημιουργείτε περιεχόμενο με AI, η οδηγία αποστέλλεται στους διακομιστές Google AI για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Το generative AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.</translation>
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="155865706765934889">Επιφάνεια Αφής</translation>
 <translation id="1561927818299383735">χρώμα φωτισμού στο πίσω μέρος</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">παραλία</translation>
 <translation id="819278132617411009">Χρησιμοποιήστε το Google AI για να γίνετε πιο παραγωγικοί</translation>
+<translation id="82003371436638355">Όταν επιλέξετε Δημιουργήστε τη δική σας, γράψτε μια προσαρμοσμένη οδηγία. Εναλλακτικά, μπορείτε να επιλέξετε Επιλέξτε ένα θέμα και, έπειτα, τις υπογραμμισμένες λέξεις, για να εξατομικεύσετε την ταπετσαρία AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Επιλέξτε Δώσε μου έμπνευση, για να λάβετε περισσότερες μοναδικές και διαφορετικές επιλογές εικόνων AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Όταν δημιουργείτε τη δική σας ταπετσαρία, η οδηγία αποστέλλεται στους διακομιστές της Google για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με τους <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Όρους Παροχής Υπηρεσιών και την Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Μην συμπεριλάβετε προσωπικό, ευαίσθητο ή εμπιστευτικό περιεχόμενο.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Μάθετε περισσότερα<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">αναπαραγωγή μέσων</translation>
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
 <translation id="8320910311642849813">δάσος</translation>
+<translation id="8322464149031882595">Κάντε κλικ για μετάβαση εμπρός</translation>
 <translation id="8329018942023753850">εφαρμογή Αριθμομηχανή</translation>
 <translation id="8336739000755212683">Αλλαγή εικόνας λογαριασμού συσκευής</translation>
 <translation id="8339024191194156249">Μάθετε περισσότερα σχετικά με την αυτόματη εκκίνηση</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">πιγκουίνοι</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
+<translation id="8972061581514441296">Κάντε κλικ για επιστροφή</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">χωριό</translation>

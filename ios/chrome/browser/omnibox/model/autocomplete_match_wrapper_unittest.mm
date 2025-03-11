@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
 
+#import "components/omnibox/browser/actions/omnibox_pedal.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -12,6 +13,8 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -30,6 +33,12 @@
   return self.isStarred;
 }
 
+- (void)autocompleteMatchWrapper:(AutocompleteMatchWrapper*)wrapper
+             didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                     nonPedalSuggestionsGroups {
+  // NO-OP
+}
+
 @end
 
 class AutocompleteMatchWrapperTest : public PlatformTest {
@@ -42,6 +51,7 @@ class AutocompleteMatchWrapperTest : public PlatformTest {
     wrapper_.templateURLService =
         search_engines_test_environment_.template_url_service();
     wrapper_.delegate = _fake_autocomplete_wrapper_delegate;
+    wrapper_.pedalAnnotator = [[OmniboxPedalAnnotator alloc] init];
 
     TestProfileIOS::Builder builder;
 
@@ -63,68 +73,64 @@ class AutocompleteMatchWrapperTest : public PlatformTest {
   FakeAutocompleteMatchWrapperDelegate* _fake_autocomplete_wrapper_delegate;
 };
 
-// Tests wrapping a search match.
+// Tests wrapping an autocomplete result with 2 non-pedal starred matches.
 TEST_F(AutocompleteMatchWrapperTest,
        testWrapMatchesFromResultWithStarredMatch) {
-  AutocompleteMatch match = CreateSearchMatch(u"search");
-
-  _fake_autocomplete_wrapper_delegate.isStarred = YES;
-
-  AutocompleteResult result;
-
-  result.AppendMatches({match});
-
-  wrapper_.hasThumbnail = YES;
-
-  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
-      [wrapper_ wrapMatchesFromResult:result];
-
-  EXPECT_EQ(wrappedMatches.count, 1u);
-
-  EXPECT_TRUE(wrappedMatches[0].starred);
-  EXPECT_FALSE(wrappedMatches[0].incognito);
-  EXPECT_TRUE(wrappedMatches[0].defaultSearchEngineIsGoogle);
-  EXPECT_TRUE(wrappedMatches[0].isMultimodal);
-  EXPECT_EQ(wrappedMatches[0].actionsInSuggest.count, 0u);
-
-  // Reset isStarred to NO.
-  _fake_autocomplete_wrapper_delegate.isStarred = NO;
-}
-
-// Tests wrapping matches form a given autocomplete result.
-TEST_F(AutocompleteMatchWrapperTest, testWrapMatchesFromResult) {
-  AutocompleteResult result;
-
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
       u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
                   omnibox::ActionInfo_ActionType_DIRECTIONS});
   AutocompleteMatch match2 = CreateSearchMatch(u"search");
 
+  _fake_autocomplete_wrapper_delegate.isStarred = YES;
+
+  AutocompleteResult result;
   result.AppendMatches({match1, match2});
+
   wrapper_.hasThumbnail = NO;
 
-  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
-      [wrapper_ wrapMatchesFromResult:result];
+  NSArray<id<AutocompleteSuggestionGroup>>* wrappedGroups =
+      [wrapper_ wrapAutocompleteResultInGroups:result];
 
-  EXPECT_EQ(wrappedMatches.count, 2u);
+  // Expect 1 wrapped group.
+  EXPECT_EQ(wrappedGroups.count, 1u);
 
-  EXPECT_FALSE(wrappedMatches[0].starred);
-  EXPECT_FALSE(wrappedMatches[1].starred);
+  EXPECT_EQ(wrappedGroups[0].type,
+            SuggestionGroupType::kUnspecifiedSuggestionGroup);
 
-  EXPECT_FALSE(wrappedMatches[0].incognito);
-  EXPECT_FALSE(wrappedMatches[1].incognito);
+  // expect 2 wrapped suggestions in the group.
+  EXPECT_EQ(wrappedGroups[0].suggestions.count, 2u);
 
-  EXPECT_TRUE(wrappedMatches[0].defaultSearchEngineIsGoogle);
-  EXPECT_TRUE(wrappedMatches[1].defaultSearchEngineIsGoogle);
+  // Wrapped suggestions should be non pedals.
+  EXPECT_TRUE([wrappedGroups[0].suggestions[0]
+      isKindOfClass:[AutocompleteMatchFormatter class]]);
+  EXPECT_TRUE([wrappedGroups[0].suggestions[1]
+      isKindOfClass:[AutocompleteMatchFormatter class]]);
 
-  EXPECT_FALSE(wrappedMatches[0].isMultimodal);
-  EXPECT_FALSE(wrappedMatches[0].isMultimodal);
+  AutocompleteMatchFormatter* firstSuggestion = wrappedGroups[0].suggestions[0];
+  AutocompleteMatchFormatter* secondSuggestion =
+      wrappedGroups[0].suggestions[1];
 
-  EXPECT_EQ(wrappedMatches[0].actionsInSuggest.count, 2u);
-  EXPECT_EQ(wrappedMatches[1].actionsInSuggest.count, 0u);
+  EXPECT_TRUE(firstSuggestion.starred);
+  EXPECT_TRUE(secondSuggestion.starred);
+
+  EXPECT_FALSE(firstSuggestion.incognito);
+  EXPECT_FALSE(secondSuggestion.incognito);
+
+  EXPECT_TRUE(firstSuggestion.defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(secondSuggestion.defaultSearchEngineIsGoogle);
+
+  EXPECT_FALSE(firstSuggestion.isMultimodal);
+  EXPECT_FALSE(secondSuggestion.isMultimodal);
+
+  EXPECT_EQ(firstSuggestion.actionsInSuggest.count, 2u);
+  EXPECT_EQ(secondSuggestion.actionsInSuggest.count, 0u);
+
+  // Reset isStarred to NO.
+  _fake_autocomplete_wrapper_delegate.isStarred = NO;
 }
 
-// Tests wrapping a search match after changing the default search engine.
+// Tests wrapping an autocomplete result after changing the default search
+// engine.
 TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
   AutocompleteResult result;
 
@@ -144,14 +150,25 @@ TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
             template_url_service->GetDefaultSearchProvider()->GetEngineType(
                 template_url_service->search_terms_data()));
 
-  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
-      [wrapper_ wrapMatchesFromResult:result];
+  NSArray<id<AutocompleteSuggestionGroup>>* wrappedGroups =
+      [wrapper_ wrapAutocompleteResultInGroups:result];
 
-  EXPECT_EQ(wrappedMatches.count, 2u);
+  EXPECT_EQ(wrappedGroups.count, 1u);
+  EXPECT_EQ(wrappedGroups[0].suggestions.count, 2u);
+
+  // Wrapped suggestions should be non pedals.
+  EXPECT_TRUE([wrappedGroups[0].suggestions[0]
+      isKindOfClass:[AutocompleteMatchFormatter class]]);
+  EXPECT_TRUE([wrappedGroups[0].suggestions[1]
+      isKindOfClass:[AutocompleteMatchFormatter class]]);
+
+  AutocompleteMatchFormatter* firstSuggestion = wrappedGroups[0].suggestions[0];
+  AutocompleteMatchFormatter* secondSuggestion =
+      wrappedGroups[0].suggestions[1];
 
   // the `wrappedMatch` defaultSearchEngineIsGoogle should be true.
-  EXPECT_TRUE(wrappedMatches[0].defaultSearchEngineIsGoogle);
-  EXPECT_TRUE(wrappedMatches[1].defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(firstSuggestion.defaultSearchEngineIsGoogle);
+  EXPECT_TRUE(secondSuggestion.defaultSearchEngineIsGoogle);
 
   // Keep a reference to the Google default search provider.
   const TemplateURL* google_provider =
@@ -167,35 +184,46 @@ TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
   template_url_service->SetUserSelectedDefaultSearchProvider(
       non_google_provider);
 
-  wrappedMatches = [wrapper_ wrapMatchesFromResult:result];
+  wrappedGroups = [wrapper_ wrapAutocompleteResultInGroups:result];
+
+  firstSuggestion = wrappedGroups[0].suggestions[0];
+  secondSuggestion = wrappedGroups[0].suggestions[1];
 
   // the `wrappedMatch` defaultSearchEngineIsGoogle should now be false.
-  EXPECT_FALSE(wrappedMatches[0].defaultSearchEngineIsGoogle);
-  EXPECT_FALSE(wrappedMatches[1].defaultSearchEngineIsGoogle);
+  EXPECT_FALSE(firstSuggestion.defaultSearchEngineIsGoogle);
+  EXPECT_FALSE(secondSuggestion.defaultSearchEngineIsGoogle);
 
   // Change the default search provider back to Google.
   template_url_service->SetUserSelectedDefaultSearchProvider(
       const_cast<TemplateURL*>(google_provider));
 }
 
-// Tests grouping suggestions.
-TEST_F(AutocompleteMatchWrapperTest, testGroupResultSuggestions) {
+/// Tests Wrapping a result that contains a pedal match.
+TEST_F(AutocompleteMatchWrapperTest, testWrapPedalMatch) {
   AutocompleteResult result;
-  AutocompleteMatch match1 = CreatePersonalizedZeroPrefixMatch("search1", 100);
-  AutocompleteMatch match2 = CreatePersonalizedZeroPrefixMatch("search2", 101);
-  AutocompleteMatch match3 = CreateSearchMatch(u"search3");
-  AutocompleteMatch match4 = CreateSearchMatch(u"search4");
 
-  result.AppendMatches({match1, match2, match3, match4});
+  AutocompleteMatch match;
 
-  NSMutableArray<AutocompleteMatchFormatter*>* wrappedMatches =
-      [wrapper_ wrapMatchesFromResult:result];
+  scoped_refptr<OmniboxPedal> pedal =
+      base::WrapRefCounted(new TestOmniboxPedalClearBrowsingData());
+  match.actions.push_back(std::move(pedal));
 
-  EXPECT_EQ(wrappedMatches.count, 4u);
+  result.AppendMatches({match});
 
-  NSArray<id<AutocompleteSuggestionGroup>>* groups =
-      [wrapper_ groupSuggestions:wrappedMatches
-          usingACResultAsHeaderMap:result];
+  NSArray<id<AutocompleteSuggestionGroup>>* wrappedGroups =
+      [wrapper_ wrapAutocompleteResultInGroups:result];
 
-  EXPECT_EQ(groups.count, 2u);
+  // The result should be wrapped into 2 groups where the first one is for
+  // pedal.
+  EXPECT_EQ(wrappedGroups.count, 2u);
+  EXPECT_EQ(wrappedGroups[0].type, SuggestionGroupType::kPedalSuggestionGroup);
+  EXPECT_EQ(wrappedGroups[1].type,
+            SuggestionGroupType::kUnspecifiedSuggestionGroup);
+
+  EXPECT_EQ(wrappedGroups[0].suggestions.count, 1u);
+  EXPECT_EQ(wrappedGroups[1].suggestions.count, 1u);
+
+  // Wrapped suggestions should be pedal.
+  EXPECT_TRUE([wrappedGroups[0].suggestions[0]
+      isKindOfClass:[PedalSuggestionWrapper class]]);
 }

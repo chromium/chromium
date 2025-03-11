@@ -880,22 +880,24 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       const webrtc::VideoEncoder::RateControlParameters& parameters,
       const std::optional<gfx::Size>& input_visible_size);
 
-  // Returns whether the webrtc |frame_buffer| needs to be converted to I420
-  // memory frame.
-  bool NeedConvertToI420MemoryFrame(
+  // Returns whether the webrtc |frame_buffer| needs to be converted to a memory
+  // frame.
+  bool NeedConvertToMemoryFrame(
       const webrtc::VideoFrameBuffer& frame_buffer) const;
-  // Create I420 STORAGE_UNOWNED_MEMORY media::VideoFrame from the native
-  // |frame_buffer| by using webrtc::VideoFrameBuffer's I420 conversion and
-  // scale functions.
+  // Create STORAGE_UNOWNED_MEMORY media::VideoFrame from the native
+  // |frame_buffer| by using webrtc::VideoFrameBuffer's Scale() and
+  // GetMappedFrameBuffer() methods, producing frames in either
+  // `preferred_pixel_formats_` (typically NV12) or I420 as a fallback.
   scoped_refptr<media::VideoFrame>
-  CreateI420UnownedMemoryFrameByWebRTCVideoFrameBuffer(
+  CreateUnownedMemoryFrameByWebRTCVideoFrameBuffer(
       webrtc::VideoFrameBuffer& frame_buffer);
   // Create I420 STORAGE_SHMEM VideoFrame from the webrtc |frame_buffer| by
   // libyuv functions. The shared memory is allocated in this function.
   scoped_refptr<media::VideoFrame> CreateI420SharedMemoryFrameByLibyuv(
       webrtc::VideoFrameBuffer& frame_buffer);
-  // Create I420 memory based VideoFrame from |frame_buffer|.
-  scoped_refptr<media::VideoFrame> CreateI420MemoryFrame(
+  // Create memory based VideoFrame from |frame_buffer|, the resulting frame can
+  // be either `preferred_pixel_formats_` (typically NV12) or I420.
+  scoped_refptr<media::VideoFrame> CreateMemoryFrame(
       webrtc::VideoFrameBuffer& frame_buffer);
   scoped_refptr<media::VideoFrame> CreateNV12SharedImageFrame(
       webrtc::VideoFrameBuffer& frame_buffer,
@@ -1998,7 +2000,7 @@ RTCVideoEncoder::Impl::~Impl() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-bool RTCVideoEncoder::Impl::NeedConvertToI420MemoryFrame(
+bool RTCVideoEncoder::Impl::NeedConvertToMemoryFrame(
     const webrtc::VideoFrameBuffer& frame_buffer) const {
   if (frame_buffer.type() != webrtc::VideoFrameBuffer::Type::kNative) {
     // Why...?
@@ -2053,7 +2055,7 @@ bool RTCVideoEncoder::Impl::NeedConvertToI420MemoryFrame(
 }
 
 scoped_refptr<media::VideoFrame>
-RTCVideoEncoder::Impl::CreateI420UnownedMemoryFrameByWebRTCVideoFrameBuffer(
+RTCVideoEncoder::Impl::CreateUnownedMemoryFrameByWebRTCVideoFrameBuffer(
     webrtc::VideoFrameBuffer& frame_buffer) {
   DCHECK_EQ(frame_buffer.type(), webrtc::VideoFrameBuffer::Type::kNative);
   auto scaled_buffer = frame_buffer.Scale(input_visible_size_.width(),
@@ -2150,7 +2152,7 @@ RTCVideoEncoder::Impl::CreateI420SharedMemoryFrameByLibyuv(
   return frame;
 }
 
-scoped_refptr<media::VideoFrame> RTCVideoEncoder::Impl::CreateI420MemoryFrame(
+scoped_refptr<media::VideoFrame> RTCVideoEncoder::Impl::CreateMemoryFrame(
     webrtc::VideoFrameBuffer& frame_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Native buffer scaling is performed by WebRtcVideoFrameAdapter, which may
@@ -2171,7 +2173,7 @@ scoped_refptr<media::VideoFrame> RTCVideoEncoder::Impl::CreateI420MemoryFrame(
       false;
 #endif
   if (native_buffer_scaling) {
-    return CreateI420UnownedMemoryFrameByWebRTCVideoFrameBuffer(frame_buffer);
+    return CreateUnownedMemoryFrameByWebRTCVideoFrameBuffer(frame_buffer);
   }
   return CreateI420SharedMemoryFrameByLibyuv(frame_buffer);
 }
@@ -2270,10 +2272,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
       frame_chunk.video_frame_buffer;
   // TODO: set timestamp.
-  if (NeedConvertToI420MemoryFrame(*frame_buffer)) {
+  if (NeedConvertToMemoryFrame(*frame_buffer)) {
     TRACE_EVENT0("webrtc",
                  "RTCVideoEncoder::Impl::EncodeOneFrame::CopyOrScale");
-    frame = CreateI420MemoryFrame(*frame_buffer);
+    frame = CreateMemoryFrame(*frame_buffer);
     if (!frame) {
       return;
     }

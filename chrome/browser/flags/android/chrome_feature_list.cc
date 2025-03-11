@@ -193,6 +193,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidToolbarScrollAblation,
+    &kAndroidWindowPopupLargeScreen,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
     &kAsyncNotificationManager,
@@ -207,6 +208,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabClosureMethodRefactor,
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
+    &kCacheIsMultiInstanceApi31Enabled,
     &kCastDeviceFilter,
     &kCCTAdaptiveButton,
     &kCCTAuthTab,
@@ -555,6 +557,10 @@ BASE_FEATURE(kAndroidToolbarScrollAblation,
              "AndroidToolbarScrollAblation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidWindowPopupLargeScreen,
+             "AndroidWindowPopupLargeScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -606,6 +612,10 @@ BASE_FEATURE(kBrowserControlsEarlyResize,
 BASE_FEATURE(kCacheActivityTaskID,
              "CacheActivityTaskID",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCacheIsMultiInstanceApi31Enabled,
+             "CacheIsMultiInstanceApi31Enabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used in downstream code.
 BASE_FEATURE(kCastDeviceFilter,

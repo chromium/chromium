@@ -269,6 +269,9 @@ bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
+  if (profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+    return false;
+  }
   if (!UserAcceptedAccountManagement(profile) && !profile->IsChild()) {
     return false;
   }
@@ -290,6 +293,9 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {
+  if (profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+    return false;
+  }
   if (!UserAcceptedAccountManagement(profile)) {
     return false;
   }

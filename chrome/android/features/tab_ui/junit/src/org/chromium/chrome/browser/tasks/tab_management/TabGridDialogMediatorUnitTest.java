@@ -391,7 +391,7 @@ public class TabGridDialogMediatorUnitTest {
         // Show the group of {tab1, tab2} in dialog to trigger the set of scrim observer.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         View.OnClickListener listener = mModel.get(TabGridDialogProperties.COLLAPSE_CLICK_LISTENER);
         listener.onClick(mView);
@@ -408,7 +408,7 @@ public class TabGridDialogMediatorUnitTest {
         // Show the group of {tab1, tab2} in dialog to trigger the set of scrim observer.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         Runnable scrimClickRunnable = mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE);
         scrimClickRunnable.run();
@@ -672,7 +672,7 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mTabSwitcherResetHandler, never()).resetWithTabList(mTabGroupModelFilter, false);
 
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
         assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(Tab.INVALID_TAB_ID));
     }
 
@@ -1168,7 +1168,7 @@ public class TabGridDialogMediatorUnitTest {
     public void onReset_hideDialog() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
 
         assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
@@ -1181,7 +1181,7 @@ public class TabGridDialogMediatorUnitTest {
     public void onReset_DialogNotVisible_NoOp() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
 
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
 
         verifyNoMoreInteractions(mDialogController);
     }
@@ -1204,7 +1204,7 @@ public class TabGridDialogMediatorUnitTest {
         // when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
         mMediator.setSelectedTabGroupColor(COLOR_3);
 
         // Assert that the color has changed both in the property model and the model filter.
@@ -1226,7 +1226,7 @@ public class TabGridDialogMediatorUnitTest {
 
         when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
                 .thenReturn(COLOR_2);
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.
         assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
@@ -1263,7 +1263,7 @@ public class TabGridDialogMediatorUnitTest {
 
         when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
                 .thenReturn(COLOR_2);
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.
         assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
@@ -1304,7 +1304,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim click runnable should be set as the current scrim runnable.
@@ -1337,7 +1337,7 @@ public class TabGridDialogMediatorUnitTest {
 
         when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
                 .thenReturn(COLOR_2);
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.
         assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
@@ -1375,7 +1375,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim observer should be set as the current scrim click runnable.
@@ -1403,7 +1403,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Animation source view should be set to null so that dialog will setup basic animation.
@@ -1590,7 +1590,7 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(tabGroup).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
 
         // Reset and confirm scroll index.
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         assertEquals(1, mModel.get(TabGridDialogProperties.INITIAL_SCROLL_INDEX).intValue());
     }
@@ -1601,7 +1601,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
         // Check that the text indicates that this is not the last tab in the group.
         assertEquals(
                 mActivity.getString(R.string.remove_tab_from_group),
@@ -1611,7 +1611,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroupAfterUngroup = new ArrayList<>(Arrays.asList(mTab1));
         doReturn(tabGroupAfterUngroup).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
 
-        mMediator.onReset(tabGroupAfterUngroup);
+        assertTrue(mMediator.onReset(tabGroupAfterUngroup));
         // Check that the text indicates that this is the last tab in the group.
         assertEquals(
                 mActivity.getString(R.string.remove_last_tab_action),
@@ -1635,7 +1635,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroupAfterUngroup = new ArrayList<>(Arrays.asList(mTab1));
         doReturn(tabGroupAfterUngroup).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
 
-        mMediator.onReset(tabGroupAfterUngroup);
+        assertTrue(mMediator.onReset(tabGroupAfterUngroup));
         // Check that the text indicates that this is the last tab in the group.
         assertEquals(
                 mActivity.getString(R.string.remove_last_tab_action_member),
@@ -1648,7 +1648,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         assertNotEquals(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), COLOR_3);
 
@@ -1664,7 +1664,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
 
         when(mTabGroupModelFilter.getTabGroupTitle(rootId)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
 
         assertEquals(CUSTOMIZED_DIALOG_TITLE, mModel.get(TabGridDialogProperties.HEADER_TITLE));
 
@@ -1726,7 +1726,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Reset with null first as reusing the same TabGroupId does not reset the observer.
         when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
         when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
                 .thenReturn(false);
         resetForDataSharing(/* isShared= */ false);
@@ -1740,7 +1740,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
 
         // Reset with null first as reusing the same TabGroupId does not reset the observer.
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
         when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
                 .thenReturn(false);
         resetForDataSharing(/* isShared= */ false);
@@ -1759,7 +1759,7 @@ public class TabGridDialogMediatorUnitTest {
                 .apply();
 
         // Reset with null first as reusing the same TabGroupId does not reset the observer.
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
         when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
                 .thenReturn(false);
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
@@ -1847,7 +1847,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
         ShadowLooper.runUiThreadTasks();
 
         // We expect 2 invocations due to the #resetForDataSharing call.
@@ -1865,7 +1865,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
         ShadowLooper.runUiThreadTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
@@ -1926,7 +1926,7 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onReset_NullAfterSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
-        mMediator.onReset(null);
+        assertFalse(mMediator.onReset(null));
 
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
     }
@@ -1959,7 +1959,7 @@ public class TabGridDialogMediatorUnitTest {
 
         setupSyncedGroup(isShared);
 
-        mMediator.onReset(tabGroup);
+        assertTrue(mMediator.onReset(tabGroup));
         ShadowLooper.runUiThreadTasks();
         verify(mDataSharingService, atLeastOnce())
                 .addObserver(mDataSharingServiceObserverCaptor.capture());

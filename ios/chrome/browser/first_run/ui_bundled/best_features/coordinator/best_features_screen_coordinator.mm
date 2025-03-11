@@ -9,12 +9,18 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_mediator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_delegate.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+
+@interface BestFeaturesScreenCoordinator () <BestFeaturesDelegate>
+@end
 
 @implementation BestFeaturesScreenCoordinator {
   // First run screen delegate.
@@ -24,6 +30,8 @@
   // Transparent view used to block user interaction before the Best Features
   // Screen presents.
   UIView* _transparentView;
+  // Best Features Screen view controller.
+  BestFeaturesViewController* _viewController;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -95,7 +103,20 @@
   [_mediator disconnect];
   _mediator = nil;
   _transparentView = nil;
+  _viewController = nil;
   [super stop];
+}
+
+#pragma mark - PromoStyleViewController
+
+- (void)didTapPrimaryActionButton {
+  [_delegate screenWillFinishPresenting];
+}
+
+#pragma mark - BestFeaturesDelegate
+
+- (void)didTapBestFeaturesItem:(BestFeaturesItem*)item {
+  // TODO(crbug.com/396481431): Present detail view controller for item.
 }
 
 #pragma mark - Private
@@ -104,8 +125,14 @@
 - (void)presentScreen {
   [_transparentView removeFromSuperview];
   _transparentView = nil;
-  // TODO(crbug.com/396480750): Set consumer and present
-  // BestFeaturesScreenViewController.
+  _viewController = [[BestFeaturesViewController alloc] init];
+  _mediator.consumer = _viewController;
+  _viewController.delegate = self;
+  _viewController.bestFeaturesDelegate = self;
+  _viewController.modalInPresentation = YES;
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  [self.baseNavigationController setViewControllers:@[ _viewController ]
+                                           animated:animated];
 }
 
 @end

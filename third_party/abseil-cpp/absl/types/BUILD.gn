@@ -50,24 +50,10 @@ absl_source_set("optional") {
   ]
 }
 
-absl_source_set("bad_variant_access") {
-  sources = [ "bad_variant_access.cc" ]
-  public = [ "bad_variant_access.h" ]
-  deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-  ]
-}
-
 absl_source_set("variant") {
-  sources = [ "internal/variant.h" ]
   public = [ "variant.h" ]
   deps = [
-    ":bad_variant_access",
-    "//third_party/abseil-cpp/absl/base:base_internal",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/utility",
   ]
 }
@@ -85,10 +71,5 @@ absl_test("variant_test") {
   sources = [ "variant_test.cc" ]
   deps = [
     ":variant",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/memory",
-    "//third_party/abseil-cpp/absl/meta:type_traits",
-    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }

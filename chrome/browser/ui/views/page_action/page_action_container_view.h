@@ -22,6 +22,8 @@ struct PageActionViewParams;
 class PageActionContainerView : public views::View {
   METADATA_HEADER(PageActionContainerView, views::View)
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageActionContainerViewElementId);
+
   PageActionContainerView(const std::vector<actions::ActionItem*>& action_items,
                           const PageActionViewParams& params);
   PageActionContainerView(const PageActionContainerView&) = delete;

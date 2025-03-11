@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -290,12 +289,12 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   return config;
 }
 
-// Relaunches the app with Inactive Tabs still enabled.
-- (void)relaunchAppWithInactiveTabsEnabled {
+// Relaunches the app with Inactive Tabs is test mode (i.e. considers tabs as
+// inactive immediately).
+- (void)relaunchAppWithInactiveTabsTestMode {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kIOSQuickDelete);
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -976,7 +975,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   // Relaunch the app to create the inactive tab. Relaunces also creates a new
   // NTP tab.
-  [self relaunchAppWithInactiveTabsEnabled];
+  [self relaunchAppWithInactiveTabsTestMode];
 
   // Set to close tabs, but nothing else.
   [ChromeEarlGrey setBoolValue:false

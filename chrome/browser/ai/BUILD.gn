@@ -121,7 +121,6 @@ source_set("test_support") {
   ]
   public_deps = [
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//testing/gmock:gmock",

@@ -336,6 +336,9 @@ extern const char kIOSKeyboardAccessoryUpgradeForIPadDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
 
+extern const char kIOSOneTapMiniMapRestrictionsName[];
+extern const char kIOSOneTapMiniMapRestrictionsDescription[];
+
 extern const char kIOSPasskeysM2Name[];
 extern const char kIOSPasskeysM2Description[];
 
@@ -393,6 +396,11 @@ extern const char kIOSReactivationNotificationsDescription[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
+extern const char
+    kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[];
+extern const char
+    kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeDescription[];
+
 extern const char kLensClearcutBackgroundUploadEnabledName[];
 extern const char kLensClearcutBackgroundUploadEnabledDescription[];
 
@@ -437,6 +445,12 @@ extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[];
 
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
+
+extern const char kLensPrewarmHardStickinessInInputSelectionName[];
+extern const char kLensPrewarmHardStickinessInInputSelectionDescription[];
+
+extern const char kLensPrewarmHardStickinessInQueryFormulationName[];
+extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[];
 
 extern const char kLensSingleTapTextSelectionDisabledName[];
 extern const char kLensSingleTapTextSelectionDisabledDescription[];
@@ -741,9 +755,6 @@ extern const char kTabGridNewTransitionsDescription[];
 
 extern const char kTabGroupsIPadName[];
 extern const char kTabGroupsIPadDescription[];
-
-extern const char kInactiveTabsIPadName[];
-extern const char kInactiveTabsIPadDescription[];
 
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];

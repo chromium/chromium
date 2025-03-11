@@ -11,6 +11,7 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
@@ -27,7 +28,6 @@
 @class CarouselItem;
 @protocol CarouselItemConsumer;
 class FaviconLoader;
-@class OmniboxPedalAnnotator;
 @class OmniboxPopupController;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
@@ -66,7 +66,8 @@ class Tracker;
            originView:(UIView*)originView;
 @end
 
-@interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
+@interface OmniboxPopupMediator : NSObject <AutocompleteMatchWrapperDelegate,
+                                            AutocompleteResultConsumerDelegate,
                                             AutocompleteResultDataSource,
                                             OmniboxPopupControllerDelegate,
                                             CarouselItemMenuProvider,
@@ -96,8 +97,6 @@ class Tracker;
 /// Whether the default search engine is Google impacts which icon is used in
 /// some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
-/// The annotator to create pedals for ths mediator.
-@property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
 /// Flag that marks that incognito actions are available. Those can be disabled
 /// by an enterprise policy.
 @property(nonatomic, assign) BOOL allowIncognitoActions;

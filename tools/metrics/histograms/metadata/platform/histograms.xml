@@ -822,7 +822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
-    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2025-07-06">
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -846,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2025-07-06">
+    units="count" expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
     enum="Platform.FbPreprocessor.PseudonymizationResult"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1612,51 +1612,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.MemuseAnon0" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory 1
-    minute after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon1" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory 5
-    minutes after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon2" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory 30
-    minutes after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon3" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory
-    150 minutes after boot.
-  </summary>
-</histogram>
-
-<histogram name="Platform.MemuseAnon4" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Chrome OS total anonymous memory (active + inactive) as % of total memory
-    750 minutes after boot.
-  </summary>
-</histogram>
-
 <histogram name="Platform.MiniDiag.Launch" units="launches"
     expires_after="2025-06-03">
   <owner>roccochen@chromium.org</owner>
@@ -2357,17 +2312,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Storage.Flash.BadBlocks" units="units"
-    expires_after="M85">
-  <owner>dehrenberg@chromium.org</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    The number of blocks marked bad in an MTD partition. This is relevant for
-    devices with raw NAND flash, such as Chromecast. Sampled once daily, if the
-    Chromecast is on for any significant length of time in the day.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Storage.Mmc.Internal.{Error}" units="errors"
     expires_after="2025-07-16">
   <owner>korneld@chromium.org</owner>
@@ -2888,7 +2832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.U2F.FipsStatus.{U2FMode}" enum="U2FFipsStatus"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>

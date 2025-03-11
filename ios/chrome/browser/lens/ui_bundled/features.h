@@ -58,4 +58,13 @@ BASE_DECLARE_FEATURE(kLensVsintParamEnabled);
 // Whether to enable the unary client data header.
 BASE_DECLARE_FEATURE(kLensUnaryClientDataHeaderEnabled);
 
+// Whether to block fetch objects interaction RPCs on separate handshake.
+BASE_DECLARE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake);
+
+// Whether to prewarm hard stickiness in Input Selection.
+BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInInputSelection);
+
+// Whether to prewarm hard stickiness in query formulation.
+BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

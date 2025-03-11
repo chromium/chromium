@@ -34,7 +34,6 @@
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
-#include "components/commerce/core/parcel/parcels_manager.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
@@ -249,11 +248,6 @@ ShoppingService::ShoppingService(
           identity_manager, url_loader_factory, subscription_proto_db,
           account_checker_.get());
     }
-
-    if (parcel_tracking_proto_db) {
-      parcels_manager_ = std::make_unique<ParcelsManager>(
-          identity_manager, url_loader_factory, parcel_tracking_proto_db);
-    }
   }
 
   if (bookmark_model_) {
@@ -329,6 +323,12 @@ ShoppingService::ShoppingService(
   // ChromeCart. This part should be removed in 11/2025.
   if (cart_proto_db) {
     cart_proto_db->DeleteAllContent(base::DoNothing());
+  }
+
+  // TODO(crbug.com/391002352): This was added in 3/2025 to deprecate Parcel
+  // Tracking. This should be removed in 3/2026.
+  if (parcel_tracking_proto_db) {
+    parcel_tracking_proto_db->DeleteAllContent(base::DoNothing());
   }
 }
 
@@ -1825,61 +1825,6 @@ void ShoppingService::WaitForReady(
         std::move(callback).Run(service.get());
       },
       AsWeakPtr(), sync_service_, std::move(callback)));
-}
-
-void ShoppingService::StartTrackingParcels(
-    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-        parcel_identifiers,
-    const std::string& source_page_domain,
-    GetParcelStatusCallback callback) {
-  if (parcels_manager_) {
-    parcels_manager_->StartTrackingParcels(
-        parcel_identifiers, source_page_domain, std::move(callback));
-  } else {
-    std::move(callback).Run(
-        false, std::make_unique<std::vector<ParcelTrackingStatus>>());
-  }
-}
-
-void ShoppingService::GetAllParcelStatuses(GetParcelStatusCallback callback) {
-  if (parcels_manager_) {
-    parcels_manager_->GetAllParcelStatuses(std::move(callback));
-  } else {
-    std::move(callback).Run(
-        false, std::make_unique<std::vector<ParcelTrackingStatus>>());
-  }
-}
-
-void ShoppingService::StopTrackingParcel(
-    const std::string& tracking_id,
-    base::OnceCallback<void(bool)> callback) {
-  if (parcels_manager_) {
-    parcels_manager_->StopTrackingParcel(tracking_id, std::move(callback));
-  } else {
-    std::move(callback).Run(false);
-  }
-}
-
-void ShoppingService::StopTrackingParcels(
-    const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
-        parcel_identifiers,
-    base::OnceCallback<void(bool)> callback) {
-  if (parcels_manager_) {
-    parcels_manager_->StopTrackingParcels(parcel_identifiers,
-                                          std::move(callback));
-  } else {
-    std::move(callback).Run(false);
-  }
-}
-
-// Called to stop tracking all parcels.
-void ShoppingService::StopTrackingAllParcels(
-    base::OnceCallback<void(bool)> callback) {
-  if (parcels_manager_) {
-    parcels_manager_->StopTrackingAllParcels(std::move(callback));
-  } else {
-    std::move(callback).Run(false);
-  }
 }
 
 ProductSpecificationsService*

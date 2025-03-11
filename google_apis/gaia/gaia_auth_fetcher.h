@@ -52,7 +52,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaSource {
     kChromeOS,
     kAccountReconcilorDice,
     kAccountReconcilorMirror,
-    kPrimaryAccountManager
+    kPrimaryAccountManager,
+    kChromeGlic,  // chrome/browser/glic
   };
 
   // Implicit conversion is necessary to avoid boilerplate code.

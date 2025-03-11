@@ -98,21 +98,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
 };
 
 struct UsageInfo {
-  UsageInfo(std::string host, blink::mojom::StorageType type, int64_t usage)
-      : host(std::move(host)), type(type), usage(usage) {}
+  UsageInfo(std::string host, int64_t usage)
+      : host(std::move(host)), usage(usage) {}
   const std::string host;
-  const blink::mojom::StorageType type;
   const int64_t usage;
 
   bool operator==(const UsageInfo& that) const {
-    return std::tie(host, usage, type) ==
-           std::tie(that.host, that.usage, that.type);
+    return std::tie(host, usage) == std::tie(that.host, that.usage);
   }
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const UsageInfo& usage_info) {
-    return os << "{\"" << usage_info.host << "\", " << usage_info.type << ", "
-              << usage_info.usage << "}";
+    return os << "{\"" << usage_info.host << "\", " << usage_info.usage << "}";
   }
 };
 
@@ -258,7 +255,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Used for retrieving host usage data in the UsageTracker.
   void GetBucketsForHost(
       const std::string& host,
-      blink::mojom::StorageType type,
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
 
   // Retrieves all buckets for `storage_key` and `type` that are in the buckets
@@ -347,8 +343,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
 
-  // Deletes buckets of a particular blink::mojom::StorageType with storage keys
-  // that match the specified host.
+  // Deletes buckets with storage keys that match the specified host.
   //
   // `callback` is always called. If this QuotaManager gets destroyed during
   // deletion, `callback` may be called with a kErrorAbort status.
@@ -358,7 +353,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // `DeleteStorageKeyData`. This should be removed as part of
   // `CookiesTreeModel` deprecation.
   void DeleteHostData(const std::string& host,
-                      blink::mojom::StorageType type,
                       StatusCallback callback);
 
   // Deletes buckets of a particular blink::StorageKey.
@@ -399,7 +393,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetStatistics(GetStatisticsCallback callback) override;
   void RetrieveBucketsTable(RetrieveBucketsTableCallback callback) override;
   void GetGlobalUsageForInternals(
-      blink::mojom::StorageType storage_type,
       GetGlobalUsageForInternalsCallback callback) override;
   // Used from quota-internals page to test behavior of the storage pressure
   // callback.

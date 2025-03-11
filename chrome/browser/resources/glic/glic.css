@@ -18,7 +18,6 @@ webview:not([hidden]) {
 
 .dialog {
   position: absolute;
-  left: 0;
   right: 0;
   font-family: Roboto, sans-serif;
   font-size: 13px;
@@ -129,7 +128,7 @@ cr-progress {
 }
 
 .placeholder {
-  width: 280px;
+  width: 200px;
   height: 24px;
   background-color: #d3dbc5;
   background-image:

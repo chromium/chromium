@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -31,7 +32,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
@@ -193,7 +193,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   using ClientReceiver = mojo::Receiver<viz::mojom::CompositorFrameSinkClient>;
   using DirectClientReceiver =
       mojo::DirectReceiver<viz::mojom::CompositorFrameSinkClient>;
-  absl::variant<absl::monostate, ClientReceiver, DirectClientReceiver>
+  std::variant<std::monostate, ClientReceiver, DirectClientReceiver>
       client_receiver_;
 
   THREAD_CHECKER(thread_checker_);

@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -377,7 +378,7 @@ class MessageServiceFactory
  private:
   ChannelEndpoint GetEndpoint(content::BrowserContext* context,
                               const Source& source) {
-    return absl::visit(
+    return std::visit(
         base::Overloaded{
             [&](const WorkerId& worker) {
               return ChannelEndpoint(

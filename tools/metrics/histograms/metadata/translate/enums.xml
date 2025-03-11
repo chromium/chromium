@@ -184,12 +184,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Script load error"/>
 </enum>
 
-<enum name="TranslateLanguageDetectionTiming">
-  <int value="0" label="On time"/>
-  <int value="1" label="Deferred"/>
-  <int value="2" label="Resumed"/>
-</enum>
-
 <enum name="TranslateLanguageVerification">
   <int value="0" label="(deprecated) Model is disabled"/>
   <int value="1" label="Model only (no Content-Language)"/>

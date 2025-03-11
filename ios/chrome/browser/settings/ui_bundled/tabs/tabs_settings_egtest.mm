@@ -16,12 +16,6 @@
 
 @implementation TabsSettingsTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Ensures that inactive tabs preference settings is set to its default state.

@@ -17,6 +17,7 @@
 #include <string_view>
 #include <tuple>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -1021,8 +1022,8 @@ struct ParamTraits<std::optional<P>> {
 };
 
 template <>
-struct ParamTraits<absl::monostate> {
-  typedef absl::monostate param_type;
+struct ParamTraits<std::monostate> {
+  typedef std::monostate param_type;
   static void Write(base::Pickle* m, const param_type& p) {}
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

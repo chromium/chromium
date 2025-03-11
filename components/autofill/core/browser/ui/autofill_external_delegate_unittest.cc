@@ -31,7 +31,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling/entities/field_filling_entity_util.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -810,17 +810,23 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
   CreditCard card = test::GetVirtualCard();
   card.set_issuer_id(payments::BnplManager::GetSupportedBnplIssuerIds()[0]);
 
+  const uint64_t expected_amount = 50'000'000;
   EXPECT_CALL(
       client().GetPaymentsAutofillClient()->CreateOrGetMockBnplManager(),
-      InitBnplFlow)
+      InitBnplFlow(expected_amount, _))
       .WillOnce(RunOnceCallback<1>(card));
   EXPECT_CALL(manager(),
               FillOrPreviewCreditCardForm(
                   mojom::ActionPersistence::kFill, HasQueriedFormId(),
                   IsQueriedFieldId(), card, AutofillTriggerSource::kPopup));
 
+  Suggestion::PaymentsPayload payments_payload;
+  payments_payload.extracted_amount_in_micros = expected_amount;
   external_delegate().DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(SuggestionType::kBnplEntry), {});
+      test::CreateAutofillSuggestion(SuggestionType::kBnplEntry,
+                                     /*main_text_value=*/u"BNPL suggestion",
+                                     payments_payload),
+      {});
 }
 
 // Test that the Autofill popup is able to display warnings explaining why

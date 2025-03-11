@@ -18,6 +18,7 @@ source_set("browser_tests") {
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/page_load_metrics/browser:browser",
+    "//third_party/blink/public/common:preloading_headers",
   ]
 
   data = [ "//chrome/test/data/" ]

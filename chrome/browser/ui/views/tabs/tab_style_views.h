@@ -69,9 +69,6 @@ class TabStyleViews {
   // Derives and returns colors for the tab. See TabColors, above.
   virtual TabStyle::TabColors CalculateTargetColors() const = 0;
 
-  // Sets the center of the radial highlight in the hover animation.
-  virtual void SetHoverLocation(const gfx::Point& location) = 0;
-
   // Shows the hover animation.
   virtual void ShowHover(TabStyle::ShowHoverStyle style) = 0;
 

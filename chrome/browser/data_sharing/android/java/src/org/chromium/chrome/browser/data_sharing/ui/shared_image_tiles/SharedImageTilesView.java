@@ -18,10 +18,12 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.StyleRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** View logic for SharedImageTiles component. */
+@NullMarked
 public class SharedImageTilesView extends LinearLayout {
     private final Context mContext;
     private TextView mCountTileView;

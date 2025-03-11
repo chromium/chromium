@@ -158,7 +158,7 @@ TEST_P(GlanceablesTaskViewPixelTest, GlanceablesTaskView) {
   widget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/0, widget()));
+      GenerateScreenshotName(), /*revision_number=*/1, widget()));
 }
 
 }  // namespace ash

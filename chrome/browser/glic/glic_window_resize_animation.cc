@@ -65,7 +65,6 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
   window_controller_->GetGlicWidget()->SetBounds(gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN_3, state),
       initial_bounds_, new_bounds_));
-  glic_window_animator_->SetRoundedRectBackground();
   duration_left_ = (1 - GetCurrentValue()) * duration();
 }
 

@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used for {@link SingleWebsiteSettings} and {@link GroupedWebsiteSettings}. */
+@NullMarked
 public class WebsiteSettingsConstants {
     // RWS help center content URL.
     public static final String RWS_LEARN_MORE_URL =

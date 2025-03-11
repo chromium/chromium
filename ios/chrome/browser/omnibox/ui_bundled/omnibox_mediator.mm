@@ -158,6 +158,10 @@ using base::UserMetricsAction;
   [self.omniboxTextController onThumbnailRemovedDuringEdit];
 }
 
+- (void)removeAdditionalText {
+  [self.omniboxTextController onUserRemoveAdditionalText];
+}
+
 #pragma mark - OmniboxTextControllerDelegate
 
 #pragma mark - PopupMatchPreviewDelegate
@@ -168,7 +172,7 @@ using base::UserMetricsAction;
   // receive the suggestion as inline autocomplete through OmniboxViewIOS.
   if (!isFirstUpdate) {
     // Remove additional text when previewing suggestions.
-    [self.consumer updateAdditionalText:nil];
+    [self.omniboxTextController setAdditionalText:u""];
     [self.consumer updateText:suggestion.omniboxPreviewText];
   }
 

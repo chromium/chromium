@@ -72,11 +72,9 @@ OptimizationGuideModelStreamingExecutionResult::
         base::expected<const StreamingResponse,
                        OptimizationGuideModelExecutionError> response,
         bool provided_by_on_device,
-        std::unique_ptr<ModelQualityLogEntry> log_entry,
         std::unique_ptr<proto::ModelExecutionInfo> execution_info)
     : response(response),
       provided_by_on_device(provided_by_on_device),
-      log_entry(std::move(log_entry)),
       execution_info(std::move(execution_info)) {}
 
 OptimizationGuideModelStreamingExecutionResult::

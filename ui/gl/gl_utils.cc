@@ -197,6 +197,10 @@ void SetGpuPreferenceEGL(GpuPreference preference, uint64_t system_device_id) {
                                                        system_device_id);
 }
 
+uint64_t GetSystemDeviceIdEGLForTesting(GpuPreference preference) {
+  return GLDisplayManagerEGL::GetInstance()->GetSystemDeviceId(preference);
+}
+
 void RemoveGpuPreferenceEGL(GpuPreference preference) {
   GLDisplayManagerEGL::GetInstance()->RemoveGpuPreference(preference);
 }

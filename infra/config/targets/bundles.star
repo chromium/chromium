@@ -4755,8 +4755,8 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
@@ -4765,8 +4765,8 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
@@ -4776,8 +4776,8 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
@@ -4787,16 +4787,16 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
-                "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
+                "SIM_IPHONE_SE_3RD_GEN_18_4",
             ],
         ),
     ],
@@ -4808,8 +4808,8 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
@@ -4818,8 +4818,8 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
@@ -4828,16 +4828,16 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
-                "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPAD_AIR_5TH_GEN_18_4",
+                "SIM_IPHONE_14_18_4",
+                "SIM_IPHONE_SE_3RD_GEN_18_4",
             ],
         ),
     ],
@@ -4849,7 +4849,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
@@ -4858,7 +4858,7 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
@@ -4868,9 +4868,9 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_10TH_GEN_18_2",
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPAD_10TH_GEN_18_4",
+                "SIM_IPAD_AIR_6TH_GEN_18_4",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
@@ -4880,19 +4880,19 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_10TH_GEN_18_2",
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPAD_10TH_GEN_18_4",
+                "SIM_IPAD_AIR_6TH_GEN_18_4",
+                "SIM_IPAD_PRO_7TH_GEN_18_4",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_15_PRO_MAX_18_2",
+                "SIM_IPAD_AIR_6TH_GEN_18_4",
+                "SIM_IPAD_PRO_7TH_GEN_18_4",
+                "SIM_IPHONE_15_18_4",
+                "SIM_IPHONE_15_PRO_MAX_18_4",
             ],
         ),
     ],
@@ -4905,7 +4905,7 @@ targets.bundle(
             targets = "ios_common_tests",
             variants = [
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
@@ -4915,7 +4915,7 @@ targets.bundle(
             ],
             variants = [
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
@@ -4925,9 +4925,9 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_18_4",
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
@@ -4937,18 +4937,18 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_18_4",
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPAD_AIR_6TH_GEN_18_4",
+                "SIM_IPAD_PRO_7TH_GEN_18_4",
+                "SIM_IPHONE_15_18_4",
+                "SIM_IPHONE_SE_3RD_GEN_18_4",
             ],
         ),
     ],
@@ -5004,7 +5004,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_blink_tests",
             variants = [
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
     ],

@@ -5,6 +5,7 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -54,7 +55,7 @@ SurfaceRecord GpuSurfaceTracker::AcquireJavaSurface(
     return SurfaceRecord(gl::ScopedJavaSurface(),
                          /*can_be_used_with_surface_control=*/false);
 
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const gl::ScopedJavaSurface& surface) {
             DCHECK(surface.IsValid());

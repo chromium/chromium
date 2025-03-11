@@ -4509,7 +4509,6 @@ const CSSValue* FontVariantEmoji::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled());
   return CSSIdentifierValue::Create(style.GetFontDescription().VariantEmoji());
 }
 

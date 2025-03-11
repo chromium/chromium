@@ -15326,6 +15326,7 @@ be describing additional metrics about the same event.
 
 <event name="NavigationRequestBreakDown" singular="True">
   <owner>chikamune@chromium.org</owner>
+  <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Metrics to measure the main frame navigation timings by tracking
@@ -15336,6 +15337,30 @@ be describing additional metrics about the same event.
     <summary>
       Measures the duration from BeginNavigation to LoaderStart, in
       milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="FetchStartToRequestStart">
+    <summary>
+      Measures the duration from FetchStart to RequestStart, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="LoaderStartToFetchStart">
+    <summary>
+      Measures the duration from LoaderStart to FetchStart, in milliseconds.
     </summary>
     <aggregation>
       <history>

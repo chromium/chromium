@@ -192,8 +192,7 @@ FontFallbackPriority ApplyFontVariantEmojiOnFallbackPriority(
     FontVariantEmoji font_variant_emoji) {
   // font-variant-emoji property should not override emoji variation selectors,
   // see https://www.w3.org/TR/css-fonts-4/#font-variant-emoji-prop.
-  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
-      !HasVSFallbackPriority(curr_font_fallback_priority)) {
+  if (!HasVSFallbackPriority(curr_font_fallback_priority)) {
     if (font_variant_emoji == kEmojiVariantEmoji) {
       return FontFallbackPriority::kEmojiEmoji;
     }
@@ -422,10 +421,8 @@ HarfBuzzShaper::FallbackFontStage ChangeStageToLast(
     case HarfBuzzShaper::kIntermediate:
       return HarfBuzzShaper::kLast;
     case HarfBuzzShaper::kIntermediateWithVS:
-      DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
       return HarfBuzzShaper::kLastWithVS;
     case HarfBuzzShaper::kIntermediateIgnoreVS:
-      DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
       return HarfBuzzShaper::kLastIgnoreVS;
     default:
       return fallback_stage;
@@ -434,7 +431,6 @@ HarfBuzzShaper::FallbackFontStage ChangeStageToLast(
 
 HarfBuzzShaper::FallbackFontStage ChangeStageToVS(
     HarfBuzzShaper::FallbackFontStage fallback_stage) {
-  DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
   switch (fallback_stage) {
     case HarfBuzzShaper::kIntermediate:
       return HarfBuzzShaper::kIntermediateWithVS;
@@ -456,7 +452,6 @@ void QueueCharacters(RangeContext* range_data,
                      HarfBuzzShaper::FallbackFontStage font_stage) {
   if (!font_cycle_queued) {
     if (StageNeedsQueueReset(font_stage)) {
-      DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
       range_data->reshape_queue.push_back(
           ReshapeQueueItem(kReshapeQueueReset, 0, 0));
     } else {
@@ -894,8 +889,7 @@ void HarfBuzzShaper::ShapeSegment(
   // beginning of the segment shaping run.
   DCHECK(HarfBuzzFace::GetVariationSelectorMode() ==
          kUseSpecifiedVariationSelector);
-  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
-      font_description.VariantEmoji() != kNormalVariantEmoji) {
+  if (font_description.VariantEmoji() != kNormalVariantEmoji) {
     HarfBuzzFace::SetVariationSelectorMode(
         GetVariationSelectorModeFromFontVariantEmoji(
             font_description.VariantEmoji()));
@@ -910,7 +904,6 @@ void HarfBuzzShaper::ShapeSegment(
         // for the base codepoint of unshaped variation sequences, so we need to
         // restart the fallback queue and set the variation selector mode to
         // `kIgnoreVariationSelector`.
-        DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
         DCHECK_EQ(fallback_stage, kLastWithVS);
         fallback_iterator.Reset();
         fallback_stage = kIntermediateIgnoreVS;
@@ -1026,16 +1019,8 @@ void HarfBuzzShaper::ShapeSegment(
     hb_buffer_reset(range_data->buffer);
   }
 
-  // Ignore variation selectors flag should be only changed when the
-  // FontVariationSequences runtime flag is enabled.
-  DCHECK(
-      RuntimeEnabledFeatures::FontVariationSequencesEnabled() ||
-      !ShouldIgnoreVariationSelector(HarfBuzzFace::GetVariationSelectorMode()));
-
-  if (RuntimeEnabledFeatures::FontVariationSequencesEnabled()) {
-    // Set variation selector mode to the default state.
-    HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
-  }
+  // Set variation selector mode to the default state.
+  HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
 
   if (IsEmojiPresentationEmoji(segment.font_fallback_priority)) {
     EmojiCorrectness emoji_correctness =

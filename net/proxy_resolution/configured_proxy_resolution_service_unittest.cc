@@ -264,6 +264,13 @@ class TestResolveProxyDelegate : public ProxyDelegate {
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override {}
 
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
+    return false;
+  }
+
  private:
   int num_resolve_proxy_called_ = 0;
   bool add_proxy_ = false;
@@ -309,6 +316,13 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
 
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override {}
+
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
+    return false;
+  }
 
   bool num_proxy_fallback_called() const { return num_proxy_fallback_called_; }
 
@@ -1434,7 +1448,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   jobs = GetCancelledJobsForURLs(resolver, url2);
 
   // Since a second request was in progress, the
-  // ConfiguredProxyResolutionService starts initializating a new ProxyResolver.
+  // ConfiguredProxyResolutionService starts initializing a new ProxyResolver.
   ASSERT_EQ(1u, factory_ptr->pending_requests().size());
   EXPECT_EQ(GURL("http://foopy/proxy.pac"),
             factory_ptr->pending_requests()[0]->script_data()->url());
@@ -2611,7 +2625,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, CancelWhilePACFetching) {
       entries1, 1,
       NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC));
   // Note that PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC is never completed
-  // before the cancellation occured.
+  // before the cancellation occurred.
   EXPECT_TRUE(LogContainsEvent(entries1, 2, NetLogEventType::CANCELLED,
                                NetLogEventPhase::NONE));
   EXPECT_TRUE(LogContainsEndEvent(entries1, 3,

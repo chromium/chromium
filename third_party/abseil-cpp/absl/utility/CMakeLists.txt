@@ -22,23 +22,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::base_internal
     absl::config
     absl::type_traits
   PUBLIC
-)
-
-absl_cc_test(
-  NAME
-    utility_test
-  SRCS
-    "utility_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  DEPS
-    absl::utility
-    absl::core_headers
-    absl::memory
-    absl::strings
-    GTest::gmock_main
 )

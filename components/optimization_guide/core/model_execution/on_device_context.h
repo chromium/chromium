@@ -45,7 +45,6 @@ struct OnDeviceOptions final {
   TokenLimits token_limits;
 
   base::WeakPtr<OptimizationGuideLogger> logger;
-  base::WeakPtr<ModelQualityLogsUploaderService> log_uploader;
 
   // Returns true if the on-device model may be used.
   bool ShouldUse() const;

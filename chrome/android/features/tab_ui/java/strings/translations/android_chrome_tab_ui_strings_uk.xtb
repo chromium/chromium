@@ -31,6 +31,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="1909810060368225529">Зверніть увагу: усі користувачі в цій спільній групі вкладок можуть бачити й вносити зміни.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Зробити закладку для <ph name="TABS_COUNT_ONE" /> вибраної вкладки}one{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраної вкладки}few{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраних вкладок}many{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
+<translation id="2055057176188061528">Виберіть групу вкладок або створіть нову</translation>
 <translation id="2118649612461486615">Про магазин</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". Анонімна вкладка буде недоступна.}one{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімна вкладка буде недоступна.}few{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімні вкладки будуть недоступні.}many{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімних вкладок будуть недоступні.}other{Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". # анонімної вкладки будуть недоступні.}}</translation>
 <translation id="2162620598375156287">Поточна ціна на сайті <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
@@ -67,6 +68,7 @@
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3547352561153509682">Групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нова вкладка}one{<ph name="MANY_ADDED" /> нова вкладка}few{<ph name="MANY_ADDED" /> нові вкладки}many{<ph name="MANY_ADDED" /> нових вкладок}other{<ph name="MANY_ADDED" /> нової вкладки}}</translation>
 <translation id="3613492231657284463">Сховати вікно "Неактивні вкладки"</translation>
 <translation id="3619255692378312441">Керувати доступом</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="381219490185664296">Розгрупувати вкладки?</translation>
 <translation id="3940195383040445971">Відстежувати ціни на вкладках</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нова вкладка, <ph name="ANY_CLOSED" /> закрито}one{<ph name="MANY_ADDED" /> нова вкладка, <ph name="ANY_CLOSED" /> закрито}few{<ph name="MANY_ADDED" /> нові вкладки, <ph name="ANY_CLOSED" /> закрито}many{<ph name="MANY_ADDED" /> нових вкладок, <ph name="ANY_CLOSED" /> закрито}other{<ph name="MANY_ADDED" /> нової вкладки, <ph name="ANY_CLOSED" /> закрито}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Додати вкладку в групу}one{Згрупувати вкладки}few{Згрупувати вкладки}many{Згрупувати вкладки}other{Згрупувати вкладки}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна вкладка}one{<ph name="TABS_COUNT_MANY" /> неактивна вкладка}few{<ph name="TABS_COUNT_MANY" /> неактивні вкладки}many{<ph name="TABS_COUNT_MANY" /> неактивних вкладок}other{<ph name="TABS_COUNT_MANY" /> неактивної вкладки}}</translation>
 <translation id="3969565576924904454">Відкрити групу "<ph name="TITLE_OF_GROUP" />"</translation>

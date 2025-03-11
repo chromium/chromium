@@ -211,8 +211,8 @@ static_library("browser") {
     "field_types.h",
     "filling/addresses/field_filling_address_util.cc",
     "filling/addresses/field_filling_address_util.h",
-    "filling/entities/field_filling_entity_util.cc",
-    "filling/entities/field_filling_entity_util.h",
+    "filling/autofill_ai/field_filling_entity_util.cc",
+    "filling/autofill_ai/field_filling_entity_util.h",
     "filling/field_filling_skip_reason.cc",
     "filling/field_filling_skip_reason.h",
     "filling/field_filling_util.cc",
@@ -546,6 +546,8 @@ static_library("browser") {
     "payments/wait_for_signal_or_timeout.cc",
     "payments/wait_for_signal_or_timeout.h",
     "payments/webauthn_callback_types.h",
+    "permissions/autofill_ai/autofill_ai_permission_utils.cc",
+    "permissions/autofill_ai/autofill_ai_permission_utils.h",
     "single_field_fillers/autocomplete/autocomplete_history_manager.cc",
     "single_field_fillers/autocomplete/autocomplete_history_manager.h",
     "single_field_fillers/payments/merchant_promo_code_manager.cc",
@@ -751,10 +753,10 @@ static_library("browser") {
 
   if (!is_ios) {
     sources += [
-      "autofill_policy_handler.cc",
-      "autofill_policy_handler.h",
       "payments/credit_card_fido_authenticator.cc",
       "payments/credit_card_fido_authenticator.h",
+      "permissions/autofill_policy_handler.cc",
+      "permissions/autofill_policy_handler.h",
       "strike_databases/payments/fido_authentication_strike_database.h",
     ]
   }
@@ -870,6 +872,10 @@ static_library("browser") {
     "//third_party/zlib/google:compression_utils",
     "//ui/accessibility:accessibility",
   ]
+
+  if (!is_fuchsia) {
+    deps += [ "//components/variations/service" ]
+  }
 
   if (use_blink) {
     deps += [
@@ -1103,6 +1109,7 @@ static_library("test_support") {
   public_deps = [
     ":browser",
     "//components/autofill/core/common:test_support",
+    "//components/optimization_guide/core:features",
   ]
 
   deps = [
@@ -1263,7 +1270,7 @@ source_set("unit_tests") {
     "field_type_utils_unittest.cc",
     "field_types_unittest.cc",
     "filling/addresses/field_filling_address_util_unittest.cc",
-    "filling/entities/field_filling_entity_util_unittest.cc",
+    "filling/autofill_ai/field_filling_entity_util_unittest.cc",
     "filling/field_filling_util_unittest.cc",
     "filling/form_autofill_history_unittest.cc",
     "filling/form_filler_unittest.cc",
@@ -1444,7 +1451,7 @@ source_set("unit_tests") {
 
   if (!is_ios) {
     sources += [
-      "autofill_policy_handler_unittest.cc",
+      "permissions/autofill_policy_handler_unittest.cc",
 
       # Not included on iOS because the files need to be bundled specially.
       "heuristic_classification_unittests.cc",
@@ -1483,6 +1490,11 @@ source_set("unit_tests") {
       "ml_model/field_classification_model_executor_unittest.cc",
       "ml_model/field_classification_model_handler_unittest.cc",
     ]
+  }
+
+  if (!is_ios && !is_android && !is_fuchsia) {
+    sources +=
+        [ "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc" ]
   }
 
   if (build_with_model_execution) {

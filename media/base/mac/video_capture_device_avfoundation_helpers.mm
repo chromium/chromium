@@ -13,6 +13,9 @@ namespace media {
 BASE_FEATURE(kUseAVCaptureDeviceTypeExternal,
              "UseAVCaptureDeviceTypeExternal",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAVCaptureDeviceTypeContinuity,
+             "UseAVCaptureDeviceTypeContinuity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
@@ -32,6 +35,12 @@ NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
       // duplicate the else case here.
       captureDeviceTypes = [captureDeviceTypes
           arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
+    }
+    // Continuity cameras are available from MacOS 14.0 and also have to
+    // be queried.
+    if (base::FeatureList::IsEnabled(kUseAVCaptureDeviceTypeContinuity)) {
+      captureDeviceTypes = [captureDeviceTypes
+          arrayByAddingObject:AVCaptureDeviceTypeContinuityCamera];
     }
   } else {
     captureDeviceTypes = [captureDeviceTypes

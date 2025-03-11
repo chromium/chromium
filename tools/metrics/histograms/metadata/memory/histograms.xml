@@ -233,13 +233,6 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
-<histogram name="Memory.BackingStore" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>TBD.</summary>
-</histogram>
-
 <histogram name="Memory.Browser.MappingsCount" units="count"
     expires_after="2025-08-24">
   <owner>lizeb@chromium.org</owner>
@@ -451,13 +444,6 @@ chromium-metrics-reviews@google.com.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
   </summary>
-</histogram>
-
-<histogram name="Memory.CachedFontAndDC" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>TBD.</summary>
 </histogram>
 
 <histogram name="Memory.CommitAvailableMB" units="MB"
@@ -716,20 +702,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The extension process's memory usage reported by the memory instrumentation
     service in bytes.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.Gpu.PhysicalFootprint.MacOS" units="MB"
-    expires_after="M85">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The physical footprint of the GPU process on macOS. Other measurements fail
-    to correctly account for OpenGL memory usage. This metric also has flaws and
-    is not intended for permanent use. It's an emergency measure added to help
-    debug https://crbug.com/713854.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
@@ -1070,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintAfter"
-    units="MB" expires_after="2025-07-06">
+    units="MB" expires_after="2025-09-07">
   <owner>tasak@google.com</owner>
   <owner>chrome-memory-tok@google.com</owner>
   <summary>
@@ -1239,26 +1211,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.GlyphPagesPerLoad" units="units" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    The number of glyph pages present in the renderer when it commits a load.
-    Since this is per-sub-process, you can get the average number of glyph pages
-    in the system by multiplying this number with the average number of
-    renderers. Note that this typically won't count the glyph pages added as a
-    result of the load that just committed, since layout will happen after the
-    commit. There are 512 bytes per glyph page, but this number also very
-    closely approximates the number of glyph width map pages in the same
-    renderer. The only difference is that if you have font fallback, it will
-    make a new glyph page and no width page, but in most common cases there is
-    no fallback). Width pages are 1K each (256 floats), so you could think of
-    this value as being the number of &quot;1.5K units related to glyphs per
-    renderer per page load&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Gpu.MappingsCount" units="count"
     expires_after="2025-08-24">
   <owner>lizeb@chromium.org</owner>
@@ -1335,16 +1287,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Gpu.PrivateSwapFootprint" units="MB"
-    expires_after="M77">
-  <owner>erikchen@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    An amount of private memory of the GPU process placed in swap (VmSwap).
-    Available on Android, Linux and ChromeOS.
   </summary>
 </histogram>
 
@@ -1904,15 +1846,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.PressureLevelChanges" enum="MemoryPressureLevelChanges"
-    expires_after="M85">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of pressure level state changes for each possible pairwise state
-    change.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Memory.PressureWindowDuration" units="ms"
     expires_after="2025-08-24">
 <!-- Name completed by histogram_suffixes name="Memory.Pressure.TransitionType" -->
@@ -2262,16 +2195,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Swap.Worker" units="KB" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    The swap used by each worker process. Each worker process provides one
-    sample. Recorded once per process per UMA ping if the system has swapped.
-  </summary>
-</histogram>
-
 <histogram name="Memory.System.MemAvailableMB" units="MB"
     expires_after="2025-08-24">
   <owner>andreaorru@chromium.org</owner>
@@ -2568,7 +2491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{ClientName}.DecisionLatency" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2581,7 +2504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{ClientName}.DecisionTimeout"
-    enum="VmmmsRequestPriority" expires_after="2025-07-06">
+    enum="VmmmsRequestPriority" expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2594,7 +2517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{ClientName}.UnnecessaryKill"
-    enum="VmmmsRequestPriority" expires_after="2025-07-06">
+    enum="VmmmsRequestPriority" expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2607,7 +2530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.Deflate" units="MiB"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2618,7 +2541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.Inflate" units="MiB"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2629,7 +2552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.ResizeInterval" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2640,7 +2563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.Size10Minutes" units="MiB"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2651,7 +2574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.StallThroughput" units="MiB/s"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2789,16 +2712,6 @@ chromium-metrics-reviews@google.com.
   <token key="VmName" variants="VmmSwapVmName"/>
 </histogram>
 
-<histogram name="Memory.Worker" units="KB" expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    The private working set used by each worker process. Each worker process
-    provides one sample. Recorded once per process per UMA ping.
-  </summary>
-</histogram>
-
 <histogram name="Memory.{UtilityProcessType}.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: useful diagnostic metric for changes in
@@ -2889,28 +2802,6 @@ chromium-metrics-reviews@google.com.
     Along with any surfaces that were embedded before a navigation occurred.
 
     This will be emitted whenever we evict one DelegatedFrameHostAndroid.
-  </summary>
-</histogram>
-
-<histogram name="MemoryAndroid.EvictionReason" enum="AndroidEvictionReason"
-    expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Reasons behind evictions of individual tabs, recorded upon each tab
-    eviction.
-  </summary>
-</histogram>
-
-<histogram name="MemoryAndroid.LowMemoryLoadedTabCount" units="units"
-    expires_after="M85">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Number of loaded (memory-resident) tabs when LowMemory notification is
-    delivered.
   </summary>
 </histogram>
 

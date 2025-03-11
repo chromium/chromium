@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -42,9 +43,10 @@ namespace blink {
 using SelectorTextCache = HeapHashMap<WeakMember<const CSSStyleRule>, String>;
 
 static SelectorTextCache& GetSelectorTextCache() {
-  DEFINE_STATIC_LOCAL(Persistent<SelectorTextCache>, cache,
-                      (MakeGarbageCollected<SelectorTextCache>()));
-  return *cache;
+  using SelectorTextCacheHolder = DisallowNewWrapper<SelectorTextCache>;
+  DEFINE_STATIC_LOCAL(Persistent<SelectorTextCacheHolder>, cache,
+                      (MakeGarbageCollected<SelectorTextCacheHolder>()));
+  return cache->Value();
 }
 
 CSSStyleRule::CSSStyleRule(StyleRule* style_rule,

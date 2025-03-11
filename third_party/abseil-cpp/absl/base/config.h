@@ -276,12 +276,10 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 
 // ABSL_HAVE_THREAD_LOCAL
 //
-// DEPRECATED - `thread_local` is available on all supported platforms.
-// Checks whether C++11's `thread_local` storage duration specifier is
-// supported.
+// Checks whether the `thread_local` storage duration specifier is supported.
 #ifdef ABSL_HAVE_THREAD_LOCAL
 #error ABSL_HAVE_THREAD_LOCAL cannot be directly set
-#else
+#elif !defined(__XTENSA__)
 #define ABSL_HAVE_THREAD_LOCAL 1
 #endif
 
@@ -524,19 +522,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_USES_STD_ANY 1
 #define ABSL_HAVE_STD_OPTIONAL 1
 #define ABSL_USES_STD_OPTIONAL 1
-
-// ABSL_HAVE_STD_VARIANT
-//
-// Checks whether C++17 std::variant is available.
-#ifdef ABSL_HAVE_STD_VARIANT
-#error "ABSL_HAVE_STD_VARIANT cannot be directly set."
-#elif defined(__cpp_lib_variant) && __cpp_lib_variant >= 201606L
 #define ABSL_HAVE_STD_VARIANT 1
-#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
-    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
-    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
-#define ABSL_HAVE_STD_VARIANT 1
-#endif
+#define ABSL_USES_STD_VARIANT 1
 
 // ABSL_HAVE_STD_STRING_VIEW
 //
@@ -564,21 +551,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     (defined(ABSL_INTERNAL_CPLUSPLUS_LANG) &&        \
      ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L)
 #define ABSL_HAVE_STD_ORDERING 1
-#endif
-
-// ABSL_USES_STD_VARIANT
-//
-// Indicates whether absl::variant is an alias for std::variant.
-#if !defined(ABSL_OPTION_USE_STD_VARIANT)
-#error options.h is misconfigured.
-#elif ABSL_OPTION_USE_STD_VARIANT == 0 || \
-    (ABSL_OPTION_USE_STD_VARIANT == 2 && !defined(ABSL_HAVE_STD_VARIANT))
-#undef ABSL_USES_STD_VARIANT
-#elif ABSL_OPTION_USE_STD_VARIANT == 1 || \
-    (ABSL_OPTION_USE_STD_VARIANT == 2 && defined(ABSL_HAVE_STD_VARIANT))
-#define ABSL_USES_STD_VARIANT 1
-#else
-#error options.h is misconfigured.
 #endif
 
 // ABSL_USES_STD_STRING_VIEW
@@ -612,14 +584,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_USES_STD_ORDERING 1
 #else
 #error options.h is misconfigured.
-#endif
-
-// In debug mode, MSVC 2017's std::variant throws a EXCEPTION_ACCESS_VIOLATION
-// SEH exception from emplace for variant<SomeStruct> when constructing the
-// struct can throw. This defeats some of variant_test and
-// variant_exception_safety_test.
-#if defined(_MSC_VER) && _MSC_VER >= 1700 && defined(_DEBUG)
-#define ABSL_INTERNAL_MSVC_2017_DBG_MODE
 #endif
 
 // ABSL_INTERNAL_MANGLED_NS

@@ -180,9 +180,10 @@ using ElementMetaParamsMap =
     HeapHashMap<WeakMember<const Element>, Member<const MetaParams>>;
 
 ElementMetaParamsMap& FullscreenParamsMap() {
-  DEFINE_STATIC_LOCAL(Persistent<ElementMetaParamsMap>, map,
-                      (MakeGarbageCollected<ElementMetaParamsMap>()));
-  return *map;
+  using ElementMetaParamsMapHolder = DisallowNewWrapper<ElementMetaParamsMap>;
+  DEFINE_STATIC_LOCAL(Persistent<ElementMetaParamsMapHolder>, holder,
+                      (MakeGarbageCollected<ElementMetaParamsMapHolder>()));
+  return holder->Value();
 }
 
 bool HasFullscreenFlag(const Element& element) {

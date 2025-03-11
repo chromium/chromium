@@ -2295,6 +2295,7 @@
 <translation id="256517381556987641">عثرت ميزة "مزامنة الملفات" على <ph name="ITEMS_FOUND" /> ملف حتى الآن ولا يزال البحث في مساحة التخزين جاريًا. يمكنك تجربة تفعيل ميزة "مزامنة الملفات" مرة أخرى في غضون بضع دقائق.</translation>
 <translation id="2565214867520763227">تفعيل قارئ الشاشة</translation>
 <translation id="2566146433999774844">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUM_OTHER_MEMBERS" /> من المستخدمِين الآخريِن</translation>
+<translation id="256726287944589768">عرض التذييل في صفحة "علامة تبويب جديدة"</translation>
 <translation id="2568694057933302218">في وضع التصفُّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح على المواقع الإلكترونية. ولا يتم استخدام نشاط التصفُّح لأغراض مثل تخصيص الإعلانات. وقد لا تعمل ميزات بعض المواقع الإلكترونية.</translation>
 <translation id="2568774940984945469">حاوية شريط المعلومات</translation>
 <translation id="2569972178052279830">اسم بائع التجزئة</translation>
@@ -2803,6 +2804,7 @@
 <translation id="2921081876747860777">يُرجى إنشاء كلمة مرور لحماية بياناتك المحلية.</translation>
 <translation id="2923006468155067296">سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> الآن.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{‫<ph name="TASK_ROW" />}zero{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مَهمة أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}two{‫<ph name="TASK_ROW" />. مَهمتان أخريان (<ph name="OTHER_TASK_NUM" />) في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}few{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مهام أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}many{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مَهمة أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مَهمة أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">إزالة هذا الحساب</translation>
 <translation id="2923644930701689793">الوصول إلى ألبوم الكاميرا في هاتفك</translation>
 <translation id="292371311537977079">‏إعدادات Chrome</translation>

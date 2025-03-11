@@ -7,16 +7,13 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/input_methods_ash.h"
 #include "chrome/common/extensions/api/enterprise_kiosk_input.h"
-#include "chromeos/crosapi/mojom/input_methods.mojom.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace {
@@ -27,9 +24,6 @@ namespace SetCurrentInputMethod =
 constexpr char kErrorMessageTemplate[] =
     "Could not change current input method. Invalid input method id: %s.";
 
-crosapi::mojom::InputMethods* GetInputMethodsApi() {
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->input_methods_ash();
-}
 }  // namespace
 
 namespace extensions {
@@ -44,24 +38,26 @@ ExtensionFunction::ResponseAction
 EnterpriseKioskInputSetCurrentInputMethodFunction::Run() {
   std::optional<SetCurrentInputMethod::Params> params =
       SetCurrentInputMethod::Params::Create(args());
+  const std::string input_method_id = params->options.input_method_id;
 
-  GetInputMethodsApi()->ChangeInputMethod(
-      params->options.input_method_id,
-      base::BindOnce(&EnterpriseKioskInputSetCurrentInputMethodFunction::
-                         OnChangeInputMethodDone,
-                     this, params->options.input_method_id));
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
+  auto& input_method_manager =
+      CHECK_DEREF(ash::input_method::InputMethodManager::Get());
+  ash::input_method::InputMethodManager::State& ime_state =
+      CHECK_DEREF(input_method_manager.GetActiveIMEState().get());
 
-void EnterpriseKioskInputSetCurrentInputMethodFunction::OnChangeInputMethodDone(
-    std::string input_method_id,
-    bool succeeded) {
-  if (succeeded) {
-    Respond(NoArguments());
-  } else {
-    Respond(Error(
+  const std::string migrated_input_method_id =
+      input_method_manager.GetMigratedInputMethodID(input_method_id);
+
+  const bool is_input_method_enabled = base::Contains(
+      ime_state.GetEnabledInputMethodIds(), migrated_input_method_id);
+  if (!is_input_method_enabled) {
+    return RespondNow(Error(
         base::StringPrintf(kErrorMessageTemplate, input_method_id.c_str())));
   }
+
+  ime_state.ChangeInputMethod(migrated_input_method_id,
+                              /*show_message=*/false);
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

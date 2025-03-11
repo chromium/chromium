@@ -6685,8 +6685,7 @@ TEST_F(
   prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
-// With new wait loop, multiple concurrent navigations are handled correctly.
-// TODO(crbug.com/353490734): Remove the above sentence.
+// Test that multiple concurrent navigations are handled correctly.
 //
 // Scenario:
 //
@@ -6907,7 +6906,7 @@ TEST_F(PrefetchServiceTest,
 // - A received non-redirect header. Unblocks them as fail.
 //
 // This test checks that it is safe to call
-// `PrefetchContainer::OnDetectedCookiesChange2()` multiple times.
+// `PrefetchContainer::OnDetectedCookiesChange()` multiple times.
 TEST_F(PrefetchServiceTest,
        DISABLED_CHROMEOS(
            MultipleConcurrentNavigationBlockUntilHeadThenCookiesChanged)) {

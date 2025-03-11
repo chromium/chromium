@@ -103,6 +103,7 @@ cargo_crate("lib") {
   features = [
     "calendar",
     "compiled_data",
+    "experimental",
   ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates

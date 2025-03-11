@@ -238,8 +238,9 @@ GlicWindowController::GlicWindowController(
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
       enabling_(enabling) {
-  subscriptions_.push_back(enabling_->RegisterEnableChanged(base::BindRepeating(
-      &GlicWindowController::EnableChanged, base::Unretained(this))));
+  subscriptions_.push_back(
+      enabling_->RegisterAllowedChanged(base::BindRepeating(
+          &GlicWindowController::EnableChanged, base::Unretained(this))));
 }
 
 GlicWindowController::~GlicWindowController() = default;
@@ -833,7 +834,7 @@ void GlicWindowController::Close() {
 
   // The webview should be faded out instead.
   if (GetGlicView()) {
-    GetGlicView()->web_view()->SetWebContents(nullptr);
+    glic_window_animator_->SetGlicWebViewVisibility(false);
   }
 
   if (attached_browser_) {

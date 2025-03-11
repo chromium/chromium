@@ -42,16 +42,16 @@ EntityInstanceToPrivateApiEntityInstanceWithLabels(
   autofill_private::EntityInstanceWithLabels entity_instance_with_labels;
   entity_instance_with_labels.guid = entity_instance.guid().AsLowercaseString();
   // TODO(crbug.com/393318055): Use better labels.
-  entity_instance_with_labels.entity_label = base::UTF16ToUTF8(
+  entity_instance_with_labels.entity_instance_label = base::UTF16ToUTF8(
       entity_instance.attributes()[0].GetCompleteInfo(app_locale));
-  entity_instance_with_labels.entity_sub_label =
+  entity_instance_with_labels.entity_instance_sub_label =
       base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
   return entity_instance_with_labels;
 }
 
 }  // namespace
 
-std::string GetAddEntityStringForI18n(EntityType entity_type) {
+std::string GetAddEntityTypeStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY);
@@ -64,7 +64,7 @@ std::string GetAddEntityStringForI18n(EntityType entity_type) {
   NOTREACHED();
 }
 
-std::string GetEditEntityStringForI18n(EntityType entity_type) {
+std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY);
@@ -80,10 +80,10 @@ std::string GetEditEntityStringForI18n(EntityType entity_type) {
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
-      attributes;
+      attribute_instances;
   for (const autofill_private::AttributeInstance&
            private_api_attribute_instance :
-       private_api_entity_instance.attributes) {
+       private_api_entity_instance.attribute_instances) {
     if (private_api_attribute_instance.type.type_name < 0 ||
         private_api_attribute_instance.type.type_name >
             base::to_underlying(AttributeTypeName::kMaxValue)) {
@@ -92,13 +92,13 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
 
     autofill::AttributeType attribute_type(
         AttributeTypeName(private_api_attribute_instance.type.type_name));
-    AttributeInstance attribute(attribute_type);
-    attribute.SetRawInfo(
-        attribute.type().field_type(),
+    AttributeInstance attribute_instance(attribute_type);
+    attribute_instance.SetRawInfo(
+        attribute_instance.type().field_type(),
         base::UTF8ToUTF16(private_api_attribute_instance.value),
         autofill::VerificationStatus::kUserVerified);
-    attribute.FinalizeInfo();
-    attributes.emplace(std::move(attribute));
+    attribute_instance.FinalizeInfo();
+    attribute_instances.emplace(std::move(attribute_instance));
   }
 
   std::optional<EntityTypeName> entity_type_name =
@@ -108,28 +108,29 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     return std::nullopt;
   }
   EntityType entity_type(entity_type_name.value());
-  // Newly added entities need to have a guid generated for them.
+  // Newly added entity instances need to have a guid generated for them.
   base::Uuid guid =
       private_api_entity_instance.guid.empty()
           ? base::Uuid::GenerateRandomV4()
           : base::Uuid::ParseLowercase(private_api_entity_instance.guid);
-  return EntityInstance(std::move(entity_type), attributes, std::move(guid),
-                        private_api_entity_instance.nickname,
+  return EntityInstance(std::move(entity_type), attribute_instances,
+                        std::move(guid), private_api_entity_instance.nickname,
                         base::Time::Now());
 }
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const EntityInstance& entity_instance,
     const std::string& app_locale) {
-  std::vector<autofill_private::AttributeInstance> private_api_attributes;
+  std::vector<autofill_private::AttributeInstance>
+      private_api_attribute_instances;
   for (const AttributeInstance& attribute_instance :
        entity_instance.attributes()) {
-    private_api_attributes.emplace_back();
-    private_api_attributes.back().type.type_name =
+    private_api_attribute_instances.emplace_back();
+    private_api_attribute_instances.back().type.type_name =
         base::to_underlying(attribute_instance.type().name());
-    private_api_attributes.back().type.type_name_as_string =
+    private_api_attribute_instances.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
-    private_api_attributes.back().value =
+    private_api_attribute_instances.back().value =
         base::UTF16ToUTF8(attribute_instance.GetCompleteInfo(app_locale));
   }
 
@@ -138,11 +139,12 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       base::to_underlying(entity_instance.type().name());
   private_api_entity_instance.type.type_name_as_string =
       base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
-  private_api_entity_instance.type.add_entity_string =
-      GetAddEntityStringForI18n(entity_instance.type());
-  private_api_entity_instance.type.edit_entity_string =
-      GetEditEntityStringForI18n(entity_instance.type());
-  private_api_entity_instance.attributes = std::move(private_api_attributes);
+  private_api_entity_instance.type.add_entity_type_string =
+      GetAddEntityTypeStringForI18n(entity_instance.type());
+  private_api_entity_instance.type.edit_entity_type_string =
+      GetEditEntityTypeStringForI18n(entity_instance.type());
+  private_api_entity_instance.attribute_instances =
+      std::move(private_api_attribute_instances);
   private_api_entity_instance.guid = entity_instance.guid().AsLowercaseString();
   private_api_entity_instance.nickname = entity_instance.nickname();
   return private_api_entity_instance;

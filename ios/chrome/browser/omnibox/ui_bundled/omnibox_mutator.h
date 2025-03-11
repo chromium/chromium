@@ -13,6 +13,9 @@
 /// Removes the thumbnail.
 - (void)removeThumbnail;
 
+/// Removes the additional text.
+- (void)removeAdditionalText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_MUTATOR_H_

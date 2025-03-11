@@ -718,6 +718,42 @@
             ]
         }
     ],
+    "AnimatedDefaultBrowserPromoInFRE": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithActionButtons",
+                    "params": {
+                        "AnimatedDefaultBrowserPromoInFREExperimentType": "0"
+                    },
+                    "enable_features": [
+                        "AnimatedDefaultBrowserPromoInFRE"
+                    ]
+                },
+                {
+                    "name": "EnabledWithShowMeHow",
+                    "params": {
+                        "AnimatedDefaultBrowserPromoInFREExperimentType": "1"
+                    },
+                    "enable_features": [
+                        "AnimatedDefaultBrowserPromoInFRE"
+                    ]
+                },
+                {
+                    "name": "EnabledWithInstructions",
+                    "params": {
+                        "AnimatedDefaultBrowserPromoInFREExperimentType": "2"
+                    },
+                    "enable_features": [
+                        "AnimatedDefaultBrowserPromoInFRE"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnimationForDesktopCapturePermissionChecker": [
         {
             "platforms": [
@@ -1595,8 +1631,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillAiWithDataSchema",
-                        "AutofillExtractInputDate"
+                        "AutofillAiWithDataSchema"
                     ]
                 }
             ]
@@ -1747,7 +1782,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableCardBenefitsIph"
+                        "AutofillEnableCardBenefitsIph",
+                        "IPH_AutofillCreditCardBenefit"
                     ]
                 }
             ]
@@ -2945,29 +2981,6 @@
                     "enable_features": [
                         "BFCachePerformanceManagerPolicy",
                         "BackForwardCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardCacheForPageWithCacheControlNotStoredHeader": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240129",
-                    "params": {
-                        "level": "restore-unless-cookie-change",
-                        "ttl": "3m"
-                    },
-                    "enable_features": [
-                        "CacheControlNoStoreEnterBackForwardCache"
                     ]
                 }
             ]
@@ -5268,6 +5281,9 @@
                         "LensClearcutLoggerFastQosEnabled",
                         "LensInkMultiSampleModeDisabled",
                         "LensOverlayEnableLocationBarEntrypoint"
+                    ],
+                    "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypointOnSRP"
                     ]
                 }
             ]
@@ -10208,6 +10224,25 @@
             ]
         }
     ],
+    "FledgeModifyInterestGroupPolicyCheckOnOwner": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeModifyInterestGroupPolicyCheckOnOwner"
+                    ]
+                }
+            ]
+        }
+    ],
     "Floss": [
         {
             "platforms": [
@@ -12247,21 +12282,6 @@
             ]
         }
     ],
-    "IOSInactiveTabsIPad": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InactiveTabsIPadFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSIncognitoSoftLock": [
         {
             "platforms": [
@@ -12287,21 +12307,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InternalAdditionalFeaturesSwitch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSInterruptibleCoordinatorAlwaysDismissed": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "IOSInterruptibleCoordinatorAlwaysDismissed",
-                    "enable_features": [
-                        "IOSInterruptibleCoordinatorAlwaysDismissed"
                     ]
                 }
             ]
@@ -12731,29 +12736,6 @@
             ]
         }
     ],
-    "IOSTabResumption2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Tab_Resumption_2_Random_Data_20241001",
-                    "params": {
-                        "use_random_score": "true"
-                    },
-                    "enable_features": [
-                        "PageContentAnnotations",
-                        "SegmentationPlatformURLVisitResumptionRanker",
-                        "TabResumption2"
-                    ],
-                    "disable_features": [
-                        "VisitedURLRankingHistoryVisibilityScoreFilter"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUpdateFirstRunSequence": [
         {
             "platforms": [
@@ -13099,16 +13081,20 @@
             ]
         }
     ],
-    "InputVizard": [
+    "InputScenarioPriorityBoostDesktop": [
         {
             "platforms": [
-                "android"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "InputOnViz"
+                        "InputScenarioPriorityBoost"
                     ]
                 }
             ]

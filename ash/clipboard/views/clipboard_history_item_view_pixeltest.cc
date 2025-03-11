@@ -63,14 +63,14 @@ TEST_F(ClipboardHistoryItemViewPixelTest, BitmapItemView) {
           clipboard_history_util::kBitmapItemView);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bitmap_item_view",
-      /*revision_number=*/0, bitmap_contents));
+      /*revision_number=*/1, bitmap_contents));
 
   // Press the tab key to focus on the delete button.
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bitmap_item_view_with_delete_button",
-      /*revision_number=*/0, bitmap_contents));
+      /*revision_number=*/1, bitmap_contents));
 }
 
 }  // namespace ash

@@ -37,14 +37,16 @@ export interface EntityDataManagerProxy {
   getEntityInstanceByGuid(guid: string): Promise<EntityInstance>;
 
   /**
-   * Returns a list of all possible entities that exist.
+   * Returns a list of all possible entity types that exist.
    */
   getAllEntityTypes(): Promise<EntityType[]>;
 
   /**
-   * Returns a list of all possible attributes that can be set on an entity.
+   * Returns a list of all possible attribute types that can be set on an entity
+   * instance.
    */
-  getAllAttributeTypesForEntity(entityType: number): Promise<AttributeType[]>;
+  getAllAttributeTypesForEntityTypeName(entityTypeName: number):
+      Promise<AttributeType[]>;
 
   /**
    * Adds a listener to changes in the entity instances.
@@ -80,8 +82,9 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
     return chrome.autofillPrivate.getAllEntityTypes();
   }
 
-  getAllAttributeTypesForEntity(entityType: number) {
-    return chrome.autofillPrivate.getAllAttributeTypesForEntity(entityType);
+  getAllAttributeTypesForEntityTypeName(entityTypeName: number) {
+    return chrome.autofillPrivate.getAllAttributeTypesForEntityTypeName(
+        entityTypeName);
   }
 
   addEntityInstancesChangedListener(listener: EntityInstancesChangedListener) {

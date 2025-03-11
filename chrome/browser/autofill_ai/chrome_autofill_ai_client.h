@@ -6,16 +6,12 @@
 #define CHROME_BROWSER_AUTOFILL_AI_CHROME_AUTOFILL_AI_CLIENT_H_
 
 #include <memory>
-#include <utility>
+#include <optional>
 
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
-#include "components/prefs/pref_service.h"
-
-class Profile;
 
 namespace content {
 class WebContents;
@@ -29,19 +25,15 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   ChromeAutofillAiClient& operator=(const ChromeAutofillAiClient&) = delete;
   ~ChromeAutofillAiClient() override;
 
-  // Creates a `ChromeAutofillAiClient` for `web_contents`
-  // if the platform and enterprise policy allow it, i.e., `autofill_ai::
-  // AutofillAiIsPlatformAndEnterprisePolicyEligible()` is true.
+  // Creates a `ChromeAutofillAiClient` for `web_contents` if
+  // `kAutofillAiWithDataSchema` is enabled. Returns `nullptr` otherwise.
   [[nodiscard]] static std::unique_ptr<ChromeAutofillAiClient>
-  MaybeCreateForWebContents(content::WebContents* web_contents,
-                            Profile* profile);
+  MaybeCreateForWebContents(content::WebContents* web_contents);
 
   // AutofillAiClient:
   autofill::ContentAutofillClient& GetAutofillClient() override;
   autofill_ai::AutofillAiManager& GetManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
-  bool IsAutofillAiEnabledPref() const override;
-  bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) override;
   void ShowSaveOrUpdateBubble(
@@ -51,11 +43,9 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
       override;
 
  private:
-  explicit ChromeAutofillAiClient(content::WebContents* web_contents,
-                                  Profile* profile);
+  explicit ChromeAutofillAiClient(content::WebContents* web_contents);
 
   const raw_ref<content::WebContents> web_contents_;
-  const raw_ref<const PrefService> prefs_;
 
   autofill_ai::AutofillAiManager prediction_improvements_manager_;
 };

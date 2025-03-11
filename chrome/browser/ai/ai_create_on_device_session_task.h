@@ -28,6 +28,13 @@ class CreateOnDeviceSessionTask
 
   bool IsPending() const { return state_ == State::kPending; }
 
+  void set_override_session(
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>
+          override_session) {
+    override_session_ = std::move(override_session);
+  }
+
   // Starts the process of creating an on-device model session.
   // It may succeed or fail immediately, or it may move into the `kPending`
   // state if it needs to wait for the on-device model availability changes.
@@ -92,6 +99,9 @@ class CreateOnDeviceSessionTask
   const raw_ptr<content::BrowserContext> browser_context_;
   const optimization_guide::ModelBasedCapabilityKey feature_;
   State state_ = CreateOnDeviceSessionTask::State::kNotStarted;
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      override_session_;
 };
 
 // Implementation of the `CreateOnDeviceSessionTask` base class for

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">الصور المتحركة لشاشة الاستراحة</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
 <translation id="1539864135338521185">لازورد</translation>
+<translation id="1548555207631326346">‏يمكنك اختيار مظهر والنقر على الكلمات التي تحتها خط لتخصيص صورك التي أنشأها الذكاء الاصطناعي (AI).<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          للحصول على صور فريدة ومتنوعة تستند إلى الذكاء الاصطناعي، انقر على "أريد أفكارًا جديدة".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          عند إنشاء الصور باستخدام الذكاء الاصطناعي، يتم إرسال الطلب إلى خوادم ذكاء Google الاصطناعي لإنشاء الصور وتحسين المنتج، ويتم إجراء ذلك مع مراعاة <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />سياسة خصوصية Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          لا يزال الذكاء الاصطناعي التوليدي في المرحلة التجريبية ومراحل التطوير الأولى، ويتوفّر حاليًا بشكل محدود.</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1561927818299383735">لون الإضاءة الخلفية</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">شاطئ</translation>
 <translation id="819278132617411009">‏استخدام تكنولوجيات الذكاء الاصطناعي من Google لتعزيز إنتاجيتك</translation>
+<translation id="82003371436638355">‏عند اختيار "إنشاء خلفيتك الخاصة"، يمكنك كتابة طلب مخصّص أو النقر على "اختيار مظهر" ثم اختيار الكلمات التي تحتها خط لتخصيص خلفيتك القائمة على الذكاء الاصطناعي.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          للحصول على صور فريدة ومتنوعة تستند إلى الذكاء الاصطناعي، انقر على "أريد أفكارًا جديدة".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          عند إنشاء خلفية خاصة بك، يتم إرسال الطلب إلى خوادم Google لإنشاء الصور وتحسين المنتج، ويتم إجراء ذلك مع مراعاة <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />بنود الخدمة وسياسة الخصوصية الساريتَين في Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          قد يعرض الذكاء الاصطناعي التوليدي معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص، لذا ننصحك بالتحقّق من ردوده. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />مزيد من المعلومات<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">تشغيل الوسائط</translation>
 <translation id="8318753676953949627">ما مِن صور.</translation>
 <translation id="8320910311642849813">غابة</translation>
+<translation id="8322464149031882595">يُرجى النقر للتقدّم إلى الأمام</translation>
 <translation id="8329018942023753850">تطبيق "الآلة الحاسبة"</translation>
 <translation id="8336739000755212683">تغيير صورة حساب الجهاز</translation>
 <translation id="8339024191194156249">مزيد من المعلومات عن الإطلاق التلقائي</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">طيور بطريق</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
+<translation id="8972061581514441296">يُرجى النقر للعودة</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="89945434909472341">قرية</translation>

@@ -8,11 +8,13 @@
 
 #import <utility>
 
+#import "base/barrier_closure.h"
 #import "base/check.h"
 #import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -24,6 +26,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
+#import "ios/chrome/browser/profile/model/profile_deleter_ios.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -310,19 +313,28 @@ void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
   ProfileInfo info = std::move(iter->second);
   profiles_map_.erase(iter);
 
-  // If profile is loaded, notify all observers that it is unloaded.
-  if (info.is_loaded()) {
+  // If the profile is still loading, pretend that the loading failed
+  // by calling the ProfileLoadedCallbacks with nullptr.
+  if (!info.is_loaded()) {
+    for (auto& callback : info.TakeCallbacks()) {
+      std::move(callback).Run(nullptr);
+    }
+  } else {
+    // If profile is loaded, notify all observers that it is unloaded.
     ProfileIOS* profile = info.profile();
     for (auto& observer : observers_) {
       observer.OnProfileUnloaded(this, profile);
     }
-    return;
   }
 
-  // If the profile is still loading, pretend that the loading failed
-  // by calling the ProfileLoadedCallbacks with nullptr.
-  for (auto& callback : info.TakeCallbacks()) {
-    std::move(callback).Run(nullptr);
+  // If the profile has been marked for deletion, then try to delete it
+  // after notifying all observers that it has been unloaded.
+  if (IsProfileMarkedForDeletion(name)) {
+    profile_deleter_.DeleteProfile(
+        name, profile_data_dir_,
+        base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
+                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing(),
+                       std::string(name)));
   }
 }
 
@@ -348,23 +360,18 @@ void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
     return;
   }
 
-  // If profile is loaded, notify all observers that it is marked for
-  // deletion.
+  // If the profile is still loading, pretend that the loading failed
+  // by calling the ProfileLoadedCallbacks with nullptr.
   ProfileInfo& info = iter->second;
-  if (info.is_loaded()) {
+  if (!info.is_loaded()) {
+    for (auto& callback : info.TakeCallbacks()) {
+      std::move(callback).Run(nullptr);
+    }
+  } else {
     ProfileIOS* profile = info.profile();
-    DCHECK(profile);
-
     for (auto& observer : observers_) {
       observer.OnProfileMarkedForPermanentDeletion(this, profile);
     }
-    return;
-  }
-
-  // If the profile is still loading, pretend that the loading failed
-  // by calling the ProfileLoadedCallbacks with nullptr.
-  for (auto& callback : info.TakeCallbacks()) {
-    std::move(callback).Run(nullptr);
   }
 }
 
@@ -372,6 +379,37 @@ bool ProfileManagerIOSImpl::IsProfileMarkedForDeletion(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return profile_attributes_storage_.IsProfileMarkedForDeletion(name);
+}
+
+void ProfileManagerIOSImpl::PurgeProfilesMarkedForDeletion(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Get the list of profiles marked for deletion, and ignore those that
+  // are already loaded or loading (their data will be deleted when they
+  // are unloaded).
+  std::set<std::string> profiles =
+      profile_attributes_storage_.GetProfilesMarkedForDeletion();
+  for (const auto& [key, _] : profiles_map_) {
+    profiles.erase(key);
+  }
+
+  // If there are no profiles to delete, the operation is complete. Post
+  // the callback on the current sequence to ensure it is always invoked
+  // asynchronously.
+  if (profiles.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+
+  auto closure = base::BarrierClosure(profiles.size(), std::move(callback));
+  for (const std::string& name : profiles) {
+    profile_deleter_.DeleteProfile(
+        name, profile_data_dir_,
+        base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
+                       weak_ptr_factory_.GetWeakPtr(), closure, name));
+  }
 }
 
 ProfileAttributesStorageIOS*
@@ -424,6 +462,21 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
     } else {
       MarkProfileForDeletion(name);
     }
+  }
+
+  // If the profile is marked for deletion, then try to delete it and
+  // return (the callback would have been called with nullptr when it
+  // was marked for deletion, so there is no need to call them again).
+  if (IsProfileMarkedForDeletion(name)) {
+    ProfileInfo info = std::move(iter->second);
+    profiles_map_.erase(iter);
+
+    profile_deleter_.DeleteProfile(
+        name, profile_data_dir_,
+        base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
+                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing(),
+                       name));
+    return;
   }
 
   if (success) {
@@ -573,4 +626,16 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
   ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
+}
+
+void ProfileManagerIOSImpl::OnProfileDeletionComplete(
+    base::OnceClosure closure,
+    const std::string& profile_name,
+    ProfileDeleterIOS::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result == ProfileDeleterIOS::Result::kSuccess) {
+    profile_attributes_storage_.ProfileDeletionComplete(profile_name);
+  }
+
+  std::move(closure).Run();
 }

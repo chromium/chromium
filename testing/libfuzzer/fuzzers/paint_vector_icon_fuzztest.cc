@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "skia/ext/switches.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"

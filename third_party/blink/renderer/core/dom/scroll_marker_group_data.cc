@@ -5,24 +5,46 @@
 #include <third_party/blink/renderer/core/dom/scroll_marker_group_data.h>
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 
 namespace blink {
 
-std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
-ScrollMarkerChooser::GetScrollTargetOffsetData(const Element* scroll_marker) {
-  const LayoutBox* target_box = nullptr;
+namespace {
+
+Element* ScrollTargetElement(Element* scroll_marker) {
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(scroll_marker)) {
-    target_box =
-        scroll_marker_pseudo->UltimateOriginatingElement().GetLayoutBox();
+    return &scroll_marker_pseudo->UltimateOriginatingElement();
   }
+  return scroll_marker;
+}
+
+}  // namespace
+
+std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
+ScrollMarkerChooser::GetScrollTargetOffsetData(Element* scroll_marker) {
+  Element* target = ScrollTargetElement(scroll_marker);
+  if (!target) {
+    return std::nullopt;
+  }
+  const LayoutBox* target_box = target->GetLayoutBox();
   if (!target_box) {
     return std::nullopt;
   }
-  const LayoutObject* scroll_marker_object = scroll_marker->GetLayoutObject();
-  CHECK(scroll_marker_object);
+  // TODO(sakhapov): Typically, we use the bounding box of the target box as the
+  // rectangle to scroll into view, as we are not scrolling the scroll marker
+  // into view, but its target.
+  // However, AbsoluteBoundingBoxRectForScrollIntoView() expects to be invoked
+  // on the marker instead of the target box for the ::scroll-marker pseudo
+  // element. That method uses that marker box to e.g. find the correct ::column
+  // rectangle to scroll to.
+  const LayoutObject* bounding_box_object =
+      scroll_marker->IsScrollMarkerPseudoElement()
+          ? scroll_marker->GetLayoutObject()
+          : target_box;
+  CHECK(bounding_box_object);
   PhysicalBoxStrut scroll_margin =
       target_box->Style() ? target_box->Style()->ScrollMarginStrut()
                           : PhysicalBoxStrut();
@@ -34,7 +56,7 @@ ScrollMarkerChooser::GetScrollTargetOffsetData(const Element* scroll_marker) {
           ? kIgnoreStickyOffset
           : 0;
   PhysicalRect rect_to_scroll = scroller_box_->AbsoluteToLocalRect(
-      scroll_marker_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
+      bounding_box_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
   rect_to_scroll.Expand(scroll_margin);
   ScrollOffset target_scroll_offset =
       scroll_into_view_util::GetScrollOffsetToExpose(
@@ -134,7 +156,7 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseReserved(
         num_within_range;
     winning_index_within_reserved =
         std::clamp(winning_index_within_reserved, 0, num_within_range - 1);
-    const Element* winning_candidate =
+    Element* winning_candidate =
         candidates_in_range[winning_index_within_reserved];
 
     const ScrollTargetOffsetData winning_candidate_data =
@@ -270,9 +292,9 @@ bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(selected_marker_.Get())) {
     scroll_marker_pseudo->SetSelected(false);
-    // When updating the active marker the following is meant to ensure that if
-    // the previously active marker was focused we update the focus to the new
-    // active marker.
+    // When updating the active marker the following is meant to ensure that
+    // if the previously active marker was focused we update the focus to the
+    // new active marker.
     if (scroll_marker_pseudo->IsFocused()) {
       scroll_marker_pseudo->GetDocument().SetFocusedElement(
           scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
@@ -295,9 +317,11 @@ Element* ScrollMarkerGroupData::Selected() const {
   return selected_marker_;
 }
 
-Element* ScrollMarkerGroupData::ChooseMarker(const ScrollOffset& scroll_offset,
-                                             ScrollableArea* scrollable_area,
-                                             LayoutBox* scroller_box) {
+Element* ScrollMarkerGroupData::ChooseMarker(
+    const ScrollOffset& scroll_offset,
+    ScrollableArea* scrollable_area,
+    LayoutBox* scroller_box,
+    const HeapVector<Member<Element>>& candidates) {
   using ScrollAxis = ScrollMarkerChooser::ScrollAxis;
   // The primary axis is, by default, the block axis.
   ScrollAxis primary_axis =
@@ -307,9 +331,8 @@ Element* ScrollMarkerGroupData::ChooseMarker(const ScrollOffset& scroll_offset,
 
   Element* selected = nullptr;
 
-  ScrollMarkerChooser primary_chooser(scroll_offset, primary_axis,
-                                      scrollable_area, ScrollMarkers(),
-                                      scroller_box);
+  ScrollMarkerChooser primary_chooser(
+      scroll_offset, primary_axis, scrollable_area, candidates, scroller_box);
   HeapVector<Member<Element>> primary_selection = primary_chooser.Choose();
   if (primary_selection.size() == 1) {
     selected = primary_selection.at(0);
@@ -317,7 +340,7 @@ Element* ScrollMarkerGroupData::ChooseMarker(const ScrollOffset& scroll_offset,
     const ScrollAxis secondary_axis =
         primary_axis == ScrollAxis::kY ? ScrollAxis::kX : ScrollAxis::kY;
     const HeapVector<Member<Element>>& secondary_candidates =
-        primary_selection.empty() ? ScrollMarkers() : primary_selection;
+        primary_selection.empty() ? candidates : primary_selection;
     ScrollMarkerChooser secondary_chooser(scroll_offset, secondary_axis,
                                           scrollable_area, secondary_candidates,
                                           scroller_box);
@@ -331,23 +354,132 @@ Element* ScrollMarkerGroupData::ChooseMarker(const ScrollOffset& scroll_offset,
   return selected;
 }
 
-bool ScrollMarkerGroupData::UpdateSelectedScrollMarker(
-    const ScrollOffset& offset,
-    LayoutBox* scroller) {
+namespace {
+
+Node* NearestCommonAncestorScrollContainer(
+    const HeapVector<Member<Node>>& scroll_containers) {
+  DCHECK(!scroll_containers.empty());
+  Node* nearest_common_ancestor = scroll_containers.front();
+  for (Node* scroller : scroll_containers) {
+    // Not all scroll markers have scroll target or not all scroll targets have
+    // scroller ancestor.
+    if (!scroller) {
+      nearest_common_ancestor = nullptr;
+      break;
+    }
+    if (nearest_common_ancestor) {
+      nearest_common_ancestor = nearest_common_ancestor->CommonAncestor(
+          *scroller, LayoutTreeBuilderTraversal::Parent);
+    }
+  }
+  for (Node* ancestor = nearest_common_ancestor; ancestor;
+       ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
+    const LayoutObject* object = ancestor->GetLayoutObject();
+    if (object && object->IsScrollContainer()) {
+      return ancestor;
+    }
+  }
+  return nullptr;
+}
+
+Node* NearestScrollContainer(const Node& node) {
+  for (Node* ancestor = LayoutTreeBuilderTraversal::Parent(node); ancestor;
+       ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
+    if (ancestor->GetLayoutObject() &&
+        ancestor->GetLayoutObject()->IsScrollContainer()) {
+      return ancestor;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+// This function follows:
+// https://drafts.csswg.org/css-overflow-5/#example-d2ca6884.
+Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
+  if (focus_group_.empty()) {
+    return nullptr;
+  }
+  HeapVector<Member<Element>> scroll_marker_targets;
+  HeapVector<Member<Node>> nearest_ancestor_scroll_container;
+  for (Element* scroll_marker : focus_group_) {
+    Element* target = scroll_marker->IsScrollMarkerPseudoElement()
+                          ? scroll_marker
+                          : ScrollTargetElement(scroll_marker);
+    scroll_marker_targets.push_back(target);
+    nearest_ancestor_scroll_container.push_back(
+        target ? NearestScrollContainer(*target) : nullptr);
+  }
+  // 1. Let scroller be the nearest common ancestor scroll container of all of
+  // the scroll marker elements in group.
+  Node* scroller =
+      NearestCommonAncestorScrollContainer(nearest_ancestor_scroll_container);
+  // 2. Let active be scroller.
+  Node* active = scroller;
+  // 3. While active is a scroll container containing scroll target elements
+  // targeted by group:
+  while (active && active->GetLayoutObject() &&
+         active->GetLayoutObject()->IsScrollContainer()) {
+    // 3.1. Let scroller be active.
+    scroller = active;
+    // 3.2. Let targets be: and the scroll container elements
+    // which contain scroll target elements targeted by the scroll marker group
+    // whose nearest ancestor scroll container is scroller.
+    HeapVector<Member<Element>> targets;
+    for (wtf_size_t i = 0; i < focus_group_.size(); ++i) {
+      Element* scroll_marker = focus_group_[i];
+      Element* target = scroll_marker_targets[i];
+      Node* target_scroller = nearest_ancestor_scroll_container[i];
+      // 3.2.a. Let targets be the set of the scroll target elements whose
+      // nearest ancestor scroll container is scroller and the scroll container
+      // elements which contain scroll target elements targeted by the scroll
+      // marker group whose nearest ancestor scroll container is scroller.
+      if (target && target_scroller == scroller) {
+        // Adding scroll_marker here instead of target, as later
+        // the algo relies on candidates to be scroll markers.
+        // TODO(sakhapov): rewrite algo to use targets instead,
+        // currently blocked by ::column::scroll-marker's bounding box.
+        targets.push_back(scroll_marker);
+      }
+      // 3.2.b. the scroll container elements which contain scroll target
+      // elements targeted by the scroll marker group whose nearest ancestor
+      // scroll container is scroller.
+      if (target_scroller &&
+          NearestScrollContainer(*target_scroller) == scroller) {
+        // The only Node scroller is viewscroll, which will never be
+        // target_scroller.
+        DCHECK(target_scroller->IsElementNode());
+        targets.push_back(To<Element>(target_scroller));
+      }
+    }
+    LayoutBox* scroller_box = scroller->GetLayoutBox();
+    DCHECK(scroller_box);
+    ScrollableArea* scrollable_area = scroller_box->GetScrollableArea();
+    DCHECK(scrollable_area);
+    // 3.3. Otherwise.
+    active =
+        ChooseMarker(scrollable_area->GetScrollOffsetForScrollMarkerUpdate(),
+                     scrollable_area, scroller_box, targets);
+  }
+  // 4. Let selected marker be the scroll marker associated with active. If
+  // multiple scroll marker elements are associated with active, set selected
+  // marker to be the marker that is earliest in tree order among them.
+  // 5. Return selected marker.
+  return DynamicTo<Element>(active);
+}
+
+void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
   if (selected_marker_is_pinned_) {
-    return false;
+    return;
   }
 
-  ScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  CHECK(scrollable_area);
-
-  if (Element* selected = ChooseMarker(offset, scrollable_area, scroller)) {
+  if (Element* selected = ChooseMarkerRecursively()) {
     // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not to
     // cause style to be dirty right after layout, which might violate lifecycle
     // expectations.
     pending_selected_marker_ = selected;
   }
-  return false;
 }
 
 Element* ScrollMarkerGroupData::FindNextScrollMarker(const Element* current) {

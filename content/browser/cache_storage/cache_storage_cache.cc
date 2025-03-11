@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/cache_storage/cache_storage_cache.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -325,7 +321,7 @@ std::vector<std::string> FindDuplicateOperations(
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
   for (BatchOperation* const* outer = sorted.cbegin(); outer != sorted.cend();
-       ++outer) {
+       UNSAFE_TODO(++outer)) {
     const BatchOperation* outer_op = *outer;
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
@@ -344,7 +340,7 @@ std::vector<std::string> FindDuplicateOperations(
     }
 
     for (BatchOperation* const* inner = std::next(outer);
-         inner != sorted.cend(); ++inner) {
+         inner != sorted.cend(); UNSAFE_TODO(++inner)) {
       const BatchOperation* inner_op = *inner;
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.

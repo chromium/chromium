@@ -22,12 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Installer.DevModeErrorCodes" enum="UpdateEngineErrorCode"
-    expires_after="M85">
-  <owner>zeuthen@chromium.org</owner>
-  <summary>Errors from update_engine process when running in dev mode.</summary>
-</histogram>
-
 <histogram name="Installer.Postinstall.BiosType" enum="ChromeOSBiosType"
     expires_after="2025-05-04">
   <owner>tbrandston@google.com</owner>

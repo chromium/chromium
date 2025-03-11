@@ -4,18 +4,20 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -33,6 +35,7 @@ import java.util.List;
  * A coordinator for SharedImageTiles component. This component is used to build a view and populate
  * shared image tilese details.
  */
+@NullMarked
 public class SharedImageTilesCoordinator {
 
     // The maximum amount of tiles that can show, including icon tile and count tile.
@@ -42,13 +45,13 @@ public class SharedImageTilesCoordinator {
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
     private final @SharedImageTilesType int mType;
-    private final @NonNull DataSharingService mDataSharingService;
-    private final @NonNull CollaborationService mCollaborationService;
-    private @NonNull String mCollaborationId;
+    private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
+    private @Nullable String mCollaborationId;
     private int mAvailableMemberCount;
     private int mIconTilesCount;
 
-    private UpdateTracker mTracker;
+    private @Nullable UpdateTracker mTracker;
 
     /**
      * Constructor for {@link SharedImageTilesCoordinator} component.
@@ -63,8 +66,8 @@ public class SharedImageTilesCoordinator {
             Context context,
             @SharedImageTilesType int type,
             SharedImageTilesColor color,
-            @NonNull DataSharingService dataSharingService,
-            @NonNull CollaborationService collaborationService) {
+            DataSharingService dataSharingService,
+            CollaborationService collaborationService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
                         .with(SharedImageTilesProperties.TYPE, type)
@@ -122,6 +125,7 @@ public class SharedImageTilesCoordinator {
 
         resetTracker();
 
+        assumeNonNull(mCollaborationId);
         GroupData groupData = mCollaborationService.getGroupData(mCollaborationId);
         if (groupData == null) {
             // Error occurred. Remove all view.
@@ -151,7 +155,7 @@ public class SharedImageTilesCoordinator {
      * Get the view component of SharedImageTiles. Note: the imageViews inside the
      * SharedImageTilesView are loaded async and might not be ready yet.
      */
-    public @NonNull SharedImageTilesView getView() {
+    public SharedImageTilesView getView() {
         return mView;
     }
 
@@ -169,7 +173,7 @@ public class SharedImageTilesCoordinator {
     }
 
     /** Get the Android context used by the component. */
-    public @NonNull Context getContext() {
+    public Context getContext() {
         return mContext;
     }
 
@@ -227,7 +231,7 @@ public class SharedImageTilesCoordinator {
     }
 
     private static class UpdateTracker {
-        private Callback<Boolean> mFinishedCallback;
+        private @Nullable Callback<Boolean> mFinishedCallback;
         private int mWaitingCount;
         private boolean mReset;
 
@@ -236,7 +240,7 @@ public class SharedImageTilesCoordinator {
                 List<GroupMember> validMembers,
                 List<ImageView> iconViews,
                 int sizeInPx,
-                @NonNull DataSharingUIDelegate dataSharingUiDelegate,
+                DataSharingUIDelegate dataSharingUiDelegate,
                 Callback<Boolean> finishedCallback) {
             mFinishedCallback = finishedCallback;
             mReset = false;
@@ -275,6 +279,7 @@ public class SharedImageTilesCoordinator {
                 return;
             }
             mReset = true;
+            assumeNonNull(mFinishedCallback);
             mFinishedCallback.onResult(false);
             mFinishedCallback = null;
         }

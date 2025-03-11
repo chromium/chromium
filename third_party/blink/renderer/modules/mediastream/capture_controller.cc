@@ -138,7 +138,8 @@ std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
 
   const media::mojom::DisplayMediaInformationPtr& display_media_info =
       native_source->device().display_media_info;
-  if (!display_media_info) {
+  if (!display_media_info ||
+      display_media_info->display_surface != SurfaceType::BROWSER) {
     return std::nullopt;
   }
 
@@ -270,6 +271,32 @@ CaptureController::ValidationResult::ValidationResult(DOMExceptionCode code,
                                                       String message)
     : code(code), message(message) {}
 
+Vector<int> CaptureController::getSupportedZoomLevelsForTabs() {
+  const wtf_size_t kSize =
+      static_cast<wtf_size_t>(kPresetBrowserZoomFactors.size());
+  // If later developers modify `kPresetBrowserZoomFactors` to include many more
+  // entries than original intended, they should consider modifying this
+  // Web-exposed API to either:
+  // * Allow the Web application provide the max levels it wishes to receive.
+  // * Do some UA-determined trimming.
+  CHECK_LE(kSize, 100u) << "Excessive zoom levels.";
+  CHECK_EQ(kMinimumBrowserZoomFactor, kPresetBrowserZoomFactors.front());
+  CHECK_EQ(kMaximumBrowserZoomFactor, kPresetBrowserZoomFactors.back());
+
+  Vector<int> result(kSize);
+  if (kSize == 0) {
+    return result;
+  }
+
+  result[0] = base::ClampCeil(100 * kPresetBrowserZoomFactors[0]);
+  for (wtf_size_t i = 1; i < kSize; ++i) {
+    result[i] = base::ClampFloor(100 * kPresetBrowserZoomFactors[i]);
+    CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
+  }
+
+  return result;
+}
+
 CaptureController* CaptureController::Create(ExecutionContext* context) {
   return MakeGarbageCollected<CaptureController>(context);
 }
@@ -375,7 +402,7 @@ ScriptPromise<IDLUndefined> CaptureController::sendWheel(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-ScriptPromise<IDLUndefined> CaptureController::captureWheel(
+ScriptPromise<IDLUndefined> CaptureController::forwardWheel(
     ScriptState* script_state,
     HTMLElement* element) {
   DCHECK(IsMainThread());
@@ -412,62 +439,32 @@ ScriptPromise<IDLUndefined> CaptureController::captureWheel(
 
   GetMediaStreamDispatcherHost()->RequestCapturedSurfaceControlPermission(
       *session_id,
-      WTF::BindOnce(&CaptureController::OnCaptureWheelPermissionResult,
+      WTF::BindOnce(&CaptureController::OnForwardWheelPermissionResult,
                     WrapWeakPersistent(this), WrapPersistent(resolver),
                     WrapWeakPersistent(element)));
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-Vector<int> CaptureController::getSupportedZoomLevels() {
-  const wtf_size_t kSize =
-      static_cast<wtf_size_t>(kPresetBrowserZoomFactors.size());
-  // If later developers modify `kPresetBrowserZoomFactors` to include many more
-  // entries than original intended, they should consider modifying this
-  // Web-exposed API to either:
-  // * Allow the Web application provide the max levels it wishes to receive.
-  // * Do some UA-determined trimming.
-  CHECK_LE(kSize, 100u) << "Excessive zoom levels.";
-  CHECK_EQ(kMinimumBrowserZoomFactor, kPresetBrowserZoomFactors.front());
-  CHECK_EQ(kMaximumBrowserZoomFactor, kPresetBrowserZoomFactors.back());
-
-  Vector<int> result(kSize);
-  if (kSize == 0) {
-    return result;
+Vector<int> CaptureController::getSupportedZoomLevels(
+    ExceptionState& exception_state) {
+  if (!video_track_ || video_track_->Ended()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Not actively capturing.");
+    return Vector<int>();
   }
 
-  result[0] = base::ClampCeil(100 * kPresetBrowserZoomFactors[0]);
-  for (wtf_size_t i = 1; i < kSize; ++i) {
-    result[i] = base::ClampFloor(100 * kPresetBrowserZoomFactors[i]);
-    CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
+  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Not a supported surface type.");
+    return Vector<int>();
   }
 
-  return result;
+  return getSupportedZoomLevelsForTabs();
 }
 
-int CaptureController::getZoomLevel(ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return 100;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    exception_state.ThrowDOMException(validation_result.code,
-                                      validation_result.message);
-    return 100;
-  }
-
-  if (!zoom_level_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The zoom level is not yet known.");
-    return 100;
-  }
-
-  return *zoom_level_;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+std::optional<int> CaptureController::zoomLevel() const {
+  return zoom_level_;
 }
 
 ScriptPromise<IDLUndefined> CaptureController::increaseZoomLevel(
@@ -548,20 +545,18 @@ void CaptureController::FinalizeFocusDecision() {
 void CaptureController::SourceChangedZoomLevel(int zoom_level) {
   DCHECK(IsMainThread());
 
-  if (zoom_level_ == zoom_level) {
+  if (!video_track_ || video_track_->Ended() ||
+      !IsCaptureType(video_track_, {SurfaceType::BROWSER}) ||
+      zoom_level_ == zoom_level) {
     return;
   }
 
   zoom_level_ = zoom_level;
 
-  if (!video_track_ || video_track_->Ended()) {
-    return;
-  }
-
-  DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
+  DispatchEvent(*Event::Create(event_type_names::kZoomlevelchange));
 }
 
-void CaptureController::OnCaptureWheelPermissionResult(
+void CaptureController::OnForwardWheelPermissionResult(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     HTMLElement* element,
     CapturedSurfaceControlResult result) {

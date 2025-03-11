@@ -4746,6 +4746,7 @@ enum WebFeature {
   kWebAppManifestDisplayFullscreen = 5360,
   kWebAppManifestDisplayStandalone = 5361,
   kBlockingAttributeFullFrameRateToken = 5362,
+  kCrossOriginOwnerInterestGroupSubframeCheckFailed = 5363,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

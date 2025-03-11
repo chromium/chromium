@@ -360,8 +360,6 @@ TEST(FlatHashMap, CForEachMutate) {
   }
 }
 
-// This test requires std::launder for mutable key access in node handles.
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
 TEST(FlatHashMap, NodeHandleMutableKeyAccess) {
   flat_hash_map<std::string, std::string> map;
 
@@ -373,7 +371,6 @@ TEST(FlatHashMap, NodeHandleMutableKeyAccess) {
 
   EXPECT_THAT(map, testing::ElementsAre(Pair("key", "mapped")));
 }
-#endif
 
 TEST(FlatHashMap, Reserve) {
   // Verify that if we reserve(size() + n) then we can perform n insertions

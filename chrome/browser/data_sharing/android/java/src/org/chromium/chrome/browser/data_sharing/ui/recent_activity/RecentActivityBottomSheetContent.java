@@ -8,13 +8,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** The bottom sheet content that contains a list of recent activities for a collaboration. */
+@NullMarked
 class RecentActivityBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
@@ -32,9 +33,8 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -66,7 +66,6 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
         return HeightMode.WRAP_CONTENT;
     }
 
-    @NonNull
     @Override
     public String getSheetContentDescription(Context context) {
         return context.getString(

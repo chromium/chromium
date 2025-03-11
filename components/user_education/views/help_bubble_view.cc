@@ -914,22 +914,6 @@ bool HelpBubbleView::IsHelpBubble(views::DialogDelegate* dialog) {
   return contents && views::IsViewClass<HelpBubbleView>(contents);
 }
 
-bool HelpBubbleView::IsFocusInHelpBubble() const {
-#if BUILDFLAG(IS_MAC)
-  if (close_button_ && close_button_->HasFocus())
-    return true;
-  if (default_button_ && default_button_->HasFocus())
-    return true;
-  for (views::MdTextButton* button : non_default_buttons_) {
-    if (button->HasFocus())
-      return true;
-  }
-  return false;
-#else
-  return GetWidget()->IsActive();
-#endif
-}
-
 views::LabelButton* HelpBubbleView::GetDefaultButtonForTesting() const {
   return default_button_;
 }

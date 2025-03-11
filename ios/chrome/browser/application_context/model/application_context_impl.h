@@ -15,6 +15,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
+namespace auto_deletion {
+class AutoDeletionService;
+}  // namespace auto_deletion
+
 namespace base {
 class CommandLine;
 class SequencedTaskRunner;
@@ -93,6 +97,7 @@ class ApplicationContextImpl : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+  auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   optimization_guide::OnDeviceModelServiceController*
   GetOnDeviceModelServiceController(
@@ -183,6 +188,8 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
+
+  std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   scoped_refptr<optimization_guide::OnDeviceModelServiceController>

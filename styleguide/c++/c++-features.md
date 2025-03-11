@@ -585,29 +585,6 @@ Overlaps with utilities in `base/strings/string_number_conversions.h`, which are
 easier to use correctly.
 ***
 
-### std::in_place{_type,_index}[_t] <sup>[banned]</sup>
-
-```c++
-std::variant<int, float> v{std::in_place_type<int>, 1.4};
-```
-
-**Description:** `std::in_place_type` and `std::in_place_index` are
-disambiguation tags for `std::variant` and `std::any` to indicate that the
-object should be constructed in-place.
-
-**Documentation:**
-[`std::in_place_type`](https://en.cppreference.com/w/cpp/utility/in_place)
-
-**Notes:**
-*** promo
-Banned for now because `std::variant` and `std::any` are banned. Because
-`absl::variant` is used instead, and it requires `absl::in_place_type`, use
-`absl::in_place_type` for non-Abseil Chromium
-code.
-
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZspmuJPpv6s)
-***
-
 ### std::{pmr::memory_resource,polymorphic_allocator} <sup>[banned]</sup>
 
 ```c++
@@ -660,24 +637,6 @@ int count = std::uncaught_exceptions();
 **Notes:**
 *** promo
 Banned because exceptions are banned.
-***
-
-### std::variant <sup>[banned]</sup>
-
-```c++
-std::variant<int, double> v = 12;
-```
-
-**Description:** The class template `std::variant` represents a type-safe
-`union`. An instance of `std::variant` at any given time holds a value of one of
-its alternative types (it's also possible for it to be valueless).
-
-**Documentation:**
-[`std::variant`](https://en.cppreference.com/w/cpp/utility/variant)
-
-**Notes:**
-*** promo
-[Will be allowed soon](https://crbug.com/1373620); for now, use `absl::variant`.
 ***
 
 ### Transparent std::owner_less <sup>[banned]</sup>

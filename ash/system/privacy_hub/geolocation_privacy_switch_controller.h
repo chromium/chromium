@@ -85,7 +85,7 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
  private:
   int usage_cnt_{};
   std::map<std::string, int> usage_per_app_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> primary_user_pref_change_registrar_;
   base::ScopedObservation<ash::SessionController,
                           GeolocationPrivacySwitchController>
       session_observation_;

@@ -374,9 +374,6 @@ struct map_slot_policy {
     return slot->value;
   }
 
-  // When C++17 is available, we can use std::launder to provide mutable
-  // access to the key for use in node handle.
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
   static K& mutable_key(slot_type* slot) {
     // Still check for kMutableKeys so that we can avoid calling std::launder
     // unless necessary because it can interfere with optimizations.
@@ -384,9 +381,6 @@ struct map_slot_policy {
                                : *std::launder(const_cast<K*>(
                                      std::addressof(slot->value.first)));
   }
-#else  // !(defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606)
-  static const K& mutable_key(slot_type* slot) { return key(slot); }
-#endif
 
   static const K& key(const slot_type* slot) {
     return kMutableKeys::value ? slot->key : slot->value.first;
@@ -443,7 +437,6 @@ struct map_slot_policy {
         typename absl::is_trivially_relocatable<value_type>::type();
 
     emplace(new_slot);
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
     if (is_relocatable) {
       // TODO(b/247130232,b/251814870): remove casts after fixing warnings.
       std::memcpy(static_cast<void*>(std::launder(&new_slot->value)),
@@ -451,7 +444,6 @@ struct map_slot_policy {
                   sizeof(value_type));
       return is_relocatable;
     }
-#endif
 
     if (kMutableKeys::value) {
       absl::allocator_traits<Allocator>::construct(

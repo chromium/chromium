@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}"
-    units="microseconds" expires_after="2025-07-06">
+    units="microseconds" expires_after="2025-09-07">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
