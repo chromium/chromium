@@ -5186,10 +5186,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSysUiShouldHoldbackDriveIntegrationDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackDriveIntegration)},
-    {"sys-ui-holdback-focus-mode",
-     flag_descriptions::kSysUiShouldHoldbackFocusModeName,
-     flag_descriptions::kSysUiShouldHoldbackFocusModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackFocusMode)},
     {"sys-ui-holdback-forest",
      flag_descriptions::kSysUiShouldHoldbackForestName,
      flag_descriptions::kSysUiShouldHoldbackForestDescription, kOsCrOS,
@@ -9726,12 +9722,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"cros-focus-mode", flag_descriptions::kFocusModeName,
-     flag_descriptions::kFocusModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFocusMode)},
-    {"cros-focus-mode-ytm", flag_descriptions::kFocusModeYTMName,
-     flag_descriptions::kFocusModeYTMDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFocusModeYTM)},
     {"render-arc-notifications-by-chrome",
      flag_descriptions::kRenderArcNotificationsByChromeName,
      flag_descriptions::kRenderArcNotificationsByChromeDescription, kOsCrOS,

@@ -1059,12 +1059,6 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kFloatingWorkspaceV2, "PeriodicJobIntervalInSeconds",
         base::Seconds(30)};
 
-// Enables or disables Focus Mode feature on ChromeOS.
-BASE_FEATURE(kFocusMode, "FocusMode", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables Focus Mode YTM integration on ChromeOS.
-BASE_FEATURE(kFocusModeYTM, "FocusModeYTM", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, makes the Projector app use server side speech
 // recognition instead of on-device speech recognition.
 BASE_FEATURE(kForceEnableServerSideSpeechRecognition,
@@ -1935,11 +1929,6 @@ BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
 // Enables a holdback experiment for Drive integration.
 BASE_FEATURE(kSysUiShouldHoldbackDriveIntegration,
              "SysUiShouldHoldbackDriveIntegration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables a holdback experiment for Forcus Mode.
-BASE_FEATURE(kSysUiShouldHoldbackFocusMode,
-             "SysUiShouldHoldbackFocusMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a holdback experiment for Forest.
@@ -3653,25 +3642,6 @@ bool IsFloatingWorkspaceV2Enabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
 }
 
-bool IsFocusModeEnabled() {
-  // If the holdback feature flag is enabled, the feature should be disabled,
-  // but only if the device is eligible for the study. Exclusion happens
-  // via hardware overlay, so it needs to be checked separately from the finch
-  // controlled holdback feature flag.
-  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
-      kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (IsSysUiShouldHoldbackFocusModeEnabled() &&
-      !device_excluded_from_holdback_study) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(kFocusMode);
-}
-
-bool IsFocusModeYTMEnabled() {
-  return base::FeatureList::IsEnabled(kFocusModeYTM);
-}
-
 bool ShouldForceEnableServerSideSpeechRecognition() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return base::FeatureList::IsEnabled(kForceEnableServerSideSpeechRecognition);
@@ -4461,11 +4431,6 @@ bool IsSystemTrayShadowEnabled() {
 
 bool IsSysUiShouldHoldbackDriveIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
-         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
-}
-
-bool IsSysUiShouldHoldbackFocusModeEnabled() {
-  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackFocusMode) &&
          !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
 }
 

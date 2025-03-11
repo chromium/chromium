@@ -28,7 +28,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
@@ -48,8 +47,7 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 class FocusModeTrayTest : public AshTestBase {
  public:
   FocusModeTrayTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        feature_list_(features::kFocusMode) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FocusModeTrayTest() override = default;
 
   // AshTestBase:
@@ -140,7 +138,6 @@ class FocusModeTrayTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<FocusModeTray> focus_mode_tray_ = nullptr;
 };
 

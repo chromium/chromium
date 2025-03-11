@@ -6632,14 +6632,6 @@ const char kFocusFollowsCursorName[] = "Focus follows cursor";
 const char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";
 
-const char kFocusModeName[] = "Focus Mode on ChromeOS";
-const char kFocusModeDescription[] =
-    "Focus mode on the OS with timer, music, and task management "
-    "functionalities.";
-
-const char kFocusModeYTMName[] = "Focus Mode YTM on ChromeOS";
-const char kFocusModeYTMDescription[] = "Focus mode YouTube Music integration.";
-
 const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
@@ -7308,11 +7300,6 @@ const char kSysUiShouldHoldbackDriveIntegrationName[] =
     "Holdback for Drive Integration on chromeOS";
 const char kSysUiShouldHoldbackDriveIntegrationDescription[] =
     "Enables holdback for Drive Integration.";
-
-const char kSysUiShouldHoldbackFocusModeName[] =
-    "Holdback for Focus Mode on chromeOS";
-const char kSysUiShouldHoldbackFocusModeDescription[] =
-    "Enables holdback for Focus Mode.";
 
 const char kSysUiShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
 const char kSysUiShouldHoldbackForestDescription[] =

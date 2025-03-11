@@ -356,7 +356,7 @@ FocusModeUIConfig::FocusModeUIConfig()
 
 bool FocusModeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsFocusModeEnabled();
+  return true;
 }
 
 }  // namespace ash

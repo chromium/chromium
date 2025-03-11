@@ -11,7 +11,6 @@
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/label_button.h"
@@ -39,7 +38,7 @@ namespace ash {
 
 class FocusModeChipCarouselTest : public AshTestBase {
  public:
-  FocusModeChipCarouselTest() : scoped_feature_(features::kFocusMode) {}
+  FocusModeChipCarouselTest() = default;
   ~FocusModeChipCarouselTest() override = default;
 
   // AshTestBase:
@@ -93,7 +92,6 @@ class FocusModeChipCarouselTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<FocusModeChipCarousel> focus_mode_chip_carousel_;
 };

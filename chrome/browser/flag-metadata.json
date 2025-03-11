@@ -1658,22 +1658,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "cros-focus-mode",
-    "owners": [
-      "richui@chromium.org",
-      "chromeos-wms@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "cros-focus-mode-ytm",
-    "owners": [
-      "richui@chromium.org",
-      "chromeos-wms@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "cros-labs-continuous-overview-animation",
     "owners": [ "sammiequon@chromium.org", "xdai@chromium.org", "chromeos-wm@google.com" ],
     "expiry_milestone": 137
@@ -8414,11 +8398,6 @@
   },
   {
     "name": "sys-ui-holdback-drive-integration",
-    "owners": ["newcomer@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "sys-ui-holdback-focus-mode",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135
   },

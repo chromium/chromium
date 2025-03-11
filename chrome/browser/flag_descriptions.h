@@ -3898,12 +3898,6 @@ extern const char kFirstPartyVietnameseInputDescription[];
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 
-extern const char kFocusModeName[];
-extern const char kFocusModeDescription[];
-
-extern const char kFocusModeYTMName[];
-extern const char kFocusModeYTMDescription[];
-
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 
@@ -4300,9 +4294,6 @@ extern const char kMacAddressRandomizationDescription[];
 
 extern const char kSysUiShouldHoldbackDriveIntegrationName[];
 extern const char kSysUiShouldHoldbackDriveIntegrationDescription[];
-
-extern const char kSysUiShouldHoldbackFocusModeName[];
-extern const char kSysUiShouldHoldbackFocusModeDescription[];
 
 extern const char kSysUiShouldHoldbackForestName[];
 extern const char kSysUiShouldHoldbackForestDescription[];

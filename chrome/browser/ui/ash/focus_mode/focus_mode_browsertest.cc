@@ -112,10 +112,7 @@ PillButton* GetToggleFocusButton(QuickSettingsView* quick_settings) {
 
 class FocusModeBrowserTest : public InProcessBrowserTest {
  public:
-  FocusModeBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kFocusMode, features::kFocusModeYTM}, {});
-  }
+  FocusModeBrowserTest() = default;
   ~FocusModeBrowserTest() override = default;
   FocusModeBrowserTest(const FocusModeBrowserTest&) = delete;
   FocusModeBrowserTest& operator=(const FocusModeBrowserTest&) = delete;
@@ -126,9 +123,6 @@ class FocusModeBrowserTest : public InProcessBrowserTest {
         ->focus_mode_sounds_controller()
         ->SetIsMinorUserForTesting(false);
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests basic create/close media widget functionality.
@@ -487,9 +481,6 @@ class FocusModeSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   FocusModeSpokenFeedbackTest& operator=(const FocusModeSpokenFeedbackTest&) =
       delete;
   ~FocusModeSpokenFeedbackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kFocusMode};
 };
 
 // Tests that when using `Search + Left/Right Arrow` key to navigate on the

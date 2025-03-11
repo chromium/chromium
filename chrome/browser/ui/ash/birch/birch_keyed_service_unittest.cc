@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -665,22 +664,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// A test harness that enables focus mode.
-class BirchKeyedServiceFocusModeTest : public BirchKeyedServiceTest {
- public:
-  BirchKeyedServiceFocusModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFocusMode);
-  }
-  BirchKeyedServiceFocusModeTest(const BirchKeyedServiceFocusModeTest&) =
-      delete;
-  BirchKeyedServiceFocusModeTest& operator=(
-      const BirchKeyedServiceFocusModeTest&) = delete;
-  ~BirchKeyedServiceFocusModeTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 TEST_F(BirchKeyedServiceTest, HasDataProviders) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
@@ -1058,7 +1041,7 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_PausedDoesNotShow) {
   EXPECT_EQ(lost_media_items.size(), 1u);
 }
 
-TEST_F(BirchKeyedServiceFocusModeTest, LostMediaProvider_FocusModeDoesNotShow) {
+TEST_F(BirchKeyedServiceTest, LostMediaProvider_FocusModeDoesNotShow) {
   BirchModel* model = Shell::Get()->birch_model();
   BirchDataProvider* lost_media_provider =
       birch_keyed_service()->GetLostMediaProvider();
