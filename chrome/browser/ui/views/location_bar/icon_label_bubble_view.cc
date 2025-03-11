@@ -648,7 +648,7 @@ void IconLabelBubbleView::SetUpForInOutAnimation(base::TimeDelta duration) {
 }
 
 void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
-  if (!label()->GetVisible()) {
+  if (!label()->GetVisible() || IsShrinking()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.
     grow_animation_starting_width_ = GetVisibleBounds().width();
