@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 async function openExampleUrl() {
   const port = (await chrome.test.getConfig()).testServer.port;
@@ -43,6 +44,8 @@ const scriptC =
 // TODO(crbug.com/337078958): These are inconsistent with one another and should
 // probably be updated.
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Tests that user scripts from separate registrations are executed in the
   // order of those registrations. That is, a script registered first will
   // inject before a script registered later.
@@ -103,6 +106,5 @@ chrome.test.runTests([
     await chrome.userScripts.unregister();
 
     chrome.test.succeed();
-
   },
 ]);

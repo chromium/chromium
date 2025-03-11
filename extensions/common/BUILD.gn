@@ -481,6 +481,8 @@ static_library("common") {
     "user_script.h",
     "user_scripts_allowed_state.cc",
     "user_scripts_allowed_state.h",
+    "user_scripts_availability.cc",
+    "user_scripts_availability.h",
     "utils/base_string.cc",
     "utils/base_string.h",
     "utils/content_script_utils.cc",

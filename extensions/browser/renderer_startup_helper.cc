@@ -556,6 +556,13 @@ void RendererStartupHelper::BindForRenderer(
                                           std::move(receiver), process_id);
 }
 
+void RendererStartupHelper::FlushAllForTesting() {
+  CHECK_IS_TEST();
+  for (auto& it : process_mojo_map_) {
+    it.second.FlushForTesting();  // IN-TEST
+  }
+}
+
 void RendererStartupHelper::GetMessageBundle(
     const ExtensionId& extension_id,
     GetMessageBundleCallback callback) {

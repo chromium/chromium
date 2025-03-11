@@ -156,6 +156,22 @@ void UserScriptManager::SetUserScriptPrefEnabled(
   SetCurrentUserScriptAllowedState(util::GetBrowserContextId(browser_context_),
                                    extension_id, enabled);
 
+  // If the extension is not loaded, its dynamic user script source will be
+  // enabled in OnExtensionLoaded().
+  if (!ExtensionRegistry::Get(browser_context_)
+           ->enabled_extensions()
+           .GetByID(extension_id)) {
+    return;
+  }
+
+  // If the extension is enabled though we need to enable dynamic user script
+  // source now since an extension may immediately register a user script.
+  // Also do this before updating the renderer so we ensure the browser has the
+  // correct allowed state before we then update the renderer.
+  ExtensionUserScriptLoader* loader =
+      GetUserScriptLoaderForExtension(extension_id);
+  loader->SetSourceEnabled(UserScript::Source::kDynamicUserScript, enabled);
+
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->OnUserScriptsAllowedChanged(extension_id, /*allowed=*/enabled);
 }
@@ -171,6 +187,15 @@ void UserScriptManager::OnExtensionWillBeInstalled(
 void UserScriptManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
+  CHECK(extension);
+  // Seed the browser's user script allowed state in case this is the first time
+  // we are creating the loader.
+  if (CanExtensionUseUserScriptsAPI(*extension)) {
+    SetCurrentUserScriptAllowedState(
+        util::GetBrowserContextId(browser_context_), extension->id(),
+        IsUserScriptPrefEnabled(extension->id()));
+  }
+
   ExtensionUserScriptLoader* loader =
       GetUserScriptLoaderForExtension(extension->id());
 
@@ -223,9 +248,18 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
                            ->dynamic_user_scripts_store(),
                        /*listen_for_extension_system_loaded=*/true))
           .first->second.get();
-  loader->SetSourceEnabled(
-      UserScript::Source::kDynamicUserScript,
-      GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_)));
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kUserScriptUserExtensionToggle)) {
+    loader->SetSourceEnabled(
+        UserScript::Source::kDynamicUserScript,
+        GetCurrentUserScriptAllowedState(
+            util::GetBrowserContextId(browser_context_), extension->id()));
+  } else {
+    loader->SetSourceEnabled(
+        UserScript::Source::kDynamicUserScript,
+        GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_)));
+  }
 
   return loader;
 }

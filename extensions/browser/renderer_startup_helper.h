@@ -123,6 +123,9 @@ class RendererStartupHelper : public KeyedService,
       int process_id,
       mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
 
+  // Flushes any pending Mojo calls for all tracked render processes.
+  void FlushAllForTesting();
+
  protected:
   // Provide ability for tests to override.
   virtual mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(

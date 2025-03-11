@@ -394,6 +394,8 @@ static_library("test_support") {
       "../browser/extensions/test_extension_menu_icon_loader.h",
       "../browser/extensions/test_extension_prefs.cc",
       "../browser/extensions/test_extension_prefs.h",
+      "../browser/extensions/user_scripts_test_util.cc",
+      "../browser/extensions/user_scripts_test_util.h",
       "../browser/policy/extension_force_install_mixin.cc",
       "../browser/policy/extension_force_install_mixin.h",
       "../browser/task_manager/task_manager_browsertest_util.cc",
