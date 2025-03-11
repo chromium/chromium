@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/mac/mac_util.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -21,8 +22,7 @@ namespace {
 const double kThinControllerHeight = 0.5;
 
 inline bool IsPermanentThinControllerEnabled() {
-  return base::FeatureList::IsEnabled(
-      remote_cocoa::features::kFullscreenPermanentThinController);
+  return base::mac::MacOSMajorVersion() >= 13;
 }
 
 }  // namespace
@@ -703,8 +703,11 @@ void ImmersiveModeControllerCocoa::CreateThinControllerIfNecessary() {
   thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
   thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
   thin_titlebar_view_controller_.hidden = YES;
+  // Insert it in the front for consistency with the permanent thin
+  // controller path.
   [browser_window_
-      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
+      insertTitlebarAccessoryViewController:thin_titlebar_view_controller_
+                                    atIndex:0];
 }
 
 void ImmersiveModeControllerCocoa::DisableThinControllerIfNecessary() {
