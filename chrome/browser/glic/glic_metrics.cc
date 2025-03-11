@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
@@ -18,6 +19,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace glic {
 
@@ -264,6 +266,11 @@ void GlicMetrics::OnImpressionTimerFired() {
     impression = EntryPointImpression::kAfterFreDisabled;
   }
   base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
+
+  ui::Accelerator saved_hotkey =
+      glic::GlicLauncherConfiguration::GetGlobalHotkey();
+  base::UmaHistogramBoolean("Glic.OsEntrypoint.Settings.ShortcutStatus",
+                            saved_hotkey != ui::Accelerator());
 }
 
 void GlicMetrics::OnGlicCompletedFrePrefChanged() {

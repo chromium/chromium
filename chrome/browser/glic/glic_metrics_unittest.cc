@@ -30,6 +30,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 
 namespace glic {
 namespace {
@@ -369,6 +371,25 @@ TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 1);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
+  task_environment_.FastForwardBy(base::Minutes(16));
+  histogram_tester_.ExpectTotalCount(
+      "Glic.OsEntrypoint.Settings.ShortcutStatus", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.OsEntrypoint.Settings.ShortcutStatus", /*true*/1,
+      /*expected_count=*/1);
+
+  local_state()->SetString(prefs::kGlicLauncherHotkey,
+                           ui::Command::AcceleratorToString(ui::Accelerator()));
+
+  task_environment_.FastForwardBy(base::Minutes(16));
+  histogram_tester_.ExpectTotalCount(
+      "Glic.OsEntrypoint.Settings.ShortcutStatus", 2);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.OsEntrypoint.Settings.ShortcutStatus", /*false*/0,
+      /*expected_count=*/1);
 }
 
 }  // namespace
