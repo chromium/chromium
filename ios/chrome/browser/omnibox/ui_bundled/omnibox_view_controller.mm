@@ -68,13 +68,6 @@ using base::UserMetricsAction;
 // to view the complete URL and immediately defocuses it".
 @property(nonatomic, assign) BOOL omniboxInteractedWhileFocused;
 
-// Tracks editing status, because only the omnibox that is in edit mode can
-// get an edit menu.
-@property(nonatomic, assign) BOOL isTextfieldEditing;
-
-// Is YES while fixing display of edit menu (below omnibox).
-@property(nonatomic, assign) BOOL showingEditMenu;
-
 // Stores whether the clipboard currently stores copied content.
 @property(nonatomic, assign) BOOL hasCopiedContent;
 // Stores the current content type in the clipboard. This is only valid if
@@ -224,13 +217,6 @@ using base::UserMetricsAction;
   _textChangeDelegate = textChangeDelegate;
 }
 
-- (void)setIsTextfieldEditing:(BOOL)owns {
-  if (_isTextfieldEditing == owns) {
-    return;
-  }
-  _isTextfieldEditing = owns;
-}
-
 - (UIView<TextFieldViewContaining>*)viewContainingTextField {
   return self.view;
 }
@@ -324,7 +310,6 @@ using base::UserMetricsAction;
   }
 
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
-  self.isTextfieldEditing = YES;
 
   self.omniboxInteractedWhileFocused = NO;
   if (!_textChangeDelegate) {
@@ -338,8 +323,6 @@ using base::UserMetricsAction;
 // Record the metrics as needed.
 - (void)textFieldDidEndEditing:(UITextField*)textField
                         reason:(UITextFieldDidEndEditingReason)reason {
-  self.isTextfieldEditing = NO;
-
   if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
     self.view.thumbnailButton.selected = NO;
   }
