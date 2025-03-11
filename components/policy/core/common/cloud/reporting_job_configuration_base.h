@@ -67,6 +67,8 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static std::string GetOSVersionPath();
     static std::string GetOSPlatformPath();
     static std::string GetNamePath();
+    static std::string GetDeviceFqdnPath();
+    static std::string GetNetworkNamePath();
 
    private:
     static std::string GetStringPath(std::string_view leaf_name);
@@ -77,6 +79,8 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static const char kOSVersion[];
     static const char kOSPlatform[];
     static const char kName[];
+    static const char kDeviceFqdn[];
+    static const char kNetworkName[];
   };
 
   // Builds a Browser dictionary for uploading information about the browser to

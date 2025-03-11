@@ -9,13 +9,16 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_test_utils.h"
+#include "content/browser/btm/btm_utils.h"
 #include "content/public/browser/btm_redirect_info.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -29,7 +32,11 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace content {
 namespace {
@@ -41,6 +48,11 @@ class BtmShortVisitObserverBrowserTest : public ContentBrowserTest {
     BtmShortVisitObserver::SetDefaultClockForTesting(&clock_);
 
     ContentBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Prevents flakiness by handling clicks even before content is drawn.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {
@@ -617,6 +629,209 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   ukm_recorder.ExpectEntryMetric(entries[1], "EntrancePageTransition",
                                  ui::PAGE_TRANSITION_LINK);
+}
+
+void SimulateKeyPress(WebContents* web_contents, std::string_view code_string) {
+  // Taken (simplified) from content/browser/keyboard_lock_browsertest.cc.
+  ui::DomKey dom_key = ui::KeycodeConverter::KeyStringToDomKey(code_string);
+  ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(code_string);
+  SimulateKeyPress(web_contents, dom_key, dom_code,
+                   ui::DomCodeToUsLayoutKeyboardCode(dom_code), false, false,
+                   false, false);
+}
+
+class UserInteractionObserver : public WebContentsObserver {
+ public:
+  explicit UserInteractionObserver(WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  [[nodiscard]] bool Wait() { return future_.Wait(); }
+
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override {
+    future_.SetValue();
+  }
+
+ private:
+  base::test::TestFuture<void> future_;
+};
+
+class StorageObserver : public WebContentsObserver {
+ public:
+  explicit StorageObserver(WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  [[nodiscard]] bool Wait() { return future_.Wait(); }
+
+  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
+                             blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override {
+    future_.SetValue();
+  }
+
+ private:
+  base::test::TestFuture<void> future_;
+};
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest, HadKeydownEvent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  UserInteractionObserver observer(web_contents());
+  SimulateKeyPress(web_contents(), "KeyK");
+  ASSERT_TRUE(observer.Wait());
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "HadKeyDownEvent", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "HadKeyDownEvent", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       HadKeydownEvent_IgnoresSyntheticEvents) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+
+  TestFrameNavigationObserver nav_observer(web_contents());
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"(
+    const promise = new Promise((resolve, reject) => {
+      document.body.addEventListener('keydown', resolve);
+    });
+
+    document.body.dispatchEvent(new Event('keydown'));
+
+    // Return a promise that will resolve when the event is handled.
+    promise;
+    )",
+
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+  // nav_observer.Wait();
+  // ASSERT_EQ(web_contents()->GetLastCommittedURL(), url3);
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "HadKeyDownEvent", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "HadKeyDownEvent", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       HadKeydownEvent_IgnoresClicks) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  UserActivationObserver observer(web_contents(),
+                                  web_contents()->GetPrimaryMainFrame());
+  SimulateMouseClick(web_contents(), 0, blink::WebMouseEvent::Button::kLeft);
+  observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "HadKeyDownEvent", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "HadKeyDownEvent", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       AccessedStorage_Cookies) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  URLCookieAccessObserver observer(web_contents(), url2,
+                                   CookieOperation::kChange);
+  ASSERT_TRUE(ExecJs(web_contents(), "document.cookie = 'foo=bar'",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "AccessedStorage", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "AccessedStorage", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       AccessedStorage_IgnoreNavigationRead) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/set-cookie?foo=bar");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  clock_.Advance(base::Minutes(1));
+  URLCookieAccessObserver observer(web_contents(), url2,
+                                   CookieOperation::kRead);
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  // The visit to url2 triggered a cookie read, but we don't include it in the
+  // metric.
+  UkmEntryVector entries = GetBtmShortVisits(1, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries), testing::ElementsAre(url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "AccessedStorage", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       AccessedStorage_LocalStorage) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("c.test", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  StorageObserver observer(web_contents());
+  ASSERT_TRUE(ExecJs(web_contents(), "localStorage.setItem('foo', 'bar')",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(observer.Wait());
+  ASSERT_TRUE(NavigateToURL(web_contents(), url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(2, ukm_recorder);
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries),
+              testing::ElementsAre(url1, url2));
+  ukm_recorder.ExpectEntryMetric(entries[0], "AccessedStorage", 0);
+  ukm_recorder.ExpectEntryMetric(entries[1], "AccessedStorage", 1);
 }
 
 }  // namespace

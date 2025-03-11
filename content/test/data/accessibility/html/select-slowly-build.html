@@ -1,0 +1,20 @@
+<!--
+@WAIT-FOR:Done
+-->
+<!DOCTYPE html>
+<select></select>
+<script>
+(async () => {
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  const select = document.querySelector('select');
+  const option = document.createElement('option');
+  option.textContent = 'option';
+  select.appendChild(option);
+
+  const div = document.createElement('div');
+  div.textContent = 'Done';
+  document.body.appendChild(div);
+})();
+</script>

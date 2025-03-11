@@ -74,7 +74,15 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         return startBatched(batchedRule, this::startOnNtpNonBatched);
     }
 
-    private <T extends Station<?>> T startBatched(
+    /**
+     * Start the batched test in a specific home station.
+     *
+     * @param batchedRule the {@link BatchedPublicTransitRule}
+     * @param entryPointCallable the {@link Callable} to run to get to the home station in the first
+     *     test case
+     * @param <T> the type of home Station each test case will start at
+     */
+    public <T extends Station<?>> T startBatched(
             BatchedPublicTransitRule<T> batchedRule, Callable<T> entryPointCallable) {
         mActivityTestRule.setFinishActivity(false);
         T station = batchedRule.getHomeStation();

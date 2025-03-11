@@ -8,14 +8,16 @@ template("generate_code_cache") {
 
     forward_variables_from(invoker,
                            [
-                             "deps",
                              "visibility",
                              "in_folder",
                              "in_files",
                              "out_folder",
                              "out_manifest",
                            ])
-    deps += [ "//tools/code_cache_generator" ]
+    deps = [ "//tools/code_cache_generator" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
 
     inputs = []
     outputs = [ out_manifest ]

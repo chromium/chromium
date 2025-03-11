@@ -1655,73 +1655,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="TabManager.BackgroundTabOpening.TabCount" units="tabs"
-    expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The max number of background tabs pending or loading when opening background
-    tabs. This is recorded at the end of the background tab opening session (the
-    duration of time from when the browser starts to open background tabs until
-    the time the browser has finished loading those tabs or otherwise decided to
-    stop loading them). The metric is not recorded when the session overlaps
-    with session restore.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.BackgroundTabOpening.TabLoadAutoStartedCount"
-    units="tabs" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of background tabs whose loading was triggered by TabManager
-    automatically when opening background tabs. This is recorded at the end of
-    the background tab opening session (the duration of time from when the
-    browser starts to open background tabs until the time the browser has
-    finished loading those tabs or otherwise decided to stop loading them). The
-    metric is not recorded when the session overlaps with session restore.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.BackgroundTabOpening.TabLoadTimeout"
-    enum="BooleanTimedOut" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    Whether the tab load is timed out during background tab opening session (the
-    duration of time from when the browser starts to open background tabs until
-    the time the browser has finished loading those tabs or otherwise decided to
-    stop loading them). The metric is not recorded when the session overlaps
-    with session restore.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.BackgroundTabOpening.TabLoadUserInitiatedCount"
-    units="tabs" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of background tabs whose loading was triggered by user action
-    when opening background tabs. For example, when the user selects a
-    background tab and brings it to foreground, that tab will start to load
-    immediately if not already loading. This is recorded at the end of the
-    background tab opening session (the duration of time from when the browser
-    starts to open background tabs until the time the browser has finished
-    loading those tabs or otherwise decided to stop loading them). The metric is
-    not recorded when the session overlaps with session restore.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.BackgroundTabOpening.TabPausedCount" units="tabs"
-    expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The max number of background tabs paused to load due to memory pressure when
-    opening background tabs. This is recorded at the end of the background tab
-    opening session during a background tab opening session (the duration of
-    time from when the browser starts to open background tabs until the time the
-    browser has finished loading those tabs or otherwise decided to stop loading
-    them). The metric is not recorded when the session overlaps with session
-    restore.
-  </summary>
-</histogram>
-
 <histogram name="TabManager.Discarding.DiscardCount" units="Discards"
     expires_after="2025-07-27">
   <owner>chrisha@chromium.org</owner>
@@ -1798,19 +1731,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time between the last time a discarded tab was reloaded and the time
     it gets closed.
-  </summary>
-</histogram>
-
-<histogram name="TabManager.SessionOverlap.BackgroundTabOpening"
-    enum="BooleanOverlap" expires_after="M79">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    Whether background tab opening session is overlapped with other types of
-    session, e.g., session restore. Background tab opening session is the
-    duration of time from when the browser starts to open background tabs until
-    the time the browser has finished loading those tabs or otherwise decided to
-    stop loading them. This metric helps to understand how often background tab
-    opening has overlap with other sessions.
   </summary>
 </histogram>
 

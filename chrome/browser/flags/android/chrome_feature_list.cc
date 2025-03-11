@@ -182,6 +182,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBottomToolbar,
     &kAndroidDumpOnScrollWithoutResource,
     &kAndroidElegantTextHeight,
+    &kAndroidKeyboardA11y,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
@@ -512,6 +513,10 @@ BASE_FEATURE(kAndroidDumpOnScrollWithoutResource,
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidKeyboardA11y,
+             "AndroidKeyboardA11y",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
              "AndroidNoVisibleHintForDifferentTLD",

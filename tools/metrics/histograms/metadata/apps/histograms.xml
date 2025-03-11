@@ -571,22 +571,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2024-12-08">
-  <owner>laurencom@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The time between sending a non-empty query to AppSearchProvider and
-    receiving results back.
+    receiving results back. Warning: this histogram was expired from 2024-12-08
+    to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.ZeroStateLatency" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The time between sending an empty query to AppSearchProvider and receiving
-    Zero State recommendation results back.
+    Zero State recommendation results back. Warning: this histogram was expired
+    from 2022-05-01 to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
@@ -636,8 +643,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveSearchProvider.DriveFSLatency" units="ms"
     expires_after="2025-07-13">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     How long it takes DriveFS to return search results. This is the first half
     of the I/O logic of the Drive provider. Logged once per Drive search query.
@@ -645,20 +653,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveSearchProvider.FileInfoLatency" units="ms"
-    expires_after="2024-02-01">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     How long it takes to generate on-disk file paths for search results. This is
     the second half of the I/O logic of the Drive provider. Logged once per
-    Drive search query.
+    Drive search query. Warning: this histogram was expired from 2024-02-01 to
+    2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.DriveSearchProvider.Latency" units="ms"
-    expires_after="2025-05-11">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Latency in milliseconds from the beginning of a launcher search query to
     Drive file results being returned. Logged once per Drive search query. This
@@ -667,19 +678,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveSearchProvider.Relevance" units="score"
-    expires_after="2024-04-28">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Relevance score for a Drive file result that was returned in response to a
-    search query. Logged once for each file per search query.
+    search query. Logged once for each file per search query. Warning: this
+    histogram was expired from 2024-04-28 to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.DriveSearchProvider.Status"
-    enum="DriveSearchProviderStatus" expires_after="2025-04-13">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="DriveSearchProviderStatus" expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of a query for Drive file results. Logged once per Drive search
     query.
@@ -688,8 +702,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
     expires_after="2026-02-10">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The time between sending a zero state query and receiving file
     recommendations back from DriveZeroStateProvider.
@@ -697,30 +712,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileResult.DefaultRelevanceUsed"
-    enum="BooleanUsage" expires_after="2024-11-30">
+    enum="BooleanUsage" expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
-  <owner>laurencom@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Whether or not the default relevance was used when calculating the relevance
     score between a filename and the search query. The default relevance is used
     as a fallback whenever the relevance calculation fails. Logged once per
-    relevance calculation.
+    relevance calculation. Warning: this histogram was expired from 2024-11-30
+    to 2026-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.FileResult.ThumbnailLoadedError"
-    enum="PlatformFileError" expires_after="2024-04-28">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="PlatformFileError" expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Result of requesting a thumbnail icon for some types of file results in the
     Chrome OS launcher. Emitted on each attempt to load a thumbnail, if it
-    results in an error.
+    results in an error. Warning: this histogram was expired from 2024-04-28 to
+    2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -733,7 +752,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
     expires_after="2026-02-02">
   <owner>chenjih@google.com</owner>
-  <owner>laurencom@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Relevance score for a local file result that was returned in response to a
     search query. Logged once for each file per search query.
@@ -754,6 +774,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
     enum="GameProviderSearchStatus" expires_after="2025-09-29">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of a query for game results. Logged once per game search query.
@@ -763,6 +784,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
     expires_after="2025-11-12">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of an index update from the Discovery service. Logged once per
@@ -774,6 +796,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.GameResult.IconLoadStatus" enum="DiscoveryError"
     expires_after="2026-02-28">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The outcome of the icon load from the Discovery service. Logged once per
@@ -782,44 +805,53 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.HelpAppProvider.ListSearchResultState"
-    enum="HelpAppProviderListSearchResultState" expires_after="2024-06-30">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="HelpAppProviderListSearchResultState" expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>zufeng@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The end result of list searches by the provider for the help app in the CrOS
     launcher. Logged once per time a list search finishes. Not logged if the
     search is canceled by a new search starting. Not logged for the help app
-    provider's suggestion chips. Chrome OS only.
+    provider's suggestion chips. Chrome OS only. Warning: this histogram was
+    expired from 2024-06-30 to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
-    expires_after="2025-01-14">
+    expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>zufeng@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The latency of a search in the HelpAppProvider. Recorded each time a search
     is completed, even if it returns no results. Not recorded if the query is
-    too short to perform a search at all. Chrome OS only.
+    too short to perform a search at all. Chrome OS only. Warning: this
+    histogram was expired from 2025-01-14 to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
-    expires_after="2024-09-01">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the size of a response from the ItemSuggest API. Reported once per
     successful response. Will not be reported if the response exceeds the
-    maximum size, instead check Apps.AppList.ItemSuggestCache.Status.
+    maximum size, instead check Apps.AppList.ItemSuggestCache.Status. Warning:
+    this histogram was expired from 2024-09-01 to 2025-03-11; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
     enum="ItemSuggestCacheStatus" expires_after="2026-03-09">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the outcome of a call to ItemSuggest. Reported once per call to
     UpdateCache that passes the minimum time between udpates check.
@@ -828,8 +860,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
     expires_after="2025-11-03">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the latency from the start of a call to UpdateCache to the time when
     results are finalised. Reported once each time results are successfully
@@ -863,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.LocalImageSearchProvider.Latency" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -933,9 +966,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
-    expires_after="2025-05-11">
-  <owner>laurencom@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The time between sending an non-empty query and receiving search results
     back from OmniboxProvider which queries chrome AutocompelteController's
@@ -946,6 +981,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
     enum="OsSettingsProviderStatus" expires_after="2026-01-14">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
@@ -961,6 +997,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
     enum="OsSettingsProviderIconLoadStatus" expires_after="2026-01-14">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Various states of the icon related parameters for OS settings in the cros
@@ -975,6 +1012,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
     expires_after="2026-01-05">
   <owner>thanhdng@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     The latency of a search in the OsSettingsProvider. Recorded each time a
@@ -985,26 +1023,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.PersistentProto.ReadStatus"
-    enum="PersistentProtoReadStatus" expires_after="2024-04-28">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="PersistentProtoReadStatus" expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Various error states on reading a backing file from disk, in the score
     normalizer used by the Chrome OS launcher. Emitted once when a persistent
     proto initially reads from disk. Some number of Missing values are expected,
-    eg. because it is logged for each new user added to a device.
+    eg. because it is logged for each new user added to a device. Warning: this
+    histogram was expired from 2024-04-28 to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.PersistentProto.WriteStatus"
-    enum="PersistentProtoWriteStatus" expires_after="2025-03-09">
+    enum="PersistentProtoWriteStatus" expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Various error states on writing a backing file to disk, in the score
     normalizer used by the Chrome OS launcher. Emitted each time a persistent
-    proto writes to disk.
+    proto writes to disk. Warning: this histogram was expired from 2025-03-09 to
+    2025-03-11; data may be missing.
   </summary>
 </histogram>
 
@@ -1020,18 +1061,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.RemovedResultsProto.SizeInKB" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2026-03-01">
   <owner>andrewxu@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Record the size of the removed results proto in KB. Emitted when the proto
-    initialization completes.
+    initialization completes. Warning: this histogram was expired from
+    2025-01-05 to 2025-03-11; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
     enum="BooleanHit" expires_after="2025-09-29">
   <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The number of the results above the BestMatch threshold with {Type} case.
@@ -1259,22 +1304,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.Error"
-    enum="AppListUserEventError" expires_after="2024-01-31">
-  <owner>yulunwu@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+    enum="AppListUserEventError" expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records errors in processing other Apps.AppList.Search.Session2.* metrics.
     These are expected to be rare and bucket proportion is not meaningful.
+    Warning: this histogram was expired from 2024-01-31 to 2025-03-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.QueryLength{SessionConclusion}"
-    units="characters" expires_after="2025-02-10">
+    units="characters" expires_after="2026-03-01">
   <owner>amandadeacon@google.com</owner>
   <owner>chenjih@google.com</owner>
-  <owner>yulunwu@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the length of a query at the conclusion of a launcher search
     session.
@@ -1293,6 +1342,9 @@ chromium-metrics-reviews@google.com.
     AnswerCardImpression: An answer card was shown long enough to the user to
     have made an impression at some point during the search session. The answer
     card may or may not be shown at the moment the search session ended.
+
+    Warning: this histogram was expired from 2025-02-10 to 2025-03-11; data may
+    be missing.
   </summary>
   <token key="SessionConclusion"
       variants="LauncherSearchSessionConclusionVariants"/>
@@ -1300,9 +1352,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.Search.Session2.{LauncherSearchEntryPoint}"
     enum="LauncherSearchSessionConclusion" expires_after="2025-07-13">
-  <owner>yulunwu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Tracks search result launches, answer card impressions, and search session
     abandons for launcher search sessions.
@@ -1353,7 +1407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
-    expires_after="2025-04-13">
+    expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1525,9 +1579,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-05-22">
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
-  <owner>laurencom@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
     {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
@@ -1542,9 +1597,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SystemInfoProvider.Error.{ErrorSource}"
-    enum="CrosDiagnosticsDataError" expires_after="2025-05-15">
+    enum="CrosDiagnosticsDataError" expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>
-  <owner>laurencom@chromium.org</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
     not met error when receiving system information including battery info,
@@ -1674,12 +1730,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateDriveProvider.Relevance" units="score"
-    expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Relevance score for a zero state Drive result in the results list. Logged
     whenever ItemSuggest is queried, once for each zero-state result created.
+
+    Warning: this histogram was expired from 2023-07-31 to 2025-03-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1695,12 +1755,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateFileProvider.Relevance" units="score"
-    expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2026-03-01">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Relevance score for a zero state file result in suggestion chips or the
     results list. Logged once each time zero state is loaded.
+
+    Warning: this histogram was expired from 2023-07-31 to 2025-03-11; data may
+    be missing.
   </summary>
 </histogram>
 

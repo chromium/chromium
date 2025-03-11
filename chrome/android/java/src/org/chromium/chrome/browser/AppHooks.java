@@ -47,7 +47,7 @@ public class AppHooks {
     /** Async fetch the iterator of partner bookmarks (or null if not available). */
     public void requestPartnerBookmarkIterator(
             Callback<PartnerBookmark.BookmarkIterator> callback) {
-        callback.onResult(PartnerBookmarksProviderIterator.createIfAvailable());
+        PartnerBookmarksProviderIterator.createIfAvailable(callback);
     }
 
     /** Returns the URL to the WebAPK creation/update server. */

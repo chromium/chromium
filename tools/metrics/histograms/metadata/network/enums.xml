@@ -662,7 +662,8 @@ chromium-metrics-reviews@google.com.
       label="The MDL is not populated, so an eligility decision could not be
              made"/>
   <int value="1" label="The request did not match the MDL"/>
-  <int value="2" label="The EnableIpProtectionProxy feature is not enabled"/>
+  <int value="2"
+      label="DEPRECATED: The EnableIpProtectionProxy feature is not enabled"/>
   <int value="3" label="The IP Protection setting is disabled"/>
   <int value="4" label="Proxy List is unavailable"/>
   <int value="5"

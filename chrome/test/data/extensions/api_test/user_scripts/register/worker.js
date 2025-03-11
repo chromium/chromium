@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 // Scripts that inject a div to the document.
 const injectDivScript1 = `var div = document.createElement('div');
@@ -38,6 +39,8 @@ async function runExecutionWorldTest(world, expectedTitle) {
 }
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Tests that an error is returned when multiple user script entries in
   // userScripts.register share the same ID.
   async function duplicateScriptId_DuplicatesInSameCall() {

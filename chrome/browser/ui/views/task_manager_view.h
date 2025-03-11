@@ -92,6 +92,9 @@ class TaskManagerView : public TableViewDelegate,
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   void WindowClosing() override;
 
+  // WidgetDelegate:
+  void OnWidgetInitialized() override;
+
   // views::TableGrouper:
   void GetGroupRange(size_t model_index, views::GroupRange* range) override;
 
@@ -160,8 +163,6 @@ class TaskManagerView : public TableViewDelegate,
       const gfx::Outsets& tab_outsets);
   std::unique_ptr<views::View> CreateSearchBar(
       const ChromeLayoutProvider* provider);
-  std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
-      const gfx::Insets& margins);
   std::unique_ptr<views::ScrollView> CreateProcessView(
       std::unique_ptr<views::TableView> tab_table,
       bool table_has_border,

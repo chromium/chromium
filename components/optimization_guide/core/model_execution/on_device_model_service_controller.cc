@@ -351,7 +351,8 @@ void OnDeviceModelServiceController::StartValidation() {
 
   MaybeCreateBaseModelRemote(PopulateModelPaths());
   mojo::Remote<on_device_model::mojom::Session> session;
-  base_model_remote_->StartSession(session.BindNewPipeAndPassReceiver());
+  base_model_remote_->StartSession(session.BindNewPipeAndPassReceiver(),
+                                   nullptr);
   model_validator_ = std::make_unique<OnDeviceModelValidator>(
       model_metadata_->validation_config(),
       base::BindOnce(&OnDeviceModelServiceController::FinishValidation,
@@ -460,7 +461,7 @@ void OnDeviceModelServiceController::OnDeviceModelClient::StartSession(
     mojo::PendingReceiver<on_device_model::mojom::Session> pending) {
   controller_
       ->GetOrCreateModelRemote(feature_, model_paths_, adaptation_assets_)
-      ->StartSession(std::move(pending));
+      ->StartSession(std::move(pending), nullptr);
 }
 
 void OnDeviceModelServiceController::OnDeviceModelClient::

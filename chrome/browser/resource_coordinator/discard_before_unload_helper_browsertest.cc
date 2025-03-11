@@ -36,6 +36,7 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
     GURL gurl(embedded_test_server()->GetURL("a.com", url));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
     auto* wc = browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContentsDestroyedWatcher destroyed_watcher(wc);
     content::PrepContentsForBeforeUnloadTest(wc);
 
     base::RunLoop run_loop;
@@ -73,19 +74,16 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
       EXPECT_TRUE(alert->is_before_unload_dialog());
       alert->view()->AcceptAppModalDialog();
     }
+
+    ASSERT_NO_FATAL_FAILURE(destroyed_watcher.Wait());
+    EXPECT_TRUE(destroyed_watcher.IsDestroyed());
   }
 };
 
 }  // namespace
 
-// TODO(crbug.com/394745724): Fails on Mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NonEmptyBeforeUnloadDetected DISABLED_NonEmptyBeforeUnloadDetected
-#else
-#define MAYBE_NonEmptyBeforeUnloadDetected NonEmptyBeforeUnloadDetected
-#endif
 IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest,
-                       MAYBE_NonEmptyBeforeUnloadDetected) {
+                       NonEmptyBeforeUnloadDetected) {
   TestDiscardBeforeUnloadHelper("/beforeunload.html",
                                 true /* has_beforeunload_helper */);
 }

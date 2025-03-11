@@ -57,7 +57,7 @@ if (android_64bit_target_cpu) {
     data_deps = [ "//build/android:test_runner_py" ]
     data = [
       "//android_webview/tools/cts_config/",
-      "//third_party/chromium-variations",
+      "//components/variations/test_data/cipd",
     ]
   }
 
@@ -67,7 +67,7 @@ if (android_64bit_target_cpu) {
     data_deps = [ "//build/android:test_runner_py" ]
     data = [
       "//android_webview/tools/cts_config/",
-      "//third_party/chromium-variations",
+      "//components/variations/test_data/cipd",
     ]
   }
 
@@ -78,7 +78,7 @@ if (android_64bit_target_cpu) {
       data_deps = [ "//build/android:test_runner_py" ]
       data = [
         "//android_webview/tools/cts_config/",
-        "//third_party/chromium-variations",
+        "//components/variations/test_data/cipd",
       ]
     }
   }
@@ -577,7 +577,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/blink/web_tests/resources/global-interface-listing.js",
     "//third_party/blink/web_tests/webexposed/global-interface-listing.html",
     "//third_party/blink/web_tests/webexposed/global-interface-listing-expected.txt",
-    "//third_party/chromium-variations/",
+    "//components/variations/test_data/cipd/",
     "$root_build_dir/third_party/blink/web_tests/resources/js-test.js",
   ]
   data_deps =

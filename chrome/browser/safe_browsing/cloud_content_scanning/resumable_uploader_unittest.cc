@@ -1,6 +1,8 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "base/base64.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "net/http/http_status_code.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
@@ -581,16 +583,28 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
 struct AsyncUploadResult {
   bool success;
   net::HttpStatusCode response_code;
-  std::string response_data;
+  bool decode_result;
+  std::string intermediate_value;
 };
+
+std::string GetEncodedContentAnalysisResponse() {
+  // Create a ContentAnalysisResponse instance with arbitrary values.
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* result = response.mutable_results()->Add();
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  return base::Base64Encode(response.SerializeAsString());
+}
 
 const AsyncUploadResult kTestCases[] = {
     {.success = true,
      .response_code = net::HTTP_OK,
-     .response_data = "intermediate_value"},
+     .decode_result = true,
+     .intermediate_value = GetEncodedContentAnalysisResponse()},
     {.success = false,
-     .response_code = net::HTTP_UNAUTHORIZED,
-     .response_data = "metadata_response"}};
+     .response_code = net::HTTP_BAD_REQUEST,
+     .decode_result = false,
+     .intermediate_value = "bad-cep-header"}};
 
 class MockResumableUploadRequestForAsync : public MockResumableUploadRequest {
  public:
@@ -652,9 +666,12 @@ TEST_P(ResumableUploadSendContentAsyncTest,
       BinaryUploadService::Result::SUCCESS,
       base::BindLambdaForTesting(
           [&](bool success, int http_status, const std::string& response_data) {
+            std::string decoded_response;
+            bool decode_result = base::Base64Decode(
+                get_upload_result().intermediate_value, &decoded_response);
+            EXPECT_EQ(get_upload_result().decode_result, decode_result);
             EXPECT_EQ(get_upload_result().success, success);
             EXPECT_EQ(get_upload_result().response_code, http_status);
-            EXPECT_EQ(get_upload_result().response_data, response_data);
             run_loop.Quit();
           }),
       base::DoNothing());
@@ -669,7 +686,8 @@ TEST_P(ResumableUploadSendContentAsyncTest,
           metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
                                                      kUploadUrl);
           metadata_response_head->headers->AddHeader(
-              "X-Goog-Upload-Header-Cep-Response", "intermediate_value");
+              "X-Goog-Upload-Header-Cep-Response",
+              get_upload_result().intermediate_value);
           test_url_loader_factory_.AddResponse(
               GURL("https://google.com"), std::move(metadata_response_head),
               "metadata_response", network::URLLoaderCompletionStatus(net::OK));

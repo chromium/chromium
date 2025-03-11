@@ -240,6 +240,8 @@ class SavedTabGroup {
   // Marks the tab group as transitioned to shared.
   void MarkTransitionedToShared();
 
+  void MarkTransitioningToSharedForTesting();
+
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
   void MoveTabImpl(const base::Uuid& saved_tab_guid, size_t new_index);

@@ -217,24 +217,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorage.BrowserLocalStorageCachePurgedInKB" units="KB"
-    expires_after="M77">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage browser-side cache purged in KB when
-    memory pressure signal was triggered or cache size hit the limits.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorage.BrowserLocalStorageCacheSizeInKB" units="KB"
-    expires_after="M77">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage databases in KB in the browser-side
-    cache recorded each time a new database is opened in memory.
-  </summary>
-</histogram>
-
 <histogram name="LocalStorage.DatabaseOpen" enum="LevelDBStatus"
     expires_after="2025-10-31">
   <owner>arichiv@chromium.org</owner>

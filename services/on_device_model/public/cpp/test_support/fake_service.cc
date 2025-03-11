@@ -210,7 +210,8 @@ FakeOnDeviceModel::FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
 FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 
 void FakeOnDeviceModel::StartSession(
-    mojo::PendingReceiver<mojom::Session> session) {
+    mojo::PendingReceiver<mojom::Session> session,
+    mojom::SessionParamsPtr params) {
   AddSession(std::move(session),
              std::make_unique<FakeOnDeviceSession>(settings_, this));
 }

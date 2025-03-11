@@ -485,4 +485,107 @@ TEST_F(ScrollSnapTest, ResizeDuringGesture) {
   ASSERT_EQ(viewport->scrollTop(), 50);
 }
 
+TEST_F(ScrollSnapTest, SnapAreaResizeDuringScrollAnimation) {
+  v8::HandleScope HandleScope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+    <!DOCTYPE html>
+    <style>
+      .snap {
+        scroll-snap-type: x mandatory;
+        scroll-snap-align: start;
+      }
+      .scroller {
+        width: 500px;
+        height: 200px;
+        overflow-x: scroll;
+        border: solid 1px black;
+        position: relative;
+        scroll-behavior: smooth;
+      }
+      .box {
+        background-color: purple;
+        height: 50px;
+        width: 50px;
+        display: inline-block;
+        margin-right: 100px;
+      }
+      .space {
+        position: absolute;
+        width: 200vw;
+        height: 100px;
+      }
+    </style>
+    <div class='snap scroller' id='snapscroller'>
+      <div class='space'>
+        <div class='snap box' id='snapbox1'>
+          <h1>1</h1>
+        </div>
+        <div class='snap box' id='snapbox2'>
+          <h1>2</h1>
+        </div>
+        <div class='snap box' id='snapbox3'>
+          <h1>3</h1>
+        </div>
+        <div class='snap box' id='snapbox4'>
+          <h1>4</h1>
+        </div>
+        <div class='snap box' id='snapbox5'>
+          <h1>5</h1>
+        </div>
+      </div>
+     </div>
+  <script>
+  function expand(box) {
+    box.style.height = "100px";
+    // box.style.width = "100px";
+  }
+  function scrollListener() {
+    for (const box of document.querySelectorAll(".box")) {
+      expand(box);
+    }
+  }
+  // once a scroll event is observed, expand the snap areas.
+  snapscroller.addEventListener("scroll", scrollListener, { once: true});
+  </script>)HTML");
+  Compositor().BeginFrame();
+
+  Element* box5 = GetDocument().getElementById(AtomicString("snapbox5"));
+  Element* scroller =
+      GetDocument().getElementById(AtomicString("snapscroller"));
+
+  Compositor().BeginFrame();
+  double last_offset = scroller->scrollLeft();
+  EXPECT_EQ(box5->clientHeight(), 50);
+
+  // Target the left edge of the last box. Make it an unaligned position using a
+  // small delta to verify snapping happens.
+  const double delta = 20;
+  const double target_offset = box5->OffsetLeft() + delta;
+
+  scroller->scrollTo(target_offset, 0);
+  // Make some progress.
+  Compositor().BeginFrame();  // update run_state_.
+  Compositor().BeginFrame();  // Set start_time = now.
+  Compositor().BeginFrame(0.2);
+  EXPECT_GT(scroller->scrollLeft(), last_offset);
+  last_offset = scroller->scrollLeft();
+
+  // Make some more progress.
+  Compositor().BeginFrame(0.8);
+  EXPECT_GT(scroller->scrollLeft(), last_offset);
+  last_offset = scroller->scrollLeft();
+
+  // Sanity-check that the layout change happened.
+  EXPECT_EQ(box5->clientHeight(), 100);
+
+  // Finish the scroll.
+  Compositor().BeginFrame(1.0);
+  EXPECT_EQ(scroller->scrollLeft(), box5->OffsetLeft());
+}
+
 }  // namespace blink

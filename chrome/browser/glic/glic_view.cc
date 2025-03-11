@@ -29,7 +29,10 @@ namespace glic {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicView, kWebViewElementIdForTesting);
 
-GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
+GlicView::GlicView(Profile* profile,
+                   const gfx::Size& initial_size,
+                   base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate)
+    : accelerator_delegate_(accelerator_delegate) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBackground(views::CreateRoundedRectBackground(kDefaultBackgroundColor,
@@ -55,6 +58,14 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
       return true;
     }
   }
+  return false;
+}
+
+bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (accelerator_delegate_) {
+    return accelerator_delegate_->AcceleratorPressed(accelerator);
+  }
+
   return false;
 }
 

@@ -28,6 +28,16 @@ module.exports = function transformer(file, api) {
     path.node.body.body.forEach(classMember => {
       if (classMember.type === 'ClassProperty' &&
           classProperties.has(classMember.key.name)) {
+        if (classMember.optional) {
+          // Workaround for https://github.com/microsoft/TypeScript/issues/54240
+          // where accessors aren't allowed to be optional. Instead of using "?"
+          // add the "undefined" as part of the type.
+          classMember.optional = false;
+          const originalType = classMember.typeAnnotation.typeAnnotation;
+          classMember.typeAnnotation.typeAnnotation =
+              j.tsUnionType([originalType, j.tsUndefinedKeyword()]);
+        }
+
         // Add an @accessor decorator since jscodeshift does not support the
         // "accessor" keyword yet. It will be replaced later using a regular
         // expression.

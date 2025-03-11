@@ -93,10 +93,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -577,8 +580,14 @@ void ChromeAutocompleteProviderClient::OpenLensOverlay() {
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/401583049): Prepare lens overlay controller directly.
   if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
-    browser->command_controller()->ExecuteCommand(
-        IDC_CONTENT_CONTEXT_LENS_OVERLAY);
+    CHECK(browser->GetActiveTabInterface());
+    // TODO(crbug.com/402497756): For prototyping, reusing the existing
+    // omnibox entry point. However, for production, create a new invocation
+    // source for this new entry point.
+    browser->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->lens_overlay_controller()
+        ->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

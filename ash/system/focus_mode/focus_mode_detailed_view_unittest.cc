@@ -39,7 +39,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -67,8 +66,7 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 class FocusModeDetailedViewTest : public AshTestBase {
  public:
   FocusModeDetailedViewTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_feature_(features::kFocusMode) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FocusModeDetailedViewTest() override = default;
 
   // AshTestBase:
@@ -212,7 +210,6 @@ class FocusModeDetailedViewTest : public AshTestBase {
   FakeDetailedViewDelegate detailed_view_delegate_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<FocusModeDetailedView> focus_mode_detailed_view_ = nullptr;
 };

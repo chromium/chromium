@@ -1132,13 +1132,9 @@ AttributionResolverImpl::GetAllDataKeys() {
 void AttributionResolverImpl::DeleteByDataKey(
     const AttributionDataModel::DataKey& datakey) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(linnan): Consider exposing a more efficient implementation to match
-  // origins directly where appropriate, e.g. for the `os_registrations_` table.
-  ClearData(base::Time::Min(), base::Time::Max(),
-            base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                                blink::StorageKey::CreateFirstParty(
-                                    datakey.reporting_origin())),
-            /*delete_rate_limit_data=*/true);
+  storage_.ClearDataWithFilter(base::Time::Min(), base::Time::Max(),
+                               datakey.reporting_origin(),
+                               /*delete_rate_limit_data=*/true);
 }
 
 bool AttributionResolverImpl::DeleteReport(AttributionReport::Id report_id) {
@@ -1167,7 +1163,8 @@ void AttributionResolverImpl::ClearDataIncludingRateLimit(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter) {
-  ClearData(delete_begin, delete_end, filter, /*delete_rate_limit_data=*/true);
+  ClearData(delete_begin, delete_end, std::move(filter),
+            /*delete_rate_limit_data=*/true);
 }
 
 void AttributionResolverImpl::ClearData(

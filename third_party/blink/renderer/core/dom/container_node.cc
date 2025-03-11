@@ -880,7 +880,11 @@ void ContainerNode::WillRemoveChildren() {
 }
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
-  return GetLayoutBox();
+  LayoutBox* box = GetLayoutBox();
+  if (box) {
+    box = box->ContentLayoutBox();
+  }
+  return box && box->IsScrollContainer() ? box : nullptr;
 }
 
 bool ContainerNode::IsReadingFlowContainer() const {

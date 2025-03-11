@@ -2082,19 +2082,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpAuthNtlmV2Usage" enum="HttpAuthNtlmV2Usage"
-    expires_after="M79">
-  <owner>mmenke@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Whether NTLMv2 was enabled for an authentication handshake. For a given data
-    set the number of samples here is expected to be equivalent to the
-    &quot;NTLM Start&quot; count in the &quot;Net.HttpAuthCount&quot; histogram.
-    Note that NTLMv2 being enabled makes the client behavior equivalent to
-    setting LmCompatibilityLevel to 3 or higher.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpAuthTarget" enum="HttpAuthTarget"
     expires_after="2025-09-07">
   <owner>mpdenton@chromium.org</owner>

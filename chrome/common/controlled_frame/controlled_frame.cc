@@ -20,8 +20,10 @@
 
 base::span<const char* const> GetControlledFrameFeatureList() {
   static constexpr const char* feature_list[] = {
+      // LINT.IfChange
       "controlledFrameInternal", "chromeWebViewInternal", "guestViewInternal",
       "webRequestInternal",      "webViewInternal",
+      // LINT.ThenChange(chrome/common/extensions/extension_test_util.cc)
   };
   return base::span(feature_list);
 }

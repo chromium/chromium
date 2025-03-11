@@ -9,8 +9,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
-#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -414,10 +414,9 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setUserEmail:base::SysUTF8ToNSString(
                                   _syncService->GetAccountInfo().email)];
   [self updateShowBulkMovePasswordsToAccount];
-  [self.consumer
-      setCanChangeGPMPin:password_manager::sync_util::GetAccountForSaving(
-                             _prefService, _syncService)
-                             .has_value()];
+  [self.consumer setCanChangeGPMPin:password_manager::features_util::
+                                        IsAccountStorageEnabled(_prefService,
+                                                                _syncService)];
 }
 
 #pragma mark - Private

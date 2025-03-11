@@ -19,60 +19,86 @@
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/lib.rs.h"
 #endif
 
-namespace base {
-
 // TODO(crbug.com/40811643): Move the C++ parser into components/nacl to just
 // run in-process there. Don't compile base::JSONReader on NaCL at all.
 #if !BUILDFLAG(IS_NACL)
 
 namespace {
-
 const char kSecurityJsonParsingTime[] = "Security.JSONParser.ParsingTime";
+}  // namespace
 
-Value::List& ListAppendList(Value::List& ctx) {
+// This namespace defines FFI-friendly functions that are be called from Rust in
+// //third_party/rust/serde_json_lenient/v0_2/wrapper/.
+namespace serde_json_lenient {
+
+base::Value::List& list_append_list(base::Value::List& ctx) {
   ctx.Append(base::Value::List());
   return ctx.back().GetList();
 }
 
-Value::Dict& ListAppendDict(Value::List& ctx) {
+base::Value::Dict& list_append_dict(base::Value::List& ctx) {
   ctx.Append(base::Value::Dict());
   return ctx.back().GetDict();
 }
 
-void ListAppendNone(Value::List& ctx) {
+void list_append_none(base::Value::List& ctx) {
   ctx.Append(base::Value());
 }
 
-template <class T, class As = T>
-void ListAppendValue(Value::List& ctx, T v) {
-  ctx.Append(As{v});
+void list_append_bool(base::Value::List& ctx, bool val) {
+  ctx.Append(val);
 }
 
-Value::List& DictSetList(Value::Dict& ctx, rust::Str key) {
+void list_append_i32(base::Value::List& ctx, int32_t val) {
+  ctx.Append(val);
+}
+
+void list_append_f64(base::Value::List& ctx, double val) {
+  ctx.Append(val);
+}
+
+void list_append_str(base::Value::List& ctx, rust::Str val) {
+  ctx.Append(std::string(val));
+}
+
+base::Value::List& dict_set_list(base::Value::Dict& ctx, rust::Str key) {
   base::Value* value =
       ctx.Set(base::RustStrToStringView(key), base::Value::List());
   return value->GetList();
 }
 
-Value::Dict& DictSetDict(Value::Dict& ctx, rust::Str key) {
+base::Value::Dict& dict_set_dict(base::Value::Dict& ctx, rust::Str key) {
   base::Value* value =
       ctx.Set(base::RustStrToStringView(key), base::Value::Dict());
   return value->GetDict();
 }
 
-void DictSetNone(Value::Dict& ctx, rust::Str key) {
+void dict_set_none(base::Value::Dict& ctx, rust::Str key) {
   ctx.Set(base::RustStrToStringView(key), base::Value());
 }
 
-template <class T, class As = T>
-void DictSetValue(Value::Dict& ctx, rust::Str key, T v) {
-  ctx.Set(base::RustStrToStringView(key), base::Value(As{v}));
+void dict_set_bool(base::Value::Dict& ctx, rust::Str key, bool val) {
+  ctx.Set(base::RustStrToStringView(key), val);
 }
 
-JSONReader::Result DecodeJSONInRust(std::string_view json,
-                                    int options,
-                                    size_t max_depth) {
-  const serde_json_lenient::JsonOptions rust_options = {
+void dict_set_i32(base::Value::Dict& ctx, rust::Str key, int32_t val) {
+  ctx.Set(base::RustStrToStringView(key), val);
+}
+
+void dict_set_f64(base::Value::Dict& ctx, rust::Str key, double val) {
+  ctx.Set(base::RustStrToStringView(key), val);
+}
+
+void dict_set_str(base::Value::Dict& ctx, rust::Str key, rust::Str val) {
+  ctx.Set(base::RustStrToStringView(key), std::string(val));
+}
+
+namespace {
+
+base::JSONReader::Result DecodeJSONInRust(std::string_view json,
+                                          int options,
+                                          size_t max_depth) {
+  const JsonOptions rust_options = {
       .allow_trailing_commas =
           (options & base::JSON_ALLOW_TRAILING_COMMAS) != 0,
       .replace_invalid_characters =
@@ -84,27 +110,11 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
       .allow_x_escapes = (options & base::JSON_ALLOW_X_ESCAPES) != 0,
       .max_depth = max_depth,
   };
-  static constexpr serde_json_lenient::Functions functions = {
-      .list_append_none_fn = ListAppendNone,
-      .list_append_bool_fn = ListAppendValue<bool>,
-      .list_append_i32_fn = ListAppendValue<int32_t>,
-      .list_append_f64_fn = ListAppendValue<double>,
-      .list_append_str_fn = ListAppendValue<rust::Str, std::string>,
-      .list_append_list_fn = ListAppendList,
-      .list_append_dict_fn = ListAppendDict,
-      .dict_set_none_fn = DictSetNone,
-      .dict_set_bool_fn = DictSetValue<bool>,
-      .dict_set_i32_fn = DictSetValue<int32_t>,
-      .dict_set_f64_fn = DictSetValue<double>,
-      .dict_set_str_fn = DictSetValue<rust::Str, std::string>,
-      .dict_set_list_fn = DictSetList,
-      .dict_set_dict_fn = DictSetDict,
-  };
 
   base::Value::List list;
-  serde_json_lenient::DecodeError error;
-  bool ok = serde_json_lenient::decode_json(
-      base::StringViewToRustSlice(json), rust_options, functions, list, error);
+  DecodeError error;
+  bool ok =
+      decode_json(base::StringViewToRustSlice(json), rust_options, list, error);
 
   if (!ok) {
     return base::unexpected(base::JSONReader::Error{
@@ -117,9 +127,12 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
   return std::move(list.back());
 }
 
-}  // anonymous namespace
+}  // namespace
+}  // namespace serde_json_lenient
 
 #endif  // !BUILDFLAG(IS_NACL)
+
+namespace base {
 
 // static
 std::optional<Value> JSONReader::Read(std::string_view json,
@@ -131,7 +144,8 @@ std::optional<Value> JSONReader::Read(std::string_view json,
 #else   // BUILDFLAG(IS_NACL)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {
-    JSONReader::Result result = DecodeJSONInRust(json, options, max_depth);
+    JSONReader::Result result =
+        serde_json_lenient::DecodeJSONInRust(json, options, max_depth);
     if (!result.has_value()) {
       return std::nullopt;
     }
@@ -184,7 +198,8 @@ JSONReader::Result JSONReader::ReadAndReturnValueWithError(
 #else   // BUILDFLAG(IS_NACL)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {
-    return DecodeJSONInRust(json, options, internal::kAbsoluteMaxDepth);
+    return serde_json_lenient::DecodeJSONInRust(json, options,
+                                                internal::kAbsoluteMaxDepth);
   } else {
     internal::JSONParser parser(options);
     auto value = parser.Parse(json);

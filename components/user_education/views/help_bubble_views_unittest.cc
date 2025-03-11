@@ -38,7 +38,6 @@ namespace user_education {
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAnchorElementId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomBubbleId);
 
 }  // namespace
 
@@ -90,13 +89,8 @@ class HelpBubbleViewsCustomBubbleTest : public views::ViewsTestBase {
   test::TestCustomHelpBubbleView* CreateBubble() {
     auto bubble = std::make_unique<test::TestCustomHelpBubbleView>(
         anchor_view_, views::BubbleBorder::TOP_RIGHT);
-    bubble->SetLayoutManager(std::make_unique<views::FillLayout>());
-    bubble->SetProperty(views::kElementIdentifierKey, kCustomBubbleId);
-    auto* const button =
-        bubble->AddChildView(std::make_unique<views::LabelButton>());
-    button->SetText(u"Button");
     auto* const result = bubble.get();
-    auto* widget =
+    auto* const widget =
         views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
     widget->Show();
     return result;
@@ -134,7 +128,8 @@ TEST_F(HelpBubbleViewsCustomBubbleTest, CloseHelpBubble) {
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, hidden);
   auto subscription =
       ui::ElementTracker::GetElementTracker()
-          ->AddElementHiddenInAnyContextCallback(kCustomBubbleId, hidden.Get());
+          ->AddElementHiddenInAnyContextCallback(
+              test::TestCustomHelpBubbleView::kBubbleId, hidden.Get());
   base::RunLoop run_loop;
   EXPECT_CALL(hidden, Run).WillOnce([&](ui::TrackedElement*) {
     run_loop.Quit();

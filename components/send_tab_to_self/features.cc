@@ -22,7 +22,11 @@ BASE_FEATURE(kSendTabToSelfV2,
 
 BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
              "SendTabToSelfIOSPushNotifications",
+#if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 
 const char kSendTabIOSPushNotificationsURLImageParam[] =
     "variant_with_URL_image";

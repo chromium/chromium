@@ -162,7 +162,7 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
   ]
   data = [
     "test/data/",
-    "//third_party/chromium-variations",
+    "//components/variations/test_data/cipd",
   ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN

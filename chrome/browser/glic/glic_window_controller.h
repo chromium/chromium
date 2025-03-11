@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -58,7 +59,8 @@ class GlicButton;
 // When the glic window is open there is an additional piece of state. The glic
 // window is either attached to a Browser* or standalone.
 //
-class GlicWindowController : public views::WidgetObserver {
+class GlicWindowController : public views::WidgetObserver,
+                             public ui::AcceleratorTarget {
  public:
   // Observes the state of the glic window.
   class StateObserver : public base::CheckedObserver {
@@ -230,6 +232,12 @@ class GlicWindowController : public views::WidgetObserver {
   GlicWindowAnimator* window_animator() { return glic_window_animator_.get(); }
 
  private:
+  // ui::AcceleratorTarget
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool CanHandleAccelerators() const override;
+
+  void AddAccelerators();
+
   gfx::Rect GetInitialDetachedBounds();
 
   // Performs initialization for the attached/detached opening flows. Important

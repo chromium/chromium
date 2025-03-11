@@ -71,6 +71,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   }
   void CancelSuspendExtension(const ExtensionId& extension_id) override {}
   void SetDeveloperMode(bool current_developer_mode) override {}
+  void SetUserScriptsAllowed(const std::string& extension_id,
+                             bool allowed) override {}
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session) override {}
   void SetSystemFont(const std::string& font_family,

@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <set>
 
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -16,6 +17,7 @@
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_state.h"
 #include "content/browser/btm/btm_utils.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +27,8 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -42,8 +46,13 @@ class NavigationState : public NavigationHandleUserData<NavigationState> {
 
   base::Time started_at() const { return started_at_; }
 
+  const std::set<GURL>& cookie_urls() const { return cookie_urls_; }
+  void RecordCookieAccess(const GURL& url) { cookie_urls_.insert(url); }
+
  private:
   const base::Time started_at_;
+  // URLs in the navigation that accessed cookies.
+  std::set<GURL> cookie_urls_;
 
   friend NavigationHandleUserData;
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
@@ -246,65 +255,72 @@ void BtmShortVisitObserver::DidFinishNavigation(
     }
   }
   const std::string visit_site = GetSite(visit_url);
+  NavigationState* const nav_state =
+      NavigationState::GetForNavigationHandle(*navigation_handle);
 
-  if (prev_site_.has_value()) {
-    if (NavigationState* nav_state =
-            NavigationState::GetForNavigationHandle(*navigation_handle)) {
-      const base::TimeDelta visit_duration =
-          nav_state->started_at() - last_committed_at_;
-      // Only emit metrics for short visits.
-      if (visit_duration <= kShortVisitMaxDuration) {
-        // Round the duration to the nearest second.
-        const int64_t visit_seconds =
-            (visit_duration.InMilliseconds() + 500) / 1000;
-        const std::string next_site = GetSite(navigation_handle->GetURL());
-        const bool prev_site_same = prev_site_ == visit_site;
-        const bool next_site_same = visit_site == next_site;
+  if (nav_state && prev_site_.has_value()) {
+    const base::TimeDelta visit_duration =
+        nav_state->started_at() - last_committed_at_;
+    // Only emit metrics for short visits.
+    if (visit_duration <= kShortVisitMaxDuration) {
+      // Round the duration to the nearest second.
+      const int64_t visit_seconds =
+          (visit_duration.InMilliseconds() + 500) / 1000;
+      const std::string next_site = GetSite(navigation_handle->GetURL());
+      const bool prev_site_same = prev_site_ == visit_site;
+      const bool next_site_same = visit_site == next_site;
 
-        if (!prev_site_same || !next_site_same) {
-          const int32_t visit_id = static_cast<int32_t>(base::RandUint64());
-          ukm::builders::BTM_ShortVisit event(page_source_id_);
-          event.SetVisitDuration(visit_seconds)
-              .SetEntranceWasRendererInitiated(
-                  last_navigation.was_renderer_initiated)
-              .SetEntranceHadUserGesture(last_navigation.had_user_gesture)
-              .SetEntrancePageTransition(last_navigation.page_transition)
-              .SetExitWasRendererInitiated(
-                  navigation_handle->IsRendererInitiated())
-              .SetExitHadUserGesture(navigation_handle->HasUserGesture())
-              .SetExitPageTransition(navigation_handle->GetPageTransition())
-              // TODO: .SetSiteEngagement()
-              .SetPreviousSiteSame(prev_site_same)
-              .SetNextSiteSame(next_site_same)
-              .SetPreviousAndNextSiteSame(prev_site_ == next_site)
-              .SetShortVisitId(visit_id);
-          current_page_metrics_->SetUkmBuilder(std::move(event));
-          if (current_page_metrics_->is_ready()) {
-            current_page_metrics_->Emit();
-            current_page_metrics_.reset();
-          } else {
-            // Still waiting for the call to BtmStorage::Read() to get the last
-            // interaction time. (StoreLastInteraction() will delete the state.)
-            pending_metrics_.insert(std::move(current_page_metrics_));
-          }
+      if (!prev_site_same || !next_site_same) {
+        const int32_t visit_id = static_cast<int32_t>(base::RandUint64());
+        ukm::builders::BTM_ShortVisit event(page_source_id_);
+        event.SetVisitDuration(visit_seconds)
+            .SetEntranceWasRendererInitiated(
+                last_navigation.was_renderer_initiated)
+            .SetEntranceHadUserGesture(last_navigation.had_user_gesture)
+            .SetEntrancePageTransition(last_navigation.page_transition)
+            .SetExitWasRendererInitiated(
+                navigation_handle->IsRendererInitiated())
+            .SetExitHadUserGesture(navigation_handle->HasUserGesture())
+            .SetExitPageTransition(navigation_handle->GetPageTransition())
+            // TODO: .SetSiteEngagement()
+            .SetPreviousSiteSame(prev_site_same)
+            .SetNextSiteSame(next_site_same)
+            .SetPreviousAndNextSiteSame(prev_site_ == next_site)
+            .SetHadKeyDownEvent(had_keydown_event_)
+            .SetAccessedStorage(page_accessed_storage_)
+            .SetShortVisitId(visit_id);
+        current_page_metrics_->SetUkmBuilder(std::move(event));
+        if (current_page_metrics_->is_ready()) {
+          current_page_metrics_->Emit();
+          current_page_metrics_.reset();
+        } else {
+          // Still waiting for the call to BtmStorage::Read() to get the last
+          // interaction time. (StoreLastInteraction() will delete the state.)
+          pending_metrics_.insert(std::move(current_page_metrics_));
+        }
 
-          if (prev_source_id_ != ukm::kInvalidSourceId) {
-            ukm::builders::BTM_ShortVisitNeighbor(prev_source_id_)
-                .SetShortVisitId(visit_id)
-                .SetIsPreceding(true)
-                .Record(ukm::UkmRecorder::Get());
-          }
-
-          ukm::builders::BTM_ShortVisitNeighbor(
-              navigation_handle->GetNextPageUkmSourceId())
+        if (prev_source_id_ != ukm::kInvalidSourceId) {
+          ukm::builders::BTM_ShortVisitNeighbor(prev_source_id_)
               .SetShortVisitId(visit_id)
-              .SetIsPreceding(false)
+              .SetIsPreceding(true)
               .Record(ukm::UkmRecorder::Get());
         }
+
+        ukm::builders::BTM_ShortVisitNeighbor(
+            navigation_handle->GetNextPageUkmSourceId())
+            .SetShortVisitId(visit_id)
+            .SetIsPreceding(false)
+            .Record(ukm::UkmRecorder::Get());
       }
     }
   }
 
+  had_keydown_event_ = false;
+  page_accessed_storage_ = false;
+  if (nav_state) {
+    page_accessed_storage_ =
+        base::Contains(nav_state->cookie_urls(), navigation_handle->GetURL());
+  }
   last_navigation.was_renderer_initiated =
       navigation_handle->IsRendererInitiated();
   last_navigation.had_user_gesture = navigation_handle->HasUserGesture();
@@ -325,6 +341,62 @@ void BtmShortVisitObserver::DidFinishNavigation(
   } else {
     current_page_metrics_->SetTimeSinceInteraction(NoBtmService());
   }
+}
+
+void BtmShortVisitObserver::DidGetUserInteraction(
+    const blink::WebInputEvent& event) {
+  if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown) {
+    had_keydown_event_ = true;
+  }
+}
+
+void BtmShortVisitObserver::OnCookiesAccessed(
+    RenderFrameHost* render_frame_host,
+    const CookieAccessDetails& details) {
+  if (!render_frame_host->GetMainFrame()->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (details.source != CookieAccessDetails::Source::kNavigation) {
+    page_accessed_storage_ = true;
+    return;
+  }
+
+  if (details.type == CookieAccessDetails::Type::kChange &&
+      details.url == render_frame_host->GetLastCommittedURL()) {
+    // A late notification of a navigational cookie write performed by the
+    // current page.
+    page_accessed_storage_ = true;
+  }
+}
+
+void BtmShortVisitObserver::OnCookiesAccessed(
+    NavigationHandle* navigation_handle,
+    const CookieAccessDetails& details) {
+  if (!IsInPrimaryPage(navigation_handle)) {
+    return;
+  }
+
+  if (details.type == CookieAccessDetails::Type::kRead) {
+    // Ignore cookie reads due to navigation.
+    return;
+  }
+
+  if (NavigationState* nav_state =
+          NavigationState::GetForNavigationHandle(*navigation_handle)) {
+    nav_state->RecordCookieAccess(details.url);
+  }
+}
+
+void BtmShortVisitObserver::NotifyStorageAccessed(
+    RenderFrameHost* render_frame_host,
+    blink::mojom::StorageTypeAccessed storage_type,
+    bool blocked) {
+  if (!render_frame_host->GetMainFrame()->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  page_accessed_storage_ = true;
 }
 
 }  // namespace content

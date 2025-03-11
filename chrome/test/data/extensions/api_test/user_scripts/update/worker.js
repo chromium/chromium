@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -13,6 +14,8 @@ async function navigateToRequestedUrl() {
 }
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Test that an error is returned when any of the script IDs specified in
   // userScripts.update do not match any registered user script, and that
   // the failed operation does not change the previously registered user

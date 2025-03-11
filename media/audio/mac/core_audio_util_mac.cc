@@ -10,7 +10,6 @@
 
 #include "base/apple/osstatus_logging.h"
 #include "base/containers/heap_array.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -23,11 +22,6 @@
 namespace media {
 namespace core_audio_mac {
 namespace {
-
-// Kill switch in case anything explodes. Remove after M132.
-BASE_FEATURE(kExcludeDeviceLatencyFromTotalLatency,
-             "ExcludeDeviceLatencyFromTotalLatency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 AudioObjectPropertyScope InputOutputScope(bool is_input) {
   return is_input ? kAudioObjectPropertyScopeInput
@@ -458,11 +452,7 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
   const base::TimeDelta stream_latency =
       AudioTimestampHelper::FramesToTime(stream_latency_frames, sample_rate);
   const base::TimeDelta total_latency =
-      audio_unit_latency +
-      ((base::FeatureList::IsEnabled(kExcludeDeviceLatencyFromTotalLatency) &&
-        is_input)
-           ? base::TimeDelta()
-           : device_latency) +
+      audio_unit_latency + (is_input ? base::TimeDelta() : device_latency) +
       stream_latency;
 
   // This function is not currently not called on iOS, but guard against an

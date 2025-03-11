@@ -10,6 +10,9 @@ export default {
     ecmaVersion: 2020,
     sourceType: 'module',
     parser: tsParser,
+    parserOptions: {
+      disallowAutomaticSingleRunInference: true,
+    },
 
     // The following field should be specified by client code. as follows:
     //

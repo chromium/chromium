@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -352,6 +353,12 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   if (configure_web_instance) {
     ConfigureWebInstance();
   }
+
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramEnumeration("Accessibility.WinHighContrastTheme",
+                                GetPlatformHighContrastColorScheme(),
+                                PlatformHighContrastColorScheme::kMaxValue);
+#endif
 }
 
 void NativeThemeWin::ConfigureWebInstance() {

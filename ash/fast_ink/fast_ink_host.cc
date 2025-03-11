@@ -143,7 +143,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  CHECK(!client_shared_image_);
+  CHECK(!client_shared_image_) << "GPU buffer should be created once";
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
       buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
@@ -183,7 +183,6 @@ gfx::Rect FastInkHost::BufferRectFromWindowRect(
 
 void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
   const bool initialized = client_shared_image_ != nullptr;
-
   if (!initialized) {
     // GPU process should be ready soon after start and `pending_bitmaps_`
     // should be drawn promptly. 60 is an arbitrary cap that should never

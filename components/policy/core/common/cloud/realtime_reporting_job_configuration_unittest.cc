@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
+#include "components/policy/core/common/features.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,11 +81,14 @@ class RealtimeReportingJobConfigurationTest
   void SetUp() override {
     client_.SetDMToken(kDummyToken);
     if (use_proto_format()) {
-      feature_list_.InitAndEnableFeature(
-          kUploadRealtimeReportingEventsUsingProto);
+      feature_list_.InitWithFeatures(
+          {kUploadRealtimeReportingEventsUsingProto,
+           policy::features::kEnhancedSecurityEventFields},
+          {});
     } else {
-      feature_list_.InitAndDisableFeature(
-          kUploadRealtimeReportingEventsUsingProto);
+      feature_list_.InitWithFeatures(
+          {policy::features::kEnhancedSecurityEventFields},
+          {kUploadRealtimeReportingEventsUsingProto});
     }
 
     configuration_ = std::make_unique<RealtimeReportingJobConfiguration>(
@@ -236,6 +240,9 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
     EXPECT_EQ(GetOSVersion(), request.device().os_version());
     EXPECT_FALSE(GetDeviceName().empty());
     EXPECT_EQ(GetDeviceName(), request.device().name());
+    EXPECT_FALSE(GetDeviceFqdn().empty());
+    EXPECT_EQ(GetDeviceFqdn(), request.device().device_fqdn());
+    EXPECT_EQ(GetNetworkName(), request.device().network_name());
 
     EXPECT_EQ(kIds.size(), base::checked_cast<size_t>(request.events_size()));
     int i = -1;
@@ -281,6 +288,15 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
     EXPECT_EQ(GetDeviceName(), *payload_dict.FindStringByDottedPath(
                                    ReportingJobConfigurationBase::
                                        DeviceDictionaryBuilder::GetNamePath()));
+    EXPECT_FALSE(GetDeviceFqdn().empty());
+    EXPECT_EQ(GetDeviceFqdn(),
+              *payload_dict.FindStringByDottedPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetDeviceFqdnPath()));
+    EXPECT_EQ(GetNetworkName(),
+              *payload_dict.FindStringByDottedPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetNetworkNamePath()));
 
     base::Value::List* events = payload->GetDict().FindList(
         RealtimeReportingJobConfiguration::kEventListKey);

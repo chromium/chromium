@@ -38,6 +38,7 @@ MEDIA_SHMEM_EXPORT void FMUL_SSE(const float src[],
                                  float scale,
                                  int len,
                                  float dest[]);
+MEDIA_SHMEM_EXPORT void FCLAMP_SSE(const float src[], int len, float dest[]);
 MEDIA_SHMEM_EXPORT std::pair<float, float> EWMAAndMaxPower_SSE(
     float initial_value,
     const float src[],

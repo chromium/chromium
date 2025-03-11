@@ -1180,10 +1180,8 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::features::IsFocusModeEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::focus_mode::mojom::TrackProvider, ash::FocusModeUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<ash::focus_mode::mojom::TrackProvider,
+                                         ash::FocusModeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::sanitize_ui::mojom::SettingsResetter, ash::SanitizeDialogUI>(map);

@@ -181,18 +181,22 @@ NSString* GetOverridenReason(
   return nil;
 }
 
+NSString* GetFormattedPrice(payments::CurrencyFormatter* formatter,
+                            long price_micros) {
+  float price = static_cast<float>(price_micros) /
+                static_cast<float>(commerce::kToMicroCurrency);
+  formatter->SetMaxFractionalDigits(price >= 10.0 ? 0 : 2);
+  return base::SysUTF16ToNSString(
+      formatter->Format(base::NumberToString(price)));
+}
+
 PriceDrop GetPriceDrop(payments::CurrencyFormatter* formatter,
                        long current_price_micros,
                        long previous_price_micros) {
-  float current_price = static_cast<float>(current_price_micros) /
-                        static_cast<float>(commerce::kToMicroCurrency);
-  float previous_price = static_cast<float>(previous_price_micros) /
-                         static_cast<float>(commerce::kToMicroCurrency);
   PriceDrop price_drop;
-  price_drop.current_price = base::SysUTF16ToNSString(
-      formatter->Format(base::NumberToString(current_price)));
-  price_drop.previous_price = base::SysUTF16ToNSString(
-      formatter->Format(base::NumberToString(previous_price)));
+  price_drop.current_price = GetFormattedPrice(formatter, current_price_micros);
+  price_drop.previous_price =
+      GetFormattedPrice(formatter, previous_price_micros);
   return price_drop;
 }
 
@@ -260,7 +264,6 @@ void ConfigureTabResumptionItemForShopCard(
         std::make_unique<payments::CurrencyFormatter>(
             price_tracking_data->product_update().new_price().currency_code(),
             GetApplicationContext()->GetApplicationLocale());
-    formatter->SetMaxFractionalDigits(2);
     item.shopCardData.priceDrop = GetPriceDrop(
         formatter.get(),
         price_tracking_data->product_update().new_price().amount_micros(),

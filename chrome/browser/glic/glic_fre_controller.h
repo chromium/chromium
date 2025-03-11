@@ -107,7 +107,6 @@ class GlicFreController {
   raw_ptr<Profile> profile_;
   std::unique_ptr<views::Widget> fre_widget_;
   raw_ptr<GlicFreDialogView> fre_view_;
-  bool first_time_pref_check_done_ = false;
   AuthController auth_controller_;
 
   // Tracks the tab that the FRE dialog is shown on.

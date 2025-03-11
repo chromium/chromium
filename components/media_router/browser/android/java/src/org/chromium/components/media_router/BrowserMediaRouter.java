@@ -6,8 +6,6 @@ package org.chromium.components.media_router;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.annotation.SuppressLint;
-
 import androidx.annotation.VisibleForTesting;
 import androidx.mediarouter.media.MediaRouter;
 
@@ -78,20 +76,6 @@ public class BrowserMediaRouter implements MediaRouteManager {
             new HashMap<String, Map<MediaRouteProvider, List<MediaSink>>>();
     private final Map<String, List<MediaSink>> mSinksPerSource =
             new HashMap<String, List<MediaSink>>();
-    private static boolean sAndroidMediaRouterSetForTest;
-
-    @SuppressLint("StaticFieldLeak") // This is for test only.
-    private static @Nullable MediaRouter sAndroidMediaRouterForTest;
-
-    public static void setAndroidMediaRouterForTest(MediaRouter router) {
-        sAndroidMediaRouterSetForTest = true;
-        sAndroidMediaRouterForTest = router;
-        ResettersForTesting.register(
-                () -> {
-                    sAndroidMediaRouterSetForTest = false;
-                    sAndroidMediaRouterForTest = null;
-                });
-    }
 
     public static void setRouteProviderFactoryForTest(MediaRouteProvider.Factory factory) {
         var oldValue = sRouteProviderFactory;
@@ -116,24 +100,12 @@ public class BrowserMediaRouter implements MediaRouteManager {
         return mSinksPerSource;
     }
 
-    /**
-     * Obtains the {@link MediaRouter} instance given the application context.
-     * @return Null if the media router API is not supported, the service instance otherwise.
-     */
-    public static @Nullable MediaRouter getAndroidMediaRouter() {
-        if (sAndroidMediaRouterSetForTest) return sAndroidMediaRouterForTest;
-
+    /** Obtains the {@link MediaRouter} instance. */
+    public static MediaRouter getAndroidMediaRouter() {
         // Some manufacturers have an implementation that causes StrictMode
         // violations. See https://crbug.com/818325.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            // Pre-MR1 versions of JB do not have the complete MediaRouter APIs,
-            // so getting the MediaRouter instance will throw an exception.
             return MediaRouter.getInstance(ContextUtils.getApplicationContext());
-        } catch (NoSuchMethodError e) {
-            return null;
-        } catch (NoClassDefFoundError e) {
-            // TODO(mlamouri): happens with Robolectric.
-            return null;
         }
     }
 

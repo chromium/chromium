@@ -8,7 +8,6 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_forward.h"
-#include "base/i18n/break_iterator.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +29,6 @@
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -46,17 +45,6 @@
 
 namespace webid {
 namespace {
-
-// safe_zone_diameter/icon_size as defined in
-// https://www.w3.org/TR/appmanifest/#icon-masks
-constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
-
-// The opacity of the avatar when the account is filtered out.
-constexpr double kDisabledAvatarOpacity = 0.38;
-
-// The border radius of the background circle containing the IDP icon in an
-// account button.
-constexpr int kIdpBorderRadius = 10;
 
 // Error codes.
 constexpr char kInvalidRequest[] = "invalid_request";
@@ -133,146 +121,6 @@ std::u16string GetPermissionFieldsString(
   return ListToString(strings);
 }
 
-class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
- public:
-  LetterCircleCroppedImageSkiaSource(const std::u16string& letter, int size)
-      : gfx::CanvasImageSource(gfx::Size(size, size)), letter_(letter) {}
-
-  LetterCircleCroppedImageSkiaSource(
-      const LetterCircleCroppedImageSkiaSource&) = delete;
-  LetterCircleCroppedImageSkiaSource& operator=(
-      const LetterCircleCroppedImageSkiaSource&) = delete;
-  ~LetterCircleCroppedImageSkiaSource() override = default;
-
-  void Draw(gfx::Canvas* canvas) override {
-    monogram::DrawMonogramInCanvas(canvas, size().width(), size().width(),
-                                   letter_, SK_ColorWHITE, SK_ColorGRAY);
-  }
-
- private:
-  const std::u16string letter_;
-};
-
-// A CanvasImageSource that:
-// 1) Applies an optional square center-crop.
-// 2) Resizes the cropped image (while maintaining the image's aspect ratio) to
-//    fit into the target canvas. If no center-crop was applied and the source
-//    image is rectangular, the image is resized so that
-//    `avatar` small edge size == `canvas_edge_size`.
-// 3) Circle center-crops the resized image.
-class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
- public:
-  CircleCroppedImageSkiaSource(gfx::ImageSkia avatar,
-                               std::optional<int> pre_resize_avatar_crop_size,
-                               int canvas_edge_size)
-      : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
-    int scaled_width = canvas_edge_size;
-    int scaled_height = canvas_edge_size;
-    if (pre_resize_avatar_crop_size) {
-      const float avatar_scale =
-          (canvas_edge_size / (float)*pre_resize_avatar_crop_size);
-      scaled_width = floor(avatar.width() * avatar_scale);
-      scaled_height = floor(avatar.height() * avatar_scale);
-    } else {
-      // Resize `avatar` so that it completely fills the canvas.
-      const float height_ratio =
-          ((float)avatar.height() / (float)avatar.width());
-      if (height_ratio >= 1.0f) {
-        scaled_height = floor(canvas_edge_size * height_ratio);
-      } else {
-        scaled_width = floor(canvas_edge_size / height_ratio);
-      }
-    }
-    avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
-        avatar, skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(scaled_width, scaled_height));
-  }
-
-  CircleCroppedImageSkiaSource(const CircleCroppedImageSkiaSource&) = delete;
-  CircleCroppedImageSkiaSource& operator=(const CircleCroppedImageSkiaSource&) =
-      delete;
-  ~CircleCroppedImageSkiaSource() override = default;
-
-  // CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    const int canvas_edge_size = size().width();
-
-    // Center the avatar in the canvas.
-    const int x = (canvas_edge_size - avatar_.width()) / 2;
-    const int y = (canvas_edge_size - avatar_.height()) / 2;
-
-    SkPath circular_mask;
-    circular_mask.addCircle(SkIntToScalar(canvas_edge_size / 2),
-                            SkIntToScalar(canvas_edge_size / 2),
-                            SkIntToScalar(canvas_edge_size / 2));
-    canvas->ClipPath(circular_mask, true);
-    canvas->DrawImageInt(avatar_, x, y);
-  }
-
- private:
-  gfx::ImageSkia avatar_;
-};
-
-gfx::ImageSkia CreateCircleCroppedImage(const gfx::ImageSkia& original_image,
-                                        int image_size) {
-  return gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-      original_image, original_image.width() * kMaskableWebIconSafeZoneRatio,
-      image_size);
-}
-
-// Returns an image consisting of `base_image` with `badge_image` being badged
-// towards its bottom right corner. `badge_offset` is used to determine how much
-// bigger the badged image should be with respect to the base image. A
-// transparent circular circle is cut out from the bottom right corner of the
-// output image, of size `badge_radius`. The following are prerequisites for
-// invoking this method:
-// * `base_image` and `badge_image` need to be square images.
-// * `badge_radius` needs to be at least half of the width of `badge_image`.
-//    That is, the diameter of the transparent cutout needs to be larger than
-//    the size of `badge_image`.
-gfx::ImageSkia CreateBadgedImageSkia(const gfx::ImageSkia& base_image,
-                                     const gfx::ImageSkia& badge_image,
-                                     int badge_offset,
-                                     int badge_radius) {
-  // Get the underlying SkBitmaps.
-  const SkBitmap* base_bitmap = base_image.bitmap();
-  const SkBitmap* badge_bitmap = badge_image.bitmap();
-
-  DCHECK_EQ(base_image.width(), base_image.height());
-  DCHECK_EQ(badge_image.width(), badge_image.height());
-
-  int base_size = base_image.width();
-  int badge_size = badge_image.width();
-
-  SkBitmap result_bitmap;
-  int total_size = base_size + badge_offset;
-  result_bitmap.allocN32Pixels(total_size, total_size);
-
-  SkCanvas canvas(result_bitmap);
-  canvas.drawImage(base_bitmap->asImage(), 0, 0);
-
-  // Calculate badge position.
-  int badge_diameter = badge_radius * 2;
-  int badge_outer = badge_diameter - badge_size;
-  CHECK_GE(badge_outer, 0);
-  int last_position = total_size - 1;
-  SkScalar badge_start = last_position - badge_diameter + badge_outer / 2.0f;
-
-  // Create a paint for "punching out" the background.
-  SkPaint clear_paint;
-  clear_paint.setAntiAlias(true);
-  clear_paint.setBlendMode(SkBlendMode::kDstOut);
-
-  // Calculate badge center position. We'll use a center for the circle.
-  SkScalar badge_center = last_position - badge_radius;
-
-  // "Punch out" the area around the badge, then draw the badge.
-  canvas.drawCircle(badge_center, badge_center, badge_radius, clear_paint);
-  canvas.drawImage(badge_bitmap->asImage(), badge_start, badge_start);
-
-  return gfx::ImageSkia::CreateFrom1xBitmap(result_bitmap);
-}
-
 class AccountImageView : public views::ImageView {
   METADATA_HEADER(AccountImageView, views::ImageView)
 
@@ -287,28 +135,8 @@ class AccountImageView : public views::ImageView {
   void SetAccountImage(const content::IdentityRequestAccount& account,
                        int image_size,
                        std::optional<gfx::ImageSkia> idp_image = std::nullopt) {
-    if (account.decoded_picture.IsEmpty()) {
-      std::u16string letter =
-          AccountSelectionViewBase::GetInitialLetterAsUppercase(account.name);
-      avatar_ = gfx::CanvasImageSource::MakeImageSkia<
-          LetterCircleCroppedImageSkiaSource>(letter, image_size);
-    } else {
-      avatar_ =
-          gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
-    }
-    if (account.is_filtered_out) {
-      avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
-          avatar_, kDisabledAvatarOpacity);
-    }
-    if (idp_image && idp_image->width() == idp_image->height() &&
-        idp_image->width() >=
-            kLargeAvatarBadgeSize / kMaskableWebIconSafeZoneRatio) {
-      gfx::ImageSkia cropped_idp_image =
-          CreateCircleCroppedImage(*idp_image, kLargeAvatarBadgeSize);
-      avatar_ = CreateBadgedImageSkia(avatar_, cropped_idp_image,
-                                      kIdpBadgeOffset, kIdpBorderRadius);
-    }
+    avatar_ =
+        ComputeAccountCircleCroppedPicture(account, image_size, idp_image);
     SetImage(ui::ImageModel::FromImageSkia(avatar_));
   }
 
@@ -491,23 +319,6 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-}
-
-/* static */ std::u16string
-AccountSelectionViewBase::GetInitialLetterAsUppercase(
-    const std::string& utf8_string) {
-  std::u16string utf16_string(base::UTF8ToUTF16(utf8_string));
-  base::i18n::BreakIterator iter(utf16_string,
-                                 base::i18n::BreakIterator::BREAK_CHARACTER);
-  if (!iter.Init()) {
-    return u"";
-  }
-
-  if (!iter.Advance()) {
-    return u"";
-  }
-
-  return base::i18n::ToUpper(iter.GetString());
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(

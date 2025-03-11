@@ -25,7 +25,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
@@ -129,11 +128,7 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
  public:
   FocusModeControllerMultiUserTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_.InitWithFeatures(
-        /*enabled_features=*/{features::kFocusMode, features::kFocusModeYTM},
-        /*disabled_features=*/{});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FocusModeControllerMultiUserTest() override = default;
 
   PrefService* user_1_prefs() { return user_1_prefs_; }
@@ -189,7 +184,6 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_;
   raw_ptr<PrefService> user_1_prefs_ = nullptr;
   raw_ptr<PrefService> user_2_prefs_ = nullptr;
 

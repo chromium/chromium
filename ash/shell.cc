@@ -1675,12 +1675,10 @@ void Shell::Init(
       focus_controller_.get(), std::make_unique<WmShadowControllerDelegate>(),
       env);
 
-  if (features::IsFocusModeEnabled()) {
-    tasks_controller_ = std::make_unique<api::TasksController>(
-        shell_delegate_->CreateTasksDelegate());
-    focus_mode_controller_ = std::make_unique<FocusModeController>(
-        shell_delegate_->CreateFocusModeDelegate());
-  }
+  tasks_controller_ = std::make_unique<api::TasksController>(
+      shell_delegate_->CreateTasksDelegate());
+  focus_mode_controller_ = std::make_unique<FocusModeController>(
+      shell_delegate_->CreateFocusModeDelegate());
 
   logout_confirmation_controller_ =
       std::make_unique<LogoutConfirmationController>();

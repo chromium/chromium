@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic.mojom.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -55,9 +57,19 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
-  if (profile_manager_) {
-    profile_manager_->MaybeAutoOpenGlicPanel();
+  // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
+  // is shown for testing convenience.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
+    profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
   }
+  // If automation is enabled do the opposite.
+  if (command_line->HasSwitch(::switches::kGlicAutomation)) {
+    profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  }
+
+  // This is only used by automation for tests.
+  profile_manager_->MaybeAutoOpenGlicPanel();
 }
 
 GlicKeyedService::~GlicKeyedService() {

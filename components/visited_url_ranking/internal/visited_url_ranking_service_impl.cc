@@ -100,6 +100,8 @@ const char* URLVisitAggregatesTransformTypeName(
       return "SegmentationMetricsData";
     case URLVisitAggregatesTransformType::kHistoryBrowserTypeFilter:
       return "HistoryBrowserTypeFilter";
+    case URLVisitAggregatesTransformType::kTabEventsData:
+      return "TabEventsData";
   }
 }
 

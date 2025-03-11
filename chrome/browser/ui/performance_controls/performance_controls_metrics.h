@@ -37,6 +37,20 @@ enum class InterventionBubbleActionType {
   kMaxValue = kClose
 };
 
+enum class CpuInterventionHealthChange {
+  kMinValue = 0,
+  kHealthyToHealthy = kMinValue,
+  kHealthyToDegraded = 1,
+  kHealthyToUnhealthy = 2,
+  kDegradedToHealthy = 3,
+  kDegradedToDegraded = 4,
+  kDegradedToUnhealthy = 5,
+  kUnhealthyToHealthy = 6,
+  kUnhealthyToDegraded = 7,
+  kUnhealthyToUnhealthy = 8,
+  kMaxValue = kUnhealthyToUnhealthy
+};
+
 enum class MemorySaverBubbleActionType {
   kOpenSettings = 0,
   kDismiss = 1,
@@ -98,5 +112,11 @@ void RecordCpuUsageBeforeDiscard(int cpu_usage);
 void RecordSuggestedTabShownCount(int count);
 void RecordTabRemovedFromTabList(int count_after_removal);
 void RecordNumberOfDiscardedTabs(int count);
+void RecordCpuHealthStatusChange(
+    base::TimeDelta time_after_discard,
+    performance_manager::user_tuning::PerformanceDetectionManager::HealthLevel
+        before_discard,
+    performance_manager::user_tuning::PerformanceDetectionManager::HealthLevel
+        after_discard);
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_

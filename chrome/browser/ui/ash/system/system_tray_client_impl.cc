@@ -869,8 +869,6 @@ void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
 }
 
 void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
-  DCHECK(ash::features::IsFocusModeEnabled());
-  DCHECK(ash::features::IsFocusModeYTMEnabled());
   base::RecordAction(base::UserMetricsAction("ShowYouTubeMusicPremiumPage"));
 
   const GURL official_url(chrome::kYoutubeMusicPremiumURL);
@@ -903,8 +901,6 @@ void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
 }
 
 void SystemTrayClientImpl::ShowChromebookPerksYouTubePage() {
-  DCHECK(ash::features::IsFocusModeEnabled());
-  DCHECK(ash::features::IsFocusModeYTMEnabled());
   OpenInBrowser(GURL(chrome::kChromebookPerksYouTubePage));
 }
 

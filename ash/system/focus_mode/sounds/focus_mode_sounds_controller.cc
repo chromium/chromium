@@ -764,15 +764,6 @@ void FocusModeSoundsController::OnPrefChanged() {
   PrefService* active_user_prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
   enabled_sound_sections_ = ReadSoundSectionPolicy(active_user_prefs);
-
-  // TODO: If we want to block the whole YTM section, we should make changes
-  // here. And remove the calls to `FocusModeSoundsController::IsMinorUser()` in
-  // `FocusModeSoundsView`.
-
-  // Hide the YTM sound section if the flag isn't enabled.
-  if (!features::IsFocusModeYTMEnabled()) {
-    enabled_sound_sections_.erase(focus_mode_util::SoundType::kYouTubeMusic);
-  }
 }
 
 }  // namespace ash

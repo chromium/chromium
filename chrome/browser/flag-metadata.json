@@ -232,6 +232,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "android-keyboard-a11y",
+    "owners": [ "jhimawan@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-no-surface-sync-for-browser-controls",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 130
@@ -1653,22 +1658,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "cros-focus-mode",
-    "owners": [
-      "richui@chromium.org",
-      "chromeos-wms@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "cros-focus-mode-ytm",
-    "owners": [
-      "richui@chromium.org",
-      "chromeos-wms@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "cros-labs-continuous-overview-animation",
     "owners": [ "sammiequon@chromium.org", "xdai@chromium.org", "chromeos-wm@google.com" ],
     "expiry_milestone": 137
@@ -1677,11 +1666,6 @@
     "name": "cros-labs-enable-overview-from-wallpaper",
     "owners": ["yulunwu@chromium.org","chromeos-wm-corexp@google.com"],
     "expiry_milestone": 131
-  },
-  {
-    "name": "cros-labs-overview-desk-navigation",
-    "owners": [ "richui@chromium.org", "janetmac@chromium.org" ],
-    "expiry_milestone": 136
   },
   {
     "name": "cros-labs-tiling-window-resize",
@@ -4294,9 +4278,20 @@
     "expiry_milestone": 160
   },
   {
-      "name": "enhanced-safe-browsing-promo",
-      "owners": ["danieltwhite@google.com", "bling-flags@google.com" ],
-      "expiry_milestone": 133
+    "name": "enhanced-calendar",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 142
+  },
+  {
+    "name": "enhanced-safe-browsing-promo",
+    "owners": [
+      "danieltwhite@google.com",
+      "bling-flags@google.com"
+    ],
+    "expiry_milestone": 133
   },
   {
     "name": "enterprise-file-obfuscation",
@@ -4514,6 +4509,11 @@
     "name": "fedcm-button-mode",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 137
+  },
+  {
+    "name": "fedcm-cooldown-on-ignore",
+    "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 140
   },
   {
     "name": "fedcm-delegation",
@@ -8398,11 +8398,6 @@
   },
   {
     "name": "sys-ui-holdback-drive-integration",
-    "owners": ["newcomer@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "sys-ui-holdback-focus-mode",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135
   },

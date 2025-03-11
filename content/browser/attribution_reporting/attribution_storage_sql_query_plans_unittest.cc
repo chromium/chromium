@@ -355,6 +355,11 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationsRangeSql) {
               ValueIs(UsesCoveringIndex("os_registrations_time_idx")));
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationAtTimeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationAtTimeSql),
+              ValueIs(UsesPrimaryKey()));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kDeleteOsRegistrationSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kDeleteOsRegistrationSql),
               ValueIs(UsesPrimaryKey()));

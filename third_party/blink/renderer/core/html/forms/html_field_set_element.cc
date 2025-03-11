@@ -185,15 +185,6 @@ LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutFieldset>(this);
 }
 
-LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
-  if (const auto* ng_fieldset = DynamicTo<LayoutFieldset>(GetLayoutBox())) {
-    if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox()) {
-      return content;
-    }
-  }
-  return HTMLFormControlElement::GetLayoutBoxForScrolling();
-}
-
 void HTMLFieldSetElement::DidRecalcStyle(const StyleRecalcChange change) {
   if (ChildNeedsReattachLayoutTree() && WillReattachChildLayoutObject(*this))
     SetNeedsReattachLayoutTree();

@@ -550,11 +550,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="Calendar"/>
 </enum>
 
-<enum name="DeprecatedAcceleratorUsage">
-  <int value="0" label="Deprecated key accelerator is used"/>
-  <int value="1" label="New key accelerator is used"/>
-</enum>
-
 <!-- LINT.IfChange(DeskBarVisibility) -->
 
 <enum name="DeskBarVisibility">
@@ -644,26 +639,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="AlreadyOff"/>
   <int value="3" label="TurnedOn"/>
   <int value="4" label="TurnedOff"/>
-</enum>
-
-<enum name="DockedAction">
-  <int value="0" label="None"/>
-  <int value="1" label="Dock"/>
-  <int value="2" label="Undock"/>
-  <int value="3" label="Resize"/>
-  <int value="4" label="Reorder"/>
-  <int value="5" label="Evict"/>
-  <int value="6" label="Maximize"/>
-  <int value="7" label="Minimize"/>
-  <int value="8" label="Restore"/>
-  <int value="9" label="Close"/>
-</enum>
-
-<enum name="DockedActionSource">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Mouse"/>
-  <int value="2" label="Touch"/>
-  <int value="3" label="Keyboard"/>
 </enum>
 
 <enum name="DriveFileSuggestDataValidationStatus">

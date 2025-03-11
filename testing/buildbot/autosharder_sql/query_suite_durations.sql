@@ -18,6 +18,7 @@ build_task_ids AS (
     AND JSON_QUERY(b.output.properties, '$.rts_was_used') IS NULL
     AND b.status = 'SUCCESS'
     AND b.builder.project = 'chromium'
+    AND NOT EXISTS(SELECT 0 FROM b.tags t where t.key = 'cq_cl_owner' and t.value IN ({ignore_cl_owner}))
 ),
 deduped_tasks AS (
   SELECT DISTINCT
@@ -110,6 +111,10 @@ suite_and_builder_durations AS (
     waterfall_builder_group,
     waterfall_builder_name,
     shard_count
+  HAVING
+    # Avoid using low volume shardings, these could come from CLs trying to
+    # implement sharding for instance
+    COUNT(*) > 10
 ),
 # If a suite had its shards updated within the past lookback_days, there
 # will be multiple rows for multiple shard counts. To be able to know which

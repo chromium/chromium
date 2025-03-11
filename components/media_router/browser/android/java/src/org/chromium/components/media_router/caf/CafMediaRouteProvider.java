@@ -203,8 +203,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
         return null;
     }
 
-    private CafMediaRouteProvider(
-            @Nullable MediaRouter androidMediaRouter, MediaRouteManager manager) {
+    private CafMediaRouteProvider(MediaRouter androidMediaRouter, MediaRouteManager manager) {
         super(androidMediaRouter, manager);
         mSessionController = new CastSessionController(this);
         mMessageHandler = new CafMessageHandler(this, mSessionController);

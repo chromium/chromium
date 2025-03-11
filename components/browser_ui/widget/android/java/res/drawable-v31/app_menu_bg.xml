@@ -13,15 +13,15 @@ found in the LICENSE file.
         android:left="@dimen/app_menu_shadow_length"
         android:bottom="@dimen/app_menu_shadow_length"
         android:right="@dimen/app_menu_shadow_length">
-        <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-            android:shape="rectangle"
-            app:surfaceElevation="@dimen/menu_bg_color_elev">
+        <shape
+            android:shape="rectangle">
+            <solid android:color="@color/menu_bg_color"/>
             <corners android:radius="@dimen/app_menu_corner_size" />
             <padding
                 android:top="@dimen/app_menu_shadow_length"
                 android:left="@dimen/app_menu_shadow_length"
                 android:bottom="@dimen/app_menu_shadow_length"
                 android:right="@dimen/app_menu_shadow_length" />
-        </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+        </shape>
     </item>
 </layer-list>

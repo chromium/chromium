@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -16,6 +17,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 
 namespace privacy_sandbox {
@@ -307,6 +309,9 @@ PrivacySandboxNoticeData PrivacySandboxNoticeStorage::ConvertV1SchemaToV2Schema(
 // static
 void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
     PrefService* pref_service) {
+  if (!base::FeatureList::IsEnabled(kPrivacySandboxMigratePrefsToSchemaV2)) {
+    return;
+  }
   const base::Value::Dict* data =
       pref_service->GetUserPrefValue(kPrivacySandboxNoticeDataPath)
           ->GetIfDict();

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/browser/web_contents.h"
@@ -80,13 +82,18 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   ~TabStripActionContainerTest() override = default;
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+#if BUILDFLAG(ENABLE_GLIC)
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+#endif  // BUILDFLAG(ENABLE_GLIC)
     ChromeViewsTestBase::SetUp();
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = std::make_unique<TestingProfile>();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
 #if BUILDFLAG(ENABLE_GLIC)
     glic::ForceSigninAndModelExecutionCapability(profile_.get());
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -96,6 +103,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
     tab_strip_action_container_.reset();
     glic_nudge_controller_.reset();
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
   }
 
   void BuildGlicContainer(bool use_otr_profile) {
@@ -135,6 +143,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   }
 
  protected:
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;

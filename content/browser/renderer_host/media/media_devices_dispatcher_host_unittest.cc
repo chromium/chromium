@@ -966,6 +966,9 @@ TEST_P(MediaDevicesDispatcherHostTest,
 }
 
 TEST_P(MediaDevicesDispatcherHostTest, SetPreferredSinkIdNoFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kPreferredAudioOutputDevices);
   EXPECT_CALL(*this,
               MockOnBadMessage(
                   render_frame_host_->GetGlobalId().child_id,

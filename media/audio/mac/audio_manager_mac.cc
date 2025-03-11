@@ -50,10 +50,6 @@
 
 namespace media {
 
-BASE_FEATURE(kMonitorOutputSampleRateChangesMac,
-             "MonitorOutputSampleRateChangesMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Maximum number of output streams that can be open simultaneously.
 static const int kMaxOutputStreams = 50;
 
@@ -788,8 +784,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
         base::BindPostTaskToCurrentDefault(
             base::BindRepeating(&AudioManagerMac::HandleDeviceChanges,
                                 weak_ptr_factory_.GetWeakPtr())),
-        /*monitor_sample_rate_changes=*/
-        base::FeatureList::IsEnabled(kMonitorOutputSampleRateChangesMac),
+        /*monitor_sample_rate_changes=*/true,
         /*monitor_default_input=*/false,
         /*monitor_addition_removal=*/false,
         /*monitor_sources=*/false);

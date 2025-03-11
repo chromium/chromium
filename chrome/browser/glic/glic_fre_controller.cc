@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/glic_fre_controller.h"
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -60,21 +58,9 @@ void GlicFreController::Shutdown() {
 }
 
 bool GlicFreController::ShouldShowFreDialog() {
-  PrefService* prefs = profile_->GetPrefs();
-  if (!first_time_pref_check_done_) {
-    first_time_pref_check_done_ = true;
-    // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
-    // is shown for testing convenience. Do this only once so that we can test
-    // the accept flow.
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
-      prefs->SetBoolean(prefs::kGlicCompletedFre, false);
-    }
-  }
-
   // If the given profile has not previously completed the FRE, then it should
   // be shown.
-  return !prefs->GetBoolean(prefs::kGlicCompletedFre);
+  return !profile_->GetPrefs()->GetBoolean(prefs::kGlicCompletedFre);
 }
 
 bool GlicFreController::CanShowFreDialog(Browser* browser) {

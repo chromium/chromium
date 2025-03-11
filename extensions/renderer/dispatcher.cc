@@ -64,6 +64,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/user_scripts_allowed_state.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -1029,6 +1030,8 @@ void Dispatcher::LoadExtensions(
     ExtensionId id = param->id;
     std::optional<base::UnguessableToken> worker_activation_token =
         param->worker_activation_token;
+    SetCurrentUserScriptAllowedState(kRendererProfileId, id,
+                                     param->user_scripts_allowed);
 
     scoped_refptr<const Extension> extension =
         ConvertToExtension(std::move(param), kRendererProfileId, &error);
@@ -1308,6 +1311,17 @@ void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
   // Since this affects the availability of different APIs, we indicate that
   // api permissions may have changed.
   UpdateAllBindings(/*api_permissions_changed=*/true);
+}
+
+void Dispatcher::SetUserScriptsAllowed(const ExtensionId& extension_id,
+                                       bool enabled) {
+  SetCurrentUserScriptAllowedState(kRendererProfileId, extension_id, enabled);
+  const Extension* extension =
+      RendererExtensionRegistry::Get()->GetByID(extension_id);
+  if (!extension) {
+    return;
+  }
+  UpdateBindingsForExtension(*extension);
 }
 
 void Dispatcher::SetSessionInfo(version_info::Channel channel,

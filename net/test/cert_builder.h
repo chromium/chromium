@@ -11,9 +11,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "net/base/ip_address.h"
+#include "net/cert/qwac.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -144,6 +146,11 @@ class CertBuilder {
       std::string_view common_name,
       unsigned common_name_tag);
 
+  // Returns a DER encoded SEQUENCE OF OBJECT IDENTIFIER from the vector of
+  // OID values.
+  static std::vector<uint8_t> BuildSequenceOfOid(
+      std::vector<bssl::der::Input> oids);
+
   // Set the version of the certificate. Note that only V3 certificates may
   // contain extensions, so if |version| is |V1| or |V2| you may want to also
   // call |ClearExtensions()| unless you intentionally want to generate an
@@ -246,6 +253,15 @@ class CertBuilder {
 
   // Sets the inhibitAnyPolicy extension.
   void SetInhibitAnyPolicy(uint64_t skip_certs);
+
+  // Sets the QcStatements extension with statements as specified by
+  // `qc_statements`.
+  void SetQcStatements(std::vector<QcStatement> qc_statements);
+
+  // Sets the QcStatements extension to have QWAC statements: a QcCompliance
+  // statement with no info and a QcType statement with the info being the OIDs
+  // with values from `qc_types`.
+  void SetQwacQcStatements(std::vector<bssl::der::Input> qc_types);
 
   void SetValidity(base::Time not_before, base::Time not_after);
 

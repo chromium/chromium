@@ -688,13 +688,6 @@
       status: "test",
     },
     {
-      // This is a kill switch for shaping directly in TextMetrics when
-      // ctx.measureText() is called. Disabled after speedometer regression:
-      // https://crbug.com/362784008.
-      name: "Canvas2dTextMetricsShaping",
-      status: "experimental",
-    },
-    {
       name: "CanvasFloatingPoint",
       status: "experimental",
     },
@@ -3368,7 +3361,12 @@
     },
     {
       name: "PreferredAudioOutputDevices",
-      status: "test",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      origin_trial_feature_name: "PreferredAudioOutputDevices",
+      origin_trial_allows_third_party: true,
+      status: "experimental",
+      public: true,
     },
     {
       name: "PrefersReducedData",

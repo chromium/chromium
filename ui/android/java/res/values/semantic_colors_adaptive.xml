@@ -118,7 +118,7 @@ found in the LICENSE file.
     <color name="signin_header_animation_background">@color/baseline_neutral_95</color>
 
     <!-- Menu colors -->
-    <color name="menu_bg_color">@color/gm3_baseline_surface_container</color>
+    <color name="menu_bg_color_baseline">@color/gm3_baseline_surface_container</color>
     <color name="menu_list_item_icon_color">@color/baseline_neutral_variant_30</color>
     <color name="menu_list_item_icon_color_disabled">@color/baseline_neutral_10</color>
     <color name="menu_list_item_text_color">@color/baseline_neutral_10</color>

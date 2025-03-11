@@ -1287,7 +1287,7 @@ if (enable_java_templates) {
     if (defined(invoker.proguard_mapping_path)) {
       _mapping_path = invoker.proguard_mapping_path
     } else {
-      _mapping_path = "${invoker.output_path}.mapping"
+      _mapping_path = "${invoker.output}.mapping"
     }
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
@@ -1381,14 +1381,20 @@ if (enable_java_templates) {
         rebase_path(_stamp, root_build_dir),
       ]
     } else {
+      if (defined(invoker.has_apk_under_test) && invoker.has_apk_under_test) {
+        _args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath_extended)" ]
+      } else {
+        _args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath)" ]
+      }
+
       # We don't directly set the output arg on the _args variable since it is
       # shared with the expectation target that uses its own stamp file and
       # does not take an --output-path.
       _output_arg = [
         "--output-path",
-        rebase_path(invoker.output_path, root_build_dir),
+        rebase_path(invoker.output, root_build_dir),
       ]
-      _outputs = [ invoker.output_path ]
+      _outputs = [ invoker.output ]
     }
     _outputs += [ _mapping_path ]
 
@@ -1416,8 +1422,8 @@ if (enable_java_templates) {
       _args += [ "--force-enable-assertions" ]
     }
 
-    if (defined(invoker.args)) {
-      _args += invoker.args
+    if (defined(invoker.proguard_args)) {
+      _args += invoker.proguard_args
     }
 
     if (defined(invoker.expected_proguard_config)) {
@@ -1596,7 +1602,6 @@ if (enable_java_templates) {
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
     _is_dex_merging = defined(invoker.input_dex_filearg)
     _enable_desugar = !defined(invoker.enable_desugar) || invoker.enable_desugar
-    _desugar_needs_classpath = _enable_desugar
 
     # It's not safe to dex merge with libraries dex'ed at higher api versions.
     assert(!_is_dex_merging || _min_sdk_version >= default_min_sdk_version)
@@ -1625,10 +1630,6 @@ if (enable_java_templates) {
              "Proguard is required to support the custom assertion handler.")
     }
 
-    if (_desugar_needs_classpath || _proguard_enabled) {
-      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-    }
-
     if (_proguard_enabled) {
       _proguard_target_name = target_name
 
@@ -1645,10 +1646,13 @@ if (enable_java_templates) {
                                      "enable_proguard_checks",
                                      "expected_proguard_config",
                                      "expected_proguard_config_base",
+                                     "has_apk_under_test",
                                      "ignore_desugar_missing_deps",
                                      "inputs",
                                      "modules",
+                                     "output",
                                      "package_name",
+                                     "proguard_args",
                                      "proguard_configs",
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
@@ -1658,25 +1662,6 @@ if (enable_java_templates) {
                                      "version_code",
                                    ])
         min_sdk_version = _min_sdk_version
-
-        args = []
-        if (defined(invoker.has_apk_under_test) && invoker.has_apk_under_test) {
-          args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath_extended)" ]
-        } else if (defined(invoker.add_view_trace_events) &&
-                   invoker.add_view_trace_events && defined(invoker.modules)) {
-          args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:trace_event_rewritten_device_classpath)" ]
-        } else {
-          args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath)" ]
-        }
-        if (defined(invoker.proguard_args)) {
-          args += invoker.proguard_args
-        }
-
-        if (defined(invoker.output)) {
-          output_path = invoker.output
-        } else if (!defined(proguard_mapping_path)) {
-          proguard_mapping_path = "$target_out_dir/$target_name.mapping"
-        }
       }
     } else {  # !_proguard_enabled
       _is_library = defined(invoker.is_library) && invoker.is_library
@@ -1786,14 +1771,15 @@ if (enable_java_templates) {
           if (!_ignore_desugar_missing_deps) {
             args += [ "--show-desugar-default-interface-warnings" ]
           }
-        }
-        if (_desugar_needs_classpath) {
+
           # Cannot use header jar for the active jar, because it does not
           # contain anonymous classes. https://crbug.com/1342018#c5
           # Cannot use processed .jar here because it might have classes
           # filtered out via jar_excluded_patterns.
           # Must come first in classpath in order to take precedence over
           # deps that defined the same classes (via jar_excluded_patterns).
+          _rebased_build_config =
+              rebase_path(invoker.build_config, root_build_dir)
           if (defined(invoker.unprocessed_jar_path)) {
             args += [
               "--classpath",

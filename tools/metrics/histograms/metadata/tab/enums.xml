@@ -45,11 +45,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Non-empty title"/>
 </enum>
 
-<enum name="BooleanOverlap">
-  <int value="0" label="No overlap"/>
-  <int value="1" label="Overlapped"/>
-</enum>
-
 <enum name="BooleanProtectedTab">
   <int value="0" label="Not Protected"/>
   <int value="1" label="Protected"/>

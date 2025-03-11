@@ -38,13 +38,7 @@ std::string PieceToString(const ml::InputPiece& piece) {
   NOTREACHED();
 }
 
-int g_active_non_clone_sessions = 0;
-
 }  // namespace
-
-int GetActiveNonCloneSessions() {
-  return g_active_non_clone_sessions;
-}
 
 void InitDawnProcs(const DawnProcTable& procs) {}
 
@@ -72,6 +66,7 @@ struct FakeModelInstance {
 
 struct FakeSessionInstance {
   std::string adaptation_data_;
+  std::optional<uint32_t> adaptation_file_id_;
   std::vector<std::string> context_;
   bool cloned;
   bool enable_image_input;
@@ -119,13 +114,13 @@ ChromeMLSafetyResult ClassifyTextSafety(ChromeMLModel model,
 
 ChromeMLSession CreateSession(ChromeMLModel model,
                               const ChromeMLAdaptationDescriptor* descriptor) {
-  g_active_non_clone_sessions++;
   auto* model_instance = reinterpret_cast<FakeModelInstance*>(model);
   auto* instance = new FakeSessionInstance{};
   if (descriptor) {
     instance->enable_image_input = descriptor->enable_image_input;
     instance->enable_audio_input = descriptor->enable_audio_input;
     if (descriptor->model_data) {
+      instance->adaptation_file_id_ = descriptor->model_data->file_id;
       if (model_instance->backend_type_ == ml::ModelBackendType::kGpuBackend) {
         instance->adaptation_data_ =
             ReadFile(descriptor->model_data->weights_file);
@@ -144,6 +139,7 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
   return reinterpret_cast<ChromeMLSession>(new FakeSessionInstance{
       .adaptation_data_ = instance->adaptation_data_,
+      .adaptation_file_id_ = instance->adaptation_file_id_,
       .context_ = instance->context_,
       .cloned = true,
       .enable_image_input = instance->enable_image_input,
@@ -153,9 +149,6 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
 
 void DestroySession(ChromeMLSession session) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
-  if (!instance->cloned) {
-    g_active_non_clone_sessions--;
-  }
   delete instance;
 }
 
@@ -218,7 +211,12 @@ bool SessionExecuteModel(ChromeMLSession session,
     OutputChunk("Fastest inference\n");
   }
   if (!instance->adaptation_data_.empty()) {
-    OutputChunk("Adaptation: " + instance->adaptation_data_ + "\n");
+    std::string adaptation_str = "Adaptation: " + instance->adaptation_data_;
+    if (instance->adaptation_file_id_) {
+      adaptation_str +=
+          " (" + base::NumberToString(*instance->adaptation_file_id_) + ")";
+    }
+    OutputChunk(adaptation_str + "\n");
   }
   if (!instance->context_.empty()) {
     for (const std::string& context : instance->context_) {

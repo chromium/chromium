@@ -30,7 +30,6 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/audio_features.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_switches.h"
@@ -251,10 +250,6 @@ ChannelConfig GuessChannelConfig(WORD channels) {
       DVLOG(1) << "Unsupported channel count: " << channels;
   }
   return KSAUDIO_SPEAKER_STEREO;
-}
-
-bool IAudioClient3IsSupported() {
-  return base::FeatureList::IsEnabled(features::kAllowIAudioClient3);
 }
 
 std::string GetDeviceID(IMMDevice* device) {
@@ -487,8 +482,6 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
   int default_frames_per_buffer = 0;
   int frames_per_buffer = 0;
 
-  const bool supports_iac3 = IAudioClient3IsSupported();
-
   const int sample_rate = format->nSamplesPerSec;
   if (is_offload_stream) {
     frames_per_buffer = AudioTimestampHelper::TimeToFrames(
@@ -511,35 +504,33 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
           sample_rate);
     }
   } else {
-    if (supports_iac3) {
-      // Try to obtain an IAudioClient3 interface from the IAudioClient object.
-      // Use ComPtr::As for doing QueryInterface calls on COM objects.
-      ComPtr<IAudioClient> audio_client(client);
-      ComPtr<IAudioClient3> audio_client_3;
-      hr = audio_client.As(&audio_client_3);
-      if (SUCCEEDED(hr)) {
-        UINT32 default_period_frames = 0;
-        UINT32 fundamental_period_frames = 0;
-        UINT32 min_period_frames = 0;
-        UINT32 max_period_frames = 0;
-        hr = audio_client_3->GetSharedModeEnginePeriod(
-            format.get(), &default_period_frames, &fundamental_period_frames,
-            &min_period_frames, &max_period_frames);
+    // Try to obtain an IAudioClient3 interface from the IAudioClient object.
+    // Use ComPtr::As for doing QueryInterface calls on COM objects.
+    ComPtr<IAudioClient> audio_client(client);
+    ComPtr<IAudioClient3> audio_client_3;
+    hr = audio_client.As(&audio_client_3);
+    if (SUCCEEDED(hr)) {
+      UINT32 default_period_frames = 0;
+      UINT32 fundamental_period_frames = 0;
+      UINT32 min_period_frames = 0;
+      UINT32 max_period_frames = 0;
+      hr = audio_client_3->GetSharedModeEnginePeriod(
+          format.get(), &default_period_frames, &fundamental_period_frames,
+          &min_period_frames, &max_period_frames);
 
-        if (SUCCEEDED(hr)) {
-          min_frames_per_buffer = min_period_frames;
-          max_frames_per_buffer = max_period_frames;
-          default_frames_per_buffer = default_period_frames;
-          frames_per_buffer = default_period_frames;
-        }
-        DVLOG(1) << "IAudioClient3 => min_period_frames: " << min_period_frames;
-        DVLOG(1) << "IAudioClient3 => frames_per_buffer: " << frames_per_buffer;
+      if (SUCCEEDED(hr)) {
+        min_frames_per_buffer = min_period_frames;
+        max_frames_per_buffer = max_period_frames;
+        default_frames_per_buffer = default_period_frames;
+        frames_per_buffer = default_period_frames;
       }
+      DVLOG(1) << "IAudioClient3 => min_period_frames: " << min_period_frames;
+      DVLOG(1) << "IAudioClient3 => frames_per_buffer: " << frames_per_buffer;
     }
 
-    // If we don't have access to IAudioClient3 or if the call to
-    // GetSharedModeEnginePeriod() fails we fall back to GetDevicePeriod().
-    if (!supports_iac3 || FAILED(hr)) {
+    // If the call to GetSharedModeEnginePeriod() fails we fall back to
+    // GetDevicePeriod().
+    if (FAILED(hr)) {
       REFERENCE_TIME default_period = 0;
       hr = CoreAudioUtil::GetDevicePeriod(client, AUDCLNT_SHAREMODE_SHARED,
                                           &default_period);
@@ -1174,8 +1165,6 @@ HRESULT CoreAudioUtil::SharedModeInitialize(IAudioClient* client,
     stream_flags |= AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
   DVLOG(2) << "stream_flags: 0x" << std::hex << stream_flags;
 
-  const bool supports_iac3 = IAudioClient3IsSupported();
-
   HRESULT hr;
 
   if (is_offload_stream) {
@@ -1196,7 +1185,7 @@ HRESULT CoreAudioUtil::SharedModeInitialize(IAudioClient* client,
                                 buffer_duration_in_ns, 0, format, session_guid);
       }
     }
-  } else if (supports_iac3 && requested_buffer_size > 0) {
+  } else if (requested_buffer_size > 0) {
     // Try to obtain an IAudioClient3 interface from the IAudioClient object.
     // Use ComPtr::As for doing QueryInterface calls on COM objects.
     ComPtr<IAudioClient> audio_client(client);

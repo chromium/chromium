@@ -146,9 +146,7 @@ MediaSource MediaSource::ForDesktop(const std::string& desktop_media_id,
 
 // static
 MediaSource MediaSource::ForUnchosenDesktop() {
-  return IsSystemAudioCaptureSupported() &&
-                 base::FeatureList::IsEnabled(
-                     media::kCastLoopbackAudioToAudioReceivers)
+  return IsSystemAudioCaptureSupported()
              ? MediaSource(std::string(kUnchosenDesktopWithAudioMediaUrn))
              : MediaSource(std::string(kUnchosenDesktopMediaUrn));
 }

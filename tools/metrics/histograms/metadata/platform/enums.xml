@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanAbsent">
-  <int value="0" label="Not Absent"/>
-  <int value="1" label="Absent"/>
-</enum>
-
 <enum name="BooleanAttached">
   <int value="0" label="Detached"/>
   <int value="1" label="Attached"/>
