@@ -190,6 +190,8 @@ public class SigninPromoCoordinatorTest {
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                                 SigninPreferencesManager.SigninPromoAccessPointId.NTP));
         ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
@@ -215,7 +217,8 @@ public class SigninPromoCoordinatorTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SyncPromo.Continued.Count."
-                                + getAccessPointToHistogramName(accessPoint));
+                                + getAccessPointToHistogramName(accessPoint),
+                        1);
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         accessPoint,
@@ -255,8 +258,8 @@ public class SigninPromoCoordinatorTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SyncPromo.Continued.Count."
-                                + getAccessPointToHistogramName(
-                                        SigninAccessPoint.BOOKMARK_MANAGER));
+                                + getAccessPointToHistogramName(SigninAccessPoint.BOOKMARK_MANAGER),
+                        1);
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
@@ -283,7 +286,8 @@ public class SigninPromoCoordinatorTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SyncPromo.Continued.Count."
-                                + getAccessPointToHistogramName(accessPoint));
+                                + getAccessPointToHistogramName(accessPoint),
+                        1);
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -338,7 +342,8 @@ public class SigninPromoCoordinatorTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SyncPromo.Dismissed.Count."
-                                + getAccessPointToHistogramName(accessPoint));
+                                + getAccessPointToHistogramName(accessPoint),
+                        1);
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         accessPoint,
