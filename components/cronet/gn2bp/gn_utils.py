@@ -123,6 +123,10 @@ def _is_java_source(src):
   return os.path.splitext(src)[1] == '.java' and not src.startswith("//out/")
 
 
+def _remove_out_prefix(label):
+  return re.sub('^//out/.+?/(gen|obj)/', '', label)
+
+
 class GnParser(object):
   """A parser with some cleverness for GN json desc files
 
@@ -503,7 +507,7 @@ class GnParser(object):
     deps = desc.get("deps", [])
     build_only_deps = []
     if custom_processor is not None:
-      custom_processor(target, deps, build_only_deps)
+      custom_processor(target, desc, deps, build_only_deps)
     elif desc.get("script", "") == "//tools/protoc_wrapper/protoc_wrapper.py":
       target.type = 'proto_library'
       target.proto_plugin = "proto"
@@ -619,7 +623,7 @@ class GnParser(object):
         if has_compile_java_target:
 
           def process_compile_java_target(compile_java_target,
-                                          compile_java_deps,
+                                          compile_java_desc, compile_java_deps,
                                           compile_java_build_only_deps):
             turn_into_java_library(compile_java_target)
             # We always get the dependency info from the metadata of the root group
@@ -629,6 +633,13 @@ class GnParser(object):
                 java_source for java_source in metadata.get("source_files", [])
                 if not java_source.startswith("//out")
                 and java_source not in JAVA_FILES_TO_IGNORE)
+            # Make sure we surface the input list - downstream logic needs it to
+            # make some decisions, e.g. deciding which jni_zero generated
+            # srcjars to depend on.
+            compile_java_target.inputs.update([
+                _remove_out_prefix(input)
+                for input in compile_java_desc.get('inputs', [])
+            ])
             # Note we adjust this later on while processing dependencies to depend
             # on the *unfiltered* jars, as Chromium does.
             compile_java_deps.clear()
@@ -661,14 +672,14 @@ class GnParser(object):
       # so we need to copy the action fields (sources, outputs and args) in
       # order to correctly generate the `rust_bindgen` module.
       target.sources.update(desc.get('sources', []))
-      outs = [re.sub('^//out/.+?/gen/', '', x) for x in desc['outputs']]
+      outs = [_remove_out_prefix(x) for x in desc['outputs']]
       target.outputs.update(outs)
       target.args = desc['args']
       target.type = "rust_bindgen"
     elif target.type in ['action', 'action_foreach']:
       target.arch[arch].inputs.update(desc.get('inputs', []))
       target.arch[arch].sources.update(desc.get('sources', []))
-      outs = [re.sub('^//out/.+?/(gen|obj)/', '', x) for x in desc['outputs']]
+      outs = [_remove_out_prefix(x) for x in desc['outputs']]
       target.arch[arch].outputs.update(outs)
       # While the arguments might differ, an action should always use the same script for every
       # architecture. (gen_android_bp's get_action_sanitizer actually relies on this fact.

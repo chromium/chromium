@@ -26,6 +26,7 @@
 # libraries are also mapped to their Android equivalents -- see |builtin_deps|.
 
 import argparse
+import enum
 import json
 import logging as log
 import operator
@@ -292,6 +293,37 @@ _RUST_FLAGS_TO_REMOVE = [
     "@",  # Used by build_script outputs to have rustc load flags from a file.
     "-Z",  # Those are unstable features, completely remove those.
 ]
+
+
+class JniZeroTargetType(enum.Enum):
+  GENERATOR = enum.auto()
+  REGISTRATION_GENERATOR = enum.auto()
+
+
+def get_jni_zero_target_type(target):
+  if target.script != '//third_party/jni_zero/jni_zero.py':
+    return None
+  if target.args[0] == 'generate-final':
+    return JniZeroTargetType.REGISTRATION_GENERATOR
+  return JniZeroTargetType.GENERATOR
+
+
+# Given a jni_zero generator module, returns the path to the generated proxy
+# and placeholders srcjars.
+def get_jni_zero_generator_proxy_and_placeholder_paths(module):
+  assert module.jni_zero_target_type == JniZeroTargetType.GENERATOR
+
+  def is_placeholder(path):
+    return path.endswith('_placeholder.srcjar')
+
+  placeholder_paths = [out for out in module.out if is_placeholder(out)]
+  assert len(placeholder_paths) == 1, module.name
+  proxy_paths = [
+      out for out in module.out
+      if out.endswith('.srcjar') and not is_placeholder(out)
+  ]
+  assert len(proxy_paths) == 1, module.name
+  return proxy_paths[0], placeholder_paths[0]
 
 
 def always_disable(module, arch):
@@ -739,6 +771,7 @@ class Module(object):
     self.bindgen_flags = set()
     self.handle_static_inline = None
     self.static_inline_library = ""
+    self.jni_zero_target_type = None
 
   def to_string(self, output):
     if self.comment:
@@ -1612,10 +1645,6 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
   def get_outputs(self):
     outputs = set()
     for out in super().get_outputs():
-      # placeholder.srcjar contains empty placeholder classes used to compile generated java files
-      # without any other deps. This is not used in aosp.
-      if out.endswith("_placeholder.srcjar"):
-        continue
       # fix target.output directory to match #include statements.
       outputs.add(re.sub('^jni_headers/', '', out))
     return outputs
@@ -1898,8 +1927,8 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
     return ProtocJavaSanitizer(target, arch, gn)
   elif target.script == '//build/android/gyp/filter_zip.py':
     return FilterZipSanitizer(target, arch)
-  elif target.script == '//third_party/jni_zero/jni_zero.py':
-    if target.args[0] == 'generate-final':
+  elif jni_zero_target_type := get_jni_zero_target_type(target):
+    if jni_zero_target_type == JniZeroTargetType.REGISTRATION_GENERATOR:
       if type == 'java_genrule':
         # Fill up the sources of the target for JniRegistrationGenerator
         # actions with all the java sources found under targets of type
@@ -2074,6 +2103,17 @@ def merge_modules(modules, genrule_type):
   return merged_module
 
 
+def create_java_module(type, bp_module_name, target, is_test_target):
+  module = Module(type, bp_module_name, target.name)
+  module.min_sdk_version = _MIN_SDK_VERSION
+  module.apex_available = [tethering_apex]
+  if is_test_target:
+    module.sdk_version = target.sdk_version
+  else:
+    module.defaults.add(java_framework_defaults_module)
+  return module
+
+
 def get_bindgen_source_stem(outputs: List[str]) -> str:
   """Returns the appropriate source_stem for a bindgen module
 
@@ -2215,6 +2255,32 @@ def create_action_module(blueprint, gn, target, genrule_type, is_test_target):
   return module
 
 
+def create_jni_zero_proxy_only_module(jni_zero_generator_module):
+  '''
+  Creates a module that filters the output of an existing jni_zero generator
+  action module, outputting the proxy classes only, leaving out the placeholder
+  classes.
+
+  This is used to work around a Soong limitation where it's not possible to
+  refer to specific files from the output of a genrule. Instead, we create an
+  additional trivial genrule that merely copies a specific subset of the
+  original output files. We can then depend on these genrules to pull the files
+  we want.
+  '''
+  assert jni_zero_generator_module.jni_zero_target_type == JniZeroTargetType.GENERATOR
+  proxy_path, _ = get_jni_zero_generator_proxy_and_placeholder_paths(
+      jni_zero_generator_module)
+
+  proxy_only_module = Module(jni_zero_generator_module.type,
+                             f"{jni_zero_generator_module.name}_proxy_only",
+                             jni_zero_generator_module.gn_target)
+  proxy_only_module.cmd = "cp $(in) $(genDir)"
+  proxy_only_module.srcs = [f":{jni_zero_generator_module.name}"]
+  proxy_only_module.out = [os.path.basename(proxy_path)]
+
+  return proxy_only_module
+
+
 def _get_cflags(cflags, defines):
   cflags = {flag for flag in cflags if flag in cflag_allowlist}
   # Consider proper allowlist or denylist if needed
@@ -2344,10 +2410,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   elif target.type == "rust_bindgen":
     modules = (create_bindgen_module(blueprint, target, bp_module_name), )
   elif target.type == 'action':
-    modules = (create_action_module(
+    module = create_action_module(
         blueprint, gn, target,
         'java_genrule' if parent_gn_type == "java_library" else 'cc_genrule',
-        is_test_target), )
+        is_test_target)
+    module.jni_zero_target_type = get_jni_zero_target_type(target)
+    modules = (module, )
   elif target.type == 'action_foreach':
     if target.script == "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py":
       modules = create_rust_cxx_modules(blueprint, target)
@@ -2361,17 +2429,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     # leaf node.
     return ()
   elif target.type == 'java_library':
+    module = create_java_module(
+        'java_import' if target.jar_path else 'java_library', bp_module_name,
+        target, is_test_target)
     if target.jar_path:
-      module = Module('java_import', bp_module_name, gn_target_name)
       module.jars.add(target.jar_path)
-    else:
-      module = Module('java_library', bp_module_name, gn_target_name)
-    module.min_sdk_version = _MIN_SDK_VERSION
-    module.apex_available = [tethering_apex]
-    if is_test_target:
-      module.sdk_version = target.sdk_version
-    else:
-      module.defaults.add(java_framework_defaults_module)
     modules = (module, )
   else:
     # Note we don't have to handle `group` targets because parse_gn_desc() never
@@ -2670,9 +2732,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           # static_libs, not srcs.
           module_target.static_libs.add(dep_module.name)
         elif dep_module.type in ['genrule', 'java_genrule']:
-          if target.unfiltered_java_target is target:
-            module_target.srcs.add(":" + dep_module.name)
-          else:
+          if target.unfiltered_java_target is not target:
             # This is a root java_library module that has a `__compile_java`
             # module under it. `dep_module` is some Java source code generator
             # (e.g. protoc, jni_zero, etc.). Generated Java source files must
@@ -2681,6 +2741,38 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             # TODO: it is awkward that we have to special case this here. Come
             # up with a cleaner way of handling this case.
             pass
+          elif dep_module.jni_zero_target_type == JniZeroTargetType.GENERATOR:
+            # TODO: we are special-casing jni_zero here. Ideally this should be
+            # handled more generically, by making gn2bp understand the general
+            # concept of a target depending on only a subset of the outputs of
+            # an action.
+            proxy_path, placeholder_path = get_jni_zero_generator_proxy_and_placeholder_paths(
+                dep_module)
+            assert proxy_path in target.inputs, f"{target.name} depends on {dep_name} but does not mention jni_zero proxy classes {proxy_path} as input"
+            if placeholder_path in target.inputs:
+              # The target depends on both jni_zero generator outputs (proxy and
+              # placeholder). We can simply pull both of them at the same time
+              # by depending on the jni_zero generator module directly. In
+              # practice this branch is taken when a standalone jni_zero library
+              # is being built separately from the JNI user code, such as the
+              # java_library generated by jni_zero's generate_jni() GN rule. One
+              # example is //base:command_line_jni_java.
+              module_target.srcs.add(":" + dep_module.name)
+            else:
+              # The target only depends on the generated proxy classes but not
+              # the placeholder classes. Typically this happens when the
+              # proxy classes are being compiled alongside the JNI user code: in
+              # this case there is no need for the placeholder classes since the
+              # user code provides all the necessary definitions. One example is
+              # //components/cronet/android:cronet_impl_native_java. In this
+              # situation it is imperative that we do *not* pull the
+              # placeholder classes, as they would conflict with user code. See
+              # https://crbug.com/397396295 for more background.
+              proxy_only_module = create_jni_zero_proxy_only_module(dep_module)
+              blueprint.add_module(proxy_only_module)
+              module_target.srcs.add(f":{proxy_only_module.name}")
+          else:
+            module_target.srcs.add(":" + dep_module.name)
         else:
           raise Exception(
               'Unsupported arch-specific dependency %s of target %s with type %s'
