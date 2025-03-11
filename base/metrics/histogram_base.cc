@@ -106,7 +106,7 @@ void HistogramBase::SetFlags(int32_t flags) {
 }
 
 void HistogramBase::ClearFlags(int32_t flags) {
-  flags_.fetch_and(~static_cast<uint16_t>(flags), std::memory_order_relaxed);
+  flags_.fetch_and(static_cast<uint16_t>(~flags), std::memory_order_relaxed);
 }
 
 bool HistogramBase::HasFlags(int32_t flags) const {
