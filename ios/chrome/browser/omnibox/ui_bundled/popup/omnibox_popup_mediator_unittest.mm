@@ -151,13 +151,11 @@ TEST_F(OmniboxPopupMediatorTest, ActionInSuggestMetricLogged) {
   [mediator_ popupController:nil didSortResults:result];
 
   id<AutocompleteSuggestion> actionSuggestion =
-      mediator_.autocompleteMatchWrapper.nonPedalSuggestionsGroups[0]
-          .suggestions[0];
+      mediator_.suggestionGroups[0].suggestions[0];
   EXPECT_EQ(actionSuggestion.actionsInSuggest.count, 1u);
 
   id<AutocompleteSuggestion> nonActionSuggestion =
-      mediator_.autocompleteMatchWrapper.nonPedalSuggestionsGroups[0]
-          .suggestions[1];
+      mediator_.suggestionGroups[0].suggestions[1];
   EXPECT_EQ(nonActionSuggestion.actionsInSuggest.count, 0u);
 
   // Review type from ActionInSuggestType enum.

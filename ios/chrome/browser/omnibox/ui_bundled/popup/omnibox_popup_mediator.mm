@@ -87,6 +87,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 // Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
 
+// Holds the current suggestion groups.
+@property(nonatomic, strong)
+    NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups;
+
 @end
 
 @implementation OmniboxPopupMediator {
@@ -192,16 +196,18 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)popupController:(OmniboxPopupController*)popupController
          didSortResults:(const AutocompleteResult&)result {
-  NSArray<id<AutocompleteSuggestionGroup>>* groups =
+  _suggestionGroups =
       [self.autocompleteMatchWrapper wrapAutocompleteResultInGroups:result];
 
   // Preselect the verbatim match. It's the top match, unless we inserted pedals
   // and pushed it one section down.
-  self.preselectedGroupIndex =
-      self.autocompleteMatchWrapper.pedalSuggestionsGroup ? MIN(1, groups.count)
-                                                          : 0;
+  self.preselectedGroupIndex = 0;
+  if (_suggestionGroups.count > 0 &&
+      _suggestionGroups[0].type == SuggestionGroupType::kPedalSuggestionGroup) {
+    self.preselectedGroupIndex = 1;
+  }
 
-  [self.consumer updateMatches:groups
+  [self.consumer updateMatches:_suggestionGroups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
 }
 
@@ -468,31 +474,22 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 #pragma mark - Private methods
 
 - (void)logPedalShownForCurrentResult {
-  id<AutocompleteSuggestionGroup> pedalSuggestionsGroup =
-      self.autocompleteMatchWrapper.pedalSuggestionsGroup;
+  for (id<AutocompleteSuggestionGroup> group in _suggestionGroups) {
+    if (group.type != SuggestionGroupType::kPedalSuggestionGroup) {
+      continue;
+    }
 
-  if (!pedalSuggestionsGroup) {
-    return;
-  }
-
-  for (PedalSuggestionWrapper* pedalMatch in pedalSuggestionsGroup
-           .suggestions) {
-    base::UmaHistogramEnumeration("Omnibox.PedalShown",
-                                  (OmniboxPedalId)pedalMatch.innerPedal.type,
-                                  OmniboxPedalId::TOTAL_COUNT);
+    for (PedalSuggestionWrapper* pedalMatch in group.suggestions) {
+      base::UmaHistogramEnumeration("Omnibox.PedalShown",
+                                    (OmniboxPedalId)pedalMatch.innerPedal.type,
+                                    OmniboxPedalId::TOTAL_COUNT);
+    }
   }
 }
 
 /// Log action in suggest shown but not used for the current result.
 - (void)logActionsInSuggestShownForCurrentResult {
-  NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestionsGroups =
-      self.autocompleteMatchWrapper.nonPedalSuggestionsGroups;
-
-  if (!nonPedalSuggestionsGroups) {
-    return;
-  }
-
-  for (id<AutocompleteSuggestionGroup> group in nonPedalSuggestionsGroups) {
+  for (id<AutocompleteSuggestionGroup> group in _suggestionGroups) {
     for (id<AutocompleteSuggestion> suggestion in group.suggestions) {
       if (suggestion.actionsInSuggest.count == 0) {
         continue;

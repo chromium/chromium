@@ -35,14 +35,6 @@ class TemplateURLService;
 /// Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
 
-/// List of suggestions without the pedal group. Used to debounce pedals.
-@property(nonatomic, strong, readonly)
-    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestionsGroups;
-
-/// Holds the current pedals group.
-@property(nonatomic, strong, readonly) id<AutocompleteSuggestionGroup>
-    pedalSuggestionsGroup;
-
 /// Disconnects the wrapper.
 - (void)disconnect;
 

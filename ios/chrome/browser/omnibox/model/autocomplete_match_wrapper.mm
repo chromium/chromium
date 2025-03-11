@@ -21,15 +21,6 @@
 
 @interface AutocompleteMatchWrapper () <PedalSectionExtractorDelegate,
                                         SearchEngineObserving>
-
-/// Redefines "nonPedalSuggestionsGroups" as readwrite.
-@property(nonatomic, strong, readwrite)
-    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestionsGroups;
-
-/// Redefines "pedalSuggestionsGroup" as readwrite.
-@property(nonatomic, strong, readwrite) id<AutocompleteSuggestionGroup>
-    pedalSuggestionsGroup;
-
 @end
 
 @implementation AutocompleteMatchWrapper {
@@ -39,6 +30,8 @@
   BOOL _defaultSearchEngineIsGoogle;
   /// Extracts pedals from AutocompleSuggestions.
   PedalSectionExtractor* _pedalSectionExtractor;
+  /// List of suggestions without the pedal group. Used to debounce pedals.
+  NSArray<id<AutocompleteSuggestionGroup>>* _nonPedalSuggestionsGroups;
 }
 
 - (instancetype)init {
@@ -71,13 +64,13 @@
 
   // Before inserting pedals above all, back up non-pedal suggestions for
   // debouncing.
-  self.nonPedalSuggestionsGroups = groups;
+  _nonPedalSuggestionsGroups = groups;
 
   // Get pedals, if any. They go at the very top of the list.
-  self.pedalSuggestionsGroup =
+  id<AutocompleteSuggestionGroup> pedalSuggestionsGroup =
       [_pedalSectionExtractor extractPedals:allMatches];
-  if (self.pedalSuggestionsGroup) {
-    [groups insertObject:self.pedalSuggestionsGroup atIndex:0];
+  if (pedalSuggestionsGroup) {
+    [groups insertObject:pedalSuggestionsGroup atIndex:0];
   }
 
   return groups;
@@ -97,10 +90,9 @@
 #pragma mark - PedalSectionExtractorDelegate
 
 - (void)invalidatePedals {
-  if (self.nonPedalSuggestionsGroups) {
-    self.pedalSuggestionsGroup = nil;
+  if (_nonPedalSuggestionsGroups) {
     [self.delegate autocompleteMatchWrapper:self
-                        didInvalidatePedals:self.nonPedalSuggestionsGroups];
+                        didInvalidatePedals:_nonPedalSuggestionsGroups];
   }
 }
 
