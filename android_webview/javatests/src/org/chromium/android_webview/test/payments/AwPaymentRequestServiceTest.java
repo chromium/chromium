@@ -69,9 +69,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mAwContents, "resultListener", new String[] {"*"}, mWebMessageListener);
 
         mMerchantServer = TestWebServer.start();
-        mPageContents =
-                new PaymentRequestTestWebPageContents(
-                        PAYMENT_METHOD_NAME, OTHER_PAYMENT_METHOD_NAME);
+        mPageContents = new PaymentRequestTestWebPageContents();
     }
 
     @After
@@ -88,7 +86,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @DisableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestIsNotDefined() throws Exception {
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkPaymentRequestDefined");
@@ -106,7 +104,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestIsDefined() throws Exception {
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkPaymentRequestDefined");
@@ -124,7 +122,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCannotMakePaymentWithoutApps() throws Exception {
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
@@ -141,7 +139,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasNoEnrolledInstrumentsWithoutApps() throws Exception {
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -159,7 +157,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCannotLaunchAppsWithoutApps() throws Exception {
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
@@ -175,7 +173,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCanMakePayments() throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
@@ -192,7 +190,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasEnrolledInstrument() throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -208,7 +206,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestLaunchPaymentApp() throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
@@ -230,7 +228,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     public void testPaymentRequestCanMakePaymentsWhenMerchantSupportsMultiplePaymentMethods()
             throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
@@ -251,7 +253,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     public void testPaymentRequestHasEnrolledInstrumentWhenMerchantSupportsMultiplePaymentMethods()
             throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .build());
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -272,7 +278,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     public void testPaymentRequestLaunchPaymentAppWhenMerchantSupportsMultiplePaymentMethods()
             throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
@@ -297,7 +307,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 .addApp(createPaymentApp())
                 .addApp(createOtherPaymentApp())
                 .install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
@@ -321,7 +335,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 .addApp(createPaymentApp())
                 .addApp(createOtherPaymentApp())
                 .install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .build());
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -345,7 +363,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 .addApp(createPaymentApp())
                 .addApp(createOtherPaymentApp())
                 .install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
@@ -360,7 +382,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testCannotRetry() throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
-        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
+        loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "retryPayment");
 
@@ -372,15 +394,11 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     /**
      * Loads a test web-page for exercising the PaymentRequest API.
      *
-     * @param multiplePaymentMethods Whether multiple payment methods should be requested in the
-     *     PaymentRequest API call.
+     * @param webPageContents The contents of the test web page to load.
      */
-    private void loadMerchantCheckoutPage(boolean multiplePaymentMethods) throws Exception {
+    private void loadMerchantCheckoutPage(String contents) throws Exception {
         String merchantCheckoutPageUrl =
-                mMerchantServer.setResponse(
-                        "/checkout",
-                        mPageContents.build(multiplePaymentMethods),
-                        /* responseHeaders= */ null);
+                mMerchantServer.setResponse("/checkout", contents, /* responseHeaders= */ null);
         mActivityTestRule.loadUrlAsync(mAwContents, merchantCheckoutPageUrl);
         Data messageFromPage = mWebMessageListener.waitForOnPostMessage();
         Assert.assertEquals("Page loaded.", messageFromPage.getAsString());

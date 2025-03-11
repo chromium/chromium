@@ -4,43 +4,51 @@
 
 package org.chromium.components.payments;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- * The contents of a merchant checkout page for testing the PaymentRequest API.
+ * The contents of a merchant checkout page for testing PaymentRequest API.
  *
  * <p>Sample usage:
  *
  * <pre>
- * loadUrlAsync(
- *         TestWebServer.start().setResponse(
- *                 "/checkout",
- *                 new PaymentRequestTestWebPageContents("https://test-1.example/pay",
- *                                              "https://test-2.example/pay").build(true)));
+ * loadUrl(TestWebServer.start().setResponse(
+ *         "/checkout",
+ *         new PaymentRequestTestWebPageContents().addMethod("https://test-1.example/pay")
+ *                                                .addMethod("https://test-2.example/pay")
+ *                                                .build()));
  * </pre>
  */
 public class PaymentRequestTestWebPageContents {
-    private final String mPaymentMethodName;
-    private final String mOtherPaymentMethodName;
+    private final List<String> mMethods = new ArrayList<>();
 
     /**
-     * Constructs an instance of test checkout page contents.
+     * Adds a payment method to the list of payment methods that will be requested in the
+     * PaymentRequest API on the test checkout page.
      *
-     * @param paymentMethodName The payment method name to use in PaymentRequest API.
-     * @param otherPaymentMethodName An additional payment method name to use in PaymentRequest API,
-     *     if need to request multiple payment methods.
+     * @param method The payment method to request in PaymentRequest API. Must be a URL, e.g.,
+     *     "https://payments.example/web-pay". The string should not contain any apostrophes,
+     *     because it is encoded into JavaScript via String.format().
+     * @return A reference to this {@link PaymentRequestTestWebPageContents} instance.
      */
-    public PaymentRequestTestWebPageContents(
-            String paymentMethodName, String otherPaymentMethodName) {
-        mPaymentMethodName = paymentMethodName;
-        mOtherPaymentMethodName = otherPaymentMethodName;
+    public PaymentRequestTestWebPageContents addMethod(String method) {
+        assert !method.contains("'") : "Payment method name should not contain any apostrophes.";
+        mMethods.add(method);
+        return this;
     }
 
     /**
-     * Builds the test web page contents for exercising the PaymentRequest API.
+     * Builds the test web page contents for exercising PaymentRequest API.
      *
-     * @param multiplePaymentMethods Whether multiple payment methods should be requested in the
-     *     PaymentRequest API call.
+     * @return The web page contents.
      */
-    public String build(boolean multiplePaymentMethods) {
+    public String build() {
+        String supportedMethods =
+                mMethods.stream()
+                        .map(method -> String.format("{supportedMethods: '%s'}", method))
+                        .collect(Collectors.joining(", "));
         String checkoutPageHtmlFormat =
                 """
             <!doctype html>
@@ -52,13 +60,8 @@ public class PaymentRequestTestWebPageContents {
 
             <script>
               function createPaymentRequest() {
-                const firstMethod = '%s';
-                const secondMethod = '%s';
                 const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
-                return secondMethod
-                       ? new PaymentRequest([{supportedMethods: firstMethod},
-                                             {supportedMethods: secondMethod}], {total})
-                       : new PaymentRequest([{supportedMethods: firstMethod}], {total});
+                return new PaymentRequest([%s], {total});
               }
 
               function checkPaymentRequestDefined() {
@@ -133,9 +136,6 @@ public class PaymentRequestTestWebPageContents {
             </script>
             """;
 
-        return String.format(
-                checkoutPageHtmlFormat,
-                mPaymentMethodName,
-                multiplePaymentMethods ? mOtherPaymentMethodName : "");
+        return String.format(checkoutPageHtmlFormat, supportedMethods);
     }
 }
