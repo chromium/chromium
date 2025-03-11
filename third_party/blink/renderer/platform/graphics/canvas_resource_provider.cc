@@ -1935,22 +1935,14 @@ void CanvasResourceProvider::MaybePostUnusedResourcesReclaimTask() {
 }
 
 void CanvasResourceProvider::ClearOldUnusedResources() {
-  bool cleared_resources =
-      WTF::EraseIf(canvas_resources_, [](const UnusedResource& resource) {
-        return base::TimeTicks::Now() - resource.last_use >=
-               kUnusedResourceExpirationTime;
-      });
-  // May have destroyed resources above, make sure that it gets to the other
-  // side. SharedImage destruction (which may be triggered by the removal of
-  // canvas resources above) is a deferred message, we need to flush pending
-  // work to ensure that it is not merely queued, but is executed on the service
-  // side.
-  if (cleared_resources && ContextProviderWrapper()) {
-    if (gpu::ContextSupport* context_support =
-            ContextProviderWrapper()->ContextProvider().ContextSupport()) {
-      context_support->FlushPendingWork();
-    }
-  }
+  WTF::EraseIf(canvas_resources_, [](const UnusedResource& resource) {
+    return base::TimeTicks::Now() - resource.last_use >=
+           kUnusedResourceExpirationTime;
+  });
+  // May have destroyed resources above that contains shared images.
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request from above is flushed. Thus,
+  // SharedImageInterface::Flush in not needed here explicitly.
 
   MaybePostUnusedResourcesReclaimTask();
 }
