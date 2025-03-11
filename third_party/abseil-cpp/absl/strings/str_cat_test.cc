@@ -78,7 +78,7 @@ TEST(StrCat, Ints) {
 TEST(StrCat, Enums) {
   enum SmallNumbers { One = 1, Ten = 10 } e = Ten;
   EXPECT_EQ("10", absl::StrCat(e));
-  EXPECT_EQ("-5", absl::StrCat(SmallNumbers(-5)));
+  EXPECT_EQ("1", absl::StrCat(One));
 
   enum class Option { Boxers = 1, Briefs = -1 };
 

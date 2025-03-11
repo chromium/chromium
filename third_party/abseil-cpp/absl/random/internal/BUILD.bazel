@@ -164,7 +164,7 @@ cc_library(
     }),
     deps = [
         ":fast_uniform_bits",
-        "//absl/base:core_headers",
+        "//absl/base:config",
         "//absl/base:dynamic_annotations",
         "//absl/base:raw_logging_internal",
         "//absl/strings",
@@ -174,13 +174,9 @@ cc_library(
 )
 
 cc_library(
-    name = "pool_urbg",
-    srcs = [
-        "pool_urbg.cc",
-    ],
-    hdrs = [
-        "pool_urbg.h",
-    ],
+    name = "entropy_pool",
+    srcs = ["entropy_pool.cc"],
+    hdrs = ["entropy_pool.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = select({
         "@rules_cc//cc/compiler:msvc-cl": [],
@@ -189,14 +185,12 @@ cc_library(
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
     deps = [
+        ":platform",
         ":randen",
         ":seed_material",
-        ":traits",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:endian",
-        "//absl/base:raw_logging_internal",
         "//absl/random:seed_gen_exception",
         "//absl/types:span",
     ],
@@ -299,13 +293,12 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":pool_urbg",
+        ":entropy_pool",
         ":salted_seed_seq",
         ":seed_material",
-        "//absl/base:core_headers",
+        "//absl/base:config",
         "//absl/container:inlined_vector",
         "//absl/meta:type_traits",
-        "//absl/types:span",
     ],
 )
 
@@ -623,9 +616,11 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":nonsecure_base",
+        "//absl/container:flat_hash_set",
         "//absl/meta:type_traits",
         "//absl/random",
         "//absl/random:distributions",
+        "//absl/synchronization",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -639,23 +634,24 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":seed_material",
+        "//absl/types:span",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
 )
 
 cc_test(
-    name = "pool_urbg_test",
+    name = "entropy_pool_test",
     size = "small",
     srcs = [
-        "pool_urbg_test.cc",
+        "entropy_pool_test.cc",
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":pool_urbg",
-        "//absl/meta:type_traits",
-        "//absl/types:span",
+        ":entropy_pool",
+        "//absl/container:flat_hash_set",
+        "//absl/synchronization",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -750,7 +746,6 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":wide_multiply",
-        "//absl/numeric:bits",
         "//absl/numeric:int128",
         "@googletest//:gtest",
         "@googletest//:gtest_main",

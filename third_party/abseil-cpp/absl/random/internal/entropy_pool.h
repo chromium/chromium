@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/random/seed_sequences.h"
+#ifndef ABSL_RANDOM_INTERNAL_ENTROPY_POOL_H_
+#define ABSL_RANDOM_INTERNAL_ENTROPY_POOL_H_
 
-#include <iterator>
+#include <cstddef>
 
 #include "absl/base/config.h"
-#include "absl/random/internal/entropy_pool.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+namespace random_internal {
 
-SeedSeq MakeSeedSeq() {
-  SeedSeq::result_type seed_material[8];
-  random_internal::GetEntropyFromRandenPool(&seed_material[0],
-                                            sizeof(seed_material[0]) * 8);
-  return SeedSeq(std::begin(seed_material), std::end(seed_material));
-}
+// GetEntropyFromRandenPool() is a helper function that fills a memory region
+// with random bytes from the RandenPool.  This is used by the absl::BitGen
+// implementation to fill the internal buffer.
+void GetEntropyFromRandenPool(void* dest, size_t bytes);
 
+}  // namespace random_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
+
+#endif  // ABSL_RANDOM_INTERNAL_ENTROPY_POOL_H_
