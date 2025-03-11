@@ -523,6 +523,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return MarginBoxOutsets().right;
   }
 
+  // Get the scroll marker group associated with this box, if any.
+  LayoutBlock* GetScrollMarkerGroup() const;
+
+  // Get the scroller that owns this scroll marker group.
+  LayoutBlock* ScrollerFromScrollMarkerGroup() const;
+
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
                                MapCoordinatesFlags) const override;

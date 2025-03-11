@@ -874,56 +874,6 @@ bool LayoutObject::IsScrollMarkerGroupBefore() const {
   return GetNode() && GetNode()->IsScrollMarkerGroupBeforePseudoElement();
 }
 
-LayoutObject* LayoutObject::GetScrollMarkerGroup() const {
-  NOT_DESTROYED();
-  if (Style()->ScrollMarkerGroup() == EScrollMarkerGroup::kNone) {
-    return nullptr;
-  }
-  if (IsFieldset()) {
-    const LayoutBlock* fieldset_content =
-        To<LayoutFieldset>(this)->FindAnonymousFieldsetContentBox();
-    if (!fieldset_content || !fieldset_content->IsScrollContainer()) {
-      return nullptr;
-    }
-  } else if (!IsScrollContainer()) {
-    return nullptr;
-  }
-  if (auto* element = DynamicTo<Element>(GetNode())) {
-    if (PseudoElement* pseudo =
-            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
-      return pseudo->GetLayoutObject();
-    }
-    if (PseudoElement* pseudo =
-            element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-      return pseudo->GetLayoutObject();
-    }
-  }
-  return nullptr;
-}
-
-LayoutBlock* LayoutObject::ScrollerFromScrollMarkerGroup() const {
-  NOT_DESTROYED();
-  DCHECK(IsScrollMarkerGroup());
-  auto* pseudo_element = DynamicTo<PseudoElement>(GetNode());
-  if (const Element* originating_element = pseudo_element->parentElement()) {
-    if (LayoutObject* object = originating_element->GetLayoutObject()) {
-      if (object->IsFieldset()) {
-        object = To<LayoutFieldset>(object)->FindAnonymousFieldsetContentBox();
-        if (!object) {
-          return nullptr;
-        }
-      }
-      if (!object->IsScrollContainer()) {
-        // TODO(crbug.com/381444307): This shouldn't happen. If there's a scroll
-        // marker group, the originating element should be a scroll container.
-        return nullptr;
-      }
-      return DynamicTo<LayoutBlock>(object);
-    }
-  }
-  return nullptr;
-}
-
 bool LayoutObject::IsListMarkerForSummary() const {
   NOT_DESTROYED();
   if (!IsListMarker()) {

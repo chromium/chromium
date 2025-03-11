@@ -178,7 +178,7 @@ void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
   ContainerNode::AttachLayoutTree(context);
 
   if (scroll_marker_group_) {
-    if (LayoutObject* scroller_box = scroll_marker_group_->GetLayoutObject()
+    if (LayoutObject* scroller_box = scroll_marker_group_->GetLayoutBox()
                                          ->ScrollerFromScrollMarkerGroup()) {
       // Mark the scroller for layout to make sure we repopulate the
       // ::scroll-marker-group box with ::scroll-marker boxes.
