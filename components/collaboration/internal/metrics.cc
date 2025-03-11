@@ -5,6 +5,7 @@
 #include "components/collaboration/internal/metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "components/data_sharing/public/logger.h"
 #include "components/data_sharing/public/logger_common.mojom.h"
 #include "components/data_sharing/public/logger_utils.h"
@@ -146,18 +147,15 @@ std::string_view CollaborationServiceShareOrManageEventToString(
 }
 
 std::string CreateJoinEventLogString(CollaborationServiceJoinEvent event) {
-  std::string log = "Join Flow Event [";
-  log += CollaborationServiceJoinEventToString(event);
-  log += "]";
-  return log;
+  return base::StringPrintf("Join Flow Event\n  Event: %s\n",
+                            CollaborationServiceJoinEventToString(event));
 }
 
 std::string CreateShareOrManageEventLogString(
     CollaborationServiceShareOrManageEvent event) {
-  std::string log = "Share or Manage Flow Event [";
-  log += CollaborationServiceShareOrManageEventToString(event);
-  log += "]";
-  return log;
+  return base::StringPrintf(
+      "Share or Manage Flow Event\n  Event: %s\n",
+      CollaborationServiceShareOrManageEventToString(event));
 }
 
 }  // namespace
