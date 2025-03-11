@@ -93,7 +93,7 @@
 <div id="entriesHeader" class="cr-row">
   <h2 class="flex">
     <span id="entriesHeaderTitle">
-      $i18n{autofillAiUserAnnotationsHeader}</span>
+      $i18n{autofillAiEntityInstancesHeader}</span>
   </h2>
   <!-- Disabled: If the user is not eligible for Autofill with Ai or if the
        user opted out by switching the toggle, the user should not be able to
@@ -113,14 +113,14 @@
         [[item.entityLabel]]
         <div class="cr-secondary-text">[[item.entitySubLabel]]</div>
       </div>
-      <!-- TODO(crbug.com/393318914): Add title. -->
       <cr-icon-button id="moreButton" class="icon-more-vert"
-          on-click="onMoreButtonClick_" title="">
+          on-click="onMoreButtonClick_" title="[[getMoreButtonTitle_(
+              item.entityLabel, item.entitySubLabel)]]">
       </cr-icon-button>
     </li>
   </template>
   <li id="entriesNone" class="list-item" hidden="[[entityInstances_.length]]">
-    $i18n{autofillAiUserAnnotationsNone}
+    $i18n{autofillAiEntityInstancesNone}
   </li>
 </ul>
 
@@ -156,15 +156,10 @@
   </settings-autofill-ai-add-or-edit-dialog>
 </template>
 <template is="dom-if" if="[[showRemoveEntityDialog_]]" restamp>
-  <!-- TODO(crbug.com/393318914): Confirm the body text string with UX and
-       potentially use settings localized strings provider for the body
-       text. -->
   <settings-simple-confirmation-dialog id="removeEntityDialog"
-      title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
-      body-text="Autofill will have less info for filling out forms."
+      title-text="$i18n{autofillAiDeleteEntityInstanceDialogTitle}"
+      body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
       confirm-text="$i18n{delete}"
       on-close="onRemoveEntityDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>
-
-<!-- TODO(crbug.com/393319296): Add dialog for adding and editing entities. -->

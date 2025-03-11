@@ -27,6 +27,7 @@ import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -58,7 +59,7 @@ export interface SettingsAutofillAiSectionElement {
 }
 
 const SettingsAutofillAiSectionElementBase =
-    HelpBubbleMixin(PrefsMixin(PolymerElement));
+    I18nMixin(HelpBubbleMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsAutofillAiSectionElement extends
     SettingsAutofillAiSectionElementBase {
@@ -192,6 +193,15 @@ export class SettingsAutofillAiSectionElement extends
   private computeDisableAddButton_(
       ineligibleUser: boolean, optInPrefValue: boolean): boolean {
     return ineligibleUser || !optInPrefValue;
+  }
+
+  /**
+   * @returns the accessibility title for the "More Actions button"
+   *     corresponding to the entity instance which is described by `label` and
+   *     `sublabel`.
+   */
+  private getMoreButtonTitle_(label: string, subLabel: string) {
+    return this.i18n('autofillAiMoreActionsForEntityInstance', label, subLabel);
   }
 
   /**
