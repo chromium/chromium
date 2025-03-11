@@ -27,6 +27,7 @@ class SessionManager:
         self.session_to_early_challenge_map = {}
         self.has_called_refresh = False
         self.scope_specification_items = []
+        self.refresh_sends_challenge = True
 
     def next_session_id_value(self):
         return len(self.session_to_key_map)
@@ -90,6 +91,10 @@ class SessionManager:
         if scope_specification_items is not None:
             self.scope_specification_items = scope_specification_items
 
+        refresh_sends_challenge = configuration.get("refreshSendsChallenge")
+        if refresh_sends_challenge is not None:
+            self.refresh_sends_challenge = refresh_sends_challenge
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -101,6 +106,9 @@ class SessionManager:
 
     def reset_registration_sends_challenge(self):
         self.registration_sends_challenge = False
+
+    def get_refresh_sends_challenge(self):
+        return self.refresh_sends_challenge
 
     def set_has_called_refresh(self, has_called_refresh):
         self.has_called_refresh = has_called_refresh

@@ -22,17 +22,18 @@ def main(request, response):
     if session_key == None:
         return (400, response.headers, "")
 
-    challenge = "refresh_challenge_value"
-    if request.headers.get("Sec-Session-Response") == None:
-        return (401, [('Sec-Session-Challenge', '"' + challenge + '";id="' + session_id + '"')], "")
+    if test_session_manager.get_refresh_sends_challenge():
+        challenge = "refresh_challenge_value"
+        if request.headers.get("Sec-Session-Response") == None:
+            return (401, [('Sec-Session-Challenge', '"' + challenge + '";id="' + session_id + '"')], "")
 
-    jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Sec-Session-Response").decode('utf-8'), session_key)
+        jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Sec-Session-Response").decode('utf-8'), session_key)
 
-    early_challenge = test_session_manager.get_early_challenge(session_id)
-    if early_challenge is not None:
-        challenge = early_challenge
+        early_challenge = test_session_manager.get_early_challenge(session_id)
+        if early_challenge is not None:
+            challenge = early_challenge
 
-    if not verified or jwt_payload.get("jti") != challenge:
-        return (400, response.headers, "")
+        if not verified or jwt_payload.get("jti") != challenge:
+            return (400, response.headers, "")
 
     return test_session_manager.get_session_instructions_response(session_id, request)
