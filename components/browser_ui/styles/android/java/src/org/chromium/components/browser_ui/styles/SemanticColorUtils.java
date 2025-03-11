@@ -159,9 +159,9 @@ public class SemanticColorUtils {
         return resolveSurfaceColorElev(R.dimen.sheet_bg_color_elev, context);
     }
 
-    /** Returns the surface color value of the conceptual snackbar_background_color_baseline. */
+    /** Returns the surface color value of the conceptual snackbar_background_color. */
     public static @ColorInt int getSnackbarBackgroundColor(Context context) {
-        return resolveSurfaceColorElev(R.dimen.snackbar_background_color_elev, context);
+        return resolve(R.attr.colorSurface, context);
     }
 
     /** Returns the semantic color value that corresponds to default_text_color_link. */
