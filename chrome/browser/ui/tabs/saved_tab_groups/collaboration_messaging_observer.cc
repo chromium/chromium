@@ -315,8 +315,11 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
     saved_tab_groups::metrics::RecordSharedTabGroupManageType(
         saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::
             kManageGroupFromUserJoinNotification);
+
+    data_sharing::RequestInfo request_info(group_id.value(),
+                                           data_sharing::FlowType::kManage);
     DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
-        group_id.value());
+        request_info);
   }
 }
 

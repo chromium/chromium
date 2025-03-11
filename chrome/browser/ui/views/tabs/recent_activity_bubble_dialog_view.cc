@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
@@ -498,8 +499,10 @@ void RecentActivityRowView::ManageSharing() {
 
   if (auto* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
           group_id.value())) {
+    data_sharing::RequestInfo request_info(group_id.value(),
+                                           data_sharing::FlowType::kManage);
     DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
-        group_id.value());
+        request_info);
   }
 }
 

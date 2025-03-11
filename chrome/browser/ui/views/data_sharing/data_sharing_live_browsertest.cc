@@ -207,8 +207,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
   std::optional<tab_groups::TabGroupId> tab_group_id =
       OpenTabGroupByTitle(tab_group_service(), unshared_group_title);
   CHECK(tab_group_id.has_value());
+
+  data_sharing::RequestInfo request_info(tab_group_id.value(),
+                                         data_sharing::FlowType::kShare);
   DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-      tab_group_id.value());
+      request_info);
 
   WaitForSDKToLoad();
 }
@@ -223,8 +226,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ManageSharedTabGroup) {
   std::optional<tab_groups::TabGroupId> tab_group_id =
       OpenTabGroupByTitle(tab_group_service(), shared_group_title);
   CHECK(tab_group_id.has_value());
+
+  data_sharing::RequestInfo request_info(tab_group_id.value(),
+                                         data_sharing::FlowType::kManage);
   DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-      tab_group_id.value());
+      request_info);
 
   WaitForSDKToLoad();
 }

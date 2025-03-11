@@ -128,8 +128,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
       WaitForShow(kTabGroupEditorBubbleShareGroupButtonId), Do([=, this]() {
         // Directly show share UI to bypass sign in flow.
+        data_sharing::RequestInfo request_info(group_id,
+                                               data_sharing::FlowType::kShare);
         DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-            group_id);
+            request_info);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       // Check the share bubble is anchored onto the group header view.
@@ -161,8 +163,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
       WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
       Do([=, this]() {
         // Directly show manage UI to bypass sign in flow.
+        data_sharing::RequestInfo request_info(group_id,
+                                               data_sharing::FlowType::kManage);
         DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-            group_id);
+            request_info);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
@@ -182,8 +186,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
             data_sharing::DataSharingServiceFactory::GetForProfile(
                 browser()->profile());
         // Directly show join UI to bypass sign in flow.
+        data_sharing::RequestInfo request_info(
+            data_sharing_service->ParseDataSharingUrl(share_link).value(),
+            data_sharing::FlowType::kJoin);
         DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-            data_sharing_service->ParseDataSharingUrl(share_link).value());
+            request_info);
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
@@ -233,19 +240,27 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
 
-  auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
+  data_sharing::RequestInfo request_info_share(group_id,
+                                               data_sharing::FlowType::kShare);
+  auto url =
+      data_sharing::GenerateWebUIUrl(request_info_share, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_share_flow_url);
 
   group->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
 
-  url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
+  data_sharing::RequestInfo request_info_manage(
+      group_id, data_sharing::FlowType::kManage);
+  url =
+      data_sharing::GenerateWebUIUrl(request_info_manage, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_manage_flow_url);
 
   data_sharing::GroupToken token = data_sharing::GroupToken(
       data_sharing::GroupId(fake_collab_id), fake_access_token);
-  url = data_sharing::GenerateWebUIUrl(token, browser()->profile());
+  data_sharing::RequestInfo request_info_join(token,
+                                              data_sharing::FlowType::kJoin);
+  url = data_sharing::GenerateWebUIUrl(request_info_join, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_join_flow_url);
 }
 
