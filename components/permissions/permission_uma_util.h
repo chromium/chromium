@@ -442,9 +442,13 @@ enum class AutoDSEPermissionRevertTransition {
   kMaxValue = INVALID_END_STATE,
 };
 
+// LINT.IfChange(PermissionPredictionSource)
+
 // This enum backs up the 'PermissionPredictionSource` histogram enum. It
 // indicates whether the permission prediction was done by the local on device
-// model or by the server side model.
+// model or by the server side model (or both).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class PermissionPredictionSource {
   ON_DEVICE_TFLITE = 0,
   SERVER_SIDE = 1,
@@ -453,6 +457,8 @@ enum class PermissionPredictionSource {
   // Always keep at the end.
   kMaxValue = ONDEVICE_AI_AND_SERVER_SIDE,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPredictionSource)
 
 // This enum backs up the 'PageInfoDialogAccessType' histogram enum.
 // It is used for collecting page info access type metrics in the context of

@@ -151,10 +151,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="RECENT_DISPLAY"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionPredictionSource) -->
+
 <enum name="PermissionPredictionSource">
-  <int value="0" label="ON_DEVICE"/>
+  <int value="0" label="ON_DEVICE_TFLITE"/>
   <int value="1" label="SERVER_SIDE"/>
+  <int value="2" label="ONDEVICE_AI_AND_SERVER_SIDE"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSource) -->
 
 <enum name="PermissionPredictionThresholdSource">
   <int value="0" label="MODEL_METADATA"/>
