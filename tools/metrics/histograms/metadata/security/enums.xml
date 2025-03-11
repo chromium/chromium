@@ -156,15 +156,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h) -->
 
-<enum name="JsonParserExtension">
-  <int value="0" label="C style comment (/**/)"/>
-  <int value="1" label="C++ style comment (//)"/>
-  <int value="2" label="UTF-8 \xNN string escape"/>
-  <int value="3" label="Vertical tab string escape (\\v)"/>
-  <int value="4" label="Unescaped ASCII control character [0x00,0x1F]"/>
-  <int value="5" label="Unescaped newline in string (\\r or \\n)"/>
-</enum>
-
 <enum name="LandlockState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
