@@ -551,7 +551,8 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
-      std::move(private_aggregation_config), options->savedQuery(),
+      std::move(private_aggregation_config), resolve_to_config,
+      options->savedQuery(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
