@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
 <translation id="1539864135338521185">номин</translation>
+<translation id="1548555207631326346">Загвар сонгоод, ХОУ-аар үүсгэсэн зургаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгоно уу.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ХОУ-ы зургийн илүү өвөрмөц, ялгаатай сонголтуудыг авахын тулд "Надад урам өг" гэсэн сонголтыг сонгоно уу.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Таныг ХОУ-аар үүсгэхэд зааврыг <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-н Нууцлалын бодлогын<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> дагуу зураг үүсгэх, бүтээгдэхүүнийг сайжруулахын тулд Google-н ХОУ-ы сервер лүү илгээдэг.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Үүсгэгч ХОУ нь туршилтынх, мөн хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд боломжтой байдал нь одоогоор хязгаарлагдмал байна.</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="155865706765934889">Мэдрэгч самбар</translation>
 <translation id="1561927818299383735">арын гэрлийн өнгө</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8183975772394450380">далайн эрэг</translation>
 <translation id="819278132617411009">Илүү бүтээмжтэй байхын тулд Google AI-г ашиглах</translation>
+<translation id="82003371436638355">Та “Өөрийнхийгөө үүсгэх” сонголтыг сонгохдоо захиалгат заавар бичнэ үү. Эсвэл та загвар сонгохын тулд “Загвар сонгох” гэсэн сонголтыг сонгоод, дараа нь ХОУ-аар үүсгэсэн дэлгэцийн зургаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгож болно.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ХОУ-ы зургийн илүү өвөрмөц, ялгаатай сонголтуудыг авахын тулд "Надад урам өг" гэсэн сонголтыг сонгоно уу.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Таныг өөрийн дэлгэцийн зургийг үүсгэхэд зааврыг <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-н Үйлчилгээний нөхцөл, Нууцлалын бодлогын<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> дагуу зураг үүсгэх, бүтээгдэхүүнийг сайжруулахын тулд Google-н сервер лүү илгээдэг. Ямар нэг хувийн, эмзэг, нууцлалтай мэдээлэл бүү оруулаарай.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Үүсгэгч ХОУ хүмүүсийн талаар буруу мэдээлэл үүсгэх зэрэг алдаа гаргаж болох тул хариултыг нь дахин шалгана уу. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Нэмэлт мэдээлэл авах<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">медиаг тоглуулах</translation>
 <translation id="8318753676953949627">Зураг байхгүй</translation>
 <translation id="8320910311642849813">ой мод</translation>
+<translation id="8322464149031882595">Үргэлжлүүлэхийн тулд товшино уу</translation>
 <translation id="8329018942023753850">тооны машин апп</translation>
 <translation id="8336739000755212683">Төхөөрөмжийн бүртгэлийн зургийг өөрчлөх</translation>
 <translation id="8339024191194156249">Автоматаар эхлүүлэх талаар нэмэлт мэдээлэл авах</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">оцон шувуунууд</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
+<translation id="8972061581514441296">Буцахын тулд товшино уу</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>
 <translation id="89945434909472341">тосгон</translation>

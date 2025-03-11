@@ -31,6 +31,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="1909810060368225529">Upozornenie: Zmeny tejto zdieľanej skupiny kariet vidia všetci. Zdieľané skupiny kariet môžu meniť všetci.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Uložiť <ph name="TABS_COUNT_ONE" /> vybranú kartu ako záložku}few{Uložiť <ph name="TABS_COUNT_MANY" /> vybrané karty ako záložky}many{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}other{Uložiť <ph name="TABS_COUNT_MANY" /> vybraných kariet ako záložky}}</translation>
+<translation id="2055057176188061528">Vyberte skupinu kariet alebo vytvorte novú</translation>
 <translation id="2118649612461486615">Informácie o obchode</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. Karta inkognito nebude k dispozícii.}few{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. # karty inkognito nebudú k dispozícii.}many{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}other{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. # kariet inkognito nebude k dispozícii.}}</translation>
 <translation id="2162620598375156287">Teraz <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="3547352561153509682">Týmto odstránite skupinu zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta}few{<ph name="MANY_ADDED" /> nové karty}many{<ph name="MANY_ADDED" /> new tabs}other{<ph name="MANY_ADDED" /> nových kariet}}</translation>
 <translation id="3613492231657284463">Skryť dialógové okno neaktívnych kariet</translation>
 <translation id="3619255692378312441">Správa prístupu</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="381219490185664296">Chcete zrušiť zoskupenie kariet v skupine?</translation>
 <translation id="3940195383040445971">Sledovať ceny na kartách</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta, zavreté: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> nové karty, zavreté: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> new tabs, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> nových kariet, zavreté: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Zoskupiť kartu}few{Zoskupiť karty}many{Zoskupiť karty}other{Zoskupiť karty}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktívna karta}few{<ph name="TABS_COUNT_MANY" /> neaktívne karty}many{<ph name="TABS_COUNT_MANY" /> inactive tabs}other{<ph name="TABS_COUNT_MANY" /> neaktívnych kariet}}</translation>
 <translation id="3969565576924904454">Otvoriť <ph name="TITLE_OF_GROUP" /></translation>

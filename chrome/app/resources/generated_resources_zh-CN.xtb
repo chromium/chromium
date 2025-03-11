@@ -2282,6 +2282,7 @@
 <translation id="256517381556987641">“文件同步”功能目前已找到 <ph name="ITEMS_FOUND" /> 个文件，仍在检查存储空间。请过几分钟再尝试重新开启该功能。</translation>
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
 <translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的标签页分组</translation>
+<translation id="256726287944589768">在“新标签页”页面上显示页脚</translation>
 <translation id="2568694057933302218">在无痕模式下，网站无法使用 Cookie 查看您在各个网站上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
 <translation id="2569972178052279830">零售商名称</translation>
@@ -2790,6 +2791,7 @@
 <translation id="2921081876747860777">请设置密码，以保护您的本地数据。</translation>
 <translation id="2923006468155067296">您的 <ph name="DEVICE_TYPE" /> 将立即锁定。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />。同一任务分组中的其他 <ph name="OTHER_TASK_NUM" /> 个任务：<ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">移除此账号</translation>
 <translation id="2923644930701689793">访问您手机的相机胶卷</translation>
 <translation id="292371311537977079">Chrome 设置</translation>

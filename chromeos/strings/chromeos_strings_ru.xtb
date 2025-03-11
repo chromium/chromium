@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Анимированная заставка</translation>
 <translation id="152892567002884378">Увеличить громкость</translation>
 <translation id="1539864135338521185">лазурит</translation>
+<translation id="1548555207631326346">Выберите тему, а затем используйте подчеркнутые слова для персонализации ИИ-изображений.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Чтобы получить больше уникальных и разнообразных картинок, нажмите "Случайные обои".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когда вы создаете контент с помощью искусственного интеллекта, запрос отправляется на серверы ИИ от Google. Это позволяет генерировать изображения и улучшать продукт. На данные распространяется <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политика конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративный искусственный интеллект – экспериментальная технология, которая находится на раннем этапе разработки и пока доступна с ограничениями.</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="155865706765934889">Сенсорная панель</translation>
 <translation id="1561927818299383735">подсветка</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Работайте эффективнее с ИИ от Google</translation>
+<translation id="82003371436638355">Если вы выбрали "Создайте свои обои", введите запрос. Также можно нажать "Выберите тему", а затем использовать подчеркнутые слова для персонализации ИИ-изображения.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Чтобы получить больше уникальных и разнообразных картинок, нажмите "Случайные обои".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когда вы создаете собственные обои, запрос отправляется на серверы ИИ от Google. Это позволяет генерировать изображения и улучшать продукт. На данные распространяются <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Условия использования и Политика конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не указывайте персональную и конфиденциальную информацию.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративный искусственный интеллект может допускать ошибки, в том числе в сведениях о людях, поэтому ответы лучше перепроверять. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Подробнее…<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208861521865154048">Преимущества</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8320910311642849813">лес</translation>
+<translation id="8322464149031882595">Нажмите, чтобы перейти вперед</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
 <translation id="8339024191194156249">Подробнее об автоматическом запуске</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пингвины</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
+<translation id="8972061581514441296">Нажмите, чтобы перейти назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
 <translation id="89945434909472341">деревня</translation>

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animazione del salvaschermo</translation>
 <translation id="152892567002884378">Alza il volume</translation>
 <translation id="1539864135338521185">lapislazzuli</translation>
+<translation id="1548555207631326346">Scegli un tema e seleziona le parole sottolineate per personalizzare le tue immagini AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini AI univoche e diversificate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando crei contenuti con l'AI, ai server di Google AI viene inviata una richiesta di generazione di immagini e miglioramento del prodotto, ai sensi delle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          L'AI generativa è un esperimento in fase di sviluppo iniziale e attualmente ha una disponibilità limitata.</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">colore retroilluminato</translation>
@@ -1553,6 +1562,16 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8183975772394450380">una spiaggia</translation>
 <translation id="819278132617411009">Usa Google AI per aumentare la produttività</translation>
+<translation id="82003371436638355">Quando selezioni "Crea il tuo", scrivi un prompt personalizzato. In alternativa, puoi selezionare "Scegli un tema" e poi selezionare le parole sottolineate per personalizzare il tuo sfondo AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini AI univoche e diversificate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando crei il tuo sfondo, ai server di Google AI viene inviato un prompt di generazione di immagini e miglioramento del prodotto, ai sensi dei <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termini di servizio e delle Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Non includere informazioni personali, sensibili o riservate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Scopri di più<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
@@ -1574,6 +1593,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8312330582793120272">riproduci i contenuti multimediali</translation>
 <translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8320910311642849813">una foresta</translation>
+<translation id="8322464149031882595">Fai clic per proseguire</translation>
 <translation id="8329018942023753850">app calcolatrice</translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
 <translation id="8339024191194156249">Scopri di più sull'avvio automatico</translation>
@@ -1720,6 +1740,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8961025972867871808">pinguini</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
+<translation id="8972061581514441296">Fai clic per tornare indietro</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scansiona}=1{Scansiona pagina {NUMBER_OF_PAGES}}other{Scansiona pagina {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">un villaggio</translation>

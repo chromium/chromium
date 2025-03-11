@@ -1126,6 +1126,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6296366034485697675">Eksport edin və silin</translation>
 <translation id="629730747756840877">Hesab</translation>
 <translation id="6303969859164067831">Çıxış edin və sinxronizasiyanı deaktiv edin</translation>
+<translation id="6307241780749477694">Bu cihazda bütün parollarınızı əldə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="6312687380483398334">Veb tətbiqlər (sakit)</translation>
 <translation id="6315386555979018699">Silin və davam edin</translation>
 <translation id="6316139424528454185">Android versiyası dəstəklənmir</translation>
@@ -1387,6 +1388,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7359002509206457351">Ödəniş üsullarına daxil olun</translation>
 <translation id="7363349185727752629">Məxfilik seçimləriniz üçün bələdçi</translation>
 <translation id="7364103838544876661">Baxış datasını silmək üzrə digər seçimlər</translation>
+<translation id="7365073365123878797">Google Parol Meneceri ilə parolları saxlamağa və istifadə etməyə başlamaq üçün Google Play xidmətlərini güncəlləyin</translation>
 <translation id="7375125077091615385">Növ:</translation>
 <translation id="7376560087009844242">Digər səhifə mətnini daxil etməklə "Axtarmaq üçün toxunun" funksiyasından istifadə etdiyiniz zaman daha yaxşı nəticələr görə bilərsiniz Bunu istənilən vaxt <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="7379900596734708416">Saytlar üçün tünd tema əlçatandır</translation>
@@ -1465,10 +1467,12 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7686086654630106285">Saytın təklif etdiyi reklamlar haqqında ətraflı</translation>
 <translation id="7690596512217303514">Cihaz Chrome-u aça bilmədi. Tətbiq mağazasından son Chrome güncəllənməsini endirin.</translation>
 <translation id="7691043218961417207">İzləmək üçün kontentləri araşdırın</translation>
+<translation id="7692761875510935111">Sürətlə brauzerdə açın. Bu qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
 <translation id="7697383401610880082">Dəstəyi çəkin</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> tətbiqində e-poçt yaradın</translation>
 <translation id="7702420606070050505">Son fəaliyyət üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="7707922173985738739">Mobil data istifadə edin</translation>
+<translation id="7708994397325774423">Bütün parollarınızı əldə edin</translation>
 <translation id="7733878270780732638">Cihazda yer yoxdur.</translation>
 <translation id="7746817319925672889">Google Parol Meneceri bu cihazda tezliklə fəaliyyətini dayandıracaq</translation>
 <translation id="774876555279732384">Avtodoldurma xidməti <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> da idarə edilir.</translation>
@@ -1610,6 +1614,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8310451567823644042">Parollar tezliklə işləməyəcək</translation>
 <translation id="831192587911042850">Cari veb saytı izlədiyiniz veb saytların siyahısına əlavə edir.</translation>
 <translation id="8320212361750431956">Son fəaliyyət</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Yenilik<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome həddən artıq bildiriş göndərə biləcək saytlar haqqında sizə məlumat verəcək</translation>
 <translation id="834313815369870491">Saytları heç vaxt tərcümə etməyin</translation>
 <translation id="8348430946834215779">Mümkün olduqda HTTPS istifadə edin və onu dəstəkləməyən saytları yükləməzdən əvvəl xəbərdarlıq alın</translation>
@@ -1741,6 +1746,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8937772741022875483">Chrome fəaliyyəti Rəqəmsal Sağlamlıqdan silinsin?</translation>
 <translation id="8942627711005830162">Başqa pəncərədə açın</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bu dili endirmək mümkün olmadı. Sonra cəhd edin.</translation>
+<translation id="8946759102391960088">Parollarınıza girişi saxlayın</translation>
 <translation id="8957528460562961174">Parollarınıza girişi saxlamaq üçün onları indi eksport edin və sonra tərcih etdiyiniz parol menecerinə import edin. Google Play xidmətləri əlçatan olmadığı üçün Google Parol Meneceri dayandı.</translation>
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8965591936373831584">gözlənilir</translation>

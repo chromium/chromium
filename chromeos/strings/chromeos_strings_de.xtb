@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Bildschirmschoneranimation</translation>
 <translation id="152892567002884378">Lauter</translation>
 <translation id="1539864135338521185">Lapislazuli</translation>
+<translation id="1548555207631326346">Wähle ein Design und dann die unterstrichenen Wörter aus, um deine KI-Bilder zu personalisieren.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kannst „Inspiriere mich“ anklicken, um weitere einzigartige KI-Bilder erstellen zu lassen.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wenn du Bilder mithilfe von KI erstellst, wird dein Prompt an Google AI-Server gesendet, um Inhalte zu generieren und das Produkt gemäß der <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative KI ist experimentell, befindet sich noch in einem frühen Entwicklungsstadium und ist derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">Farbe der Hintergrundbeleuchtung</translation>
@@ -1553,6 +1562,16 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183975772394450380">Strand</translation>
 <translation id="819278132617411009">Mit Google AI produktiver sein</translation>
+<translation id="82003371436638355">Wenn du „Eigenen Hintergrund erstellen“ auswählst, kannst du einen eigenen Prompt schreiben. Du kannst auch auf „Design wählen“ klicken und dann die unterstrichenen Wörter auswählen, um deinen KI-Hintergrund zu personalisieren.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kannst „Inspiriere mich“ anklicken, um weitere einzigartige KI-Bilder erstellen zu lassen.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wenn du dein eigenes Hintergrundbild erstellst, wird dein Prompt an Google-Server gesendet, um Bilder zu erstellen und das Produkt gemäß den <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Nutzungsbedingungen und der Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative KI kann Fehler machen, auch bei Informationen über Personen – überprüfe daher die Antworten. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
@@ -1574,6 +1593,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8312330582793120272">Medien abspielen</translation>
 <translation id="8318753676953949627">Keine Bilder vorhanden</translation>
 <translation id="8320910311642849813">Wald</translation>
+<translation id="8322464149031882595">Klicken, um fortzufahren</translation>
 <translation id="8329018942023753850">Rechner App</translation>
 <translation id="8336739000755212683">Bild des Gerätekontos ändern</translation>
 <translation id="8339024191194156249">Weitere Informationen zum automatischen Start</translation>
@@ -1720,6 +1740,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8961025972867871808">Pinguine</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
+<translation id="8972061581514441296">Klicken, um zurückzukehren</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Seite {NUMBER_OF_PAGES} scannen}other{Seite {NUMBER_OF_PAGES} scannen}}</translation>
 <translation id="89945434909472341">Dorf</translation>

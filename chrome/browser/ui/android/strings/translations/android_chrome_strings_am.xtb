@@ -1128,6 +1128,7 @@
 <translation id="6296366034485697675">ወደ ውጭ ላክ እና ሰርዝ</translation>
 <translation id="629730747756840877">መለያ</translation>
 <translation id="6303969859164067831">ዘግተው ይውጡ እና ስምረትን ያጥፉ</translation>
+<translation id="6307241780749477694">ሁሉንም የይለፍ ቃላትዎን በዚህ መሣሪያ ላይ ለማግኘት እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6312687380483398334">የድር መተግበሪያዎች (ፀጥታ)</translation>
 <translation id="6315386555979018699">ሰርዝ እና ቀጥል</translation>
 <translation id="6316139424528454185">የAndroid ስሪቱ አይደገፍም</translation>
@@ -1389,6 +1390,7 @@
 <translation id="7359002509206457351">የመዳረሻ መክፈያ ዘዴዎች</translation>
 <translation id="7363349185727752629">የግላዊነት ምርጫዎችዎ መመሪያ</translation>
 <translation id="7364103838544876661">የአሰሳ ውሂብን ለመሰረዝ ተጨማሪ አማራጮች</translation>
+<translation id="7365073365123878797">በGoogle የይለፍ ቃል አስተዳዳሪ የይለፍ ቃላትን ማስቀመጥ እና መጠቀም ለመጀመር Google Play አገልግሎቶችን ያዘምኑ</translation>
 <translation id="7375125077091615385">ዓይነት፦</translation>
 <translation id="7376560087009844242">ተጨማሪ የገጽ ጽሁፍ በማካተት፣ ለመፈለግ ይንኩን ሲጠቀሙ የተሻሉ ውጤቶችን ማየት ይችላሉ። ይህንን ለመለወጥ ሁልጊዜ <ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" />ን መጎብኘት ይችላሉ።</translation>
 <translation id="7379900596734708416">ለጣቢያዎች ጠቆር ያለ ገጽታ ይገኛል</translation>
@@ -1467,10 +1469,12 @@
 <translation id="7686086654630106285">ስለ በጣቢያ የተጠቆሙ ማስታወቂያዎች ተጨማሪ</translation>
 <translation id="7690596512217303514">መሣሪያዎ Chromeን መክፈት አልቻለም። ችግሩን ለማስተካከል የቅርብ የሆነውን የChrome ዝማኔ ከመተግበሪያ መደብርዎ ያውርዱ።</translation>
 <translation id="7691043218961417207">ለመከተል ይዘትን ያስሱ</translation>
+<translation id="7692761875510935111">በፍጥነት አሳሸ ውስጥ ክፈት። ይህን አቋራጭ ለማርትዕ ይንኩ እና ይያዙ።</translation>
 <translation id="7697383401610880082">መያዣ ይጎትቱ</translation>
 <translation id="7698359219371678927">በ<ph name="APP_NAME" /> ውስጥ ኢሜይል ይፍጠሩ</translation>
 <translation id="7702420606070050505">የቅርብ ጊዜ እንቅስቃሴ የግርጌ ሉህ ሙሉ ርዝመት ላይ ተከፍቷል</translation>
 <translation id="7707922173985738739">የተንቀሳቃሽ ስልክ ውሂብ</translation>
+<translation id="7708994397325774423">ሁሉንም የይለፍ ቃላትዎን ያግኙ</translation>
 <translation id="7733878270780732638">በመሣሪያ ላይ በቂ ቦታ የለም።</translation>
 <translation id="7746817319925672889">Google የይለፍ ቃል አስተዳዳሪ በቅርቡ በዚህ መሣሪያ ላይ መሥራት ያቆማል</translation>
 <translation id="774876555279732384">እንዲሁም የራስ-ሙላ አገልግሎቶች <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ይተዳደራሉ።</translation>
@@ -1612,6 +1616,7 @@
 <translation id="8310451567823644042">የይለፍ ቃላት በቅርቡ መሥራት ያቆማሉ</translation>
 <translation id="831192587911042850">የአሁኑን ድር ጣቢያ እርስዎ በሚከተሏቸው የድር ጣቢያዎች ዝርዝር ውስጥ ያክላል።</translation>
 <translation id="8320212361750431956">የቅርብ ጊዜ እንቅስቃሴ</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome በጣም ብዙ ማሳወቂያዎችን እየላኩ ሊሆኑ ስለሚችሉ ጣቢያዎች ያሳውቅዎታል</translation>
 <translation id="834313815369870491">ጣቢያዎችን በጭራሽ አይተርጉሙ</translation>
 <translation id="8348430946834215779">በተቻለ መጠን ኤችቲቲፒኤስ ይጠቀሙ እና እሱን የማይደግፉትን ጣቢያዎች ከመጫንዎ በፊት ማስጠንቀቂያ ያግኙ</translation>
@@ -1743,6 +1748,7 @@
 <translation id="8937772741022875483">የChrome እንቅስቃሰዎ ከዲጂታል ብቁ መሆን ይወገድ?</translation>
 <translation id="8942627711005830162">በሌላ መስኮት ውስጥ ክፈት</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ይህ ቋንቋ ሊወርድ አልቻለም ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="8946759102391960088">ለይለፍ ቃላትዎ መዳረሻን ያቆዩ</translation>
 <translation id="8957528460562961174">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው ከዚያም ወደመረጡት የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። Google Play አገልግሎቶች ስለማይገኝ Google የይለፍ ቃል አስተዳዳሪ መስራት አቁሟል።</translation>
 <translation id="8963117664422609631">ወደ የጣቢያ ቅንብሮች ይሂዱ</translation>
 <translation id="8965591936373831584">በመጠበቅ ላይ</translation>

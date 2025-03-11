@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Анимација чувара екрана</translation>
 <translation id="152892567002884378">Појачајте звук</translation>
 <translation id="1539864135338521185">лазулит</translation>
+<translation id="1548555207631326346">Одаберите тему, па изаберите подвучене речи да бисте персонализовали слике које је генерисала вештачка интелигенција.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изаберите Инспириши ме да бисте добили више јединствених и разноврснијих опција за слике које је генерисала вештачка интелигенција.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Када правите садржај помоћу вештачке интелигенције, упит се шаље серверима Google вештачке интелигенције ради генерисања слика и побољшања производа, у складу са <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google политиком приватности<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративни AI је експерименталан, у раном развоју и тренутно има ограничену доступност.</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="155865706765934889">Додирна табла</translation>
 <translation id="1561927818299383735">боја позадинског осветљења</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плажа</translation>
 <translation id="819278132617411009">Користите Google вештачку интелигенцију да бисте били продуктивнији</translation>
+<translation id="82003371436638355">Када изаберете Направите свој, напишите прилагођени упит. Можете и да изаберете „Одаберите тему“, па да изаберете подвучене речи да бисте персонализовали AI позадину.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изаберите Инспириши ме да бисте добили више јединствених и разноврснијих опција за слике које је генерисала вештачка интелигенција.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Када правите сопствену позадину, упит се шаље Google серверима ради генерисања слика и побољшања производа, у складу са <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google условима коришћења услуге и политиком приватности<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Немојте да наводите никакве личне, осетљиве или поверљиве информације.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративна вештачка интелигенција може да приказује нетачне информације, укључујући и информације о људима, па проверите одговоре. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Сазнајте више<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
 <translation id="8208861521865154048">Погодности</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">пуштајте медије</translation>
 <translation id="8318753676953949627">Нема слика</translation>
 <translation id="8320910311642849813">шума</translation>
+<translation id="8322464149031882595">Кликните да бисте ишли напред</translation>
 <translation id="8329018942023753850">апликација Калкулатор</translation>
 <translation id="8336739000755212683">Промените слику налога на уређају</translation>
 <translation id="8339024191194156249">Сазнајте више о аутоматском покретању</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Брзина пуњења</translation>
 <translation id="8970109610781093811">Поново покрени</translation>
+<translation id="8972061581514441296">Кликните да бисте се вратили</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES}. страницу}one{Скенирај {NUMBER_OF_PAGES}. страницу}few{Скенирај {NUMBER_OF_PAGES}. страницу}other{Скенирај {NUMBER_OF_PAGES}. страницу}}</translation>
 <translation id="89945434909472341">село</translation>

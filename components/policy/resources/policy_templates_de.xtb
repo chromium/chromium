@@ -2506,7 +2506,6 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2872968825059227580">GIF-Unterstützung deaktivieren.</translation>
 <translation id="2874209944580848064">Hinweis für <ph name="PRODUCT_OS_NAME" />-Geräte, die Android-Apps unterstützen:</translation>
 <translation id="287474029350993681">Streamen von Inhalten auf das Gerät deaktivieren</translation>
-<translation id="2874983257003956579">Tools zur Kursverwaltung konfigurieren</translation>
 <translation id="2875192972412983412">Gibt die Untergruppe der Druckserver an, von denen Serverdrucker abgefragt werden.
 
       Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Serverdrucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen.
@@ -4533,7 +4532,6 @@ Ist die Richtlinie deaktiviert, können Nutzer ihre Pakete in <ph name="PRODUCT_
       Diese Richtlinie wurde in Version M121 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="439661169333921592">„Objekt mit Tastaturfokus hervorheben“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="4397045637922200204">Kontowiederherstellung deaktivieren</translation>
-<translation id="4397157269508242312">Mit dieser Richtlinie wird festgelegt, ob Nutzer mit den Tools zur Kursverwaltung Inhalte senden/empfangen können, Schüler/Studenten oder Lehrkräfte Untertitel senden/erhalten können oder ob die Tools zur Kursverwaltung für Nutzer deaktiviert sind.</translation>
 <translation id="4397464099112037398">Standardeinstellung für die Berechtigung für die Fensterpositionierung</translation>
 <translation id="4398803806072237638">Die Syntax „<ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />“ für die Funktion „CSS custom state“ wird in <ph name="PRODUCT_NAME" /> in „<ph name="CUSTOM_STATE_NEW_SYNTAX" />“ geändert, damit sie den in <ph name="FIREFOX_PRODUCT_NAME" /> und <ph name="SAFARI_PRODUCT_NAME" /> vorgenommenen Änderungen entspricht. Mit dieser Richtlinie kann die alte, eingestellte Syntax bis M133 aktiviert werden.
 
@@ -4656,6 +4654,27 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4480694116501920047">SafeSearch erzwingen</translation>
 <translation id="4481202456143946404">Gültige Version der Nutzungsbedingungen, basierend auf den mit Google3 CL eingeführten Bedingungen.</translation>
+<translation id="4481804933320714808">Diese Funktion befindet sich in der Betaphase. Da es sich um eine Funktion in der Entwicklung handelt, die für unsere Trusted Tester verfügbar ist, kann es sein, dass noch Änderungen vorgenommen werden und sie aktualisiert wird.
+
+Mit dieser Richtlinie können Administratoren einen bestimmten Suchaggregator für Unternehmen festlegen, der Suchvorschläge und ‑ergebnisse in der Adressleiste einblendet, wenn er durch einen bestimmten Suchbegriff aktiviert wird. Nutzer können eine Suche starten, indem sie den im Feld „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ angegebenen Suchbegriff mit oder ohne das Präfix „@“ (z. B. „<ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />“), gefolgt von einem Leerzeichen oder Tabulatorzeichen, in die Adressleiste eingeben.
+
+Die folgenden Felder sind Pflichtfelder: „<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“, „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“, „<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ und „<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“.
+
+Das Feld „<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ entspricht dem Namen der Suchmaschine, der dem Nutzer in der Adressleiste angezeigt werden soll.
+
+Das Feld „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ entspricht dem Suchbegriff, den der Nutzer eingibt, um die Suche zu starten. Das Kürzel kann einfache Wörter und Zeichen enthalten, darf jedoch keine Leerzeichen enthalten und nicht mit dem @‑Symbol beginnen. Kürzel müssen eindeutig sein.
+
+Im Feld „<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ wird die URL angegeben, unter der gesucht werden soll. Gib die Webadresse für die Ergebnisseite der Suchmaschine ein und verwende <ph name="SEARCH_TERM_MARKER" /> als Platzhalter für die Suchanfrage.
+
+Durch das Feld „<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ wird die URL angegeben, die Suchvorschläge bereitstellt. Wenn „<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ <ph name="SEARCH_TERM_MARKER" /> enthält, ruft Chrome Suchvorschläge über eine GET-Anfrage an die URL ab, wobei <ph name="SEARCH_TERM_MARKER" /> durch die Suchanfrage des Nutzers ersetzt wird. Anderenfalls wird eine POST-Anfrage gesendet und die Anfrage des Nutzers wird in den POST-Parametern unter dem Schlüssel <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" /> übergeben.
+
+Durch das Feld „<ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ wird die URL eines Bildes angegeben, das für die Suchvorschläge verwendet wird. Wenn dieses Feld nicht konfiguriert ist, wird ein Standardsymbol verwendet. Es wird empfohlen, ein Favicon (Beispiel: <ph name="ICON_URL_EXAMPLE" />) zu verwenden.
+
+Das Feld „<ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ gibt an, ob die Adressleiste „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ erforderlich ist, um Suchvorschläge zu sehen. Wenn dieses Feld nicht festgelegt ist, ist die Adressleiste „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ nicht erforderlich.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="4481952213163895432">Google Assistant-Hotword deaktivieren</translation>
 <translation id="4482784169143060077">Automatische HTTPS-Upgrades aktivieren</translation>
 <translation id="4483120730995943109">JavaScript-Funktion setTimeout() mit einem Zeitlimit von 0 ms wird nicht auf 1 ms aufgerundet.</translation>
@@ -5019,7 +5038,6 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
 <translation id="4739596156184678950">Speichern von Dateien direkt in <ph name="GOOGLE_DRIVE_NAME" /> zulassen</translation>
 <translation id="4742973303930120836">Druckmodus mit Hintergrundgrafiken einschränken</translation>
 <translation id="4745232963710538589">Erweiterung „Insights“ zum Senden von Messwerten zur Nutzung aktivieren</translation>
-<translation id="4746394249367607432">Nutzer können einer Sitzung zur Kursverwaltung beitreten und hinzugefügt werden. Lehrkräfte können Inhalte an diese Nutzer senden.</translation>
 <translation id="4749670563834935149">Hiermit aktivierst du <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs auf dem Anmelde- und Sperrbildschirm.
 
 Mit dieser Richtlinie kannst du festlegen, für welche URLs <ph name="PRODUCT_OS_NAME" /> anbietet, den Attestierungsablauf zu starten. Dieser Ablauf ermöglicht den Websites, einen attestierten Satz kontextsensitiver Signale vom Gerät abzurufen.
@@ -9343,7 +9361,6 @@ Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tag
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="7827127381981620448">Plattform-App</translation>
 <translation id="7829436838673974723">Zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>
-<translation id="7829546795016635784">Nutzer können keine der Funktionen zur Kursverwaltung verwenden und keiner Sitzung zur Kursverwaltung hinzugefügt werden.</translation>
 <translation id="782978857350824974">Webauthentifizierungsanfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="7830775338190021763">Dateiübertragungsfunktion in Remote-Supportsitzungen von Unternehmen aktivieren</translation>
 <translation id="7832225468415136704">Verhindern, dass das Chrome Cleanup Tool das System regelmäßig scannt, und manuelle Scans deaktivieren</translation>

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animacija ohranjevalnika zaslona.</translation>
 <translation id="152892567002884378">Povečanje glasnosti</translation>
 <translation id="1539864135338521185">lazurit</translation>
+<translation id="1548555207631326346">Izberite temo in nato izberite podčrtane besede, če želite osebno prilagoditi slike z umetno inteligenco.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Izberite »Navdihni me«, da pridobite bolj edinstvene in raznolike možnosti slik z umetno inteligenco.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ko ustvarjate z umetno inteligenco, se poziv pošlje v strežnike Googlove umetne inteligence zaradi ustvarjanja slik in izboljšanja izdelka v skladu z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlovim pravilnikom o zasebnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativna umetna inteligenca je v preizkusni fazi, še v razvoju ter trenutno omejeno razpoložljiva.</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="155865706765934889">Sledilna ploščica</translation>
 <translation id="1561927818299383735">barva osvetlitve</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
 <translation id="819278132617411009">Uporabite Googlovo umetno inteligenco za doseganje večje storilnosti</translation>
+<translation id="82003371436638355">Ko izberete »Ustvarite lastnega«, vnesite poziv po meri. Izberete lahko tudi »Izberite temo« in nato izberete podčrtane besede, če želite osebno prilagoditi UI zaslonsko ozadje.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Izberite »Navdihni me«, da pridobite bolj edinstvene in raznolike možnosti slik z umetno inteligenco.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ko ustvarite lastno zaslonsko ozadje, se poziv pošlje v Googlove strežnike zaradi generiranja slik in izboljšanja izdelka v skladu z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlovimi pogoji storitve in pravilnikom o zasebnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ne vključite osebnih, občutljivih ali zaupnih podatkov.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativna umetna inteligenca se lahko zmoti, tudi o ljudeh, zato preverite odgovore. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Več o tem<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">predvajanje predstavnosti</translation>
 <translation id="8318753676953949627">Ni slik</translation>
 <translation id="8320910311642849813">gozd</translation>
+<translation id="8322464149031882595">Kliknite, če želite nadaljevati.</translation>
 <translation id="8329018942023753850">aplikacija računalo</translation>
 <translation id="8336739000755212683">Spremeni sliko računa v napravi</translation>
 <translation id="8339024191194156249">Preberite več o samodejnem zagonu</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">pingvini</translation>
 <translation id="8968751544471797276">Hitrost polnjenja</translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
+<translation id="8972061581514441296">Kliknite, če se želite vrniti</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Optično preberi}=1{Optično preberi stran {NUMBER_OF_PAGES}}one{Optično preberi stran {NUMBER_OF_PAGES}}two{Optično preberi stran {NUMBER_OF_PAGES}}few{Optično preberi stran {NUMBER_OF_PAGES}}other{Optično preberi stran {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">vas</translation>

@@ -1128,6 +1128,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6296366034485697675">Экспортолж, устгах</translation>
 <translation id="629730747756840877">Данс</translation>
 <translation id="6303969859164067831">Гараад синк хийхийг унтраах</translation>
+<translation id="6307241780749477694">Та энэ төхөөрөмж дээр бүх нууц үгээ авахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="6312687380483398334">Веб программууд (чимээгүй)</translation>
 <translation id="6315386555979018699">Устгаж, үргэлжлүүлэх</translation>
 <translation id="6316139424528454185">Android-н хувилбарыг дэмжээгүй байна</translation>
@@ -1389,6 +1390,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7359002509206457351">Төлбөрийн хэрэгсэлд хандах</translation>
 <translation id="7363349185727752629">Таны нууцлалын сонголтуудын гарын авлага</translation>
 <translation id="7364103838544876661">Интернэтээр үзсэн өгөгдлийг устгах бусад сонголт</translation>
+<translation id="7365073365123878797">Google Нууц үгний менежерийг ашиглан нууц үг хадгалж, ашиглаж эхлэхийн тулд Google Play үйлчилгээг шинэчилнэ үү</translation>
 <translation id="7375125077091615385">Бичих:</translation>
 <translation id="7376560087009844242">Хайхын тулд хүрэхийг ашиглаж байхдаа хуудасны текстээс илүү ихийг багтааснаар та илүү сайн илэрцүүд харж магадгүй. Та үүнийг өөрчлөхийн тулд хүссэн үедээ <ph name="BEGIN_LINK" />тохиргоонд<ph name="END_LINK" /> зочлох боломжтой.</translation>
 <translation id="7379900596734708416">Сайтуудад зориулсан Бараан загвар боломжтой байна</translation>
@@ -1467,10 +1469,12 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7686086654630106285">Сайтаас санал болгож буй зарын талаарх илүү дэлгэрэнгүй</translation>
 <translation id="7690596512217303514">Таны төхөөрөмж Chrome-г нээж чадсангүй. Уг асуудлыг засахын тулд апп дэлгүүрээсээ Chrome-н хамгийн сүүлийн үеийн шинэчлэлтийг татна уу.</translation>
 <translation id="7691043218961417207">Дагах контент судлах</translation>
+<translation id="7692761875510935111">Хөтчид түргэн нээнэ үү. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="7697383401610880082">Чирэх бариул</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />-д имэйл үүсгэнэ үү</translation>
 <translation id="7702420606070050505">Саяхны үйл ажиллагааны доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="7707922173985738739">Мобайл дата ашиглах</translation>
+<translation id="7708994397325774423">Бүх нууц үгээ аваарай</translation>
 <translation id="7733878270780732638">Төхөөрөмжид хангалттай зай байхгүй байна.</translation>
 <translation id="7746817319925672889">Google Нууц үгний менежер удахгүй энэ төхөөрөмж дээр ажиллахаа болино</translation>
 <translation id="774876555279732384">Автоматаар бөглөх хэсгийн үйлчилгээг мөн <ph name="BEGIN_LINK" />Android-н Тохиргоонд<ph name="END_LINK" /> удирддаг.</translation>
@@ -1612,6 +1616,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8310451567823644042">Нууц үгнүүд удахгүй ажиллахаа болино</translation>
 <translation id="831192587911042850">Одоогийн веб сайтыг таны дагаж буй веб сайтуудын жагсаалтад нэмнэ.</translation>
 <translation id="8320212361750431956">Саяхны үйл ажиллагаа</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome хэт олон мэдэгдэл илгээж байж магадгүй сайтуудын талаар танд мэдэгдэнэ</translation>
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8348430946834215779">Боломжтой үед HTTPS-г ашиглаж, түүнийг дэмждэггүй сайтуудыг ачаалахаас өмнө сануулга аваарай</translation>
@@ -1743,6 +1748,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8937772741022875483">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах уу?</translation>
 <translation id="8942627711005830162">Өөр цонхонд нээх</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Энэ хэлийг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
+<translation id="8946759102391960088">Нууц үгэндээ хандах эрхээ хадгалаарай</translation>
 <translation id="8957528460562961174">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, дараа нь сонгосон нууц үгний менежер лүүгээ импортолно уу. Google Play үйлчилгээг ашиглах боломжгүй тул Google Нууц үгний менежер ажиллахаа больсон.</translation>
 <translation id="8963117664422609631">Сайтын тохиргоо руу очих</translation>
 <translation id="8965591936373831584">хүлээгдэж байна</translation>

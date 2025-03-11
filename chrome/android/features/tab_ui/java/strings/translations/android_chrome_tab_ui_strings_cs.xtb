@@ -31,6 +31,7 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="1909810060368225529">Oznámení: Změny téhle sdílené skupiny karet jsou viditelné pro všechny. Ve sdílených skupinách karet můžou všichni provádět změny.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Přidat <ph name="TABS_COUNT_ONE" /> vybranou kartu do záložek}few{Přidat <ph name="TABS_COUNT_MANY" /> vybrané karty do záložek}many{Přidat <ph name="TABS_COUNT_MANY" /> vybrané karty do záložek}other{Přidat <ph name="TABS_COUNT_MANY" /> vybraných karet do záložek}}</translation>
+<translation id="2055057176188061528">Vyberte skupinu karet nebo vytvořte novou</translation>
 <translation id="2118649612461486615">Informace o prodejně</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. Vaše anonymní karta nebude k dispozici.}few{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaše anonymní karty nebudou k dispozici.}many{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaší anonymní karty nebude k dispozici.}other{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vašich anonymních karet nebude k dispozici.}}</translation>
 <translation id="2162620598375156287">Nyní <ph name="CURRENT_PRICE" /> na webu <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="3194464645767632461">hodnocení</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="3547352561153509682">Tímto skupinu smažete ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta}few{<ph name="MANY_ADDED" /> nové karty}many{<ph name="MANY_ADDED" /> nové karty}other{<ph name="MANY_ADDED" /> nových karet}}</translation>
 <translation id="3613492231657284463">Dialogové okno Skrýt neaktivní karty</translation>
 <translation id="3619255692378312441">Spravovat přístup</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="381219490185664296">Odebrat karty ze skupiny?</translation>
 <translation id="3940195383040445971">Sledovat ceny na kartách</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta, zavřeno: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> nové karty, zavřeno: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> nové karty, zavřeno: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> nových karet, zavřeno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Přidat kartu do skupiny}few{Seskupit karty}many{Seskupit karty}other{Seskupit karty}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivní karta}few{<ph name="TABS_COUNT_MANY" /> neaktivní karty}many{<ph name="TABS_COUNT_MANY" /> neaktivní karty}other{<ph name="TABS_COUNT_MANY" /> neaktivních karet}}</translation>
 <translation id="3969565576924904454">Otevřít skupinu <ph name="TITLE_OF_GROUP" /></translation>

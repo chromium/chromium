@@ -3023,6 +3023,7 @@
 <translation id="6337133576188860026">سيتم تفريغ أقل من <ph name="SIZE" />. وقد يكون تحميل بعض المواقع الإلكترونية أبطأ عند زيارتها في المرة القادمة.</translation>
 <translation id="6337534724793800597">فلترة السياسات حسب الاسم</translation>
 <translation id="633770708279464947">قيمة <ph name="SECURE_DNS_SALT" /> غير صالحة ولن يتم استخدامها.</translation>
+<translation id="6338645927051849741">‏كلمة المرور • مدير كلمات المرور في Google</translation>
 <translation id="6340739886198108203">حسب سياسة المشرف، لا يُنصح بأخذ لقطات شاشة أو تسجيل فيديوهات لمحتوى سرّي معروض على الشاشة:</translation>
 <translation id="6341434961864773665">{0,plural, =1{لا تنصح سياسة المشرف بتحميل هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بتحميل هذين الملفَين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بتحميل هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="6342069812937806050">الآن</translation>

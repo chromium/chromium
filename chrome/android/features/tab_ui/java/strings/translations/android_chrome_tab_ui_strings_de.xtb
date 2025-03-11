@@ -31,6 +31,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
 <translation id="1909810060368225529">Hinweis: Änderungen an dieser geteilten Tabgruppe sind für alle sichtbar. Jeder kann Änderungen an deinen geteilten Tabgruppen vornehmen.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab als Lesezeichen speichern}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs als Lesezeichen speichern}}</translation>
+<translation id="2055057176188061528">Tabgruppe auswählen oder neue erstellen</translation>
 <translation id="2118649612461486615">Händlerinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deinen Inkognitotab findest du dort jedoch nicht.}other{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deine # Inkognitotabs findest du dort jedoch nicht.}}</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="3194464645767632461">Bewertung</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3547352561153509682">Dadurch wird die Gruppe von allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> neuer Tab}other{<ph name="MANY_ADDED" /> neue Tabs}}</translation>
 <translation id="3613492231657284463">Dialogfeld „Inaktive Tabs“ ausblenden</translation>
 <translation id="3619255692378312441">Zugriff verwalten</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="381219490185664296">Tabgruppe aufheben?</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> neuer Tab, <ph name="ANY_CLOSED" /> geschlossen}other{<ph name="MANY_ADDED" /> neue Tabs, <ph name="ANY_CLOSED" /> geschlossen}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tab gruppieren}other{Tabs gruppieren}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktiver Tab}other{<ph name="TABS_COUNT_MANY" /> inaktive Tabs}}</translation>
 <translation id="3969565576924904454">„<ph name="TITLE_OF_GROUP" />“ öffnen</translation>

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animált képernyőkímélő</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
 <translation id="1539864135338521185">lazúrkő</translation>
+<translation id="1548555207631326346">Válasszon egy témát, majd válassza ki az aláhúzott szavakat az AI-képek személyre szabásához.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Amikor AI-jal hoz létre tartalmat, a rendszer elküldi az utasítást a Google AI szervereinek a képek generálásához és a termék továbbfejlesztéséhez <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />A Google adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A generatív AI egy kísérleti szolgáltatás, korai fejlesztési fázisban van, és jelenleg korlátozottan áll rendelkezésre.</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1561927818299383735">háttérvilágítás színe</translation>
@@ -1553,6 +1562,16 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">tengerpart</translation>
 <translation id="819278132617411009">A Google AI használatával hatékonyabb lehet</translation>
+<translation id="82003371436638355">Írhat egyéni utasítást a „Saját létrehozása” lehetőséget választva. Másik lehetőségként kiválaszthatja a „Téma kiválasztása” elemet, majd kijelölhet egy témát, és az aláhúzott szavak kiválasztásával személyre szabhatja az AI-háttérképet.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Amikor saját háttérképet hoz létre, a rendszer elküldi az utasítást a Google szervereinek a képek generálásához és a termék továbbfejlesztéséhez a <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Általános Szerződési Feltételeinek és adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően. Ne adjon meg személyes, kényes vagy bizalmas adatokat.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />További információ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
@@ -1574,6 +1593,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8312330582793120272">médiafájl lejátszása</translation>
 <translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8320910311642849813">erdő</translation>
+<translation id="8322464149031882595">Kattintson a továbblépéshez</translation>
 <translation id="8329018942023753850">számológép alkalmazás</translation>
 <translation id="8336739000755212683">Eszközfiókhoz tartozó kép módosítása</translation>
 <translation id="8339024191194156249">További információ az automatikus indításról</translation>
@@ -1720,6 +1740,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8961025972867871808">pingvinek</translation>
 <translation id="8968751544471797276">Töltési sebesség</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
+<translation id="8972061581514441296">Kattintson a visszalépéshez</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Keresés}=1{Keresés {NUMBER_OF_PAGES} oldalon}other{Keresés {NUMBER_OF_PAGES} oldalon}}</translation>
 <translation id="89945434909472341">falu</translation>

@@ -31,6 +31,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="1909810060368225529">Teade. Selle jagatud vahelehegrupi muutused on kõigile nähtavad. Kõik saavad teie jagatud vahelehegruppides muudatusi teha</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> valitud vahelehe järjehoidjatesse lisamine}other{<ph name="TABS_COUNT_MANY" /> valitud vahelehe järjehoidjatesse lisamine}}</translation>
+<translation id="2055057176188061528">Valige vahelehegrupp või looge uus vahelehegrupp</translation>
 <translation id="2118649612461486615">Poe teave</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Teie suletud vahelehti ja gruppe on võimalik uuesti avada jaotistest Hiljutised vahelehed ja Vahelehegrupid. Teie inkognito vaheleht pole saadaval.}other{Teie suletud vahelehti ja gruppe on võimalik uuesti avada jaotistest Hiljutised vahelehed ja Vahelehegrupid. Teie # inkognito vahelehte pole saadaval.}}</translation>
 <translation id="2162620598375156287">Nüüd <ph name="CURRENT_PRICE" /> veebisaidil <ph name="SOURCE_WEBSITE" /></translation>
@@ -67,6 +68,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="3194464645767632461">hinnang</translation>
 <translation id="3328308545011660196">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
 <translation id="3547352561153509682">See kustutab grupi kõikidest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uus vaheleht}other{<ph name="MANY_ADDED" /> uut vahelehte}}</translation>
 <translation id="3613492231657284463">Dialoog Peida inaktiivsed vahelehed</translation>
 <translation id="3619255692378312441">Juurdepääsu haldamine</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="3810973564298564668">Halda</translation>
 <translation id="381219490185664296">Kas tühistada vahelehegrupi sorteerimine?</translation>
 <translation id="3940195383040445971">Jälgige vahelehtedel hindu</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uus vaheleht, <ph name="ANY_CLOSED" /> suletud}other{<ph name="MANY_ADDED" /> uut vahelehte, <ph name="ANY_CLOSED" /> suletud}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupeeri vaheleht}other{Grupeeri vahelehed}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> passiivne vaheleht}other{<ph name="TABS_COUNT_MANY" /> passiivset vahelehte}}</translation>
 <translation id="3969565576924904454">Ava <ph name="TITLE_OF_GROUP" /></translation>

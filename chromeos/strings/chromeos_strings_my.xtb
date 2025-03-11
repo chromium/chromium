@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">စခရင်နားချိန်ပုံ လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
 <translation id="1539864135338521185">ပါလဒုတ္တာကျောက်</translation>
+<translation id="1548555207631326346">သင့် AI ပုံများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် အပြင်အဆင်ရွေးပြီး မျဉ်းသားထားသော စာလုံးများကို ရွေးပါ။<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ပိုမို၍ တစ်မူထူးခြားပြီး စုံလင်သော AI ပုံရွေးစရာများ ရရန် “စိတ်ကူးစိတ်သန်းရစေရန် လှုံ့ဆော်ပါ” ကို ရွေးပါ။
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ဖြင့် ပြုလုပ်သောအခါ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> နှင့်အညီ ပုံများထုတ်လုပ်ပြီး ထုတ်ကုန်မွမ်းမံရန်အတွက် ညွှန်ကြားချက်ကို Google AI ဆာဗာများသို့ ပို့သည်။
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ထုတ်လုပ်မှု AI ကို ကနဦးစမ်းသပ်ရေးဆွဲနေဆဲဖြစ်ပြီး လောလောဆယ်တွင် ရနိုင်မှုကို ကန့်သတ်ထားသည်။</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
 <translation id="1561927818299383735">နောက်ခံမီးအရောင်</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8183975772394450380">ကမ်းခြေ</translation>
 <translation id="819278132617411009">ပိုမိုလုပ်ဆောင်နိုင်ရန် Google AI သုံးပါ</translation>
+<translation id="82003371436638355">“သင့်ကိုယ်ပိုင် ပြုလုပ်ပါ” ကို ရွေးပါက စိတ်ကြိုက်ညွှန်ကြားချက်ရေးပါ။ သို့မဟုတ် “အပြင်အဆင် ရွေးရန်” ကို ရွေးပြီးနောက် သင့် AI နောက်ခံကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် မျဉ်းသားထားသော စာလုံးများ ရွေးနိုင်သည်။
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ပိုမို၍ တစ်မူထူးခြားပြီး စုံလင်သော AI ပုံရွေးစရာများ ရရန် “စိတ်ကူးစိတ်သန်းရစေရန် လှုံ့ဆော်ပါ” ကို ရွေးပါ။
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ကိုယ်ပိုင်နောက်ခံ ပြုလုပ်သောအခါ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ၏ ဝန်ဆောင်မှုစည်းမျဉ်းများနှင့် ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> တို့နှင့်အညီ ပုံများထုတ်လုပ်ပြီး ထုတ်ကုန်မွမ်းမံရန်အတွက် ညွှန်ကြားချက်ကို Google ဆာဗာများသို့ ပို့သည်။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်အချက်အလက်များကို မထည့်ပါနှင့်။
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ထုတ်လုပ်မှု AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာ စိစစ်ပါ။ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ပိုမိုလေ့လာရန်<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">မီဒီယာဖွင့်ရန်</translation>
 <translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
 <translation id="8320910311642849813">သစ်တော</translation>
+<translation id="8322464149031882595">ရှေ့ဆက်သွားရန် နှိပ်ပါ</translation>
 <translation id="8329018942023753850">ဂဏန်းတွက်စက် အက်ပ်</translation>
 <translation id="8336739000755212683">စက်ပစ္စည်း၏ အကောင့်ပုံ ပြောင်းရန်</translation>
 <translation id="8339024191194156249">အော်တိုစတင်မှုအကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">ပင်ဂွင်ငှက်</translation>
 <translation id="8968751544471797276">အားသွင်းနှုန်း</translation>
 <translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
+<translation id="8972061581514441296">နောက်ပြန်သွားရန် နှိပ်ပါ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{စကင်ဖတ်ရန်}=1{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}other{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}}</translation>
 <translation id="89945434909472341">ရွာ</translation>

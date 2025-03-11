@@ -31,6 +31,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="1909810060368225529">Эскертүү: Бул бөлүшүлгөн өтмөктөр тобуна киргизилген өзгөрүүлөр баарына көрүнөт. Бөлүшүлгөн өтмөк топторуна баары өзгөртүү киргизе алышат</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> тандалган өтмөктү кыстаруу}other{<ph name="TABS_COUNT_MANY" /> тандалган өтмөктү кыстаруу}}</translation>
+<translation id="2055057176188061528">Өтмөктөр тобун тандап же жаңы өтмөктөр тобун түзүңүз</translation>
 <translation id="2118649612461486615">Дүкөн жөнүндө маалымат</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. Жашыруун өтмөк жеткиликсиз болот.}other{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. # жашыруун өтмөк жеткиликсиз болот.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
@@ -67,6 +68,7 @@
 <translation id="3194464645767632461">рейтинг</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="3547352561153509682">Ушуну менен топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңы өтмөк}other{<ph name="MANY_ADDED" /> жаңы өтмөк}}</translation>
 <translation id="3613492231657284463">Жигерсиз өтмөктөр диалогун жашыруу</translation>
 <translation id="3619255692378312441">Кирүү мүмкүнчүлүгүн тескөө</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -74,6 +76,7 @@
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="381219490185664296">Өтмөктөр тобу ажыратылсынбы?</translation>
 <translation id="3940195383040445971">Бааларга өтмөктөрдө көз салуу</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңы өтмөк, <ph name="ANY_CLOSED" /> жабылды}other{<ph name="MANY_ADDED" /> жаңы өтмөк, <ph name="ANY_CLOSED" /> жабылды}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Өтмөктү топтоо}other{Өтмөктөрдү топтоо}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> жигерсиз өтмөк}other{<ph name="TABS_COUNT_MANY" /> жигерсиз өтмөк}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> ачуу</translation>

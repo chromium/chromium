@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">স্ক্ৰীন ছেভাৰৰ এনিমেশ্বন</translation>
 <translation id="152892567002884378">ভলিউম বঢ়াওক</translation>
 <translation id="1539864135338521185">লেপিছ লেজুলি</translation>
+<translation id="1548555207631326346">এটা থীম বাছনি কৰক আৰু তাৰ পাছত আপোনাৰ AI প্ৰতিচ্ছবিসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দসমূহ বাছনি কৰক।<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          অধিক অদ্বিতীয় আৰু বৈচিত্ৰময় AI প্ৰতিচ্ছবিৰ বিকল্পসমূহ লাভ কৰিবলৈ "মোক অনুপ্ৰাণিত কৰক" বাছনি কৰক।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          যেতিয়া আপুনি AIৰ জৰিয়তে সৃষ্টি কৰে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ৰ অধীনত প্ৰতিচ্ছবি সৃষ্টি আৰু প্ৰ’ডাক্ট উন্নত কৰিবলৈ প্ৰম্প্‌টটো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI সম্পৰীক্ষামূলক, বিকাশৰ প্ৰাৰম্ভিক স্থিতিত আছে আৰু বৰ্তমান ইয়াৰ উপলব্ধতা সীমিত।</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
 <translation id="1561927818299383735">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰৰ ৰং</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">সমুদ্ৰতীৰ</translation>
 <translation id="819278132617411009">অধিক উৎপাদনশীল হ’বলৈ Google AI ব্যৱহাৰ কৰক</translation>
+<translation id="82003371436638355">আপুনি “আপোনাৰ নিজৰ সৃষ্টি কৰক” বাছনি কৰিলে, এটা কাষ্টম প্ৰম্প্‌ট লিখক। বা আপুনি “এটা থীম বাছনি কৰক” বাছনি কৰিব পাৰে আৰু তাৰ পাছত আপোনাৰ AI ৱালপেপাৰ ব্যক্তিগতকৰণ কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দবোৰ বাছনি কৰিব পাৰে।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          অধিক অদ্বিতীয় আৰু বৈচিত্ৰময় AI প্ৰতিচ্ছবিৰ বিকল্পসমূহ লাভ কৰিবলৈ "মোক অনুপ্ৰাণিত কৰক" বাছনি কৰক।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপুনি নিজৰ ৱালপেপাৰ সৃষ্টি কৰোঁতে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ সেৱাৰ চৰ্তাৱলী আৰু গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুসৰি প্ৰতিচ্ছবি সৃষ্টি কৰিবলৈ তথা প্ৰ’ডাক্টটো উন্নত কৰিবলৈ প্ৰম্পট্‌টো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়। যিকোনো ধৰণৰ ব্যক্তিগত, সংবেদনশীল বা গোপন তথ্য অন্তৰ্ভুক্ত নকৰিব।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AIএ লোকসকলৰ বিষয়ে তথ্যকে ধৰি ভুল কৰিব পাৰে, সেয়ে ইয়াক পুনৰ পৰীক্ষা কৰক। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />অধিক জানক<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">মিডিয়া প্লে’ কৰক</translation>
 <translation id="8318753676953949627">কোনো প্ৰতিচ্ছবি নাই</translation>
 <translation id="8320910311642849813">অৰণ্য</translation>
+<translation id="8322464149031882595">আগবাঢ়ি যাবলৈ ক্লিক কৰক</translation>
 <translation id="8329018942023753850">কেলকুলেটৰ এপ্</translation>
 <translation id="8336739000755212683">ডিভাইচ একাউণ্টৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
 <translation id="8339024191194156249">স্বয়ংক্ৰিয়ভাৱে লঞ্চ হোৱাৰ বিষয়ে অধিক জানক</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">পেংগুইন</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
+<translation id="8972061581514441296">উভতি যাবলৈ ক্লিক কৰক</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্কেন কৰক}=1{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}one{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}other{পৃষ্ঠা {NUMBER_OF_PAGES} স্কেন কৰক}}</translation>
 <translation id="89945434909472341">গাঁও</translation>

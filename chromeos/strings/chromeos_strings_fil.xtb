@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animation ng screen saver</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong mga imaheng gawa ng AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Piliin ang "Pahingi ng inspirasyon" para makakuha ng higit pang natatangi at iba't ibang opsyon para sa mga larawang binuo ng AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kapag gumawa ka gamit ang AI, ipinapadala ang prompt sa mga server ng Google AI para bumuo ng mga larawan at pahusayin ang produkto, nang napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pang-eksperimento ang Generative AI, na nasa unang yugto ng pag-develop, at kasalukuyang may limitadong availability.</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">kulay ng backlit</translation>
@@ -1553,6 +1562,16 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">beach</translation>
 <translation id="819278132617411009">Gamitin ang Google AI para mas maging produktibo</translation>
+<translation id="82003371436638355">Kapag pinili mo ang “Gumawa ng sarili mo,” magsulat ng custom na prompt. O puwede mong piliin ang “Pumili ng tema” at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong AI wallpaper.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Piliin ang "Pahingi ng inspirasyon" para makakuha ng higit pang natatangi at iba't ibang opsyon para sa mga larawang binuo ng AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kapag gumawa ka ng sarili mong wallpaper, ipinapadala ang prompt sa mga server ng Google para bumuo ng mga imahe at pahusayin ang produkto, nang napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Mga Tuntunin ng Serbisyo at Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Puwedeng magkamali ang generative AI, kabilang ang tungkol sa mga tao, kaya i-double check ito. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Matuto pa<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
@@ -1574,6 +1593,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8312330582793120272">mag-play ng media</translation>
 <translation id="8318753676953949627">Walang Larawan</translation>
 <translation id="8320910311642849813">gubat</translation>
+<translation id="8322464149031882595">Mag-click para magpatuloy</translation>
 <translation id="8329018942023753850">calculator app</translation>
 <translation id="8336739000755212683">Baguhin ang larawan ng account ng device</translation>
 <translation id="8339024191194156249">Matuto pa tungkol sa awtomatikong paglunsad</translation>
@@ -1720,6 +1740,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8961025972867871808">mga penguin</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
+<translation id="8972061581514441296">I-click para bumalik</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{I-scan}=1{I-scan ang page {NUMBER_OF_PAGES}}one{I-scan ang page {NUMBER_OF_PAGES}}other{I-scan ang page {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">village</translation>

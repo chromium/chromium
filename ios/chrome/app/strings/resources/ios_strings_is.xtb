@@ -284,7 +284,6 @@
 <translation id="2122754583996902531">Vafranum þínum er stjórnað. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Leita að texta sem þú afritaðir</translation>
 <translation id="2147127444698817042">Aðeins í boði í iPhone</translation>
-<translation id="2148716181193084225">Í dag</translation>
 <translation id="2148799636999124959">Skráðu þig inn á vefsvæði og forrit á fljótan hátt með vistuðum aðgangsorðum.</translation>
 <translation id="2149968176347646218">Tengingin er ekki örugg</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
@@ -325,7 +324,6 @@
 <translation id="2287614783861766820">{count,plural, =1{Þessu heimilisfangi verður eytt úr tækinu.}one{Þessum heimilisföngum verður eytt úr tækinu.}other{Þessum heimilisföngum verður eytt úr tækinu.}}</translation>
 <translation id="2297989278479054870">Eftir að þú skráir þig út verða bókamerkin, aðgangsorðin og fleira á Google-reikningnum þínum fjarlægt úr tækinu.</translation>
 <translation id="2299218006564889602">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google.</translation>
-<translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Loka flipa</translation>
 <translation id="2311077293164383652">Loka festum flipa</translation>
 <translation id="2316129865977710310">Nei, takk</translation>
@@ -463,7 +461,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2883151425485251736">Skoðaðu og breyttu umfjöllunarefnum sem þú hefur falið á reikningnum þínum</translation>
 <translation id="288655811176831528">Loka flipa</translation>
 <translation id="2888631381369839306">Kveikt er á tilkynningum fyrir verðrakningu</translation>
-<translation id="288902476966286676">Endursenda til sendanda</translation>
 <translation id="2893168226686371498">Sjálfgefinn vafri</translation>
 <translation id="2894757982205307093">Nýr flipi í hópi</translation>
 <translation id="2902312830803030883">Fleiri aðgerðir</translation>
@@ -594,7 +591,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3530767473765895035">Stjórna reikningum í þessu tæki…</translation>
 <translation id="3533436815740441613">Nýr flipi</translation>
 <translation id="3547356470684043247">Lestu umsagnir viðskiptavina til að sjá álit þeirra á vörum, þjónustu og upplifunum og auðvelda þér að taka upplýstar ákvarðanir</translation>
-<translation id="3549391962818677448">Tilraun gerð til afhendingar. Önnur tilraun verður gerð</translation>
 <translation id="3557336313807607643">Bæta við tengiliði</translation>
 <translation id="355765753469272474">Afturkalla</translation>
 <translation id="3562379378751492229">Veldu þá stöðu sem virkar best fyrir þig.</translation>
@@ -884,7 +880,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4803185665210547709">Stjórnað af fyrirtækinu þínu.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nafn á korti</translation>
-<translation id="4808646838864186379">Hætt var við afhendingu</translation>
 <translation id="4808744395915275922">Uppfærslur</translation>
 <translation id="4813345808229079766">Tenging</translation>
 <translation id="4821595350501541683">Flipum var lokað og vefskoðunargögnum eytt</translation>
@@ -913,7 +908,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4894963374040315706">Með þessu móti geturðu notað röddina til að leita</translation>
 <translation id="4895540042460820904">Síðast opnað</translation>
 <translation id="4896467949657706481">Flipum var lokað; þú skráðist út</translation>
-<translation id="490709372351071121">Sækir stöðu pakka</translation>
 <translation id="4913626501929406101">Þú getur núna örugglega deilt afriti að aðgangsorðinu þínu með einhverjum í fjölskylduhópnum. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4936354130727646074">Aldrei færa</translation>
@@ -1080,7 +1074,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5633237939819267663">{count,plural, =1{Bókamerki vistað í „{title}“}one{{count} bókamerki vistað í „{title}“}other{{count} bókamerki vistuð í „{title}“}}</translation>
 <translation id="564170563478022912">Skrá út? Óvistuðum reikningsgögnum verður eytt.</translation>
 <translation id="5642707040609478753">Merkja sem ólesið</translation>
-<translation id="5646284034397250191">Merking búin til. Dagsetning bíður staðfestingar</translation>
 <translation id="5647096944343801045">Stór aðgangsstaður</translation>
 <translation id="5647193778876139879">Haltu heimilisfangi inni.</translation>
 <translation id="5647702255748985085">Hætta í hópi?</translation>
@@ -1113,7 +1106,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5740123193752401435">Leita í flipum…</translation>
 <translation id="5744274077973758795">Kveikt á tilkynningum fyrir <ph name="FEATURE_NAME" /></translation>
 <translation id="574762237186762643">Viðburðir</translation>
-<translation id="5748177854685749242">Afhending <ph name="DATE" /></translation>
 <translation id="5749158352074143502">Halda áfram á þessum flipa</translation>
 <translation id="5753021559215751319">Vista aðgangsorð</translation>
 <translation id="5756525336488841345">Fela „Bókamerki“</translation>
@@ -1166,7 +1158,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="598634819525651074">Flatarmál</translation>
 <translation id="5988097621740394599">Sjá verðlækkanir á flipum.</translation>
 <translation id="5988851877894965432">Opna vefslóðir í Chrome</translation>
-<translation id="5996189683621529225">Tilbúið til afhendingar</translation>
 <translation id="6001839398155993679">Byrjum ballið</translation>
 <translation id="6011308810877101166">Bæta leitartillögur</translation>
 <translation id="6012140227487808125">Dulkóðar…</translation>
@@ -1234,7 +1225,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6251835855431997163">Sjálfvirk útfylling fyrir <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Opna tengla í forritinu í stað vafrans.</translation>
-<translation id="6266039999629596120">Bregðast þarf við</translation>
 <translation id="6268773951964630964">Finna afritaða mynd</translation>
 <translation id="6271462272606946663">Fela „Biðja um snjallvef“</translation>
 <translation id="6271824294945464304">Aðgangsorði deilt</translation>
@@ -1266,6 +1256,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6368102751067608420">Til að eyða öllum gögnum aðgangsorðastjórnunar</translation>
 <translation id="6374469231428023295">Reyna aftur</translation>
 <translation id="6387994324662817823">Aðgangsorð eru aðeins vistuð í aðgangsorðastjórnun Google í þessu tæki.</translation>
+<translation id="6393156038355142111">Leggja til traust aðgangsorð</translation>
 <translation id="6404422529625928907">Opna í Google Drive</translation>
 <translation id="6404511346730675251">Breyta bókamerki</translation>
 <translation id="6406506848690869874">Samstilling</translation>
@@ -1527,7 +1518,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7476548258282096076">Þetta kort sýnir vefsvæðin sem þú opnar oftast.</translation>
 <translation id="7484645889979462775">Aldrei fyrir þetta vefsvæði</translation>
 <translation id="7486006552035434095">Haltu tækjunum þínum samstilltum</translation>
-<translation id="7488874549363591659">Afhent</translation>
 <translation id="7491131399623468277">Opna stillingar…</translation>
 <translation id="7498234416455752244">Halda áfram að breyta</translation>
 <translation id="7500244509706269886">Fylla út eyðublað sjálfkrafa</translation>

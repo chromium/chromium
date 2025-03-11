@@ -3021,6 +3021,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6337133576188860026">Magbabakante ng wala pang <ph name="SIZE" />. Maaaring mag-load nang mas mabagal ang ilang site sa iyong susunod na pagbisita.</translation>
 <translation id="6337534724793800597">I-filter ang mga patakaran ayon sa pangalan</translation>
 <translation id="633770708279464947">Invalid ang value ng <ph name="SECURE_DNS_SALT" /> at hindi ito gagamitin.</translation>
+<translation id="6338645927051849741">Password • Google Password Manager</translation>
 <translation id="6340739886198108203">Hindi inirerekomenda ng patakaran ng administrator ang pagkuha ng mga screenshot o recording kapag may nakikitang kumpidensyal na content:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na i-upload ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Ngayon lang</translation>

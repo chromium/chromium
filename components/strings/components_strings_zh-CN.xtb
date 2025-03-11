@@ -3016,6 +3016,7 @@
 <translation id="6337133576188860026">释放不到 <ph name="SIZE" /> 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="6337534724793800597">按名称过滤政策</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 值无效，因此不会被使用。</translation>
+<translation id="6338645927051849741">密码 • Google 密码管理工具</translation>
 <translation id="6340739886198108203">管理员政策不建议在屏幕显示机密内容时截屏/录屏：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理员政策不建议将这个文件上传到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件上传到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">刚刚</translation>

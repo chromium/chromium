@@ -2302,6 +2302,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="256517381556987641">Sinhronizacija fajlova je dosad pronašla više fajlova (ukupno <ph name="ITEMS_FOUND" />) i još uvijek provjerava prostor za pohranu. Za nekoliko minuta pokušajte ponovo uključiti Sinhronizaciju fajlova.</translation>
 <translation id="2565214867520763227">Uključite čitač ekrana</translation>
 <translation id="2566146433999774844">Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUM_OTHER_MEMBERS" /> osoba/e</translation>
+<translation id="256726287944589768">Prikaži podnožje na stranici Nova kartica</translation>
 <translation id="2568694057933302218">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="2568774940984945469">Spremnik trake s informacijama</translation>
 <translation id="2569972178052279830">Naziv maloprodavca</translation>
@@ -2810,6 +2811,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2921081876747860777">Kreirajte lozinku da zaštitite svoje lokalne podatke.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> će se sada zaključati.
 Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Ostali zadaci (njih <ph name="OTHER_TASK_NUM" />) u istoj grupi zadataka: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Ostali zadaci (njih <ph name="OTHER_TASK_NUM" />) u istoj grupi zadataka: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ostali zadaci (njih <ph name="OTHER_TASK_NUM" />) u istoj grupi zadataka: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Ukloni ovaj račun</translation>
 <translation id="2923644930701689793">Pristupite snimljenim fotografijama telefona</translation>
 <translation id="292371311537977079">Postavke Chromea</translation>
