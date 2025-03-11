@@ -198,9 +198,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     }
 
     private SuggestionsTileView findTileView(SiteSuggestion data) {
-        int tileCount = mMvTilesLayout.getTileCount();
-        for (int i = 0; i < tileCount; i++) {
-            SuggestionsTileView tileView = (SuggestionsTileView) mMvTilesLayout.getTileAt(i);
+        int childCount = mMvTilesLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            SuggestionsTileView tileView = (SuggestionsTileView) mMvTilesLayout.getChildAt(i);
             if (data.equals(tileView.getData())) return tileView;
         }
         return null;
@@ -234,7 +234,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     }
 
     private void updateTilesView() {
-        if (mMvTilesLayout.getTileCount() < 1) return;
+        if (mMvTilesLayout.getChildCount() < 1) return;
 
         if (mIsTablet) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewEdgePaddingForTablet);

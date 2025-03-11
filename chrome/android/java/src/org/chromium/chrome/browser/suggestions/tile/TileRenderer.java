@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Utility class that renders {@link Tile}s into a provided {@link TilesLinearLayout}, creating and
+ * Utility class that renders {@link Tile}s into a provided {@link ViewGroup}, creating and
  * manipulating the views as needed.
  */
 public class TileRenderer {
@@ -150,23 +151,20 @@ public class TileRenderer {
     }
 
     /**
-     * Renders tile views in the given {@link TilesLinearLayout}, reusing existing tile views where
+     * Renders tile views in the given {@link ViewGroup}, reusing existing tile views where
      * possible because view inflation and icon loading are slow.
-     *
      * @param parent The layout to render the tile views into.
      * @param sectionTiles Tiles to render.
      * @param setupDelegate Delegate used to setup callbacks and listeners for the new views.
      */
     public void renderTileSection(
-            List<Tile> sectionTiles,
-            TilesLinearLayout parent,
-            TileGroup.TileSetupDelegate setupDelegate) {
+            List<Tile> sectionTiles, ViewGroup parent, TileGroup.TileSetupDelegate setupDelegate) {
         try (TraceEvent e = TraceEvent.scoped("TileRenderer.renderTileSection")) {
             // Map the old tile views by url so they can be reused later.
             SuggestionsTileViewCache oldTileViews = new SuggestionsTileViewCache();
-            int tileCount = parent.getTileCount();
-            for (int i = 0; i < tileCount; i++) {
-                SuggestionsTileView tileView = (SuggestionsTileView) parent.getTileAt(i);
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                SuggestionsTileView tileView = (SuggestionsTileView) parent.getChildAt(i);
                 oldTileViews.put(tileView.getData(), tileView);
             }
 
@@ -179,7 +177,7 @@ public class TileRenderer {
                 if (tileView == null) {
                     tileView = buildTileView(tile, parent, setupDelegate);
                 }
-                parent.addTile(tileView);
+                parent.addView(tileView);
             }
         }
     }
@@ -205,18 +203,18 @@ public class TileRenderer {
 
     /**
      * Inflates a new tile view, initializes it, and loads an icon for it.
-     *
      * @param tile The tile that holds the data to populate the new tile view.
-     * @param parent The parent of the new tile view.
+     * @param parentView The parent of the new tile view.
      * @param setupDelegate The delegate used to setup callbacks and listeners for the new view.
      * @return The new tile view.
      */
     @VisibleForTesting
     SuggestionsTileView buildTileView(
-            Tile tile, TilesLinearLayout parent, TileGroup.TileSetupDelegate setupDelegate) {
+            Tile tile, ViewGroup parentView, TileGroup.TileSetupDelegate setupDelegate) {
         SuggestionsTileView tileView =
                 (SuggestionsTileView)
-                        LayoutInflater.from(parent.getContext()).inflate(mLayout, parent, false);
+                        LayoutInflater.from(parentView.getContext())
+                                .inflate(mLayout, parentView, false);
 
         tileView.initialize(tile, mTitleLinesCount);
 
