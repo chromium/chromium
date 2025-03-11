@@ -18,11 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
-#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -36,6 +34,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#endif
 
 namespace safe_browsing {
 
@@ -81,6 +85,7 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
     is_incognito_ = browser_context->IsOffTheRecord();
     is_enhanced_protection_ =
         profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
+#if !BUILDFLAG(IS_ANDROID)
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     if (!profile->IsOffTheRecord() && identity_manager &&
@@ -88,6 +93,7 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           identity_manager);
     }
+#endif
   }
 }
 
@@ -349,11 +355,13 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (is_enhanced_protection_ && token_fetcher_) {
     token_fetcher_->Start(base::BindOnce(
         &CheckClientDownloadRequestBase::OnGotAccessToken, GetWeakPtr()));
     return;
   }
+#endif
 
   SendRequest();
 }
@@ -371,11 +379,13 @@ void CheckClientDownloadRequestBase::StartTimeout() {
       service_->GetDownloadRequestTimeout());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void CheckClientDownloadRequestBase::OnGotAccessToken(
     const std::string& access_token) {
   access_token_ = access_token;
   SendRequest();
 }
+#endif
 
 void CheckClientDownloadRequestBase::SendRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -453,6 +463,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->site_for_cookies =
       net::SiteForCookies::FromUrl(resource_request->url);
 
+#if !BUILDFLAG(IS_ANDROID)
   if (!access_token_.empty()) {
     LogAuthenticatedCookieResets(
         *resource_request,
@@ -460,6 +471,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token_);
   }
+#endif
 
   network::mojom::URLLoaderFactory* url_loader_factory =
       service_->GetURLLoaderFactory(GetBrowserContext()).get();
@@ -480,8 +492,10 @@ void CheckClientDownloadRequestBase::SendRequest() {
                      GetWeakPtr()));
   request_start_time_ = base::TimeTicks::Now();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Add the access token to the proto for display on chrome://safe-browsing
   client_download_request_->set_access_token(access_token_);
+#endif
 
   // The following is to log this ClientDownloadRequest on any open
   // chrome://safe-browsing pages. If no such page is open, the request is

@@ -298,7 +298,6 @@ void DownloadProtectionService::CheckDownloadUrl(
     download::DownloadItem* item,
     CheckDownloadCallback callback) {
   DCHECK(!item->GetUrlChain().empty());
-  DCHECK(ShouldCheckDownloadUrl(item));
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   // |web_contents| can be null in tests.

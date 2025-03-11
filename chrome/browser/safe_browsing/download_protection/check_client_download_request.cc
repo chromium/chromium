@@ -224,11 +224,16 @@ bool CheckClientDownloadRequest::IsSupportedDownload(
     *reason = final_url.has_host() ? REASON_REMOTE_FILE : REASON_LOCAL_FILE;
     return false;
   }
+  // On Android, ignore REASON_NOT_BINARY_FILE, because it is derived from
+  // FileTypePolicies, which are currently only applicable to desktop platforms.
+  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this exception.
+#if !BUILDFLAG(IS_ANDROID)
   // This check should be last, so we know the earlier checks passed.
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(target_path)) {
     *reason = REASON_NOT_BINARY_FILE;
     return false;
   }
+#endif
   return true;
 }
 
