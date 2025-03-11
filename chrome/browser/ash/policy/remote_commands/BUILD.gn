@@ -240,6 +240,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/login/test:test_support",
