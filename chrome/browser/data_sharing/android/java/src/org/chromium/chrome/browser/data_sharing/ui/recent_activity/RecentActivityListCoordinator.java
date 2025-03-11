@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -29,6 +31,7 @@ import org.chromium.url.GURL;
  * A coordinator for the recent activity UI. This includes (1) creating and managing bottom sheet,
  * and (2) building and showing the list of recent activity UI.
  */
+@NullMarked
 public class RecentActivityListCoordinator {
     /** Interface to fetch favicons for tabs to be used for data sharing UI. */
     public interface FaviconProvider {
@@ -65,7 +68,7 @@ public class RecentActivityListCoordinator {
     private final View mContentContainer;
     private final RecyclerView mContentRecyclerView;
     private final RecentActivityListMediator mMediator;
-    private RecentActivityBottomSheetContent mBottomSheetContent;
+    private @Nullable RecentActivityBottomSheetContent mBottomSheetContent;
 
     /**
      * Constructor.
@@ -79,7 +82,7 @@ public class RecentActivityListCoordinator {
      */
     public RecentActivityListCoordinator(
             Context context,
-            @NonNull BottomSheetController bottomSheetController,
+            BottomSheetController bottomSheetController,
             MessagingBackendService messagingBackendService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
@@ -141,6 +144,7 @@ public class RecentActivityListCoordinator {
     }
 
     private void closeBottomSheet() {
+        assumeNonNull(mBottomSheetContent);
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
     }
 }

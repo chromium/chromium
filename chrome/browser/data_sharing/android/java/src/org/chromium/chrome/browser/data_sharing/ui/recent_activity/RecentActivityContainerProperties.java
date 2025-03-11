@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Properties for the recent activity list container view. */
+@NullMarked
 class RecentActivityContainerProperties {
     public static final WritableBooleanPropertyKey EMPTY_STATE_VISIBLE =
             new WritableBooleanPropertyKey();
