@@ -97,6 +97,11 @@ class RendererStartupHelper : public KeyedService,
   // Sends a message to all renderers to update the developer mode.
   void OnDeveloperModeChanged(bool in_developer_mode);
 
+  // Sends a message to all renderers to update user scripts API allowed state
+  // for an extension.
+  void OnUserScriptsAllowedChanged(const ExtensionId& extension_id,
+                                   bool allowed);
+
   // Sets properties for the user script world of the given `world_id` for
   // the given `extension` in all applicable renderers.
   void SetUserScriptWorldProperties(const Extension& extension,

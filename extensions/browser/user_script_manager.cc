@@ -12,6 +12,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/scripting_constants.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/state_store.h"
@@ -25,6 +26,7 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/user_scripts_allowed_state.h"
 #include "extensions/common/utils/content_script_utils.h"
 
 namespace extensions {
@@ -105,6 +107,9 @@ bool UserScriptManager::AreUserScriptsAllowed(
     const Extension& extension,
     content::BrowserContext* browser_context) const {
   return CanExtensionUseUserScriptsAPI(extension) &&
+         // We check the pref directly (instead of
+         // GetCurrentUserScriptAllowedState() because this method can be called
+         // before the allowed state is set.
          IsUserScriptPrefEnabled(extension.id());
 }
 
@@ -137,8 +142,22 @@ bool UserScriptManager::IsUserScriptPrefEnabled(
 void UserScriptManager::SetUserScriptPrefEnabled(
     const ExtensionId& extension_id,
     bool enabled) {
+  CHECK(ExtensionRegistry::Get(browser_context_)
+            ->GenerateInstalledExtensionsSet()
+            .Contains(extension_id));
+
+  if (IsUserScriptPrefEnabled(extension_id) == enabled) {
+    // Return early since the pref is already set correctly.
+    return;
+  }
+
   ExtensionPrefs::Get(browser_context_)
       ->SetBooleanPref(extension_id, kUserScriptsAllowedPref, enabled);
+  SetCurrentUserScriptAllowedState(util::GetBrowserContextId(browser_context_),
+                                   extension_id, enabled);
+
+  RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+      ->OnUserScriptsAllowedChanged(extension_id, /*allowed=*/enabled);
 }
 
 void UserScriptManager::OnExtensionWillBeInstalled(

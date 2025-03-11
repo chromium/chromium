@@ -479,6 +479,8 @@ static_library("common") {
     "url_pattern_set.h",
     "user_script.cc",
     "user_script.h",
+    "user_scripts_allowed_state.cc",
+    "user_scripts_allowed_state.h",
     "utils/base_string.cc",
     "utils/base_string.h",
     "utils/content_script_utils.cc",
