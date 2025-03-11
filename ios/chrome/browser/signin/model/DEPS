@@ -27,4 +27,8 @@ specific_include_rules = {
     "+ios/chrome/browser/widget_kit/model/features.h",
     "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],
+  "^authentication_service.mm": [
+    "+ios/chrome/browser/widget_kit/model/features.h",
+    "+ios/chrome/browser/widget_kit/model/model_swift.h",
+  ],
 }
