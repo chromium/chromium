@@ -924,7 +924,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, Size(),
-      GetFormat(), image_info.alphaType(), image_info.refColorSpace(),
+      GetFormat(), image_info.alphaType(), GetColorSpace(),
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 }
