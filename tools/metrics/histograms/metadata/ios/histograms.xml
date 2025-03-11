@@ -2006,7 +2006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IsDefaultBrowser{NumberOfDays}" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>sebsg@chromium.org</owner>
   <owner>gujen@chromium.org</owner>
   <summary>
@@ -2144,7 +2144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Undetermined"
-    enum="MediaAPIParams" expires_after="2025-05-31">
+    enum="MediaAPIParams" expires_after="2025-09-07">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2196,7 +2196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.LocationBar.LensOverlayEntrypointAvailable" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>christianxu@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
   <summary>
@@ -2206,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.LocationBar.LensOverlayEntrypointHidden"
-    enum="IOSLocationBarLeadingIconType" expires_after="2025-07-06">
+    enum="IOSLocationBarLeadingIconType" expires_after="2025-09-07">
   <owner>christianxu@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
   <summary>
@@ -2320,7 +2320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Disabled" enum="IOSMagicStackModuleType"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>Records when a module was disabled.</summary>
@@ -2337,7 +2337,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.MagicStack.Module.{Event}.TabResumption.{Surface}.{Source}"
-    units="index" expires_after="2025-07-06">
+    units="index" expires_after="2025-09-07">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2369,7 +2369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.ScrollActionToIndex" units="index"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2800,7 +2800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>marq@chromium.org</owner>
   <owner>fedegermi@chromium.org</owner>
   <summary>
@@ -3192,7 +3192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OpenIn.MimeType" enum="IOSOpenInMimeType"
-    expires_after="2025-07-09">
+    expires_after="2025-09-07">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -3563,7 +3563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.WidgetPromo.Action"
-    enum="PromoWithInstructionsAction" expires_after="2025-07-06">
+    enum="PromoWithInstructionsAction" expires_after="2025-09-07">
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -3975,7 +3975,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToProvisional"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -4201,7 +4201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SafetyCheck.FreshnessTrigger"
-    enum="IOSSafetyCheckFreshnessTrigger" expires_after="2025-07-06">
+    enum="IOSSafetyCheckFreshnessTrigger" expires_after="2025-09-07">
   <owner>bwwilliams@google.com</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -4346,7 +4346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.TotalRegularSessionSize" units="MB"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4359,7 +4359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.WebKitCacheSize" units="MB"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4664,7 +4664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>The context in which Search With has been triggered.</summary>
@@ -5024,7 +5024,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2025-07-09">
+<histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2025-09-07">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -5199,7 +5199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Idle.IncognitoTabGridPage" enum="Boolean"
-    expires_after="2025-07-09">
+    expires_after="2025-09-07">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>

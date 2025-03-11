@@ -634,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyDeviceIdValidity2.{EnrollmentType}"
-    enum="EnterprisePolicyDeviceIdValidity" expires_after="2025-07-06">
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="2025-09-07">
   <owner>igorcov@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>
@@ -1655,7 +1655,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.RestrictionConfigured"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2025-07-06">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2025-09-07">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.PolicyFetchResult"
-    enum="EnrollmentNudgePolicyFetchResult" expires_after="2025-07-06">
+    enum="EnrollmentNudgePolicyFetchResult" expires_after="2025-09-07">
   <owner>andreydav@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
@@ -2076,7 +2076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.UserAction"
-    enum="EnrollmentNudgeUserAction" expires_after="2025-07-06">
+    enum="EnrollmentNudgeUserAction" expires_after="2025-09-07">
   <owner>andreydav@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
@@ -3654,7 +3654,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.{ContentAnalysisProtocol}Request.{ContentAnalysisRequestType}.Duration"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>

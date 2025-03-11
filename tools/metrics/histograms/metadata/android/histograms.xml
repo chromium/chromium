@@ -1379,7 +1379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DeviceAuthenticator.AuthSource"
-    enum="DeviceAuthSource" expires_after="2025-07-06">
+    enum="DeviceAuthSource" expires_after="2025-09-07">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <owner>theocristea@google.com</owner>
@@ -1660,7 +1660,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.FromStrip.Result"
-    enum="DragDropTabResult" expires_after="2025-07-06">
+    enum="DragDropTabResult" expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1725,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.Type" enum="DragDropType"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1781,7 +1781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DynamicTopChrome.WindowResize.DesktopWindowModeState"
-    enum="DesktopWindowModeState" expires_after="2025-07-06">
+    enum="DesktopWindowModeState" expires_after="2025-09-07">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -2617,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MaybeCopyContentAreaAsBitmap.Time" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2892,7 +2892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.TimeToFullyShow{MessageIdentifier}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2945,7 +2945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumActivities.DesktopWindow"
-    units="activities" expires_after="2025-07-06">
+    units="activities" expires_after="2025-09-07">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -2996,7 +2996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances.DesktopWindow"
-    units="instances" expires_after="2025-07-06">
+    units="instances" expires_after="2025-09-07">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -3032,7 +3032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.WindowManager.DesktopWindowModeState"
-    enum="DesktopWindowModeState" expires_after="2025-07-06">
+    enum="DesktopWindowModeState" expires_after="2025-09-07">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -4055,7 +4055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DocumentLoad" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4078,7 +4078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DocumentLoadResult.Detail"
-    enum="AndroidPdfLoadResult" expires_after="2025-07-06">
+    enum="AndroidPdfLoadResult" expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4145,7 +4145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DownloadUrlEncoded" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4155,7 +4155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.FindInPageCounts" units="count"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4970,7 +4970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Tab.BackgroundColorChange"
-    enum="BackgroundColorChangeOrigin" expires_after="2025-07-06">
+    enum="BackgroundColorChangeOrigin" expires_after="2025-09-07">
   <owner>clhager@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -4986,7 +4986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Tab.BackgroundColorChange.PreOptimization"
-    enum="BackgroundColorChangeOrigin" expires_after="2025-07-06">
+    enum="BackgroundColorChangeOrigin" expires_after="2025-09-07">
   <owner>clhager@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -5268,7 +5268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TabGroupCollapsed" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>nemco@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>zheliooo@google.com</owner>
@@ -5458,7 +5458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.BlockCaptureReason"
-    enum="TopToolbarBlockCaptureReason" expires_after="2025-07-06">
+    enum="TopToolbarBlockCaptureReason" expires_after="2025-09-07">
   <owner>skym@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -5496,7 +5496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.UIDialogShown" enum="AndroidDialogType"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>alexmitra@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

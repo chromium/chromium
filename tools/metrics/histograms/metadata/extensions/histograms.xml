@@ -3926,7 +3926,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus{DispatchTarget}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-07-06">
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-09-07">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3949,7 +3949,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelStatus{WorkerStatus}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-07-06">
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-09-07">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3980,7 +3980,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelWorkerDispatchStatus{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-07-06">
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-09-07">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3998,7 +3998,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-07-06">
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-09-07">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4171,7 +4171,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}3"
-    enum="ExtensionLocation" expires_after="2025-07-06">
+    enum="ExtensionLocation" expires_after="2025-09-07">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4860,7 +4860,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -5200,7 +5200,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestListenerEvaluationTimeInMicroseconds.{HandlerTypes}"
-    units="microseconds" expires_after="2025-07-06">
+    units="microseconds" expires_after="2025-09-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>

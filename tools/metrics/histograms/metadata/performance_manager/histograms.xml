@@ -143,7 +143,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.CPUMonitorMemoryUse.{ResourceContextType}.{ResourceContextState}"
-    units="KB" expires_after="2025-07-06">
+    units="KB" expires_after="2025-09-07">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

@@ -445,7 +445,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.InvalidatesDuringLayout" units="count"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>dpranke@chromium.org</owner>
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
@@ -504,7 +504,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentInitializingColorProvider" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -521,7 +521,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentProcessingOnNativeThemeUpdatedEvent"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>

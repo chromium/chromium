@@ -1618,7 +1618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.DeviceType{Direction}"
-    enum="NearbyShareDeviceType" expires_after="2025-07-06">
+    enum="NearbyShareDeviceType" expires_after="2025-09-07">
   <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1634,7 +1634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Discovery.Delay.FromStartDiscoveryTo{EndState}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1671,7 +1671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Discovery.NumShareTargets.{Variation}"
-    units="share targets" expires_after="2025-07-06">
+    units="share targets" expires_after="2025-09-07">
   <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1902,7 +1902,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Payload.FinalStatus{UpgradedMedium}"
-    enum="NearbyShareFinalStatus" expires_after="2025-07-06">
+    enum="NearbyShareFinalStatus" expires_after="2025-09-07">
   <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1933,7 +1933,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Nearby.Share.Payload.Medium.Over5MbTransferred{ShareTargetType}"
-    enum="NearbyShareUpgradedMedium" expires_after="2025-07-06">
+    enum="NearbyShareUpgradedMedium" expires_after="2025-09-07">
   <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1952,7 +1952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Payload.NumAttachments{Type}" units="attachments"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1968,7 +1968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Payload.TotalSize{Variation}" units="KB"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -2001,7 +2001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Payload.TransferRate{Variation}" units="KB/s"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -2139,7 +2139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Share.Transfer.FinalStatus{Variation}"
-    enum="NearbyShareTransferFinalStatus" expires_after="2025-07-06">
+    enum="NearbyShareTransferFinalStatus" expires_after="2025-09-07">
   <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -2242,7 +2242,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Nearby.Share.TransferDuration.Receiver.BandwidthUpgradeToAllFilesReceived2{TransferMedium}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
@@ -2324,7 +2324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Nearby.Share.TransferDuration.Sender.ConnectionEstablishedToBandwidthUpgrade2{TransferMedium}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>

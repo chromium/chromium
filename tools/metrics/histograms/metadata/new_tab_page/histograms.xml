@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeSidePanelImpression"
-    enum="NTPCustomizeChromeSidePanelImpression" expires_after="2025-07-06">
+    enum="NTPCustomizeChromeSidePanelImpression" expires_after="2025-09-07">
   <owner>howardcha@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>webstore-eng@google.com</owner>

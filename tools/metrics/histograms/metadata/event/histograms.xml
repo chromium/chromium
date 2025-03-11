@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.GestureScrollEnd.BrowserCompositorFrame.Count"
-    units="counts" expires_after="2025-07-06">
+    units="counts" expires_after="2025-09-07">
   <owner>peilinwang@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{ScrollEventType}.GenerationToBrowserMain"
-    units="microseconds" expires_after="2025-07-06">
+    units="microseconds" expires_after="2025-09-07">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>

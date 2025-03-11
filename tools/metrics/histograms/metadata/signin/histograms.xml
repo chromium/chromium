@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountInPref.State" enum="AccountInPrefState"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1500,7 +1500,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline"
-    units="Days" expires_after="2025-07-03">
+    units="Days" expires_after="2025-09-07">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1512,7 +1512,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.RepromptCount" units="reprompts"
-    expires_after="2025-07-03">
+    expires_after="2025-09-07">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1567,7 +1567,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.Heuristic.SupervisionState.{InterceptType}"
-    enum="SinginInterceptSupervisionState" expires_after="2025-07-06">
+    enum="SinginInterceptSupervisionState" expires_after="2025-09-07">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -2551,7 +2551,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignInPromo.{UserAction}" enum="SigninAccessPoint"
-    expires_after="2025-07-09">
+    expires_after="2025-09-07">
   <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

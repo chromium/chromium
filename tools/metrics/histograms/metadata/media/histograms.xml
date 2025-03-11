@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEndToEndLatency"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSender}.PercentDroppedFrames"
-    units="%" expires_after="2025-07-06">
+    units="%" expires_after="2025-09-07">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -1177,7 +1177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1255,7 +1255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.SystemDelay" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1947,7 +1947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>guidou@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -3995,7 +3995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Result"
-    enum="UserMediaRequestResult" expires_after="2025-07-06">
+    enum="UserMediaRequestResult" expires_after="2025-09-07">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -4856,7 +4856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.PlatformVideoDecoding.VideoCodecProfile"
-    enum="VideoCodecProfile" expires_after="2025-07-06">
+    enum="VideoCodecProfile" expires_after="2025-09-07">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -5207,7 +5207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderError" enum="MediaStatusCode"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>posciak@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
@@ -5786,7 +5786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>

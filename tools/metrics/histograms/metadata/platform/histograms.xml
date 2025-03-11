@@ -822,7 +822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
-    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2025-07-06">
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -846,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2025-07-06">
+    units="count" expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
     enum="Platform.FbPreprocessor.PseudonymizationResult"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2888,7 +2888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.U2F.FipsStatus.{U2FMode}" enum="U2FFipsStatus"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>

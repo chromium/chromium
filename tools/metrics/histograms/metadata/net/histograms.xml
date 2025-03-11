@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2096,7 +2096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpAuthTarget" enum="HttpAuthTarget"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>mpdenton@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2855,7 +2855,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.GenerateProxyAuthTokenBlocked{HostType}.{Protocol}"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2884,7 +2884,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.GenerateServerAuthTokenBlocked{HostType}.{Protocol}"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2913,7 +2913,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.InitializeStreamBlocked{HostType}.{Protocol}"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2926,7 +2926,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.InitializeStreamBlockTime{HostType}.{Protocol}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4923,7 +4923,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.SessionKeyMismatch.MismatchedFieldCombination{HostType}"
-    enum="QuicSessionKeyMismatchedFieldCombination" expires_after="2025-07-06">
+    enum="QuicSessionKeyMismatchedFieldCombination" expires_after="2025-09-07">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4937,7 +4937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.SessionKeyMismatch.MismatchedField{HostType}"
-    enum="QuicSessionKeyMismatchedField" expires_after="2025-07-06">
+    enum="QuicSessionKeyMismatchedField" expires_after="2025-09-07">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4950,7 +4950,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.SessionKeyMismatch.TotalMismatchedField{HostType}"
-    units="count" expires_after="2025-07-06">
+    units="count" expires_after="2025-09-07">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4963,7 +4963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.SessionKeyMismatch{HostType}"
-    enum="QuicSessionKeyPartialMatchResult" expires_after="2025-07-06">
+    enum="QuicSessionKeyPartialMatchResult" expires_after="2025-09-07">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5308,7 +5308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ZeroRttReasonNonGoogle"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2025-07-06">
+    enum="SSLHandshakeEarlyDataReason" expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5801,7 +5801,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryOnDisk.OpenEntryLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5812,7 +5812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryOnDisk.ReadDataLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5833,7 +5833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.MetadataReadTime.{Result}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5870,7 +5870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStore.{MethodName}.Error"
-    enum="SharedDictionaryStoreError" expires_after="2025-07-06">
+    enum="SharedDictionaryStoreError" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5896,7 +5896,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryTransaction.AbortedWhileReadingDictionary.{SuccessOrFailure}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5922,7 +5922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryTransaction.NetResultWithDict.{CertState}"
-    enum="NetErrorCodes" expires_after="2025-07-06">
+    enum="NetErrorCodes" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5939,7 +5939,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedByResponseWhenAvailable2.MainFrame.{ConnectionType}.{CertState}"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -5962,7 +5962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedResponseErrorCodes2.{DestinationType}.{CertState}"
-    enum="NetErrorCodes" expires_after="2025-07-06">
+    enum="NetErrorCodes" expires_after="2025-09-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -6744,7 +6744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.CompressionRatio" units="%"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
