@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/page_transition_types.h"
 
 namespace base {
 class Clock;
@@ -52,6 +53,12 @@ class CONTENT_EXPORT BtmShortVisitObserver
   std::optional<std::string> prev_site_;
   // The UKM source id of the page visited before the current page.
   ukm::SourceId prev_source_id_ = ukm::kInvalidSourceId;
+  // Several properties of the navigation that led to the current page.
+  struct {
+    bool was_renderer_initiated = false;
+    bool had_user_gesture = false;
+    ui::PageTransition page_transition = ui::PAGE_TRANSITION_LINK;
+  } last_navigation;
   // The time the current page committed.
   base::Time last_committed_at_;
   // The source ID of the current page -- used in DidFinishNavigation() to emit

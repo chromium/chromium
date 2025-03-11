@@ -297,6 +297,36 @@ TEST_F(AIModelDownloadProgressManagerTest,
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
+       DoesntReceiveUpdatesForEventsWithNegativeDownloadedBytes) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", 100);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Doesn't receive an update when the downloaded bytes are negative.
+  SendUpdate(component, ComponentState::kDownloading, -1);
+  monitor.ExpectNoUpdate();
+  FastForwardBy(base::Milliseconds(51));
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       DoesntReceiveUpdatesForEventsWithNegativeTotalBytes) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", -1);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Doesn't receive an update when the total bytes are negative.
+  SendUpdate(component, ComponentState::kDownloading, 0);
+  monitor.ExpectNoUpdate();
+  FastForwardBy(base::Milliseconds(51));
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
        DoesntReceiveUpdatesForComponentsNotObserving) {
   AIModelDownloadProgressManager manager;
   FakeMonitor monitor;
@@ -410,6 +440,68 @@ TEST_F(AIModelDownloadProgressManagerTest, ShouldReceive100percent) {
 
   // No other events should be fired.
   FastForwardBy(base::Milliseconds(51));
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       AllComponentsMustBeObservedBeforeSendingEvents) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component1("component_id1", 100);
+  FakeComponent component2("component_id2", 1000);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component1.id(), component2.id()});
+
+  // Shouldn't receive this updates since we haven't observed `component2` yet.
+  SendUpdate(component1, ComponentState::kDownloading, 0);
+  monitor.ExpectNoUpdate();
+  FastForwardBy(base::Milliseconds(51));
+
+  // Should receive this update since now we've seen both components.
+  SendUpdate(component2, ComponentState::kDownloading, 10);
+  uint64_t total_bytes = component1.total_bytes() + component2.total_bytes();
+  monitor.ExpectReceivedNormalizedUpdate(0, total_bytes);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       ProgressIsNormalizedAgainstTheSumOfTheComponentsTotalBytes) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component1("component_id1", 100);
+  FakeComponent component2("component_id2", 1000);
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component1.id(), component2.id()});
+
+  // Trigger the first event by sending updates for components 1 and 2.
+  uint64_t component1_downloaded_bytes = 10;
+  SendUpdate(component1, ComponentState::kDownloading,
+             component1_downloaded_bytes);
+  uint64_t component2_downloaded_bytes = 20;
+  SendUpdate(component2, ComponentState::kDownloading,
+             component2_downloaded_bytes);
+  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Component 2 receives another 5 bytes.
+  component2_downloaded_bytes += 5;
+  SendUpdate(component2, ComponentState::kDownloading,
+             component2_downloaded_bytes);
+
+  // Should receive an update of the sum of component1 and component2's
+  // downloaded bytes normalized with the sum of their total_bytes
+  uint64_t downloaded_bytes =
+      component1_downloaded_bytes + component2_downloaded_bytes;
+  uint64_t total_bytes = component1.total_bytes() + component2.total_bytes();
+  uint64_t normalized_downloaded_bytes =
+      AIUtils::NormalizeModelDownloadProgress(downloaded_bytes, total_bytes);
+
+  monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
+                               AIUtils::kNormalizedDownloadProgressMax);
 }
 
 }  // namespace on_device_ai

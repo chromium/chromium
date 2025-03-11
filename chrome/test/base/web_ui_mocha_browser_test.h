@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_WEB_UI_MOCHA_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_WEB_UI_MOCHA_BROWSER_TEST_H_
 
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
@@ -79,6 +80,7 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
 
   void set_test_loader_host(const std::string& host);
   void set_test_loader_scheme(const std::string& scheme);
+  void set_test_loader_redirect(const std::string& path);
 
  private:
   // Helper that performs setup steps normally done by test_loader.html, invoked
@@ -100,6 +102,10 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   // content::kChromeUIScheme.
   // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_scheme_;
+
+  // The domain-relative URL to which the <scheme>://<host>/test_loader.html...
+  // redirects. Defaults to nullopt, expecting that the URL doesn't redirect.
+  std::optional<std::string> test_loader_redirect_;
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, JavaScript console messages are only added to test logs if

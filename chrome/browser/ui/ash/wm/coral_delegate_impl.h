@@ -32,6 +32,7 @@ class CoralDelegateImpl : public ash::CoralDelegate,
                               send_feedback_callback) override;
   void CheckGenAIAgeAvailability(GenAIInquiryCallback callback) override;
   bool GetGenAILocationAvailability() override;
+  bool GetLanguageAvailability() override;
 
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(

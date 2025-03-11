@@ -11,12 +11,12 @@ AddNewAddressProfileTest.*
 AppInfoDialogBrowserTest.*
 AppMenuBrowserTest*.InvokeUi_*
 AskGoogleForSuggestionsDialogTest.*
-AutofillBubbleSignInPromoInteractiveUITest.*
 BatchUploadDialogViewPixelTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BrowserViewScrimPixelTest.*
 BubbleFrameViewBrowserTest.*
+BubbleSignInPromoInteractiveUITest.*
 ChromeLabs*UiTest.*
 ChromeSignoutConfirmationPromptPixelTest.*
 ConfirmBubbleTest.*

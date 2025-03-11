@@ -88,7 +88,7 @@ public class TabGroupVisualDataManager {
         mFilterObserver =
                 new TabGroupModelFilterObserver() {
                     @Override
-                    public void willMergeTabToGroup(Tab movedTab, int newRootId) {
+                    public void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
                         String sourceGroupTitle = filter.getTabGroupTitle(movedTab.getRootId());
                         String targetGroupTitle = filter.getTabGroupTitle(newRootId);
@@ -113,7 +113,8 @@ public class TabGroupVisualDataManager {
                     }
 
                     @Override
-                    public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
+                    public void willMoveTabOutOfGroup(
+                            Tab movedTab, @Nullable Token destinationTabGroupId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
 
                         // If the group will become empty (0 tabs) delete the title.

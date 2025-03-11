@@ -273,6 +273,12 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridLayoutData& layout_data,
       GapFragmentData::GapGeometry* gap_geometry) const;
 
+  // Updates the blocked status of the relevant gap intersection
+  // points in `gap_geometry` based on the span of `grid_item`.
+  void MarkBlockedStatusForGapIntersections(
+      const GridItemData& grid_item,
+      GapFragmentData::GapGeometry* gap_geometry) const;
+
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).
   void PlaceOutOfFlowItems(const GridLayoutData& layout_data,

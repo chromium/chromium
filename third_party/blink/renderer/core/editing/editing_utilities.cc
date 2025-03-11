@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
 #include <array>
+#include <string_view>
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
@@ -105,12 +106,12 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-std::ostream& operator<<(std::ostream& os, PositionMoveType type) {
-  static const std::array<const char*, 3> kTexts = {
+std::string_view ToString(PositionMoveType type) {
+  static const std::array<std::string_view, 3> kTexts = {
       "CodeUnit", "BackwardDeletion", "GraphemeCluster"};
   DCHECK_LT(static_cast<size_t>(type), kTexts.size())
       << "Unknown PositionMoveType value";
-  return os << kTexts[static_cast<size_t>(type)];
+  return kTexts[static_cast<size_t>(type)];
 }
 
 UChar WhitespaceRebalancingCharToAppend(const String& string,
@@ -743,7 +744,7 @@ PositionTemplate<Strategy> PreviousPositionOfAlgorithm(
         return PositionTemplate<Strategy>(
             node, PreviousGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << ToString(move_type);
     }
   }
 
@@ -805,7 +806,7 @@ PositionTemplate<Strategy> NextPositionOfAlgorithm(
         return PositionTemplate<Strategy>::EditingPositionOf(
             node, NextGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << ToString(move_type);
     }
   }
 

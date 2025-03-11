@@ -522,7 +522,7 @@ using base::UserMetricsAction;
 #pragma mark - OmniboxViewConsumer
 
 - (void)updateAdditionalText:(NSString*)additionalText {
-  [self.view updateAdditionalText:additionalText];
+  [self.textField setAdditionalText:additionalText];
 }
 
 - (void)setThumbnailImage:(UIImage*)image {

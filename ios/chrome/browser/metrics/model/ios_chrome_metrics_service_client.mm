@@ -40,6 +40,7 @@
 #import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/entropy_state_provider.h"
 #import "components/metrics/field_trials_provider.h"
+#import "components/metrics/install_date_provider.h"
 #import "components/metrics/metrics_data_validation.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -380,6 +381,10 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
   // LINT.IfChange(UkmProviders)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
+
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::InstallDateProvider>(local_state));
+
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CPUMetricsProvider>());
 

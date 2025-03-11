@@ -64,7 +64,7 @@ enum PrivateAggregationErrorEvent {
   // equivalent to just calling `ContributeToHistogram()`, but there
   // are some differences, see details of the two-phase flows in
   // `PrivateAggregationPendingContributions`.
-  kAlreadyTriggeredNonInternalError
+  kAlreadyTriggeredExternalError
 };
 
 // Interface implemented in the browser for worklets and renderers to forward

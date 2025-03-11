@@ -90,6 +90,11 @@ using base::UserMetricsAction;
   return self;
 }
 
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.consumer setThumbnailImage:image];
+  [self.omniboxTextController onThumbnailSet:image != nil];
+}
+
 #pragma mark - Setters
 
 - (void)setConsumer:(id<OmniboxConsumer>)consumer {
@@ -150,7 +155,7 @@ using base::UserMetricsAction;
   base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
   // Update the UI.
   [self.consumer setThumbnailImage:nil];
-  [self.omniboxTextController onThumbnailRemoved];
+  [self.omniboxTextController onThumbnailRemovedDuringEdit];
 }
 
 #pragma mark - OmniboxTextControllerDelegate

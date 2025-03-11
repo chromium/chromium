@@ -31,8 +31,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -155,6 +155,12 @@ class CookieEncryptionProviderBrowserTest
         base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
       GTEST_SKIP() << "Elevation is required for this test.";
     }
+
+    // Browser tests use a custom user data dir, which would normally result in
+    // App-Bound encryption being disabled with
+    // `SupportLevel::kNotUsingDefaultUserDataDir`, so this call forces the
+    // non-standard testing data dir to be considered a default one.
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
 #endif  // BUILDFLAG(IS_WIN)
 
     auto configuration =

@@ -58,29 +58,6 @@
 namespace mojo {
 namespace core {
 
-namespace {
-
-// On Android base::SysInfo::OperatingSystemVersionNumbers actually returns the
-// build numbers and not the kernel version as the other posix OSes would.
-void KernelVersionNumbers(int32_t* major_version,
-                          int32_t* minor_version,
-                          int32_t* bugfix_version) {
-  struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
-  }
-  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
-                        bugfix_version);
-  if (num_read < 1)
-    *major_version = 0;
-  if (num_read < 2)
-    *minor_version = 0;
-  if (num_read < 3)
-    *bugfix_version = 0;
-}
-
-}  // namespace
-
 // DataAvailableNotifier is a simple interface which allows us to
 // substitute how we notify the reader that we've made data available,
 // implementations might be EventFDNotifier or FutexNotifier.
@@ -918,12 +895,8 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
     //
     // Additionally, the behavior of eventfd prior to the 4.0 kernel could be
     // racy.
-    int os_major_version = 0;
-    int os_minor_version = 0;
-    int os_bugfix_version = 0;
-    KernelVersionNumbers(&os_major_version, &os_minor_version,
-                         &os_bugfix_version);
-    if (os_major_version < 4) {
+    if (base::SysInfo::KernelVersionNumber::Current() <
+        base::SysInfo::KernelVersionNumber(4, 0)) {
       // Due to the potentially races in 3.17/3.18 kernels with eventfd,
       // explicitly require a 4.x+ kernel.
       return false;

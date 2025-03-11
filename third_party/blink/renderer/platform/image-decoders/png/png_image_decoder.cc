@@ -93,7 +93,17 @@ const AtomicString& PNGImageDecoder::MimeType() const {
 
 bool PNGImageDecoder::SetFailed() {
   reader_.reset();
+  scaler_.reset();
   return ImageDecoder::SetFailed();
+}
+
+Vector<SkISize> PNGImageDecoder::GetSupportedDecodeSizes() const {
+  return (Failed() || !scaler_) ? Vector<SkISize>()
+                                : scaler_->SupportedDecodeSizes();
+}
+
+gfx::Size PNGImageDecoder::DecodedSize() const {
+  return (Failed() || !scaler_) ? gfx::Size() : scaler_->DecodedSize();
 }
 
 wtf_size_t PNGImageDecoder::DecodeFrameCount() {
@@ -140,6 +150,21 @@ void PNGImageDecoder::Decode(wtf_size_t index) {
   }
 }
 
+bool PNGImageDecoder::IsInterlaced() const {
+  return !Failed() && reader_ &&
+         png_get_interlace_type(reader_->PngPtr(), reader_->InfoPtr()) ==
+             PNG_INTERLACE_ADAM7;
+}
+
+bool PNGImageDecoder::IsAnimated() const {
+  return !Failed() && reader_ && reader_->IsAnimated();
+}
+
+wtf_size_t PNGImageDecoder::GetBytesPerRawPixel() const {
+  const wtf_size_t bytes_per_pixel = has_alpha_channel_ ? 4 : 3;
+  return decode_to_half_float_ ? (bytes_per_pixel * 2) : bytes_per_pixel;
+}
+
 void PNGImageDecoder::Parse(ParseQuery query) {
   if (Failed() || (reader_ && reader_->ParseCompleted())) {
     return;
@@ -151,6 +176,11 @@ void PNGImageDecoder::Parse(ParseQuery query) {
 
   if (!reader_->Parse(*data_, query)) {
     SetFailed();
+    return;
+  }
+
+  if (!scaler_ && IsDecodedSizeAvailable()) {
+    scaler_ = std::make_unique<PNGImageScaler>(this);
   }
 }
 
@@ -694,7 +724,7 @@ static inline void SetRGBARawRowNoAlphaNeon(png_bytep src_ptr,
 }
 #endif
 
-void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
+void PNGImageDecoder::RowAvailable(unsigned char* raw_row_buffer,
                                    unsigned row_index,
                                    int) {
   if (current_frame_ >= frame_buffer_cache_.size()) {
@@ -710,14 +740,13 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
 
     DCHECK_EQ(ImageFrame::kFramePartial, buffer.GetStatus());
 
-    if (PNG_INTERLACE_ADAM7 ==
-        png_get_interlace_type(png, reader_->InfoPtr())) {
-      unsigned color_channels = has_alpha_channel_ ? 4 : 3;
-      base::CheckedNumeric<int> interlace_buffer_size = color_channels;
-      interlace_buffer_size *= Size().GetCheckedArea();
-      if (decode_to_half_float_) {
-        interlace_buffer_size *= 2;
-      }
+    if (IsInterlaced()) {
+      // TODO(crbug.com/381913638): Downscaling interlaced PNGs is not currently
+      // supported. To support it, Size() here should change to DecodedSize();
+      // more changes may also be needed here. Investigate.
+      base::CheckedNumeric<int> interlace_buffer_size =
+          Size().GetCheckedArea() * GetBytesPerRawPixel();
+
       if (!interlace_buffer_size.IsValid()) {
         longjmp(JMPBUF(png), 1);
       }
@@ -750,7 +779,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
   // frame size, ignore the extra rows and use the frame size as the source
   // of truth. libpng can send extra rows: ignore them too, this to prevent
   // memory writes outside of the image bounds (security).
-  if (!row_buffer) {
+  if (!raw_row_buffer) {
     return;
   }
 
@@ -764,6 +793,19 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
     return;
   }
   DCHECK_LT(y, Size().height());
+
+  unsigned char* row_buffer = raw_row_buffer;
+  gfx::Rect scaled_rect = frame_rect;
+  if (scaler_->MustDownscale()) {
+    std::optional<int> scaled_y_index = scaler_->CalculateScaledYIndex(y);
+    if (!scaled_y_index.has_value()) {
+      return;
+    }
+    scaled_rect = scaler_->CalculateScaledFrameRect(scaled_rect);
+    scaler_->DownscaleRowInPlace(row_buffer, frame_rect.width(),
+                                 scaled_rect.width());
+    y = scaled_y_index.value();
+  }
 
   /* libpng comments (continued).
    *
@@ -788,21 +830,18 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
   png_bytep row = row_buffer;
 
   if (png_bytep interlace_buffer = reader_->InterlaceBuffer()) {
-    unsigned bytes_per_pixel = has_alpha ? 4 : 3;
-    if (decode_to_half_float_) {
-      bytes_per_pixel *= 2;
-    }
-    row = interlace_buffer + (row_index * bytes_per_pixel * Size().width());
+    row =
+        interlace_buffer + (row_index * GetBytesPerRawPixel() * Size().width());
     png_progressive_combine_row(reader_->PngPtr(), row, row_buffer);
   }
 
   // Write the decoded row pixels to the frame buffer. The repetitive
   // form of the row write loops is for speed.
-  const int width = frame_rect.width();
+  const int width = scaled_rect.width();
   png_bytep src_ptr = row;
 
   if (!decode_to_half_float_) {
-    ImageFrame::PixelData* const dst_row = buffer.GetAddr(frame_rect.x(), y);
+    ImageFrame::PixelData* const dst_row = buffer.GetAddr(scaled_rect.x(), y);
     if (has_alpha) {
       if (ColorProfileTransform* xform = ColorTransform()) {
         ImageFrame::PixelData* xform_dst = dst_row;
@@ -908,7 +947,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
     }
   } else {  // for if (!decode_to_half_float_)
     ImageFrame::PixelDataF16* const dst_row_f16 =
-        buffer.GetAddrF16(frame_rect.x(), y);
+        buffer.GetAddrF16(scaled_rect.x(), y);
 
     // TODO(zakerinasab): https://crbug.com/874057
     // Due to a lack of 16 bit APNG encoders, multi-frame 16 bit APNGs are not

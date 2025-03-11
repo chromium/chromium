@@ -722,6 +722,10 @@ fn target_vendor_to_condition(target_vendor: &str) -> Condition {
         return Condition::AlwaysFalse;
     }
 
+    if target_vendor == "apple" {
+        return Condition::Expr("is_apple".to_string());
+    }
+
     Condition::Unsupported(format!("unknown `target_vendor` name: `{target_vendor}`"))
 }
 

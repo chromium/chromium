@@ -68,6 +68,8 @@ suite('AmbientSubpageElementTest', function() {
     personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
     personalizationStore.data.ambient.previews = previews;
     personalizationStore.data.ambient.duration = duration;
+    personalizationStore.data.ambient.ambientThemePreviews =
+        ambientProvider.ambientThemePreviews;
     const ambientSubpage =
         initElement(AmbientSubpageElement, {path: Paths.AMBIENT, queryParams});
     personalizationStore.notifyObservers();

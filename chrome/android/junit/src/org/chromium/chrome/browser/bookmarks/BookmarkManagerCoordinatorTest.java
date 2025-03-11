@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -82,6 +83,7 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -121,7 +123,8 @@ public class BookmarkManagerCoordinatorTest {
                                             mProfile,
                                             mBookmarkUiPrefs,
                                             mBookmarkOpener,
-                                            mBookmarkManagerOpener);
+                                            mBookmarkManagerOpener,
+                                            mPriceDropNotificationManager);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }

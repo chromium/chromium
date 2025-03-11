@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(
 
     blink::mojom::SpeculationCandidatePtr candidate =
         CreateSpeculationCandidate(prerender_url);
-    // Use `kModerate` to trigger `PrefetchMatchResolver2::OnTimeout()`.
+    // Use `kModerate` to trigger `PrefetchMatchResolver::OnTimeout()`.
     // Note that `block_until_head_timeout_moderate_prefetch = 500 <
     // response_delay_ = 1000 < prefetch_timeout_ms = 1500`.
     candidate->eagerness = blink::mojom::SpeculationEagerness::kModerate;

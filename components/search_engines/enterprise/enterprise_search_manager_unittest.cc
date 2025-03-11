@@ -296,7 +296,7 @@ struct ProviderInjectionTestCase {
     {
         .policy_loading_status = PolicyLoadingStatus::kPolicyEnabledWithEngines,
         .mock_setting_status = MockSettingStatus::kEnabledValid,
-        .expected_result = ExpectedResult::kPolicyListLoaded,
+        .expected_result = ExpectedResult::kMockListLoaded,
     },
 };
 

@@ -12,9 +12,9 @@
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
-namespace proto {
-class WebAppOsIntegrationState;
-}  // namespace proto
+namespace proto::os_state {
+class WebAppOsIntegration;
+}  // namespace proto::os_state
 
 struct SynchronizeOsOptions {
   // This option will always unregister all os integration, despite what may be
@@ -48,13 +48,13 @@ class OsIntegrationSubManager {
   // desired_state can still be empty after the configure_done has completed
   // running.
   virtual void Configure(const webapps::AppId& app_id,
-                         proto::WebAppOsIntegrationState& desired_state,
+                         proto::os_state::WebAppOsIntegration& desired_state,
                          base::OnceClosure configure_done) = 0;
   virtual void Execute(
       const webapps::AppId& app_id,
       const std::optional<SynchronizeOsOptions>& synchronize_options,
-      const proto::WebAppOsIntegrationState& desired_state,
-      const proto::WebAppOsIntegrationState& current_state,
+      const proto::os_state::WebAppOsIntegration& desired_state,
+      const proto::os_state::WebAppOsIntegration& current_state,
       base::OnceClosure callback) = 0;
 
   // Only invoked if the app is not in the database and the caller set

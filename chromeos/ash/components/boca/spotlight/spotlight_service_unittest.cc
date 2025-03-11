@@ -89,6 +89,7 @@ class MockSessionManager : public BocaSessionManager {
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
       : BocaSessionManager(
             session_client_impl,
+            /*pref_service=*/nullptr,
             AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId)),
             /*=is_producer*/ false) {}
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));

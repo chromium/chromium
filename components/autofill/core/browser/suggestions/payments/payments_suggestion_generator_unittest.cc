@@ -58,10 +58,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "ui/native_theme/native_theme.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 namespace autofill {
 namespace {
 
@@ -172,10 +168,7 @@ Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
                                     IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
                                 Suggestion::Icon::kSettings),
                Field(&Suggestion::trailing_icon,
-                     with_gpay_logo ? (ui::NativeTheme::GetInstanceForNativeUi()
-                                               ->ShouldUseDarkColors()
-                                           ? Suggestion::Icon::kGooglePayDark
-                                           : Suggestion::Icon::kGooglePay)
+                     with_gpay_logo ? Suggestion::Icon::kGooglePay
                                     : Suggestion::Icon::kNoIcon));
 #endif
 }

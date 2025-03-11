@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwm_disabled;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
@@ -11,6 +13,9 @@ import androidx.fragment.app.FragmentActivity;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -28,19 +33,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /** Oversees the multiple steps of the password CSV download flow. */
+@NullMarked
 public class PasswordCsvDownloadFlowController {
     private final Runnable mEndOfFlowCallback;
     private PasswordCsvDownloadDialogController mCsvDownloadDialogController;
     private Profile mProfile;
     private FragmentActivity mFragmentActivity;
-    private ReauthenticatorBridge mReauthenticatorBridge;
-    private DialogManager mProgressBarManager;
+    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
+    private @Nullable DialogManager mProgressBarManager;
 
     public PasswordCsvDownloadFlowController(Runnable endOfFlowCallback) {
         mEndOfFlowCallback = endOfFlowCallback;
     }
 
     /** Starts the CSV download flow by showing the dialog explaining the reason and risks. */
+    @Initializer
     public void showDialogAndStartFlow(
             FragmentActivity activity, Profile profile, boolean isGooglePlayServicesAvailable) {
         mProfile = profile;
@@ -89,9 +96,9 @@ public class PasswordCsvDownloadFlowController {
         mProgressBarManager.show(
                 new NonCancelableProgressBar(R.string.passwords_export_in_progress_title),
                 mFragmentActivity.getSupportFragmentManager());
-        new AsyncTask<String>() {
+        new AsyncTask<@Nullable String>() {
             @Override
-            protected String doInBackground() {
+            protected @Nullable String doInBackground() {
                 try {
                     copyInternalCsvToSelectedDocument(sourceFileUri, destinationFileUri);
                 } catch (IOException e) {
@@ -101,18 +108,19 @@ public class PasswordCsvDownloadFlowController {
             }
 
             @Override
-            protected void onPostExecute(String exceptionMessage) {
+            protected void onPostExecute(@Nullable String exceptionMessage) {
                 if (exceptionMessage == null) {
                     deleteOriginalFile(sourceFileUri);
                 }
                 // TODO(crbug.com/378653384): Add error dialog.
+                assumeNonNull(mProgressBarManager);
                 mProgressBarManager.hide(null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         endFlow();
     }
 
-    private Uri getSourceFileUri() {
+    private @Nullable Uri getSourceFileUri() {
         String autoExportedFilePath =
                 LoginDbDeprecationUtilBridge.getAutoExportCsvFilePath(mProfile);
         File autoExportedFile = new File(autoExportedFilePath);
@@ -136,13 +144,15 @@ public class PasswordCsvDownloadFlowController {
                     ContextUtils.getApplicationContext()
                             .getContentResolver()
                             .openOutputStream(destinationUri)) {
+                assumeNonNull(fileInputStream);
+                assumeNonNull(fileOutputStream);
                 FileUtils.copyStream(fileInputStream, fileOutputStream);
             }
         }
     }
 
     private void deleteOriginalFile(Uri fileUri) {
-        File file = new File(fileUri.getPath());
+        File file = new File(assumeNonNull(fileUri.getPath()));
         if (!file.delete()) {
             // The deletion will be re-attempted later.
             UserPrefs.get(mProfile).setBoolean(Pref.UPM_AUTO_EXPORT_CSV_NEEDS_DELETION, true);

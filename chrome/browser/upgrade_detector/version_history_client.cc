@@ -22,15 +22,37 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/system/sys_info.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace {
 
 // Returns the name of the current channel, as ingested by the VersionHistory
 // API.
 std::string GetChannelString() {
-  if (auto name = chrome::GetChannelName(chrome::WithExtendedStable(true));
-      !name.empty() && name != "unknown") {
-    return name;
+  std::string channel =
+      chrome::GetChannelName(chrome::WithExtendedStable(true));
+  if (channel == "unknown") {
+    return "stable";
   }
+  if (!channel.empty()) {
+    return channel;
+  }
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // "" could mean Stable, LTC, or LTS. Find out which.
+  std::string crosapi_channel_name;
+  if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
+                                        &crosapi_channel_name)) {
+    if (crosapi_channel_name == crosapi::kReleaseChannelLtc) {
+      return "ltc";
+    }
+    if (crosapi_channel_name == crosapi::kReleaseChannelLts) {
+      return "lts";
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "stable";
 }
 
@@ -62,6 +84,10 @@ GURL GetVersionReleasesUrl(base::Version version) {
 #define CURRENT_PLATFORM "mac"
 #endif
 
+#elif BUILDFLAG(IS_CHROMEOS)
+
+#define CURRENT_PLATFORM "chromeos"
+
 #else
 
 #error Unsupported platform
@@ -83,13 +109,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           description:
             "Queries the VersionHistory API to know how old the "
             "currently-running version of Chrome is. If it's older than a "
-            "threshold configured by the admin, Chrome forces a relaunch to "
-            "apply the update. Desktop Chrome only."
+            "threshold configured by the admin, Chrome forces a relaunch (or "
+            "ChromeOS forces a restart) to apply the update."
           trigger:
             "When Chrome detects that an update is available, if the "
-            "OutdatedBuildThreshold policy is set."
-          data: "The version number of the currently-running Chrome, the "
-            "update channel name, and an identifier of the platform."
+            "RelaunchSupersededReleaseAge policy is set."
+          data: "The version number of the currently-running Chrome/ChromeOS, "
+            "the update channel name, and an identifier of the platform."
           destination: GOOGLE_OWNED_SERVICE
           user_data {
             type: NONE
@@ -99,13 +125,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                email: "cec-growth-eng@google.com"
              }
           }
-          last_reviewed: "2025-01-29"
+          last_reviewed: "2025-03-06"
         }
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled by settings."
-          policy_exception_justification:
-            "Feature not fully implemented yet."
+          chrome_policy {
+            RelaunchSupersededReleaseAge {
+              RelaunchSupersededReleaseAge: 0
+            }
+          }
         })");
 
 // Sends a GET to `url`, and calls `callback` with the response.

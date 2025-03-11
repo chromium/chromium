@@ -135,8 +135,9 @@ class BASE_EXPORT CheckError {
   CheckError& operator=(const CheckError&) = delete;
 
   template <typename T>
-  std::ostream& operator<<(T&& streamed_type) {
-    return stream() << streamed_type;
+  CheckError& operator<<(T&& streamed_type) {
+    stream() << streamed_type;
+    return *this;
   }
 
  protected:

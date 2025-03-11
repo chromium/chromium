@@ -74,6 +74,8 @@ extern const base::FeatureParam<bool> kInheritParentPriority;
 
 extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
 
+extern const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority;
+
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
 // Policy that evicts the BFCache of pages that become non visible or the

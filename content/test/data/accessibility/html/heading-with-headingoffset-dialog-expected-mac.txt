@@ -1,0 +1,4 @@
+AXWebArea
+++AXGroup AXSubrole=AXApplicationDialog
+++++AXHeading AXDisclosureLevel=0 AXValue=1
+++++AXHeading AXDisclosureLevel=1 AXValue=2

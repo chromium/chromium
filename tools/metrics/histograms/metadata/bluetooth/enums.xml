@@ -149,34 +149,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Keyboard Mouse Combo"/>
 </enum>
 
-<enum name="BluetoothDiscoveryOutcomes">
-  <int value="0" label="Success"/>
-  <int value="1"
-      label="Unknown error; used when we could add code to get more detail"/>
-  <int value="2" label="Function not implemented on this platform"/>
-  <int value="3" label="Adapter not present"/>
-  <int value="4" label="Adapter removed since call chain started"/>
-  <int value="5" label="Discovery session not active"/>
-  <int value="6"
-      label="Attempted to remove a discovery session with another pending
-             request"/>
-  <int value="7"
-      label="Active BluetoothDiscoverySession wasn't found in
-             BluetoothAdapter"/>
-  <int value="8" label="Failed without a more specific reason"/>
-  <int value="9" label="(BlueZ) DBus failed to find the adapter"/>
-  <int value="10" label="(BlueZ) DBus didn't return an error code"/>
-  <int value="11" label="(BlueZ) org.bluez.Error.InProgress"/>
-  <int value="12" label="(BlueZ) org.bluez.Error.NotReady"/>
-  <int value="13"
-      label="(BlueZ) org.bluez.Error.Failed inside SetDiscoveryFilter, maybe
-             indicating an unsupported transport"/>
-  <int value="14"
-      label="(BlueZ) org.bluez.Error.NotSupported inside SetDiscoverFilter,
-             indicating a kernel that does not support Start Service
-             Discovery."/>
-</enum>
-
 <enum name="BluetoothGattServiceGattErrorCode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Failed"/>

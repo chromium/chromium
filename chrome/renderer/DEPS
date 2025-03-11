@@ -2,7 +2,6 @@ include_rules = [
   "+ash/webui/file_manager/url_constants.h",
   "+chrome/grit",
   "+chrome/services/speech/buildflags/buildflags.h",
-  "+chromeos/constants/chromeos_features.h",
   "+components/autofill/content/common",
   "+components/autofill/content/renderer",
   "+components/autofill/core/common",

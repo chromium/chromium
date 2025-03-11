@@ -10,7 +10,7 @@
 
 namespace blink {
 
-UniqueFontSelector::UniqueFontSelector(FontSelector& base_selector)
+UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector)
     : base_selector_(base_selector) {}
 
 void UniqueFontSelector::Trace(Visitor* visitor) const {
@@ -31,7 +31,9 @@ void UniqueFontSelector::DidSwitchFrame() {}
 
 void UniqueFontSelector::RegisterForInvalidationCallbacks(
     FontSelectorClient* client) {
-  base_selector_->RegisterForInvalidationCallbacks(client);
+  if (base_selector_ != nullptr) {
+    base_selector_->RegisterForInvalidationCallbacks(client);
+  }
 }
 
 }  // namespace blink

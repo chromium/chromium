@@ -16,7 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -115,6 +115,7 @@ public class PowerBookmarkUtils {
      * @param profile The current profile.
      * @param callback The status callback, may be called multiple times depending if the user
      *     retries on failure.
+     * @param priceDropNotificationManager Manages price drop notifications.
      */
     public static void setPriceTrackingEnabledWithSnackbars(
             @NonNull BookmarkModel bookmarkModel,
@@ -123,7 +124,8 @@ public class PowerBookmarkUtils {
             SnackbarManager snackbarManager,
             Resources resources,
             Profile profile,
-            Callback<Boolean> callback) {
+            Callback<Boolean> callback,
+            @NonNull PriceDropNotificationManager priceDropNotificationManager) {
         // TODO(crbug.com/393186352): Fix nullable annotation for bookmarkId parameter.
         // Early return when bookmarkId is null.
         if (bookmarkId == null) {
@@ -151,7 +153,8 @@ public class PowerBookmarkUtils {
                                 snackbarManager,
                                 resources,
                                 profile,
-                                callback);
+                                callback,
+                                priceDropNotificationManager);
                     }
                 };
         // Wrapper which shows a snackbar and forwards the result.
@@ -191,7 +194,7 @@ public class PowerBookmarkUtils {
         // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
         if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PriceDropNotificationManagerFactory.create(profile).createNotificationChannel();
+            priceDropNotificationManager.createNotificationChannel();
         }
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 profile, bookmarkId.getId(), enabled, wrapperCallback);

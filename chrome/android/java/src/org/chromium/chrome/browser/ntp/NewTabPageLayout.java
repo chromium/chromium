@@ -283,11 +283,9 @@ public class NewTabPageLayout extends LinearLayout {
                 new OnDragListener() {
                     @Override
                     public boolean onDrag(View view, DragEvent dragEvent) {
-                        // Disable search box EditText when tab is dropped.
-                        if (dragEvent.getClipDescription() == null
-                                || !dragEvent
-                                        .getClipDescription()
-                                        .hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
+                        // Disable search box EditText when browser content is dropped.
+                        if (!MimeTypeUtils.clipDescriptionHasBrowserContent(
+                                dragEvent.getClipDescription())) {
                             return false;
                         } else {
                             if (dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {

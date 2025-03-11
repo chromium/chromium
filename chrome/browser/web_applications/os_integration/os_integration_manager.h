@@ -170,7 +170,7 @@ class OsIntegrationManager {
   void StartSubManagerExecutionIfRequired(
       const webapps::AppId& app_id,
       std::optional<SynchronizeOsOptions> options,
-      std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
+      std::unique_ptr<proto::os_state::WebAppOsIntegration> desired_states,
       base::OnceClosure on_all_execution_done);
 
   // Use to call Execute() on each sub manager recursively through callbacks
@@ -180,14 +180,14 @@ class OsIntegrationManager {
   void ExecuteNextSubmanager(
       const webapps::AppId& app_id,
       std::optional<SynchronizeOsOptions> options,
-      proto::WebAppOsIntegrationState* desired_state,
-      const proto::WebAppOsIntegrationState current_state,
+      proto::os_state::WebAppOsIntegration* desired_state,
+      const proto::os_state::WebAppOsIntegration current_state,
       size_t index,
       base::OnceClosure on_all_execution_done_db_write);
 
   void WriteStateToDB(
       const webapps::AppId& app_id,
-      std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
+      std::unique_ptr<proto::os_state::WebAppOsIntegration> desired_states,
       base::OnceClosure callback);
 
   // Called when ForceUnregisterOsIntegrationSubManager has finished

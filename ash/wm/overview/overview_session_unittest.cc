@@ -3359,7 +3359,7 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   auto* item_widget3 = GetOverviewItemForWindow(window3.get())->item_widget();
 
   // With this flag enabled, there are is no saved desk save desk container.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
     // desk_widget, save_widget].
     CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);

@@ -56,7 +56,7 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
   const auto& background_client = prefer_compositing_to_lcd_text
                                       ? GetLayoutView()
                                       : ViewScrollingBackgroundClient();
-  const DisplayItem* background_display_item = &display_items[0];
+  const DisplayItem* background_display_item = UNSAFE_TODO(&display_items[0]);
   EXPECT_THAT(
       *background_display_item,
       IsSameId(background_client.Id(), DisplayItem::kDocumentBackground));

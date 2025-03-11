@@ -75,7 +75,7 @@ public class PrivacySandboxDialogUtils {
 
         String description =
                 context.getString(
-                        R.string.concat_two_strings_with_periods,
+                        R.string.concat_two_strings_with_comma,
                         dropdownButtonText,
                         collapseOrExpandedText);
         dropdownElement.setContentDescription(description);

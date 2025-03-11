@@ -230,23 +230,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Enterprise.AutoEnrollmentBucketDownloadTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2025-04-06">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Duration of the bucket download part of the auto-enrollment protocol.
-    {EnterpriseAutoEnrollmentType}
-
-    The histogram was expired (not recording data) from 2021-12-26 until
-    2022-07-15.
-  </summary>
-  <token key="EnterpriseAutoEnrollmentType"
-      variants="EnterpriseAutoEnrollmentType"/>
-</histogram>
-
 <histogram name="Enterprise.AutoEnrollmentControllerTimeout"
     enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
     expires_after="2025-08-10">
@@ -258,23 +241,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2025-03-09">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Duration of the hash dance to determine enrollment state of the device. Only
-    recorded if the hash dance finished successfully.
-    {EnterpriseAutoEnrollmentType}
-  </summary>
-  <token key="EnterpriseAutoEnrollmentType"
-      variants="EnterpriseAutoEnrollmentType"/>
-</histogram>
-
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
-    units="ms" expires_after="2025-04-06">
+    units="ms" expires_after="2026-04-06">
   <owner>sergiyb@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -288,25 +256,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Enterprise.AutoEnrollmentProtocolTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2025-03-09">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Total duration time of the auto-enrollment protocol.
-    {EnterpriseAutoEnrollmentType}
-
-    The histogram was expired (not recording data) from 2022-01-09 until
-    2022-07-15.
-  </summary>
-  <token key="EnterpriseAutoEnrollmentType"
-      variants="EnterpriseAutoEnrollmentType"/>
-</histogram>
-
-<histogram
     name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2025-04-06">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2026-04-06">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -325,7 +276,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2025-04-06">
+    enum="NetErrorCodes" expires_after="2026-04-06">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -344,7 +295,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
-    enum="PsmResult" expires_after="2025-03-09">
+    enum="PsmResult" expires_after="2026-03-09">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -360,40 +311,6 @@ chromium-metrics-reviews@google.com.
       variants="EnterpriseAutoEnrollmentType">
     <variant name=""/>
   </token>
-</histogram>
-
-<histogram
-    name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2025-03-23">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Network error code (if applicable) for auto-enrollment requests.
-    {EnterpriseAutoEnrollmentType}
-
-    The histogram was expired (not recording data) from 2021-12-19 until
-    2022-07-15.
-  </summary>
-  <token key="EnterpriseAutoEnrollmentType"
-      variants="EnterpriseAutoEnrollmentType"/>
-</histogram>
-
-<histogram
-    name="Enterprise.AutoEnrollmentRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2025-03-09">
-  <owner>sergiyb@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    URL fetcher status for auto-enrollment requests.
-    {EnterpriseAutoEnrollmentType}
-
-    The histogram was expired (not recording data) from 2021-12-12 until
-    2022-07-15.
-  </summary>
-  <token key="EnterpriseAutoEnrollmentType"
-      variants="EnterpriseAutoEnrollmentType"/>
 </histogram>
 
 <histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
@@ -865,7 +782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
-    enum="BooleanSuccess" expires_after="2024-12-01">
+    enum="BooleanSuccess" expires_after="2025-12-01">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -873,6 +790,9 @@ chromium-metrics-reviews@google.com.
     Recorded every time policy file is missing or corrupted on Chrome OS. Should
     be compared to Enterprise.DeviceSettings.UpdatedStatus as happens only if
     status is STORE_NO_POLICY and device being not managed.
+
+    Warning: this histogram was expired from 2024-12-01 to 2025-03-11. Data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3722,19 +3642,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.VpdCheck" units="units" expires_after="2023-12-01">
-  <owner>igorcov@chromium.org</owner>
-  <owner>tnagel@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The status code (exit code or signal) from sanity check of RW_VPD read and
-    matching the contents with data from dump_vpd_log (Chrome OS).
-
-    There is a gap in data as the histogram was expired from 2020-07-05 till
-    2023-02-09.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.VpdUpdateStatus" units="units"
     expires_after="2025-07-13">
   <owner>igorcov@chromium.org</owner>
@@ -3800,7 +3707,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidJsonPolicies" enum="EnterprisePolicies"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>olsen@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -3809,7 +3716,8 @@ chromium-metrics-reviews@google.com.
     the policy has changed.
 
     The histogram was expired (not recording data) from 2020-06-18 until
-    2021-03-15 and from 2021-07-01 to 2022-10-23.
+    2021-03-15 and from 2021-07-01 to 2022-10-23 and from 2024-12-01 to
+    2025-03-11. Data may be missing.
   </summary>
 </histogram>
 

@@ -50,6 +50,18 @@ export function ambientThemeReducer(
   }
 }
 
+export function ambientThemePreviewsReducer(
+    state: AmbientState['ambientThemePreviews'], action: Actions,
+    _: PersonalizationState): AmbientState['ambientThemePreviews'] {
+  switch (action.name) {
+    case AmbientActionName.SET_AMBIENT_THEME_PREVIEWS:
+      return action.previews;
+    default:
+      return state;
+  }
+}
+
+
 export function previewsReducer(
     state: AmbientState['previews'], action: Actions,
     _: PersonalizationState): AmbientState['previews'] {
@@ -142,6 +154,7 @@ export const ambientReducers:
       albums: albumsReducer,
       ambientModeEnabled: ambientModeEnabledReducer,
       ambientTheme: ambientThemeReducer,
+      ambientThemePreviews: ambientThemePreviewsReducer,
       duration: screenSaverDurationReducer,
       previews: previewsReducer,
       temperatureUnit: temperatureUnitReducer,

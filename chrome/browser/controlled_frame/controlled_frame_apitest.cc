@@ -9,11 +9,13 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
@@ -23,6 +25,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1112,6 +1116,39 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
     EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
   }
 }
+
+class ControlledFrameAvailabilityAdminPolicyTest
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<ContentSetting> {};
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityAdminPolicyTest,
+                       VerifyPolicy) {
+  // Get the expected content setting and set it up.
+  const ContentSetting content_setting = GetParam();
+
+  bool expected_enabled =
+      content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::CONTROLLED_FRAME,
+                                 content_setting);
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  const bool actual_enabled = CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html"));
+  EXPECT_EQ(expected_enabled, actual_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* */,
+    ControlledFrameAvailabilityAdminPolicyTest,
+    /* Per-channel tests examine the extensions-based availability system. */
+    testing::Values(ContentSetting::CONTENT_SETTING_DEFAULT,
+                    ContentSetting::CONTENT_SETTING_ALLOW,
+                    ContentSetting::CONTENT_SETTING_BLOCK));
 
 class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
  public:

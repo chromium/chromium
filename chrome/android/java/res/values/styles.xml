@@ -313,7 +313,7 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
     <style name="TextAppearance.AutofillCardInstructionsText">
-        <item name="android:textColor">@color/explanation_text_color</item>
+        <item name="android:textColor">@macro/default_text_color_secondary</item>
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
     <style name="TextAppearance.AutofillCardCheckBoxText">

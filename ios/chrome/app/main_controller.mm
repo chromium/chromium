@@ -1644,7 +1644,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
   // Wait for the profile to complete its initialisation.
   [animator waitForSceneState:sceneState
-             toInitReachStage:ProfileInitStage::kUIReady
+             toReachInitStage:ProfileInitStage::kUIReady
                  continuation:std::move(continuation)];
 }
 

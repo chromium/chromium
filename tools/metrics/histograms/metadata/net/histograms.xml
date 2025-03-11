@@ -633,28 +633,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Certificate.TLSFeatureExtensionWithPrivateRoot"
-    enum="Boolean" expires_after="M77">
-  <owner>estark@chromium.org</owner>
-  <summary>
-    This histogram is recorded every time Chrome successfully verifies a
-    certificate that chains to a private root. A value of true indicates that
-    the certificate contains the TLS Feature Extension, and false indicates that
-    it doesn't.
-  </summary>
-</histogram>
-
-<histogram name="Net.Certificate.TLSFeatureExtensionWithPrivateRootHasOCSP"
-    enum="Boolean" expires_after="M77">
-  <owner>estark@chromium.org</owner>
-  <summary>
-    This histogram is recorded every time Chrome successfully verifies a
-    certificate that chains to a private root and the certificate contains the
-    TLS Feature Extension. A value of true indicates that the connection had an
-    OCSP response stapled, and a value of false indicates that it did not.
-  </summary>
-</histogram>
-
 <histogram name="Net.Certificate.TrustAnchor.Request" enum="NetTrustAnchors"
     expires_after="never">
 <!-- expires-never: Used for CA risk assessment ( https://goto.google.com/chrome-root-ca-stats ) -->
@@ -965,15 +943,6 @@ chromium-metrics-reviews@google.com.
     Application protocol used for subresources (resources other than main
     frame). Logged by the renderer only for request that accessed the network
     and have received response headers.
-  </summary>
-</histogram>
-
-<histogram name="Net.ContentDecodingFailed2" enum="NetFilterType2"
-    expires_after="M77">
-  <owner>mef@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    For each CONTENT_DECODING_FAILED, record the filter that failed.
   </summary>
 </histogram>
 
@@ -2139,16 +2108,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpContentLengthDifferenceWithValidOCL" units="bytes"
-    expires_after="M85">
-  <owner>bengr@chromium.org</owner>
-  <summary>
-    The difference between the size specified in the X-Original-Content-Length
-    header and the size of the response body. Only includes resources that have
-    the X-Original-Content-Length header.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpContentLengthV2" units="bytes" expires_after="never">
 <!-- expires-never: Input to Lingo pipelines. -->
 
@@ -2533,15 +2492,6 @@ chromium-metrics-reviews@google.com.
     not present in the response, the size of the response body is used. Replaces
     Net.HttpOriginalContentLength, breaking down traffic by Direct, ViaDRP,
     Bypassed, and Other.
-  </summary>
-</histogram>
-
-<histogram name="Net.HttpOriginalContentLengthWithValidOCL" units="bytes"
-    expires_after="M85">
-  <owner>bengr@chromium.org</owner>
-  <summary>
-    Size specified in the X-Original-Content-Length header. Only includes
-    resources that have the X-Original-Content-Length header.
   </summary>
 </histogram>
 
@@ -3100,17 +3050,6 @@ chromium-metrics-reviews@google.com.
     doing proxy auto-discovery, or failed attempts at retrieving PAC scripts. If
     the response body was empty, this measures the total time to fetch the
     (empty) response body.
-  </summary>
-</histogram>
-
-<histogram name="Net.PublicKeyPinReportSendingFailure2" enum="NetErrorCodes"
-    expires_after="M77">
-  <owner>estark@chromium.org</owner>
-  <summary>
-    A validated certificate chain may be subject to additional pinning
-    requirements on a per-domain basis. When pinning requirements are violated,
-    Chrome attempts to send a report about the incident. This records the net
-    error code when sending a pinning violation report fails.
   </summary>
 </histogram>
 
@@ -5628,15 +5567,6 @@ chromium-metrics-reviews@google.com.
     The type of header that produced the endpoint used for uploading reports for
     the Reporting API, recorded when reports have been succesfully uploaded,
     counted once for each report.
-  </summary>
-</histogram>
-
-<histogram name="Net.ResourceLoader.ReadDeferral" units="ms"
-    expires_after="M77">
-  <owner>clamy@chromium.org</owner>
-  <summary>
-    When starting a cross-site navigation, the time between reading the headers
-    and body of the response.
   </summary>
 </histogram>
 

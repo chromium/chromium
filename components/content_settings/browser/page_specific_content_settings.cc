@@ -483,6 +483,12 @@ void WebContentsHandler::ReadyToCommitNavigation(
                               ContentSettingsType::MIXEDSCRIPT) ==
       CONTENT_SETTING_ALLOW;
 #endif
+#if !BUILDFLAG(IS_IOS)
+  content_settings->allow_controlled_frame =
+      map_->GetContentSetting(primary_url, secondary_url,
+                              ContentSettingsType::CONTROLLED_FRAME) ==
+      CONTENT_SETTING_ALLOW;
+#endif
 
   navigation_handle->SetContentSettings(std::move(content_settings));
 }

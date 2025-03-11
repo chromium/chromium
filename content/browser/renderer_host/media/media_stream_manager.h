@@ -447,10 +447,10 @@ class CONTENT_EXPORT MediaStreamManager
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
 
-  void SetZoomLevel(
+  void UpdateZoomLevel(
       GlobalRenderFrameHostId capturer_rfh_id,
       const base::UnguessableToken& session_id,
-      int zoom_level,
+      blink::mojom::ZoomLevelAction action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
 

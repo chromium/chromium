@@ -488,6 +488,10 @@ const network::mojom::PermissionsPolicyFeature
 PermissionsPolicy::PermissionsPolicy(mojo::DefaultConstruct::Tag)
     : feature_list_(GetPermissionsPolicyFeatureListUnloadNone()) {}
 
+PermissionsPolicy::PermissionsPolicy(const PermissionsPolicy&) = default;
+PermissionsPolicy& PermissionsPolicy::operator=(const PermissionsPolicy&) =
+    default;
+
 PermissionsPolicy::PermissionsPolicy(PermissionsPolicy&&) noexcept = default;
 PermissionsPolicy& PermissionsPolicy::operator=(PermissionsPolicy&&) noexcept =
     default;

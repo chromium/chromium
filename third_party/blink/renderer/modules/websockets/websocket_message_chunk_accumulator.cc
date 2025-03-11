@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/websockets/websocket_message_chunk_accumulator.h"
 
 #include <string.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 
@@ -36,8 +32,9 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
   if (!segments_.empty()) {
     const size_t to_be_written =
         std::min(data.size(), kSegmentSize - GetLastSegmentSize());
-    std::ranges::copy(data.first(to_be_written),
-                      segments_.back().get() + GetLastSegmentSize());
+    std::ranges::copy(
+        data.first(to_be_written),
+        UNSAFE_TODO(segments_.back().get() + GetLastSegmentSize()));
     data = data.subspan(to_be_written);
     size_ += to_be_written;
   }
@@ -66,9 +63,10 @@ Vector<base::span<const char>> WebSocketMessageChunkAccumulator::GetView()
 
   view.reserve(segments_.size());
   for (wtf_size_t i = 0; i < segments_.size() - 1; ++i) {
-    view.push_back(base::span(segments_[i].get(), kSegmentSize));
+    view.push_back(UNSAFE_TODO(base::span(segments_[i].get(), kSegmentSize)));
   }
-  view.push_back(base::span(segments_.back().get(), GetLastSegmentSize()));
+  view.push_back(
+      UNSAFE_TODO(base::span(segments_.back().get(), GetLastSegmentSize())));
   return view;
 }
 

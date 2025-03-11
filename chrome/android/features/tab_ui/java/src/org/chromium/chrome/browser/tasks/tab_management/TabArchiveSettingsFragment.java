@@ -10,6 +10,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -95,11 +96,10 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
                 (ChromeSwitchPreference) findPreference(PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS);
         enableArchiveDuplicateTabsSwitch.setTitle(
                 getString(R.string.archive_settings_archive_duplicate_tabs_title));
-        boolean isArchiveDuplicateTabsEnabled =
-                mArchiveSettings.getArchiveEnabled()
-                        && mArchiveSettings.isArchiveDuplicateTabsEnabled();
-        enableArchiveDuplicateTabsSwitch.setEnabled(mArchiveSettings.getArchiveEnabled());
-        enableArchiveDuplicateTabsSwitch.setChecked(isArchiveDuplicateTabsEnabled);
+        enableArchiveDuplicateTabsSwitch.setEnabled(
+                ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled());
+        enableArchiveDuplicateTabsSwitch.setChecked(
+                mArchiveSettings.isArchiveDuplicateTabsEnabled());
         enableArchiveDuplicateTabsSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean enabled = (boolean) newValue;

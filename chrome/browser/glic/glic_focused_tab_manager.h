@@ -90,13 +90,13 @@ class GlicFocusedTabManager : public BrowserListObserver,
   std::optional<glic::mojom::InvalidCandidateError> IsValidFocusable(
       content::WebContents* web_contents);
 
-  // Updates focused tab if a new one is computed. Notifies after debounce
-  // threshold if updated or if `force_notify` is true for any call within the
-  // duration of the debouncing.
-  void MaybeUpdateFocusedTab(bool force_notify = false);
+  // Updates focused tab if a new one is computed. Notifies if updated or if
+  // `force_notify` is true (for any call within the duration of the optional
+  // debouncing).
+  void MaybeUpdateFocusedTab(bool force_notify = false, bool debounce = false);
 
-  // Updates focused tab if a new one is computed without debouncing. Prefer
-  // `MaybeUpdateFocusedTab` unless debouncing must specifically be avoided.
+  // Updates focused tab if a new one is computed without debouncing. Use
+  // `MaybeUpdateFocusedTab` instead of calling this directly.
   void PerformMaybeUpdateFocusedTab(bool force_notify = false);
 
   // Computes the currently focused tab.

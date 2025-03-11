@@ -365,13 +365,13 @@ void ChromeOmniboxClient::OnResultChanged(
       request_ids_.push_back(bitmap_fetcher_service->RequestImage(
           match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
     } else if (match.associated_keyword) {
-      // - Fetch the favicon here for these purposes:
-      //   - Featured search aggregator matches (e.g., when user types
-      // '@aggregator') use the policy favicon in both the popup keyword row UI
+      // - Fetch the favicon here for non-featured matches that have the search
+      // aggregator keyword hint attached to them (e.g., verbatim match when
+      // user types 'aggregator') use the policy favicon only in location bar
+      // keyword UI.
+      // - Featured search aggregator matches (e.g., when user types
+      // '@aggregator') use the match icon_url in both the popup keyword row UI
       // and the location bar keyword UI.
-      //   - Non-featured matches that have the search aggregator keyword hint
-      // attached to them (e.g., verbatim match when user types 'aggregator')
-      // use the policy favicon only in location bar keyword UI.
       // - Site search matches do not use the policy favicon so do not fetch the
       // favicon here.
       const TemplateURL* turl = match.associated_keyword->GetTemplateURL(

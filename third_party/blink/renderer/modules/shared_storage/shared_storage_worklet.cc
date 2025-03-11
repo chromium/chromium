@@ -73,6 +73,21 @@ bool IsValidFencedFrameReportingURL(const KURL& url) {
   return url.ProtocolIs("https");
 }
 
+// Precondition: `data_origin_type` is not kInvalid.
+mojom::blink::SharedStorageDataOriginType SharedStorageDataOriginToMojom(
+    SharedStorageDataOrigin data_origin_type) {
+  switch (data_origin_type) {
+    case SharedStorageDataOrigin::kContextOrigin:
+      return mojom::blink::SharedStorageDataOriginType::kContextOrigin;
+    case SharedStorageDataOrigin::kScriptOrigin:
+      return mojom::blink::SharedStorageDataOriginType::kScriptOrigin;
+    case SharedStorageDataOrigin::kCustomOrigin:
+      return mojom::blink::SharedStorageDataOriginType::kCustomOrigin;
+    case SharedStorageDataOrigin::kInvalid:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 // static
@@ -235,7 +250,8 @@ void SharedStorageWorklet::AddModuleHelper(
   SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url, shared_storage_security_origin, credentials_mode,
+          script_source_url, shared_storage_security_origin,
+          SharedStorageDataOriginToMojom(data_origin_type), credentials_mode,
           resolve_to_worklet
               ? mojom::blink::SharedStorageWorkletCreationMethod::kCreateWorklet
               : mojom::blink::SharedStorageWorkletCreationMethod::kAddModule,

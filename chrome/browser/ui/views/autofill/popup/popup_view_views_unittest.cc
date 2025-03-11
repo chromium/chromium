@@ -1765,7 +1765,7 @@ TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
   CreateAndShowView();
 
   EXPECT_EQ(GetPopupRowViewAt(0).GetProperty(views::kElementIdentifierKey),
-            kAutofillStandaloneCvcSuggestionElementId);
+            TestPopupViewViews::kAutofillStandaloneCvcSuggestionElementId);
 }
 
 TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
@@ -1776,7 +1776,7 @@ TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
   CreateAndShowView();
 
   EXPECT_EQ(GetPopupRowViewAt(0).GetProperty(views::kElementIdentifierKey),
-            kAutofillCreditCardSuggestionEntryElementId);
+            TestPopupViewViews::kAutofillCreditCardSuggestionEntryElementId);
 }
 
 // Tests that (only) clickable items trigger an AcceptSuggestion event.

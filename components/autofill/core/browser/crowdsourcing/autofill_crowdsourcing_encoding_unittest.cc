@@ -202,7 +202,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
            // Add checkable field.
            {.label = u"Checkable1",
             .name = u"Checkable1",
-            .check_status = FormFieldData::CheckStatus::kCheckableButUnchecked},
+            .form_control_type = FormControlType::kInputCheckbox},
        }});
 
   std::vector<FieldTypeSet> possible_field_types;
@@ -1700,6 +1700,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
   // Add checkable field.
   FormFieldData checkable_field;
+  checkable_field.set_form_control_type(FormControlType::kInputCheckbox);
   checkable_field.set_check_status(
       FormFieldData::CheckStatus::kCheckableButUnchecked);
   checkable_field.set_label(u"Checkable1");
@@ -1851,9 +1852,7 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
       .fields = {{.role = USERNAME},
                  {.label = u"select",
                   .name = u"select",
-                  .form_control_type = FormControlType::kInputCheckbox,
-                  .check_status =
-                      FormFieldData::CheckStatus::kCheckableButUnchecked},
+                  .form_control_type = FormControlType::kInputCheckbox},
                  {.role = EMAIL_ADDRESS}},
       .name = u"the-name",
       .url = "http://cool.com",
@@ -1974,8 +1973,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                  // No name set for this field.
                  {.label = u"",
                   .name = u"",
-                  .form_control_type = FormControlType::kInputText,
-                  .check_status = FormFieldData::CheckStatus::kNotCheckable}},
+                  .form_control_type = FormControlType::kInputText}},
       // No name set for the form.
       .name = u"",
       .url = "http://cool.com",
@@ -2557,9 +2555,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
                   {.label = u"address", .name = u"address"},
                   // Checkable fields should be ignored in parsing
                   {.label = u"radio_button",
-                   .form_control_type = FormControlType::kInputRadio,
-                   .check_status =
-                       FormFieldData::CheckStatus::kCheckableButUnchecked}}});
+                   .form_control_type = FormControlType::kInputRadio}}});
 
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;

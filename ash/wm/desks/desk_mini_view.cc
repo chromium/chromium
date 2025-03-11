@@ -314,7 +314,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   auto get_visible = [this]() -> bool {
     // If revamp is enabled, then we still want to show the save desk options,
     // even if we can't remove the desk.
-    if (!features::IsSavedDeskUiRevampEnabled() &&
+    if (!features::IsForestFeatureEnabled() &&
         !DesksController::Get()->CanRemoveDesks()) {
       return false;
     }
@@ -358,7 +358,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
   // all desks.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     auto* context_menu_button = desk_action_view_->context_menu_button();
     context_menu_button->SetVisible(context_menu_button->CanShow());
   } else {
@@ -533,7 +533,7 @@ void DeskMiniView::OpenContextMenu(ui::mojom::MenuSourceType source) {
 
   // Holdback metrics for the Saved Desk UI revamp.
   if (ShouldRecordSavedDesksOptionsHistogram(desk_, owner_bar_.get())) {
-    if (features::IsSavedDeskUiRevampEnabled()) {
+    if (features::IsForestFeatureEnabled()) {
       base::UmaHistogramBoolean(kSavedDeskMenuOptionsShownHistogramName, true);
     } else {
       base::UmaHistogramBoolean(kSavedDeskButtonsShownHistogramName, true);

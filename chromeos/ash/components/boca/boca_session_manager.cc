@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -34,10 +35,12 @@
 namespace ash::boca {
 
 BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
+                                       const PrefService* pref_service,
                                        AccountId account_id,
                                        bool is_producer)
     : is_producer_(is_producer),
       account_id_(std::move(account_id)),
+      pref_service_(pref_service),
       session_client_impl_(std::move(session_client_impl)) {
   in_session_polling_interval_ =
       features::IsBocaCustomPollingEnabled()
@@ -110,10 +113,13 @@ void BocaSessionManager::Observer::OnConsumerActivityUpdated(
 
 void BocaSessionManager::OnNetworkStateChanged(
     chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Check network types comment here:
   // chromeos/services/network_config/public/mojom/network_types.mojom
   if (chromeos::network_config::StateIsConnected(
           network_state->connection_state)) {
+    // Update network restriction before load session.
+    UpdateNetworkRestriction(std::move(network_state));
     if (!is_network_connected_) {
       // Explicitly trigger a load whenever network back online. This will cover
       // the case for initial ctor too.
@@ -184,6 +190,12 @@ void BocaSessionManager::LoadCurrentSession(bool from_polling) {
   if (!IsProfileActive()) {
     return;
   }
+  if (disabled_on_non_managed_network_) {
+    UpdateCurrentSession(std::unique_ptr<::boca::Session>(nullptr),
+                         /*dispatch_event=*/true);
+    return;
+  }
+
   auto request = std::make_unique<GetSessionRequest>(
       session_client_impl_->sender(),
       BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), is_producer_,
@@ -213,7 +225,6 @@ void BocaSessionManager::UpdateCurrentSession(
     std::unique_ptr<::boca::Session> session,
     bool dispatch_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (IsSessionTakeOver(current_session_.get(), session.get())) {
     HandleTakeOver(dispatch_event, std::move(session));
     return;
@@ -271,44 +282,6 @@ void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
   }
 }
 
-void BocaSessionManager::StartSendingStudentHeartbeatRequests() {
-  if (!features::IsBocaStudentHeartbeatEnabled() || is_producer_ ||
-      student_heartbeat_interval_ == base::Seconds(0)) {
-    return;
-  }
-  if (!student_heartbeat_timer_.IsRunning()) {
-    student_heartbeat_timer_.Start(
-        FROM_HERE, student_heartbeat_interval_, this,
-        &BocaSessionManager::SendStudentHeartbeatRequest);
-  }
-}
-
-void BocaSessionManager::StopSendingStudentHeartbeatRequests() {
-  if (student_heartbeat_timer_.IsRunning()) {
-    student_heartbeat_timer_.Stop();
-  }
-}
-
-void BocaSessionManager::SendStudentHeartbeatRequest() {
-  const std::string& session_id = current_session_->session_id();
-  const GaiaId& gaia_id = account_id_.GetGaiaId();
-  const std::string& device_id = BocaAppClient::Get()->GetDeviceId();
-  const std::string& student_group_id =
-      GetStudentGroupIdSafe(current_session_.get());
-  auto request = std::make_unique<StudentHeartbeatRequest>(
-      session_client_impl_->sender(),
-      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), session_id, gaia_id,
-      device_id, student_group_id,
-      base::BindOnce(
-          [](base::expected<bool, google_apis::ApiErrorCode> result) {
-            if (!result.has_value()) {
-              // TODO: crbug.com/366316261 - Add metrics for update failure.
-              DVLOG(1) << "[Boca]Failed to call student heartbeat.";
-            }
-          }));
-  session_client_impl_->StudentHeartbeat(std::move(request));
-}
-
 void BocaSessionManager::NotifyLocalCaptionEvents(
     ::boca::CaptionsConfig caption_config) {
   for (auto& observer : observers_) {
@@ -345,10 +318,12 @@ void BocaSessionManager::LoadInitialNetworkState() {
 void BocaSessionManager::OnNetworkStateFetched(
     std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
         networks) {
-  for (const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
-           network : networks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (chromeos::network_config::mojom::NetworkStatePropertiesPtr& network :
+       networks) {
     if (chromeos::network_config::StateIsConnected(network->connection_state)) {
       is_network_connected_ = true;
+      UpdateNetworkRestriction(std::move(network));
       break;
     }
   }
@@ -640,6 +615,64 @@ void BocaSessionManager::HandleCaptionNotification() {
       GetSessionConfigSafe(current_session_.get())
           .captions_config()
           .captions_enabled());
+}
+
+void BocaSessionManager::StartSendingStudentHeartbeatRequests() {
+  if (!features::IsBocaStudentHeartbeatEnabled() || is_producer_ ||
+      student_heartbeat_interval_ == base::Seconds(0)) {
+    return;
+  }
+  if (!student_heartbeat_timer_.IsRunning()) {
+    student_heartbeat_timer_.Start(
+        FROM_HERE, student_heartbeat_interval_, this,
+        &BocaSessionManager::SendStudentHeartbeatRequest);
+  }
+}
+
+void BocaSessionManager::StopSendingStudentHeartbeatRequests() {
+  if (student_heartbeat_timer_.IsRunning()) {
+    student_heartbeat_timer_.Stop();
+  }
+}
+
+void BocaSessionManager::SendStudentHeartbeatRequest() {
+  const std::string& session_id = current_session_->session_id();
+  const GaiaId& gaia_id = account_id_.GetGaiaId();
+  const std::string& device_id = BocaAppClient::Get()->GetDeviceId();
+  const std::string& student_group_id =
+      GetStudentGroupIdSafe(current_session_.get());
+  auto request = std::make_unique<StudentHeartbeatRequest>(
+      session_client_impl_->sender(),
+      BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), session_id, gaia_id,
+      device_id, student_group_id,
+      base::BindOnce(
+          [](base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              // TODO: crbug.com/366316261 - Add metrics for update failure.
+              DVLOG(1) << "[Boca]Failed to call student heartbeat.";
+            }
+          }));
+  session_client_impl_->StudentHeartbeat(std::move(request));
+}
+
+void BocaSessionManager::UpdateNetworkRestriction(
+    chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
+  bool should_disable_on_non_managed_network =
+      (features::IsBocaNetworkRestrictionEnabled() ||
+       (pref_service_->FindPreference(
+            prefs::kClassManagementToolsNetworkRestrictionSetting) &&
+        pref_service_->GetBoolean(
+            prefs::kClassManagementToolsNetworkRestrictionSetting))) &&
+      network_state->source !=
+          chromeos::network_config::mojom::OncSource::kUserPolicy &&
+      network_state->source !=
+          chromeos::network_config::mojom::OncSource::kDevicePolicy;
+
+  if (should_disable_on_non_managed_network !=
+      disabled_on_non_managed_network_) {
+    disabled_on_non_managed_network_ = should_disable_on_non_managed_network;
+    LoadCurrentSession(/*from_polling=*/false);
+  }
 }
 
 }  // namespace ash::boca

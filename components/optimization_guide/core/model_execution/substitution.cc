@@ -15,12 +15,14 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
+#include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -135,8 +137,8 @@ class InputBuilder final {
                          const proto::IndexExpr& field);
   Error ResolveControlToken(const ResolutionContext& ctx,
                             proto::ControlToken token);
-  Error ResolveImageField(const ResolutionContext& ctx,
-                          proto::ImageField token);
+  Error ResolveMediaField(const ResolutionContext& ctx,
+                          proto::MediaField token);
 
   void AddToken(ml::Token token) { out_->pieces.emplace_back(token); }
 
@@ -211,15 +213,20 @@ InputBuilder::Error InputBuilder::ResolveControlToken(
   return Error::OK;
 }
 
-InputBuilder::Error InputBuilder::ResolveImageField(
+InputBuilder::Error InputBuilder::ResolveMediaField(
     const ResolutionContext& ctx,
-    proto::ImageField field) {
-  const SkBitmap* skbitmap = ctx.view.GetImage(field.proto_field());
-  if (!skbitmap) {
-    return Error::FAILED;
+    proto::MediaField field) {
+  MultimodalType mtype = ctx.view.GetMultimodalType(field.proto_field());
+  switch (mtype) {
+    case MultimodalType::kAudio:
+      out_->pieces.emplace_back(*ctx.view.GetAudio(field.proto_field()));
+      return Error::OK;
+    case MultimodalType::kImage:
+      out_->pieces.emplace_back(*ctx.view.GetImage(field.proto_field()));
+      return Error::OK;
+    case MultimodalType::kNone:
+      return Error::OK;
   }
-  out_->pieces.emplace_back(*skbitmap);
-  return Error::OK;
 }
 
 InputBuilder::Error InputBuilder::ResolveStringArg(
@@ -237,8 +244,8 @@ InputBuilder::Error InputBuilder::ResolveStringArg(
       return ResolveIndexExpr(ctx, candidate.index_expr());
     case proto::StringArg::kControlToken:
       return ResolveControlToken(ctx, candidate.control_token());
-    case proto::StringArg::kImageField:
-      return ResolveImageField(ctx, candidate.image_field());
+    case proto::StringArg::kMediaField:
+      return ResolveMediaField(ctx, candidate.media_field());
     case proto::StringArg::ARG_NOT_SET:
       DVLOG(1) << "StringArg is incomplete.";
       return Error::FAILED;
@@ -327,12 +334,14 @@ std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<std::string>(piece)) {
       oss << std::get<std::string>(piece);
-    }
-    if (std::holds_alternative<ml::Token>(piece)) {
+    } else if (std::holds_alternative<ml::Token>(piece)) {
       oss << PlaceholderForToken(std::get<ml::Token>(piece));
-    }
-    if (std::holds_alternative<SkBitmap>(piece)) {
+    } else if (std::holds_alternative<SkBitmap>(piece)) {
       oss << "<image>";
+    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
+      oss << "<audio>";
+    } else {
+      NOTREACHED();
     }
   }
   return oss.str();

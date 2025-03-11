@@ -130,13 +130,13 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
           }),
       install_params);
   loop.Run();
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           result_app_id);
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-            proto::RunOnOsLoginMode::NOT_RUN);
+            proto::os_state::RunOnOsLogin::MODE_NOT_RUN);
 }
 
 }  // namespace web_app

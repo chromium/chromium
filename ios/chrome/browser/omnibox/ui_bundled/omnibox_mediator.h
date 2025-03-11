@@ -60,6 +60,9 @@ class Tracker;
 // NonModalDefaultBrowserPromoSchedulerSceneAgent.
 @property(nonatomic, weak) SceneState* sceneState;
 
+/// Sets the image used in image search.
+- (void)setThumbnailImage:(UIImage*)image;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_MEDIATOR_H_

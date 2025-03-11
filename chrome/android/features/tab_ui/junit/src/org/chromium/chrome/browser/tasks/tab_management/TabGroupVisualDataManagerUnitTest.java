@@ -257,7 +257,9 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
 
         // The title of the source group will not be deleted until the merge is committed, after
         // SnackbarController#onDismissNoAction is called for the UndoGroupSnackbarController.
@@ -280,7 +282,9 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
 
         // The stored title should be assigned to the new root id. The title of the source group
         // will not be deleted until the merge is committed, after
@@ -296,7 +300,9 @@ public class TabGroupVisualDataManagerUnitTest {
         createTabGroup(group1, TAB1_ID, GROUP_1_ID);
         List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
         createTabGroup(group2, TAB3_ID, GROUP_2_ID);
-        mTabGroupModelFilterObserverCaptor.getValue().willMergeTabToGroup(mTab1, TAB3_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB3_ID);
     }
 
@@ -315,7 +321,9 @@ public class TabGroupVisualDataManagerUnitTest {
         when(mTab1.getRootId()).thenReturn(TAB2_ID);
         when(mTab2.getRootId()).thenReturn(TAB2_ID);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMoveTabOutOfGroup(mTab1, TAB1_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMoveTabOutOfGroup(mTab1, /* destinationTabGroupId= */ null);
 
         // Verify that the title and color were not deleted.
         verify(mTabGroupModelFilter, never()).deleteTabGroupTitle(TAB1_ID);
@@ -334,7 +342,9 @@ public class TabGroupVisualDataManagerUnitTest {
         // tab.
         when(mTabGroupModelFilter.getTabCountForGroup(GROUP_1_ID)).thenReturn(1);
 
-        mTabGroupModelFilterObserverCaptor.getValue().willMoveTabOutOfGroup(mTab2, TAB2_ID);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMoveTabOutOfGroup(mTab2, /* destinationTabGroupId= */ null);
 
         // Verify that the title and color were deleted.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(TAB2_ID);

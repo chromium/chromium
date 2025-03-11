@@ -219,28 +219,30 @@ TEST(WebAppProtoUtilsTest, SpecificsProtoWithNewEnumValueParses) {
 }
 
 TEST(WebAppProtoUtilsTest, RunOnOsLoginModes) {
-  RunOnOsLoginMode mode = ToRunOnOsLoginMode(WebAppProto::MINIMIZED);
+  RunOnOsLoginMode mode =
+      ToRunOnOsLoginMode(proto::WebApp::RUN_ON_OS_LOGIN_MODE_MINIMIZED);
   EXPECT_EQ(RunOnOsLoginMode::kMinimized, mode);
 
-  mode = ToRunOnOsLoginMode(WebAppProto::WINDOWED);
+  mode = ToRunOnOsLoginMode(proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED);
   EXPECT_EQ(RunOnOsLoginMode::kWindowed, mode);
 
-  mode = ToRunOnOsLoginMode(WebAppProto::NOT_RUN);
+  mode = ToRunOnOsLoginMode(proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN);
   EXPECT_EQ(RunOnOsLoginMode::kNotRun, mode);
 
   // Any other value should return kNotRun.
-  mode = ToRunOnOsLoginMode(static_cast<WebAppProto::RunOnOsLoginMode>(0xCAFE));
+  mode =
+      ToRunOnOsLoginMode(static_cast<proto::WebApp::RunOnOsLoginMode>(0xCAFE));
   EXPECT_EQ(RunOnOsLoginMode::kNotRun, mode);
 
-  WebAppProto::RunOnOsLoginMode proto_mode =
+  proto::WebApp::RunOnOsLoginMode proto_mode =
       ToWebAppProtoRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(WebAppProto::WINDOWED, proto_mode);
+  EXPECT_EQ(proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED, proto_mode);
 
   proto_mode = ToWebAppProtoRunOnOsLoginMode(RunOnOsLoginMode::kMinimized);
-  EXPECT_EQ(WebAppProto::MINIMIZED, proto_mode);
+  EXPECT_EQ(proto::WebApp::RUN_ON_OS_LOGIN_MODE_MINIMIZED, proto_mode);
 
   proto_mode = ToWebAppProtoRunOnOsLoginMode(RunOnOsLoginMode::kNotRun);
-  EXPECT_EQ(WebAppProto::NOT_RUN, proto_mode);
+  EXPECT_EQ(proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN, proto_mode);
 }
 
 }  // namespace web_app

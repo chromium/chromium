@@ -49,7 +49,10 @@ source_set("unit_tests") {
 
 # Constants only target without dependencies to allow embedders to only include relevant code.
 android_library("constants_java") {
-  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettingsConstants.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettingsConstants.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/WebsiteSettingsConstants.java",
+  ]
 }
 
 android_library("java") {
@@ -165,6 +168,8 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//components/browser_ui/settings/android:test_support_java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/jni_zero:jni_zero_java",

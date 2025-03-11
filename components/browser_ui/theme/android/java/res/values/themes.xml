@@ -26,7 +26,10 @@ found in the LICENSE file.
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
-        <item name="colorSurfaceContainerHighest">@color/default_bg_color_elev_5_baseline</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_light</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_light</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_light</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_light</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_light</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
@@ -144,7 +147,10 @@ found in the LICENSE file.
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
-        <item name="colorSurfaceContainerHighest">@color/default_bg_color_elev_5_baseline</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_light</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_light</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_light</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_light</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_light</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorError">@color/baseline_error_40</item>
@@ -217,7 +223,10 @@ found in the LICENSE file.
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
-        <item name="colorSurfaceContainerHighest">@color/default_bg_color_elev_5_baseline</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_light</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_light</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_light</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_light</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_light</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>

@@ -4,6 +4,8 @@
 
 #include "chrome/common/chrome_paths.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
@@ -43,6 +45,8 @@
 #endif
 
 namespace {
+
+std::optional<bool> g_override_using_default_data_directory_for_testing;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The path to the external extension <id>.json files.
@@ -631,6 +635,29 @@ bool PathProvider(int key, base::FilePath* result) {
 
   *result = cur;
   return true;
+}
+
+std::optional<bool> IsUsingDefaultDataDirectory() {
+  if (g_override_using_default_data_directory_for_testing.has_value()) {
+    return g_override_using_default_data_directory_for_testing.value();
+  }
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    return std::nullopt;
+  }
+
+  base::FilePath default_user_data_dir;
+  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
+    return std::nullopt;
+  }
+
+  return user_data_dir == default_user_data_dir;
+}
+
+void SetUsingDefaultUserDataDirectoryForTesting(
+    std::optional<bool> is_default) {
+  g_override_using_default_data_directory_for_testing = is_default;
 }
 
 // This cannot be done as a static initializer sadly since Visual Studio will

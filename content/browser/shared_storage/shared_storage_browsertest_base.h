@@ -36,8 +36,6 @@ namespace content {
 
 class SharedStorageBrowserTestBase : public ContentBrowserTest {
  public:
-  using AccessType = TestSharedStorageObserver::AccessType;
-
   using MockPrivateAggregationShellContentBrowserClient =
       MockPrivateAggregationContentBrowserClientBase<
           ContentBrowserTestContentBrowserClient>;

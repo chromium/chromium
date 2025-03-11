@@ -699,10 +699,10 @@ id<GREYMatcher> UseSuggestedPasswordMatcher();
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.
-id<GREYMatcher> PromoStylePrimaryActionButtonMatcher();
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher();
 
 // Returns matcher for the secondary action button.
-id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher();
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher();
 
 #pragma mark - Incognito Interstitial
 

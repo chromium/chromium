@@ -1197,8 +1197,10 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  output_frame.data.is_handling_interaction_or_animation =
-      swap_frame_data.is_handling_interaction_or_animation;
+  output_frame.data.is_handling_interaction =
+      swap_frame_data.is_handling_interaction;
+  output_frame.data.is_handling_animation =
+      swap_frame_data.is_handling_animation;
 #endif
 
   if (buffer_queue_) {

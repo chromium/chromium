@@ -633,12 +633,3 @@ void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
     this->SetCaretPos(str.length());
   }
 }
-
-#pragma mark - Thumbnail
-
-void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
-  [consumer_ setThumbnailImage:image];
-  if (popup_provider_) {
-    popup_provider_->SetHasThumbnail(image != nil);
-  }
-}

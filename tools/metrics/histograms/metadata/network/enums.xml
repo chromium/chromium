@@ -1570,6 +1570,7 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="is_ad_tagged"/>
   <int value="63" label="keepalive_token"/>
   <int value="64" label="expected_signatures"/>
+  <int value="65" label="permissions_policy"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->

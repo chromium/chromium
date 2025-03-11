@@ -263,6 +263,13 @@ BASE_FEATURE(kEnterpriseProfileBadgingPolicies,
              "EnterpriseProfileBadgingPolicies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables enterprise badging for managed bnpwser on the new tab page footer.
+// On managed browsers, a building icon and "Managed by <domain>" string will be
+// shown in the footer, unless the icon and label are customized by the admin.
+BASE_FEATURE(kEnterpriseBadgingForNtpFooter,
+             "EnterpriseProfileBadgingForNtpFooter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables showing the EnterpriseCustomLabel` instead of the cloud policy
 // manager in the managed disclaimer "Managed by..." in the profile and app
 // menus.

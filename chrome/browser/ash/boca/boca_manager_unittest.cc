@@ -108,7 +108,8 @@ class BocaManagerTest : public testing::Test {
     session_client_impl_ =
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
     boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
-        session_client_impl_.get(), AccountId::FromUserEmail(kTestEmail),
+        session_client_impl_.get(), /*pref_service=*/nullptr,
+        AccountId::FromUserEmail(kTestEmail),
         /*is_producer=*/false);
     invalidation_service_impl_ =
         std::make_unique<boca::InvalidationServiceImpl>(

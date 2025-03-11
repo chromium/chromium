@@ -92,14 +92,19 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
   // Re-enable extensions on session end to prepare for subsequent sessions.
   extensions_manager_->ReEnableExtensions();
 
+  // Stop and clear locked mode countdown notification if the session ends.
+  notifications_manager_->StopProcessingNotification(
+      kOnTaskEnterLockedModeNotificationId);
+  notifications_manager_->ClearNotification(
+      kOnTaskEnterLockedModeNotificationId);
+
   // Surface notification to notify user about session end.
   OnTaskNotificationsManager::NotificationCreateParams
       notification_create_params(
           kOnTaskSessionEndNotificationId,
           /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
-          /*message=*/
-          l10n_util::GetStringUTF16(
-              IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE),
+          /*message_id=*/
+          IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE,
           /*notifier_id=*/
           NotifierId(NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
                      ash::NotificationCatalogName::kOnTaskSessionEnd));
@@ -177,7 +182,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     }
   }
 
-  LockOrUnlockWindow(bundle.locked());
+  LockOrUnlockWindow(bundle.locked(), kOnTaskNotificationCountdownDuration);
 
   // Show relevant notifications if content was added or deleted.
   if (has_new_content) {
@@ -185,8 +190,8 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
         notification_create_params(
             kOnTaskBundleContentAddedNotificationId,
             /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
-            /*message=*/
-            l10n_util::GetStringUTF16(IDS_ON_TASK_BUNDLE_CONTENT_ADDED_MESSAGE),
+            /*message_id=*/
+            IDS_ON_TASK_BUNDLE_CONTENT_ADDED_MESSAGE,
             /*notifier_id=*/
             NotifierId(
                 NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
@@ -199,9 +204,8 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
         notification_create_params(
             kOnTaskBundleContentRemovedNotificationId,
             /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
-            /*message=*/
-            l10n_util::GetStringUTF16(
-                IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE),
+            /*message_id=*/
+            IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE,
             /*notifier_id=*/
             NotifierId(
                 NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
@@ -261,10 +265,11 @@ void OnTaskSessionManager::OnAppReloaded() {
   }
 
   // Also lock window if necessary.
-  LockOrUnlockWindow(should_lock_window_);
+  LockOrUnlockWindow(should_lock_window_, kOnTaskNotificationCountdownDuration);
 }
 
-void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
+void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window,
+                                              base::TimeDelta countdown) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool locked_mode_state_changed = (should_lock_window_ != lock_window);
   should_lock_window_ = lock_window;
@@ -274,34 +279,64 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
     extensions_manager_->DisableExtensions();
     if (locked_mode_state_changed) {
       // Show notification before locking the window.
+      // TODO (crbug.com/402014591): Only show countdown or non-countdown
+      // notifications once we have a decision.
+      int message_id =
+          (countdown == base::Seconds(1))
+              ? IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE
+              : IDS_ON_TASK_ENTER_LOCKED_MODE_COUNTDOWN_NOTIFICATION_MESSAGE;
+
       OnTaskNotificationsManager::NotificationCreateParams
           notification_create_params(
               kOnTaskEnterLockedModeNotificationId,
               /*title=*/
               l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
-              /*message=*/
-              l10n_util::GetStringUTF16(
-                  IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE),
+              /*message_id=*/message_id,
               /*notifier_id=*/
               NotifierId(NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
-                         ash::NotificationCatalogName::kOnTaskEnterLockedMode));
+                         ash::NotificationCatalogName::kOnTaskEnterLockedMode),
+              base::BindRepeating(&OnTaskSessionManager::EnterLockedMode,
+                                  weak_ptr_factory_.GetWeakPtr()),
+              countdown);
+
+      if (countdown != base::Seconds(1)) {
+        notification_create_params.is_counting_down = true;
+      }
+
       notifications_manager_->CreateNotification(
           std::move(notification_create_params));
+    } else {
+      EnterLockedMode();
     }
-    // Attempt to lock the window. This should be a no-op should the window be
-    // already locked.
-    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
-        /*pinned=*/true,
-        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
-                            weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Re-enable extensions before attempting to unlock the window.
     extensions_manager_->ReEnableExtensions();
+
+    // Stop and clear locked mode countdown notification if the session unlocks.
+    notifications_manager_->StopProcessingNotification(
+        kOnTaskEnterLockedModeNotificationId);
+    notifications_manager_->ClearNotification(
+        kOnTaskEnterLockedModeNotificationId);
+
     system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
         /*pinned=*/false,
         base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
                             weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void OnTaskSessionManager::EnterLockedMode() {
+  // If the Boca SWA is closed during the countdown, we launch it again so we
+  // can pin the SWA window.
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      !window_id.is_valid()) {
+    system_web_app_launch_helper_->LaunchBocaSWA();
+  }
+  system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
+      /*pinned=*/true,
+      base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OnTaskSessionManager::OnTabAdded(const SessionID active_tab_id,

@@ -51,6 +51,7 @@ public interface ButtonData {
         @StringRes private final int mActionChipLabelResId;
         private final boolean mShowHoverHighlight;
         @StringRes private final int mTooltipTextResId;
+        private final boolean mHasErrorBadge;
 
         public ButtonSpec(
                 @NonNull Drawable drawable,
@@ -62,7 +63,8 @@ public interface ButtonData {
                 @AdaptiveToolbarButtonVariant int buttonVariant,
                 int actionChipLabelResId,
                 int tooltipTextResId,
-                boolean showHoverHighlight) {
+                boolean showHoverHighlight,
+                boolean hasErrorBadge) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -74,6 +76,7 @@ public interface ButtonData {
             mActionChipLabelResId = actionChipLabelResId;
             mTooltipTextResId = tooltipTextResId;
             mShowHoverHighlight = showHoverHighlight;
+            mHasErrorBadge = hasErrorBadge;
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -141,6 +144,14 @@ public interface ButtonData {
          */
         public boolean getShouldShowHoverHighlight() {
             return mShowHoverHighlight;
+        }
+
+        /**
+         * Returns {@code true} if the button has an error badge. False otherwise. The button's
+         * height is increased to accommodate the larger icon when an error badge is present.
+         */
+        public boolean hasErrorBadge() {
+            return mHasErrorBadge;
         }
 
         @Override

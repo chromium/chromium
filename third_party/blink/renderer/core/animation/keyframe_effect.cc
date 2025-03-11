@@ -380,7 +380,7 @@ CompositorAnimations::FailureReasons
 KeyframeEffect::CheckCanStartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
     double animation_playback_rate,
-    PropertyHandleSet* unsupported_properties) const {
+    PropertyHandleSet* unsupported_properties_for_tracing) const {
   CompositorAnimations::FailureReasons reasons =
       CompositorAnimations::kNoFailure;
 
@@ -410,7 +410,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
         SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
         *Model(), paint_artifact_compositor, animation_playback_rate,
-        unsupported_properties);
+        unsupported_properties_for_tracing);
   }
 
   return reasons;

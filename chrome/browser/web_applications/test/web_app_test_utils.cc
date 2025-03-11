@@ -55,7 +55,6 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_isolation_data.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -472,10 +471,10 @@ std::vector<blink::SafeUrlPattern> CreateRandomScopePatterns(
   return scope_patterns;
 }
 
-proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
+proto::os_state::WebAppOsIntegration GenerateRandomWebAppOsIntegration(
     RandomHelper& random,
     WebApp& app) {
-  proto::WebAppOsIntegrationState state;
+  proto::os_state::WebAppOsIntegration state;
 
   // Randomly fill shortcuts data.
   auto* shortcuts = state.mutable_shortcut();
@@ -496,11 +495,12 @@ proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
   }
 
   // Randomly fill run_on_os_login.
-  const std::array<proto::RunOnOsLoginMode, 3> run_on_os_login_modes = {
-      proto::RunOnOsLoginMode::NOT_RUN,
-      proto::RunOnOsLoginMode::WINDOWED,
-      proto::RunOnOsLoginMode::MINIMIZED,
-  };
+  const std::array<proto::os_state::RunOnOsLogin::Mode, 3>
+      run_on_os_login_modes = {
+          proto::os_state::RunOnOsLogin::MODE_NOT_RUN,
+          proto::os_state::RunOnOsLogin::MODE_WINDOWED,
+          proto::os_state::RunOnOsLogin::MODE_MINIMIZED,
+      };
   state.mutable_run_on_os_login()->set_run_on_os_login_mode(
       run_on_os_login_modes[random.next_uint(/*bound=*/3)]);
 
@@ -618,7 +618,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   // correct OS integration state to match that.
   web_app->SetInstallState(
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  proto::WebAppOsIntegrationState os_state;
+  proto::os_state::WebAppOsIntegration os_state;
   web_app->SetCurrentOsIntegrationStates(os_state);
 
   return web_app;
@@ -1046,7 +1046,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
 
   app->SetCurrentOsIntegrationStates(
-      GenerateRandomWebAppOsIntegrationState(random, *app));
+      GenerateRandomWebAppOsIntegration(random, *app));
 
   if (random.next_bool()) {
     bool dev_mode = random.next_bool();
@@ -1126,9 +1126,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetLatestInstallTime(random.next_time());
 
   if (random.next_bool()) {
-    GeneratedIconFix generated_icon_fix;
-    generated_icon_fix.set_source(
-        NEXT_PROTO_ENUM(random, GeneratedIconFixSource, /*skip_zero=*/true));
+    proto::GeneratedIconFix generated_icon_fix;
+    generated_icon_fix.set_source(NEXT_PROTO_ENUM(
+        random, proto::GeneratedIconFixSource, /*skip_zero=*/true));
     generated_icon_fix.set_window_start_time(random.next_proto_time());
     if (random.next_bool()) {
       generated_icon_fix.set_last_attempt_time(random.next_proto_time());

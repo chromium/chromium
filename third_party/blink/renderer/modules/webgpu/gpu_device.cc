@@ -161,8 +161,11 @@ void GPUDevice::Initialize(wgpu::Device handle,
                            const GPUDeviceDescriptor* descriptor,
                            GPUDeviceLostInfo* lost_info) {
   SetHandle(std::move(handle));
-  features_ = MakeGarbageCollected<GPUSupportedFeatures>(
-      descriptor->requiredFeatures());
+
+  wgpu::SupportedFeatures features;
+  GetHandle().GetFeatures(&features);
+  features_ = MakeGarbageCollected<GPUSupportedFeatures>(features);
+
   queue_ = MakeGarbageCollected<GPUQueue>(this, GetHandle().GetQueue(),
                                           descriptor->defaultQueue()->label());
 
@@ -698,6 +701,11 @@ void GPUDevice::OnPopErrorScopeCallback(
     case wgpu::PopErrorScopeStatus::EmptyStack:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "No error scopes to pop");
+      return;
+    default:
+      // TODO(crbug.com/402220413): Handle Error explicitly.
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       StringFromASCIIAndUTF8(message));
       return;
   }
   switch (type) {

@@ -1823,12 +1823,12 @@ void inspector_animation_state_event::Data(perfetto::TracedValue context,
 void inspector_animation_compositor_event::Data(
     perfetto::TracedValue context,
     CompositorAnimations::FailureReasons failure_reasons,
-    const PropertyHandleSet& unsupported_properties) {
+    const PropertyHandleSet& unsupported_properties_for_tracing) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("compositeFailed", failure_reasons);
   {
     auto unsupported_properties_array = dict.AddArray("unsupportedProperties");
-    for (const PropertyHandle& p : unsupported_properties) {
+    for (const PropertyHandle& p : unsupported_properties_for_tracing) {
       unsupported_properties_array.Append(
           p.GetCSSPropertyName().ToAtomicString());
     }

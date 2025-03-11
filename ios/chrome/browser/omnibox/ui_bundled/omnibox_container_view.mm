@@ -235,23 +235,6 @@ const CGFloat kClearButtonImageSize = 17.0f;
   _stackView.semanticContentAttribute = semanticContentAttribute;
 }
 
-- (void)updateAdditionalText:(NSString*)additionalText {
-  // Additional text in text field.
-  if (!additionalText) {
-    _textField.additionalText = nil;
-  } else {
-    NSMutableAttributedString* additionalAttributedText =
-        [[NSMutableAttributedString alloc] initWithString:additionalText];
-    [additionalAttributedText
-        addAttributes:@{
-          NSForegroundColorAttributeName :
-              [UIColor colorNamed:kTextSecondaryColor]
-        }
-                range:NSMakeRange(0, additionalAttributedText.length)];
-    _textField.additionalText = additionalAttributedText;
-  }
-}
-
 #pragma mark - TextFieldViewContaining
 
 - (UIView*)textFieldView {

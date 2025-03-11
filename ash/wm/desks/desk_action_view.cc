@@ -40,7 +40,7 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
   // merged into the desk action context menu, behind the a feature flag. Thus,
   // we replace the combine desks button with a button to open the context menu
   // if the feature is enabled.
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     context_menu_button_ = AddChildView(std::make_unique<DeskActionButton>(
         // The tooltip for the context menu button will be set by the button
         // itself, as its tooltip is constant.
@@ -61,7 +61,7 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
 }
 
 DeskActionView::~DeskActionView() {
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     context_menu_button_->RemoveObserver(this);
   } else {
     combine_desks_button_->RemoveObserver(this);
@@ -70,7 +70,7 @@ DeskActionView::~DeskActionView() {
 }
 
 bool DeskActionView::ChildHasFocus() const {
-  return (features::IsSavedDeskUiRevampEnabled()
+  return (features::IsForestFeatureEnabled()
               ? context_menu_button_->HasFocus()
               : combine_desks_button_->HasFocus()) ||
          close_all_button_->HasFocus();

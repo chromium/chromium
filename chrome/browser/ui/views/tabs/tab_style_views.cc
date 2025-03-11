@@ -177,6 +177,9 @@ class TabStyleViewsImpl : public TabStyleViews {
 
   const Tab* GetAdjacentSplitTab(const Tab* tab) const;
 
+  bool IsLeftmostSplitTab(const Tab* tab) const;
+  bool IsRightmostSplitTab(const Tab* tab) const;
+
   const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
@@ -321,11 +324,10 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   float tab_left = left + extension;
   float tab_right = right - extension;
 
-  const Tab* const split_tab = GetAdjacentSplitTab(tab());
-  if (split_tab) {
-    if (split_tab == tab()->controller()->GetAdjacentTab(tab(), 1)) {
+  if (tab()->split()) {
+    if (IsLeftmostSplitTab(tab())) {
       tab_right = tab_right + extension;
-    } else if (split_tab == tab()->controller()->GetAdjacentTab(tab(), -1)) {
+    } else if (IsRightmostSplitTab(tab())) {
       tab_left = tab_left - extension;
     }
   }
@@ -388,10 +390,10 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     //   ╭─────────╮
     //   │ Content │
     // ┌━╝         ╰─┐
-      path.lineTo(tab_left - left_extension_corner_radius, tab_bottom);
-      path.arcTo(left_extension_corner_radius, left_extension_corner_radius, 0,
-                 SkPath::kSmall_ArcSize, SkPathDirection::kCCW, tab_left,
-                 tab_bottom - left_extension_corner_radius);
+    path.lineTo(tab_left - left_extension_corner_radius, tab_bottom);
+    path.arcTo(left_extension_corner_radius, left_extension_corner_radius, 0,
+               SkPath::kSmall_ArcSize, SkPathDirection::kCCW, tab_left,
+               tab_bottom - left_extension_corner_radius);
   }
 
   // Draw the ascender and top-left curve, if present.
@@ -431,10 +433,10 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     //   ╭─────────╮
     //   │ Content ┃
     // ┌─╯         ╚━┐
-      path.lineTo(tab_right, tab_bottom - extension_corner_radius);
-      path.arcTo(extension_corner_radius, extension_corner_radius, 0,
-                 SkPath::kSmall_ArcSize, SkPathDirection::kCCW,
-                 tab_right + extension_corner_radius, tab_bottom);
+    path.lineTo(tab_right, tab_bottom - extension_corner_radius);
+    path.arcTo(extension_corner_radius, extension_corner_radius, 0,
+               SkPath::kSmall_ArcSize, SkPathDirection::kCCW,
+               tab_right + extension_corner_radius, tab_bottom);
     if (tab_bottom != extended_bottom) {
       path.lineTo(right, tab_bottom);
     }
@@ -1059,6 +1061,16 @@ const Tab* TabStyleViewsImpl::GetAdjacentSplitTab(const Tab* tab) const {
   }
 
   return nullptr;
+}
+
+bool TabStyleViewsImpl::IsLeftmostSplitTab(const Tab* tab) const {
+  const Tab* const split_tab = GetAdjacentSplitTab(tab);
+  return split_tab == tab->controller()->GetAdjacentTab(tab, 1);
+}
+
+bool TabStyleViewsImpl::IsRightmostSplitTab(const Tab* tab) const {
+  const Tab* const split_tab = GetAdjacentSplitTab(tab);
+  return split_tab == tab->controller()->GetAdjacentTab(tab, -1);
 }
 
 float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {

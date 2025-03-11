@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -137,6 +138,7 @@ public class BookmarkManagerCoordinator
      * @param bookmarkUiPrefs Manages prefs for bookmarks ui.
      * @param bookmarkOpener Helper class to open bookmarks.
      * @param bookmarkManagerOpener Helper class to open bookmark activities.
+     * @param priceDropNotificationManager Manages price drop notifications.
      */
     public BookmarkManagerCoordinator(
             @NonNull Context context,
@@ -145,7 +147,8 @@ public class BookmarkManagerCoordinator
             @NonNull Profile profile,
             @NonNull BookmarkUiPrefs bookmarkUiPrefs,
             @NonNull BookmarkOpener bookmarkOpener,
-            @NonNull BookmarkManagerOpener bookmarkManagerOpener) {
+            @NonNull BookmarkManagerOpener bookmarkManagerOpener,
+            @NonNull PriceDropNotificationManager priceDropNotificationManager) {
         mContext = context;
         mProfile = profile;
         mImageFetcher =
@@ -255,7 +258,8 @@ public class BookmarkManagerCoordinator
                         this::canShowSigninPromo,
                         onScrollListenerConsumer,
                         moveSnackbarManager,
-                        bookmarkManagerOpener);
+                        bookmarkManagerOpener,
+                        priceDropNotificationManager);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/* object= */ mMediator);

@@ -27,6 +27,12 @@ MEDIA_SHMEM_EXPORT void FMUL(base::span<const float> src,
                              float scale,
                              base::span<float> dest);
 
+// Clamps each element in `src` to the [-1.0, +1.0] range and store in `dest`.
+// replacing NaNs with 0s (silence).
+// `src` and `dest` must be aligned by `kRequiredAlignment`.
+MEDIA_SHMEM_EXPORT void FCLAMP(base::span<const float> src,
+                               base::span<float> dest);
+
 // Computes the exponentially-weighted moving average power of a signal by
 // iterating the recurrence:
 //

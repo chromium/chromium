@@ -115,17 +115,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="JavaScript Dialog"/>
 </enum>
 
-<enum name="AndroidDownloadFilterType">
-  <int value="0" label="All"/>
-  <int value="1" label="Page"/>
-  <int value="2" label="Video"/>
-  <int value="3" label="Audio"/>
-  <int value="4" label="Image"/>
-  <int value="5" label="Document"/>
-  <int value="6" label="Other"/>
-  <int value="7" label="Prefetched"/>
-</enum>
-
 <enum name="AndroidDownloadOpenSource">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ANDROID_DOWNLOAD_MANAGER"/>
@@ -785,11 +774,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Retain"/>
 </enum>
 
-<enum name="BooleanSameArray">
-  <int value="0" label="Not the same resource array"/>
-  <int value="1" label="App returned same resource array instance"/>
-</enum>
-
 <enum name="BottomControlsStatus">
   <int value="0" label="HEIGHT_ZERO"/>
   <int value="1" label="HIDDEN"/>
@@ -989,98 +973,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Undefined"/>
 </enum>
 
-<enum name="FeatureModuleAvailabilityStatus">
-  <int value="0" label="Requested">
-    Feature module has been requested but is not installed yet.
-  </int>
-  <int value="1" label="Installed Requested">
-    Feature module is installed after being requested.
-  </int>
-  <int value="2" label="Installed Unrequested">
-    Feature module is installed but has not been requested previously.
-  </int>
-</enum>
-
-<enum name="FeatureModuleInstallingStatus">
-  <int value="0" label="UnknownCode">Unknown update status.</int>
-  <int value="1" label="Requested">Module requested (on-demand).</int>
-  <int value="2" label="Pending">Module pending.</int>
-  <int value="3" label="Downloading">Module downloading.</int>
-  <int value="4" label="Downloaded">Module downloaded.</int>
-  <int value="5" label="Installing">Module installing.</int>
-  <int value="6" label="Installed">Module installed.</int>
-  <int value="7" label="Failed">Module request failed.</int>
-  <int value="8" label="Canceling">Module request canceling.</int>
-  <int value="9" label="Canceled">Module request canceled.</int>
-  <int value="10" label="RequiresUserConfirmation">
-    Module request requires user confirmation.
-  </int>
-  <int value="11" label="RequestedDeferred">Module requested (deferred).</int>
-</enum>
-
-<enum name="FeatureModuleInstallStatus">
-  <int value="0" label="Success">Installation succeeded.</int>
-  <int value="1" label="Failure (deprecated)">
-    (deprecated) Catch-all for install failures.
-  </int>
-  <int value="2" label="Request Error (deprecated)">
-    (deprecated) Catch-all for request failures.
-  </int>
-  <int value="3" label="Cancellation">The installation has been cancelled.</int>
-  <int value="4" label="Access Denied">
-    Download not permitted under current device circumstances (e.g. in
-    background).
-  </int>
-  <int value="5" label="Active Sessions Limit Exceeded">
-    Too many sessions are running for current app, existing sessions must be
-    resolved first.
-  </int>
-  <int value="6" label="API Not Available">
-    Split Install API is not available.
-  </int>
-  <int value="7" label="Incompatible with Existing Session">
-    Requested session contains modules from an existing active session and also
-    new modules.
-  </int>
-  <int value="8" label="Insufficient Storage">
-    Install failed due to insufficient storage.
-  </int>
-  <int value="9" label="Invalid Request">Request is otherwise invalid.</int>
-  <int value="10" label="Module Unavailable">
-    A requested module is not available (to this user/device, for the installed
-    apk).
-  </int>
-  <int value="11" label="Network Error">
-    Network error: unable to obtain split details
-  </int>
-  <int value="12" label="No Error"/>
-  <int value="13" label="Service Died">
-    Service handling split install has died.
-  </int>
-  <int value="14" label="Session Not Found">
-    Requested session is not found.
-  </int>
-  <int value="15" label="Splitcompat Copy Error">
-    Error in copying files for SplitCompat.
-  </int>
-  <int value="16" label="Splitcompat Emulation Error">
-    Error in SplitCompat emulation.
-  </int>
-  <int value="17" label="Splitcompat Verification Error">
-    Signature verification error when invoking SplitCompat.
-  </int>
-  <int value="18" label="Internal Error">
-    Unknown error processing split install.
-  </int>
-  <int value="19" label="Split Install Unknown Error">
-    Unmapped error processing split install error code.
-  </int>
-  <int value="20" label="Unknown Request Error">
-    Catch-all for unknown request failures.
-  </int>
-  <int value="21" label="No SplitCompat">SplitCompat has not been enabled.</int>
-</enum>
-
 <enum name="FrameJankStatus">
   <int value="0" label="Janky"/>
   <int value="1" label="NonJanky"/>
@@ -1104,14 +996,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Got nothing"/>
   <int value="3" label="Got different aspect ratio JPEG thumbnail"/>
   <int value="4" label="Got JPEG thumbnail on refetch"/>
-</enum>
-
-<enum name="GroupWindowState">
-  <summary>If a tab is open in the current or another window.</summary>
-  <int value="0" label="In current"/>
-  <int value="1" label="In current closing"/>
-  <int value="2" label="In another"/>
-  <int value="3" label="Hidden"/>
 </enum>
 
 <!-- LINT.IfChange(HubPaneId) -->

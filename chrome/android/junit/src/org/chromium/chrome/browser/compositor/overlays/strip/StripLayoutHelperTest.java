@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -41,7 +43,6 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.HapticFeedbackConstants;
@@ -101,6 +102,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -119,6 +121,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
@@ -139,6 +142,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -178,6 +182,10 @@ public class StripLayoutHelperTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private TabContextMenuCoordinator mTabContextMenuCoordinator;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ShareDelegate mShareDelegate;
+    @Mock private Tab mTab;
     @Mock private TabCreator mTabCreator;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
@@ -231,6 +239,7 @@ public class StripLayoutHelperTest {
     private static final float EPSILON = 0.001f;
     private static final String COLLABORATION_ID1 = "A";
     private static final String SYNC_ID1 = "B";
+    private static final GURL URL = new GURL("http://example.com");
 
     /** Reset the environment before each test. */
     @Before
@@ -308,7 +317,7 @@ public class StripLayoutHelperTest {
     /**
      * Test method for {@link StripLayoutHelper#getVirtualViews(List<VirtualView>)}.
      *
-     * Checks that it returns the correct order of tabs, including correct content.
+     * <p>Checks that it returns the correct order of tabs, including correct content.
      */
     @Test
     @Feature({"Accessibility"})
@@ -324,7 +333,7 @@ public class StripLayoutHelperTest {
     /**
      * Test method for {@link StripLayoutHelper#getVirtualViews(List<VirtualView>)}.
      *
-     * Checks that it returns the correct order of tabs, even when a tab except the first one is
+     * <p>Checks that it returns the correct order of tabs, even when a tab except the first one is
      * selected.
      */
     @Test
@@ -342,7 +351,7 @@ public class StripLayoutHelperTest {
     /**
      * Test method for {@link StripLayoutHelper#getVirtualViews(List<VirtualView>)}.
      *
-     * Checks that it returns the correct order of tabs, even in RTL mode.
+     * <p>Checks that it returns the correct order of tabs, even in RTL mode.
      */
     @Test
     @Feature({"Accessibility"})
@@ -360,7 +369,7 @@ public class StripLayoutHelperTest {
     /**
      * Test method for {@link StripLayoutHelper#getVirtualViews(List<VirtualView>)}.
      *
-     * Checks that it returns the correct order of tabs, even in incognito mode.
+     * <p>Checks that it returns the correct order of tabs, even in incognito mode.
      */
     @Test
     @Feature({"Accessibility"})
@@ -1877,7 +1886,9 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getDelayedReorderView());
+        assertNull(
+                "No tab was clicked by mouse.",
+                mStripLayoutHelper.getDelayedReorderViewForTesting());
         assertFalse(
                 "Should not start reorder mode when pressing down on tab without mouse.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1930,7 +1941,9 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getDelayedReorderView());
+        assertNull(
+                "No tab was clicked by mouse.",
+                mStripLayoutHelper.getDelayedReorderViewForTesting());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1953,7 +1966,9 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getDelayedReorderView());
+        assertNull(
+                "No tab was clicked by mouse.",
+                mStripLayoutHelper.getDelayedReorderViewForTesting());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1991,25 +2006,78 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     public void testOnLongPress_OnTab() {
-        onLongPress_OnTab();
+        var tabs = initializeTest_ForTab();
+        onLongPress_OnTab(tabs);
+        // Verify that we don't show the tab menu.
+        assertFalse(
+                "Should not show tab menu after long press on tab.",
+                mStripLayoutHelper.isTabMenuShowingForTesting());
         // Verify we directly enter reorder mode.
         assertTrue(
                 "Should be in reorder mode after long press on tab.",
                 mStripLayoutHelper.getInReorderModeForTesting());
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
+    @Feature("Tab Context Menu")
+    public void testOnLongPress_OnTab_FeaturesEnabled() {
+        var tabs = initializeTest_ForTab();
+        setupForIndividualTabContextMenu();
+        // Long press on tab
+        onLongPress_OnTab(tabs);
+        // Verify we performed haptic feedback for a long-press.
+        verify(mToolbarContainerView, times(1))
+                .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
+        // Verify tab context menu is showing.
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        // Verify anchorView coordinates.
+        StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
+        assertThat(view, instanceOf(StripLayoutTab.class));
+        Rect expectedRect = new Rect();
+        view.getAnchorRect(expectedRect);
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
+        assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testOnLongPress_WithDragDrop_OnTab_ContextMenuEnabled() {
+        var tabs = initializeTest_ForTab();
+        setTabDragSourceMock();
+        setupForIndividualTabContextMenu();
+        mStripLayoutHelper.onTabStateInitialized(); // drag is disabled if tab state is not init'ed
+        onLongPress_OnTab(tabs);
+
+        // Make the drag delta larger than INITIATE_REORDER_DRAG_THRESHOLD
+        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 110f, /* y= */ 10f, /* deltaX= */ 40f);
+        assertTrue(mStripLayoutHelper.getReorderDelegateForTesting().getInReorderMode());
+    }
+
+    /** Sets up tabModel and menu coordinator. */
     private void setupForContextMenu() {
-        // Set up tabModel and menu coordinator.
-        Drawable mockDrawable = mock(Drawable.class);
-        when(mTabGroupContextMenuCoordinator.getMenuBackground(any(), anyBoolean()))
-                .thenReturn(mockDrawable);
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
         tabModel.setActive(true);
+    }
+
+    private void setupForGroupContextMenu() {
+        setupForContextMenu();
         mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
                 mTabGroupContextMenuCoordinator);
+    }
+
+    private void setupForIndividualTabContextMenu() {
+        setupForContextMenu();
+        when(mModel.getTabById(anyInt())).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(URL);
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
     }
 
     @Test
@@ -2020,12 +2088,13 @@ public class StripLayoutHelperTest {
         groupTabs(0, 1);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        setupForContextMenu();
+        setupForGroupContextMenu();
 
         // Long press on group title.
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
         // Verify we performed haptic feedback for a long-press.
-        verify(mToolbarContainerView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        verify(mToolbarContainerView, times(1))
+                .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab group context menu is showing.
@@ -2047,7 +2116,7 @@ public class StripLayoutHelperTest {
         // Initialize.
         initializeTest(false, false, 0);
         groupTabs(0, 1);
-        setupForContextMenu();
+        setupForGroupContextMenu();
 
         // Verify drag without context menu starts a scroll.
         mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
@@ -2062,7 +2131,7 @@ public class StripLayoutHelperTest {
         // Initialize.
         initializeTest(false, false, 0);
         groupTabs(0, 1);
-        setupForContextMenu();
+        setupForGroupContextMenu();
 
         // Long press on group title and verify drag with context menu does not start a scroll.
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
@@ -2082,7 +2151,7 @@ public class StripLayoutHelperTest {
         // Initialize.
         initializeTest(false, false, 0);
         groupTabs(0, 1);
-        setupForContextMenu();
+        setupForGroupContextMenu();
 
         // Long press on group title and verify drag with context menu does not start a scroll.
         // Long press on group title.
@@ -2094,30 +2163,29 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testOnLongPress_WithDragDrop_OnTab() {
-        // Extra setup for DragDrop
+        var tabs = initializeTest_ForTab();
         setTabDragSourceMock();
-        onLongPress_OnTab();
+        onLongPress_OnTab(tabs);
         // Verify drag invoked
         verify(mTabDragSource).startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
     }
 
-    private void onLongPress_OnTab() {
-        // Initialize.
+    private StripLayoutTab[] initializeTest_ForTab() {
         initializeTest(false, false, 0);
+
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        return tabs;
+    }
 
+    private void onLongPress_OnTab(StripLayoutTab[] tabs) {
         // Long press on second tab.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
-
-        // Verify that we enter reorder mode.
-        assertFalse(
-                "Should not show tab menu after long press on tab.",
-                mStripLayoutHelper.isTabMenuShowingForTesting());
     }
 
     @Test
@@ -2392,7 +2460,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
 
         // Verify we performed haptic feedback for a long-press.
-        verify(mToolbarContainerView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        verify(mToolbarContainerView, times(1))
+                .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
     }
 
     @Test
@@ -4008,7 +4077,7 @@ public class StripLayoutHelperTest {
         // Arrange
         initializeTest(false, false, 10, 11);
         groupTabs(0, 1);
-        setupForContextMenu();
+        setupForGroupContextMenu();
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
         // Disable the padding as changing the visible width change the existing expected fling
         // distance.
@@ -4417,7 +4486,9 @@ public class StripLayoutHelperTest {
                         mActionConfirmationManager,
                         mModalDialogManager,
                         mDataSharingTabManager,
-                        () -> true);
+                        () -> true,
+                        mBottomSheetController,
+                        () -> mShareDelegate);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;

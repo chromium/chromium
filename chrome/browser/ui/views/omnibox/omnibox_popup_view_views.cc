@@ -374,15 +374,10 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     result_view->SetVisible(!group_hidden && !row_hidden);
     result_view->UpdateAccessibilityProperties();
 
-    // Enterprise search aggregator matches use the bitmap for icon setting in
-    // `OmniboxResultView::ApplyThemeAndRefreshIcons()`. Only set the image here
-    // for other match types.
-    if (!AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type)) {
-      const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
-      if (bitmap) {
-        result_view->SetRichSuggestionImage(
-            gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-      }
+    const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
+    if (bitmap) {
+      result_view->SetRichSuggestionImage(
+          gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
     }
   }
   // If we have more views than matches, hide the surplus ones.

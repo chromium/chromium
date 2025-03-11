@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card.BookmarkBatchUploadCardCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -381,6 +382,7 @@ class BookmarkManagerMediator
                     TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
     private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
+    private final PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Nullable private BookmarkBatchUploadCardCoordinator mBookmarkBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
@@ -420,7 +422,8 @@ class BookmarkManagerMediator
             BooleanSupplier canShowSigninPromo,
             Consumer<OnScrollListener> onScrollListenerConsumer,
             BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
-            BookmarkManagerOpener bookmarkManagerOpener) {
+            BookmarkManagerOpener bookmarkManagerOpener,
+            PriceDropNotificationManager priceDropNotificationManager) {
         mContext = activity;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -464,6 +467,7 @@ class BookmarkManagerMediator
         mBookmarkUndoController = bookmarkUndoController;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
         mBookmarkManagerOpener = bookmarkManagerOpener;
+        mPriceDropNotificationManager = priceDropNotificationManager;
         if (CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
             mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
         }
@@ -1537,7 +1541,8 @@ class BookmarkManagerMediator
                 mSnackbarManager,
                 mContext.getResources(),
                 mProfile,
-                callback);
+                callback,
+                mPriceDropNotificationManager);
     }
 
     void toggleSelectionForRow(BookmarkId id) {

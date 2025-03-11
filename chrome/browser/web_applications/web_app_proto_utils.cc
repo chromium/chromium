@@ -63,28 +63,28 @@ proto::UrlPatternPart::Modifier UrlPatternModifierToProto(
     liburlpattern::Modifier modifier) {
   switch (modifier) {
     case liburlpattern::Modifier::kZeroOrMore:
-      return proto::UrlPatternPart_Modifier_ZERO_OR_MORE;
+      return proto::UrlPatternPart::MODIFIER_ZERO_OR_MORE;
     case liburlpattern::Modifier::kOptional:
-      return proto::UrlPatternPart_Modifier_OPTIONAL;
+      return proto::UrlPatternPart::MODIFIER_OPTIONAL;
     case liburlpattern::Modifier::kOneOrMore:
-      return proto::UrlPatternPart_Modifier_ONE_OR_MORE;
+      return proto::UrlPatternPart::MODIFIER_ONE_OR_MORE;
     case liburlpattern::Modifier::kNone:
-      return proto::UrlPatternPart_Modifier_NONE;
+      return proto::UrlPatternPart::MODIFIER_NONE;
   }
 }
 
 std::optional<liburlpattern::Modifier> ProtoToUrlPatternModifier(
     proto::UrlPatternPart::Modifier modifier) {
   switch (modifier) {
-    case proto::UrlPatternPart_Modifier_UNKNOWN_MODIFIER:
+    case proto::UrlPatternPart::MODIFIER_UNSPECIFIED:
       return std::nullopt;
-    case proto::UrlPatternPart_Modifier_ZERO_OR_MORE:
+    case proto::UrlPatternPart::MODIFIER_ZERO_OR_MORE:
       return liburlpattern::Modifier::kZeroOrMore;
-    case proto::UrlPatternPart_Modifier_OPTIONAL:
+    case proto::UrlPatternPart::MODIFIER_OPTIONAL:
       return liburlpattern::Modifier::kOptional;
-    case proto::UrlPatternPart_Modifier_ONE_OR_MORE:
+    case proto::UrlPatternPart::MODIFIER_ONE_OR_MORE:
       return liburlpattern::Modifier::kOneOrMore;
-    case proto::UrlPatternPart_Modifier_NONE:
+    case proto::UrlPatternPart::MODIFIER_NONE:
       return liburlpattern::Modifier::kNone;
   }
 }
@@ -95,24 +95,24 @@ proto::UrlPatternPart::PartType UrlPatternPartTypeToProto(
     case liburlpattern::PartType::kRegex:
       NOTREACHED();
     case liburlpattern::PartType::kFullWildcard:
-      return proto::UrlPatternPart_PartType_FULL_WILDCARD;
+      return proto::UrlPatternPart::PART_TYPE_FULL_WILDCARD;
     case liburlpattern::PartType::kSegmentWildcard:
-      return proto::UrlPatternPart_PartType_SEGMENT_WILDCARD;
+      return proto::UrlPatternPart::PART_TYPE_SEGMENT_WILDCARD;
     case liburlpattern::PartType::kFixed:
-      return proto::UrlPatternPart_PartType_FIXED;
+      return proto::UrlPatternPart::PART_TYPE_FIXED;
   }
 }
 
 std::optional<liburlpattern::PartType> ProtoToUrlPatternPartType(
     proto::UrlPatternPart::PartType part_type) {
   switch (part_type) {
-    case proto::UrlPatternPart_PartType_UNKNOWN_PART_TYPE:
+    case proto::UrlPatternPart::PART_TYPE_UNSPECIFIED:
       return std::nullopt;
-    case proto::UrlPatternPart_PartType_FULL_WILDCARD:
+    case proto::UrlPatternPart::PART_TYPE_FULL_WILDCARD:
       return liburlpattern::PartType::kFullWildcard;
-    case proto::UrlPatternPart_PartType_SEGMENT_WILDCARD:
+    case proto::UrlPatternPart::PART_TYPE_SEGMENT_WILDCARD:
       return liburlpattern::PartType::kSegmentWildcard;
-    case proto::UrlPatternPart_PartType_FIXED:
+    case proto::UrlPatternPart::PART_TYPE_FIXED:
       return liburlpattern::PartType::kFixed;
   }
 }
@@ -120,9 +120,9 @@ std::optional<liburlpattern::PartType> ProtoToUrlPatternPartType(
 TabStrip::Visibility ProtoToTabStripVisibility(
     proto::TabStrip::Visibility visibility) {
   switch (visibility) {
-    case proto::TabStrip_Visibility_AUTO:
+    case proto::TabStrip::VISIBILITY_AUTO:
       return TabStrip::Visibility::kAuto;
-    case proto::TabStrip_Visibility_ABSENT:
+    case proto::TabStrip::VISIBILITY_ABSENT:
       return TabStrip::Visibility::kAbsent;
   }
 }
@@ -264,27 +264,27 @@ content::proto::ImageResource AppImageResourceToProto(
   return image_resource_proto;
 }
 
-RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode) {
+RunOnOsLoginMode ToRunOnOsLoginMode(proto::WebApp::RunOnOsLoginMode mode) {
   switch (mode) {
-    case WebAppProto::MINIMIZED:
+    case proto::WebApp::RUN_ON_OS_LOGIN_MODE_MINIMIZED:
       return RunOnOsLoginMode::kMinimized;
-    case WebAppProto::WINDOWED:
+    case proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED:
       return RunOnOsLoginMode::kWindowed;
-    case WebAppProto::NOT_RUN:
+    case proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN:
     default:
       return RunOnOsLoginMode::kNotRun;
   }
 }
 
-WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
+proto::WebApp::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     RunOnOsLoginMode mode) {
   switch (mode) {
     case RunOnOsLoginMode::kMinimized:
-      return WebAppProto::MINIMIZED;
+      return proto::WebApp::RUN_ON_OS_LOGIN_MODE_MINIMIZED;
     case RunOnOsLoginMode::kWindowed:
-      return WebAppProto::WINDOWED;
+      return proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED;
     case RunOnOsLoginMode::kNotRun:
-      return WebAppProto::NOT_RUN;
+      return proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN;
   }
 }
 

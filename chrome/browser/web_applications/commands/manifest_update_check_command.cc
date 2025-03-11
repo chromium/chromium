@@ -425,7 +425,8 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
       generated_icon_fix_util::IsWithinFixTimeWindow(web_app)) {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     generated_icon_fix_util::EnsureFixTimeWindowStarted(
-        *lock_, update, app_id_, GeneratedIconFixSource_MANIFEST_UPDATE);
+        *lock_, update, app_id_,
+        proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 

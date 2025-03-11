@@ -1948,18 +1948,8 @@ const LayoutLocale* HTMLCanvasElement::GetLocale() const {
     return LayoutLocale::Get(language);
   }
 
-  // The computed language may be null if the element is disconnected and does
-  // not have it's own language attribute. Fall back to the language of the
-  // document from the execution context.
-  if (const auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
-    const Element* document_element = window->document()->documentElement();
-    if (document_element) {
-      return &LayoutLocale::ValueOrDefault(
-          LayoutLocale::Get(document_element->ComputeInheritedLanguage()));
-    }
-  }
-
-  // If all else fails, return the default.
+  // The spec says to use the language of the canvas element, so if it doesn't
+  // have one we need to return the default (the "unknown language").
   return &LayoutLocale::GetDefault();
 }
 
@@ -1968,7 +1958,7 @@ UniqueFontSelector* HTMLCanvasElement::GetFontSelector() {
     return unique_font_selector;
   }
   auto* unique_font_selector = MakeGarbageCollected<UniqueFontSelector>(
-      *GetDocument().GetStyleEngine().GetFontSelector());
+      GetDocument().GetStyleEngine().GetFontSelector());
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
 }

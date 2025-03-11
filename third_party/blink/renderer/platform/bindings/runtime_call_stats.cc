@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 
 #include <inttypes.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/web/blink.h"
@@ -86,7 +82,7 @@ RuntimeCallStats::RuntimeCallStats(const base::TickClock* clock)
   });
 
   for (int i = 0; i < number_of_counters_; i++) {
-    counters_[i] = RuntimeCallCounter(names[i]);
+    UNSAFE_TODO(counters_[i] = RuntimeCallCounter(names[i]));
   }
 }
 
@@ -99,7 +95,7 @@ RuntimeCallStats* RuntimeCallStats::From(v8::Isolate* isolate) {
 
 void RuntimeCallStats::Reset() {
   for (int i = 0; i < number_of_counters_; i++) {
-    counters_[i].Reset();
+    UNSAFE_TODO(counters_[i].Reset());
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -111,8 +107,11 @@ void RuntimeCallStats::Reset() {
 
 void RuntimeCallStats::Dump(TracedValue& value) const {
   for (int i = 0; i < number_of_counters_; i++) {
-    if (counters_[i].GetCount() > 0)
-      counters_[i].Dump(value);
+    UNSAFE_TODO({
+      if (counters_[i].GetCount() > 0) {
+        counters_[i].Dump(value);
+      }
+    });
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -134,7 +133,7 @@ String RuntimeCallStats::ToString() const {
       "Name                                                    Count     Time "
       "(ms)\n\n");
   for (int i = 0; i < number_of_counters_; i++) {
-    const RuntimeCallCounter* counter = &counters_[i];
+    const RuntimeCallCounter* counter = UNSAFE_TODO(&counters_[i]);
     builder.AppendFormat(row_format, counter->GetName(), counter->GetCount(),
                          counter->GetTime().InMillisecondsF());
   }

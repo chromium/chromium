@@ -948,11 +948,19 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
   return native_widget_delegate_->GetNonClientComponent(dip_position);
 }
 
-void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
+void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
                                              SkPath* path) {
+  // Request the window mask for hwnd of `size_px`. The hwnd size must be
+  // adjusted by `window_enlargement` to return to the client-expected window
+  // size (see crbug.com/41047830).
+  const gfx::Size adjusted_size_in_px =
+      size_px - gfx::Size(window_enlargement_.x(), window_enlargement_.y());
+
   if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->GetWindowMask(
-        display::win::ScreenWin::ScreenToDIPSize(GetHWND(), size), path);
+        display::win::ScreenWin::ScreenToDIPSize(GetHWND(),
+                                                 adjusted_size_in_px),
+        path);
     // Convert path in DIPs to pixels.
     if (!path->isEmpty()) {
       const float scale =
@@ -963,11 +971,8 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
       path->transform(matrix);
     }
   } else if (!window_enlargement_.IsZero()) {
-    gfx::Rect bounds(WidgetSizeIsClientSize()
-                         ? message_handler_->GetClientAreaBoundsInScreen()
-                         : message_handler_->GetWindowBoundsInScreen());
-    InsetBottomRight(&bounds, window_enlargement_);
-    path->addRect(SkRect::MakeXYWH(0, 0, bounds.width(), bounds.height()));
+    path->addRect(SkRect::MakeXYWH(0, 0, adjusted_size_in_px.width(),
+                                   adjusted_size_in_px.height()));
   }
 }
 

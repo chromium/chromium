@@ -15,6 +15,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +77,13 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
   using DragObserver =
       views::test::PollingViewObserver<bool, views::MenuItemView>;
 
-  AppMenuDragAndDropInteractiveTest() = default;
+  AppMenuDragAndDropInteractiveTest() {
+    // Disabled to hide the comparison tables submenu.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {commerce::kProductSpecifications,
+             commerce::kCompareManagementInterface});
+  }
+
   ~AppMenuDragAndDropInteractiveTest() override = default;
   AppMenuDragAndDropInteractiveTest(const AppMenuDragAndDropInteractiveTest&) =
       delete;
@@ -169,6 +176,7 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 
  private:
   std::unique_ptr<DragWaiter> drag_waiter_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/375959961): For X11, the menu is always closed on drag

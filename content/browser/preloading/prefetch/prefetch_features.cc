@@ -24,12 +24,6 @@ BASE_FEATURE(kPrefetchReusable,
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
     &kPrefetchReusable, "prefetch_reusable_body_size_limit", 4194304};
 
-BASE_FEATURE_PARAM(bool,
-                   kPrefetchReusableUseNewWaitLoop,
-                   &kPrefetchReusable,
-                   "PrefetchReusableUseNewWaitLoop",
-                   false);
-
 BASE_FEATURE(kPrefetchNIKScope,
              "PrefetchNIKScope",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -66,10 +60,6 @@ BASE_FEATURE(kPrefetchCookieIndices,
 
 BASE_FEATURE(kPrefetchNewLimits,
              "PrefetchNewLimits",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchNewWaitLoop,
-             "PrefetchNewWaitLoop",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix,

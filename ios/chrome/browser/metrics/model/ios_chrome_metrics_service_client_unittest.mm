@@ -138,7 +138,7 @@ TEST_F(IOSChromeMetricsServiceClientTest,
 
   // The number of providers registered in
   // IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders().
-  const size_t expected_providers = 5;
+  const size_t expected_providers = 6;
 
   EXPECT_EQ(expected_providers,
             ukmService->metrics_providers_.GetProviders().size());

@@ -690,6 +690,8 @@ void FlossAdapterClient::OnSdpSearchComplete(
   for (auto& observer : observers_) {
     observer.SdpSearchComplete(device, uuid, sdp_records);
   }
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void FlossAdapterClient::OnSdpRecordCreated(
@@ -710,6 +712,8 @@ void FlossAdapterClient::OnSdpRecordCreated(
   for (auto& observer : observers_) {
     observer.SdpRecordCreated(sdp_record, handle);
   }
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void FlossAdapterClient::OnDeviceConnected(

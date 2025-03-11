@@ -626,20 +626,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceArcAppWithExtensionMatching) {
   EXPECT_TRUE(tasks[0].is_file_extension_match);
 }
 
-// Enable MV3 File Handlers.
-class AppServiceFileHandlersTest : public AppServiceFileTasksTest {
- public:
-  AppServiceFileHandlersTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Verify App Service tasks for extensions with MV3 File Handlers.
-TEST_F(AppServiceFileHandlersTest, FindAppServiceExtension) {
+TEST_F(AppServiceFileTasksTest, FileHandlersFindAppServiceExtension) {
   static constexpr char kAction[] = "/open.html";
   const std::string manifest = base::StringPrintf(R"(
     "version": "0.0.1",

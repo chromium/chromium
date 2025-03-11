@@ -343,11 +343,13 @@ GraphBuilderTflite::Result::Result(
     flatbuffers::DetachedBuffer buffer,
     base::flat_map<std::string, int> input_name_to_index,
     base::flat_map<std::string, int> output_name_to_index,
-    std::vector<uint8_t> buffer_data)
+    std::vector<uint8_t> buffer_data,
+    bool graph_requires_fp32_precision)
     : buffer(std::move(buffer)),
       input_name_to_index(std::move(input_name_to_index)),
       output_name_to_index(std::move(output_name_to_index)),
-      buffer_data(std::move(buffer_data)) {}
+      buffer_data(std::move(buffer_data)),
+      graph_requires_fp32_precision(graph_requires_fp32_precision) {}
 
 GraphBuilderTflite::Result::Result(Result&&) = default;
 
@@ -1343,7 +1345,8 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   is_created_model_ = true;
 
   return {builder_.Release(), std::move(input_name_to_index),
-          std::move(output_name_to_index), std::move(buffer_data_)};
+          std::move(output_name_to_index), std::move(buffer_data_),
+          graph_requires_fp32_precision};
 }
 
 uint32_t GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer) {

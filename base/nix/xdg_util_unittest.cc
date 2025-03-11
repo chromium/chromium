@@ -19,10 +19,8 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using ::testing::_;
-using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Return;
-using ::testing::SetArgPointee;
 
 namespace base::nix {
 
@@ -30,9 +28,9 @@ namespace {
 
 class MockEnvironment : public Environment {
  public:
-  MOCK_METHOD(bool,
+  MOCK_METHOD(std::optional<std::string>,
               GetVar,
-              (std::string_view, std::string* result),
+              (std::string_view),
               (override));
   MOCK_METHOD(bool,
               SetVar,
@@ -92,8 +90,8 @@ TEST(XDGUtilTest, GetXDGDataWriteLocation) {
   // Test that it returns $XDG_DATA_HOME.
   {
     MockEnvironment getter;
-    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_HOME"), _))
-        .WillOnce(DoAll(SetArgPointee<1>("/user/path"), Return(true)));
+    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_HOME")))
+        .WillOnce(Return("/user/path"));
 
     ScopedPathOverride home_override(DIR_HOME, FilePath("/home/user"),
                                      /*is_absolute=*/true, /*create=*/false);
@@ -104,7 +102,7 @@ TEST(XDGUtilTest, GetXDGDataWriteLocation) {
   // Test that $XDG_DATA_HOME falls back to $HOME/.local/share.
   {
     MockEnvironment getter;
-    EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+    EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
     ScopedPathOverride home_override(DIR_HOME, FilePath("/home/user"),
                                      /*is_absolute=*/true, /*create=*/false);
     FilePath path = GetXDGDataWriteLocation(&getter);
@@ -116,11 +114,10 @@ TEST(XDGUtilTest, GetXDGDataSearchLocations) {
   // Test that it returns $XDG_DATA_HOME + $XDG_DATA_DIRS.
   {
     MockEnvironment getter;
-    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_HOME"), _))
-        .WillOnce(DoAll(SetArgPointee<1>("/user/path"), Return(true)));
-    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_DIRS"), _))
-        .WillOnce(DoAll(SetArgPointee<1>("/system/path/1:/system/path/2"),
-                        Return(true)));
+    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_HOME")))
+        .WillOnce(Return("/user/path"));
+    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_DIRS")))
+        .WillOnce(Return("/system/path/1:/system/path/2"));
     ScopedPathOverride home_override(DIR_HOME, FilePath("/home/user"),
                                      /*is_absolute=*/true, /*create=*/false);
     EXPECT_THAT(
@@ -131,10 +128,9 @@ TEST(XDGUtilTest, GetXDGDataSearchLocations) {
   // Test that $XDG_DATA_HOME falls back to $HOME/.local/share.
   {
     MockEnvironment getter;
-    EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_DIRS"), _))
-        .WillOnce(DoAll(SetArgPointee<1>("/system/path/1:/system/path/2"),
-                        Return(true)));
+    EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_DIRS")))
+        .WillOnce(Return("/system/path/1:/system/path/2"));
 
     ScopedPathOverride home_override(DIR_HOME, FilePath("/home/user"),
                                      /*is_absolute=*/true, /*create=*/false);
@@ -147,10 +143,9 @@ TEST(XDGUtilTest, GetXDGDataSearchLocations) {
   // succeeds.
   {
     MockEnvironment getter;
-    EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_DIRS"), _))
-        .WillOnce(DoAll(SetArgPointee<1>("/system/path/1:/system/path/2"),
-                        Return(true)));
+    EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_DIRS")))
+        .WillOnce(Return("/system/path/1:/system/path/2"));
     std::vector<std::string> results =
         FilePathsToStrings(GetXDGDataSearchLocations(&getter));
     ASSERT_EQ(3U, results.size());
@@ -162,9 +157,9 @@ TEST(XDGUtilTest, GetXDGDataSearchLocations) {
   // Test that $XDG_DATA_DIRS falls back to the two default paths.
   {
     MockEnvironment getter;
-    EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_HOME"), _))
-        .WillOnce(DoAll(SetArgPointee<1>("/user/path"), Return(true)));
+    EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+    EXPECT_CALL(getter, GetVar(Eq("XDG_DATA_HOME")))
+        .WillOnce(Return("/user/path"));
     ScopedPathOverride home_override(DIR_HOME, FilePath("/home/user"),
                                      /*is_absolute=*/true, /*create=*/false);
     EXPECT_THAT(
@@ -175,264 +170,262 @@ TEST(XDGUtilTest, GetXDGDataSearchLocations) {
 
 TEST(XDGUtilTest, GetDesktopEnvironmentGnome) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kDesktopGnome), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession)))
+      .WillOnce(Return(kDesktopGnome));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_GNOME, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetDesktopEnvironmentMATE) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kDesktopMATE), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession)))
+      .WillOnce(Return(kDesktopMATE));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_GNOME, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetDesktopEnvironmentKDE4) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kDesktopKDE4), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession)))
+      .WillOnce(Return(kDesktopKDE4));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE4, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetDesktopEnvironmentKDE3) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kDesktopKDE), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession)))
+      .WillOnce(Return(kDesktopKDE));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE3, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetDesktopEnvironmentXFCE) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kDesktopXFCE), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession)))
+      .WillOnce(Return(kDesktopXFCE));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_XFCE, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopCinnamon) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopCinnamon), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopCinnamon));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_CINNAMON, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopDeepin) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopDeepin), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopDeepin));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_DEEPIN, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopGnome) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopGNOME), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopGNOME));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_GNOME, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopGnomeClassic) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopGNOMEClassic), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopGNOMEClassic));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_GNOME, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopGnomeFallback) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUnity), Return(true)));
-  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kDesktopGnomeFallback), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopUnity));
+  EXPECT_CALL(getter, GetVar(Eq(kDesktopSession)))
+      .WillOnce(Return(kDesktopGnomeFallback));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_GNOME, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopKDE5) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopKDE), Return(true)));
-  EXPECT_CALL(getter, GetVar(Eq(kKDESession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kKDESessionKDE5), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopKDE));
+  EXPECT_CALL(getter, GetVar(Eq(kKDESession)))
+      .WillOnce(Return(kKDESessionKDE5));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE5, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopKDE6) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopKDE), Return(true)));
-  EXPECT_CALL(getter, GetVar(Eq(kKDESession), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kKDESessionKDE6), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopKDE));
+  EXPECT_CALL(getter, GetVar(Eq(kKDESession)))
+      .WillOnce(Return(kKDESessionKDE6));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE6, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopKDE4) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopKDE), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopKDE));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_KDE4, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopPantheon) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopPantheon), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopPantheon));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_PANTHEON, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopUKUI) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUKUI), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopUKUI));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_UKUI, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopUnity) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUnity), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopUnity));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_UNITY, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopUnity7) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUnity7), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopUnity7));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_UNITY, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgDesktopUnity8) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUnity8), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopUnity8));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_UNITY, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessiontypeUnset) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
 
   EXPECT_EQ(SessionType::kUnset, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeOther) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionUnknown), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionUnknown));
 
   EXPECT_EQ(SessionType::kOther, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeUnspecified) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionUnspecified), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionUnspecified));
 
   EXPECT_EQ(SessionType::kUnspecified, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeTty) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionTty), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionTty));
 
   EXPECT_EQ(SessionType::kTty, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeMir) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionMir), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionMir));
 
   EXPECT_EQ(SessionType::kMir, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeX11) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionX11), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionX11));
 
   EXPECT_EQ(SessionType::kX11, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeWayland) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionWayland), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionWayland));
 
   EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeWaylandCapital) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(DoAll(SetArgPointee<1>(kSessionWaylandCapital), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionWaylandCapital));
 
   EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessionTypeWaylandWhitespace) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
-  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(kSessionWaylandWhitespace), Return(true)));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar)))
+      .WillOnce(Return(kSessionWaylandWhitespace));
 
   EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
 }
 
 TEST(XDGUtilTest, ExtractXdgActivationTokenFromEnvNotSet) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
   EXPECT_EQ(std::nullopt, ExtractXdgActivationTokenFromEnv(getter));
   EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
 }
 
 TEST(XDGUtilTest, ExtractXdgActivationTokenFromEnv) {
   MockEnvironment getter;
-  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN"), _))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(kXdgActivationTokenFromEnv), Return(true)));
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN")))
+      .WillOnce(Return(kXdgActivationTokenFromEnv));
   EXPECT_CALL(getter, UnSetVar(Eq("XDG_ACTIVATION_TOKEN")));
   EXPECT_EQ(kXdgActivationTokenFromEnv,
             ExtractXdgActivationTokenFromEnv(getter));
@@ -451,9 +444,8 @@ TEST(XDGUtilTest, ExtractXdgActivationTokenFromCmdLine) {
   CommandLine command_line(CommandLine::NO_PROGRAM);
   MockEnvironment getter;
   // Extract activation token initially from env.
-  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN"), _))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(kXdgActivationTokenFromEnv), Return(true)));
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN")))
+      .WillOnce(Return(kXdgActivationTokenFromEnv));
   EXPECT_CALL(getter, UnSetVar(Eq("XDG_ACTIVATION_TOKEN")));
   EXPECT_EQ(kXdgActivationTokenFromEnv,
             ExtractXdgActivationTokenFromEnv(getter));
@@ -475,9 +467,8 @@ TEST(XDGUtilTest, ScopedXdgActivationTokenInjector) {
   cmd_line.AppendSwitch("z");
   CommandLine::SwitchMap initial_switches = cmd_line.GetSwitches();
   // Set token value in env
-  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN"), _))
-      .WillOnce(
-          DoAll(SetArgPointee<1>(kXdgActivationTokenFromEnv), Return(true)));
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN")))
+      .WillOnce(Return(kXdgActivationTokenFromEnv));
   EXPECT_CALL(getter, UnSetVar(Eq("XDG_ACTIVATION_TOKEN")));
   {
     ScopedXdgActivationTokenInjector scoped_injector(cmd_line, getter);

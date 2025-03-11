@@ -535,52 +535,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearch.Ranker.Model.Status"
-    enum="RankerModelStatus" expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
-  <summary>Tracks the outcome of attempts to download a Ranker Model.</summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.DownloadModel" units="ms"
-    expires_after="M81">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to download its model from the
-    configured URL, in ms.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.ParseModel" units="ms"
-    expires_after="M77">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to parse its model, in ms.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.ReadModel" units="ms"
-    expires_after="M85">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to read its model from local storage
-    (cache), in ms.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Timer.WriteModel" units="ms"
-    expires_after="M85">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Time taken for the Ranker Model Loader to write its model to local storage,
-    in ms.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
     expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
@@ -695,30 +649,6 @@ chromium-metrics-reviews@google.com.
     Whether Contextual Cards data was shown in the Contextual Search Bar.
     Contextual Cards data is included with the search term resolution response.
     Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchIPHShown" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of times the Contextual Search panel is opened, categorized by
-    whether In-Product Help for Contextual Search was shown before. Logged when
-    the panel is opened. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPanelOpenedIPHShown" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of times the Contextual Search panel is opened, categorized by
-    whether In-Product Help for opening the panel was shown before. Logged when
-    the panel is opened. Implemented for Android.
   </summary>
 </histogram>
 
@@ -851,28 +781,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether search results were seen, broken down by original triggering
     gesture. Only includes users that have enabled. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapIPHShown" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of times the Contextual Search is triggered by tapping,
-    categorized by whether In-Product Help for tapping was shown before. Logged
-    when Contextual Search is triggered by tapping. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTranslateCondition" enum="Boolean"
-    expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    For each contextual search that is triggered by tap, records whether the
-    translation conditions are met. Implemented for Android.
   </summary>
 </histogram>
 
@@ -1123,17 +1031,6 @@ chromium-metrics-reviews@google.com.
     since the last button tap. This status indicates whether we identified the
     current tap as the initial one, or whether for a repeated tap we decided to
     avoid requesting the choice screen to be launched again.
-  </summary>
-</histogram>
-
-<histogram name="Search.PartnershipSearchPerformed" enum="SearchEntryPoint"
-    expires_after="M85">
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    The entry point used for all searches performed under partnership after the
-    Android search engine promo dialog was shown. This is a dialog prompting the
-    user to pick a default search engine. This metric is collected for every
-    search query performed.
   </summary>
 </histogram>
 
@@ -1629,41 +1526,6 @@ chromium-metrics-reviews@google.com.
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>Time between showing and hiding the answer card.</summary>
-</histogram>
-
-<histogram name="SearchAnswer.LoadingTime" units="ms" expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between sending an answer server request and the end of loading of the
-    answer card. Failed requests and requests not returning an answer are not
-    counted.
-  </summary>
-</histogram>
-
-<histogram name="SearchAnswer.NavigationTime" units="ms" expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between sending an answer server request and successful finish of
-    navigation. Failed requests and requests not returning an answer are not
-    counted.
-  </summary>
-</histogram>
-
-<histogram name="SearchAnswer.RequestResult" enum="SearchAnswerRequestResult"
-    expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>Result of a answer server request.</summary>
-</histogram>
-
-<histogram name="SearchAnswer.ResizeAfterLoadTime" units="ms"
-    expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between successfully loading an answer card request and updating its
-    preferred size. There might be no or more than one size update per card
-    load. Size updates that happen before the card finishes loading are ignored
-    since they are not visible.
-  </summary>
 </histogram>
 
 </histograms>

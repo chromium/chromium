@@ -84,21 +84,20 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private String mCurrentModifiedTitle;
     private boolean mIsPresetTitleUsed;
     private WindowAndroid mWindowAndroid;
-    private boolean mIsMenuShowing;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     protected CollaborationService mCollaborationService;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
                 public void didChangeTabGroupTitle(int rootId, String newTitle) {
-                    if (mIsMenuShowing && rootId == mGroupRootId) {
+                    if (isMenuShowing() && rootId == mGroupRootId) {
                         setExistingOrDefaultTitle(newTitle);
                     }
                 }
 
                 @Override
                 public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
-                    if (mIsMenuShowing && rootId == mGroupRootId) {
+                    if (isMenuShowing() && rootId == mGroupRootId) {
                         setSelectedColorItem(newColor);
                     }
                 }
@@ -267,13 +266,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* animStyle= */ ResourcesCompat.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 mWindowAndroid.getActivity().get());
-        mIsMenuShowing = true;
         recordUserAction("Shown");
-    }
-
-    /** Returns {@code true} if the menu is currently showing, {@code false} otherwise. */
-    protected boolean isMenuShowing() {
-        return mIsMenuShowing;
     }
 
     @Override
@@ -442,7 +435,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mWindowAndroid
                 .getKeyboardDelegate()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
-        mIsMenuShowing = false;
     }
 
     @Override

@@ -956,6 +956,7 @@ void TabGroupEditorBubbleView::LeaveGroupPressed() {
 
   tab_groups::SavedTabGroupUtils::LeaveSharedGroup(browser_,
                                                    saved_group->saved_guid());
+  GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {

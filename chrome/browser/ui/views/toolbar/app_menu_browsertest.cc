@@ -49,6 +49,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -66,6 +67,13 @@ namespace {
 
 class AppMenuBrowserTest : public UiBrowserTest {
  public:
+  AppMenuBrowserTest() {
+    // Disable the comparison tables submenu.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {commerce::kProductSpecifications,
+             commerce::kCompareManagementInterface});
+  }
+
   // UiBrowserTest:
   void ShowUi(const std::string& name) override;
   bool VerifyUi() override;
@@ -92,6 +100,7 @@ class AppMenuBrowserTest : public UiBrowserTest {
  private:
   raw_ptr<Browser> browser_ = nullptr;
   std::optional<int> command_id_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void AppMenuBrowserTest::ShowUi(const std::string& name) {
@@ -106,6 +115,7 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
       // Submenus present in all versions.
       {"history", IDC_RECENT_TABS_MENU},
       {"bookmarks", IDC_BOOKMARKS_MENU},
+      {"bookmarks_comparison_tables", IDC_BOOKMARKS_MENU},
       {"more_tools", IDC_MORE_TOOLS_MENU},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"help", IDC_HELP_MENU},
@@ -371,6 +381,26 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
 }
 
 #endif
+
+// Test case for the comparison table submenu under bookmarks. Only appears when
+// the Compare feature is enabled.
+class AppMenuBrowserTestCompareOnly : public AppMenuBrowserTest {
+ public:
+  AppMenuBrowserTestCompareOnly() {
+    scoped_feature_list_.InitWithFeatures(
+        {commerce::kProductSpecifications,
+         commerce::kCompareManagementInterface},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestCompareOnly,
+                       InvokeUi_bookmarks_comparison_tables) {
+  ShowAndVerifyUi();
+}
 
 // Test case for Safety Hub notification.
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, Safety_Hub_shown_notification) {

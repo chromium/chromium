@@ -46,17 +46,21 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
     private Runnable mOnDeleteCallback;
 
+    private boolean mShowRwsMembershipLabels;
+
     WebsiteRowPreference(
             Context context,
             SiteSettingsDelegate siteSettingsDelegate,
             WebsiteEntry siteEntry,
-            LayoutInflater layoutInflater) {
+            LayoutInflater layoutInflater,
+            boolean showRwsMembershipLabels) {
         super(context);
         mSiteSettingsDelegate = siteSettingsDelegate;
         mSiteEntry = siteEntry;
         mLayoutInflater = layoutInflater;
         // Initialize with an empty callback.
         mOnDeleteCallback = CallbackUtils.emptyRunnable();
+        mShowRwsMembershipLabels = showRwsMembershipLabels;
 
         // To make sure the layout stays stable throughout, we assign a
         // transparent drawable as the icon initially. This is so that
@@ -202,17 +206,16 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             }
         }
 
-        if (mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()) {
-            if (mSiteEntry.isPartOfRws()) {
-                String rwsSummary = getContext().getString(R.string.all_sites_rws_label);
-                if (summary.isEmpty()) {
-                    summary = rwsSummary;
-                } else {
-                    summary =
-                            getContext()
-                                    .getString(
-                                            R.string.summary_with_one_bullet, summary, rwsSummary);
-                }
+        if (mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()
+                && mSiteEntry.isPartOfRws()
+                && mShowRwsMembershipLabels) {
+            String rwsSummary = getContext().getString(R.string.all_sites_rws_label);
+            if (summary.isEmpty()) {
+                summary = rwsSummary;
+            } else {
+                summary =
+                        getContext()
+                                .getString(R.string.summary_with_one_bullet, summary, rwsSummary);
             }
         }
 

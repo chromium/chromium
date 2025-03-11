@@ -2331,6 +2331,7 @@ bool PropertyTrees::ElementIsAnimatingChanged(
   }
   return updated_transform;
 }
+#undef DCHECK_NODE_EXISTENCE
 
 void PropertyTrees::MaximumAnimationScaleChanged(ElementId element_id,
                                                  float maximum_scale) {

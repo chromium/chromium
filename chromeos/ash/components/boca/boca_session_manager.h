@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
@@ -90,6 +91,7 @@ class BocaSessionManager
   };
 
   BocaSessionManager(SessionClientImpl* session_client_impl,
+                     const PrefService* pref_service,
                      AccountId account_id,
                      bool is_producer);
   BocaSessionManager(const BocaSessionManager&) = delete;
@@ -228,6 +230,8 @@ class BocaSessionManager
   void StopSendingStudentHeartbeatRequests();
   void SendStudentHeartbeatRequest();
   void HandleCaptionNotification();
+  void UpdateNetworkRestriction(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
 
   const bool is_producer_;
   bool is_app_opened_ = false;
@@ -257,6 +261,7 @@ class BocaSessionManager
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;
   bool is_network_connected_ = false;
+  bool disabled_on_non_managed_network_ = false;
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
@@ -265,6 +270,7 @@ class BocaSessionManager
   AccountId account_id_;
   std::u16string active_tab_title_;
   BocaNotificationHandler notification_handler_;
+  raw_ptr<const PrefService> pref_service_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   bool is_local_caption_enabled_ = false;

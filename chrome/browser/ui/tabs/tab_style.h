@@ -117,6 +117,10 @@ class TabStyle {
   // available.
   virtual int GetStandardWidth() const = 0;
 
+  // Returns the preferred width of half of a split Tab, assuming space is
+  // available.
+  virtual int GetStandardSplitWidth() const = 0;
+
   // Returns the width for pinned tabs. Pinned tabs always have this width.
   virtual int GetPinnedWidth() const = 0;
 

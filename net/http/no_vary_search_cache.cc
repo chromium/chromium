@@ -414,7 +414,7 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
   EvictIfOverfull();
 }
 
-void NoVarySearchCache::ClearData(UrlFilterType filter_type,
+bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
                                   const base::flat_set<url::Origin>& origins,
                                   const base::flat_set<std::string>& domains,
                                   base::Time delete_begin,
@@ -438,6 +438,7 @@ void NoVarySearchCache::ClearData(UrlFilterType filter_type,
   for (QueryString* query_string : pending_erase) {
     EraseQuery(query_string);
   }
+  return !pending_erase.empty();
 }
 
 void NoVarySearchCache::Erase(EraseHandle handle) {

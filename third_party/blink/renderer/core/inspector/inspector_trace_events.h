@@ -599,7 +599,7 @@ void Data(perfetto::TracedValue context, const Animation&);
 namespace inspector_animation_compositor_event {
 void Data(perfetto::TracedValue context,
           blink::CompositorAnimations::FailureReasons failure_reasons,
-          const blink::PropertyHandleSet& unsupported_properties);
+          const blink::PropertyHandleSet& unsupported_properties_for_tracing);
 }
 
 namespace inspector_hit_test_event {

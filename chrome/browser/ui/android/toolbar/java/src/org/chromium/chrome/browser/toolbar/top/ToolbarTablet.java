@@ -27,6 +27,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -752,6 +753,27 @@ public class ToolbarTablet extends ToolbarLayout
             mOptionalButton.setOnLongClickListener(buttonSpec.getOnLongClickListener());
         }
         mOptionalButton.setImageDrawable(buttonSpec.getDrawable());
+
+        // Adjusting the paddings ensures the avatar remains stationary while the error badge is
+        // added or removed.
+        int paddingStart =
+                getDimensionPixelSize(
+                        buttonSpec.hasErrorBadge()
+                                ? R.dimen
+                                        .optional_toolbar_tablet_button_with_error_badge_padding_start
+                                : R.dimen.optional_toolbar_tablet_button_padding_start);
+        int paddingTop =
+                getDimensionPixelSize(
+                        buttonSpec.hasErrorBadge()
+                                ? R.dimen
+                                        .optional_toolbar_tablet_button_with_error_badge_padding_top
+                                : R.dimen.optional_toolbar_tablet_button_padding_top);
+        mOptionalButton.setPaddingRelative(
+                paddingStart,
+                paddingTop,
+                mOptionalButton.getPaddingEnd(),
+                mOptionalButton.getPaddingBottom());
+
         mOptionalButton.setContentDescription(buttonSpec.getContentDescription());
         mOptionalButton.setVisibility(View.VISIBLE);
         mOptionalButton.setEnabled(buttonData.isEnabled());
@@ -928,6 +950,10 @@ public class ToolbarTablet extends ToolbarLayout
                 });
 
         return set;
+    }
+
+    private int getDimensionPixelSize(@DimenRes int dimenId) {
+        return getResources().getDimensionPixelSize(dimenId);
     }
 
     @VisibleForTesting

@@ -1565,7 +1565,7 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
     }
   };
   // If a prerender navigation reached to `PrefetchURLLoaderInterceptor`, it is
-  // blocked by `PrefetchMatchResolver2` and prefetch ahead of prerender. So, we
+  // blocked by `PrefetchMatchResolver` and prefetch ahead of prerender. So, we
   // should've got prefetch eligibility when it reached to
   // `PrerenderURLLoaderThrottle`. Therefore, if prefetch eligibility is
   // `PreloadingEligibility::kUnspecified`, it implies that the navigation is

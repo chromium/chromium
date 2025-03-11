@@ -6631,13 +6631,6 @@ Called by update_permissions_policy_enum.py.-->
              encountered"/>
 </enum>
 
-<enum name="IntersectionObservationUpdateType">
-  <int value="0" label="No update"/>
-  <int value="1" label="Scroll only"/>
-  <int value="2" label="CachedRectInvalid"/>
-  <int value="3" label="Full update"/>
-</enum>
-
 <enum name="KeyboardLockMethods">
   <int value="0" label="keyboardLock() requested for all keys"/>
   <int value="1" label="keyboardLock() requested for a subset of keys"/>

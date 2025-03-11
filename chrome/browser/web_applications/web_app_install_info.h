@@ -455,7 +455,7 @@ struct WebAppInstallInfo {
 
   // Bookkeeping details about attempts to fix broken icons from sync installed
   // web apps.
-  std::optional<GeneratedIconFix> generated_icon_fix;
+  std::optional<proto::GeneratedIconFix> generated_icon_fix;
 
   IconsWithSizeAny icons_with_size_any;
 

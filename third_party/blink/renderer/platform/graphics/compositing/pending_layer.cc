@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 
 #include "base/containers/adapters.h"
+#include "cc/base/features.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/layers/solid_color_layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
@@ -82,28 +83,31 @@ void PendingLayer::Trace(Visitor* visitor) const {
   visitor->Trace(content_layer_client_);
 }
 
-gfx::Vector2dF PendingLayer::LayerOffset() const {
+std::pair<gfx::Vector2dF, gfx::Size> PendingLayer::Bounds() const {
+  gfx::Size ceiled_size = gfx::ToCeiledSize(bounds_.size());
   // The solid color layer optimization is important for performance. Snapping
   // the location could make the solid color drawings not cover the entire
   // cc::Layer which would make the layer non-solid-color.
   if (IsSolidColor()) {
-    return bounds_.OffsetFromOrigin();
+    return {bounds_.OffsetFromOrigin(), ceiled_size};
   }
-  // Otherwise return integral offset to reduce chance of additional blurriness.
-  // TODO(crbug.com/1414915): This expansion may harm performance because
-  // opaque layers becomes non-opaque. We can avoid this when we support
-  // subpixel raster translation for render surfaces. We have already supported
-  // that for cc::PictureLayerImpls.
-  return gfx::Vector2dF(gfx::ToFlooredVector2d(bounds_.OffsetFromOrigin()));
-}
 
-gfx::Size PendingLayer::LayerBounds() const {
-  // Because solid color layers do not adjust their location (see:
-  // |PendingLayer::LayerOffset()|), we only expand their size here.
-  if (IsSolidColor()) {
-    return gfx::ToCeiledSize(bounds_.size());
+  // Though raster translation in cc can avoid bluriness under subpixel
+  // translations in most cases, a rounded layer offset can still reduce the
+  // chance of additional blurriness. However, if the rounding would make an
+  // opaque layer non-opaque, we prefer opaqueness which is beneficial to
+  // performance (with better occlusion optimization) and render quality (by
+  // eliminating seams between adjacent layers under non-integral scale even
+  // if scale rounding on the render surface doesn't apply).
+  gfx::RectF bounds_with_ceiled_size(bounds_.origin(), gfx::SizeF(ceiled_size));
+  gfx::Rect enclosing_bounds = gfx::ToEnclosingRect(bounds_);
+  if (base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment) &&
+      rect_known_to_be_opaque_.Contains(bounds_with_ceiled_size) &&
+      !rect_known_to_be_opaque_.Contains(gfx::RectF(enclosing_bounds))) {
+    return {bounds_.OffsetFromOrigin(), ceiled_size};
   }
-  return gfx::ToEnclosingRect(bounds_).size();
+
+  return {enclosing_bounds.OffsetFromOrigin(), enclosing_bounds.size()};
 }
 
 gfx::RectF PendingLayer::MapRectKnownToBeOpaque(
@@ -658,8 +662,9 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
   if (!cc_layer_) {
     cc_layer_ = cc::SolidColorLayer::Create();
   }
-  cc_layer_->SetOffsetToTransformParent(LayerOffset());
-  cc_layer_->SetBounds(LayerBounds());
+  auto [layer_offset, layer_bounds] = Bounds();
+  cc_layer_->SetOffsetToTransformParent(layer_offset);
+  cc_layer_->SetBounds(layer_bounds);
   cc_layer_->SetHitTestOpaqueness(GetHitTestOpaqueness());
   cc_layer_->SetBackgroundColor(GetSolidColor());
   cc_layer_->SetIsDrawable(draws_content_);

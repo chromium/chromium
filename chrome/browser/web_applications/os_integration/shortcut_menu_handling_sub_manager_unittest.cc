@@ -203,66 +203,66 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    EXPECT_TRUE(
-        os_integration_state.shortcut_menus().shortcut_menu_info_size() ==
-        num_menu_items);
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  EXPECT_TRUE(os_integration_state.shortcut_menus().shortcut_menu_info_size() ==
+              num_menu_items);
 
-    int num_sizes = static_cast<int>(sizes.size());
+  int num_sizes = static_cast<int>(sizes.size());
 
-    for (int menu_index = 0; menu_index < num_menu_items; menu_index++) {
-      EXPECT_THAT(os_integration_state.shortcut_menus()
+  for (int menu_index = 0; menu_index < num_menu_items; menu_index++) {
+    EXPECT_THAT(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .shortcut_name(),
+                testing::Eq(base::StrCat(
+                    {"shortcut_name", base::NumberToString(menu_index)})));
+
+    EXPECT_THAT(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .shortcut_launch_url(),
+                testing::Eq(base::StrCat(
+                    {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
+
+    EXPECT_EQ(os_integration_state.shortcut_menus()
+                  .shortcut_menu_info(menu_index)
+                  .icon_data_any_size(),
+              num_sizes);
+    EXPECT_EQ(os_integration_state.shortcut_menus()
+                  .shortcut_menu_info(menu_index)
+                  .icon_data_maskable_size(),
+              num_sizes);
+    EXPECT_EQ(os_integration_state.shortcut_menus()
+                  .shortcut_menu_info(menu_index)
+                  .icon_data_monochrome_size(),
+              num_sizes);
+
+    for (int size_index = 0; size_index < num_sizes; size_index++) {
+      EXPECT_TRUE(os_integration_state.shortcut_menus()
                       .shortcut_menu_info(menu_index)
-                      .shortcut_name(),
-                  testing::Eq(base::StrCat(
-                      {"shortcut_name", base::NumberToString(menu_index)})));
-
-      EXPECT_THAT(os_integration_state.shortcut_menus()
+                      .icon_data_any(size_index)
+                      .icon_size() == sizes[size_index]);
+      EXPECT_TRUE(os_integration_state.shortcut_menus()
                       .shortcut_menu_info(menu_index)
-                      .shortcut_launch_url(),
-                  testing::Eq(base::StrCat(
-                      {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
-
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_any_size(),
-                num_sizes);
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_maskable_size(),
-                num_sizes);
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_monochrome_size(),
-                num_sizes);
-
-      for (int size_index = 0; size_index < num_sizes; size_index++) {
-        EXPECT_TRUE(os_integration_state.shortcut_menus()
-                        .shortcut_menu_info(menu_index)
-                        .icon_data_any(size_index)
-                        .icon_size() == sizes[size_index]);
-        EXPECT_TRUE(os_integration_state.shortcut_menus()
-                        .shortcut_menu_info(menu_index)
-                        .icon_data_any(size_index)
-                        .has_timestamp());
-        EXPECT_TRUE(os_integration_state.shortcut_menus()
-                        .shortcut_menu_info(menu_index)
-                        .icon_data_maskable(size_index)
-                        .icon_size() == sizes[size_index]);
-        EXPECT_TRUE(os_integration_state.shortcut_menus()
-                        .shortcut_menu_info(menu_index)
-                        .icon_data_maskable(size_index)
-                        .has_timestamp());
-        EXPECT_TRUE(os_integration_state.shortcut_menus()
-                        .shortcut_menu_info(menu_index)
-                        .icon_data_monochrome(size_index)
-                        .icon_size() == sizes[size_index]);
-        EXPECT_TRUE(os_integration_state.shortcut_menus()
-                        .shortcut_menu_info(menu_index)
-                        .icon_data_monochrome(size_index)
-                        .has_timestamp());
-      }
+                      .icon_data_any(size_index)
+                      .has_timestamp());
+      EXPECT_TRUE(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .icon_data_maskable(size_index)
+                      .icon_size() == sizes[size_index]);
+      EXPECT_TRUE(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .icon_data_maskable(size_index)
+                      .has_timestamp());
+      EXPECT_TRUE(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .icon_data_monochrome(size_index)
+                      .icon_size() == sizes[size_index]);
+      EXPECT_TRUE(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .icon_data_monochrome(size_index)
+                      .has_timestamp());
     }
+  }
 }
 
 // Tests handling crashes fixed in crbug.com/1417955.
@@ -288,7 +288,8 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   ASSERT_FALSE(os_integration_state.has_shortcut_menus());
 }
 
@@ -353,17 +354,17 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-    ASSERT_EQ(os_integration_state.shortcut_menus().shortcut_menu_info_size(),
-              1);
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  ASSERT_EQ(os_integration_state.shortcut_menus().shortcut_menu_info_size(), 1);
 
-    auto shortcut_menu_info =
-        os_integration_state.shortcut_menus().shortcut_menu_info(0);
-    EXPECT_EQ(shortcut_menu_info.shortcut_name(), "basic_shortcut");
-    EXPECT_EQ(shortcut_menu_info.shortcut_launch_url(), kWebAppUrl.spec());
-    EXPECT_EQ(shortcut_menu_info.icon_data_any_size(), 2);
-    EXPECT_EQ(shortcut_menu_info.icon_data_maskable_size(), 2);
-    EXPECT_EQ(shortcut_menu_info.icon_data_monochrome_size(), 2);
+  auto shortcut_menu_info =
+      os_integration_state.shortcut_menus().shortcut_menu_info(0);
+  EXPECT_EQ(shortcut_menu_info.shortcut_name(), "basic_shortcut");
+  EXPECT_EQ(shortcut_menu_info.shortcut_launch_url(), kWebAppUrl.spec());
+  EXPECT_EQ(shortcut_menu_info.icon_data_any_size(), 2);
+  EXPECT_EQ(shortcut_menu_info.icon_data_maskable_size(), 2);
+  EXPECT_EQ(shortcut_menu_info.icon_data_monochrome_size(), 2);
 }
 
 // This tests our handling of https://crbug.com/1427444.
@@ -388,7 +389,8 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   ASSERT_FALSE(os_integration_state.has_shortcut_menus());
 }
 
@@ -493,7 +495,8 @@ TEST_F(ShortcutMenuHandlingSubManagerExecuteTest,
   test::UninstallAllWebApps(profile());
 
 #if BUILDFLAG(IS_WIN)
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   const std::wstring app_user_model_id2 =
       web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
   ASSERT_TRUE(os_integration_state.has_shortcut_menus());

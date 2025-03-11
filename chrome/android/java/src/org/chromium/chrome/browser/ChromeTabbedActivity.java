@@ -906,7 +906,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             mRootUiCoordinator.getDesktopWindowStateManager(),
                             actionConfirmationManager,
                             getModalDialogManagerSupplier().get(),
-                            mRootUiCoordinator.getDataSharingTabManager());
+                            mRootUiCoordinator.getDataSharingTabManager(),
+                            mRootUiCoordinator.getBottomSheetController(),
+                            mRootUiCoordinator.getShareDelegateSupplier());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

@@ -77,9 +77,6 @@ class AIManager : public base::SupportsUserData::Data,
   // Return the max temperature for the LanguageModel API.
   float GetLanguageModelMaxTemperature();
 
-  // Return the default and max sampling params for the LanguageModel API.
-  blink::mojom::AILanguageModelParamsPtr GetLanguageModelParams();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, CanCreate);
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath);
@@ -98,6 +95,9 @@ class AIManager : public base::SupportsUserData::Data,
       const std::vector<AILanguageCodePtr>& input,
       const std::vector<AILanguageCodePtr>& context,
       const AILanguageCodePtr& output);
+
+  // Return the default and max sampling params for the LanguageModel API.
+  blink::mojom::AILanguageModelParamsPtr GetLanguageModelParams();
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateLanguageModel(
@@ -143,7 +143,7 @@ class AIManager : public base::SupportsUserData::Data,
   // model to be available.
   std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
   CreateLanguageModelInternal(
-      const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
+      blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
       AIContextBoundObjectSet& context_bound_object_set,
       AIUtils::LanguageCodes expected_input_languages,
       base::OnceCallback<void(AILanguageModelOrCreationError)> callback,

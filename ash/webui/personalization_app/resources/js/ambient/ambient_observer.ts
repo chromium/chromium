@@ -13,8 +13,9 @@ import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientUiVisibilityAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientThemePreviewsAction, setAmbientUiVisibilityAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
+import {AmbientThemePreviewMap} from './utils.js';
 
 /** @fileoverview listens for updates on ambient mode changes. */
 
@@ -65,6 +66,11 @@ export class AmbientObserver implements AmbientObserverInterface {
         AmbientObserver.shouldLogPreviewsLoadPerformance && ambientModeEnabled;
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
+  }
+
+  onAmbientThemePreviewImagesChanged(previews: AmbientThemePreviewMap): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setAmbientThemePreviewsAction(previews));
   }
 
   onAmbientThemeChanged(ambientTheme: AmbientTheme): void {

@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.pwm_disabled;
 
 import android.text.SpannableString;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Model properties describing the contents of the CSV download dialog. */
+@NullMarked
 class PasswordCsvDownloadDialogProperties {
     private PasswordCsvDownloadDialogProperties() {}
 

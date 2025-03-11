@@ -1195,6 +1195,49 @@ mega_cq_excluded_gardener_rotations = [
     "cft",
 ]
 
+# This dict should NOT be added to. It contains a list of ci builders that are
+# already being mirrored in CQ but have no gardener rotation.
+exempted_gardened_mirrors_in_cq_builders = [
+    "ci/android-cronet-arm-dbg",
+    "ci/android-cronet-arm-rel",
+    "ci/android-cronet-x64-dbg",
+    "ci/android-cronet-x64-dbg-15-tests",
+    "ci/android-cronet-x64-rel",
+    "ci/android-cronet-x86-dbg",
+    "ci/android-cronet-x86-dbg-marshmallow-tests",
+    "ci/fuchsia-x64-accessibility-rel",
+    "ci/linux-enterprise-companion-builder-dbg",
+    "ci/linux-enterprise-companion-builder-rel",
+    "ci/linux-enterprise-companion-tester-dbg",
+    "ci/linux-enterprise-companion-tester-rel",
+    "ci/linux-headless-shell-rel",
+    "ci/linux-js-code-coverage",
+    "ci/linux-perfetto-rel",
+    "ci/linux-updater-builder-dbg",
+    "ci/linux-updater-builder-rel",
+    "ci/linux-updater-tester-dbg",
+    "ci/linux-updater-tester-rel",
+    "ci/mac-enterprise-companion-builder-dbg",
+    "ci/mac-enterprise-companion-builder-rel",
+    "ci/mac-updater-builder-dbg",
+    "ci/mac-updater-builder-rel",
+    "ci/mac11-x64-enterprise-companion-tester-dbg",
+    "ci/mac11-x64-enterprise-companion-tester-rel",
+    "ci/mac11-x64-updater-tester-dbg",
+    "ci/mac11-x64-updater-tester-rel",
+    "ci/mac14-tests",
+    "ci/win-arm64-updater-builder-rel",
+    "ci/win-enterprise-companion-builder-dbg",
+    "ci/win-enterprise-companion-builder-rel",
+    "ci/win-updater-builder-dbg",
+    "ci/win-updater-builder-rel",
+    "ci/win10-enterprise-companion-tester-dbg",
+    "ci/win10-enterprise-companion-tester-rel",
+    "ci/win10-updater-tester-dbg",
+    "ci/win10-updater-tester-rel",
+    "ci/win11-arm64-updater-tester-rel",
+]
+
 standalone_trybot_excluded_builders = [
     "android_blink_rel",  # Same reason 'tryserver.blink' is excluded below.
     "linux-layout-tests-edit-ng",  # Unclear why this one is standalone.

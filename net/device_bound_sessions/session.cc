@@ -161,6 +161,8 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
       SessionInclusionRules::InclusionResult::kExclude,
       candidate_refresh_endpoint.host(), candidate_refresh_endpoint.path());
 
+  session->inclusion_rules_.SetIncludeSite(params.scope.include_site);
+
   for (const auto& cred : params.credentials) {
     if (!cred.name.empty()) {
       std::optional<CookieCraving> craving =

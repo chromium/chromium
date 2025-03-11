@@ -37,7 +37,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
-#include "base/android/orderfile/orderfile_instrumentation.h"
+#include "base/android/orderfile/orderfile_instrumentation.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)

@@ -12,31 +12,31 @@ cargo_crate("lib") {
   crate_name = "icu_collections"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/char16trie/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/char16trie/trie.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointinvlist/builder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointinvlist/conversions.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointinvlist/cpinvlist.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointinvlist/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointinvlist/utils.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointinvliststringlist/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/cptrie.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/impl_const.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/planes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/codepointtrie/toml.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/iterator_utils.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/char16trie/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/char16trie/trie.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointinvlist/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointinvlist/conversions.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointinvlist/cpinvlist.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointinvlist/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointinvlist/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointinvliststringlist/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/cptrie.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/impl_const.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/planes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/codepointtrie/toml.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/iterator_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collections-2.0.0-beta2/src/lib.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_version = "2.0.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_collections"
   cargo_pkg_description = "Collection of API for use in ICU libraries."
@@ -50,10 +50,11 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/potential_utf/v0_1:lib",
-    "//third_party/rust/yoke/v0_7:lib",
+    "//third_party/rust/yoke/v0_8:lib",
     "//third_party/rust/zerofrom/v0_1:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  features = [ "alloc" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

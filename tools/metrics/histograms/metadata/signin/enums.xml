@@ -199,11 +199,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
-<enum name="BatchUploadTypes">
-  <int value="0" label="Passwords"/>
-  <int value="1" label="Addresses"/>
-</enum>
-
 <enum name="BooleanBoundToTheSameKey">
   <int value="0" label="Bound to different keys"/>
   <int value="1" label="Bound to the same key"/>
@@ -799,15 +794,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Revoked by Dice migration"/>
   <int value="2" label="Revoked as secondary account"/>
   <int value="3" label="Revoked on load due to cookie settings"/>
-</enum>
-
-<enum name="SigninReauthResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Account not signed in"/>
-  <int value="2" label="User dismissed Reauth"/>
-  <int value="3" label="Reauth page failed to load"/>
-  <int value="4" label="Reauth was cancelled"/>
-  <int value="5" label="Unexpected server response"/>
 </enum>
 
 <enum name="SigninReconcilerOperation">

@@ -71,10 +71,6 @@ class VideoEffectsProcessorWebGpu {
       media::VideoPixelFormat result_pixel_format,
       mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
 
-  wgpu::ComputePipeline CreateComputePipeline();
-  wgpu::RenderPipeline CreateRenderPipelineForTextureCopy(
-      wgpu::TextureFormat destination_format);
-
   void MaybeInitializeInferenceEngine();
 
   wgpu::Device device_;
@@ -86,16 +82,6 @@ class VideoEffectsProcessorWebGpu {
   // is unavailable. This can happen either when we have not received the model
   // yet, or if we have been told to stop using an existing model.
   std::vector<uint8_t> background_segmentation_model_;
-
-  // Compute pipeline executing basic compute shader on a video frame.
-  wgpu::ComputePipeline compute_pipeline_;
-  wgpu::RenderPipeline render_pipeline_texture_copy_into_rgbaf32_;
-  wgpu::RenderPipeline render_pipeline_texture_copy_into_rgba8unorm_;
-
-  // WebGPU buffer that we use to send the parameters to our compute shader.
-  wgpu::Buffer uniforms_buffer_;
-  // Uniforms buffer specifically for render pipelines for texture copy.
-  wgpu::Buffer texture_copy_uniforms_buffer_;
 
 #if BUILDFLAG(MEDIAPIPE_BUILD_WITH_GPU_SUPPORT)
   std::unique_ptr<VideoEffectsGraphWebGpu> graph_;

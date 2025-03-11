@@ -15,11 +15,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
+#include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -138,9 +140,9 @@ class BocaSessionManagerTestBase : public testing::Test {
   void SetUp() override {
     // Sign in test user.
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    boca_util::RegisterPrefs(local_state_.registry());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
-
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
     const std::string username_hash =
@@ -180,6 +182,24 @@ class BocaSessionManagerTestBase : public testing::Test {
     cros_network_config_helper_.network_state_helper().SetServiceProperty(
         wifi_device_path_, shill::kStateProperty,
         base::Value(shill::kStateOnline));
+  }
+
+  void ToggleIntoManagedNetwork() {
+    std::unique_ptr<NetworkUIData> ui_data =
+        NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
+    cros_network_config_helper_.network_state_helper().SetServiceProperty(
+        wifi_device_path_, shill::kUIDataProperty,
+        base::Value(ui_data->GetAsJson()));
+    ToggleOnline();
+  }
+
+  void ToggleIntoNonManagedNetwork() {
+    std::unique_ptr<NetworkUIData> ui_data =
+        NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_NONE);
+    cros_network_config_helper_.network_state_helper().SetServiceProperty(
+        wifi_device_path_, shill::kUIDataProperty,
+        base::Value(ui_data->GetAsJson()));
+    ToggleOnline();
   }
 
   void ToggleOffline() {
@@ -261,7 +281,8 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
         .WillRepeatedly(Return(kDeviceId));
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), account_id, /*is_producer=*/true);
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/true);
     boca_session_manager_->AddObserver(observer());
 
     EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
@@ -1430,6 +1451,71 @@ TEST_F(BocaSessionManagerTest, StudentHeartbeatNotCalledWithProducer) {
   task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
 }
 
+class BocaSessionManagerManagedNetworkTest : public BocaSessionManagerTestBase {
+ protected:
+  void SetUp() override {
+    BocaSessionManagerTestBase::SetUp();
+    scoped_feature_list().InitWithFeatures(
+        {ash::features::kBocaNetworkRestriction}, /*disabled_features=*/{});
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+    EXPECT_CALL(*session_client_impl(), GetSession(_))
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
+          // The first fetch at construction time will fail due to refresh token
+          // not ready.
+          boca_session_manager_->ParseSessionResponse(
+              /*from_polling=*/false,
+              base::unexpected<google_apis::ApiErrorCode>(
+                  google_apis::ApiErrorCode::NOT_READY));
+        }));
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
+    boca_session_manager_ = std::make_unique<BocaSessionManager>(
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/true);
+    ToggleOnline();
+  }
+
+ protected:
+  const base::Time session_start_time_ = base::Time::Now();
+  std::unique_ptr<BocaSessionManager> boca_session_manager_;
+};
+
+TEST_F(BocaSessionManagerManagedNetworkTest,
+       DoNotLoadSessionIfNonManagedNetwork) {
+  ToggleIntoNonManagedNetwork();
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
+  EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(0);
+  EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
+  EXPECT_FALSE(boca_session_manager_->GetCurrentSession());
+  task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval +
+                                    base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerManagedNetworkTest, LoadSessionWhenOnManagedNetwork) {
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  ToggleIntoManagedNetwork();
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+
+  task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval * 1 +
+                                    base::Seconds(1));
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+}
+
+TEST_F(BocaSessionManagerManagedNetworkTest,
+       TriggerReloadWhenSwitchbackToManagedNetwork) {
+  ToggleIntoNonManagedNetwork();
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  ToggleIntoManagedNetwork();
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
+  task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval +
+                                    base::Seconds(1));
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+}
+
 class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
  public:
   BocaSessionManagerNoPollingTest() = default;
@@ -1454,7 +1540,8 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
     EXPECT_CALL(*boca_app_client(), GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), account_id, /*is_producer=*/true);
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/true);
   }
 
  protected:
@@ -1534,7 +1621,8 @@ class BocaSessionManagerCustomPollingTest : public BocaSessionManagerTestBase {
     EXPECT_CALL(*boca_app_client(), GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), account_id, /*is_producer=*/true);
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/true);
   }
 
  private:
@@ -1582,7 +1670,8 @@ class BocaSessionManagerStudentHeartbeatTest
     const auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), account_id, /*is_producer=*/false);
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/false);
   }
 
   BocaSessionManager* boca_session_manager() {
@@ -1674,7 +1763,8 @@ class BocaSessionManagerStudentHeartbeatCustomPollingTest
     const auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), account_id, /*is_producer=*/false);
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/false);
   }
 
   BocaSessionManager* boca_session_manager() {
@@ -1741,7 +1831,8 @@ class BocaSessionManagerStudentHeartbeatNoPollingTest
     EXPECT_CALL(*boca_app_client(), GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl(), account_id, /*is_producer=*/false);
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/false);
   }
 
   BocaSessionManager* boca_session_manager() {

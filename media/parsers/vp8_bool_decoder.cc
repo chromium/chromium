@@ -207,4 +207,6 @@ inline bool Vp8BoolDecoder::OutOfBuffer() {
   return (count_ > VP8_BD_VALUE_BIT) && (count_ < VP8_LOTS_OF_BITS);
 }
 
+#undef VP8_BD_VALUE_BIT
+#undef VP8_LOTS_OF_BITS
 }  // namespace media

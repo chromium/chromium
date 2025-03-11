@@ -36,6 +36,7 @@ suite('cr-scrollable', () => {
   let childBlockElement: HTMLElement;
 
   setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);
 

@@ -28,6 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -75,6 +76,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -2675,6 +2677,35 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, MAYBE_RemoteDebugger) {
 IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
   ASSERT_TRUE(RunExtensionTest("discovery_page")) << message_;
 }
+
+class RemoteDebuggingUserDataDirTest
+    : public RemoteDebuggingTest,
+      public ::testing::WithParamInterface</*default_user_dir*/ bool> {
+ public:
+  void SetUp() override {
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(GetParam());
+    RemoteDebuggingTest::SetUp();
+  }
+
+ protected:
+  base::HistogramTester histograms_;
+};
+
+IN_PROC_BROWSER_TEST_P(RemoteDebuggingUserDataDirTest, Metrics) {
+  histograms_.ExpectUniqueSample(
+      "DevTools.DevToolsDebuggingUserDataDirStatus",
+      GetParam() ? /*kBeingDebuggedWithDefaultUserDataDir*/ 2
+                 : /*kBeingDebuggedWithNonDefaultUserDataDir*/ 1,
+      1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         RemoteDebuggingUserDataDirTest,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "DefaultUserDataDir"
+                                             : "NonDefaultUserDataDir";
+                         });
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
   DisallowDevTools(browser());

@@ -30,11 +30,6 @@ bool IsWeatherAllowedByGeolocation() {
       ->IsGeolocationUsageAllowedForSystem();
 }
 
-// Returns the pref service to use for Birch bar prefs.
-PrefService* GetPrefService() {
-  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-}
-
 }  // namespace
 
 BirchBarContextMenuModel::BirchBarContextMenuModel(
@@ -50,14 +45,12 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
     if (features::IsCoralFeatureEnabled()) {
-      bool coral_enabled =
-          coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
-          BirchCoralProvider::Get()->GetGenAIAvailability();
       AddItem(base::to_underlying(CommandId::kCoralSuggestions),
               l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM));
       auto coral_index = GetIndexOfCommandId(
           base::to_underlying(CommandId::kCoralSuggestions));
-      SetEnabledAt(coral_index.value(), coral_enabled);
+      SetEnabledAt(coral_index.value(),
+                   BirchCoralProvider::Get()->IsCoralServiceAvailable());
     }
 
     bool enabled = IsWeatherAllowedByGeolocation();

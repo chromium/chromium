@@ -35,8 +35,6 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  */
 public class StripLayoutGroupTitle extends StripLayoutView {
 
-    private final Context mContext;
-
     /** Delegate for additional group title functionality. */
     public interface StripLayoutGroupTitleDelegate extends StripLayoutViewOnClickHandler {
         /**
@@ -139,10 +137,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             boolean incognito,
             int rootId,
             Token tabGroupId) {
-        super(incognito, delegate);
+        super(incognito, delegate, context);
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
         mRootId = rootId;
-        mContext = context;
         mDelegate = delegate;
         mTabGroupId = tabGroupId;
         mBubbleTint = TabUiThemeUtil.getGroupTitleBubbleColor(mContext);
@@ -202,12 +199,17 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param out Rect to set the bounds.
      */
     public void getPaddedBoundsPx(Rect out) {
-        float dpToPx = mContext.getResources().getDisplayMetrics().density;
+        float dpToPx = getDpToPx();
         out.set(
-                (int) (getPaddedX() * dpToPx),
-                (int) (getPaddedY() * dpToPx),
-                (int) ((getPaddedX() + getPaddedWidth()) * dpToPx),
-                (int) ((getPaddedY() + getPaddedHeight()) * dpToPx));
+                Math.round(getPaddedX() * dpToPx),
+                Math.round(getPaddedY() * dpToPx),
+                Math.round((getPaddedX() + getPaddedWidth()) * dpToPx),
+                Math.round((getPaddedY() + getPaddedHeight()) * dpToPx));
+    }
+
+    @Override
+    public void getAnchorRect(Rect out) {
+        getPaddedBoundsPx(out);
     }
 
     /**

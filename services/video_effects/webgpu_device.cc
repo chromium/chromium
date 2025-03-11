@@ -115,11 +115,21 @@ void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
                                    device_lost_callback->UnboundCallback(),
                                    device_lost_callback->AsUserdata());
 
-  descriptor.SetUncapturedErrorCallback(
-      [](const wgpu::Device&, wgpu::ErrorType type, wgpu::StringView message) {
+  auto* uncaptured_error_callback = gpu::webgpu::BindWGPUOnceCallback(
+      [](base::WeakPtr<WebGpuDevice> self, const wgpu::Device& device,
+         wgpu::ErrorType type, wgpu::StringView message) {
         DVLOG(1) << "wgpu::ErrorType = " << base::to_underlying(type) << "; "
                  << std::string_view(message);
-      });
+        // We're treating uncaptured WebGPU error like a device loss. It likely
+        // signifies programmer error, meaning that we can't really trust the
+        // contents of the textures that we're producing.
+        self->OnDeviceLost(device, wgpu::DeviceLostReason::Unknown, message);
+      },
+      weak_ptr_factory_.GetWeakPtr());
+
+  descriptor.SetUncapturedErrorCallback(
+      uncaptured_error_callback->UnboundCallback(),
+      uncaptured_error_callback->AsUserdata());
 
   auto* request_device_callback = gpu::webgpu::BindWGPUOnceCallback(
       [](base::WeakPtr<WebGpuDevice> self, DeviceCallback device_cb,
