@@ -10,6 +10,9 @@
 namespace auto_deletion {
 class ScheduledFile;
 }  // namespace auto_deletion
+namespace base {
+class Time;
+}  // namespace base
 class PrefService;
 
 namespace auto_deletion {
@@ -27,18 +30,19 @@ class Scheduler {
   Scheduler(Scheduler&&) = delete;
   Scheduler& operator=(Scheduler&&) = delete;
 
-  // Returns a list of files whose scheduled deletion dates have elapsed. This
-  // function removes the expired files from where they are stored. Therefore,
-  // invoke this function only with the intent to remove the returned list of
-  // files from the device.
-  [[nodiscard]] std::vector<ScheduledFile> IdentifyScheduledFilesForDeletion();
+  // Returns a list of files whose scheduled deletion dates have elapsed.
+  [[nodiscard]] std::vector<ScheduledFile> IdentifyExpiredFiles(
+      base::Time instant);
+
+  // Removes the ScheduledFiles whose deletion dates have elased.
+  void RemoveExpiredFiles(base::Time instant);
 
   // Schedules the file for deletion.
   void ScheduleFile(ScheduledFile file);
 
  private:
   // Returns whether the file is older than one month.
-  bool IsFileReadyForDeletion(const ScheduledFile& file);
+  bool IsFileReadyForDeletion(base::Time instant, const ScheduledFile& file);
 
   // The PrefService where the list of ScheduledFiles awaiting automatic
   // deletion is stored.

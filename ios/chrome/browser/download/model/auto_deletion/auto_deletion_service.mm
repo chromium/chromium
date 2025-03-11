@@ -4,10 +4,17 @@
 
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/base64.h"
 #import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/hash/md5.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -17,21 +24,36 @@
 #import "ios/web/public/download/download_task.h"
 
 namespace {
-// The base64 encoding option given for converting the DownloadTask's contents
-// to a string in order to compute a hash.
-NSDataBase64EncodingOptions kEncodingOption =
-    NSDataBase64EncodingEndLineWithCarriageReturn;
+
+// Creates an MD5Hash of the downloaded file's contents.
+std::string HashDownloadData(base::span<const uint8_t> data_span) {
+  base::MD5Digest hash;
+  base::MD5Sum(data_span, &hash);
+  return base::MD5DigestToBase16(hash);
+}
 
 // Creates an MD5Hash of the downloaded file's contents. This hash is used to
 // verify that the file that is scheduled to be deleted is the same file that
 // was originally scheduled for deletion.
 std::string HashDownloadData(NSData* data) {
-  base::MD5Digest hash;
-  NSString* base_64_string =
-      [data base64EncodedStringWithOptions:kEncodingOption];
-  std::string utf_8_base_64_string = base::SysNSStringToUTF8(base_64_string);
-  base::MD5Sum(base::as_byte_span(utf_8_base_64_string), &hash);
-  return base::MD5DigestToBase16(hash);
+  return HashDownloadData(base::apple::NSDataToSpan(data));
+}
+
+// Removes the ScheduledFiles from the device. It is intended to be invoked on a
+// background thread.
+void RemoveScheduledFilesHelper(
+    const std::vector<auto_deletion::ScheduledFile>& files_to_delete) {
+  // Delete the files from the file system.
+  std::string buffer;
+  for (const auto& file : files_to_delete) {
+    if (!base::ReadFileToString(file.filepath(), &buffer)) {
+      continue;
+    }
+    const std::string hash = HashDownloadData(base::as_byte_span(buffer));
+    if (hash == file.hash()) {
+      base::DeleteFile(file.filepath());
+    }
+  }
 }
 
 }  // namespace
@@ -57,11 +79,36 @@ void AutoDeletionService::ScheduleFileForDeletion(web::DownloadTask* task) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(task)));
 }
 
+void AutoDeletionService::RemoveScheduledFilesReadyForDeletion(
+    base::OnceClosure closure) {
+  // Identify all of the files that are ready for deletion.
+  const base::Time now = base::Time::Now();
+  std::vector<ScheduledFile> files_to_delete =
+      scheduler_.IdentifyExpiredFiles(now);
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {
+          base::MayBlock(),
+          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+          base::ThreadPolicy::PREFER_BACKGROUND,
+      },
+      base::BindOnce(&RemoveScheduledFilesHelper, files_to_delete),
+      base::BindOnce(&AutoDeletionService::OnFilesDeletedFromDisk,
+                     weak_ptr_factory_.GetWeakPtr(), now, std::move(closure)));
+}
+
 void AutoDeletionService::ScheduleFileForDeletionHelper(web::DownloadTask* task,
                                                         NSData* data) {
   ScheduledFile file(task->GetResponsePath(), HashDownloadData(data),
                      base::Time::Now());
   scheduler_.ScheduleFile(std::move(file));
+}
+
+void AutoDeletionService::OnFilesDeletedFromDisk(base::Time instant,
+                                                 base::OnceClosure closure) {
+  scheduler_.RemoveExpiredFiles(instant);
+  std::move(closure).Run();
 }
 
 }  // namespace auto_deletion

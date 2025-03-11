@@ -49,7 +49,7 @@ TEST_F(SchedulerTest, IdentifyNoFilesForDeletion) {
                                             number_of_files);
 
   std::vector<ScheduledFile> files_for_deletion =
-      scheduler.IdentifyScheduledFilesForDeletion();
+      scheduler.IdentifyExpiredFiles(base::Time::Now());
 
   EXPECT_EQ(files_for_deletion.size(), 0u);
 }
@@ -64,25 +64,9 @@ TEST_F(SchedulerTest, IdentifyEveryFileForDeletion) {
                                             number_of_files);
 
   std::vector<ScheduledFile> files_for_deletion =
-      scheduler.IdentifyScheduledFilesForDeletion();
+      scheduler.IdentifyExpiredFiles(base::Time::Now());
 
   EXPECT_EQ(files_for_deletion.size(), 10u);
-}
-
-// Tests the scheduler correctly removes the expired files from the PrefService.
-TEST_F(SchedulerTest, RemoveExpiredFiles) {
-  base::TimeDelta start_point_in_past = base::Days(30);
-  size_t number_of_files = 10;
-  auto_deletion::Scheduler scheduler(local_state());
-  PopulateSchedulerWithAutoDeletionSchedule(scheduler, start_point_in_past,
-                                            number_of_files);
-  ASSERT_EQ(scheduled_files().size(), 10u);
-
-  std::vector<ScheduledFile> files_for_deletion =
-      scheduler.IdentifyScheduledFilesForDeletion();
-
-  EXPECT_EQ(files_for_deletion.size(), 10u);
-  EXPECT_EQ(scheduled_files().size(), 0u);
 }
 
 }  // namespace auto_deletion
