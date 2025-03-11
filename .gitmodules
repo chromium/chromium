@@ -173,9 +173,6 @@
 [submodule "third_party/ced/src"]
 	path = third_party/ced/src
 	url = https://chromium.googlesource.com/external/github.com/google/compact_enc_det
-[submodule "third_party/chromium-variations"]
-	path = third_party/chromium-variations
-	url = https://chromium.googlesource.com/chromium-variations
 [submodule "third_party/chromevox/third_party/sre/src"]
 	path = third_party/chromevox/third_party/sre/src
 	url = https://chromium.googlesource.com/external/github.com/zorkow/speech-rule-engine

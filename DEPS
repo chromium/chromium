@@ -365,10 +365,6 @@ vars = {
   # and whatever else without interference from each other.
   'catapult_revision': '4d2793429fbccd6cbddc46b4b3ca9474e72c528a',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling chromium_variations
-  # and whatever else without interference from each other.
-  'chromium_variations_revision': '270a25f8795caf0a798ebf5a7d69284e3d830d19',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
   'crossbench_revision': 'a4825d77765470c6df91f6c5315407939f4741a0',
@@ -1470,7 +1466,7 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  'src/chrome/test/data/variations/cipd': {
+  'src/components/variations/test_data/cipd': {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/variations/cipd',
@@ -1937,9 +1933,6 @@ deps = {
       'condition': '(checkout_android or checkout_linux) and non_git_source',
       'dep_type': 'cipd',
   },
-
-  'src/third_party/chromium-variations':
-    Var('chromium_git') + '/chromium-variations.git' + '@' + Var('chromium_variations_revision'),
 
   # Dependency for ChromeVox.
   'src/third_party/chromevox/third_party/sre/src': {
