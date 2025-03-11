@@ -27,12 +27,6 @@ class AutofillAiDelegate {
       autofill::FormGlobalId form_global_id,
       autofill::FieldGlobalId field_global_id) = 0;
 
-  // Returns whether `form` and `field` are eligible for the Autofill AI
-  // experience.
-  virtual bool IsFormAndFieldEligibleForAutofillAi(
-      const FormStructure& form,
-      const AutofillField& field) const = 0;
-
   // Returns whether the current user is eligible for the Autofill AI
   // experience. This is not dependent on whether the user has enabled the flag
   // or not.

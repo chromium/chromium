@@ -1109,6 +1109,7 @@ static_library("test_support") {
   public_deps = [
     ":browser",
     "//components/autofill/core/common:test_support",
+    "//components/optimization_guide/core:features",
   ]
 
   deps = [

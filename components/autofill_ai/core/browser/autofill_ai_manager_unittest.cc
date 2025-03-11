@@ -130,6 +130,7 @@ class BaseAutofillAiManagerTest : public testing::Test {
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
+  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
   MockAutofillAiClient& client() { return client_; }
   AutofillAiManager& manager() { return manager_; }
   autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
@@ -146,8 +147,18 @@ class BaseAutofillAiManagerTest : public testing::Test {
 class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
  public:
   AutofillAiManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {autofill::features::kAutofillAiWithDataSchema,
+         autofill::features::kAutofillAiServerModel},
+        {});
+    autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+    autofill_client().set_entity_data_manager(
+        std::make_unique<autofill::EntityDataManager>(
+            webdata_helper_.autofill_webdata_service(),
+            /*history_service=*/nullptr,
+            /*strike_database=*/nullptr));
     ON_CALL(client(), GetEntityDataManager)
-        .WillByDefault(Return(&entity_data_manager_));
+        .WillByDefault(Return(autofill_client().GetEntityDataManager()));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
@@ -174,27 +185,28 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
   }
 
   void AddOrUpdateEntityInstance(EntityInstance entity) {
-    entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
+    edm().AddOrUpdateEntityInstance(std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
 
   void RemoveEntityInstance(base::Uuid guid) {
-    entity_data_manager_.RemoveEntityInstance(guid);
+    edm().RemoveEntityInstance(guid);
     webdata_helper_.WaitUntilIdle();
   }
 
   base::span<const EntityInstance> GetEntityInstances() {
     webdata_helper_.WaitUntilIdle();
-    return entity_data_manager_.GetEntityInstances();
+    return edm().GetEntityInstances();
+  }
+
+  autofill::EntityDataManager& edm() {
+    return *autofill_client().GetEntityDataManager();
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
-  autofill::EntityDataManager entity_data_manager_{
-      webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
-      /*strike_database=*/nullptr};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the user receives a filling suggestion when interacting with
@@ -798,42 +810,6 @@ class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
 };
 
 TEST_F(AutofillAiEligibilityTests,
-       IsFormAndFieldNotEligibleIfBothFlagsAreDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
-
-  EXPECT_FALSE(
-      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
-}
-
-TEST_F(AutofillAiEligibilityTests,
-       FormAndFieldIsNotEligibleIfServerPredictionHasNoAutofillAiType) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
-
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
-  SetPredictionTypesForField(*form->field(0), {autofill::NAME_FIRST});
-
-  EXPECT_FALSE(
-      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
-}
-
-TEST_F(AutofillAiEligibilityTests, FormAndFieldIsNotEligibleIfPrefIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
-
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
-
-  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
-  EXPECT_FALSE(
-      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
-}
-
-TEST_F(AutofillAiEligibilityTests,
        UserNotEligibleForImportingAndFillingIfPrefIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -841,26 +817,6 @@ TEST_F(AutofillAiEligibilityTests,
 
   EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
   EXPECT_FALSE(manager().IsUserEligibleForFillingAndImporting());
-}
-
-TEST_F(AutofillAiEligibilityTests, AutofillAiEligibility_FormAndFieldEligible) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      autofill::features::kAutofillAiWithDataSchema};
-
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
-  EXPECT_TRUE(
-      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
-}
-
-TEST_F(AutofillAiEligibilityTests,
-       FormAndFieldIsNotEligibleForNonEligibleUser) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      autofill::features::kAutofillAiWithDataSchema};
-
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
-  ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));
-  EXPECT_FALSE(
-      manager().IsFormAndFieldEligibleForAutofillAi(*form, *form->field(0)));
 }
 
 }  // namespace

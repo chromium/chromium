@@ -17,9 +17,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,10 +28,6 @@ namespace {
 
 using ::testing::TestWithParam;
 using ::testing::Values;
-
-constexpr auto kAutofillPredictionSettingsAllow =
-    base::to_underlying(optimization_guide::model_execution::prefs::
-                            ModelExecutionEnterprisePolicyValue::kAllow);
 
 constexpr auto kAutofillPredictionSettingsDisable =
     base::to_underlying(optimization_guide::model_execution::prefs::
@@ -75,22 +68,8 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
         {features::kAutofillAiWithDataSchema, features::kAutofillAiServerModel},
         {});
 
-    // Prefs.
-    client().SetAutofillProfileEnabled(true);
-    test::AutofillTestingPrefService& prefs = *client().GetPrefs();
-    prefs.SetBoolean(prefs::kAutofillPredictionImprovementsEnabled, true);
-    prefs.registry()->RegisterIntegerPref(
-        optimization_guide::prefs::
-            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-        kAutofillPredictionSettingsAllow, PrefRegistry::LOSSY_PREF);
-
-    // Account-level state.
-    AccountInfo account_info =
-        client().identity_test_environment().MakePrimaryAccountAvailable(
-            "foo@gmail.com", signin::ConsentLevel::kSignin);
-    SetCanUseExecutionFeatures(true);
-
-    // Other.
+    // Pref and identity state.
+    client().SetUpPrefsAndIdentityForAutofillAi();
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
@@ -99,17 +78,6 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
   void AddEntity() {
     edm().AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
     webdata_helper_.WaitUntilIdle();
-  }
-
-  // Updates whether the currently signed in primary can use model execution
-  // features. Assumes that there is a primary account.
-  void SetCanUseExecutionFeatures(bool can_use_model_execution) {
-    signin::IdentityManager* identity_manager = client().GetIdentityManager();
-    AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-    AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_can_use_model_execution_features(can_use_model_execution);
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
   TestAutofillClient& client() { return client_; }
@@ -245,7 +213,7 @@ TEST_P(AutofillAiPermissionUtilsTest, SignedOut) {
 // user's account capabilities include running a model.
 TEST_P(AutofillAiPermissionUtilsTest, MayNotRunModel) {
   AddEntity();
-  SetCanUseExecutionFeatures(false);
+  client().SetCanUseModelExecutionFeatures(false);
   const bool is_allowed =
       (GetParam() ==
        AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||

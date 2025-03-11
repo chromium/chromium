@@ -1110,10 +1110,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
                               /*update_datalist=*/true);
 
   std::vector<Suggestion> autofill_ai_suggestions;
-  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-      delegate && form_structure && autofill_field &&
-      delegate->IsFormAndFieldEligibleForAutofillAi(*form_structure,
-                                                    *autofill_field)) {
+  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
     autofill_ai_suggestions =
         delegate->GetSuggestions(form.global_id(), field.global_id());
   }
