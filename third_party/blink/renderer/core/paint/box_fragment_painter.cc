@@ -2266,7 +2266,7 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       // caused by filters), because we want to record a match if we hit the
       // overflow of a child below the stop node. This matches legacy behavior
       // in LayoutBox::NodeAtPoint(); see call to
-      // PhysicalVisualOverflowRectIncludingFilters().
+      // VisualOverflowRectIncludingFilters().
       bounds_rect = InkOverflowIncludingFilters();
       bounds_rect.Move(physical_offset);
     }
