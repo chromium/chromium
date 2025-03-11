@@ -1550,13 +1550,6 @@ BASE_FEATURE(kCameraMicEffects,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_FUCHSIA)
 
-// Controls whether system loopback audio can be Cast to audio-only Cast
-// receivers, e.g. speakers.
-// TODO(crbug.com/40579200): Remove once launched.
-BASE_FEATURE(kCastLoopbackAudioToAudioReceivers,
-             "CastLoopbackAudioToAudioReceivers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether mirroring negotiations will include the AV1 codec for video
 // encoding.
 //

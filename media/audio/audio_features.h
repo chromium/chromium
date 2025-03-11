@@ -11,16 +11,9 @@
 
 namespace features {
 
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcessKillAtHang);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kDumpOnAudioServiceHang);
-
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioDriver);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioInput);
-#endif
-
-#if BUILDFLAG(IS_WIN)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowIAudioClient3);
 #endif
 
 }  // namespace features
