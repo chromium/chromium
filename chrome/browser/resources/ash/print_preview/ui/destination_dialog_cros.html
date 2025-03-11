@@ -47,23 +47,25 @@
         </searchable-drop-down-cros>
       </div>
     </div>
-    <div class="throbber-container" hidden$="[[!showThrobber_]]">
+    <div class="throbber-container" hidden$="[[!shouldShowUi_(
+        uiStateEnum_.THROBBER, uiState_)]]">
       <div class="throbber"></div>
     </div>
     <print-preview-search-box id="searchBox"
-        hidden$="[[!isShowingDestinationList]]"
+        hidden$="[[!shouldShowUi_(uiStateEnum_.DESTINATION_LIST, uiState_)]]"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
         autofocus>
     </print-preview-search-box>
     <print-preview-destination-list id="printList"
         destinations="[[destinations_]]"
-        hidden$="[[!isShowingDestinationList]]"
-        loading-destinations="false"
+        hidden$="[[!shouldShowUi_(uiStateEnum_.DESTINATION_LIST, uiState_)]]"
+        loading-destinations="[[loadingDestinations_]]"
         search-query="[[searchQuery_]]"
         on-destination-selected="onDestinationSelected_">
     </print-preview-destination-list>
     <print-preview-printer-setup-info-cros
-        hidden$="[[!isShowingPrinterSetupAssistance]]"
+        hidden$="[[!shouldShowUi_(uiStateEnum_.PRINTER_SETUP_ASSISTANCE,
+            uiState_)]]"
         message-type="[[noPrinters_]]"
         initiator="[[destinationDialogCrosInitiator_]]">
     </print-preview-printer-setup-info-cros>
