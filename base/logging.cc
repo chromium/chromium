@@ -178,7 +178,7 @@ std::unique_ptr<VlogInfo> VlogInfoFromCommandLine() {
 #endif  // defined(LEAK_SANITIZER)
   return std::make_unique<VlogInfo>(
       command_line->GetSwitchValueASCII(switches::kV),
-      command_line->GetSwitchValueASCII(switches::kVModule), &g_min_log_level);
+      command_line->GetSwitchValueASCII(switches::kVModule), g_min_log_level);
 }
 
 // If the commandline is initialized for the current process this will
@@ -1325,7 +1325,7 @@ VlogInfo* ScopedVmoduleSwitches::CreateVlogInfoWithSwitches(
   VlogInfo* base_vlog_info = GetVlogInfo();
   if (!base_vlog_info) {
     // Base is |nullptr|, so just create it from scratch.
-    return new VlogInfo(/*v_switch_=*/"", vmodule_switch, &g_min_log_level);
+    return new VlogInfo(/*v_switch_=*/"", vmodule_switch, g_min_log_level);
   }
   return base_vlog_info->WithSwitches(vmodule_switch);
 }
