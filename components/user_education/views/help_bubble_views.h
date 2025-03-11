@@ -13,12 +13,11 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace user_education {
-
-class HelpBubbleView;
 
 // Views-specific implementation of the help bubble.
 //
@@ -33,11 +32,6 @@ class HelpBubbleViews : public HelpBubble,
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
-  // Retrieve the bubble view. If the bubble has been closed, this may return
-  // null.
-  HelpBubbleView* bubble_view() { return help_bubble_view_; }
-  const HelpBubbleView* bubble_view() const { return help_bubble_view_; }
-
   // HelpBubble:
   bool ToggleFocusForAccessibility() override;
   void OnAnchorBoundsChanged() override;
@@ -48,13 +42,22 @@ class HelpBubbleViews : public HelpBubble,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
+  // Retrieve the bubble view. If the bubble has been closed, this may return
+  // null.
+  auto* bubble_view_for_testing() { return help_bubble_view_.get(); }
+  const auto* bubble_view_for_testing() const {
+    return help_bubble_view_.get();
+  }
+
+ protected:
+  HelpBubbleViews(views::BubbleDialogDelegateView* help_bubble_view,
+                  ui::TrackedElement* anchor_element);
+
  private:
   friend class HelpBubbleFactoryViews;
   friend class HelpBubbleFactoryMac;
   friend class HelpBubbleViewsTest;
-
-  explicit HelpBubbleViews(HelpBubbleView* help_bubble_view,
-                           ui::TrackedElement* anchor_element);
+  friend class HelpBubbleViewsCustomBubbleTest;
 
   // Clean up properties on the anchor view, if applicable.
   void MaybeResetAnchorView();
@@ -68,7 +71,7 @@ class HelpBubbleViews : public HelpBubble,
   void OnElementHidden(ui::TrackedElement* element);
   void OnElementBoundsChanged(ui::TrackedElement* element);
 
-  raw_ptr<HelpBubbleView> help_bubble_view_;
+  raw_ptr<views::BubbleDialogDelegateView> help_bubble_view_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_observation_{this};
 

@@ -13,17 +13,33 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace user_education {
 
+namespace {
+
+bool IsFocusInHelpBubble(const views::BubbleDialogDelegateView* bubble) {
+#if BUILDFLAG(IS_MAC)
+  auto* const focused = bubble->GetFocusManager()->GetFocusedView();
+  return focused && focused->GetWidget() == bubble->GetWidget();
+#else
+  return bubble->GetWidget()->IsActive();
+#endif
+}
+
+}  // namespace
+
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleViews)
 
-HelpBubbleViews::HelpBubbleViews(HelpBubbleView* help_bubble_view,
-                                 ui::TrackedElement* anchor_element)
+HelpBubbleViews::HelpBubbleViews(
+    views::BubbleDialogDelegateView* help_bubble_view,
+    ui::TrackedElement* anchor_element)
     : help_bubble_view_(help_bubble_view), anchor_element_(anchor_element) {
-  DCHECK(help_bubble_view);
-  DCHECK(help_bubble_view->GetWidget());
+  CHECK(help_bubble_view);
+  CHECK(help_bubble_view->GetWidget());
+  CHECK(anchor_element);
   scoped_observation_.Observe(help_bubble_view->GetWidget());
 
   anchor_hidden_subscription_ =
@@ -53,7 +69,7 @@ bool HelpBubbleViews::ToggleFocusForAccessibility() {
   // If the focus isn't in the help bubble, focus the help bubble.
   // Note that if is_focus_in_ancestor_widget is true, then anchor both exists
   // and has a widget, so anchor->GetWidget() will always be valid.
-  if (!help_bubble_view_->IsFocusInHelpBubble()) {
+  if (!IsFocusInHelpBubble(help_bubble_view_)) {
     help_bubble_view_->GetWidget()->Activate();
     help_bubble_view_->RequestFocus();
     return true;
@@ -177,7 +193,13 @@ void HelpBubbleViews::OnElementHidden(ui::TrackedElement* element) {
 
 void HelpBubbleViews::OnElementBoundsChanged(ui::TrackedElement* element) {
   if (help_bubble_view_ && element == anchor_element_) {
-    help_bubble_view_->SetForceAnchorRect(element->GetScreenBounds());
+    // TODO(dfried): Support arbitrary anchor regions more generally in
+    // BubbleDialogDelegateViews so that non-help bubble dialogs can be used
+    // as help bubbles when attached to e.g. WebUI elements.
+    if (HelpBubbleView::IsHelpBubble(help_bubble_view_)) {
+      static_cast<HelpBubbleView*>(help_bubble_view_.get())
+          ->SetForceAnchorRect(element->GetScreenBounds());
+    }
     OnAnchorBoundsChanged();
   }
 }

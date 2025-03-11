@@ -504,7 +504,12 @@ class BrowserFeaturePromoController2xTestBase
   }
 
   HelpBubbleView* GetPromoBubble(HelpBubble* bubble) {
-    return bubble ? bubble->AsA<HelpBubbleViews>()->bubble_view() : nullptr;
+    if (!bubble) {
+      return nullptr;
+    }
+    auto* const view =
+        bubble->AsA<HelpBubbleViews>()->bubble_view_for_testing();
+    return view ? AsViewClass<HelpBubbleView>(view) : nullptr;
   }
 
   HelpBubbleView* GetPromoBubble() {

@@ -85,6 +85,7 @@ source_set("unit_tests") {
   sources = [
     "help_bubble_factory_views_unittest.cc",
     "help_bubble_view_unittest.cc",
+    "help_bubble_views_unittest.cc",
     "new_badge_label_unittest.cc",
   ]
 
