@@ -67,6 +67,10 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
       const net::HttpResponseHeaders& response_headers) override;
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   friend class IpProtectionProxyDelegateTest;

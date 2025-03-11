@@ -246,6 +246,15 @@ net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
 void IpProtectionProxyDelegate::SetProxyResolutionService(
     net::ProxyResolutionService* proxy_resolution_service) {}
 
+bool IpProtectionProxyDelegate::AliasRequiresProxyOverride(
+    const std::string scheme,
+    const std::vector<std::string>& dns_aliases,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  // TODO(crbug.com/383134117): Iterate through aliases and invoke mdl manager
+  // to check if any match a 3p resource.
+  return false;
+}
+
 // static
 net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(
     const net::ProxyList& existing_proxy_list,
