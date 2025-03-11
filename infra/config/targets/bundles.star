@@ -5004,7 +5004,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_blink_tests",
             variants = [
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_15_18_4",
             ],
         ),
     ],
