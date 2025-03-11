@@ -48,7 +48,7 @@ class MODULES_EXPORT CaptureController final
 
   // Captured Surface Control IDL interface - zoom controls.
   static Vector<int> getSupportedZoomLevels();
-  int getZoomLevel(ExceptionState& exception_state);
+  std::optional<int> zoomLevel() const;
   ScriptPromise<IDLUndefined> increaseZoomLevel(ScriptState* script_state);
   ScriptPromise<IDLUndefined> decreaseZoomLevel(ScriptState* script_state);
   ScriptPromise<IDLUndefined> resetZoomLevel(ScriptState* script_state);
@@ -156,13 +156,13 @@ class MODULES_EXPORT CaptureController final
   // open. Once set to true, this never changes.
   bool focus_decision_finalized_ = false;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The last known zoom level of the captured surface.
   // Set to a concrete value when capture starts.
   // Never changes back to nullopt.
-  // Always stays at 100 (the default value) for window- and screen-capture.
+  // Always stays at `std::nullopt` for window- and screen-capture.
   std::optional<int> zoom_level_;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   Member<WheelEventListener> wheel_listener_;
   HeapMojoRemote<mojom::blink::MediaStreamDispatcherHost>
       media_stream_dispatcher_host_;

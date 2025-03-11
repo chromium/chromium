@@ -53,10 +53,9 @@ interface CaptureController : EventTarget {
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
-    MeasureAs = CapturedSurfaceControl,
-    RaisesException
+    MeasureAs = CapturedSurfaceControl
   ]
-  long getZoomLevel();
+  readonly attribute long? zoomLevel;
 
   [
     RuntimeEnabled = CapturedSurfaceControl,

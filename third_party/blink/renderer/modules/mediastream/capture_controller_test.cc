@@ -237,69 +237,38 @@ TEST_F(CaptureControllerGetSupportedZoomLevelsTest,
 }
 
 // Test suite for CaptureController functionality from the
-// Captured Surface Control spec, focusing on GetZoomLevel.
-class CaptureControllerGetZoomLevelTest : public CaptureControllerBaseTest {
+// Captured Surface Control spec, focusing on the zoomLevel attribute.
+class CaptureControllerZoomLevelAttributeTest
+    : public CaptureControllerBaseTest {
  public:
-  ~CaptureControllerGetZoomLevelTest() override = default;
+  ~CaptureControllerZoomLevelAttributeTest() override = default;
 };
 
-TEST_F(CaptureControllerGetZoomLevelTest,
-       GetZoomLevelFailsIfCaptureControllerNotBound) {
+TEST_F(CaptureControllerZoomLevelAttributeTest,
+       NoValueIfCaptureControllerNotBound) {
   V8TestingScope v8_scope;
   CaptureController* controller =
       MakeController(v8_scope.GetExecutionContext());
   // Test avoids calling CaptureController::SetIsBound().
 
-  controller->getZoomLevel(v8_scope.GetExceptionState());
-  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(v8_scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kInvalidStateError);
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(v8_scope.GetExceptionState().Message(),
-            "getDisplayMedia() not called yet.");
+  EXPECT_EQ(controller->zoomLevel(), std::nullopt);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 }
 
-TEST_F(CaptureControllerGetZoomLevelTest,
-       GetZoomLevelFailsIfCaptureControllerBoundButNoVideoTrack) {
+TEST_F(CaptureControllerZoomLevelAttributeTest,
+       NoValueIfCaptureControllerBoundButNoVideoTrack) {
   V8TestingScope v8_scope;
   CaptureController* controller =
       MakeController(v8_scope.GetExecutionContext());
   controller->SetIsBound(true);
   // Test avoids calling CaptureController::SetVideoTrack().
 
-  controller->getZoomLevel(v8_scope.GetExceptionState());
-  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(v8_scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kInvalidStateError);
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(v8_scope.GetExceptionState().Message(),
-            "Capture-session not started.");
+  EXPECT_EQ(controller->zoomLevel(), std::nullopt);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 }
 
-TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelFailsIfVideoTrackEnded) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-  track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
-
-  controller->getZoomLevel(v8_scope.GetExceptionState());
-  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(v8_scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kInvalidStateError);
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(v8_scope.GetExceptionState().Message(), "Video track ended.");
-}
-
-TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelSuccessInitialZoomLevel) {
+TEST_F(CaptureControllerZoomLevelAttributeTest,
+       CorrectlyReportsInitialZoomLevel) {
   V8TestingScope v8_scope;
   CaptureController* controller =
       MakeController(v8_scope.GetExecutionContext());
@@ -309,12 +278,12 @@ TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelSuccessInitialZoomLevel) {
       /*initial_zoom_level=*/CaptureController::getSupportedZoomLevels()[1]);
   controller->SetVideoTrack(track, "descriptor");
 
-  int zoom_level = controller->getZoomLevel(v8_scope.GetExceptionState());
+  EXPECT_EQ(controller->zoomLevel(),
+            CaptureController::getSupportedZoomLevels()[1]);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(zoom_level, CaptureController::getSupportedZoomLevels()[1]);
 }
 
-TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelSuccessZoomLevelUpdate) {
+TEST_F(CaptureControllerZoomLevelAttributeTest, CorrectlyUpdatesValue) {
   V8TestingScope v8_scope;
   CaptureController* controller =
       MakeController(v8_scope.GetExecutionContext());
@@ -323,18 +292,20 @@ TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelSuccessZoomLevelUpdate) {
       v8_scope, SurfaceType::BROWSER,
       /*initial_zoom_level=*/CaptureController::getSupportedZoomLevels()[0]);
   controller->SetVideoTrack(track, "descriptor");
+  ASSERT_EQ(controller->zoomLevel(),
+            CaptureController::getSupportedZoomLevels()[0]);
 
   track->Component()->Source()->OnZoomLevelChange(
       MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[1]);
 
-  int zoom_level = controller->getZoomLevel(v8_scope.GetExceptionState());
+  EXPECT_EQ(controller->zoomLevel(),
+            CaptureController::getSupportedZoomLevels()[1]);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(zoom_level, CaptureController::getSupportedZoomLevels()[1]);
 }
 
-// Note that the setup differs from that of GetZoomLevelSuccessInitialZoomLevel
+// Note that the setup differs from that of CorrectlyReportsInitialZoomLevel
 // only in the SurfaceType provided to MakeTrack().
-TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelFailsIfCapturingWindow) {
+TEST_F(CaptureControllerZoomLevelAttributeTest, NoValueIfCapturingWindow) {
   V8TestingScope v8_scope;
   CaptureController* controller =
       MakeController(v8_scope.GetExecutionContext());
@@ -344,20 +315,13 @@ TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelFailsIfCapturingWindow) {
       /*initial_zoom_level=*/CaptureController::getSupportedZoomLevels()[1]);
   controller->SetVideoTrack(track, "descriptor");
 
-  controller->getZoomLevel(v8_scope.GetExceptionState());
-  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(v8_scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kNotSupportedError);
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(v8_scope.GetExceptionState().Message(),
-            "Action only supported for tab-capture.");
+  EXPECT_EQ(controller->zoomLevel(), std::nullopt);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 }
 
-// Note that the setup differs from that of GetZoomLevelSuccessInitialZoomLevel
+// Note that the setup differs from that of CorrectlyReportsInitialZoomLevel
 // only in the SurfaceType provided to MakeTrack().
-TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelFailsIfCapturingMonitor) {
+TEST_F(CaptureControllerZoomLevelAttributeTest, NoValueIfCapturingMonitor) {
   V8TestingScope v8_scope;
   CaptureController* controller =
       MakeController(v8_scope.GetExecutionContext());
@@ -367,15 +331,80 @@ TEST_F(CaptureControllerGetZoomLevelTest, GetZoomLevelFailsIfCapturingMonitor) {
       /*initial_zoom_level=*/CaptureController::getSupportedZoomLevels()[1]);
   controller->SetVideoTrack(track, "descriptor");
 
-  controller->getZoomLevel(v8_scope.GetExceptionState());
-  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(v8_scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kNotSupportedError);
+  EXPECT_EQ(controller->zoomLevel(), std::nullopt);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+}
 
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(v8_scope.GetExceptionState().Message(),
-            "Action only supported for tab-capture.");
+TEST_F(CaptureControllerZoomLevelAttributeTest,
+       ReportOldValueIfVideoTrackEndedWithoutUpdate) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeController(v8_scope.GetExecutionContext());
+  controller->SetIsBound(true);
+  const int initial_zoom_level = CaptureController::getSupportedZoomLevels()[1];
+  MediaStreamTrack* track =
+      MakeTrack(v8_scope, SurfaceType::BROWSER, initial_zoom_level);
+  controller->SetVideoTrack(track, "descriptor");
+  ASSERT_EQ(controller->zoomLevel(), initial_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
+
+  EXPECT_EQ(controller->zoomLevel(), initial_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+}
+
+TEST_F(CaptureControllerZoomLevelAttributeTest,
+       ReportOldValueIfVideoTrackEndedWithUpdate) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeController(v8_scope.GetExecutionContext());
+  controller->SetIsBound(true);
+  const int initial_zoom_level = CaptureController::getSupportedZoomLevels()[1];
+  MediaStreamTrack* track =
+      MakeTrack(v8_scope, SurfaceType::BROWSER, initial_zoom_level);
+  controller->SetVideoTrack(track, "descriptor");
+  ASSERT_EQ(controller->zoomLevel(), initial_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  const int new_zoom_level = CaptureController::getSupportedZoomLevels()[2];
+  ASSERT_NE(new_zoom_level, initial_zoom_level);
+
+  track->Component()->Source()->OnZoomLevelChange(MediaStreamDevice(),
+                                                  new_zoom_level);
+  ASSERT_EQ(controller->zoomLevel(), new_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
+
+  EXPECT_EQ(controller->zoomLevel(), new_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+}
+
+TEST_F(CaptureControllerZoomLevelAttributeTest,
+       ZoomLevelUpdatesAfterTrackEndedGracefullyIgnored) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeController(v8_scope.GetExecutionContext());
+  controller->SetIsBound(true);
+  const int original_zoom_level =
+      CaptureController::getSupportedZoomLevels()[1];
+  MediaStreamTrack* track =
+      MakeTrack(v8_scope, SurfaceType::BROWSER, original_zoom_level);
+  controller->SetVideoTrack(track, "descriptor");
+  ASSERT_EQ(controller->zoomLevel(), original_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  const int new_zoom_level = CaptureController::getSupportedZoomLevels()[2];
+  ASSERT_NE(new_zoom_level, original_zoom_level);
+
+  track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
+
+  // Should not really happen; nullified.
+  track->Component()->Source()->OnZoomLevelChange(MediaStreamDevice(),
+                                                  new_zoom_level);
+  ASSERT_EQ(controller->zoomLevel(), original_zoom_level);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 }
 
 // Test suite for CaptureController functionality from the Captured Surface

@@ -1699,13 +1699,11 @@ class CaptureSessionDetails {
               expected_result);
   }
 
-  int GetZoomLevel() {
-    // TODO(crbug.com/40276312): Deprecate getZoomLevel(), use an attribute.
-    const int result = content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                                       "getZoomLevel();")
-                           .ExtractInt();
-    EXPECT_GT(result, 0);
-    return result;
+  std::optional<int> GetZoomLevel() {
+    const content::EvalJsResult result = content::EvalJs(
+        capturing_tab_->GetPrimaryMainFrame(), "getZoomLevel();");
+    return (result == nullptr) ? std::nullopt
+                               : std::make_optional<int>(result.ExtractInt());
   }
 
   int GetZoomLevelChangeEventsSinceLast() {
@@ -1776,7 +1774,6 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     kIncreaseZoomLevel,
     kDecreaseZoomLevel,
     kResetZoomLevel,
-    // TODO(crbug.com/40276312): Deprecate kGetZoomLevel.
     kGetZoomLevel,
   };
 
@@ -1885,6 +1882,18 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
 };
 
 using CscAction = GetDisplayMediaCapturedSurfaceControlTest::Action;
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       UnboundCaptureControllerReportNullZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to RunGetDisplayMedia().
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  EXPECT_EQ(capture_session.GetZoomLevel(), std::nullopt);
+}
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
                        CorrectlyReportDefaultCapturedSurfaceZoomLevel) {

@@ -6,7 +6,7 @@
   <script type="text/javascript" src="video_detector.js"></script>
   <script>
   'use strict';
-  let controller;
+  const controller = new CaptureController;
   let zoom_level_event_count = 0;
   let settings;
   let video_track;
@@ -48,7 +48,6 @@
       }).then((event) => event.data);
     }
 
-    controller = new CaptureController;
     controller.onzoomlevelchange = (() => ++zoom_level_event_count);
     return navigator.mediaDevices.getDisplayMedia({...constraints, controller}).
       then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
@@ -191,9 +190,8 @@
     return result;
   }
 
-  // TODO(crbug.com/40276312): Remove.
   function getZoomLevel() {
-    return controller.getZoomLevel();
+    return controller.zoomLevel;
   }
 </script>
 </head>

@@ -138,7 +138,8 @@ std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
 
   const media::mojom::DisplayMediaInformationPtr& display_media_info =
       native_source->device().display_media_info;
-  if (!display_media_info) {
+  if (!display_media_info ||
+      display_media_info->display_surface != SurfaceType::BROWSER) {
     return std::nullopt;
   }
 
@@ -445,29 +446,8 @@ Vector<int> CaptureController::getSupportedZoomLevels() {
   return result;
 }
 
-int CaptureController::getZoomLevel(ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return 100;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    exception_state.ThrowDOMException(validation_result.code,
-                                      validation_result.message);
-    return 100;
-  }
-
-  if (!zoom_level_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The zoom level is not yet known.");
-    return 100;
-  }
-
-  return *zoom_level_;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+std::optional<int> CaptureController::zoomLevel() const {
+  return zoom_level_;
 }
 
 ScriptPromise<IDLUndefined> CaptureController::increaseZoomLevel(
@@ -548,15 +528,13 @@ void CaptureController::FinalizeFocusDecision() {
 void CaptureController::SourceChangedZoomLevel(int zoom_level) {
   DCHECK(IsMainThread());
 
-  if (zoom_level_ == zoom_level) {
+  if (!video_track_ || video_track_->Ended() ||
+      !IsCaptureType(video_track_, {SurfaceType::BROWSER}) ||
+      zoom_level_ == zoom_level) {
     return;
   }
 
   zoom_level_ = zoom_level;
-
-  if (!video_track_ || video_track_->Ended()) {
-    return;
-  }
 
   DispatchEvent(*Event::Create(event_type_names::kZoomlevelchange));
 }
