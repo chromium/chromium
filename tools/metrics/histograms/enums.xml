@@ -23393,15 +23393,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Strict Mode"/>
 </enum>
 
-<enum name="SamplingProfilerUnwindResult">
-  <summary>Track reason for unwind failures in sampling profiler.</summary>
-  <int value="0" label="Futex wait for signal handler failed."/>
-  <int value="1" label="Stack segment was not found or too large to copy."/>
-  <int value="2" label="Unwind initialization failed."/>
-  <int value="3" label="Unwind info for signal handler missing."/>
-  <int value="4" label="First frame of stack isn't mapped."/>
-</enum>
-
 <enum name="SanitizeEvent">
   <summary>Track the events in the Sanitize UI SWA.</summary>
   <int value="0" label="Sanitize UI is being shown to the user."/>

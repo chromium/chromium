@@ -9347,28 +9347,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Thumbnails.Gradient.ImageDetectionTime" units="ms"
-    expires_after="M84">
-  <owner>carlosk@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <summary>
-    The time it takes to detect whether a thumbnail requires a gradient overlay.
-    This is run when thumbnails are downloaded for content suggestions, as they
-    load and the result is cached for future use. It is Android specific.
-  </summary>
-</histogram>
-
-<histogram name="Thumbnails.Gradient.ImageRequiresGradient" enum="Boolean"
-    expires_after="M84">
-  <owner>carlosk@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <summary>
-    Whether a thumbnail used for a suggestions image requires a gradient to be
-    overlaid to not fade into the background. It applies to the thumbnails used
-    for content suggestions and is Android specific.
-  </summary>
-</histogram>
-
 <histogram name="TimeZone.TimeZoneRequest.Event" enum="TimeZoneRequestEvent"
     expires_after="never">
 <!-- expires-never: This reports external time zone provider health status and
@@ -10004,15 +9982,6 @@ regressions. -->
     The time between one regular user logging out and a different regular user
     logging in (Chrome OS). Delays above thirty minutes or which span system
     reboots or non-regular-user logins are not reported.
-  </summary>
-</histogram>
-
-<histogram name="UserManager.ProfileEverInitializedMigrationCompleted"
-    enum="BooleanCompleted" expires_after="M77">
-  <owner>atwilson@chromium.org</owner>
-  <summary>
-    Whether the profile_ever_initialized() user attribute migration has
-    completed for the current user.
   </summary>
 </histogram>
 

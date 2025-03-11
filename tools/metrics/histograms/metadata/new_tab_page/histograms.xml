@@ -484,16 +484,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NewTabPage.Languages.UILanguageRatioInTwoTopLanguages"
-    units="%" expires_after="M77">
-  <owner>jkrcal@chromium.org</owner>
-  <summary>
-    Android: Percentage of how much in browsing is the UI language of Chrome
-    used compared to overall use of the two top languages that are reported to
-    Chrome content suggestion server.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.Lens.UploadDialog.DialogAction"
     enum="NewTabPageLensUploadDialogActions" expires_after="2025-02-10">
   <owner>nguyenbryan@google.com</owner>
@@ -1488,15 +1478,6 @@ chromium-metrics-reviews@google.com.
     Logs whether the search resumption module is expanded or collapsed when the
     module is shown on the NTP using cached results. Recorded when the
     NewTabPage is created and the search resumption module is shown.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Snippets.IncompleteSnippetsAfterFetch"
-    enum="Boolean" expires_after="M85">
-  <owner>maybelle@chromium.org</owner>
-  <summary>
-    Whether we discarded any of the snippets after fetching them due to having
-    incomplete metadata.
   </summary>
 </histogram>
 

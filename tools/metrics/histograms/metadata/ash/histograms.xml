@@ -484,17 +484,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Accelerators.Deprecated.ToggleHighContrast"
-    enum="DeprecatedAcceleratorUsage" expires_after="M77">
-  <owner>afakhry@chromium.org</owner>
-  <summary>
-    Toggling the high contrast display mode has two accelerators: -
-    Search+Shift+H which is deprecated. - Ctrl+Search+H which is new. This
-    histogram shows the number of times each accelerator (deprecated and new) is
-    used.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Accelerators.OverviewBasedScreenshot.{ActionName}"
     enum="OverviewBasedScreenshotKeyboardType" expires_after="2025-05-11">
   <owner>dpad@google.com</owner>
@@ -3309,80 +3298,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ExternalDisplay" summary="external display"/>
     <variant name="InternalDisplay" summary="internal display"/>
   </token>
-</histogram>
-
-<histogram name="Ash.Dock.Action" enum="DockedAction" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    User-initiated action taken that affects docked windows such as docking,
-    undocking, minimizing, restoring, closing or just dragging a docked window.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.ActionSource" enum="DockedActionSource"
-    expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Source (mouse, touch, keyboard or unknown) of the user-initiated action for
-    docked windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.ItemsAll" units="units" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Number of all docked windows or panels including hidden or minimized.
-    Recorded on every user action that interacts with docked windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.ItemsLarge" units="units" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Number of large (wider than dock maximum width) windows that had to be
-    shrunk to get docked among the visible docked windows. Recorded on every
-    user action that interacts with docked windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.ItemsPanels" units="units" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Number of docked visible panels. Recorded on every user action that
-    interacts with docked windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.ItemsVisible" units="units" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Number of visible docked windows or panels. Recorded on every user action
-    that interacts with docked windows.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.TimeBetweenUse" units="seconds" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Time elapsed between instances of docking, undocking or any other action
-    affecting docked state of a window.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Dock.Width" units="pixels" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    Width of the docked area in pixels. Recorded every time it changes after a
-    user window resize operation is completed.
-  </summary>
 </histogram>
 
 <histogram name="Ash.DozeMode.RealPower.DurationPercentage" units="%"
@@ -8923,20 +8838,6 @@ chromium-metrics-reviews@google.com.
     Relative smoothness of animations when exiting tablet mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
     second.
-  </summary>
-</histogram>
-
-<histogram name="Ash.TouchMoveSteps" units="pixels" expires_after="M85">
-  <owner>kuscher@google.com</owner>
-  <owner>rbyers@chromium.org</owner>
-  <summary>The distance between touch-move events.</summary>
-</histogram>
-
-<histogram name="Ash.TouchStartAfterEnd" units="ms" expires_after="M77">
-  <owner>kuscher@google.com</owner>
-  <summary>
-    The interval between the end of a touch-sequence and the start of the next
-    touch-sequence.
   </summary>
 </histogram>
 
