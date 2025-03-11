@@ -1641,7 +1641,8 @@ void HWNDMessageHandler::ResetWindowRegion(bool force, bool redraw) {
     mi.cbSize = sizeof mi;
     GetMonitorInfo(monitor, &mi);
     RECT work_rect = mi.rcWork;
-    OffsetRect(&work_rect, -window_rect.left, -window_rect.top);
+    OffsetRect(&work_rect, static_cast<int>(-window_rect.left),
+               static_cast<int>(-window_rect.top));
     new_region.reset(CreateRectRgnIndirect(&work_rect));
   } else {
     SkPath window_mask;
@@ -2504,7 +2505,8 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
     }
 
     // rgn_bounding_box is in screen coordinates. Map it to window coordinates.
-    OffsetRect(&dirty_region, -window_rect.left, -window_rect.top);
+    OffsetRect(&dirty_region, static_cast<int>(-window_rect.left),
+               static_cast<int>(-window_rect.top));
   }
 
   // We only do non-client painting if we're not using the system frame.
@@ -2520,7 +2522,8 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
     ::GetClientRect(hwnd(), &client_rect);
     ::MapWindowPoints(hwnd(), nullptr, reinterpret_cast<POINT*>(&client_rect),
                       2);
-    ::OffsetRect(&client_rect, -window_rect.left, -window_rect.top);
+    ::OffsetRect(&client_rect, static_cast<int>(-window_rect.left),
+                 static_cast<int>(-window_rect.top));
     // client_rect now is in window space.
 
     base::win::ScopedGDIObject<HRGN> base(
