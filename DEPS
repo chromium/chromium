@@ -45,6 +45,7 @@ gclient_gn_args = [
   'checkout_copybara',
   'checkout_glic_e2e_tests',
   'checkout_ios_webkit',
+  'checkout_mutter',
   'checkout_nacl',
   'checkout_openxr',
   'checkout_src_internal',
@@ -112,6 +113,10 @@ vars = {
   # are used to post-process raw v8 coverage reports into IstanbulJS compliant
   # output.
   'checkout_js_coverage_modules': True,
+
+  # Checkout out mutter and its dependencies to be able to run tests like
+  # interactive_ui_tests on the linux/wayland compositor.
+  'checkout_mutter': False,
 
   # Check out and download nacl for ChromeOS only.
   # This can be disabled e.g. with custom_vars.
@@ -2031,12 +2036,12 @@ deps = {
 
   'src/third_party/glib/src': {
       'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/glib.git' + '@' + '95eafc073843cb6e8c848f3850c074a83e01427c',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux and checkout_mutter',
   },
 
   'src/third_party/gvdb/src': {
       'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/gvdb.git' + '@' + 'b54bc5da25127ef416858a3ad92e57159ff565b3',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux and checkout_mutter',
   },
 
   'src/third_party/freetype/src':
@@ -2314,7 +2319,7 @@ deps = {
 
   'src/third_party/libdisplay-info/src': {
       'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/emersion/libdisplay-info.git' + '@' + '66b802d05b374cd8f388dc6ad1e7ae4f08cb3300',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux and checkout_mutter',
   },
 
   # Userspace interface to kernel DRM services.
@@ -2325,12 +2330,12 @@ deps = {
 
   'src/third_party/libgudev/src': {
       'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/libgudev.git' + '@' + 'df7c9c9940160307aaeb31347f4776a46f8736a9',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux and checkout_mutter',
   },
 
   'src/third_party/libinput/src': {
       'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libinput.git' + '@' + '3aa004b96488bf0b2446c11b97a7f8a75ff37c23',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux and checkout_mutter',
   },
 
   'src/third_party/expat/src':
@@ -2451,7 +2456,7 @@ deps = {
 
   'src/third_party/mutter/src': {
       'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/mutter.git' + '@' + '30b7162b54de7681fb585d095de8a5ffaf771d38',
-      'condition': 'checkout_linux',
+      'condition': 'checkout_linux and checkout_mutter',
   },
 
   'src/third_party/nasm': {
