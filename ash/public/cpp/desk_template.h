@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "components/app_restore/restore_data.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -163,6 +164,14 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // return a base::value::Dict if policy is defined.
   const base::Value& policy_definition() const { return policy_definition_; }
 
+  void set_coral_tab_app_entities(
+      std::vector<coral::mojom::EntityPtr> coral_tab_app_entities) {
+    coral_tab_app_entities_ = std::move(coral_tab_app_entities);
+  }
+  const std::vector<coral::mojom::EntityPtr>& coral_tab_app_entities() const {
+    return coral_tab_app_entities_;
+  }
+
   // Returns `this` in string format. Used for feedback logs.
   std::string ToString() const;
 
@@ -215,6 +224,10 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // If this template was originally defined by a policy, store the policy in
   // this field. See GetPolicy for more information.
   base::Value policy_definition_;
+
+  // If this template is created by Coral, store the tab and app entities such
+  // that the groups with a similar topic will not be suggested.
+  std::vector<coral::mojom::EntityPtr> coral_tab_app_entities_;
 };
 
 }  // namespace ash
