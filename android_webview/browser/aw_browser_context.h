@@ -251,6 +251,11 @@ class AwBrowserContext : public content::BrowserContext,
   // triggered by AwContents::StartPrerendering().
   int allowed_prerendering_count_ = 2;
 
+  // Enables usage of net::StaleHostResolver. This will not be applied to any
+  // in-flight requests, only applied to the requests made afterwards. It should
+  // be enabled before making any requests.
+  bool enable_stale_dns_ = false;
+
   base::WeakPtrFactory<AwBrowserContext> weak_method_factory_{this};
 };
 

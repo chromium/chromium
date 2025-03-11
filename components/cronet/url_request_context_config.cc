@@ -389,6 +389,13 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   std::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
 
   net::StaleHostResolver::StaleOptions stale_dns_options;
+  // TODO(crbug.com/399372859): Run an experiment to use the default
+  // StaleOptions() values.
+  stale_dns_options.allow_other_network = false;
+  stale_dns_options.max_stale_uses = 0;
+  stale_dns_options.use_stale_on_name_not_resolved = false;
+  stale_dns_options.max_expired_time = base::Milliseconds(0);
+
   const std::string* host_resolver_rules_string;
 
   for (auto iter = experimental_options.begin();

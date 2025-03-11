@@ -513,12 +513,14 @@ class MockHostResolverFactory : public HostResolver::Factory {
   std::unique_ptr<HostResolver> CreateResolver(
       HostResolverManager* manager,
       std::string_view host_mapping_rules,
-      bool enable_caching) override;
+      bool enable_caching,
+      bool enable_stale) override;
   std::unique_ptr<HostResolver> CreateStandaloneResolver(
       NetLog* net_log,
       const HostResolver::ManagerOptions& options,
       std::string_view host_mapping_rules,
-      bool enable_caching) override;
+      bool enable_caching,
+      bool enable_stale) override;
 
  private:
   const MockHostResolverBase::RuleResolver rules_;

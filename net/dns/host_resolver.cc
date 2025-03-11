@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time_delta_from_string.h"
 #include "base/values.h"
+#include "mapped_host_resolver.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -32,6 +33,8 @@
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/resolve_context.h"
+#include "net/dns/stale_host_resolver.h"
+#include "stale_host_resolver.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -312,18 +315,20 @@ HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
     HostResolverManager* manager,
     std::string_view host_mapping_rules,
-    bool enable_caching) {
+    bool enable_caching,
+    bool enable_stale) {
   return HostResolver::CreateResolver(manager, host_mapping_rules,
-                                      enable_caching);
+                                      enable_caching, enable_stale);
 }
 
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateStandaloneResolver(
     NetLog* net_log,
     const ManagerOptions& options,
     std::string_view host_mapping_rules,
-    bool enable_caching) {
+    bool enable_caching,
+    bool enable_stale) {
   return HostResolver::CreateStandaloneResolver(
-      net_log, options, host_mapping_rules, enable_caching);
+      net_log, options, host_mapping_rules, enable_caching, enable_stale);
 }
 
 HostResolver::ResolveHostParameters::ResolveHostParameters() = default;
@@ -386,21 +391,36 @@ handles::NetworkHandle HostResolver::GetTargetNetworkForTesting() const {
 std::unique_ptr<HostResolver> HostResolver::CreateResolver(
     HostResolverManager* manager,
     std::string_view host_mapping_rules,
-    bool enable_caching) {
+    bool enable_caching,
+    bool enable_stale) {
   DCHECK(manager);
 
   auto resolve_context = std::make_unique<ResolveContext>(
       nullptr /* url_request_context */, enable_caching);
 
-  auto resolver = std::make_unique<ContextHostResolver>(
-      manager, std::move(resolve_context));
+  std::unique_ptr<ContextHostResolver> context_resolver =
+      std::make_unique<ContextHostResolver>(manager,
+                                            std::move(resolve_context));
 
-  if (host_mapping_rules.empty())
-    return resolver;
-  auto remapped_resolver =
-      std::make_unique<MappedHostResolver>(std::move(resolver));
-  remapped_resolver->SetRulesFromString(host_mapping_rules);
-  return remapped_resolver;
+  std::unique_ptr<HostResolver> resolver;
+
+  // Wrap in StaleHostResolver if needed.
+  if (enable_stale) {
+    resolver = std::make_unique<StaleHostResolver>(
+        std::move(context_resolver), StaleHostResolver::StaleOptions());
+  } else {
+    resolver = std::move(context_resolver);
+  }
+
+  // Wrap in MappedHostResolver if needed.
+  if (!host_mapping_rules.empty()) {
+    auto remapped_resolver =
+        std::make_unique<MappedHostResolver>(std::move(resolver));
+    remapped_resolver->SetRulesFromString(host_mapping_rules);
+    resolver = std::move(remapped_resolver);
+  }
+
+  return resolver;
 }
 
 // static
@@ -408,17 +428,31 @@ std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
     NetLog* net_log,
     std::optional<ManagerOptions> options,
     std::string_view host_mapping_rules,
-    bool enable_caching) {
-  std::unique_ptr<ContextHostResolver> resolver =
+    bool enable_caching,
+    bool enable_stale) {
+  std::unique_ptr<ContextHostResolver> context_resolver =
       CreateStandaloneContextResolver(net_log, std::move(options),
                                       enable_caching);
 
-  if (host_mapping_rules.empty())
-    return resolver;
-  auto remapped_resolver =
-      std::make_unique<MappedHostResolver>(std::move(resolver));
-  remapped_resolver->SetRulesFromString(host_mapping_rules);
-  return remapped_resolver;
+  std::unique_ptr<HostResolver> resolver;
+
+  // Wrap in StaleHostResolver if needed.
+  if (enable_stale) {
+    resolver = std::make_unique<StaleHostResolver>(
+        std::move(context_resolver), StaleHostResolver::StaleOptions());
+  } else {
+    resolver = std::move(context_resolver);
+  }
+
+  // Wrap in MappedHostResolver if needed.
+  if (!host_mapping_rules.empty()) {
+    auto remapped_resolver =
+        std::make_unique<MappedHostResolver>(std::move(resolver));
+    remapped_resolver->SetRulesFromString(host_mapping_rules);
+    resolver = std::move(remapped_resolver);
+  }
+
+  return resolver;
 }
 
 // static

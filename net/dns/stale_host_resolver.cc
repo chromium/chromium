@@ -321,10 +321,13 @@ void StaleHostResolver::RequestImpl::OnStaleDelayElapsed() {
   std::move(result_callback_).Run(cache_error_);
 }
 
+// NOTE: Don't change these values without checking with all browsers using it.
+// Currently this is being used but android_webview and Cronet.
 StaleHostResolver::StaleOptions::StaleOptions()
-    : allow_other_network(false),
-      max_stale_uses(0),
-      use_stale_on_name_not_resolved(false) {}
+    : max_expired_time(base::Hours(6)),
+      allow_other_network(true),
+      max_stale_uses(1),
+      use_stale_on_name_not_resolved(true) {}
 
 StaleHostResolver::StaleHostResolver(
     std::unique_ptr<ContextHostResolver> inner_resolver,
@@ -381,6 +384,11 @@ HostCache* StaleHostResolver::GetHostCache() {
 
 base::Value::Dict StaleHostResolver::GetDnsConfigAsValue() const {
   return inner_resolver_->GetDnsConfigAsValue();
+}
+
+std::unique_ptr<HostResolver::ProbeRequest>
+StaleHostResolver::CreateDohProbeRequest() {
+  return inner_resolver_->CreateDohProbeRequest();
 }
 
 void StaleHostResolver::SetRequestContext(URLRequestContext* request_context) {

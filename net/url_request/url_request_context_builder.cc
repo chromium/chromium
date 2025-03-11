@@ -31,6 +31,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/stale_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -354,21 +355,21 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     if (host_resolver_factory_) {
       host_resolver_ = host_resolver_factory_->CreateResolver(
           host_resolver_manager_, host_mapping_rules_,
-          true /* enable_caching */);
+          true /* enable_caching */, stale_dns_enabled_);
     } else {
-      host_resolver_ = HostResolver::CreateResolver(host_resolver_manager_,
-                                                    host_mapping_rules_,
-                                                    true /* enable_caching */);
+      host_resolver_ = HostResolver::CreateResolver(
+          host_resolver_manager_, host_mapping_rules_,
+          true /* enable_caching */, stale_dns_enabled_);
     }
   } else {
     if (host_resolver_factory_) {
       host_resolver_ = host_resolver_factory_->CreateStandaloneResolver(
           context->net_log(), HostResolver::ManagerOptions(),
-          host_mapping_rules_, true /* enable_caching */);
+          host_mapping_rules_, true /* enable_caching */, stale_dns_enabled_);
     } else {
       host_resolver_ = HostResolver::CreateStandaloneResolver(
           context->net_log(), HostResolver::ManagerOptions(),
-          host_mapping_rules_, true /* enable_caching */);
+          host_mapping_rules_, true /* enable_caching */, stale_dns_enabled_);
     }
   }
   host_resolver_->SetRequestContext(context.get());

@@ -1270,7 +1270,8 @@ MockHostResolverFactory::~MockHostResolverFactory() = default;
 std::unique_ptr<HostResolver> MockHostResolverFactory::CreateResolver(
     HostResolverManager* manager,
     std::string_view host_mapping_rules,
-    bool enable_caching) {
+    bool enable_caching,
+    bool enable_stale) {
   DCHECK(host_mapping_rules.empty());
 
   // Explicit new to access private constructor.
@@ -1283,8 +1284,10 @@ std::unique_ptr<HostResolver> MockHostResolverFactory::CreateStandaloneResolver(
     NetLog* net_log,
     const HostResolver::ManagerOptions& options,
     std::string_view host_mapping_rules,
-    bool enable_caching) {
-  return CreateResolver(nullptr, host_mapping_rules, enable_caching);
+    bool enable_caching,
+    bool enable_stale) {
+  return CreateResolver(nullptr, host_mapping_rules, enable_caching,
+                        enable_stale);
 }
 
 //-----------------------------------------------------------------------------

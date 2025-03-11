@@ -585,6 +585,7 @@ void AwBrowserContext::ConfigureNetworkContextParams(
 
   context_params->enable_brotli = true;
   context_params->enable_zstd = true;
+  context_params->stale_dns_enabled = enable_stale_dns_;
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
