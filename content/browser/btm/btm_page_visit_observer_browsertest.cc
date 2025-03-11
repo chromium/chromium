@@ -123,6 +123,42 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, CreatedWhileOnPage) {
   EXPECT_EQ(recorder.visits().size(), 2u);
 }
 
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       SameDocumentNavigation) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/fragment.html");
+  const GURL url1b =
+      embedded_https_test_server().GetURL("a.test", "/fragment.html#fragment");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/fragment.html#fragment");
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  // Perform a same-document navigation to a fragment. `NavigateToURL()`
+  // automatically detects that the navigation should be same-document, since
+  // the URLs differ only by fragment.
+  ASSERT_TRUE(NavigateToURL(web_contents, url1b));
+  // Perform a cross-document navigation to a fragment
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
+  EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
+  EXPECT_THAT(first_visit.navigation.server_redirects, IsEmpty());
+  EXPECT_EQ(first_visit.url, url1);
+
+  const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
+  EXPECT_THAT(second_visit.prev_page,
+              HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
+  // Same-document navigations shouldn't be reported as server redirects.
+  EXPECT_THAT(first_visit.navigation.server_redirects, IsEmpty());
+  // Same-document navigations shouldn't be counted as page visits.
+  EXPECT_EQ(second_visit.url, url2);
+
+  EXPECT_EQ(recorder.visits().size(), 2u);
+}
+
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, Redirects) {
   const GURL url1 =
       embedded_https_test_server().GetURL("a.test", "/empty.html");

@@ -6887,6 +6887,7 @@ data/forms/form_controls_browsertest_textarea_ios.png
 data/forms/form_controls_browsertest_textarea_linux.png
 data/forms/form_controls_browsertest_textarea_mac.png
 data/forms/form_controls_browsertest_textarea_win.png
+data/fragment.html
 data/frame-ancestors-none.html
 data/frame-ancestors-none.html.mock-http-headers
 data/frame-src-self-and-b.html

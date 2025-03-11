@@ -112,7 +112,8 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationState);
 void BtmPageVisitObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   // Ignore irrelevant navigations.
-  if (!IsInPrimaryPage(navigation_handle)) {
+  if (!IsInPrimaryPage(navigation_handle) ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
 
