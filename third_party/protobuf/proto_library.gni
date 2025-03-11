@@ -469,16 +469,17 @@ template("proto_library") {
     inputs = [
       # System protoc is not used so it's necessary to build a chromium one.
       _protoc_path,
+
       # Add this here as there are some protos which import descriptor.proto
       # directly or indirectly.
       "//third_party/protobuf/src/google/protobuf/descriptor.proto",
     ]
     deps = [ _protoc_label ]
-    if (use_prebuilt_instrumented_libraries) {
+    if (host_toolchain_is_msan) {
       # When prebuilt instrumneted libraries are used, we need to tell that
       # protoc needs to load the following libraries via BUILD configs so that
       # siso uploads these files to remote workers.
-      if (msan_track_origins == 0) {
+      if (host_toolchain_msan_track_origins == 0) {
         archive = "msan-no-origins-noble-lib"
       } else {
         archive = "msan-chained-origins-noble-lib"
@@ -493,7 +494,7 @@ template("proto_library") {
         "//third_party/instrumented_libs/binaries/$archive/lib/libc.so.6",
         "//$root_build_dir/third_party/instrumented_libs/binaries/$archive/lib/ld-linux-x86-64.so.2",
       ]
-      deps += [ "//third_party/instrumented_libs:ld-linux" ]
+      deps += [ "//third_party/instrumented_libs:ld-linux($host_toolchain)" ]
     }
 
     if (enable_js_protobuf) {
