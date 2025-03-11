@@ -5268,6 +5268,9 @@
                         "LensClearcutLoggerFastQosEnabled",
                         "LensInkMultiSampleModeDisabled",
                         "LensOverlayEnableLocationBarEntrypoint"
+                    ],
+                    "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypointOnSRP"
                     ]
                 }
             ]
