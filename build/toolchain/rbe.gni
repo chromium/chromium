@@ -157,6 +157,9 @@ if (use_reclient_cfgs && current_toolchain == default_toolchain) {
 rbe_bug_326584510_missing_inputs = ""
 if (defined(clang_unsafe_buffers_paths) &&
     "$clang_unsafe_buffers_paths" != "") {
+  if (rbe_exec_root != rebase_path("//")) {
+    assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
+  }
   from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
   rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
 }
