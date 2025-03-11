@@ -132,9 +132,11 @@ class ModelWrapper final : public mojom::OnDeviceModel {
     RunTaskIfPossible();
   }
 
-  void StartSession(mojo::PendingReceiver<mojom::Session> session) override {
+  void StartSession(mojo::PendingReceiver<mojom::Session> session,
+                    mojom::SessionParamsPtr params) override {
     AddSession(std::move(session),
-               model_->CreateSession(receivers_.current_context().get()));
+               model_->CreateSession(receivers_.current_context().get(),
+                                     std::move(params)));
   }
 
   void ClassifyTextSafety(const std::string& text,
@@ -191,21 +193,8 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   void LoadAdaptationInternal(mojom::LoadAdaptationParamsPtr params,
                               mojo::PendingReceiver<mojom::OnDeviceModel> model,
                               LoadAdaptationCallback callback) {
-    auto start = base::TimeTicks::Now();
-    auto result = model_->LoadAdaptation(
-        std::move(params),
-        base::BindOnce(
-            [](base::TimeTicks start) {
-              base::UmaHistogramMediumTimes(
-                  "OnDeviceModel.LoadAdaptationModelDuration",
-                  base::TimeTicks::Now() - start);
-            },
-            start));
-    if (!result.has_value()) {
-      std::move(callback).Run(result.error());
-      return;
-    }
-    receivers_.Add(this, std::move(model), std::move(*result));
+    receivers_.Add(this, std::move(model),
+                   model_->LoadAdaptation(std::move(params)));
     std::move(callback).Run(mojom::LoadModelResult::kSuccess);
   }
 

@@ -701,6 +701,9 @@ class EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest() {
     EnableFeature(media::kHardwareSecureDecryptionExperiment);
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+    EnableFeature(media::kPlatformEncryptedDolbyVision);
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -710,7 +713,7 @@ class EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest
     // audio.
     command_line->AppendSwitchASCII(
         switches::kOverrideHardwareSecureCodecsForTesting,
-        "vp8,vp9,av01-no-clearlead,vorbis");
+        "vp8,vp9,av01-no-clearlead,dolbyvision,vorbis");
   }
 };
 

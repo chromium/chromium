@@ -3388,4 +3388,9 @@ void PaintLayerScrollableArea::UpdateScrollMarkers() {
   }
 }
 
+bool PaintLayerScrollableArea::HasRunningAnimation() {
+  return GetScrollAnimator().HasRunningAnimation() ||
+         GetProgrammaticScrollAnimator().HasRunningAnimation();
+}
+
 }  // namespace blink

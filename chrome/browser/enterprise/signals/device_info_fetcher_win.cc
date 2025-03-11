@@ -33,28 +33,12 @@
 #include "base/win/windows_version.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "net/base/network_interfaces.h"
 
 namespace enterprise_signals {
 
 namespace {
-
-// Retrieves the FQDN of the computer and if this fails reverts to the hostname
-// as known to the net subsystem.
-std::string GetComputerName() {
-  DWORD size = 1024;
-  std::wstring result_wstr(size, L'\0');
-
-  if (::GetComputerNameExW(ComputerNameDnsFullyQualified, &result_wstr[0],
-                           &size)) {
-    std::string result;
-    if (base::WideToUTF8(result_wstr.data(), size, &result)) {
-      return result;
-    }
-  }
-
-  return net::GetHostName();
-}
 
 std::string GetSecurityPatchLevel() {
   base::win::OSInfo* gi = base::win::OSInfo::GetInstance();
@@ -75,7 +59,7 @@ std::optional<std::string> GetWindowsUserDomain() {
   std::string username_str = base::WideToUTF8(username);
   std::string domain = username_str.substr(0, username_str.find("\\"));
 
-  return domain == base::ToUpperASCII(GetComputerNameW())
+  return domain == base::ToUpperASCII(policy::GetDeviceFqdn())
              ? std::nullopt
              : std::make_optional(domain);
 }
@@ -96,7 +80,7 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   device_info.os_name = "windows";
   device_info.os_version = device_signals::GetOsVersion();
   device_info.security_patch_level = GetSecurityPatchLevel();
-  device_info.device_host_name = GetComputerName();
+  device_info.device_host_name = policy::GetDeviceFqdn();
   device_info.device_model = device_signals::GetDeviceModel();
   device_info.serial_number = device_signals::GetSerialNumber();
   device_info.screen_lock_secured = device_signals::GetScreenlockSecured();

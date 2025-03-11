@@ -96,7 +96,7 @@ class CustomHelpBubbleUi {
       UserActionCallback callback);
 
   // Get this object as a weak pointer.
-  base::WeakPtr<CustomHelpBubbleUi> AsWeakPtr();
+  base::WeakPtr<CustomHelpBubbleUi> GetCustomUiAsWeakPtr();
 
  protected:
   // Notifies listeners that the user has done some significant input which

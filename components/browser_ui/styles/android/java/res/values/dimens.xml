@@ -37,7 +37,6 @@ found in the LICENSE file.
     <!-- Surface color elevations -->
     <dimen name="dialog_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="snackbar_background_color_elev">@dimen/default_elevation_0</dimen>
 
     <!-- Favicon dimensions -->
     <dimen name="default_favicon_size">16dp</dimen>

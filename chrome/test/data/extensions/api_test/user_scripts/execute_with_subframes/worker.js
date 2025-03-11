@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import {findDocumentIdWithHostname, findFrameIdWithHostname, findFrameWithHostname, getFramesInTab, getSingleTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 const locationScript = `(function() { return location.href })()`;
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Tests injecting a script when the extension has site access to the top
   // frame (a.com).
   async function allowedTopFrameAccess() {

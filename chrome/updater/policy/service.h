@@ -170,9 +170,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Enterprise Core (formerly Chrome Enterprise Cloud Management).
   void IsCloudManaged(base::OnceCallback<void(bool)> callback) const;
 
-  // Returns the last policy fetch result.
-  std::optional<int> LastFetchResult() const { return last_fetch_result_; }
-
   void SetManagersForTesting(
       std::vector<scoped_refptr<PolicyManagerInterface>> managers);
 
@@ -228,8 +225,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyManagers policy_managers_;
   const scoped_refptr<ExternalConstants> external_constants_;
 
-  // Holds the last policy fetch result.
-  std::optional<int> last_fetch_result_;
   base::OnceCallback<void(int)> fetch_policies_callback_;
   scoped_refptr<PersistedData> persisted_data_;
   const bool is_ceca_experiment_enabled_;

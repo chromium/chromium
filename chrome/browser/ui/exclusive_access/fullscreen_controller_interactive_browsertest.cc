@@ -1059,7 +1059,13 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
   EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad().first);
 }
 
-IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
+// TODO(crbug.com/399354373): Gardening
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImmediatelyAfterPopupExit DISABLED_ImmediatelyAfterPopupExit
+#else
+#define MAYBE_ImmediatelyAfterPopupExit ImmediatelyAfterPopupExit
+#endif
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, MAYBE_ImmediatelyAfterPopupExit) {
   auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
   EXPECT_TRUE(success);
   ASSERT_TRUE(popup);

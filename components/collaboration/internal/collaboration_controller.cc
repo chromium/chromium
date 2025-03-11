@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/collaboration/internal/metrics.h"
@@ -29,6 +30,12 @@ using metrics::CollaborationServiceShareOrManageEvent;
 class ControllerState;
 
 namespace {
+
+constexpr char kDebugCollaborationStateString[] =
+    "Collaboration State Change\n"
+    "  New State: %s\n"
+    "  Previous State: %s\n"
+    "  Error Type: %s\n";
 
 using ErrorInfo = CollaborationControllerDelegate::ErrorInfo;
 using Outcome = CollaborationControllerDelegate::Outcome;
@@ -78,17 +85,13 @@ std::string CreateStateTransitionLogString(
     StateId previous,
     StateId current,
     const CollaborationControllerDelegate::ErrorInfo& error) {
-  std::string log("State Transition to [");
-  log += GetStateIdString(current);
-  log += "] from previous state [";
-  log += GetStateIdString(previous);
-  log += "]";
-  if (error.type() !=
-      CollaborationControllerDelegate::ErrorInfo::Type::kUnknown) {
-    log += " with error [";
-    log += error.GetLogString();
-    log += "]";
-  }
+  std::string error_str =
+      error.type() != CollaborationControllerDelegate::ErrorInfo::Type::kUnknown
+          ? error.GetLogString()
+          : "[N/A]";
+  std::string log = base::StringPrintf(kDebugCollaborationStateString,
+                                       GetStateIdString(current),
+                                       GetStateIdString(previous), error_str);
 
   return log;
 }

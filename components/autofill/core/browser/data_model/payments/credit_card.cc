@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <ostream>
 #include <string_view>
 
@@ -1072,6 +1073,20 @@ std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
       CardNameAndLastFourDigits(customized_nickname),
       GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
+}
+
+std::optional<std::u16string> CreditCard::CardIdentifierForAutofillDisplay(
+    const std::u16string& customized_nickname) const {
+  if (!customized_nickname.empty()) {
+    return customized_nickname;
+  }
+  if (HasNonEmptyValidNickname()) {
+    return nickname_;
+  }
+  if (!product_description_.empty()) {
+    return product_description_;
+  }
+  return std::nullopt;
 }
 
 std::u16string CreditCard::DescriptiveExpiration(

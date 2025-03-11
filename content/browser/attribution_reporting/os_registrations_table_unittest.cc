@@ -177,6 +177,48 @@ TEST_F(OsRegistrationsTableTest, DeleteExpiredRows) {
                                      now + base::Days(45))));
 }
 
+TEST_F(OsRegistrationsTableTest, ClearDataForRegistrationOrigin) {
+  base::Time now = base::Time::Now();
+
+  auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  auto origin_b = url::Origin::Create(GURL("https://b.test"));
+
+  table_.AddOsRegistrations(&db_,
+                            {url::Origin::Create(GURL("https://a.test")),
+                             url::Origin::Create(GURL("https://b.test"))});
+
+  task_environment_.FastForwardBy(base::Days(1));
+
+  table_.AddOsRegistrations(&db_,
+                            {url::Origin::Create(GURL("https://a.test")),
+                             url::Origin::Create(GURL("https://b.test"))});
+
+  ASSERT_THAT(GetOsRegistrationRows(), SizeIs(4));
+
+  table_.ClearDataForRegistrationOrigin(
+      &db_, /*delete_begin=*/now + base::Hours(1),
+      /*delete_end=*/base::Time::Max(),
+      url::Origin::Create(GURL("https://a.test")));
+
+  ASSERT_THAT(
+      GetOsRegistrationRows(),
+      UnorderedElementsAre(
+          OsRegistrationData(/*registration_origin=*/"https://a.test", now),
+          OsRegistrationData(/*registration_origin=*/"https://b.test", now),
+          OsRegistrationData(/*registration_origin=*/"https://b.test",
+                             now + base::Days(1))));
+
+  table_.ClearDataForRegistrationOrigin(
+      &db_, /*delete_begin=*/now - base::Hours(1),
+      /*delete_end=*/now, url::Origin::Create(GURL("https://b.test")));
+  ASSERT_THAT(
+      GetOsRegistrationRows(),
+      UnorderedElementsAre(
+          OsRegistrationData(/*registration_origin=*/"https://a.test", now),
+          OsRegistrationData(/*registration_origin=*/"https://b.test",
+                             now + base::Days(1))));
+}
+
 TEST_F(OsRegistrationsTableTest, GetOsRegistrationDataKeys) {
   url::Origin origin_1 = url::Origin::Create(GURL("https://a.r.test"));
   url::Origin origin_2 = url::Origin::Create(GURL("https://b.r.test"));

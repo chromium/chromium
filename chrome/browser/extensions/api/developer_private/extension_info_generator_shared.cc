@@ -260,22 +260,6 @@ bool CanAccessSiteData(PermissionsManager* permissions_manager,
              .ShouldWarnAllHosts();
 }
 
-// Returns whether the extension has permission to run user scripts or can
-// request permission to do so.
-bool CanRunOrRequestUserScripts(const Extension& extension) {
-  // TODO(crbug.com/390138269): Once finch flag is default, remove the
-  // feature restriction.
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kUserScriptUserExtensionToggle)) {
-    return false;
-  }
-
-  return extension.permissions_data()->HasAPIPermission(
-             mojom::APIPermissionID::kUserScripts) ||
-         PermissionsParser::GetOptionalPermissions(&extension)
-             .HasAPIPermission(mojom::APIPermissionID::kUserScripts);
-}
-
 // Populates the `permissions` data for the given `extension`.
 void AddPermissionsInfo(content::BrowserContext* browser_context,
                         const Extension& extension,
@@ -603,13 +587,13 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 #endif
 
   // User Scripts toggle.
-  info.user_scripts_access.is_enabled = CanRunOrRequestUserScripts(extension);
+  info.user_scripts_access.is_enabled =
+      UserScriptManager::CanExtensionUseUserScriptsAPI(extension);
   const UserScriptManager* user_script_manager =
       ExtensionSystem::Get(browser_context_)->user_script_manager();
   if (user_script_manager) {  // Not created in some unit tests.
     info.user_scripts_access.is_active =
-        // User scripts will be able to run if the user has enabled the toggle.
-        user_script_manager->IsUserScriptPrefEnabled(extension.id());
+        user_script_manager->AreUserScriptsAllowed(extension, browser_context_);
   }
 
   // Install warnings, but only if unpacked, the error console isn't enabled

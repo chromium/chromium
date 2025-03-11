@@ -757,7 +757,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * @return The appropriate title for clear storage confirmation dialog.
    */
   private getClearAllStorageDialogTitle_(): string {
-    const titleId = this.isFiltered_() ?
+    const titleId = this.isFiltered_() && !this.isRwsV2Filtered_() ?
         'siteSettingsDeleteDisplayedStorageDialogTitle' :
         'siteSettingsDeleteAllStorageDialogTitle';
     return loadTimeData.substituteString(this.i18n(titleId), this.totalUsage_);
@@ -765,11 +765,20 @@ export class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Get the appropriate label for the clear data confirmation dialog, depending
-   * on whether any apps are installed and/or filter is applied.
+   * on whether any apps are installed, a filter is applied, and/or the RWS V2
+   * view is shown.
    * @return The appropriate description for clear data confirmation dialog.
    */
   private getClearAllStorageDialogDescription_(): string {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
+    if (this.isRwsV2Filtered_()) {
+      const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
+      const messageId = anyAppsInstalled ?
+          'siteSettingsDeleteRwsStorageConfirmationInstalled' :
+          'siteSettingsDeleteRwsStorageConfirmation';
+      return loadTimeData.getStringF(messageId, this.totalUsage_, rwsOwner);
+    }
+
     let messageId;
     if (anyAppsInstalled) {
       messageId = this.isFiltered_() ?
@@ -789,13 +798,16 @@ export class AllSitesElement extends AllSitesElementBase {
    * Selects the appropriate string to display for the sign-out string in
    * confirmation popup based on whether a filter is applied.
    * @return The appropriate sign out confirmation string based on whether a
-   *     filter is applied.
+   *     filter is applied and/or the RWS V2 view is shown.
    */
   private getClearAllStorageDialogSignOutLabel_(): string {
-    const signOutLabelId = this.isFiltered_() ?
-        'siteSettingsClearDisplayedStorageSignOut' :
-        'siteSettingsClearAllStorageSignOut';
-    return this.i18n(signOutLabelId);
+    if (this.isFiltered_()) {
+      const messageId = this.isRwsV2Filtered_() ?
+          'siteSettingsClearRwsStorageSignOut' :
+          'siteSettingsClearDisplayedStorageSignOut';
+      return this.i18n(messageId);
+    }
+    return this.i18n('siteSettingsClearAllStorageSignOut');
   }
 
   private recordUserAction_(scopes: string[]) {

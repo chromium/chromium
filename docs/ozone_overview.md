@@ -309,19 +309,33 @@ you can use a locally compiled version of Weston or Mutter. This is what the
 build bots do. Please note that this is required for interactive_ui_tests, as
 those tests use a patched version of the compositor.
 
-Add this to your gn args:
+Mutter and its dependencies are not checked out by default to keep the disk
+usage optimal for most developers. In order to checkout mutter, add the
+`checkout_mutter` custom var in your .gclient file and set it to `True` and run `gclient sync`.
+
+```
+solutions = [
+  {
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    "managed": False,
+    "name": "src",
+    "custom_deps": {},
+    "custom_vars": {
+      "checkout_mutter": True,
+    },
+  },
+]
+```
+
+For weston, simply add this to your gn args:
 
 ``` shell
-# For weston
 use_bundled_weston = true
 ```
 
-``` shell
-# For mutter
-use_bundled_mutter = true
-```
 
-Then run the xvfb.py wrapper script and tell it to start the compositor with the tests:
+Then after building the test executable, run the xvfb.py wrapper script and tell
+it to start the compositor with the tests:
 
 ``` shell
 cd out/debug  # or your out directory

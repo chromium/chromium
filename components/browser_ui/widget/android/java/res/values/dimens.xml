@@ -194,7 +194,6 @@ found in the LICENSE file.
     <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
 
     <!-- Surface color elevations -->
-    <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
 
     <!-- Empty view layout dimensions -->

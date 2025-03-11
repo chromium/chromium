@@ -248,11 +248,12 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group,
 
 void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
                                                aura::Window* root_window) {
-  std::vector<coral::mojom::EntityPtr> tab_app_entities =
-      mojo::Clone(group->entities);
+  std::vector<GURL> tab_urls;
   base::flat_set<std::string> app_ids;
-  for (const coral::mojom::EntityPtr& entity : tab_app_entities) {
-    if (entity->is_app()) {
+  for (const coral::mojom::EntityPtr& entity : group->entities) {
+    if (entity->is_tab()) {
+      tab_urls.push_back(entity->get_tab()->url);
+    } else if (entity->is_app()) {
       app_ids.insert(entity->get_app()->id);
     }
   }
@@ -264,14 +265,14 @@ void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
   auto window_tracker = std::make_unique<aura::WindowTracker>(
       aura::WindowTracker::WindowList{root_window});
   if (app_ids.empty()) {
-    OnTemplateCreated(std::move(tab_app_entities), std::move(window_tracker),
+    OnTemplateCreated(tab_urls, std::move(window_tracker),
                       /*desk_template=*/nullptr);
     return;
   }
 
   DesksController::Get()->CaptureActiveDeskAsSavedDesk(
       base::BindOnce(&CoralController::OnTemplateCreated,
-                     weak_factory_.GetWeakPtr(), std::move(tab_app_entities),
+                     weak_factory_.GetWeakPtr(), tab_urls,
                      std::move(window_tracker)),
       DeskTemplateType::kCoral,
       /*root_window_to_show=*/root_window, app_ids);
@@ -353,17 +354,10 @@ void CoralController::HandleCacheEmbeddingsResult(
 }
 
 void CoralController::OnTemplateCreated(
-    std::vector<coral::mojom::EntityPtr> tab_app_entities,
+    const std::vector<GURL>& tab_urls,
     std::unique_ptr<aura::WindowTracker> window_tracker,
     std::unique_ptr<DeskTemplate> desk_template) {
   std::unique_ptr<DeskTemplate> new_template = std::move(desk_template);
-  std::vector<GURL> tab_urls;
-  for (const auto& entity : tab_app_entities) {
-    if (entity->is_tab()) {
-      tab_urls.emplace_back(entity->get_tab()->url);
-    }
-  }
-
   // There is a chance the template is empty due to unsupported apps.
   if (!new_template) {
     if (tab_urls.empty()) {
@@ -378,8 +372,6 @@ void CoralController::OnTemplateCreated(
     new_template->set_desk_restore_data(
         std::make_unique<app_restore::RestoreData>());
   }
-
-  new_template->set_coral_tab_app_entities(std::move(tab_app_entities));
 
   auto* shell = Shell::Get();
   if (!tab_urls.empty()) {

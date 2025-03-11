@@ -63,8 +63,8 @@ void FrameSinkHost::InitFrameSinkHolder(
       std::move(layer_tree_frame_sink),
       base::BindRepeating(&FrameSinkHost::CreateCompositorFrame,
                           base::Unretained(this)),
-      base::BindRepeating(&FrameSinkHost::OnFirstFrameRequested,
-                          base::Unretained(this)),
+      base::BindOnce(&FrameSinkHost::OnFirstFrameRequested,
+                     base::Unretained(this)),
       base::BindOnce(&FrameSinkHost::OnFrameSinkLost, base::Unretained(this)));
 }
 

@@ -3836,6 +3836,15 @@ TEST_F(AttributionResolverTest, MaxAttributions_BoundedBySourceTimeWindow) {
             MaybeCreateAndStoreEventLevelReport(trigger));
 
   task_environment_.FastForwardBy(kTimeWindow - kTriggerDelay);
+  // The attribution rate-limit is based on attributed source time, therefore
+  // the attribution rate-limit record is not out of time window yet.
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveAttributions,
+            MaybeCreateAndStoreEventLevelReport(trigger));
+
+  // This source will be preferred as it's more recent.
+  storage()->StoreSource(SourceBuilder().Build());
+  // The attribution rate-limit is based on attributed source time, therefore
+  // the attribution rate-limit record is now out of time window.
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(trigger));
 }

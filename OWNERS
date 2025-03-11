@@ -91,7 +91,6 @@ per-file third_party/catapult=*
 per-file third_party/ced/src=*
 per-file third_party/chromevox/third_party/sre/src=*
 per-file third_party/chromite=*
-per-file third_party/chromium-variations=*
 per-file third_party/clang-format/script=*
 per-file third_party/cld_3/src=*
 per-file third_party/colorama/src=*

@@ -12,7 +12,6 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -80,15 +79,7 @@ TEST_F(DoNotDisturbNotificationControllerTest,
   EXPECT_FALSE(message_center->IsQuietMode());
 }
 
-class DoNotDisturbNotificationControllerWithFocusModeTest : public AshTestBase {
- public:
-  DoNotDisturbNotificationControllerWithFocusModeTest()
-      : scoped_feature_list_(features::kFocusMode) {}
-  ~DoNotDisturbNotificationControllerWithFocusModeTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using DoNotDisturbNotificationControllerWithFocusModeTest = AshTestBase;
 
 // Tests if the correct notification id shows up when the system DND is on
 // before starting a focus session.

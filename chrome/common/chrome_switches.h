@@ -284,6 +284,7 @@ extern const char kGlicAlwaysOpenFre[];
 extern const char kGlicFreURL[];
 extern const char kGlicOpenOnStartup[];
 extern const char kGlicAllowedOrigins[];
+extern const char kGlicAutomation[];
 extern const char kGlicDev[];
 extern const char kGlicHostLogging[];
 #endif

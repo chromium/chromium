@@ -340,7 +340,6 @@ TEST_F(RendererAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
 
   ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
   StartLoadWithoutSettingActivationState();
   FinishLoad();
 
@@ -433,7 +432,7 @@ TEST_F(
   EXPECT_CALL(*agent(), OnSetFilterCalled());
   // The mocked function `GetMainDocumentUrl` will be called several times in
   // the stack of `DidCreateNewDocument`.
-  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(testing::AtLeast(2));
+  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(2);
   // The agent should request activation state since the newly-started load is
   // cross-origin (about:blank vs. example.com).
   EXPECT_CALL(*agent(), RequestActivationState());
@@ -444,18 +443,15 @@ TEST_F(
       subresource_filter::mojom::ActivationLevel::kEnabled;
   state->measure_performance = true;
   agent()->OnActivationComputed(std::move(state));
-  agent_as_rfo()->DidFailProvisionalLoad();
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
-
-  // The activation state should have been reset.
+  // The activation state should have been set to Enabled.
   EXPECT_EQ(agent()->activation_state().activation_level,
-            subresource_filter::mojom::ActivationLevel::kDisabled);
+            subresource_filter::mojom::ActivationLevel::kEnabled);
 
-  // The agent should request activation again even though the next load is
-  // same origin (example.com) because the activation state has been reset.
+  // The activation state should be reset on a failed provisional load and
+  // immediately re-requested.
   EXPECT_CALL(*agent(), RequestActivationState());
-  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(testing::AtLeast(2));
-  StartLoadWithoutSettingActivationState();
+  EXPECT_CALL(*agent(), GetMainDocumentUrl());
+  agent_as_rfo()->DidFailProvisionalLoad();
 
   histogram_tester.ExpectUniqueSample(
       MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
@@ -551,7 +547,7 @@ TEST_F(RendererAgentTest,
       SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
 
   ExpectNoFilterGetsInjected();
-  EXPECT_CALL(*agent(), RequestActivationState());
+  EXPECT_CALL(*agent(), RequestActivationState()).Times(2);
   EXPECT_CALL(*agent(), OnSetFilterCalled());
   StartLoadAndSetActivationState(
       subresource_filter::mojom::ActivationLevel::kEnabled);

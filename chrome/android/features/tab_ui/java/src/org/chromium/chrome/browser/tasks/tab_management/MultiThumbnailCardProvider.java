@@ -323,7 +323,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         }
     }
 
-    MultiThumbnailCardProvider(
+    public MultiThumbnailCardProvider(
             @NonNull Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull TabContentManager tabContentManager,

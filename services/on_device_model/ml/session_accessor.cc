@@ -52,14 +52,17 @@ SessionAccessor::Ptr SessionAccessor::Create(
     const ChromeML& chrome_ml,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ChromeMLModel model,
-    on_device_model::mojom::LoadAdaptationParamsPtr params) {
+    on_device_model::mojom::SessionParamsPtr params,
+    on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
+    std::optional<uint32_t> adaptation_id) {
   Ptr handle(new SessionAccessor(chrome_ml, task_runner, model),
              base::OnTaskRunnerDeleter(task_runner));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&SessionAccessor::CreateInternal,
-                     base::Unretained(handle.get()), std::move(params)));
+                     base::Unretained(handle.get()), std::move(params),
+                     std::move(adaptation_params), adaptation_id));
   return handle;
 }
 
@@ -133,38 +136,55 @@ void SessionAccessor::CloneFrom(SessionAccessor* other) {
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::CreateInternal(
-    on_device_model::mojom::LoadAdaptationParamsPtr params) {
+    on_device_model::mojom::SessionParamsPtr params,
+    on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
+    std::optional<uint32_t> adaptation_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  const bool enable_image_input = kImageInput.Get();
-  const bool enable_audio_input = kAudioInput.Get();
-  if (enable_image_input || enable_audio_input) {
-    if (!params) {
-      params = on_device_model::mojom::LoadAdaptationParams::New();
+  if (!params) {
+    params = on_device_model::mojom::SessionParams::New();
+    // If session params are not provided but adaptation params are, inherit
+    // values from adaptation.
+    if (adaptation_params) {
+      if (adaptation_params->enable_image_input) {
+        params->capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
+      }
+      if (adaptation_params->enable_audio_input) {
+        params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
+      }
+      params->max_tokens = adaptation_params->max_tokens;
     }
-    params->enable_image_input |= enable_image_input;
-    params->enable_audio_input |= enable_audio_input;
   }
-  if (params) {
-    ChromeMLAdaptationDescriptor descriptor = {
-        .max_tokens = params->max_tokens,
-        .enable_image_input = params->enable_image_input,
-        .enable_audio_input = params->enable_audio_input,
-    };
+  if (kImageInput.Get()) {
+    params->capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
+  }
+  if (kAudioInput.Get()) {
+    params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
+  }
 
-    ChromeMLModelData data;
-    std::string weights_path_str = params->assets.weights_path.AsUTF8Unsafe();
-    if (params->assets.weights.IsValid() || !weights_path_str.empty()) {
-      if (params->assets.weights.IsValid()) {
-        data.weights_file = params->assets.weights.TakePlatformFile();
+  ChromeMLAdaptationDescriptor descriptor = {
+      .max_tokens = params->max_tokens,
+      .enable_image_input = params->capabilities.Has(
+          on_device_model::CapabilityFlags::kImageInput),
+      .enable_audio_input = params->capabilities.Has(
+          on_device_model::CapabilityFlags::kAudioInput),
+  };
+  ChromeMLModelData data;
+  std::string weights_path_str;
+  if (adaptation_params) {
+    weights_path_str = adaptation_params->assets.weights_path.AsUTF8Unsafe();
+    if (adaptation_params->assets.weights.IsValid() ||
+        !weights_path_str.empty()) {
+      if (adaptation_params->assets.weights.IsValid()) {
+        data.weights_file =
+            adaptation_params->assets.weights.TakePlatformFile();
       } else {
         data.model_path = weights_path_str.data();
       }
+      data.file_id = adaptation_id;
       descriptor.model_data = &data;
     }
-    session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
-  } else {
-    session_ = chrome_ml_->api().CreateSession(model_, nullptr);
   }
+  session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
 }
 
 DISABLE_CFI_DLSYM

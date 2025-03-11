@@ -13,7 +13,6 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {listenOnce} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -72,6 +71,19 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.addEventListener(
         'open-command-menu',
         e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('displayedIds_')) {
+      // Reset the focused index if it's out of bounds for the new array value.
+      if (this.focusedIndex_ > this.displayedIds_.length - 1) {
+        this.focusedIndex_ = 0;
+      }
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -223,7 +235,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
    * Highlight a list of items by selecting them, scrolling them into view and
    * focusing the first item.
    */
-  private onHighlightItems_(e: CustomEvent<string[]>) {
+  private async onHighlightItems_(e: CustomEvent<string[]>) {
     // Ensure that we only select items which are actually being displayed.
     // This should only matter if an unrelated update to the bookmark model
     // happens with the perfect timing to end up in a tracked batch update.
@@ -237,16 +249,14 @@ export class BookmarksListElement extends BookmarksListElementBase {
     const leadId = toHighlight[0]!;
     this.dispatch(selectAll(toHighlight, this.getState(), leadId));
 
-    // Allow cr-lazy-list time to render additions to the list. Note: Do not
-    // add listener using the eventTracker_, as this will break the add/remove
-    // logic for focusing the menu button.
-    listenOnce(this.$.list, 'items-rendered', async () => {
-      this.scrollToId_(leadId);
-      const leadIndex = this.displayedIds_.indexOf(leadId);
-      assert(leadIndex !== -1);
-      const element = await this.$.list.ensureItemRendered(leadIndex);
-      element.focus();
-    });
+    // Wait for the change to selectedItems_ to reflect in the DOM.
+    await this.updateComplete;
+    const leadIndex = this.displayedIds_.indexOf(leadId);
+    assert(leadIndex !== -1);
+    // Ensure the new list addition has been rendered by cr-lazy-list.
+    const element = await this.$.list.ensureItemRendered(leadIndex);
+    element.scrollIntoViewIfNeeded();
+    element.focus();
   }
 
   private onImportBegan_() {

@@ -40,6 +40,7 @@ class SignalsAggregatorImpl : public SignalsAggregator {
 
  private:
   void GetSignal(SignalName signal_name,
+                 UserPermission permission,
                  const SignalsAggregationRequest& request,
                  SignalsAggregationResponse* response,
                  base::OnceClosure done_closure);

@@ -24,8 +24,10 @@ class GlicWidget : public views::Widget {
   ~GlicWidget() override;
 
   // Create a widget with the given bounds.
-  static std::unique_ptr<GlicWidget> Create(Profile* profile,
-                                            const gfx::Rect& initial_bounds);
+  static std::unique_ptr<GlicWidget> Create(
+      Profile* profile,
+      const gfx::Rect& initial_bounds,
+      base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate);
 
   // Get the most-overlapping display.
   display::Display GetDisplay();

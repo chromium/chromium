@@ -13,7 +13,7 @@ mojom("mojo_bindings") {
 }
 
 build_webui("build") {
-  grd_prefix = "cr_components_history_embeddings"
+  grd_prefix = "cr_components_history"
   non_web_component_files = [ "constants.ts" ]
 
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]

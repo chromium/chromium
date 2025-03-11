@@ -107,6 +107,38 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusChange.{Time}"
+    enum="InterventionHealthChange" expires_after="2025-07-06">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the resource type's health level a certain duration after taking the
+    suggested intervention. This will be used to evaluate the impact of
+    discarding tabs on the resource health level.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+  <token key="Time">
+    <variant name="1Min"
+        summary="One minute has elapsed since the user chose to discard the
+                 suggested tabs."/>
+    <variant name="2Min"
+        summary="Two minutes have elapsed since the user chose to discard the
+                 suggested tabs."/>
+    <variant name="4Min"
+        summary="Four minutes have elapsed since the user chose to discard
+                 the suggested tabs."/>
+  </token>
+</histogram>
+
+<histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageShownCount"
     units="count" expires_after="2025-09-07">
   <owner>stluong@chromium.org</owner>

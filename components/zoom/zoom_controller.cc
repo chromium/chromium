@@ -127,8 +127,6 @@ ZoomController::ZoomController(content::WebContents* web_contents,
       frame_tree_node_id_(rfh->GetFrameTreeNodeId()),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(https://crbug.com/376084060):  convert this to be able to use a
-  // RenderFrameHost other than that of the mainframe.
   host_zoom_map_ = content::HostZoomMap::Get(rfh->GetSiteInstance());
   host_zoom_map_->SetIndependentZoomForFrameTreeNode(web_contents,
                                                      frame_tree_node_id_);

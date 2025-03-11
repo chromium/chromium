@@ -299,6 +299,24 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
          ' for more details and suggested replacements.', ),
         False,
     ),
+    BanRule(
+        pattern=(r'IS_DESKTOP_ANDROID'),
+        explanation=(
+            'Features which depend on IS_DESKTOP_ANDROID should only exist in '
+            'chrome/ layer and similar layers. Lower layers such as content/ '
+            'should not have features which are only designed for '
+            'desktop-android builds. See https://crbug.com/401628399.', ),
+        treat_as_error=False,
+        excluded_paths=[
+          _THIRD_PARTY_EXCEPT_BLINK, # Don't warn in third_party folders.
+          r'^build/', # This is permitted in build/ folder.
+          r'^chrome/', # This is permitted in chrome/ folder.
+          r'^components/', # This is permitted only for components/ that are not shared by WebView.
+          r'^extensions/', # This is permitted in chrome/ folder.
+          r'^infra/', # This is permitted in infra/ folder.
+          r'^tools/', # This is permitted in tools/ folder.
+        ],
+    ),
 )
 
 _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (
@@ -2162,6 +2180,24 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'use-after-free bugs. Instead, use AddChildView(std::unique_ptr). '
             'See https://crbug.com/40485510 for more details.', ),
         treat_as_error=False,
+    ),
+    BanRule(
+        pattern=(r'IS_DESKTOP_ANDROID'),
+        explanation=(
+            'Features which depend on IS_DESKTOP_ANDROID should only exist in '
+            'chrome/ layer and similar layers. Lower layers such as content/ '
+            'should not have features which are only designed for '
+            'desktop-android builds. See https://crbug.com/401628399.', ),
+        treat_as_error=False,
+        excluded_paths=[
+          _THIRD_PARTY_EXCEPT_BLINK, # Don't warn in third_party folders.
+          r'^build/', # This is permitted in build/ folder.
+          r'^chrome/', # This is permitted in chrome/ folder.
+          r'^components/', # This is permitted only for components/ that are not shared by WebView.
+          r'^extensions/', # This is permitted in chrome/ folder.
+          r'^infra/', # This is permitted in infra/ folder.
+          r'^tools/', # This is permitted in tools/ folder.
+        ],
     ),
 )
 

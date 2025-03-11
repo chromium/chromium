@@ -1018,7 +1018,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     const LayoutUnit min_max_percentage_resolution_size =
         node.GetDocument().InQuirksMode() && !node.IsOutOfFlowPositioned()
             ? space.AvailableSize().block_size
-            : space.ReplacedPercentageResolutionBlockSize();
+            : space.PercentageResolutionBlockSize();
 
     block_min_max_sizes = {
         ResolveMinBlockLength(space, style, border_padding, BlockSizeFunc,
@@ -1041,7 +1041,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
           block_length.HasAuto() ? Length::FillAvailable() : block_length;
 
       const LayoutUnit main_percentage_resolution_size =
-          space.ReplacedPercentageResolutionBlockSize();
+          space.PercentageResolutionBlockSize();
       const LayoutUnit block_size = ResolveMainBlockLength(
           space, style, border_padding, block_length_to_resolve,
           /* auto_length*/ nullptr,
@@ -1761,7 +1761,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
   // Anonymous block or spaces should use the parent percent block-size.
   if (space.IsAnonymous() || node.IsAnonymousBlock()) {
     return {child_available_size.inline_size,
-            space.PercentageResolutionBlockSize()};
+            space.ReplacedChildPercentageResolutionBlockSize()};
   }
 
   // Table cell children don't apply the "percentage-quirk". I.e. if their
@@ -1788,7 +1788,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
 
   return AdjustChildPercentageSize(
       space, node, child_available_size,
-      space.ReplacedPercentageResolutionBlockSize());
+      space.ReplacedChildPercentageResolutionBlockSize());
 }
 
 LayoutUnit ClampIntrinsicBlockSize(

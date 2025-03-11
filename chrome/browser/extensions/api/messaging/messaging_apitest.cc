@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -54,23 +55,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = extensions::ExtensionPlatformApiTest;
-#else
-using ExtensionApiTestBase = extensions::ExtensionApiTest;
 #endif
 
 namespace extensions {
@@ -126,7 +115,7 @@ class MessageSender : public ExtensionHostRegistry::Observer {
       host_registry_observation_{this};
 };
 
-class MessagingApiTest : public ExtensionApiTestBase {
+class MessagingApiTest : public ExtensionPlatformApiTest {
  public:
   explicit MessagingApiTest(bool enable_back_forward_cache = true) {
     if (!enable_back_forward_cache) {
@@ -146,7 +135,7 @@ class MessagingApiTest : public ExtensionApiTestBase {
   ~MessagingApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTestBase::SetUpOnMainThread();
+    ExtensionPlatformApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }

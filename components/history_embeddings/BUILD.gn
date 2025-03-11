@@ -98,4 +98,8 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   data = [ "//components/test/data/history_embeddings/" ]
+
+  if (is_ios) {
+    deps += [ "//components/test:history_embeddings_test_bundle_data" ]
+  }
 }

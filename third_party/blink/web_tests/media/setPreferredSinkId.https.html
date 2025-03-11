@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<title>Test that fallback among codecs is done correctly regardless of their order.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src=../resources/testdriver.js></script>
+<script src=../resources/testdriver-vendor.js></script>
+<script>
+
+"use strict";
+
+const audio = new Audio();
+
+// Copied from the external/wpt/mediacapture-streams/permission-help.js.
+async function setMediaPermission(status="granted", scope=["camera", "microphone"]) {
+  try {
+    for (let s of scope) {
+      await test_driver.set_permission({ name: s }, status);
+    }
+  } catch (e) {
+    const noSetPermissionSupport = typeof e === "string" && e.match(/set_permission not implemented/);
+    if (!(noSetPermissionSupport ||
+          (e instanceof Error && e.message.match("unimplemented")) )) {
+      throw e;
+    }
+    // Web Driver not implemented action
+    // FF: https://bugzilla.mozilla.org/show_bug.cgi?id=1524074
+
+    // with current WPT runners, will default to granted state for FF and Safari
+    // throw if status!="granted" to invalidate test results
+    if (status === "denied") {
+      assert_implements_optional(!noSetPermissionSupport, "Unable to set permission to denied for this test");
+    }
+  }
+}
+
+promise_test(t => navigator.mediaDevices.setPreferredSinkId(""), "setPreferredSinkId on default audio output should always work");
+
+promise_test(t => promise_rejects_dom(t, "NotFoundError", navigator.mediaDevices.setPreferredSinkId("nonexistent_device_id")),
+  "setPreferredSinkId fails with NotFoundError on made up deviceid");
+
+promise_test(async t => {
+  // Attempt to expose some audiooutput devices.
+  await setMediaPermission("granted", ["microphone"]);
+  await navigator.mediaDevices.getUserMedia({ audio: true });
+  const list = await navigator.mediaDevices.enumerateDevices();
+  assert_greater_than(list.length, 0,
+                      "media device list includes at least one device");
+  const audioInputList = list.filter(({kind}) => kind == "audioinput");
+  const outputDevicesList = list.filter(({kind}) => kind == "audiooutput");
+
+  // List of exposed microphone groupIds
+  const exposedGroupIds = new Set(audioInputList.map(device => device.groupId));
+
+  for (const { deviceId, groupId } of outputDevicesList) {
+    assert_equals(audio.sinkId, "", "sinkId init device id is default");
+    let r;
+    try {
+      r = await navigator.mediaDevices.setPreferredSinkId(deviceId);
+    } catch (e) {
+      assert_equals(e.name, "NotAllowedError", "Non-permitted devices are failing with NotAllowed error");
+      continue;
+    }
+    assert_equals(r, undefined, "setPreferredSinkId resolves with undefined");
+    assert_equals(audio.sinkId, "", "when it resolves, audio.sinkId is always default");
+    if (deviceId !== "" && deviceId !== "default") {
+      try {
+        await audio.setSinkId(deviceId);
+        assert_equals(audio.sinkId, deviceId, "when it resolves, setSinkId updates sinkId to the requested deviceId");
+      } catch (e) {
+        assert_equals(e.name, "NotFoundError", "setSinkId failed with NotFoundError error");
+        continue;
+      }
+      r = await navigator.mediaDevices.setPreferredSinkId("");
+      assert_equals(r, undefined, "setPreferredSinkId resolves with undefined");
+      assert_equals(audio.sinkId, deviceId, "setPreferredSinkId can't change audio.sinkId if audio.setSinkId is called");
+    }
+  }
+}, "setPreferredSinkId() with output device IDs exposed by getUserMedia() should either reject with NotAllowedError or resolve");
+
+</script>

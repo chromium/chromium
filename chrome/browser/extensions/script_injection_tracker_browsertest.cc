@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/user_scripts_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -43,6 +45,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1761,19 +1764,26 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
-class UserScriptTrackerBrowserTest : public ScriptInjectionTrackerBrowserTest {
+class UserScriptTrackerBrowserTest : public ScriptInjectionTrackerBrowserTest,
+                                     public testing::WithParamInterface<bool> {
  public:
-  UserScriptTrackerBrowserTest() = default;
-  void SetUpOnMainThread() override {
-    ScriptInjectionTrackerBrowserTest::SetUpOnMainThread();
-    // The userScripts API is only available to users in developer mode.
-    util::SetDeveloperModeForProfile(profile(), true);
+  UserScriptTrackerBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          extensions_features::kUserScriptUserExtensionToggle);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          extensions_features::kUserScriptUserExtensionToggle);
+    }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests tracking of user scripts dynamically injected/declared via
 // `chrome.userScripts` API.
-IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserScriptTrackerBrowserTest,
                        UserScriptViaUserScriptsApi) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1798,11 +1808,17 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
         runAt: 'document_end'
       }];
 
-      chrome.runtime.onInstalled.addListener(async function(details) {
+      async function registerUserScripts() {
         await chrome.userScripts.register(scripts, () => {
           chrome.test.sendMessage('SCRIPT_LOADED');
         });
-      }); )";
+      }
+
+      // Wait for the user scripts API to be allowed before continuing.
+      chrome.test.sendMessage('ready', () => {
+        registerUserScripts();
+      });
+  )";
   dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kServiceWorker);
 
   const char kUserScript[] = R"(
@@ -1814,9 +1830,17 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
   )";
   dir.WriteFile(FILE_PATH_LITERAL("user_script.js"), kUserScript);
 
-  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
+  // Load the extension, but pause it before it starts to enable the userScripts
+  // API, then register the user script, and then continue with the test.
+  ExtensionTestMessageListener extension_background_ready(
+      "ready", ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_background_ready.WaitUntilSatisfied());
+  user_scripts_test_util::SetUserScriptsAPIAllowed(profile(), extension->id(),
+                                                   /*allowed=*/true);
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
+  extension_background_ready.Reply("");
   ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
 
   // Navigate to a page that is not in the user script 'matches'.
@@ -1855,7 +1879,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
 
 // Tests tracking of user scripts dynamically injected/declared via
 // `chrome.userScripts` API only when extension requests host permissions.
-IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserScriptTrackerBrowserTest,
                        UserScriptViaUserScriptsApi_HostPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1881,11 +1905,17 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
         runAt: 'document_end'
       }];
 
-      chrome.runtime.onInstalled.addListener(async function(details) {
+      async function registerUserScripts() {
         await chrome.userScripts.register(scripts, () => {
           chrome.test.sendMessage('SCRIPT_LOADED');
         });
-      }); )";
+      }
+
+      // Wait for the user scripts API to be allowed before continuing.
+      chrome.test.sendMessage('ready', () => {
+        registerUserScripts();
+      });
+  )";
   dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kServiceWorker);
 
   const char kUserScript[] = R"(
@@ -1894,9 +1924,17 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
   )";
   dir.WriteFile(FILE_PATH_LITERAL("user_script.js"), kUserScript);
 
-  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
+  // Load the extension, but pause it before it starts to enable the userScripts
+  // API, then register the user script, and then continue with the test.
+  ExtensionTestMessageListener extension_background_ready(
+      "ready", ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_background_ready.WaitUntilSatisfied());
+  user_scripts_test_util::SetUserScriptsAPIAllowed(profile(), extension->id(),
+                                                   /*allowed=*/true);
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
+  extension_background_ready.Reply("");
   ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
 
   // Navigate to a page that is not in the extension's host permissions.
@@ -1933,6 +1971,11 @@ IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserScriptTrackerBrowserTest,
+                         // extensions_features::kUserScriptUserExtensionToggle
+                         testing::Bool());
 
 class ScriptInjectionTrackerAppBrowserTest : public PlatformAppBrowserTest {
  public:

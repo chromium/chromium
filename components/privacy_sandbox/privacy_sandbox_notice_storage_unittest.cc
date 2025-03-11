@@ -8,10 +8,12 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/histogram_variants_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version_info/version_info.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
@@ -29,6 +31,8 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
     notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>();
+    scoped_feature_list_.InitAndEnableFeature(
+        kPrivacySandboxMigratePrefsToSchemaV2);
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {
@@ -42,6 +46,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrivacySandboxNoticeStorageTest, CheckPSNoticeHistograms) {
@@ -357,6 +362,35 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
 using NoticeEvents = std::vector<std::pair<NoticeEvent, base::Time>>;
 class PrivacySandboxNoticeStorageV2Test
     : public PrivacySandboxNoticeStorageTest {};
+
+TEST_F(PrivacySandboxNoticeStorageV2Test,
+       PrivacySandboxMigratePrefsToSchemaV2FlagDisabledDoesNotMigrate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndDisableFeature(
+      kPrivacySandboxMigratePrefsToSchemaV2);
+  std::string notice = kTopicsConsentModal;
+  ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
+  update.Get().SetByDottedPath(base::StrCat({notice, ".", "schema_version"}),
+                               1);
+  update.Get().SetByDottedPath(
+      base::StrCat({notice, ".", "notice_last_shown"}),
+      base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(100)));
+  update.Get().SetByDottedPath(
+      base::StrCat({notice, ".", "notice_action_taken"}),
+      static_cast<int>(NoticeActionTaken::kAck));
+  update.Get().SetByDottedPath(
+      base::StrCat({notice, ".", "notice_action_taken_time"}),
+      base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(200)));
+
+  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
+
+  auto notice_data = notice_storage()->ReadNoticeData(prefs(), notice);
+  EXPECT_EQ(notice_data->GetSchemaVersion(), 1);
+  NoticeEvents events = notice_data->GetNoticeEvents();
+
+  EXPECT_EQ(events.size(), 0u);
+}
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
        AllEventsPopulatedMigrateSuccessfully) {

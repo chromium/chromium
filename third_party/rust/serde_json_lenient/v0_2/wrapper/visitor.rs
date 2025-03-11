@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::{Dict, Functions, List};
+use crate::{ffi, Dict, List};
 use serde::de::{DeserializeSeed, Deserializer, Error, MapAccess, SeqAccess, Visitor};
 use std::borrow::Cow;
 use std::convert::TryFrom;
@@ -72,19 +72,13 @@ impl<'de> DeserializeSeed<'de> for CowStrVisitor {
 /// is designed to call back into C++ for creating the deserialized objects. To
 /// achieve this we use a feature of serde called "stateful deserialization" (https://docs.serde.rs/serde/de/trait.DeserializeSeed.html).
 pub struct ValueVisitor<'c, 'de> {
-    fns: &'static Functions,
     aggregate: DeserializationTarget<'c, 'de>,
     recursion_depth_check: RecursionDepthCheck,
 }
 
 impl<'c, 'de> ValueVisitor<'c, 'de> {
-    pub fn new(
-        fns: &'static Functions,
-        target: DeserializationTarget<'c, 'de>,
-        max_depth: usize,
-    ) -> Self {
+    pub fn new(target: DeserializationTarget<'c, 'de>, max_depth: usize) -> Self {
         Self {
-            fns,
             aggregate: target,
             // The `max_depth` includes the top level of the JSON input, which is where parsing
             // starts. We subtract 1 to count the top level now.
@@ -104,8 +98,8 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
 
     fn visit_i32<E: serde::de::Error>(self, value: i32) -> Result<Self::Value, E> {
         match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_i32(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_i32(ctx, &key, value),
+            DeserializationTarget::List { ctx } => ffi::list_append_i32(ctx, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_i32(ctx, &key, value),
         };
         Ok(())
     }
@@ -116,8 +110,8 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
 
     fn visit_bool<E: serde::de::Error>(self, value: bool) -> Result<Self::Value, E> {
         match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_bool(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_bool(ctx, &key, value),
+            DeserializationTarget::List { ctx } => ffi::list_append_bool(ctx, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_bool(ctx, &key, value),
         };
         Ok(())
     }
@@ -141,24 +135,24 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
 
     fn visit_f64<E: serde::de::Error>(self, value: f64) -> Result<Self::Value, E> {
         match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_f64(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_f64(ctx, &key, value),
+            DeserializationTarget::List { ctx } => ffi::list_append_f64(ctx, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_f64(ctx, &key, value),
         };
         Ok(())
     }
 
     fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
         match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_str(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_str(ctx, &key, value),
+            DeserializationTarget::List { ctx } => ffi::list_append_str(ctx, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_str(ctx, &key, value),
         };
         Ok(())
     }
 
     fn visit_none<E: serde::de::Error>(self) -> Result<Self::Value, E> {
         match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_none(ctx),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_none(ctx, &key),
+            DeserializationTarget::List { ctx } => ffi::list_append_none(ctx),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_none(ctx, &key),
         };
         Ok(())
     }
@@ -174,12 +168,11 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
         // `serde_json_lenient::de::MapAccess::size_hint` always returns `None`,
         // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_dict(ctx),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_dict(ctx, &key),
+            DeserializationTarget::List { ctx } => ffi::list_append_dict(ctx),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_dict(ctx, &key),
         };
         while let Some(key) = access.next_key_seed(CowStrVisitor)? {
             access.next_value_seed(ValueVisitor {
-                fns: self.fns,
                 aggregate: DeserializationTarget::Dict { ctx: inner_ctx.as_mut(), key },
                 recursion_depth_check: self.recursion_depth_check.recurse()?,
             })?;
@@ -194,11 +187,10 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
         // `serde_json_lenient::de::SeqAccess::size_hint` always returns `None`,
         // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_list(ctx),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_list(ctx, &key),
+            DeserializationTarget::List { ctx } => ffi::list_append_list(ctx),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_list(ctx, &key),
         };
         while let Some(_) = access.next_element_seed(ValueVisitor {
-            fns: self.fns,
             aggregate: DeserializationTarget::List { ctx: inner_ctx.as_mut() },
             recursion_depth_check: self.recursion_depth_check.recurse()?,
         })? {}

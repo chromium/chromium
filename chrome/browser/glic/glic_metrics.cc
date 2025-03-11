@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
@@ -18,72 +19,11 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace glic {
 
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(Error)
-enum class Error {
-  kResponseStartWithoutInput = 0,
-  kResponseStopWithoutInput = 1,
-  kResponseStartWhileHidingOrHidden = 2,
-  kWindowCloseWithoutWindowOpen = 3,
-  kMaxValue = kWindowCloseWithoutWindowOpen,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseError)
-
-// LINT.IfChange(EntryPointImpression)
-enum class EntryPointImpression {
-  kBeforeFre = 0,
-  kAfterFreBrowserOnly = 1,
-  kAfterFreOsOnly = 2,
-  kAfterFreEnabled = 3,
-  kAfterFreDisabled = 4,
-  kMaxValue = kAfterFreDisabled,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
-
-// LINT.IfChange(ResponseSegmentation)
-enum class ResponseSegmentation {
-  kUnknown = 0,
-  kOsButtonAttachedText = 1,
-  kOsButtonAttachedAudio = 2,
-  kOsButtonDetachedText = 3,
-  kOsButtonDetachedAudio = 4,
-  kOsButtonMenuAttachedText = 5,
-  kOsButtonMenuAttachedAudio = 6,
-  kOsButtonMenuDetachedText = 7,
-  kOsButtonMenuDetachedAudio = 8,
-  kOsHotkeyAttachedText = 9,
-  kOsHotkeyAttachedAudio = 10,
-  kOsHotkeyDetachedText = 11,
-  kOsHotkeyDetachedAudio = 12,
-  kButtonTopChromeAttachedText = 13,
-  kButtonTopChromeAttachedAudio = 14,
-  kButtonTopChromeDetachedText = 15,
-  kButtonTopChromeDetachedAudio = 16,
-  kFreAttachedText = 17,
-  kFreAttachedAudio = 18,
-  kFreDetachedText = 19,
-  kFreDetachedAudio = 20,
-  kProfilePickerAttachedText = 21,
-  kProfilePickerAttachedAudio = 22,
-  kProfilePickerDetachedText = 23,
-  kProfilePickerDetachedAudio = 24,
-  kNudgeAttachedText = 25,
-  kNudgeAttachedAudio = 26,
-  kNudgeDetachedText = 27,
-  kNudgeDetachedAudio = 28,
-  kChroMenuAttachedText = 29,
-  kChroMenuAttachedAudio = 30,
-  kChroMenuDetachedText = 31,
-  kChroMenuDetachedAudio = 32,
-  kMaxValue = kChroMenuDetachedAudio,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
 ResponseSegmentation GetResponseSegmentation(bool attached,
                                              mojom::WebClientMode mode,
@@ -140,13 +80,13 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   no_url_source_id_ = ukm::NoURLSourceId();
   source_id_ = no_url_source_id_;
 
-  is_allowed_ = enabling_->IsAllowed();
-  subscriptions_.push_back(
-      enabling_->RegisterAllowedChanged(base::BindRepeating(
-          &GlicMetrics::OnAllowedChanged, base::Unretained(this))));
-
+  is_enabled_ = enabling_->IsEnabledAndConsentForProfile(profile_);
   is_pinned_ = profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Add(
+      prefs::kGlicCompletedFre,
+      base::BindRepeating(&GlicMetrics::OnGlicCompletedFrePrefChanged,
+                          base::Unretained(this)));
   pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
                       base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
                                           base::Unretained(this)));
@@ -307,9 +247,9 @@ void GlicMetrics::OnImpressionTimerFired() {
                                   EntryPointImpression::kBeforeFre);
     return;
   }
-  if (!is_allowed_) {
+  if (!enabling_->IsAllowed()) {
     base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
-                                  EntryPointImpression::kAfterFreDisabled);
+                                  EntryPointImpression::kNotPermitted);
     return;
   }
 
@@ -326,19 +266,21 @@ void GlicMetrics::OnImpressionTimerFired() {
     impression = EntryPointImpression::kAfterFreDisabled;
   }
   base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
+
+  ui::Accelerator saved_hotkey =
+      glic::GlicLauncherConfiguration::GetGlobalHotkey();
+  base::UmaHistogramBoolean("Glic.OsEntrypoint.Settings.ShortcutStatus",
+                            saved_hotkey != ui::Accelerator());
 }
 
-void GlicMetrics::OnAllowedChanged() {
-  bool is_allowed = enabling_->IsAllowed();
-  if (is_allowed == is_allowed_) {
+void GlicMetrics::OnGlicCompletedFrePrefChanged() {
+  bool is_enabled = enabling_->IsEnabledAndConsentForProfile(profile_);
+  if (is_enabled == is_enabled_) {
     // No change, early exit.
     return;
   }
-  is_allowed_ = is_allowed;
-  // TODO(crbug.com/391417447): Fix how/where these metrics are recorded.
-  // They're recording whether the user is allowed to use glic, when they should
-  // record whether the user enabled/disabled glic.
-  if (is_allowed_) {
+  is_enabled_ = is_enabled;
+  if (is_enabled_) {
     base::RecordAction(base::UserMetricsAction("Glic.Enabled"));
   } else {
     base::RecordAction(base::UserMetricsAction("Glic.Disabled"));

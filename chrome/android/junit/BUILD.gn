@@ -589,7 +589,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ExternalViewDragDropReorderStrategyTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/ReorderStrategyTestBase.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/SourceViewDragDropReorderStrategyTest.java",
-      "src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/StripTabDragShadowViewUnitTest.java",
+      "src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/StripDragShadowViewUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabDragSourceTest.java",
       "src/org/chromium/chrome/browser/compositor/scene_layer/TabStripSceneLayerTest.java",
     ]

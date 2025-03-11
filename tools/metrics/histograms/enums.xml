@@ -10227,6 +10227,7 @@ from previous Chrome versions.
   <int value="-1513112313" label="AudioSettingsPage:enabled"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
+  <int value="-1511776843" label="FedCmCooldownOnIgnore:enabled"/>
   <int value="-1511549741" label="verbose-logging-in-nacl"/>
   <int value="-1510844027" label="ScanAppStickySettings:enabled"/>
   <int value="-1510839574" label="disable-sync-synced-notifications"/>
@@ -10414,6 +10415,7 @@ from previous Chrome versions.
   <int value="-1443796945" label="OfflinePagesSharing:disabled"/>
   <int value="-1443583078" label="CrOSLateBootAudioStyleTransfer:disabled"/>
   <int value="-1443261188" label="DesktopPWAsTabStripLinkCapturing:disabled"/>
+  <int value="-1442521127" label="FedCmCooldownOnIgnore:disabled"/>
   <int value="-1441695001" label="OmniboxOnFocusSuggestions:enabled"/>
   <int value="-1441340278" label="NewTabPageIcons:enabled"/>
   <int value="-1440440375" label="WebVrAutopresent:enabled"/>
@@ -13807,6 +13809,7 @@ from previous Chrome versions.
   <int value="-102387656" label="FillingAcrossAffiliatedWebsites:disabled"/>
   <int value="-102227288" label="PasswordExport:disabled"/>
   <int value="-102008534" label="AppInstallServiceUri:disabled"/>
+  <int value="-101679300" label="AndroidKeyboardA11y:disabled"/>
   <int value="-100702864" label="PageInfoAboutThisSite:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
@@ -18394,6 +18397,7 @@ from previous Chrome versions.
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
   <int value="1684080951" label="ArcUnthrottleOnActiveAudio:enabled"/>
   <int value="1685280468" label="AppServiceShelf:enabled"/>
+  <int value="1686788127" label="AndroidKeyboardA11y:enabled"/>
   <int value="1687272287" label="HandwritingLibraryDlc:disabled"/>
   <int value="1687544136" label="AndroidManagedByMenuItem:enabled"/>
   <int value="1687768359" label="ServiceWorkerBypassFetchHandler:disabled"/>
@@ -22871,6 +22875,7 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Custom Action"/>
   <int value="5" label="Legacy"/>
   <int value="6" label="Rotating"/>
+  <int value="7" label="CustomUi"/>
 </enum>
 
 <enum name="ProtoDatabaseInitState">
@@ -23387,15 +23392,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="No Restriction"/>
   <int value="1" label="Lax Mode"/>
   <int value="2" label="Strict Mode"/>
-</enum>
-
-<enum name="SamplingProfilerUnwindResult">
-  <summary>Track reason for unwind failures in sampling profiler.</summary>
-  <int value="0" label="Futex wait for signal handler failed."/>
-  <int value="1" label="Stack segment was not found or too large to copy."/>
-  <int value="2" label="Unwind initialization failed."/>
-  <int value="3" label="Unwind info for signal handler missing."/>
-  <int value="4" label="First frame of stack isn't mapped."/>
 </enum>
 
 <enum name="SanitizeEvent">

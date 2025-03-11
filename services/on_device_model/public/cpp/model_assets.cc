@@ -76,6 +76,16 @@ AdaptationAssetPaths::AdaptationAssetPaths(const AdaptationAssetPaths&) =
 AdaptationAssetPaths::~AdaptationAssetPaths() = default;
 
 AdaptationAssets::AdaptationAssets() = default;
+
+AdaptationAssets::AdaptationAssets(const AdaptationAssets& other)
+    : weights(other.weights.Duplicate()), weights_path(other.weights_path) {}
+
+AdaptationAssets& AdaptationAssets::operator=(const AdaptationAssets& other) {
+  weights = other.weights.Duplicate();
+  weights_path = other.weights_path;
+  return *this;
+}
+
 AdaptationAssets::AdaptationAssets(AdaptationAssets&&) = default;
 AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
 AdaptationAssets::~AdaptationAssets() = default;

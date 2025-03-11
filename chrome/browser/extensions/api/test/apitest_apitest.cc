@@ -5,16 +5,11 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
 
 namespace extensions {
 
@@ -48,13 +43,7 @@ constexpr char kExpectedFailureMessage[] = "Failed 1 of 1 tests";
 
 using ContextType = extensions::browser_test_util::ContextType;
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = ExtensionPlatformApiTest;
-#else
-using ExtensionApiTestBase = ExtensionApiTest;
-#endif
-
-class TestAPITest : public ExtensionApiTestBase {
+class TestAPITest : public ExtensionPlatformApiTest {
  protected:
   const Extension* LoadExtensionScriptWithContext(const char* background_script,
                                                   ContextType context_type,

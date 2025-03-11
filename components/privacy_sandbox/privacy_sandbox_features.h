@@ -327,6 +327,11 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies);
 // equalized styling.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxEqualizedPromptButtons);
+
+// If true, migrates Privacy Sandbox Notice & Consent prefs to V2.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

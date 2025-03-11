@@ -2972,6 +2972,10 @@ class BannedTypeCheckTest(unittest.TestCase):
                 'some/java/problematic/accessibilityTypeAnnouncement.java', [
                     'accessibilityEvent.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);'
                 ]),
+            MockFile(
+                'content/java/problematic/desktopandroid.java', [
+                    'if (BuildConfig.IS_DESKTOP_ANDROID) {}'
+                ]),
         ]
 
         errors = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -3001,6 +3005,9 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertTrue(
             'some/java/problematic/accessibilityTypeAnnouncement.java' in
             errors[0].message)
+        self.assertTrue(
+            'content/java/problematic/desktopandroid.java' in
+            errors[0].message)
 
 
     def testBannedCppFunctions(self):
@@ -3029,6 +3036,8 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('banned_ranges_usage.cc',
                      ['std::ranges::subrange(first, last)']),
             MockFile('views_usage.cc', ['std::views::all(vec)']),
+            MockFile('content/desktop_android.cc',
+                     ['#if BUILDFLAG(IS_DESKTOP_ANDROID)']),
         ]
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -3051,6 +3060,7 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertFalse('allowed_ranges_usage.cc' in results[1].message)
         self.assertTrue('banned_ranges_usage.cc' in results[1].message)
         self.assertTrue('views_usage.cc' in results[1].message)
+        self.assertTrue('content/desktop_android.cc' in results[0].message)
 
     def testBannedCppRandomFunctions(self):
         banned_rngs = [

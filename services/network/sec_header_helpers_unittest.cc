@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -35,6 +36,8 @@ constexpr char kInsecureSite[] = "http://othersite.tld";
 constexpr char kPrivilegedInitiator[] = "https://chrome-extension.example.com";
 constexpr char kSecureSameSite[] = "https://same.site.tld";
 constexpr char kSecureCrossSite[] = "https://cross-site.tld";
+constexpr char kFile[] = "file://test";
+constexpr char kOtherFile[] = "file://other";
 
 constexpr char kKnownSecChHeader[] = "Sec-CH-UA";
 constexpr char kKnownSecFetchSiteHeader[] = "Sec-Fetch-Site";
@@ -261,6 +264,93 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
                       kKnownSecFetchFrameTopHeader, "same-origin"},
               }));
 }
+
+struct FileSchemeTestData {
+  const url::Origin test_origin;
+  const std::string_view expected_header_value;
+};
+
+// Parameterized test suite checking that headers are set correctly on requests
+// with the `file` scheme.
+class SecHeaderHelpersFileSchemeTest
+    : public PlatformTest,
+      public testing::WithParamInterface<FileSchemeTestData> {
+ public:
+  SecHeaderHelpersFileSchemeTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        url_request_(context_->CreateRequest(GURL(kFile),
+                                             net::DEFAULT_PRIORITY,
+                                             /*delegate=*/nullptr,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+
+  net::URLRequest* url_request() const { return url_request_.get(); }
+
+  const url::Origin test_origin() { return GetParam().test_origin; }
+
+  const std::string_view expected_header_value() {
+    return GetParam().expected_header_value;
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kFrameAncestorHeaders);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<net::URLRequestContext> context_;
+  std::unique_ptr<net::URLRequest> url_request_;
+};
+
+// Validate that the Sec-Fetch-Frame-Top header is set correctly,
+// for a request whose top frame's origin is kSecureSite.
+TEST_P(SecHeaderHelpersFileSchemeTest, SecFetchFrameTop) {
+  net::URLRequest* current_url_request = url_request();
+  current_url_request->set_isolation_info(net::IsolationInfo::Create(
+      /*request_type=*/net::IsolationInfo::RequestType::kOther,
+      /*top_frame_origin=*/test_origin(),
+      /*frame_origin=*/url::Origin::Create(GURL(kFile)),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*nonce=*/std::nullopt));
+
+  current_url_request->set_initiator(url::Origin::Create(GURL(kFile)));
+
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors,
+      /*has_user_activation=*/false,
+      network::mojom::RequestDestination::kIframe, nullptr,
+      network::mojom::URLLoaderFactoryParams(),
+      /*origin_access_list=*/{}, mojom::CredentialsMode::kInclude);
+
+  EXPECT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchFrameTopHeader),
+            expected_header_value());
+}
+
+TEST_P(SecHeaderHelpersFileSchemeTest, SecFetchSite) {
+  net::URLRequest* current_url_request = url_request();
+  current_url_request->set_initiator(test_origin());
+
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors,
+      /*has_user_activation=*/false,
+      network::mojom::RequestDestination::kIframe, nullptr,
+      network::mojom::URLLoaderFactoryParams(),
+      /*origin_access_list=*/{}, mojom::CredentialsMode::kInclude);
+
+  EXPECT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchSiteHeader),
+            expected_header_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SecHeaderHelpersFileSchemeTest,
+    testing::Values(FileSchemeTestData{url::Origin::Create(GURL(kFile)),
+                                       std::string_view("same-origin")},
+                    FileSchemeTestData{url::Origin::Create(GURL(kOtherFile)),
+                                       std::string_view("cross-site")}));
 
 struct StorageAccessTestData {
   std::optional<net::cookie_util::StorageAccessStatus> status;

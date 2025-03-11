@@ -22,6 +22,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_event_relay.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -74,38 +75,6 @@
 namespace user_education {
 
 namespace {
-
-// Translates from HelpBubbleArrow to the Views equivalent.
-views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
-  switch (arrow) {
-    case HelpBubbleArrow::kNone:
-      return views::BubbleBorder::NONE;
-    case HelpBubbleArrow::kTopLeft:
-      return views::BubbleBorder::TOP_LEFT;
-    case HelpBubbleArrow::kTopRight:
-      return views::BubbleBorder::TOP_RIGHT;
-    case HelpBubbleArrow::kBottomLeft:
-      return views::BubbleBorder::BOTTOM_LEFT;
-    case HelpBubbleArrow::kBottomRight:
-      return views::BubbleBorder::BOTTOM_RIGHT;
-    case HelpBubbleArrow::kLeftTop:
-      return views::BubbleBorder::LEFT_TOP;
-    case HelpBubbleArrow::kRightTop:
-      return views::BubbleBorder::RIGHT_TOP;
-    case HelpBubbleArrow::kLeftBottom:
-      return views::BubbleBorder::LEFT_BOTTOM;
-    case HelpBubbleArrow::kRightBottom:
-      return views::BubbleBorder::RIGHT_BOTTOM;
-    case HelpBubbleArrow::kTopCenter:
-      return views::BubbleBorder::TOP_CENTER;
-    case HelpBubbleArrow::kBottomCenter:
-      return views::BubbleBorder::BOTTOM_CENTER;
-    case HelpBubbleArrow::kLeftCenter:
-      return views::BubbleBorder::LEFT_CENTER;
-    case HelpBubbleArrow::kRightCenter:
-      return views::BubbleBorder::RIGHT_CENTER;
-  }
-}
 
 class MdIPHBubbleButton : public views::MdTextButton {
   METADATA_HEADER(MdIPHBubbleButton, views::MdTextButton)
@@ -357,7 +326,7 @@ HelpBubbleView::HelpBubbleView(
     std::unique_ptr<HelpBubbleEventRelay> event_relay)
     : BubbleDialogDelegateView(
           anchor.view,
-          TranslateArrow(params.arrow),
+          HelpBubbleViews::TranslateArrow(params.arrow),
 #if BUILDFLAG(IS_MAC)
           // On Mac, the default DIALOG_SHADOW is system-drawn, which is
           // incompatible with visible bubble arrows. Therefore, always use

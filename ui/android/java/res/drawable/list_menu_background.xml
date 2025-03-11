@@ -9,7 +9,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <corners android:radius="@dimen/list_menu_bg_corner_radius" />
-    <solid android:color="@color/menu_bg_color" />
+    <solid android:color="@color/menu_bg_color_baseline" />
     <padding android:top="@dimen/list_menu_vertical_padding"
         android:bottom="@dimen/list_menu_vertical_padding" />
 </shape>

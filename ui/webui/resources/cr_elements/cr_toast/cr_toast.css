@@ -53,6 +53,10 @@
   visibility: visible;
 }
 
+:host(:not([open])) ::slotted(*) {
+  display: none;
+}
+
 /* Note: this doesn't work on slotted text nodes. Something like
  * <cr-toast>hey!</cr-toast> wont get the right text color. */
 :host ::slotted(*) {

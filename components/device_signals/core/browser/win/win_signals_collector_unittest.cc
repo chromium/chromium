@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +66,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Unsupported) {
   SignalName signal_name = SignalName::kFileSystemInfo;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -83,7 +85,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_AV_MissingSystemSignalsService) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -103,7 +106,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix_MissingSystemSignalsService) {
   SignalName signal_name = SignalName::kHotfixes;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -129,7 +133,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix) {
   SignalName signal_name = SignalName::kHotfixes;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -151,7 +156,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_AV_Empty) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -192,7 +198,8 @@ TEST_P(AntivirusWinSignalsCollectorTest, GetSignal_AV) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();

@@ -18,7 +18,7 @@ suite('<bookmarks-list>', function() {
   setup(function() {
     const nodes = testTree(createFolder('10', [
       createItem('1'),
-      createFolder('3', []),
+      createFolder('3', [createItem('8')]),
       createItem('5'),
       createItem('7'),
     ]));
@@ -104,6 +104,37 @@ suite('<bookmarks-list>', function() {
     assertEquals('select-items', lastAction.name);
     assertEquals('1', lastAction.anchor);
     assertDeepEquals(['1', '3'], lastAction.items);
+  });
+
+  test('resets focused index if out of bounds', async () => {
+    let items = list.shadowRoot.querySelectorAll('bookmarks-item');
+    assertEquals(4, items.length);
+    assertEquals(0, items[0]!.tabIndex);
+
+    items[3]!.focus();
+    customClick(items[3]!);
+    await microtasksFinished();
+    assertEquals(-1, items[0]!.tabIndex);
+    assertEquals(0, items[3]!.tabIndex);
+
+    // Changing the search term won't reset, if the index is still in bounds.
+    store.data.search.term = 'google.com';
+    store.notifyObservers();
+    await microtasksFinished();
+
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
+    assertEquals(4, items.length);
+    assertEquals(0, items[3]!.tabIndex);
+
+    // Changing the selected folder such that the index is out of bounds resets
+    // the focused index so that the list remains in the tab order.
+    store.data.selectedFolder = '3';
+    store.notifyObservers();
+    await eventToPromise('items-rendered', list.$.list);
+
+    items = list.shadowRoot.querySelectorAll('bookmarks-item');
+    assertEquals(1, items.length);
+    assertEquals(0, items[0]!.tabIndex);
   });
 });
 

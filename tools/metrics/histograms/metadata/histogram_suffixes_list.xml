@@ -1116,7 +1116,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="ModeratePurgeTriggered"
       label="Moderate purge was triggered on memory pressure."/>
   <suffix name="SizeLimitExceeded" label="Cache size exceeded limit."/>
-  <affected-histogram name="LocalStorage.BrowserLocalStorageCachePurgedInKB"/>
   <affected-histogram name="SessionStorageContext.CachePurgedInKB"/>
 </histogram_suffixes>
 

@@ -5681,23 +5681,25 @@ void Document::SetSequentialFocusNavigationStartingPoint(Node* node) {
 Element* Document::SequentialFocusNavigationStartingPoint(
     mojom::blink::FocusType type) const {
   if (focused_element_) {
-    // Per https://drafts.csswg.org/css-overflow-5/#scroll-marker-next-focus
-    // we want to start our search from scroll target of ::scroll-marker,
-    // for regular ::scroll-marker, the starting point should be its ultimate
-    // originating element. and TODO(378698659): the first element in ::column's
-    // view for column scroll marker, but it's not clear yet what how to
-    // implement that. sequential_focus_navigation_starting_point_ check is
-    // needed to prevent focus loops as carousel primitives focus order is not
-    // regular DOM one, we can end up on the same ::scroll-marker by moving
-    // focus order, but in that case, we shouldn't go to its scroll target, as
-    // we only go there once
-    // ::scroll-marker is activated.
+    // Per https://drafts.csswg.org/css-overflow-5/#scroll-marker-next-focus we
+    // want to start our search from scroll target of ::scroll-marker, for
+    // regular ::scroll-marker, the starting point should be its originating
+    // element, or the first element in ::column's view for column scroll
+    // marker. The sequential_focus_navigation_starting_point_ check is needed
+    // to prevent focus loops as carousel primitives focus order is not regular
+    // DOM one, we can end up on the same ::scroll-marker by moving focus order,
+    // but in that case, we shouldn't go to its scroll target, as we only go
+    // there once ::scroll-marker is activated.
     if (auto* scroll_marker =
             DynamicTo<ScrollMarkerPseudoElement>(focused_element_.Get());
         scroll_marker && sequential_focus_navigation_starting_point_ &&
         sequential_focus_navigation_starting_point_->startContainer() !=
             focused_element_ &&
         type == mojom::blink::FocusType::kForward) {
+      if (auto* column_pseudo =
+              DynamicTo<ColumnPseudoElement>(scroll_marker->parentElement())) {
+        return column_pseudo;
+      }
       return &scroll_marker->UltimateOriginatingElement();
     }
     return focused_element_.Get();

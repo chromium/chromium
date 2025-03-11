@@ -4831,15 +4831,12 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-
-    session_controller->AddUserSession({kUser1Email});
-    user_1_prefs_ = session_controller->GetUserPrefService(GetUser1AccountId());
-    CHECK(user_1_prefs_);
-    session_controller->AddUserSession({kUser2Email});
-    user_2_prefs_ = session_controller->GetUserPrefService(GetUser2AccountId());
-    CHECK(user_2_prefs_);
+    owned_user_1_prefs_ =
+        ash::TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    user_1_prefs_ = owned_user_1_prefs_.get();
+    owned_user_2_prefs_ =
+        ash::TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    user_2_prefs_ = owned_user_2_prefs_.get();
   }
 
   void TearDown() override {
@@ -4856,16 +4853,28 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
                                  bool teleported) override {}
   void OnTransitionUserShelfToNewAccount() override {}
 
+  void SimulateUser1Login() {
+    auto account_id = SimulateUserLogin({kUser1Email}, std::nullopt,
+                                        std::move(owned_user_1_prefs_));
+    multi_user_window_manager_ =
+        MultiUserWindowManager::Create(this, account_id);
+    MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
+        MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
+    GetSessionControllerClient()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
+  }
+
+  void SimulateUser2Login() {
+    SimulateUserLogin({kUser2Email}, std::nullopt,
+                      std::move(owned_user_2_prefs_));
+  }
+
   AccountId GetUser1AccountId() const {
     return AccountId::FromUserEmail(kUser1Email);
   }
 
   AccountId GetUser2AccountId() const {
     return AccountId::FromUserEmail(kUser2Email);
-  }
-
-  void SwitchActiveUser(const AccountId& account_id) {
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
 
   // Initializes the given |prefs| with a desks restore data of 3 desks, with
@@ -4888,25 +4897,16 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
     }
   }
 
-  void SwitchToUser(const AccountId& account_id) {
-    SwitchActiveUser(account_id);
-    multi_user_window_manager_ =
-        MultiUserWindowManager::Create(this, account_id);
-    MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-        MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
-    GetSessionControllerClient()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
-  }
-
  private:
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
-
+  std::unique_ptr<PrefService> owned_user_1_prefs_;
+  std::unique_ptr<PrefService> owned_user_2_prefs_;
   raw_ptr<PrefService> user_1_prefs_ = nullptr;
   raw_ptr<PrefService> user_2_prefs_ = nullptr;
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
-  SwitchToUser(GetUser1AccountId());
+  SimulateUser1Login();
   auto* controller = DesksController::Get();
   NewDesk();
   NewDesk();
@@ -4925,7 +4925,7 @@ TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
 
   // Switch to user_2 and expect no windows from user_1 is visible regardless of
   // the desk.
-  SwitchActiveUser(GetUser2AccountId());
+  SimulateUser2Login();
   EXPECT_FALSE(win0->IsVisible());
   EXPECT_FALSE(win1->IsVisible());
 
@@ -4963,7 +4963,7 @@ TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
 }
 
 TEST_F(DesksMultiUserTest, RemoveDesks) {
-  SwitchToUser(GetUser1AccountId());
+  SimulateUser1Login();
   // Create two desks with several windows with different app types that
   // belong to different users.
   auto* controller = DesksController::Get();
@@ -4991,7 +4991,7 @@ TEST_F(DesksMultiUserTest, RemoveDesks) {
 
   // Switch to user_2 and expect no windows from user_1 is visible regardless of
   // the desk.
-  SwitchActiveUser(GetUser2AccountId());
+  SimulateUser2Login();
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_FALSE(win0->IsVisible());
   EXPECT_FALSE(win1->IsVisible());
@@ -5062,11 +5062,11 @@ TEST_F(DesksMultiUserTest, RemoveDesks) {
 }
 
 TEST_F(DesksMultiUserTest, SwitchingUsersEndsOverview) {
-  SwitchToUser(GetUser1AccountId());
+  SimulateUser1Login();
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  SwitchActiveUser(GetUser2AccountId());
+  SimulateUser2Login();
   EXPECT_FALSE(overview_controller->InOverviewSession());
 }
 
@@ -5080,7 +5080,7 @@ TEST_F(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
   // Set the primary user1's active desk prefs to kUser1StoredActiveDesk.
   user_1_prefs()->SetInteger(prefs::kDesksActiveDesk, kUser1StoredActiveDesk);
 
-  SwitchToUser(GetUser1AccountId());
+  SimulateUser1Login();
   // User 1 is the first to login, hence the primary user.
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
@@ -5104,7 +5104,7 @@ TEST_F(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
 
   // Switching users should not change anything as restoring happens only at
   // the time when the first user signs in.
-  SwitchActiveUser(GetUser2AccountId());
+  SimulateUser2Login();
   verify_desks("After switching users");
   // The secondary user2 should start with a default active desk.
   EXPECT_EQ(desks[kDefaultActiveDesk]->container_id(),
@@ -5125,7 +5125,7 @@ TEST_F(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
 TEST_F(DesksRestoreMultiUserTest,
        ChangesMadeBySecondaryUserAffectsOnlyPrimaryUserPrefs) {
   InitPrefsWithDesksRestoreData(user_1_prefs());
-  SwitchToUser(GetUser1AccountId());
+  SimulateUser1Login();
 
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
@@ -5137,7 +5137,7 @@ TEST_F(DesksRestoreMultiUserTest,
 
   // Switch to user 2 (secondary) and make some desks changes. Those changes
   // should be persisted to user 1's prefs only.
-  SwitchActiveUser(GetUser2AccountId());
+  SimulateUser2Login();
 
   // Create a fourth desk.
   NewDesk();
@@ -5174,7 +5174,7 @@ TEST_F(DesksRestoreMultiUserTest,
   user_1_prefs()->SetInteger(prefs::kDesksActiveDesk, user_1_active_desk_index);
   InitPrefsWithDesksRestoreData(user_1_prefs(),
                                 std::vector<std::string>{"0", "1", "2", "3"});
-  SwitchToUser(GetUser1AccountId());
+  SimulateUser1Login();
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
   ASSERT_EQ(4u, desks.size());
@@ -5184,7 +5184,7 @@ TEST_F(DesksRestoreMultiUserTest,
   EXPECT_EQ(desks[user_1_active_desk_index]->container_id(),
             desks_util::GetActiveDeskContainerId());
   int user_2_active_desk_index = 2;
-  SwitchActiveUser(GetUser2AccountId());
+  SimulateUser2Login();
   ActivateDesk(desks[user_2_active_desk_index].get());
   EXPECT_EQ(desks[user_2_active_desk_index]->container_id(),
             desks_util::GetActiveDeskContainerId());

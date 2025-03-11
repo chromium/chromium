@@ -663,7 +663,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage_Abort) {
   ASSERT_EQ(1UL, console_observer.messages().size());
   EXPECT_EQ(
       "<controlledframe>: "
-      "The load has aborted with error -301: ERR_DISALLOWED_URL_SCHEME.",
+      "The load has aborted with error -301: ERR_DISALLOWED_URL_SCHEME."
+      " url: chrome://flags/",
       console_observer.GetMessageAt(0));
 }
 

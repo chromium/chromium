@@ -94,19 +94,38 @@ struct LoadAdaptationParams {
   // Assets for an adaptation.
   AdaptationAssets assets;
 
-  // The maximum number of input+output tokens the adaptation model can handle.
-  // This is needed when initializing the model. Currently this is only
-  // supported by the APU backend.
-  // When set to 0, the original `max_tokens` set by the base model will be
-  // used.
+  // Deprecated: use SessionParams.max_tokens instead.
   uint32 max_tokens = 0;
 
-  // Whether this model will handle InputPieces containing images.
+  // Deprecated: use SessionParams.capabilities.image_input instead.
   [MinVersion=1]
   bool enable_image_input = false;
-  // Whether this model will handle InputPieces containing audio.
+  // Deprecated: use SessionParams.capabilities.audio_input instead.
   [MinVersion=2]
   bool enable_audio_input = false;
+};
+
+// A set of capabilities that a model can have.
+[Stable]
+struct Capabilities {
+  // Whether this model will handle InputPieces containing images.
+  bool image_input = false;
+
+  // Whether this model will handle InputPieces containing audio.
+  bool audio_input = false;
+};
+
+// Params to describe a new session.
+[Stable]
+struct SessionParams {
+  // The maximum number of input+output tokens the session can handle. This is
+  // needed when initializing the session. Currently this is only supported by
+  // the APU backend. When set to 0, the original `max_tokens` set by the base
+  // model will be used.
+  uint32 max_tokens = 0;
+
+  // The capabilities to enable for this session.
+  Capabilities capabilities;
 };
 
 // The set of tokens that can be added as part of an input.
@@ -225,7 +244,8 @@ interface OnDeviceModel {
   // of StreamingResponder & ContextClient will also be closed.
   // When the multiple sessions support is enabled, nothing will be
   // disconnected, and the further requests will be queued.
-  StartSession@0(pending_receiver<Session> session);
+  StartSession@0(pending_receiver<Session> session,
+      [MinVersion=1] SessionParams? params);
 
   // Infers multiclass safety scores for the given `text` using this model's
   // underlying safety classifier, if any. Returns null if classification fails

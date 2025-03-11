@@ -213,6 +213,8 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool DeleteExpiredRateLimits(sql::Database* db)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  const bool rate_limit_check_source_time_enabled_;
+
   raw_ref<const AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

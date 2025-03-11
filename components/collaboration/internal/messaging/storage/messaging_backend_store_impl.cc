@@ -44,6 +44,50 @@ bool IsMessageExpired(const collaboration_pb::Message& message,
   return message.event_timestamp() < expiration_time;
 }
 
+bool IsMemberAddRemoveMessage(const collaboration_pb::Message& message) {
+  return message.event_type() == collaboration_pb::COLLABORATION_MEMBER_ADDED ||
+         message.event_type() == collaboration_pb::COLLABORATION_MEMBER_REMOVED;
+}
+
+std::pair<std::optional<std::string>, std::optional<collaboration_pb::Message>>
+AddOrReplaceCollaborationMessage(
+    std::vector<collaboration_pb::Message>& collaboration_messages,
+    const collaboration_pb::Message& new_message) {
+  std::optional<std::string> message_id_to_remove;
+  std::optional<collaboration_pb::Message> message_to_update;
+
+  // Loop through the messages and find if there is a message for the same
+  // affected user. If yes, erase the older of the two message in favor of
+  // keeping the new one.
+  bool found_matching_message = false;
+  for (auto it = collaboration_messages.begin();
+       it != collaboration_messages.end(); it++) {
+    auto message = *it;
+    if (IsMemberAddRemoveMessage(message) &&
+        IsMemberAddRemoveMessage(new_message) &&
+        message.affected_user_gaia_id() ==
+            new_message.affected_user_gaia_id()) {
+      found_matching_message = true;
+      if (IsMessageMoreRecent(new_message, message)) {
+        message_id_to_remove = message.uuid();
+        message_to_update = new_message;
+        collaboration_messages.erase(it);
+        collaboration_messages.emplace_back(new_message);
+      }
+      break;
+    }
+  }
+
+  // If we didn't find a matching message for the same user, just add the
+  // message.
+  if (!found_matching_message) {
+    message_to_update = new_message;
+    collaboration_messages.emplace_back(new_message);
+  }
+
+  return std::make_pair<>(message_id_to_remove, message_to_update);
+}
+
 }  // namespace
 
 MessagesPerGroup::MessagesPerGroup() = default;
@@ -305,9 +349,10 @@ void MessagingBackendStoreImpl::AddMessage(
       }
     }
   } else if (category == MessageCategory::kCollaboration) {
-    // For collaboration messages, keep all the messages.
-    messages_per_group->collaboration_messages.push_back(message);
-    message_to_update = message;
+    // For collaboration messages, keep the latest per user.
+    std::tie(message_id_to_delete, message_to_update) =
+        AddOrReplaceCollaborationMessage(
+            messages_per_group->collaboration_messages, message);
   }
 
   if (message_id_to_delete) {

@@ -21,7 +21,8 @@ GlicWidget::~GlicWidget() = default;
 
 std::unique_ptr<GlicWidget> GlicWidget::Create(
     Profile* profile,
-    const gfx::Rect& initial_bounds) {
+    const gfx::Rect& initial_bounds,
+    base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -37,8 +38,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
 
   std::unique_ptr<GlicWidget> widget(new GlicWidget(std::move(params)));
 
-  widget->SetContentsView(
-      std::make_unique<GlicView>(profile, initial_bounds.size()));
+  widget->SetContentsView(std::make_unique<GlicView>(
+      profile, initial_bounds.size(), accelerator_delegate));
 
   // Mac fullscreen uses this identifier to find this widget and reparent it to
   // the overlay widget.

@@ -210,6 +210,27 @@ TEST_F(VectorMathPerfTest, FCLAMP_unoptimized) {
   RunClampingBenchmark(vector_math::FCLAMP_C, true, "_fclamp", "unoptimized");
 }
 
+// Benchmark FCLAMP_FUNC() with aligned size.
+TEST_F(VectorMathPerfTest, FCLAMP_optimized_aligned) {
+  ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
+            0U);
+#if defined(ARCH_CPU_X86_FAMILY)
+  RunClampingBenchmark(vector_math::FCLAMP_SSE, true, "_fclamp",
+                       "optimized_aligned");
+#endif
+}
+
+// Benchmark FCLAMP_FUNC() with unaligned size.
+TEST_F(VectorMathPerfTest, FCLAMP_optimized_unaligned) {
+  ASSERT_NE(
+      (kVectorSize - 1) % (vector_math::kRequiredAlignment / sizeof(float)),
+      0U);
+#if defined(ARCH_CPU_X86_FAMILY)
+  RunClampingBenchmark(vector_math::FCLAMP_SSE, false, "_fclamp",
+                       "optimized_unaligned");
+#endif
+}
+
 // Benchmarks for each optimized vector_math::EWMAAndMaxPower() method.
 // Benchmark EWMAAndMaxPower_C().
 TEST_F(VectorMathPerfTest, EWMAAndMaxPower_unoptimized) {

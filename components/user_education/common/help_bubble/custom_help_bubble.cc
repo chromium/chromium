@@ -20,12 +20,12 @@ void CustomHelpBubbleUi::NotifyUserAction(UserAction user_action) {
   user_action_callbacks_.Notify(user_action);
 }
 
-base::WeakPtr<CustomHelpBubbleUi> CustomHelpBubbleUi::AsWeakPtr() {
+base::WeakPtr<CustomHelpBubbleUi> CustomHelpBubbleUi::GetCustomUiAsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 CustomHelpBubble::CustomHelpBubble(CustomHelpBubbleUi& bubble)
-    : bubble_(bubble.AsWeakPtr()) {}
+    : bubble_(bubble.GetCustomUiAsWeakPtr()) {}
 CustomHelpBubble::~CustomHelpBubble() = default;
 
 }  // namespace user_education

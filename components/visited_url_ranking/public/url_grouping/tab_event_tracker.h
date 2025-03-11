@@ -10,7 +10,8 @@ namespace visited_url_ranking {
 
 class TabEventTracker {
  public:
-  virtual ~TabEventTracker() = 0;
+  TabEventTracker() = default;
+  virtual ~TabEventTracker() = default;
 
   TabEventTracker(const TabEventTracker&) = delete;
   TabEventTracker& operator=(const TabEventTracker&) = delete;

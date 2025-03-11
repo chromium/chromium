@@ -43,7 +43,10 @@ source_set("util") {
     "//components/version_info",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//net",
+  ]
 
   if (is_chromeos) {
     deps += [

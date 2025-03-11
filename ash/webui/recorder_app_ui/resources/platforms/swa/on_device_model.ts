@@ -76,7 +76,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
   async execute(content: string, language: LanguageCode):
     Promise<ModelResponse<T>> {
     const session = new SessionRemote();
-    this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
+    this.remote.startSession(session.$.bindNewPipeAndPassReceiver(), null);
     const result =
       await this.executeInRemoteSession(content, language, session);
     session.$.close();

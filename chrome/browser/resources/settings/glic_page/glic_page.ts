@@ -86,6 +86,8 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     };
   }
 
+  private shortcutInput_: string;
+  private removedShortcut_: string|null = null;
   private registeredShortcut_: string;
   private fakePref_: chrome.settingsPrivate.PrefObject;
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
@@ -137,16 +139,37 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   }
 
   private async onShortcutUpdated_(event: CustomEvent<string>) {
-    await this.browserProxy_.setGlicShortcut(event.detail);
+    this.shortcutInput_ = event.detail;
+    await this.browserProxy_.setGlicShortcut(this.shortcutInput_);
+    if (this.removedShortcut_ === null) {
+      this.removedShortcut_ = this.registeredShortcut_;
+    }
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     // Records true if the shortcut string is not undefined or the empty string.
     this.metricsBrowserProxy_.recordBooleanHistogram(
-        'Glic.OsEntrypoint.Settings.Shortcut', !!event.detail);
+        'Glic.OsEntrypoint.Settings.Shortcut', !!this.shortcutInput_);
     this.hideHelpBubble(OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID);
   }
 
+  // Records whether the shortcut enablement state transitioned from disabled to
+  // enabled or vice versa.
+  private recordShortcutEnablement() {
+    if (!!this.shortcutInput_ && !this.removedShortcut_) {
+      this.metricsBrowserProxy_.recordAction(
+          'GlicOsEntrypoint.Settings.ShortcutEnabled');
+    } else if (!this.shortcutInput_ && this.removedShortcut_) {
+      this.metricsBrowserProxy_.recordAction(
+          'GlicOsEntrypoint.Settings.ShortcutDisabled');
+    }
+  }
+
   private onInputCaptureChange_(event: CustomEvent<boolean>) {
-    this.browserProxy_.setShortcutSuspensionState(event.detail);
+    const capturing = event.detail;
+    this.browserProxy_.setShortcutSuspensionState(capturing);
+    if (!capturing) {
+      this.recordShortcutEnablement();
+      this.removedShortcut_ = null;
+    }
   }
 
   private shouldShowKeyboardShortcut_(launcherEnabled: boolean): boolean {

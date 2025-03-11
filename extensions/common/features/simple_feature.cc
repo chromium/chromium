@@ -658,6 +658,15 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
     if (name() == "debugger" && !debugger_api_restricted) {
       return CreateAvailability(IS_AVAILABLE);
     }
+
+    if (name().starts_with("userScripts") &&
+        // TODO(crbug.com/390138269): Remove dev mode restriction from
+        // userScripts API when feature is enabled.
+        base::FeatureList::IsEnabled(
+            extensions_features::kUserScriptUserExtensionToggle)) {
+      return CreateAvailability(IS_AVAILABLE);
+    }
+
     return CreateAvailability(REQUIRES_DEVELOPER_MODE);
   }
 

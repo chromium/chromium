@@ -1385,6 +1385,54 @@ suite('EnableRelatedWebsiteSets', function() {
             clearLabel.innerText.trim());
       });
 
+  test('verify RWS delete all data dialog', function() {
+    TEST_SITE_GROUPS.forEach(siteGroup => {
+      testElement.siteGroupMap.set(
+          siteGroup.groupingKey, structuredClone(siteGroup));
+    });
+    testElement.forceListUpdateForTesting();
+    testElement.filter = 'related:foo.com';
+    flush();
+
+    const clearAllButton =
+        testElement.$.clearAllButton.querySelector('cr-button')!;
+    const confirmClearAllData = testElement.$.confirmClearAllData.get();
+    clearAllButton.click();
+    assertTrue(confirmClearAllData.open, 'open dialog');
+
+    for (const appInstalled of [true, false]) {
+      testElement.siteGroupMap.get(groupingKey('foo.com'))!.hasInstalledPWA =
+          appInstalled;
+      testElement.forceListUpdateForTesting();
+      flush();
+
+      const confirmationTitle =
+          confirmClearAllData.querySelector<HTMLElement>(
+                                 '[slot=title]')!.innerText.trim();
+      const confirmationDescription =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogDescription')!.innerText.trim();
+      const confirmationSignOutLabel =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogSignOutLabel')!.innerText.trim();
+
+      assertEquals(
+          loadTimeData.getString('siteSettingsDeleteAllStorageDialogTitle'),
+          confirmationTitle);
+      const messageId = appInstalled ?
+          'siteSettingsDeleteRwsStorageConfirmationInstalled' :
+          'siteSettingsDeleteRwsStorageConfirmation';
+      assertEquals(
+          loadTimeData.getStringF(messageId, '0 B', 'foo.com'),
+          confirmationDescription);
+      assertEquals(
+          loadTimeData.getString('siteSettingsClearRwsStorageSignOut'),
+          confirmationSignOutLabel);
+    }
+  });
+
   // TODO(crbug.com/396463421): Remove once RelatedWebsiteSetsUi launched.
   test(
       'site entry RWS label updated on site deletion when RWS UI V2 disabled',

@@ -103,17 +103,30 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   // dimension, we won't have to store the values separately.
   void SetPercentageResolutionSize(LogicalSize percentage_resolution_size);
 
-  // Set percentage resolution size for replaced content (a special quirk inside
-  // tables). Only honored if the writing modes (container vs. child) are
-  // parallel. In orthogonal writing modes, we'll use whatever regular
-  // percentage resolution size is already set. Prior to calling this method,
-  // SetAvailableSize() must have been called, since we'll compare the input
-  // against the available size set, because if they are equal in either
-  // dimension, we won't have to store the values separately. Additionally,
-  // SetPercentageResolutionSize() must have been called, since we'll override
-  // with that value on orthogonal writing mode roots.
-  void SetReplacedPercentageResolutionSize(
-      LogicalSize replaced_percentage_resolution_size);
+  // Sets the percentage resolution size for a replaced child.
+  // Replaced children within a table-cell have *slightly* different rules for
+  // percentage resolution. This should only be used for passing this
+  // information to inline-layout.
+  void SetReplacedChildPercentageResolutionSize(
+      LogicalSize replaced_child_percentage_resolution_size) {
+#if DCHECK_IS_ON()
+    DCHECK(is_available_size_set_);
+    DCHECK(is_percentage_resolution_size_set_);
+    DCHECK(is_in_parallel_flow_);
+#endif
+
+    // We don't store the replaced percentage resolution inline size, so we
+    // need it to be the same as the regular percentage resolution inline size.
+    DCHECK_EQ(replaced_child_percentage_resolution_size.inline_size,
+              space_.PercentageResolutionInlineSize());
+    DCHECK(replaced_child_percentage_resolution_size.block_size !=
+           kIndefiniteSize);
+    DCHECK(replaced_child_percentage_resolution_size.block_size !=
+           space_.PercentageResolutionBlockSize());
+
+    space_.EnsureRareData()->replaced_child_percentage_resolution_block_size =
+        replaced_child_percentage_resolution_size.block_size;
+  }
 
   // Set the fallback available inline-size for an orthogonal child. The size is
   // the inline size in the writing mode of the orthogonal child.
@@ -684,8 +697,8 @@ class CORE_EXPORT MinMaxConstraintSpaceBuilder final {
     delegate_.SetPercentageResolutionSize({kIndefiniteSize, block_size});
   }
 
-  void SetReplacedPercentageResolutionBlockSize(LayoutUnit block_size) {
-    delegate_.SetReplacedPercentageResolutionSize(
+  void SetReplacedChildPercentageResolutionBlockSize(LayoutUnit block_size) {
+    delegate_.SetReplacedChildPercentageResolutionSize(
         {kIndefiniteSize, block_size});
   }
 

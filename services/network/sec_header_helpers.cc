@@ -68,20 +68,14 @@ OriginRelationHeaderValue GetRelationOfURLToOrigin(
     const url::Origin& related_origin) {
   url::Origin target_origin = url::Origin::Create(target_url);
 
-  if (target_origin == related_origin) {
-    return OriginRelationHeaderValue::kSameOrigin;
+  if (!net::SchemefulSite::IsSameSite(url::Origin::Create(target_url),
+                                      related_origin)) {
+    return OriginRelationHeaderValue::kCrossSite;
   }
 
-  // Cross-scheme origin should be considered cross-site (even if it's host
-  // is same-site with the target).  See also https://crbug.com/979257.
-  if (related_origin.scheme() == target_origin.scheme() &&
-      net::registry_controlled_domains::SameDomainOrHost(
-          related_origin, target_origin,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    return OriginRelationHeaderValue::kSameSite;
-  }
-
-  return OriginRelationHeaderValue::kCrossSite;
+  return target_origin == related_origin
+             ? OriginRelationHeaderValue::kSameOrigin
+             : OriginRelationHeaderValue::kSameSite;
 }
 
 OriginRelationHeaderValue GetHeaderValueForRequest(

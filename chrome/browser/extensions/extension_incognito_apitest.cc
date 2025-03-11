@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/common/url_constants.h"
@@ -14,10 +15,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -30,16 +28,10 @@ using extensions::ResultCatcher;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_ANDROID)
-using IncognitoApiTestBase = ExtensionPlatformApiTest;
-#else
-using IncognitoApiTestBase = ExtensionApiTest;
-#endif
-
-class IncognitoApiTest : public IncognitoApiTestBase {
+class IncognitoApiTest : public ExtensionPlatformApiTest {
  public:
   void SetUpOnMainThread() override {
-    IncognitoApiTestBase::SetUpOnMainThread();
+    ExtensionPlatformApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }

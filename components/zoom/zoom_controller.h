@@ -43,7 +43,9 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
   friend class base::RefCounted<ZoomRequestClient>;
 };
 
-// Per-tab class to manage zoom changes and the Omnibox zoom icon. Lives on the
+// ZoomController manages zoom changes and the Omnibox zoom icon. It can be
+// created for main frames and subframes. Creating for subframes allows those
+// frames to have zoom behavior independent from the main frame's. Lives on the
 // UI thread.
 class ZoomController : public content::WebContentsObserver {
  public:
@@ -111,8 +113,6 @@ class ZoomController : public content::WebContentsObserver {
 
   // Use to create a ZoomController for a subframe in `web_contents`. The
   // specified `rfh_id` must be for a local-root RenderFrameHost.
-  // TODO(https://crbug.com/376084060); Implement this for the case where
-  // `rfh_id` isn't for the primary mainframe.
   static ZoomController* CreateForWebContentsAndRenderFrameHost(
       content::WebContents* web_contents,
       content::GlobalRenderFrameHostId rfh_id);

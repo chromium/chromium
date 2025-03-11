@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {findDocumentIdWithHostname, findFrameIdWithHostname, getFramesInTab, getInjectedElementIds, getInjectedElementIdsInOrder, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -49,6 +50,8 @@ const worldIdScript = `
 
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Tests that an error is returned if the user script source list is empty.
   async function invalidScriptSource_EmptySourceList() {
     await chrome.userScripts.unregister();
