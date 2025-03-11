@@ -546,6 +546,8 @@ static_library("browser") {
     "payments/wait_for_signal_or_timeout.cc",
     "payments/wait_for_signal_or_timeout.h",
     "payments/webauthn_callback_types.h",
+    "permissions/autofill_ai/autofill_ai_permission_utils.cc",
+    "permissions/autofill_ai/autofill_ai_permission_utils.h",
     "single_field_fillers/autocomplete/autocomplete_history_manager.cc",
     "single_field_fillers/autocomplete/autocomplete_history_manager.h",
     "single_field_fillers/payments/merchant_promo_code_manager.cc",
@@ -1483,6 +1485,11 @@ source_set("unit_tests") {
       "ml_model/field_classification_model_executor_unittest.cc",
       "ml_model/field_classification_model_handler_unittest.cc",
     ]
+  }
+
+  if (!is_ios && !is_android && !is_fuchsia) {
+    sources +=
+        [ "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc" ]
   }
 
   if (build_with_model_execution) {

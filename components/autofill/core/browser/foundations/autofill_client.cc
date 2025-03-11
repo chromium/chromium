@@ -51,6 +51,10 @@ bool AutofillClient::IsOffTheRecord() const {
   return false;
 }
 
+const EntityDataManager* AutofillClient::GetEntityDataManager() const {
+  return const_cast<AutofillClient*>(this)->GetEntityDataManager();
+}
+
 const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }

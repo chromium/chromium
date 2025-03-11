@@ -259,6 +259,7 @@ class AutofillClient {
   // Gets the EntityDataManager instance associated with the client, if there is
   // one.
   virtual EntityDataManager* GetEntityDataManager() = 0;
+  const EntityDataManager* GetEntityDataManager() const;
 
   // Gets the AutofillOptimizationGuide instance associated with the client.
   // This function can return nullptr if we are on an unsupported platform, or
