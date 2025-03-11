@@ -2507,7 +2507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OidcEnrollment.Interception.Funnel"
-    enum="OidcInterceptionFunnelStep" expires_after="2025-03-20">
+    enum="OidcInterceptionFunnelStep" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2517,7 +2517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OidcEnrollment.Interception.Result"
-    enum="OidcInterceptionResult" expires_after="2025-03-20">
+    enum="OidcInterceptionResult" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2552,7 +2552,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.{IdentityType}.PolicyFetchLatency.{Result}"
-    units="ms" expires_after="2025-03-20">
+    units="ms" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
