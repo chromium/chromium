@@ -21,47 +21,46 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     wtf_size_t start_offset;
     const GridLineResolver line_resolver(algorithm.Style(),
                                          /*auto_repetitions=*/0);
-    virtual_masonry_items_ =
-        algorithm.BuildVirtualMasonryItems(line_resolver, &start_offset);
 
-    grid_axis_tracks_ = std::make_unique<GridSizingTrackCollection>(
-        algorithm.BuildGridAxisTracks(line_resolver, SizingConstraint::kLayout,
-                                      &start_offset));
+    grid_axis_tracks_ = algorithm.BuildGridAxisTracks(
+        line_resolver, SizingConstraint::kLayout, &start_offset);
 
-    masonry_items_ =
-        algorithm.Node().ConstructMasonryItems(line_resolver, start_offset);
+    const auto grid_axis_direction = grid_axis_tracks_->Direction();
+    for (const auto& masonry_item :
+         *algorithm.BuildVirtualMasonryItems(line_resolver, &start_offset)) {
+      MasonryItemCachedData item_data;
+
+      item_data.resolved_span =
+          masonry_item.resolved_position.Span(grid_axis_direction);
+      if (masonry_item.contribution_sizes) {
+        item_data.contribution_sizes = *masonry_item.contribution_sizes;
+      }
+      virtual_items_data_.emplace_back(std::move(item_data));
+    }
   }
 
+  wtf_size_t VirtualItemCount() { return virtual_items_data_.size(); }
   const GridRangeVector& Ranges() { return grid_axis_tracks_->ranges_; }
-  wtf_size_t SetCount() { return grid_axis_tracks_->GetSetCount(); }
-  wtf_size_t VirtualItemCount() {
-    return virtual_masonry_items_ ? virtual_masonry_items_->Size() : 0;
-  }
-  wtf_size_t MasonryItemCount() {
-    return masonry_items_ ? masonry_items_->Size() : 0;
-  }
 
-  LayoutUnit TrackSize(wtf_size_t index) {
-    return grid_axis_tracks_->GetSetOffset(index + 1) -
-           grid_axis_tracks_->GetSetOffset(index);
+  Vector<LayoutUnit> TrackSizes() {
+    Vector<LayoutUnit> track_sizes;
+    for (wtf_size_t i = 0; i < grid_axis_tracks_->GetSetCount(); ++i) {
+      track_sizes.push_back(grid_axis_tracks_->GetSetOffset(i + 1) -
+                            grid_axis_tracks_->GetSetOffset(i));
+    }
+    return track_sizes;
   }
 
   LayoutUnit MaxContentContribution(wtf_size_t index) {
-    return ContributionSizes(index).max_size;
+    return VirtualItemData(index).contribution_sizes.max_size;
   }
 
   LayoutUnit MinContentContribution(wtf_size_t index) {
-    return ContributionSizes(index).min_size;
+    return VirtualItemData(index).contribution_sizes.min_size;
   }
 
   const GridSpan& VirtualItemSpan(wtf_size_t index) {
-    return virtual_masonry_items_->At(index).resolved_position.Span(
-        grid_axis_tracks_->Direction());
-  }
-
-  const GridSpan& MasonryItemSpan(wtf_size_t index) {
-    return masonry_items_->At(index).resolved_position.Span(
-        grid_axis_tracks_->Direction());
+    return VirtualItemData(index).resolved_span;
   }
 
   const Vector<LayoutUnit>& GetRunningPositions(
@@ -70,25 +69,24 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
  private:
-  const MinMaxSizes& ContributionSizes(wtf_size_t index) {
-    const auto& contribution_sizes =
-        virtual_masonry_items_->At(index).contribution_sizes;
+  struct MasonryItemCachedData {
+    MinMaxSizes contribution_sizes;
+    GridSpan resolved_span{GridSpan::IndefiniteGridSpan()};
+  };
 
-    DCHECK(contribution_sizes);
-    return *contribution_sizes;
+  const MasonryItemCachedData& VirtualItemData(wtf_size_t index) {
+    DCHECK_LT(index, virtual_items_data_.size());
+    return virtual_items_data_[index];
   }
 
-  std::unique_ptr<GridSizingTrackCollection> grid_axis_tracks_;
+  std::optional<GridSizingTrackCollection> grid_axis_tracks_;
 
   // Virtual items represent the contributions of item groups in track sizing
   // and are not directly related to any children of the container.
-  Persistent<GridItems> virtual_masonry_items_;
-
-  // Children of the container to be laid out are represented by masonry items.
-  Persistent<GridItems> masonry_items_;
+  Vector<MasonryItemCachedData> virtual_items_data_;
 };
 
-TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
+TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #masonry {
@@ -108,21 +106,11 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
     </div>
   )HTML");
 
-  BlockNode node(GetLayoutBoxByElementId("masonry"));
+  MasonryNode node(GetLayoutBoxByElementId("masonry"));
 
-  const auto space = ConstructBlockLayoutTestConstraintSpace(
-      {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
-      /*stretch_inline_size_if_auto=*/true,
-      /*is_new_formatting_context=*/true);
-
-  const auto fragment_geometry =
-      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
-
-  EXPECT_EQ(MasonryItemCount(), 0U);
-  ComputeGeometry(algorithm);
-  EXPECT_EQ(MasonryItemCount(), 8U);
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  const auto* masonry_items =
+      node.ConstructMasonryItems(line_resolver, /*start_offset=*/0);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
@@ -134,8 +122,12 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
       GridSpan::TranslatedDefiniteGridSpan(0, 2),
       GridSpan::TranslatedDefiniteGridSpan(2, 4)};
 
-  for (wtf_size_t i = 0; i < expected_spans.size(); ++i) {
-    EXPECT_EQ(MasonryItemSpan(i), expected_spans[i]);
+  EXPECT_EQ(masonry_items->Size(), expected_spans.size());
+
+  const auto grid_axis_direction = node.Style().MasonryTrackSizingDirection();
+  for (wtf_size_t i = 0; const auto& masonry_item : *masonry_items) {
+    EXPECT_EQ(masonry_item.resolved_position.Span(grid_axis_direction),
+              expected_spans[i++]);
   }
 }
 
@@ -211,13 +203,9 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
   MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
-  const Vector<int> expected_track_sizes = {5, 30, 45, 15, 5, 20};
-
-  const auto set_count = SetCount();
-  EXPECT_EQ(set_count, expected_track_sizes.size());
-  for (wtf_size_t i = 0; i < set_count; ++i) {
-    EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
-  }
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(5), LayoutUnit(30),
+                                              LayoutUnit(45), LayoutUnit(15),
+                                              LayoutUnit(5), LayoutUnit(20)}));
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
@@ -334,13 +322,8 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
   MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
-  const Vector<int> expected_track_sizes = {30, 170};
-
-  const auto set_count = SetCount();
-  EXPECT_EQ(set_count, expected_track_sizes.size());
-  for (wtf_size_t i = 0; i < set_count; ++i) {
-    EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
-  }
+  EXPECT_EQ(TrackSizes(),
+            Vector<LayoutUnit>({LayoutUnit(30), LayoutUnit(170)}));
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
@@ -379,13 +362,8 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
   // 15px that the first track already has, the second track expands to 45px.
   // Finally, the last track takes the remaining space after the first two
   // tracks are maximized, which is 100px - 30px - 45px = 25px.
-  const Vector<int> expected_track_sizes = {30, 45, 25};
-
-  const auto set_count = SetCount();
-  EXPECT_EQ(set_count, expected_track_sizes.size());
-  for (wtf_size_t i = 0; i < set_count; ++i) {
-    EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
-  }
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(30), LayoutUnit(45),
+                                              LayoutUnit(25)}));
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
