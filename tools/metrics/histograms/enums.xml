@@ -24136,13 +24136,6 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Files"/>
 </enum>
 
-<enum name="SharingDialogType">
-  <int value="0" label="Dialog with devices and maybe apps"/>
-  <int value="1" label="Dialog without devices but with an app"/>
-  <int value="2" label="Educational dialog without devices or apps"/>
-  <int value="3" label="Error dialog"/>
-</enum>
-
 <enum name="SharingHubBottomRowIndex">
   <summary>
     Index of a third party app in the bottom row of the sharing hub on Android.

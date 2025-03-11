@@ -3908,14 +3908,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Sharing.SendMessageResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SharingClickToCallUi" separator=".">
-  <suffix name="ContextMenu" label="Context menu"/>
-  <suffix name="Dialog" label="Dialog"/>
-  <affected-histogram name="Sharing.ClickToCallDevicesToShow"/>
-  <affected-histogram name="Sharing.ClickToCallSelectedAppIndex"/>
-  <affected-histogram name="Sharing.ClickToCallSelectedDeviceIndex"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SharingDevicePlatform" separator=".">
   <suffix name="Android" label="Android OS"/>
   <suffix name="ChromeOS" label="Chrome OS"/>
