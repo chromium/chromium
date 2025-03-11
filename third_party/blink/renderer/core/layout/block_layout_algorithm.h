@@ -247,6 +247,11 @@ class CORE_EXPORT BlockLayoutAlgorithm
            previous_inflow_position.margin_strut.Sum();
   }
 
+  LogicalSize PercentageSizeForChild(const LayoutInputNode& child) {
+    return child.IsReplaced() ? replaced_child_percentage_size_
+                              : child_percentage_size_;
+  }
+
   BoxStrut CalculateMargins(LayoutInputNode child,
                             bool is_new_fc,
                             LayoutUnit* additional_line_offset);

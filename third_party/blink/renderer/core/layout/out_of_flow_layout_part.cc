@@ -2379,8 +2379,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                    /* is_new_fc */ true);
     builder.SetAvailableSize(imcb.Size());
     builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
-    builder.SetReplacedPercentageResolutionSize(
-        space.PercentageResolutionSize());
 
     const bool is_parallel =
         IsParallelWritingMode(container_writing_direction.GetWritingMode(),

@@ -1713,9 +1713,9 @@ const LayoutResult* BlockNode::LayoutAtomicInline(
 
   builder.SetAvailableSize(parent_constraint_space.AvailableSize());
   builder.SetPercentageResolutionSize(
-      parent_constraint_space.PercentageResolutionSize());
-  builder.SetReplacedPercentageResolutionSize(
-      parent_constraint_space.ReplacedPercentageResolutionSize());
+      IsReplaced()
+          ? parent_constraint_space.ReplacedChildPercentageResolutionSize()
+          : parent_constraint_space.PercentageResolutionSize());
   ConstraintSpace constraint_space = builder.ToConstraintSpace();
   const LayoutResult* result = Layout(constraint_space);
   if (!DisableLayoutSideEffectsScope::IsDisabled()) {

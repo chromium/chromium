@@ -446,9 +446,15 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
     MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
                                          child_is_new_fc);
     builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
-    builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
-    builder.SetReplacedPercentageResolutionBlockSize(
-        replaced_child_percentage_size_.block_size);
+    builder.SetPercentageResolutionBlockSize(
+        PercentageSizeForChild(child).block_size);
+    // Pass the replaced %-size down to inline layout.
+    if ((child.IsAnonymous() || child.IsInline()) &&
+        replaced_child_percentage_size_.block_size !=
+            child_percentage_size_.block_size) {
+      builder.SetReplacedChildPercentageResolutionBlockSize(
+          replaced_child_percentage_size_.block_size);
+    }
     const auto space = builder.ToConstraintSpace();
 
     MinMaxSizesResult child_result;
@@ -1549,8 +1555,8 @@ void BlockLayoutAlgorithm::HandleFloat(
   }
 
   UnpositionedFloat unpositioned_float(
-      child, child_break_token, ChildAvailableSize(), child_percentage_size_,
-      replaced_child_percentage_size_, origin_bfc_offset, constraint_space,
+      child, child_break_token, ChildAvailableSize(),
+      PercentageSizeForChild(child), origin_bfc_offset, constraint_space,
       Style(), FragmentainerCapacityForChildren(),
       FragmentainerOffsetForChildren(), line_clamp_data_.ShouldHideForPaint());
 
@@ -3214,8 +3220,14 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   }
 
   builder.SetAvailableSize(child_available_size);
-  builder.SetPercentageResolutionSize(child_percentage_size_);
-  builder.SetReplacedPercentageResolutionSize(replaced_child_percentage_size_);
+  builder.SetPercentageResolutionSize(PercentageSizeForChild(child));
+
+  // Pass the replaced %-size down to inline layout.
+  if ((child.IsAnonymous() || child.IsInline()) &&
+      replaced_child_percentage_size_ != child_percentage_size_) {
+    builder.SetReplacedChildPercentageResolutionSize(
+        replaced_child_percentage_size_);
+  }
 
   if (constraint_space.IsTableCell()) {
     builder.SetIsTableCellChild(true);
