@@ -67,9 +67,8 @@ class MODULES_EXPORT CaptureController final
   // https://screen-share.github.io/mouse-events/#capture-controller-extensions
   DEFINE_ATTRIBUTE_EVENT_LISTENER(capturedmousechange, kCapturedmousechange)
 
-  // TODO(crbug.com/1466247): Link to spec.
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(capturedzoomlevelchange,
-                                  kCapturedzoomlevelchange)
+  // https://w3c.github.io/mediacapture-surface-control/#dom-capturecontroller-onzoomlevelchange
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(zoomlevelchange, kZoomlevelchange)
 
   // Close the window of opportunity to make the focus decision.
   // Further calls to setFocusBehavior() will raise an exception.

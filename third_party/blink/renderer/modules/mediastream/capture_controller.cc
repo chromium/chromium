@@ -558,7 +558,7 @@ void CaptureController::SourceChangedZoomLevel(int zoom_level) {
     return;
   }
 
-  DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
+  DispatchEvent(*Event::Create(event_type_names::kZoomlevelchange));
 }
 
 void CaptureController::OnCaptureWheelPermissionResult(

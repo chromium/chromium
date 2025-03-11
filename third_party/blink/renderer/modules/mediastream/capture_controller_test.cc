@@ -394,7 +394,7 @@ TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest, NoEventOnInit) {
   StrictMock<MockEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockEventListener>>();
   EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
-  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+  controller->addEventListener(event_type_names::kZoomlevelchange,
                                event_listener);
 
   controller->SetIsBound(true);
@@ -409,7 +409,7 @@ TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
       MakeController(v8_scope.GetExecutionContext());
   StrictMock<MockEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockEventListener>>();
-  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+  controller->addEventListener(event_type_names::kZoomlevelchange,
                                event_listener);
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
@@ -427,7 +427,7 @@ TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
       MakeController(v8_scope.GetExecutionContext());
   StrictMock<MockEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockEventListener>>();
-  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+  controller->addEventListener(event_type_names::kZoomlevelchange,
                                event_listener);
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
@@ -445,7 +445,7 @@ TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
       MakeController(v8_scope.GetExecutionContext());
   StrictMock<MockEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockEventListener>>();
-  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+  controller->addEventListener(event_type_names::kZoomlevelchange,
                                event_listener);
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
@@ -467,7 +467,7 @@ TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
       MakeController(v8_scope.GetExecutionContext());
   StrictMock<MockEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockEventListener>>();
-  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+  controller->addEventListener(event_type_names::kZoomlevelchange,
                                event_listener);
   controller->SetIsBound(true);
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);

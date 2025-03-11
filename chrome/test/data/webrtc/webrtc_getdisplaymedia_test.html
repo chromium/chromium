@@ -49,7 +49,7 @@
     }
 
     controller = new CaptureController;
-    controller.oncapturedzoomlevelchange = (() => ++zoom_level_event_count);
+    controller.onzoomlevelchange = (() => ++zoom_level_event_count);
     return navigator.mediaDevices.getDisplayMedia({...constraints, controller}).
       then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
                                               : handleError);

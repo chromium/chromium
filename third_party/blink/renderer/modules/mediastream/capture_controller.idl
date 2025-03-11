@@ -83,5 +83,5 @@ interface CaptureController : EventTarget {
     RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl
   ]
-  attribute EventHandler oncapturedzoomlevelchange;
+  attribute EventHandler onzoomlevelchange;
 };
