@@ -24633,7 +24633,7 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   {
     base::HistogramTester histogram_tester;
     auto result = RunAuctionAndWait(auction_config);
-    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                         AuctionResult::kNoBids, 1);
     histogram_tester.ExpectUniqueSample(
         "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
@@ -24664,7 +24664,7 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   {
     base::HistogramTester histogram_tester;
     auto result = RunAuctionAndWait(auction_config);
-    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                         AuctionResult::kNoBids, 1);
     histogram_tester.ExpectUniqueSample(
         "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
@@ -26994,7 +26994,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   // We have no interest groups & nothing cached at this point.
   base::HistogramTester histogram_tester;
   auto result1 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                       AuctionResult::kNoInterestGroups, 1);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 0, 1);
@@ -27029,7 +27029,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
   EXPECT_EQ(cached_signals_origin, signals_origin);
 
   auto result2 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result2",
                                       AuctionResult::kNoInterestGroups, 2);
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 1, 1);
@@ -27049,8 +27049,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
                           interest_group.owner, "interest_group"}});
 
   auto result3 = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 3);
-  histogram_tester.ExpectBucketCount("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result2", 3);
+  histogram_tester.ExpectBucketCount("Ads.InterestGroup.Auction.Result2",
                                      AuctionResult::kNoInterestGroups, 2);
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect", 1, 2);

@@ -2426,13 +2426,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ads.InterestGroup.{AuctionType}.Result" enum="AuctionResult"
-    expires_after="2025-09-07">
+<histogram name="Ads.InterestGroup.{AuctionType}.Result{Version}"
+    enum="AuctionResult" expires_after="2025-09-07">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The final result type of running a {AuctionType} auction. Recorded on
-    auction completion/cancellation.
+    auction completion/cancellation. {Version}
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -2442,6 +2442,16 @@ chromium-metrics-reviews@google.com.
     <variant name="ServerAuction" summary="Bidding and Auction Services">
       <owner>behamilton@google.com</owner>
       <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+  <token key="Version">
+    <variant name=""
+        summary="Warning: Ads.InterestGroup.{AuctionType}.Result is
+                 deprecated and will be removed. Use
+                 Ads.InterestGroup.{AuctionType}.Result2 instead."/>
+    <variant name="2" summary="">
+      <owner>abigailkatcoff@google.com</owner>
       <owner>privacy-sandbox-dev@chromium.org</owner>
     </variant>
   </token>

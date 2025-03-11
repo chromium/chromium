@@ -12931,7 +12931,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 1);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
                         0);
-  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result2",
                           AuctionResult::kSuccess, 1);
   hist.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon", true, 1);
@@ -12948,7 +12948,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   // There should be no on-device metrics
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTimeNoWinner", 0);
-  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result2", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.ReportDelay", 0);
@@ -13110,7 +13110,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
                         1);
-  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result2",
                           AuctionResult::kNoBids, 1);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon",
                         0);
@@ -13120,7 +13120,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
   // There should be no on-device metrics
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTimeNoWinner", 0);
-  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result2", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
 }
@@ -13200,7 +13200,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
                         1);
-  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result2",
                           AuctionResult::kNoBids, 1);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon",
                         0);
@@ -13210,7 +13210,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
   // There should be no on-device metrics
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTimeNoWinner", 0);
-  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result2", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
 }
@@ -13291,7 +13291,7 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
                         0);
-  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result2",
                           AuctionResult::kInvalidServerResponse, 1);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon",
                         0);
@@ -13377,7 +13377,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
                         0);
-  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result2",
                           AuctionResult::kInvalidServerResponse, 1);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon",
                         0);

@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(AdjustableAuction, RunAdjustableAuction) {
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.Auction.NumInterestGroups",
       kInterestGroupsPerOwner * kOwners * kSellers, kAuctions);
-  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result",
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result2",
                                     kAuctions);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.Auction.AuctionWithWinnerTime", kAuctions);

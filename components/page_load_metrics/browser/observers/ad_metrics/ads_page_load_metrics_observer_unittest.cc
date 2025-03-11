@@ -3285,7 +3285,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
        FirstContentfulPaintPostAbortedOnDeviceAuction_NotRecorded) {
   SimulateFCPPostAuctions({CompleteAuctionResult(
       /*is_server_auction=*/false,
-      /*is_on_device_auction=*/true, content::AuctionResult::kAborted)});
+      /*is_on_device_auction=*/true, content::AuctionResult::kAbortSignal)});
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram(
