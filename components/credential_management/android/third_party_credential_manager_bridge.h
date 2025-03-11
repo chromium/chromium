@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_THIRD_PARTY_CREDENTIAL_MANAGER_BRIDGE_H_
-#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_THIRD_PARTY_CREDENTIAL_MANAGER_BRIDGE_H_
+#ifndef COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_THIRD_PARTY_CREDENTIAL_MANAGER_BRIDGE_H_
+#define COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_THIRD_PARTY_CREDENTIAL_MANAGER_BRIDGE_H_
 
 #include <jni.h>
 
@@ -12,7 +12,7 @@
 #include "base/types/pass_key.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 
-namespace android_autofill {
+namespace credential_management {
 using GetCallback = base::OnceCallback<void(
     password_manager::CredentialManagerError,
     const std::optional<password_manager::CredentialInfo>&)>;
@@ -62,6 +62,6 @@ class ThirdPartyCredentialManagerBridge {
   std::unique_ptr<JniDelegate> jni_delegate_;
 };
 
-}  // namespace android_autofill
+}  // namespace credential_management
 
-#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_THIRD_PARTY_CREDENTIAL_MANAGER_BRIDGE_H_
+#endif  // COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_THIRD_PARTY_CREDENTIAL_MANAGER_BRIDGE_H_

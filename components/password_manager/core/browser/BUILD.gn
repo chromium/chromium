@@ -26,7 +26,6 @@ static_library("browser") {
     "browser_save_password_progress_logger.h",
     "credential_cache.cc",
     "credential_cache.h",
-    "credential_manager_factory_interface.h",
     "credential_manager_impl.cc",
     "credential_manager_impl.h",
     "credential_manager_logger.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/third_party_credential_manager_bridge.h"
+#include "components/credential_management/android/third_party_credential_manager_bridge.h"
 
 #include <jni.h>
 
@@ -15,9 +15,9 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/android_autofill/browser/credential_manager_jni_headers/ThirdPartyCredentialManagerBridge_jni.h"
+#include "components/credential_management/android/jni_headers/ThirdPartyCredentialManagerBridge_jni.h"
 
-namespace android_autofill {
+namespace credential_management {
 
 using base::android::ConvertJavaStringToUTF8;
 using JniDelegate = ThirdPartyCredentialManagerBridge::JniDelegate;
@@ -96,4 +96,4 @@ void ThirdPartyCredentialManagerBridge::OnGetPasswordCredentialError(
                      std::nullopt));
 }
 
-}  // namespace android_autofill
+}  // namespace credential_management

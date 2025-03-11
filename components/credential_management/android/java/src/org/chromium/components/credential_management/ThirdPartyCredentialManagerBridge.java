@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.autofill;
+package org.chromium.components.credential_management;
 
 import android.content.Context;
 
@@ -24,7 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 
 /** A bridge for interacting with Credential Manager. */
-@JNINamespace("android_autofill")
+@JNINamespace("credential_management")
 class ThirdPartyCredentialManagerBridge {
     private final long mReceiverBridge;
     private static CredentialManager sCredentialManagerForTesting;

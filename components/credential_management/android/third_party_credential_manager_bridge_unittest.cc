@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/third_party_credential_manager_bridge.h"
+#include "components/credential_management/android/third_party_credential_manager_bridge.h"
 
 #include <jni.h>
 
@@ -18,7 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace android_autofill {
+namespace credential_management {
 using GetCallback = base::OnceCallback<void(
     password_manager::CredentialManagerError,
     const std::optional<password_manager::CredentialInfo>&)>;
@@ -123,4 +123,4 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, testUnuccessfulGetCall) {
   run_loop.Run();
 }
 
-}  // namespace android_autofill
+}  // namespace credential_management

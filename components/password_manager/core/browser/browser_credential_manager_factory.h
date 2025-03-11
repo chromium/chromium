@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BROWSER_CREDENTIAL_MANAGER_FACTORY_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/credential_manager_factory_interface.h"
+#include "components/credential_management/credential_manager_factory_interface.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 
 namespace password_manager {
@@ -16,7 +16,7 @@ class PasswordManagerClient;
 // used by `ContentCredentialManager` to implement Credential Management API
 // methods. This factory is browser-specific and doesn't exist on WebView.
 class BrowserCredentialManagerFactory
-    : public CredentialManagerFactoryInterface {
+    : public credential_management::CredentialManagerFactoryInterface {
  public:
   explicit BrowserCredentialManagerFactory(PasswordManagerClient* client);
   BrowserCredentialManagerFactory(const BrowserCredentialManagerFactory&) =
