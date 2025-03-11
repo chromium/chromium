@@ -56,6 +56,16 @@ ResourcePool::Backing::~Backing() {
   shared_image_.reset();
 }
 
+void ResourcePool::Backing::CreateSharedImage(
+    gpu::SharedImageInterface* sii,
+    const gpu::SharedImageUsageSet& usage,
+    std::string_view debug_label) {
+  set_shared_image(sii->CreateSharedImage(
+      {format(), size(), color_space(), usage, debug_label},
+      gpu::kNullSurfaceHandle));
+  CHECK(shared_image());
+}
+
 void ResourcePool::InUsePoolResource::InstallGpuBacking(
     gpu::SharedImageInterface* sii,
     bool is_overlay_candidate,
