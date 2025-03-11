@@ -34,14 +34,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <variant name="BelowTwo" summary="rating value within [0 - 2)"/>
 </variants>
 
-<variants name="ParcelRequestTypes">
-  <variant name="GetParcelStatus" summary="get status of parcels."/>
-  <variant name="StartTrackingParcels" summary="start tracking parcels."/>
-  <variant name="StopTrackingAllParcels" summary="stop tracking all parcels."/>
-  <variant name="StopTrackingParcels" summary="stop tracking parcels."/>
-  <variant name="Unknown" summary="unknown."/>
-</variants>
-
 <variants name="TabUsageStatuses">
   <variant name="ActiveTab"
       summary="Tabs between 0 and 1 day since last usage."/>
@@ -405,20 +397,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     server responses. This histogram is emitted after all server responses are
     received and ready to compute which page action to expand.
   </summary>
-</histogram>
-
-<histogram name="Commerce.ParcelTracking.{ParcelRequestTypes}.RequestStatus"
-    enum="ParcelRequestStatus" expires_after="2025-07-06">
-  <owner>ayman@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the HTTP request status for various calls sent to the parcels
-    server. This histogram is emitted when the sender failed to create the
-    network request, or when the server response is received and parsed, right
-    before calling back the requester.
-  </summary>
-  <token key="ParcelRequestTypes" variants="ParcelRequestTypes"/>
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.URLSize" units="bytes"

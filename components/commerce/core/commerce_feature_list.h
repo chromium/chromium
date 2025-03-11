@@ -102,10 +102,6 @@ BASE_DECLARE_FEATURE(kDiscountConsentV2);
 // Feature flag for Code-based RBD.
 BASE_DECLARE_FEATURE(kCodeBasedRBD);
 
-// Feature flag for parcel tracking.
-BASE_DECLARE_FEATURE(kParcelTracking);
-BASE_DECLARE_FEATURE(kParcelTrackingRegionLaunched);
-
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>
     kShoppingListBookmarkpdateIntervalParam(
