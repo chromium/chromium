@@ -150,9 +150,6 @@ void ComputePropertyTreeNodeUpdate(
       old_node->target_id == new_node.target_id &&
       old_node->backdrop_mask_element_id == new_node.backdrop_mask_element_id &&
       old_node->has_copy_request == new_node.has_copy_request &&
-      old_node->subtree_has_copy_request == new_node.subtree_has_copy_request &&
-      old_node->closest_ancestor_with_copy_request_id ==
-          new_node.closest_ancestor_with_copy_request_id &&
       old_node->backdrop_filters == new_node.backdrop_filters &&
       copy_requests.empty()) {
     return;
@@ -172,9 +169,6 @@ void ComputePropertyTreeNodeUpdate(
   wire->target_id = new_node.target_id;
   wire->backdrop_mask_element_id = new_node.backdrop_mask_element_id;
   wire->copy_output_requests = std::move(copy_requests);
-  wire->subtree_has_copy_request = new_node.subtree_has_copy_request;
-  wire->closest_ancestor_with_copy_request_id =
-      new_node.closest_ancestor_with_copy_request_id;
   wire->backdrop_filters = new_node.backdrop_filters;
   container.push_back(std::move(wire));
 }
