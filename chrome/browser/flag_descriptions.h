@@ -1095,6 +1095,9 @@ extern const char kFedCmAuthzDescription[];
 extern const char kFedCmButtonModeName[];
 extern const char kFedCmButtonModeDescription[];
 
+extern const char kFedCmCooldownOnIgnoreName[];
+extern const char kFedCmCooldownOnIgnoreDescription[];
+
 extern const char kFedCmDelegationName[];
 extern const char kFedCmDelegationDescription[];
 
@@ -1109,6 +1112,9 @@ extern const char kFedCmMetricsEndpointDescription[];
 
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
+
+extern const char kFedCmQuietUiName[];
+extern const char kFedCmQuietUiDescription[];
 
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];

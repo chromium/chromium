@@ -1917,6 +1917,11 @@ const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "
     "the button flow.";
 
+const char kFedCmCooldownOnIgnoreName[] = "kFedCmCooldownOnIgnore";
+const char kFedCmCooldownOnIgnoreDescription[] =
+    "Enables cooldown of the FedCM API in passive mode whenever the dialog is "
+    "ignored by the user.";
+
 const char kFedCmDelegationName[] = "FedCM with delegation support";
 const char kFedCmDelegationDescription[] =
     "Enables IdPs to delegate presentation to the browser.";
