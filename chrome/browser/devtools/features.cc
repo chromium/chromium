@@ -138,11 +138,6 @@ BASE_FEATURE(kDevToolsAutomaticFileSystems,
              "DevToolsAutomaticFileSystems",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether the new DevTools "Workspaces" features are enabled.
-BASE_FEATURE(kDevToolsImprovedWorkspaces,
-             "DevToolsImprovedWorkspaces",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether DevTools will attempt to load project settings from a well-known
 // URI. See https://goo.gle/devtools-json-design for additional details.
 BASE_FEATURE(kDevToolsWellKnown,

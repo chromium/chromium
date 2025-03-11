@@ -1666,9 +1666,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsConsoleInsights",
                     std::move(console_insights_dict));
 
-  bool devToolsImprovedWorkspacedEnabled =
-      base::FeatureList::IsEnabled(::features::kDevToolsImprovedWorkspaces);
-
   if (base::FeatureList::IsEnabled(::features::kDevToolsFreestyler)) {
     base::Value::Dict freestyler_dict;
     freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
@@ -1689,12 +1686,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     freestyler_dict.Set("functionCalling",
                         features::kDevToolsFreestylerFunctionCalling.Get());
     response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));
-
-    if (features::kDevToolsFreestylerPatching.Get()) {
-      // Patching requires kDevToolsImprovedWorkspaces for functioning
-      // correctly.
-      devToolsImprovedWorkspacedEnabled = true;
-    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1764,12 +1755,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       base::FeatureList::IsEnabled(::features::kDevToolsAutomaticFileSystems));
   response_dict.Set("devToolsAutomaticFileSystems",
                     std::move(devtools_automatic_file_systems_dict));
-
-  base::Value::Dict devtools_improved_workspaces_dict;
-  devtools_improved_workspaces_dict.Set("enabled",
-                                        devToolsImprovedWorkspacedEnabled);
-  response_dict.Set("devToolsImprovedWorkspaces",
-                    std::move(devtools_improved_workspaces_dict));
 
   base::Value::Dict devtools_well_known_dict;
   devtools_well_known_dict.Set(
