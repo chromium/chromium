@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -204,10 +205,10 @@ bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  ArgsType args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode) {
-  static_assert(absl::variant_size<ArgsType>::value == 2, "Unhandled variant!");
+  static_assert(std::variant_size<ArgsType>::value == 2, "Unhandled variant!");
   base::Value::List parsed_args =
-      args.index() == 0 ? base::test::ParseJsonList(absl::get<0>(args))
-                        : std::move(absl::get<1>(args));
+      args.index() == 0 ? base::test::ParseJsonList(std::get<0>(args))
+                        : std::move(std::get<1>(args));
   SendResponseHelper response_helper(function.get());
   function->SetArgs(std::move(parsed_args));
 
