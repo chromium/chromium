@@ -115,6 +115,8 @@ class RecorderAppUI
 
   ModelState GetSodaState(const speech::LanguageCode& language_code);
 
+  ModelState GetCachedSodaState(const speech::LanguageCode& language_code);
+
   // recorder_app::mojom::PageHandler:
   void GetModelInfo(on_device_model::mojom::FormatFeature feature,
                     GetModelInfoCallback callback) override;
