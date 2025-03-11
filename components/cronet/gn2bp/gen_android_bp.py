@@ -1865,14 +1865,19 @@ def create_action_foreach_modules(blueprint, gn, target, is_test_target):
   "gen/net/base/registry_controlled_domains/{{source_name_part}}-reversed-inc.cc"
   So each source file will generate an output whose name is the {source_name-reversed-inc.cc}
   """
-  new_args = []
-  for i, src in enumerate(sorted(target.sources)):
-    # don't add script arg for the first source -- create_action_module
-    # already does this.
-    if i != 0:
-      new_args.append('&&')
-      new_args.append('python3 $(location %s)' %
-                      gn_utils.label_to_path(target.script))
+
+  # We create one genrule per individual source, with numbered names (e.g.
+  # "foo_0", "foo_1", etc.).
+  # Note: currently we return the collection of the resulting genrules, instead
+  # of a single module. Arguably this is a bit cumbersome. We could centralize
+  # the outputs into a single "cp everything" genrule so that dependent modules
+  # only have to depend on a single module.
+
+  def create_subtarget(i, src):
+    subtarget = copy.deepcopy(target)
+    subtarget.name += f"_{i}"
+    subtarget.sources = {src}
+    new_args = []
     for arg in target.args:
       if '{{source}}' in arg:
         new_args.append('$(location %s)' % (gn_utils.label_to_path(src)))
@@ -1887,16 +1892,22 @@ def create_action_foreach_modules(blueprint, gn, target, is_test_target):
         for out in target.outputs:
           if out.endswith(file_name):
             new_args.append('$(location %s)' % out)
+            subtarget.outputs = {out}
 
         for file in (target.sources | target.inputs):
           if file.endswith(file_name):
             new_args.append('$(location %s)' % gn_utils.label_to_path(file))
       else:
         new_args.append(arg)
+    subtarget.args = new_args
+    return subtarget
 
-  target.args = new_args
-  return create_action_module(blueprint, gn, target, 'cc_genrule',
-                              is_test_target)
+  return [
+      create_action_module(blueprint, gn, create_subtarget(i, src),
+                           'cc_genrule', is_test_target)
+      for i, src in enumerate(sorted(target.sources))
+  ]
+
 
 
 def create_action_module_internal(gn,
@@ -2264,8 +2275,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     if target.script == "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py":
       modules = create_rust_cxx_modules(blueprint, target)
     else:
-      modules = (create_action_foreach_modules(blueprint, gn, target,
-                                               is_test_target), )
+      modules = create_action_foreach_modules(blueprint, gn, target,
+                                              is_test_target)
   elif target.type == 'copy':
     # TODO: careful now! copy targets are not supported yet, but this will stop
     # traversing the dependency tree. For //base:base, this is not a big
