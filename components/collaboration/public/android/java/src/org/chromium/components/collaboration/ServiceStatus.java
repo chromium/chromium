@@ -7,8 +7,11 @@ package org.chromium.components.collaboration;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Information about a member of a group. */
 @JNINamespace("collaboration")
+@NullMarked
 public class ServiceStatus {
     public final @SigninStatus int signinStatus;
     public final @SyncStatus int syncStatus;
