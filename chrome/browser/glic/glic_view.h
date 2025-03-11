@@ -32,7 +32,9 @@ class GlicView : public views::View {
   METADATA_HEADER(GlicView, views::View)
 
  public:
-  GlicView(Profile* profile, const gfx::Size& initial_size);
+  GlicView(Profile* profile,
+           const gfx::Size& initial_size,
+           base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate);
   GlicView(const GlicView&) = delete;
   GlicView& operator=(const GlicView&) = delete;
   ~GlicView() override;
@@ -45,9 +47,11 @@ class GlicView : public views::View {
 
   views::WebView* web_view() { return web_view_; }
 
- private:
-  raw_ptr<views::WebView> web_view_;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
+ private:
+  base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate_;
+  raw_ptr<views::WebView> web_view_;
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;

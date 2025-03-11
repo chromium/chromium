@@ -462,6 +462,30 @@ void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
   }
 }
 
+bool GlicWindowController::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  if (accelerator.key_code() == ui::VKEY_ESCAPE) {
+    Close();
+    return true;
+  }
+
+  return false;
+}
+
+bool GlicWindowController::CanHandleAccelerators() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void GlicWindowController::AddAccelerators() {
+  GlicView* glic_view = GetGlicView();
+  if (!glic_view) {
+    return;
+  }
+
+  glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+}
+
 void GlicWindowController::Show(Browser* browser, InvocationSource source) {
   // At this point State must be kClosed, and all glic window state must be
   // unset.
@@ -551,8 +575,10 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   // window.
   gfx::Rect glic_window_widget_initial_rect = glic_button->GetBoundsWithInset();
 
-  glic_widget_ = GlicWidget::Create(profile_, glic_window_widget_initial_rect);
+  glic_widget_ = GlicWidget::Create(profile_, glic_window_widget_initial_rect,
+                                    GetWeakPtr());
   glic_widget_observation_.Observe(glic_widget_.get());
+  AddAccelerators();
 
   glic_widget_->Show();
   AttachToBrowser(browser);
@@ -571,8 +597,9 @@ void GlicWindowController::OpenDetached() {
   gfx::Rect initial_bounds = GetInitialDetachedBounds();
 
   // Make the widget.
-  glic_widget_ = GlicWidget::Create(profile_, initial_bounds);
+  glic_widget_ = GlicWidget::Create(profile_, initial_bounds, GetWeakPtr());
   glic_widget_observation_.Observe(glic_widget_.get());
+  AddAccelerators();
 
   // Be sure to reparent the widget and set its state first before showing it.
   MaybeCreateHolderWindowAndReparent();
