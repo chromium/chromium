@@ -36,6 +36,7 @@ import copy
 from typing import List, Dict, Set, Union
 from pathlib import Path
 import hashlib
+import shlex
 
 import gn_utils
 import targets as gn2bp_targets
@@ -524,8 +525,19 @@ root_modules_visibility = {
 # End of configuration.
 # ----------------------------------------------------------------------------
 
-def write_blueprint_key_value(output, name, value, sort=True):
-  """Writes a Blueprint key-value pair to the output"""
+
+def write_blueprint_key_value(output,
+                              name,
+                              value,
+                              sort=True,
+                              list_to_multiline_string=False):
+  """Writes a Blueprint key-value pair to the output.
+
+  If list_to_multiline_string is set, and the value is a list, then the output
+  value will be the list elements concatenated into a single Blueprint string,
+  formatted such that each list element appears on its own line. This is a
+  purely cosmetic feature to make the Blueprint file more readable.
+  """
 
   if isinstance(value, bool):
     if value:
@@ -537,7 +549,7 @@ def write_blueprint_key_value(output, name, value, sort=True):
     return
   if isinstance(value, set):
     value = sorted(value)
-  if isinstance(value, list):
+  if isinstance(value, list) and not list_to_multiline_string:
     output.append('    %s: [' % name)
     for item in sorted(value) if sort else value:
       output.append('        "%s",' % item)
@@ -556,7 +568,12 @@ def write_blueprint_key_value(output, name, value, sort=True):
       output.append('    %s' % line)
     output.append('    },')
     return
-  output.append('    %s: "%s",' % (name, value))
+  output.append(
+      '    %s: "%s",' %
+      (name,
+       NEWLINE.join(
+           str(line).replace('\\', '\\\\').replace('"', '\\"')
+           for line in (value if isinstance(value, list) else [value]))))
 
 
 class Module(object):
@@ -617,9 +634,18 @@ class Module(object):
           output.append('    %s' % line)
         output.append('    },')
 
-    def _output_field(self, output, name, sort=True):
+    def _output_field(self,
+                      output,
+                      name,
+                      sort=True,
+                      list_to_multiline_string=False):
       value = getattr(self, name)
-      return write_blueprint_key_value(output, name, value, sort)
+      return write_blueprint_key_value(
+          output,
+          name,
+          value,
+          sort=sort,
+          list_to_multiline_string=list_to_multiline_string)
 
   def __init__(self, mod_type, name, gn_target):
     self.type = mod_type
@@ -723,7 +749,7 @@ class Module(object):
     self._output_field(output, 'static_libs')
     self._output_field(output, 'whole_static_libs')
     self._output_field(output, 'tools')
-    self._output_field(output, 'cmd', sort=False)
+    self._output_field(output, 'cmd', sort=False, list_to_multiline_string=True)
     if self.host_supported:
       self._output_field(output, 'host_supported')
     if not self.host_cross_supported:
@@ -820,9 +846,18 @@ class Module(object):
       ])
     return False
 
-  def _output_field(self, output, name, sort=True):
+  def _output_field(self,
+                    output,
+                    name,
+                    sort=True,
+                    list_to_multiline_string=False):
     value = getattr(self, name)
-    return write_blueprint_key_value(output, name, value, sort)
+    return write_blueprint_key_value(
+        output,
+        name,
+        value,
+        sort=sort,
+        list_to_multiline_string=list_to_multiline_string)
 
   def is_compiled(self):
     return self.type not in ('cc_genrule', 'filegroup', 'java_genrule')
@@ -1133,7 +1168,7 @@ def create_proto_modules(blueprint, gn, target):
     cmd += absolute_sources
 
     descriptor_module = Module('cc_genrule', target_module_name, target.name)
-    descriptor_module.cmd = ' '.join(cmd)
+    descriptor_module.cmd = cmd
     descriptor_module.out = [out]
     descriptor_module.tools = tools
     blueprint.add_module(descriptor_module)
@@ -1184,7 +1219,7 @@ def create_proto_modules(blueprint, gn, target):
     raise Exception('Unsupported proto plugin: %s' % target.proto_plugin)
 
   cmd += absolute_sources
-  source_module.cmd = ' '.join(cmd)
+  source_module.cmd = cmd
   header_module.cmd = source_module.cmd
   source_module.tools = tools
   header_module.tools = tools
@@ -1247,10 +1282,10 @@ def create_gcc_preprocess_modules(blueprint, target):
   module = Module('genrule', bp_module_name, target.name)
   module.srcs.add(':' + preprocess_module.name)
   module.out.add(stem + '.srcjar')
-  module.cmd = NEWLINE.join([
+  module.cmd = [
       f'cp $(in) $(genDir)/{stem}.java &&',
       f'$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/{stem}.java'
-  ])
+  ]
   module.tools.add('soong_zip')
   blueprint.add_module(module)
   return module
@@ -1277,10 +1312,8 @@ class BaseActionSanitizer():
 
   def _normalize_args(self):
     # Convert ['--param=value'] to ['--param', 'value'] for consistency.
-    # Escape quotations.
     normalized_args = []
     for arg in self.target.args:
-      arg = arg.replace('"', r'\"')
       if arg.startswith('-'):
         normalized_args.extend(arg.split('='))
       else:
@@ -1393,20 +1426,27 @@ class BaseActionSanitizer():
     # Sort the list to make the output deterministic.
     for out_dir in sorted(set(out_dirs)):
       pre_cmd.append("mkdir -p $(genDir)/{} && ".format(out_dir))
-    return NEWLINE.join(pre_cmd)
+    return pre_cmd
 
   def get_base_cmd(self):
-    arg_string = NEWLINE.join(self.target.args)
-    cmd = '$(location %s) %s' % (gn_utils.label_to_path(
-        self.target.script), arg_string)
-
-    if self.use_response_file:
-      # Pipe response file contents into script
-      cmd = 'echo \'%s\' |%s%s' % (self.target.response_file_contents, NEWLINE,
-                                   cmd)
-    return cmd
+    # TODO: most sanitizer logic does not really handle "$" characters very
+    # well, and will likely do the wrong thing if the GN target contains args
+    # with literal "$" characters in them. Also, if a sanitizer deliberately
+    # shoves a $() macro in an arg, we still run that through shell quoting,
+    # which does preserve the "$" but that's mostly luck. We should design
+    # a better mechanism for handling "$" and $() macros.
+    return (([f"echo {shlex.quote(self.target.response_file_contents)} |"]
+             if self.target.response_file_contents else []) +
+            [f"$(location {gn_utils.label_to_path(self.target.script)})"] +
+            [shlex.quote(arg) for arg in self.target.args])
 
   def get_cmd(self):
+    # Note: don't be confused by the return type. This function returns a list,
+    # but the list is *NOT* an argv array, it's a list of lines for Blueprint
+    # file formatting for cosmetic purposes. The actual command is the list
+    # elements concatenated together into a single string, which is ultimately
+    # fed as a shell command at build time. This means what we are returning
+    # here is expected to have been properly shell-escaped beforehand.
     return self.get_pre_cmd() + self.get_base_cmd()
 
   def get_outputs(self):
@@ -1518,7 +1558,7 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
 
   def get_cmd(self):
     # Remove the script and use the binary right away
-    return self.get_pre_cmd() + NEWLINE.join(self.target.args)
+    return self.get_pre_cmd() + [shlex.quote(arg) for arg in self.target.args]
 
 
 class JniGeneratorSanitizer(BaseActionSanitizer):
@@ -1673,19 +1713,22 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
   def get_cmd(self):
-    # jni_registration_generator.py doesn't work with python2
-    cmd = "python3 " + super().get_base_cmd()
+    base_cmd = super().get_base_cmd()
     # Path in the original sources file does not work in genrule.
     # So creating sources file in cmd based on the srcs of this target.
     # Adding ../$(current_dir)/ to the head because jni_registration_generator.py uses the files
     # whose path startswith(..)
-    commands = [
-        "current_dir=`basename \\\`pwd\\\``;", "for f in $(in);", "do",
-        "echo \\\"../$$current_dir/$$f\\\" >> $(genDir)/java.sources;", "done;",
-        cmd
-    ]
+    base_cmd = ([
+        "current_dir=`basename \\`pwd\\``;",
+        "for f in $(in);",
+        "do",
+        "echo \"../$$current_dir/$$f\" >> $(genDir)/java.sources;",
+        "done;",
+    ] +
+                # jni_registration_generator.py doesn't work with python2
+                [f"python3 {base_cmd[0]}"] + base_cmd[1:])
 
-    return self.get_pre_cmd() + NEWLINE.join(commands)
+    return self.get_pre_cmd() + base_cmd
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
@@ -1716,11 +1759,7 @@ class VersionSanitizer(BaseActionSanitizer):
     # args for the version.py contain file path without leading --arg key. So apply sanitize
     # function for all the args.
     self._update_all_args(self._sanitize_filepath_with_location_tag)
-    self._update_list_arg('-e', self._sanitize_eval)
     super()._sanitize_args()
-
-  def _sanitize_eval(self, eval_arg):
-    return "'%s'" % eval_arg.replace("\'", "\\\"")
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
@@ -1960,10 +1999,10 @@ def merge_cmd(modules, genrule_type):
   :param genrule_type: cc_genrule or java_genrule
   :return: merged command or common command if all the archs have the same command.
   '''
-  commands = list({module.cmd for module in modules.values()})
+  commands = list({"\n".join(module.cmd) for module in modules.values()})
   if len(commands) == 1:
     # If all the archs have the same command, return the command
-    return commands[0]
+    return list(modules.values())[0].cmd
 
   if genrule_type != 'cc_genrule':
     raise Exception(f'{genrule_type} can not have different cmd between archs')
@@ -1972,9 +2011,9 @@ def merge_cmd(modules, genrule_type):
   for arch, module in sorted(modules.items()):
     merged_cmd.append(f'if [[ {get_cmd_condition(arch)} ]];')
     merged_cmd.append('then')
-    merged_cmd.append(module.cmd + ';')
-    merged_cmd.append('fi;')
-  return NEWLINE.join(merged_cmd)
+    merged_cmd.extend(module.cmd)
+    merged_cmd.append(';fi;')
+  return merged_cmd
 
 def merge_modules(modules, genrule_type):
   '''

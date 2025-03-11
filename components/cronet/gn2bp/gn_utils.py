@@ -21,6 +21,7 @@ import logging as log
 import os
 import re
 import collections
+import shlex
 
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library',
                      'source_set')
@@ -391,19 +392,12 @@ class GnParser(object):
     self.jni_java_sources = set()
 
   def _get_response_file_contents(self, action_desc):
-    # response_file_contents are formatted as:
-    # ['--flags', '--flag=true && false'] and need to be formatted as:
-    # '--flags --flag=\"true && false\"'
-    flags = action_desc.get('response_file_contents', [])
-    formatted_flags = []
-    for flag in flags:
-      if '=' in flag:
-        key, val = flag.split('=')
-        formatted_flags.append('%s=\\"%s\\"' % (key, val))
-      else:
-        formatted_flags.append(flag)
-
-    return ' '.join(formatted_flags)
+    # GN response_file_contents docs state "The response file contents will
+    # always be quoted and escaped according to Unix shell rules". Reproduce
+    # GN's behavior.
+    return ' '.join(
+        shlex.quote(arg)
+        for arg in action_desc.get('response_file_contents', []))
 
   def _is_java_group(self, type_, target_name):
     # Per https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
