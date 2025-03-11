@@ -23,69 +23,6 @@ namespace glic {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(Error)
-enum class Error {
-  kResponseStartWithoutInput = 0,
-  kResponseStopWithoutInput = 1,
-  kResponseStartWhileHidingOrHidden = 2,
-  kWindowCloseWithoutWindowOpen = 3,
-  kMaxValue = kWindowCloseWithoutWindowOpen,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseError)
-
-// LINT.IfChange(EntryPointImpression)
-enum class EntryPointImpression {
-  kBeforeFre = 0,
-  kAfterFreBrowserOnly = 1,
-  kAfterFreOsOnly = 2,
-  kAfterFreEnabled = 3,
-  kAfterFreDisabled = 4,
-  kNotPermitted = 5,
-  kMaxValue = kNotPermitted,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
-
-// LINT.IfChange(ResponseSegmentation)
-enum class ResponseSegmentation {
-  kUnknown = 0,
-  kOsButtonAttachedText = 1,
-  kOsButtonAttachedAudio = 2,
-  kOsButtonDetachedText = 3,
-  kOsButtonDetachedAudio = 4,
-  kOsButtonMenuAttachedText = 5,
-  kOsButtonMenuAttachedAudio = 6,
-  kOsButtonMenuDetachedText = 7,
-  kOsButtonMenuDetachedAudio = 8,
-  kOsHotkeyAttachedText = 9,
-  kOsHotkeyAttachedAudio = 10,
-  kOsHotkeyDetachedText = 11,
-  kOsHotkeyDetachedAudio = 12,
-  kButtonTopChromeAttachedText = 13,
-  kButtonTopChromeAttachedAudio = 14,
-  kButtonTopChromeDetachedText = 15,
-  kButtonTopChromeDetachedAudio = 16,
-  kFreAttachedText = 17,
-  kFreAttachedAudio = 18,
-  kFreDetachedText = 19,
-  kFreDetachedAudio = 20,
-  kProfilePickerAttachedText = 21,
-  kProfilePickerAttachedAudio = 22,
-  kProfilePickerDetachedText = 23,
-  kProfilePickerDetachedAudio = 24,
-  kNudgeAttachedText = 25,
-  kNudgeAttachedAudio = 26,
-  kNudgeDetachedText = 27,
-  kNudgeDetachedAudio = 28,
-  kChroMenuAttachedText = 29,
-  kChroMenuAttachedAudio = 30,
-  kChroMenuDetachedText = 31,
-  kChroMenuDetachedAudio = 32,
-  kMaxValue = kChroMenuDetachedAudio,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
-
 ResponseSegmentation GetResponseSegmentation(bool attached,
                                              mojom::WebClientMode mode,
                                              InvocationSource source) {

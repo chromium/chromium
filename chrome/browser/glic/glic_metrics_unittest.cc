@@ -83,10 +83,12 @@ class GlicMetricsTest : public testing::Test {
     metrics_->SetControllers(controller_.get(), tab_manager_.get());
   }
 
-  void ExpectEntryPointImpressionLogged(base::HistogramBase::Sample32 bucket) {
+  void ExpectEntryPointImpressionLogged(
+      EntryPointImpression entry_point_impression) {
     task_environment_.FastForwardBy(base::Minutes(16));
     histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);
-    histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression", bucket,
+    histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression",
+                                        entry_point_impression,
                                         /*expected_count=*/1);
   }
 
@@ -236,9 +238,9 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
   metrics_->OnGlicWindowClose();
 
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
-  histogram_tester_.ExpectBucketCount("Glic.Response.Segmentation",
-                                      /*kOsButtonAttachedText=*/1,
-                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Response.Segmentation", ResponseSegmentation::kOsButtonAttachedText,
+      /*expected_count=*/1);
 }
 
 TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
@@ -252,9 +254,10 @@ TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
   metrics_->OnGlicWindowClose();
 
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
-  histogram_tester_.ExpectBucketCount("Glic.Response.Segmentation",
-                                      /*kChroMenuDetachedAudio=*/32,
-                                      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Response.Segmentation",
+      ResponseSegmentation::kChroMenuDetachedAudio,
+      /*expected_count=*/1);
 }
 
 TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
@@ -274,16 +277,15 @@ TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
 
   histogram_tester_.ExpectTotalCount("Glic.Session.Duration", 0);
   histogram_tester_.ExpectTotalCount("Glic.Metrics.Error", 1);
-  histogram_tester_.ExpectBucketCount(
-      "Glic.Metrics.Error",
-      /*Error::kWindowCloseWithoutWindowOpen=*/3,
-      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount("Glic.Metrics.Error",
+                                      Error::kWindowCloseWithoutWindowOpen,
+                                      /*expected_count=*/1);
 }
 
 TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
 
-  ExpectEntryPointImpressionLogged(/*kBeforeFre=*/0);
+  ExpectEntryPointImpressionLogged(EntryPointImpression::kBeforeFre);
 }
 
 // kGeminiSettings is by default enabled, however if we initialize a scoped
@@ -312,7 +314,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionNotPermittedByPolicy) {
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
 
-  ExpectEntryPointImpressionLogged(/*kNotPermitted*/5);
+  ExpectEntryPointImpressionLogged(EntryPointImpression::kNotPermitted);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
@@ -320,7 +322,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
   // kGlicPinnedToTabstrip is true
   // kGlicLauncherEnabled is false
 
-  ExpectEntryPointImpressionLogged(/*kAfterFreBrowserOnly=*/1);
+  ExpectEntryPointImpressionLogged(EntryPointImpression::kAfterFreBrowserOnly);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
@@ -328,7 +330,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
-  ExpectEntryPointImpressionLogged(/*kAfterFreOsOnly=*/2);
+  ExpectEntryPointImpressionLogged(EntryPointImpression::kAfterFreOsOnly);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
@@ -336,7 +338,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
   // kGlicPinnedToTabstrip is true
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
-  ExpectEntryPointImpressionLogged(/*kAfterFreEnabled=*/3);
+  ExpectEntryPointImpressionLogged(EntryPointImpression::kAfterFreEnabled);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
@@ -344,7 +346,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   // kGlicLauncherEnabled is false
 
-  ExpectEntryPointImpressionLogged(/*kAfterFreDisabled=*/4);
+  ExpectEntryPointImpressionLogged(EntryPointImpression::kAfterFreDisabled);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
