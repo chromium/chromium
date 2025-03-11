@@ -834,7 +834,7 @@ void GlicWindowController::Close() {
 
   // The webview should be faded out instead.
   if (GetGlicView()) {
-    GetGlicView()->web_view()->SetWebContents(nullptr);
+    glic_window_animator_->SetGlicWebViewVisibility(false);
   }
 
   if (attached_browser_) {

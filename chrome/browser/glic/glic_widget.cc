@@ -33,6 +33,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   params.bounds = initial_bounds;
   params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
   params.name = "GlicWidget";
+  params.corner_radius = kCornerRadius;
 
   std::unique_ptr<GlicWidget> widget(new GlicWidget(std::move(params)));
 
