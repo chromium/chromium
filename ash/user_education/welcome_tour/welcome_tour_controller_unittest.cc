@@ -407,7 +407,7 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   session_controller_client->AddUserSession({.is_new_profile = true},
                                             primary_account_id);
   session_controller_client->AddUserSession({.is_new_profile = true},
-                                            secondary_account_id, );
+                                            secondary_account_id);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
