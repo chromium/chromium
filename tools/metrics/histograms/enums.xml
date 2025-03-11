@@ -9334,6 +9334,7 @@ from previous Chrome versions.
   <int value="-1867342522" label="MaterialDesignHistory:enabled"/>
   <int value="-1865499199" label="SidePanelDragAndDrop:enabled"/>
   <int value="-1865155026" label="AutoFetchOnNetErrorPage:enabled"/>
+  <int value="-1864828052" label="AutofillEnableNewFopDisplayDesktop:disabled"/>
   <int value="-1863962664" label="LockScreenNotifications:enabled"/>
   <int value="-1863893966" label="InstallPromptSegmentation:enabled"/>
   <int value="-1863249844" label="AccessibilityService:disabled"/>
@@ -15051,6 +15052,7 @@ from previous Chrome versions.
   <int value="379397486" label="WebViewSupervisedUserSiteBlock:disabled"/>
   <int value="379428799" label="security-chip-animation"/>
   <int value="379502873" label="webrtc-hw-decoding:enabled"/>
+  <int value="379856248" label="AutofillEnableNewFopDisplayDesktop:enabled"/>
   <int value="380372760" label="V8Orinoco:disabled"/>
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
   <int value="381316164" label="IndexedDBCompressValuesWithSnappy:disabled"/>

@@ -676,6 +676,12 @@ const char kAutofillEnableLoyaltyCardsFillingDescription[] =
     "When enabled, Autofill will offer support for filling the user's loyalty "
     "cards stored in Google Wallet.";
 
+const char kAutofillEnableNewFopDisplayDesktopName[] =
+    "Enable Autofill new FOP display on Desktop";
+const char kAutofillEnableNewFopDisplayDesktopDescription[] =
+    "When enabled, updates payment method Autofill suggestions and settings "
+    "UI.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =

@@ -664,6 +664,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "autofill-enable-new-fop-display-desktop",
+    "owners": [ "qihuizhao@google.com", "jsaul@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua@chromium.org", "siashah@google.com" ],
     "expiry_milestone": 116

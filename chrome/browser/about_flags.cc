@@ -11745,6 +11745,13 @@ const FeatureEntry kFeatureEntries[] = {
          enterprise::webstore::kChromeWebStoreNavigationThrottle)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+    {"autofill-enable-new-fop-display-desktop",
+     flag_descriptions::kAutofillEnableNewFopDisplayDesktopName,
+     flag_descriptions::kAutofillEnableNewFopDisplayDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableNewFopDisplayDesktop)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

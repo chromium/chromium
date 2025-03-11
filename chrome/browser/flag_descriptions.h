@@ -414,6 +414,9 @@ extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 extern const char kAutofillEnableLoyaltyCardsFillingName[];
 extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
 
+extern const char kAutofillEnableNewFopDisplayDesktopName[];
+extern const char kAutofillEnableNewFopDisplayDesktopDescription[];
+
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
