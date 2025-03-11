@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @IntDef({SharedImageTilesType.DEFAULT, SharedImageTilesType.SMALL})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface SharedImageTilesType {
     /** Standard SharedImageTiles behavior. */
     int DEFAULT = 0;

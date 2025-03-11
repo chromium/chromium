@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A class to define the color scheme of a {@link SharedImageTilesCoordinator} component. */
+@NullMarked
 public class SharedImageTilesColor {
     @IntDef({Style.DEFAULT, Style.DYNAMIC, Style.TAB_GROUP})
     @Retention(RetentionPolicy.SOURCE)
