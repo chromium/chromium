@@ -25,24 +25,22 @@ class PrefetchContainer;
 // This class is created per call of
 // `PrefetchURLLoaderInterceptor::MaybeCreateLoader()` except redirects for
 // already matched prefetch and still servable ones, i.e. a prefetch was matched
-// by prior call of `PrefetchMatchResolver2::FindPrefetch()`.
+// by prior call of `PrefetchMatchResolver::FindPrefetch()`.
 //
 // Lifetime of this class is from the call of `FindPrefetch()` to calling
 // `callback_`. This is owned by itself. See the comment on `self_`.
-//
-// TODO(crbug.com/353490734): Rename it to `PrefetchMatchResolver`.
-class CONTENT_EXPORT PrefetchMatchResolver2 final
+class CONTENT_EXPORT PrefetchMatchResolver final
     : public PrefetchContainer::Observer {
  public:
   using Callback = base::OnceCallback<void(PrefetchContainer::Reader reader)>;
 
-  ~PrefetchMatchResolver2() override;
+  ~PrefetchMatchResolver() override;
 
   // Not movable nor copyable.
-  PrefetchMatchResolver2(PrefetchMatchResolver2&& other) = delete;
-  PrefetchMatchResolver2& operator=(PrefetchMatchResolver2&& other) = delete;
-  PrefetchMatchResolver2(const PrefetchMatchResolver2&) = delete;
-  PrefetchMatchResolver2& operator=(const PrefetchMatchResolver2&) = delete;
+  PrefetchMatchResolver(PrefetchMatchResolver&& other) = delete;
+  PrefetchMatchResolver& operator=(PrefetchMatchResolver&& other) = delete;
+  PrefetchMatchResolver(const PrefetchMatchResolver&) = delete;
+  PrefetchMatchResolver& operator=(const PrefetchMatchResolver&) = delete;
 
   // PrefetchContainer::Observer implementation
   void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override;
@@ -73,9 +71,9 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
     std::unique_ptr<base::OneShotTimer> timeout_timer;
   };
 
-  explicit PrefetchMatchResolver2(PrefetchContainer::Key navigated_key,
-                                  base::WeakPtr<PrefetchService>,
-                                  Callback callback);
+  explicit PrefetchMatchResolver(PrefetchContainer::Key navigated_key,
+                                 base::WeakPtr<PrefetchService>,
+                                 Callback callback);
 
   // Returns blocked duration. Returns null iff it's not blocked yet.
   std::optional<base::TimeDelta> GetBlockedDuration() const;
@@ -137,7 +135,7 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
   // leak.
   //
   // A would be enough.
-  std::unique_ptr<PrefetchMatchResolver2> self_;
+  std::unique_ptr<PrefetchMatchResolver> self_;
 
   const PrefetchContainer::Key navigated_key_;
   base::WeakPtr<PrefetchService> prefetch_service_;
@@ -148,7 +146,7 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
 
 // Abstracts required operations for `PrefetchContainer` that is used to collect
 // match candidates in the first phase of
-// `PrefetchMatchResolver2::FindPrefetch()`. Used for unit testing.
+// `PrefetchMatchResolver::FindPrefetch()`. Used for unit testing.
 template <class T>
 concept MatchCandidate =
     requires(T& t,
@@ -288,7 +286,7 @@ bool IsCandidateAvailable(const T& candidate,
 // Collects `PrefetchContainer`s that are expected to match to `navigated_key`.
 //
 // This is defined with the template for testing the first phase of
-// `PrefetchMatchResolver2::FindPrefetch()` with mock `PrefetchContainer`.
+// `PrefetchMatchResolver::FindPrefetch()` with mock `PrefetchContainer`.
 template <class T>
   requires MatchCandidate<T>
 std::pair<

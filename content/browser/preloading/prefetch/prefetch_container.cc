@@ -1571,7 +1571,7 @@ void PrefetchContainer::OnDetectedCookiesChange() {
 void PrefetchContainer::OnDetectedCookiesChange2(
     std::optional<bool>
         is_unblock_for_cookies_changed_triggered_by_this_prefetch_container) {
-  // If `kPrefetchNewWaitLoop` is enabled, multiple `PrefetchMatchResolver2` can
+  // If `kPrefetchNewWaitLoop` is enabled, multiple `PrefetchMatchResolver` can
   // wait the same `PrefetchContainer`. So, `OnDetectedCookiesChange2()` can be
   // called multiple times, unlike `OnDetectedCookiesChange()`.
   //

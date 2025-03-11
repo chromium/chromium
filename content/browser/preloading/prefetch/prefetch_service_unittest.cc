@@ -828,7 +828,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     PrefetchService* prefetch_service =
         BrowserContextImpl::From(browser_context())->GetPrefetchService();
       auto key = PrefetchContainer::Key(initiator_document_token, url);
-      PrefetchMatchResolver2::FindPrefetch(
+      PrefetchMatchResolver::FindPrefetch(
           std::move(key), /*is_nav_prerender=*/false, *prefetch_service,
           GetServingPageMetricsContainerForMostRecentNavigation(),
           std::move(callback));
@@ -849,7 +849,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   // Simulates part of navigation.
   //
   // - Creates MockNavigationHandle.
-  // - Starts matching of prefetch `PrefetchMatchResolver2::FindPrefetch()`.
+  // - Starts matching of prefetch `PrefetchMatchResolver::FindPrefetch()`.
   //
   // Note that these are very small part of navigation. For example,
   // post-matching process `OnGotPrefetchToServe()` and redirects are not
@@ -914,7 +914,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     PrefetchService* prefetch_service =
         BrowserContextImpl::From(browser_context())->GetPrefetchService();
     auto key = PrefetchContainer::Key(initiator_document_token, url);
-    PrefetchMatchResolver2::FindPrefetch(
+    PrefetchMatchResolver::FindPrefetch(
         std::move(key), is_nav_prerender, *prefetch_service,
         std::move(serving_page_metrics_container), std::move(callback));
 
@@ -6671,7 +6671,7 @@ TEST_F(
   request->client.reset();
   ASSERT_TRUE(disconnect_future.Wait());
   // `PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo` will directly
-  // invoke `PrefetchMatchResolver2::OnHeadDetermine`. At this point the
+  // invoke `PrefetchMatchResolver::OnHeadDetermine`. At this point the
   // container's `ServableState` should be `kShouldBlockUntilHeadReceived` (same
   // with a normal case of an ineligible redirect), so it should be unblocked
   // for unmatched.

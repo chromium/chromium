@@ -225,7 +225,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Each callback is called at most once in the lifecycle of a container.
   //
   // Be careful about using this. This is designed only for
-  // `PrefetchMatchResolver2`.
+  // `PrefetchMatchResolver`.
   class Observer : public base::CheckedObserver {
    public:
     // Called at the head of dtor.
@@ -480,7 +480,7 @@ class CONTENT_EXPORT PrefetchContainer {
     // This received non redirect header and is not expired.
     //
     // Note that it needs more checks to serve, e.g. cookie check. See also e.g.
-    // `PrefetchMatchResolver2::OnDeterminedHead()`.
+    // `PrefetchMatchResolver::OnDeterminedHead()`.
     kServable,
 
     // Not other states.
@@ -572,8 +572,8 @@ class CONTENT_EXPORT PrefetchContainer {
   //
   // - Roughly speaking, when non-redirect header received and
   //   `PrefetchService`/`PrefetchContainer` detected cookies change of the head
-  //   of redirect chain. `PrefetchMatchResolver`/`PrefetchMatchResolver2`
-  //   propagates it to other waiting prefetches as they share domain.
+  //   of redirect chain. `PrefetchMatchResolver` propagates it to other waiting
+  //   prefetches as they share domain.
   // - When `PrefetchURLLoaderInterceptor::MaybeCreateLoader()` handles
   //   redirects in the serving prefetch.
   void OnDetectedCookiesChange();
@@ -709,12 +709,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // Records metrics when serving result is determined.
   //
   // This is eventually called once for every `PrefetchContainer` put in
-  // `PrefetchMatchResolver2::candidates_`, i.e. those potentially matching
+  // `PrefetchMatchResolver::candidates_`, i.e. those potentially matching
   // and expected to become servable at the head of
-  // `PrefetchMatchResolver2::FindPrefetch()`.
+  // `PrefetchMatchResolver::FindPrefetch()`.
   //
   // This can be called multiple times, because this can be called for multiple
-  // `PrefetchMatchResolver2`s.
+  // `PrefetchMatchResolver`s.
   void OnUnregisterCandidate(const GURL& navigated_url,
                              bool is_served,
                              std::optional<base::TimeDelta> blocked_duration);

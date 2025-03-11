@@ -89,7 +89,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           redirect_reader_.GetPrefetchContainer();
       CHECK(prefetch_container);
       // Use `std::nullopt` as we need to record the crash key to identify
-      // which case in `PrefetchMatchResolver2` is the cause.
+      // which case in `PrefetchMatchResolver` is the cause.
       prefetch_container->OnDetectedCookiesChange2(
           /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
           std::nullopt);
@@ -170,7 +170,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
       return frame_tree_node->frame_tree().is_prerendering();
     }();
 
-    PrefetchMatchResolver2::FindPrefetch(
+    PrefetchMatchResolver::FindPrefetch(
         std::move(key), is_nav_prerender, *prefetch_service,
         serving_page_metrics_container_, std::move(callback));
 }
