@@ -150,7 +150,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testUpdateReorder_dragOntoStrip() {
         setupForTabDrag();
-        startReorder();
+        startTabReorder();
 
         // Call
         mStrategy.updateReorderPosition(
@@ -177,7 +177,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testUpdateReorder_dragWithinStrip() {
         setupForTabDrag();
-        startReorder();
+        startTabReorder();
 
         // Start reorder before dragging within strip.
         mStrategy.updateReorderPosition(
@@ -219,7 +219,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         // Set properties for dragged tab.
         float drawX = 24f; // Arbitrary value.
         mInteractingTab.setIdealX(drawX);
-        startReorder();
+        startTabReorder();
 
         // Call
         mStrategy.updateReorderPosition(
@@ -262,7 +262,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         // Tab not in group - no prompt shown.
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
-        startReorder();
+        startTabReorder();
 
         // Update reorder - drag out of strip to set lastOffsetX
         float lastOffsetX = 12f; // Arbitrary value.
@@ -306,7 +306,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(1);
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);
-        startReorder();
+        startTabReorder();
 
         // Call
         mStrategy.updateReorderPosition(
@@ -331,7 +331,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     public void testStopReorder_withoutTabRestore() {
         // Start and update reorder - drag onto strip.
         setupForTabDrag();
-        startReorder();
+        startTabReorder();
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
 
@@ -354,7 +354,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
 
         // Start reorder. Simulate drag off strip.
-        startReorder();
+        startTabReorder();
         mInteractingTab.setIsDraggedOffStrip(true);
 
         // Call
@@ -368,6 +368,43 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     @Test
+    public void testStopReorder_withoutGroupRestore() {
+        // Start and update reorder - drag onto strip.
+        setupForGroupDrag();
+        startGroupReorder();
+        mStrategy.updateReorderPosition(
+                mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
+
+        // Call
+        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+
+        // Assert
+        assertNull("View being dragged should be null", mStrategy.getViewBeingDraggedForTesting());
+        assertEquals(0f, mStrategy.getDragLastOffsetXForTesting(), EPSILON);
+
+        // Verify
+        verify(mGroupStrategy).stopReorderMode(mGroupTitles, mStripTabs);
+    }
+
+    @Test
+    public void testStopReorder_withGroupRestore() {
+        setupForGroupDrag();
+        // Start reorder. Simulate drag off strip.
+        startGroupReorder();
+        mInteractingGroupTitle.setIsDraggedOffStrip(true);
+
+        // Call. Simulate failed drop.
+        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
+        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+
+        // Verify restore.
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
+        assertFalse("DraggedOffStrip should be false", mInteractingGroupTitle.isDraggedOffStrip());
+        assertEquals("offsetY should be 0", 0f, mInteractingGroupTitle.getOffsetY(), EPSILON);
+    }
+
+    @Test
     public void testStopReorder_afterDragOutOfStrip_tabStrategyStopInvokedOnce() {
         setupForTabDrag();
         // No prompt for update - drag out of strip.
@@ -375,7 +412,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(false);
 
         // Start and update reorder - drag out of strip. Verify tab strategy stop invoked.
-        startReorder();
+        startTabReorder();
         mStrategy.updateReorderPosition(
                 mStripViews,
                 mGroupTitles,
@@ -396,7 +433,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verifyNoMoreInteractions(mTabStrategy);
     }
 
-    private void startReorder() {
+    private void startTabReorder() {
         when(mTabDragSource.startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
@@ -405,5 +442,17 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         anyFloat()))
                 .thenReturn(true);
         mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+    }
+
+    private void startGroupReorder() {
+        when(mTabDragSource.startGroupDragAction(
+                        Mockito.eq(mContainerView),
+                        eq(GROUP_ID),
+                        eq(DRAG_START_POINT),
+                        anyFloat(),
+                        anyFloat()))
+                .thenReturn(true);
+        mStrategy.startReorderMode(
+                mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
     }
 }
