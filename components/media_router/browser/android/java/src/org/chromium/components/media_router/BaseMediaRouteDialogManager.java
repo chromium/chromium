@@ -58,7 +58,7 @@ public abstract class BaseMediaRouteDialogManager {
 
     private final String mSourceId;
     private final MediaRouteSelector mRouteSelector;
-    private final @Nullable MediaRouter mAndroidMediaRouter;
+    private final MediaRouter mAndroidMediaRouter;
     private final MediaRouteDialogDelegate mDelegate;
 
     protected @Nullable DialogFragment mDialogFragment;
@@ -115,7 +115,7 @@ public abstract class BaseMediaRouteDialogManager {
         return mDelegate;
     }
 
-    protected @Nullable MediaRouter androidMediaRouter() {
+    MediaRouter androidMediaRouter() {
         return mAndroidMediaRouter;
     }
 

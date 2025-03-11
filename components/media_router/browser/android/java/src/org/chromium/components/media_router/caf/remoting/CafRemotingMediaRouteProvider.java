@@ -59,7 +59,7 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
     }
 
     private CafRemotingMediaRouteProvider(
-            @Nullable MediaRouter androidMediaRouter, MediaRouteManager manager) {
+            MediaRouter androidMediaRouter, MediaRouteManager manager) {
         super(androidMediaRouter, manager);
         mSessionController = new RemotingSessionController(this);
     }

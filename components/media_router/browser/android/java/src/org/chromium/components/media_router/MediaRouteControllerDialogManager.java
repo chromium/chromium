@@ -4,8 +4,6 @@
 
 package org.chromium.components.media_router;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -96,7 +94,6 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
             assert mCallback != null;
 
             mManager.delegate().onDialogCancelled();
-            assumeNonNull(mManager.androidMediaRouter());
             mManager.androidMediaRouter().removeCallback(mCallback);
             mManager.mDialogFragment = null;
         }
@@ -107,7 +104,6 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
         if (fm.findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) return null;
 
         Fragment fragment = new Fragment(this, mCallback);
-        assumeNonNull(androidMediaRouter());
         androidMediaRouter().addCallback(routeSelector(), mCallback);
 
         fragment.show(fm, DIALOG_FRAGMENT_TAG);
