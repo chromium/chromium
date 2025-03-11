@@ -260,6 +260,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     this.customColor_ = {
       background: this.theme_.backgroundColor,
       foreground: this.theme_.foregroundColor!,
+      base: {value: 0},
     };
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
