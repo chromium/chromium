@@ -32,6 +32,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
+#include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace optimization_guide {
@@ -39,6 +40,12 @@ namespace optimization_guide {
 struct RepeatedMultimodalMessageData;
 class RepeatedMultimodalMessageReadView;
 class RepeatedMultimodalMessageEditView;
+
+enum class MultimodalType {
+  kNone = 0,
+  kImage,
+  kAudio,
+};
 
 // Stores extra information associated with a proto message's fields.
 struct MultimodalMessageData final {
@@ -51,6 +58,9 @@ struct MultimodalMessageData final {
 
   // Images stored for fields of the message.
   std::map<int, SkBitmap> images;
+
+  // Audio data for fields of the message.
+  std::map<int, ml::AudioBuffer> audio;
 
   // Overlay data for singular message fields.
   // The message may also have message type fields with no overlays,
@@ -97,6 +107,9 @@ class MultimodalMessageEditView {
   // Sets a media field value.
   void Set(int tag, SkBitmap v);
 
+  // Sets a media field value.
+  void Set(int tag, ml::AudioBuffer v);
+
   // Retrieve a message field overlay created by a previous "Set" call.
   // Mutations through the returned view will not invalidate this view, but
   // this call may invalidate other child views created from this object.
@@ -135,8 +148,14 @@ class MultimodalMessageReadView {
   // Get the type of the underlying message.
   std::string GetTypeName() const { return message_->GetTypeName(); }
 
+  // Get the type of multimodal content for a field.
+  MultimodalType GetMultimodalType(const proto::ProtoField& proto_field) const;
+
   // Retrieve an image associated with a field.
   const SkBitmap* GetImage(const proto::ProtoField& proto_field) const;
+
+  // Retrieve an image associated with a field.
+  const ml::AudioBuffer* GetAudio(const proto::ProtoField& proto_field) const;
 
   // Retrieve an value stored in a proto field.
   std::optional<proto::Value> GetValue(
