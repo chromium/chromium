@@ -45,6 +45,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_test_helper.h"
+#include "ui/gl/test/gl_test_support.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/win/win_window.h"
 
@@ -235,8 +236,7 @@ class DCompPresenterTestBase : public testing::Test {
   void SetUp() override {
     enabled_features_.InitWithFeatures(enabled_features_list_,
                                        disabled_features_list_);
-    display_ = gl::init::InitializeGLNoExtensionsOneOff(
-        /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
+    display_ = GLTestSupport::InitializeGL(std::nullopt);
     std::tie(gl_surface_, context_) =
         GLTestHelper::CreateOffscreenGLSurfaceAndContext();
 
