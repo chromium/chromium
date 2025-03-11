@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -35,9 +36,12 @@ namespace {
 constexpr char kTestNotificationId[] = "TestOnTaskNotification";
 constexpr std::u16string_view kTestNotificationTitle =
     u"TestOnTaskNotificationTitle";
-constexpr std::u16string_view kTestNotificationMessage =
-    u"TestOnTaskNotificationMessage";
+constexpr int kTestNotificationMessageId =
+    IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE;
+constexpr int kTestCountdownNotificationMessageId =
+    IDS_ON_TASK_ENTER_LOCKED_MODE_COUNTDOWN_NOTIFICATION_MESSAGE;
 constexpr std::u16string_view kToastDescription = u"TestDescription";
+constexpr base::TimeDelta kNotificationCountdownPeriod = base::Seconds(5);
 constexpr base::TimeDelta kToastCountdownPeriod = base::Seconds(5);
 
 // Fake delegate implementation for the `OnTaskNotificationsManager`.
@@ -204,13 +208,106 @@ TEST_F(OnTaskNotificationsManagerTest,
   EXPECT_TRUE(callback_triggered);
 }
 
-TEST_F(OnTaskNotificationsManagerTest, CreateNotification) {
+TEST_F(OnTaskNotificationsManagerTest,
+       CreateNotificationWithNoCountdownPeriod) {
   OnTaskNotificationsManager::NotificationCreateParams create_params(
       /*id=*/kTestNotificationId,
       /*title=*/std::u16string{kTestNotificationTitle},
-      /*message=*/std::u16string{kTestNotificationMessage},
+      /*message_id=*/kTestNotificationMessageId,
       /*notifier_id=*/NotifierId());
   notifications_manager_->CreateNotification(std::move(create_params));
+
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  EXPECT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
+}
+
+TEST_F(OnTaskNotificationsManagerTest,
+       TriggerCompletionCallbackOnNotificationCountdownEnd) {
+  bool callback_triggered = false;
+  OnTaskNotificationsManager::NotificationCreateParams create_params(
+      /*id=*/kTestNotificationId,
+      /*title=*/std::u16string{kTestNotificationTitle},
+      /*message_id=*/kTestCountdownNotificationMessageId,
+      /*notifier_id=*/NotifierId(),
+      /*completion_callback=*/base::BindLambdaForTesting([&]() {
+        callback_triggered = true;
+      }),
+      /*countdown_period=*/kNotificationCountdownPeriod,
+      /*is_counting_down=*/true);
+  notifications_manager_->CreateNotification(std::move(create_params));
+
+  // Verify notification is shown after a 1 second delay.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  ASSERT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
+  ASSERT_FALSE(callback_triggered);
+
+  // Notifications remain visible before count down.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  ASSERT_EQ(fake_delegate_ptr_->GetNotificationCount(), 2u);
+  ASSERT_FALSE(callback_triggered);
+
+  // Verify callback is triggered after the countdown period.
+  task_environment_.FastForwardBy(kNotificationCountdownPeriod);
+  EXPECT_TRUE(callback_triggered);
+}
+
+TEST_F(OnTaskNotificationsManagerTest,
+       NewNotificationsWithSameIdOverridePreviousOnes) {
+  bool callback_triggered_1 = false;
+  OnTaskNotificationsManager::NotificationCreateParams create_params_1(
+      /*id=*/kTestNotificationId,
+      /*title=*/std::u16string{kTestNotificationTitle},
+      /*message_id=*/kTestCountdownNotificationMessageId,
+      /*notifier_id=*/NotifierId(),
+      /*completion_callback=*/base::BindLambdaForTesting([&]() {
+        callback_triggered_1 = true;
+      }),
+      /*countdown_period=*/kNotificationCountdownPeriod,
+      /*is_counting_down=*/true);
+  notifications_manager_->CreateNotification(std::move(create_params_1));
+
+  // Verify notification is shown after a 1 second delay.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  ASSERT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
+
+  // Trigger another notification with the same id.
+  bool callback_triggered_2 = false;
+  OnTaskNotificationsManager::NotificationCreateParams create_params_2(
+      /*id=*/kTestNotificationId,
+      /*title=*/std::u16string{kTestNotificationTitle},
+      /*message_id=*/kTestCountdownNotificationMessageId,
+      /*notifier_id=*/NotifierId(),
+      /*completion_callback=*/base::BindLambdaForTesting([&]() {
+        callback_triggered_2 = true;
+      }),
+      /*countdown_period=*/kNotificationCountdownPeriod,
+      /*is_counting_down=*/true);
+  notifications_manager_->CreateNotification(std::move(create_params_2));
+
+  // Advance timer and verify the first notification is overridden by ensuring
+  // the corresponding callback is not triggered.
+  task_environment_.FastForwardBy(kNotificationCountdownPeriod +
+                                  kNotificationCountdownPeriod);
+  EXPECT_FALSE(callback_triggered_1);
+  EXPECT_TRUE(callback_triggered_2);
+}
+
+TEST_F(OnTaskNotificationsManagerTest, StopProcessingNotification) {
+  OnTaskNotificationsManager::NotificationCreateParams create_params(
+      /*id=*/kTestNotificationId,
+      /*title=*/std::u16string{kTestNotificationTitle},
+      /*message_id=*/kTestNotificationMessageId,
+      /*notifier_id=*/NotifierId());
+  notifications_manager_->CreateNotification(std::move(create_params));
+
+  // Verify notification is shown after a 1 second delay.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  EXPECT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
+
+  // Attempt to stop processing notification and verify notification is not
+  // shown with subsequent timer advances.
+  notifications_manager_->StopProcessingNotification(kTestNotificationId);
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
 }
 

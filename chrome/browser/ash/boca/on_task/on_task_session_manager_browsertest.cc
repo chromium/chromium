@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
+#include "chromeos/ash/components/boca/on_task/util/mock_clock.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
@@ -45,6 +47,9 @@ constexpr char kTestUrl2[] = "https://test2.com";
 class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
  protected:
   OnTaskSessionManagerBrowserTest() {
+    // Initialize the MockClock.
+    boca::MockClock::Get();
+
     // Enable Boca and consumer experience for testing purposes. This is used
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
@@ -82,6 +87,16 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
 
   Browser* FindBocaSystemWebAppBrowser() {
     return ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
+  }
+
+  void WaitForLockedModeCountdown() {
+    // Simulate one tick of the countdown timer to generate the notification.
+    boca::MockClock::Get().Advance(kOnTaskNotificationCountdownInterval);
+    content::RunAllTasksUntilIdle();
+
+    // Simulate the full countdown duration to trigger completion.
+    boca::MockClock::Get().Advance(kOnTaskNotificationCountdownDuration);
+    content::RunAllTasksUntilIdle();
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -218,6 +233,7 @@ IN_PROC_BROWSER_TEST_F(
   // Lock the boca app.
   bundle.set_locked(true);
   GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  WaitForLockedModeCountdown();
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
@@ -234,6 +250,7 @@ IN_PROC_BROWSER_TEST_F(
   // Attempt to lock the boca app again to simulate real world scenario.
   bundle.set_locked(true);
   GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  WaitForLockedModeCountdown();
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
