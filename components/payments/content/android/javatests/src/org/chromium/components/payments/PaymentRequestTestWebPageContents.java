@@ -18,11 +18,15 @@ import java.util.stream.Collectors;
  *         "/checkout",
  *         new PaymentRequestTestWebPageContents().addMethod("https://test-1.example/pay")
  *                                                .addMethod("https://test-2.example/pay")
+ *                                                .requestShippingAddress()
+ *                                                .requestContactInformation()
  *                                                .build()));
  * </pre>
  */
 public class PaymentRequestTestWebPageContents {
     private final List<String> mMethods = new ArrayList<>();
+    private boolean mRequestShippingAddress;
+    private boolean mRequestContactInformation;
 
     /**
      * Adds a payment method to the list of payment methods that will be requested in the
@@ -40,6 +44,26 @@ public class PaymentRequestTestWebPageContents {
     }
 
     /**
+     * Makes the PaymentRequest API call request user's shipping address.
+     *
+     * @return A reference to this {@link PaymentRequestTestWebPageContents} instance.
+     */
+    public PaymentRequestTestWebPageContents requestShippingAddress() {
+        mRequestShippingAddress = true;
+        return this;
+    }
+
+    /**
+     * Makes the PaymentRequest API call request user's contact information.
+     *
+     * @return A reference to this {@link PaymentRequestTestWebPageContents} instance.
+     */
+    public PaymentRequestTestWebPageContents requestContactInformation() {
+        mRequestContactInformation = true;
+        return this;
+    }
+
+    /**
      * Builds the test web page contents for exercising PaymentRequest API.
      *
      * @return The web page contents.
@@ -49,6 +73,13 @@ public class PaymentRequestTestWebPageContents {
                 mMethods.stream()
                         .map(method -> String.format("{supportedMethods: '%s'}", method))
                         .collect(Collectors.joining(", "));
+
+        String optionsFormat =
+                "{requestShipping: %1$b, requestPayerName: %2$b, "
+                        + "requestPayerEmail: %2$b, requestPayerPhone: %2$b}";
+        String options =
+                String.format(optionsFormat, mRequestShippingAddress, mRequestContactInformation);
+
         String checkoutPageHtmlFormat =
                 """
             <!doctype html>
@@ -61,7 +92,7 @@ public class PaymentRequestTestWebPageContents {
             <script>
               function createPaymentRequest() {
                 const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
-                return new PaymentRequest([%s], {total});
+                return new PaymentRequest([%s], {total}, %s);
               }
 
               function checkPaymentRequestDefined() {
@@ -136,6 +167,6 @@ public class PaymentRequestTestWebPageContents {
             </script>
             """;
 
-        return String.format(checkoutPageHtmlFormat, supportedMethods);
+        return String.format(checkoutPageHtmlFormat, supportedMethods, options);
     }
 }
