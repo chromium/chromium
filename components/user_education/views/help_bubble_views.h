@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEWS_H_
 #define COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEWS_H_
 
+#include <concepts>
+
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -90,6 +93,17 @@ class HelpBubbleViews : public HelpBubble,
   base::CallbackListSubscription anchor_bounds_changed_subscription_;
 
   base::WeakPtrFactory<HelpBubbleViews> weak_ptr_factory_{this};
+};
+
+// Help bubble that wraps a custom help bubble view.
+class CustomHelpBubbleViews : public HelpBubbleViews, public CustomHelpBubble {
+ public:
+  template <typename T>
+    requires(std::derived_from<T, views::BubbleDialogDelegateView> &&
+             std::derived_from<T, CustomHelpBubbleUi>)
+  CustomHelpBubbleViews(T* bubble, ui::TrackedElement* anchor_element)
+      : HelpBubbleViews(bubble, anchor_element), CustomHelpBubble(*bubble) {}
+  ~CustomHelpBubbleViews() override = default;
 };
 
 }  // namespace user_education
