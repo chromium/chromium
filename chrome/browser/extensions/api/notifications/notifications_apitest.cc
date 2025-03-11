@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -45,13 +46,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -73,13 +71,7 @@ enum class WindowState {
   NORMAL
 };
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-using NotificationsApiTestBase = extensions::ExtensionPlatformApiTest;
-#else
-using NotificationsApiTestBase = extensions::ExtensionApiTest;
-#endif
-
-class NotificationsApiTest : public NotificationsApiTestBase {
+class NotificationsApiTest : public extensions::ExtensionPlatformApiTest {
  public:
   NotificationsApiTest() = default;
   ~NotificationsApiTest() override = default;
@@ -148,7 +140,7 @@ class NotificationsApiTest : public NotificationsApiTestBase {
 
  protected:
   void SetUpOnMainThread() override {
-    NotificationsApiTestBase::SetUpOnMainThread();
+    extensions::ExtensionPlatformApiTest::SetUpOnMainThread();
 
     DCHECK(profile());
     display_service_tester_ =
@@ -157,7 +149,7 @@ class NotificationsApiTest : public NotificationsApiTestBase {
 
   void TearDownOnMainThread() override {
     display_service_tester_.reset();
-    NotificationsApiTestBase::TearDownOnMainThread();
+    extensions::ExtensionPlatformApiTest::TearDownOnMainThread();
   }
 
   // Returns the notification that's being displayed for |extension|, or nullptr

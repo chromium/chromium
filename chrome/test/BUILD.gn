@@ -326,6 +326,7 @@ static_library("test_support") {
       "../browser/extensions/api_test_util.h",
       "../browser/extensions/extension_browser_test_util.cc",
       "../browser/extensions/extension_browser_test_util.h",
+      "../browser/extensions/extension_platform_apitest.h",
       "../browser/extensions/extension_platform_browsertest.cc",
       "../browser/extensions/extension_platform_browsertest.h",
     ]
@@ -335,8 +336,8 @@ static_library("test_support") {
 
   if (enable_desktop_android_extensions) {
     sources += [
-      "../browser/extensions/extension_platform_apitest.cc",
-      "../browser/extensions/extension_platform_apitest.h",
+      "../browser/extensions/desktop_android/desktop_android_extension_apitest.cc",
+      "../browser/extensions/desktop_android/desktop_android_extension_apitest.h",
       "../browser/extensions/platform_test_extension_loader.cc",
       "../browser/extensions/platform_test_extension_loader.h",
     ]

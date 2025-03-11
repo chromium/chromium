@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_apitest.h"
 
 #include <stddef.h>
 
@@ -39,12 +39,13 @@ const char kEmbeddedTestServerPort[] = "testServer.port";
 
 }  // namespace
 
-ExtensionPlatformApiTest::ExtensionPlatformApiTest(ContextType context_type)
+DesktopAndroidExtensionApiTest::DesktopAndroidExtensionApiTest(
+    ContextType context_type)
     : ExtensionPlatformBrowserTest(context_type) {}
 
-ExtensionPlatformApiTest::~ExtensionPlatformApiTest() = default;
+DesktopAndroidExtensionApiTest::~DesktopAndroidExtensionApiTest() = default;
 
-void ExtensionPlatformApiTest::SetUpOnMainThread() {
+void DesktopAndroidExtensionApiTest::SetUpOnMainThread() {
   ExtensionPlatformBrowserTest::SetUpOnMainThread();
 
   test_data_dir_ = test_data_dir_.AppendASCII("api_test");
@@ -67,22 +68,24 @@ void ExtensionPlatformApiTest::SetUpOnMainThread() {
   TestGetConfigFunction::set_test_config_state(test_config_.get());
 }
 
-void ExtensionPlatformApiTest::TearDownOnMainThread() {
+void DesktopAndroidExtensionApiTest::TearDownOnMainThread() {
   ExtensionPlatformBrowserTest::TearDownOnMainThread();
   TestGetConfigFunction::set_test_config_state(nullptr);
   test_config_.reset();
 }
 
-bool ExtensionPlatformApiTest::RunExtensionTest(const char* extension_name) {
+bool DesktopAndroidExtensionApiTest::RunExtensionTest(
+    const char* extension_name) {
   return RunExtensionTest(extension_name, {}, {});
 }
 
-bool ExtensionPlatformApiTest::RunExtensionTest(const char* extension_name,
-                                                const RunOptions& run_options) {
+bool DesktopAndroidExtensionApiTest::RunExtensionTest(
+    const char* extension_name,
+    const RunOptions& run_options) {
   return RunExtensionTest(extension_name, run_options, {});
 }
 
-bool ExtensionPlatformApiTest::RunExtensionTest(
+bool DesktopAndroidExtensionApiTest::RunExtensionTest(
     const char* extension_name,
     const RunOptions& run_options,
     const LoadOptions& load_options) {
@@ -93,7 +96,7 @@ bool ExtensionPlatformApiTest::RunExtensionTest(
   return RunExtensionTest(extension_path, run_options, load_options);
 }
 
-bool ExtensionPlatformApiTest::RunExtensionTest(
+bool DesktopAndroidExtensionApiTest::RunExtensionTest(
     const base::FilePath& extension_path,
     const RunOptions& run_options,
     const LoadOptions& load_options) {
@@ -158,15 +161,15 @@ bool ExtensionPlatformApiTest::RunExtensionTest(
   return true;
 }
 
-void ExtensionPlatformApiTest::SetCustomArg(std::string_view custom_arg) {
+void DesktopAndroidExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
   test_config_->Set(kTestCustomArg, base::Value(custom_arg));
 }
 
-const Extension* ExtensionPlatformApiTest::GetSingleLoadedExtension() {
+const Extension* DesktopAndroidExtensionApiTest::GetSingleLoadedExtension() {
   return api_test_util::GetSingleLoadedExtension(profile(), message_);
 }
 
-void ExtensionPlatformApiTest::SetUpCommandLine(
+void DesktopAndroidExtensionApiTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
 
@@ -176,7 +179,7 @@ void ExtensionPlatformApiTest::SetUpCommandLine(
   command_line->AppendSwitch(::switches::kDisableRendererBackgrounding);
 }
 
-bool ExtensionPlatformApiTest::StartEmbeddedTestServer() {
+bool DesktopAndroidExtensionApiTest::StartEmbeddedTestServer() {
   if (!InitializeEmbeddedTestServer()) {
     return false;
   }
@@ -185,7 +188,7 @@ bool ExtensionPlatformApiTest::StartEmbeddedTestServer() {
   return true;
 }
 
-bool ExtensionPlatformApiTest::InitializeEmbeddedTestServer() {
+bool DesktopAndroidExtensionApiTest::InitializeEmbeddedTestServer() {
   if (!embedded_test_server()->InitializeAndListen()) {
     return false;
   }
@@ -203,11 +206,11 @@ bool ExtensionPlatformApiTest::InitializeEmbeddedTestServer() {
   return true;
 }
 
-void ExtensionPlatformApiTest::EmbeddedTestServerAcceptConnections() {
+void DesktopAndroidExtensionApiTest::EmbeddedTestServerAcceptConnections() {
   embedded_test_server()->StartAcceptingConnections();
 }
 
-void ExtensionPlatformApiTest::UseHttpsTestServer() {
+void DesktopAndroidExtensionApiTest::UseHttpsTestServer() {
   https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server_.get()->AddDefaultHandlers(
@@ -216,8 +219,8 @@ void ExtensionPlatformApiTest::UseHttpsTestServer() {
       net::EmbeddedTestServer::CERT_TEST_NAMES);
 }
 
-void ExtensionPlatformApiTest::OpenURL(const GURL& url,
-                                       bool open_in_incognito) {
+void DesktopAndroidExtensionApiTest::OpenURL(const GURL& url,
+                                             bool open_in_incognito) {
   if (open_in_incognito) {
     PlatformOpenURLOffTheRecord(profile(), url);
   } else {

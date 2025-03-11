@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
@@ -12,23 +13,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#else
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
-
 namespace extensions {
 
 using extensions::ResultCatcher;
 
-#if BUILDFLAG(IS_ANDROID)
-using AlarmsApiTestBase = ExtensionPlatformApiTest;
-#else
-using AlarmsApiTestBase = ExtensionApiTest;
-#endif
-
-class AlarmsApiTest : public AlarmsApiTestBase {
+class AlarmsApiTest : public ExtensionPlatformApiTest {
  public:
   AlarmsApiTest() = default;
   ~AlarmsApiTest() override = default;
@@ -37,16 +26,16 @@ class AlarmsApiTest : public AlarmsApiTestBase {
 
   void SetUp() override {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    AlarmsApiTestBase::SetUp();
+    ExtensionPlatformApiTest::SetUp();
   }
 
   void TearDown() override {
     histogram_tester_.release();
-    AlarmsApiTestBase::TearDown();
+    ExtensionPlatformApiTest::TearDown();
   }
 
   void SetUpOnMainThread() override {
-    AlarmsApiTestBase::SetUpOnMainThread();
+    ExtensionPlatformApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }

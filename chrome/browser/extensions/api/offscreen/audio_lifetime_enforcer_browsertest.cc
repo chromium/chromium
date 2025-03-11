@@ -21,10 +21,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_apitest.h"
-#endif
-
 namespace extensions {
 
 namespace {
@@ -79,13 +75,7 @@ class AudioWaiter : public content::WebContentsObserver {
 
 }  // namespace
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = ExtensionPlatformApiTest;
-#else
-using ExtensionApiTestBase = ExtensionApiTest;
-#endif
-
-class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTestBase {
+class AudioLifetimeEnforcerBrowserTest : public ExtensionPlatformApiTest {
  public:
   AudioLifetimeEnforcerBrowserTest() = default;
   ~AudioLifetimeEnforcerBrowserTest() override = default;
