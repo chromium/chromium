@@ -127,7 +127,6 @@ class BaseAutofillAiManagerTest : public testing::Test {
     ON_CALL(client(), GetAutofillClient)
         .WillByDefault(ReturnRef(autofill_client_));
     ON_CALL(client(), IsAutofillAiEnabledPref).WillByDefault(Return(true));
-    ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
   autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
@@ -159,7 +158,6 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
             /*strike_database=*/nullptr));
     ON_CALL(client(), GetEntityDataManager)
         .WillByDefault(Return(autofill_client().GetEntityDataManager()));
-    ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
   // Given a `FormStructure` sets `field_types_predictions` for each field in

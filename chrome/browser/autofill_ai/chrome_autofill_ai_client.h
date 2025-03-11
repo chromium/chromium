@@ -41,7 +41,6 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   autofill_ai::AutofillAiManager& GetManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
   bool IsAutofillAiEnabledPref() const override;
-  bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) override;
   void ShowSaveOrUpdateBubble(

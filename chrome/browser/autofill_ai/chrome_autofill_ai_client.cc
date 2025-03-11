@@ -115,11 +115,6 @@ void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
   std::move(prompt_acceptance_callback).Run(SaveOrUpdatePromptResult());
 }
 
-bool ChromeAutofillAiClient::IsUserEligible() {
-  return autofill_ai::IsUserEligible(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-}
-
 autofill::FormStructure* ChromeAutofillAiClient::GetCachedFormStructure(
     const autofill::FormGlobalId& form_id) {
   autofill::ContentAutofillDriver* driver =

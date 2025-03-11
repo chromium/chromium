@@ -31,8 +31,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
@@ -114,46 +112,6 @@ TEST_F(ChromeAutofillAiClientTest,
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, false);
   EXPECT_FALSE(client().IsAutofillAiEnabledPref());
-}
-
-TEST_F(ChromeAutofillAiClientTest, EligibilityOfNotSignedInUser) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakeAccountAvailable(
-      identity_manager,
-      signin::AccountAvailabilityOptionsBuilder().Build("example@gmail.com"));
-
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_use_model_execution_features(true);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  EXPECT_FALSE(client().IsUserEligible());
-}
-
-TEST_F(ChromeAutofillAiClientTest, EligibilityOfSignedInUserWithMlDisabled) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "example@gmail.com", signin::ConsentLevel::kSignin);
-
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_use_model_execution_features(false);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  EXPECT_FALSE(client().IsUserEligible());
-}
-
-TEST_F(ChromeAutofillAiClientTest, EligibilityOfSignedInUserWithMlEnabled) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "example@gmail.com", signin::ConsentLevel::kSignin);
-
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_use_model_execution_features(true);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  EXPECT_TRUE(client().IsUserEligible());
 }
 
 // Tests that no ChromeAutofillAiClient is created if

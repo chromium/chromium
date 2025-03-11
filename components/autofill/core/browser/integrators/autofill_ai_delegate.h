@@ -27,11 +27,6 @@ class AutofillAiDelegate {
       autofill::FormGlobalId form_global_id,
       autofill::FieldGlobalId field_global_id) = 0;
 
-  // Returns whether the current user is eligible for the Autofill AI
-  // experience. This is not dependent on whether the user has enabled the flag
-  // or not.
-  virtual bool IsUserEligible() const = 0;
-
   // Displays an import bubble for `form` if Autofill AI is interested in the
   // form and then calls `autofill_callback`. Returns whether an import bubble
   // will be shown.

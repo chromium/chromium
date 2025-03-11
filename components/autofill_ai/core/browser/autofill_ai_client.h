@@ -74,9 +74,6 @@ class AutofillAiClient {
   // not, the client is not instantiated in the first place).
   virtual bool IsAutofillAiEnabledPref() const = 0;
 
-  // Returns whether the current user is eligible for Autofill AI.
-  virtual bool IsUserEligible() = 0;
-
   // Returns a pointer to a `FormStructure` for the corresponding `form_id`
   // from the Autofill cache. Can be a `nullptr` when the structure was not
   // found or if the driver is not available.

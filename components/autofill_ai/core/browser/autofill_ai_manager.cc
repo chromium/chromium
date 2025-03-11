@@ -282,10 +282,6 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillAiManager::IsUserEligible() const {
-  return client_->IsUserEligible();
-}
-
 void AutofillAiManager::OnSuggestionsShown(
     const DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormGlobalId& form_id) {
@@ -456,12 +452,14 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
 
 bool AutofillAiManager::ShouldDisplayIph(
     const autofill::AutofillField& field) const {
-  // Iph can be shown if:
-  // 1. The pref is off.
-  // 2. The user can access the feature (for example the experiment flag is on).
-  // 3. The focused form can trigger the feature.
-  return !client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
-         field.GetAutofillAiServerTypePredictions();
+  if (!autofill::MayPerformAutofillAiAction(
+          client_->GetAutofillClient(),
+          autofill::AutofillAiAction::kIphForOptIn)) {
+    return false;
+  }
+
+  // TODO(crbug.com/402367669): Implement IPH conditions.
+  return false;
 }
 
 autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
