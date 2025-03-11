@@ -294,6 +294,27 @@ void AILanguageModel::SetInitialPrompts(
       NOTREACHED();
     }
   }
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  // If multimodal input is enabled, the initial prompts have to get added
+  // manually.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIMultimodalInput)) {
+    if (system_prompt) {
+      auto system_prompt_ptr = blink::mojom::AILanguageModelPrompt::New();
+      system_prompt_ptr->role =
+          blink::mojom::AILanguageModelPromptRole::kSystem;
+      system_prompt_ptr->content =
+          blink::mojom::AILanguageModelPromptContent::NewText(*system_prompt);
+      initial_prompts.insert(initial_prompts.begin(),
+                             std::move(system_prompt_ptr));
+    }
+    if (!initial_prompts.empty()) {
+      auto append_options = on_device_model::mojom::AppendOptions::New();
+      append_options->input = BuildOnDeviceModelInput(initial_prompts);
+      append_options->max_tokens = context_->max_tokens();
+      session_->GetSession().Append(std::move(append_options), {});
+    }
+  }
   MultimodalMessage request = MakeInitialPrompt(item);
   session_->GetContextSizeInTokens(
       request.read(),
@@ -607,12 +628,19 @@ void AILanguageModel::Fork(
   const optimization_guide::SamplingParams sampling_param =
       session_->GetSamplingParams();
 
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      override_session;
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIMultimodalInput)) {
+    override_session = session_->Clone();
+  }
   ai_manager_->CreateLanguageModelForCloning(
       base::PassKey<AILanguageModel>(),
       blink::mojom::AILanguageModelSamplingParams::New(
           sampling_param.top_k, sampling_param.temperature),
       context_bound_object_set_.get(), GetExpectedInputLanguagesCopy(),
-      *context_, std::move(client_remote));
+      *context_, std::move(client_remote), std::move(override_session));
 }
 
 void AILanguageModel::Destroy() {
