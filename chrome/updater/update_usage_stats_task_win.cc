@@ -56,11 +56,7 @@ bool AppInVectorAllowsUsageStats(UpdaterScope scope,
 
 // Returns all app ids which are not the Updater or CECA.
 std::vector<std::string> FilterOtherAppIds(std::vector<std::string> app_ids) {
-  app_ids.erase(std::remove_if(app_ids.begin(), app_ids.end(),
-                               [](const std::string& app_id) {
-                                 return IsUpdaterOrCompanionApp(app_id);
-                               }),
-                app_ids.end());
+  std::erase_if(app_ids, IsUpdaterOrCompanionApp);
   return app_ids;
 }
 
