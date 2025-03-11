@@ -5644,6 +5644,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-block-fetch-objects-interaction-rpcs-on-separate-handshake",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-clearcut-background-upload-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
@@ -5711,6 +5716,16 @@
   {
     "name": "lens-overlay-force-show-onboarding-screen",
     "owners": [ "ameurhosni@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "lens-prewarm-hard-stickiness-in-input-selection",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "lens-prewarm-hard-stickiness-in-query-formulation",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 140
   },
   {
