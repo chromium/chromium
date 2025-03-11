@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_policy_handler.h"
+#include "components/autofill/core/browser/permissions/autofill_policy_handler.h"
 
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_prefs.h"

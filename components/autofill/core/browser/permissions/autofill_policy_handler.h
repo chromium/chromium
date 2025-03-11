@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_POLICY_HANDLER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_POLICY_HANDLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_POLICY_HANDLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/policy_export.h"
@@ -27,4 +27,4 @@ class AutofillPolicyHandler : public policy::TypeCheckingPolicyHandler {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_POLICY_HANDLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_POLICY_HANDLER_H_
