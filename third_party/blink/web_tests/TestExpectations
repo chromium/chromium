@@ -9055,3 +9055,4 @@ crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTr
 crbug.com/402339999 [ Mac14-arm64 ] compositing/geometry/video-opacity-overlay.html [ Failure ]
 crbug.com/402339999 [ Mac14-arm64 ] compositing/overlap-blending/children-opacity-no-overlap.html [ Failure ]
 crbug.com/402339999 [ Mac14-arm64 ] compositing/reflections/nested-reflection-animated.html [ Failure ]
+crbug.com/402377886 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.sharedworker.html [ Failure ]
