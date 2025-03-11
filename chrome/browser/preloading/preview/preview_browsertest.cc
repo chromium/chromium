@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, SecPurposeHeader) {
       GetObservedRequestHeadersFor(preview_url);
   auto it = headers.find(blink::kSecPurposeHeaderName);
   ASSERT_NE(it, headers.end());
-  EXPECT_EQ(it->second, "prefetch;prerender;preview");
+  EXPECT_EQ(it->second, blink::kSecPurposePrefetchPrerenderPreviewHeaderValue);
 }
 
 IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, CancelWhenPrimaryPageChanged) {

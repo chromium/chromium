@@ -191,6 +191,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -413,8 +414,10 @@ void AddAdditionalRequestHeaders(
   // compatibility concerns (See
   // https://github.com/WICG/nav-speculation/issues/133).
   if (frame_tree_node->frame_tree().is_prerendering()) {
-    headers->SetHeader("Sec-Purpose", "prefetch;prerender");
-    headers->SetHeader("Purpose", "prefetch");
+    headers->SetHeader(blink::kSecPurposeHeaderName,
+                       blink::kSecPurposePrefetchPrerenderHeaderValue);
+    headers->SetHeader(blink::kPurposeHeaderName,
+                       blink::kSecPurposePrefetchHeaderValue);
   } else if (frame_tree_node->frame_tree()
                  .page_delegate()
                  ->IsPageInPreviewMode()) {
@@ -423,7 +426,8 @@ void AddAdditionalRequestHeaders(
     // need to identify the preview case from prerendering.
     // Do not send the `Purpose` header as the preview mode is new and don't
     // need to be careful about the compatibility breakage here.
-    headers->SetHeader("Sec-Purpose", "prefetch;prerender;preview");
+    headers->SetHeader(blink::kSecPurposeHeaderName,
+                       blink::kSecPurposePrefetchPrerenderPreviewHeaderValue);
   }
 }
 
