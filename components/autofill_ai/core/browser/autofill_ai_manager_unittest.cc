@@ -126,7 +126,6 @@ class BaseAutofillAiManagerTest : public testing::Test {
   BaseAutofillAiManagerTest() {
     ON_CALL(client(), GetAutofillClient)
         .WillByDefault(ReturnRef(autofill_client_));
-    ON_CALL(client(), IsAutofillAiEnabledPref).WillByDefault(Return(true));
   }
 
   autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
