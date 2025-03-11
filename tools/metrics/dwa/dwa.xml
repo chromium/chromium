@@ -36,6 +36,18 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AttributionConversionsStoreSource">
+  <owner>linnan@google.com</owner>
+  <owner>zhouzj@google.com</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status" enum="ConversionStorageSourceStatus">
+    <summary>
+      Records the status of source registration processing. Recorded once for
+      each source event processed by the attribution manager layer.
+    </summary>
+  </metric>
+</event>
+
 <event name="DwaTestMetric">
   <owner>zhouzj@google.com</owner>
   <summary>
