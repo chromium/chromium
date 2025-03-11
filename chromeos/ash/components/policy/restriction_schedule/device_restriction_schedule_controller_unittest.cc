@@ -699,4 +699,17 @@ TEST_F(DeviceRestrictionScheduleControllerTest, HandlingDST_SummerToWinter) {
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
+// Test that Run() is not called when the policy is not set and a login event
+// happens.
+TEST_F(DeviceRestrictionScheduleControllerTest, LoginEventDoesntTriggerRun) {
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(_)).Times(0);
+
+  // Perform login.
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
+
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+
 }  // namespace policy

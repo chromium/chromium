@@ -163,6 +163,11 @@ void DeviceRestrictionScheduleController::RemoveObserver(Observer* observer) {
 }
 
 void DeviceRestrictionScheduleController::LoggedInStateChanged() {
+  if (intervals_.empty()) {
+    // Do nothing if the policy isn't set.
+    return;
+  }
+  // Re-run the logic when a login event happens.
   Run();
 }
 
