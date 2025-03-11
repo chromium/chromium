@@ -43,6 +43,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -56,12 +57,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -305,6 +308,37 @@ public class IdentityDiscControllerTest {
         identityDiscController.onPrimaryAccountChanged(accountSetEvent);
 
         verify(mButtonDataObserver).buttonDataChanged(true);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void preExistingErrorAtCreation() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Fake an identity error.
+                    FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
+                    SyncServiceFactory.setInstanceForTesting(fakeSyncService);
+                    fakeSyncService.setRequiresClientUpgrade(true);
+
+                    mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+                    ObservableSupplierImpl<Profile> profileSupplier =
+                            new ObservableSupplierImpl<Profile>();
+                    IdentityDiscController identityDiscController =
+                            new IdentityDiscController(
+                                    mActivityTestRule.getActivity(), mDispatcher, profileSupplier);
+
+                    Assert.assertEquals(
+                            SyncError.NO_ERROR, identityDiscController.getIdentityError());
+
+                    identityDiscController.onFinishNativeInitialization();
+                    profileSupplier.set(ProfileManager.getLastUsedRegularProfile());
+
+                    Assert.assertEquals(
+                            SyncError.CLIENT_OUT_OF_DATE,
+                            identityDiscController.getIdentityError());
+                });
     }
 
     @Test
