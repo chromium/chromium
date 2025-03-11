@@ -193,6 +193,19 @@
   function getZoomLevel() {
     return controller.zoomLevel;
   }
+
+  function getSupportedZoomLevels() {
+    try {
+      return controller.getSupportedZoomLevels();
+    } catch (e) {
+      // `EvalJsResult` is limiting; we cannot inspect it until after
+      // we ExtractList() or use some other ExtractX().
+      // We therefore pack the error the same way we would pack a valid
+      // result; the test fixture will detect a single entry as one
+      // containing an error.
+      return [`${e}`];
+    }
+  }
 </script>
 </head>
 <body>

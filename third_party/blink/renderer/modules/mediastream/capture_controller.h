@@ -32,6 +32,8 @@ class MODULES_EXPORT CaptureController final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static Vector<int> getSupportedZoomLevelsForTabs();
+
   static CaptureController* Create(ExecutionContext*);
 
   explicit CaptureController(ExecutionContext*);
@@ -47,7 +49,7 @@ class MODULES_EXPORT CaptureController final
                                            HTMLElement* element);
 
   // Captured Surface Control IDL interface - zoom controls.
-  static Vector<int> getSupportedZoomLevels();
+  Vector<int> getSupportedZoomLevels(ExceptionState& exception_state);
   std::optional<int> zoomLevel() const;
   ScriptPromise<IDLUndefined> increaseZoomLevel(ScriptState* script_state);
   ScriptPromise<IDLUndefined> decreaseZoomLevel(ScriptState* script_state);

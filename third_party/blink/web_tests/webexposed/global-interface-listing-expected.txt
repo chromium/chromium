@@ -1456,7 +1456,6 @@ interface CanvasRenderingContext2D
     setter textRendering
     setter wordSpacing
 interface CaptureController : EventTarget
-    static method getSupportedZoomLevels
     attribute @@toStringTag
     getter oncapturedmousechange
     getter onzoomlevelchange
@@ -1464,6 +1463,7 @@ interface CaptureController : EventTarget
     method captureWheel
     method constructor
     method decreaseZoomLevel
+    method getSupportedZoomLevels
     method increaseZoomLevel
     method resetZoomLevel
     method sendWheel

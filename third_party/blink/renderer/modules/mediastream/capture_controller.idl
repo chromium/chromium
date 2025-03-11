@@ -47,9 +47,10 @@ interface CaptureController : EventTarget {
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
-    MeasureAs = CapturedSurfaceControl
+    MeasureAs = CapturedSurfaceControl,
+    RaisesException
   ]
-  static sequence<long> getSupportedZoomLevels();
+  sequence<long> getSupportedZoomLevels();
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
