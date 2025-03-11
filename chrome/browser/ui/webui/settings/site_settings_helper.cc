@@ -624,9 +624,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     }
 
     if (base::FeatureList::IsEnabled(
-            features::kCapturedSurfaceControlKillswitch) &&
-        base::FeatureList::IsEnabled(
-            features::kCapturedSurfaceControlStickyPermissions)) {
+            features::kCapturedSurfaceControlKillswitch)) {
       base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
     }
 
