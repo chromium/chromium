@@ -833,7 +833,7 @@ public class WebsitePermissionsFetcherTest {
                     .getBrowsingDataModel(any(Callback.class));
         } else {
             // Add storage info.
-            websitePreferenceBridge.addStorageInfo(new StorageInfo(ORIGIN, 0, storageSize));
+            websitePreferenceBridge.addStorageInfo(new StorageInfo(ORIGIN, storageSize));
 
             // Add local storage info.
             websitePreferenceBridge.addLocalStorageInfoMapEntry(
@@ -1297,7 +1297,7 @@ public class WebsitePermissionsFetcherTest {
         String chromiumOrigin = "https://chromium.org";
         int storageSize = 256;
         int sharedDictionarySize = 512;
-        StorageInfo fakeStorageInfo = new StorageInfo(ORIGIN, 0, storageSize);
+        StorageInfo fakeStorageInfo = new StorageInfo(ORIGIN, storageSize);
         LocalStorageInfo fakeLocalStorageInfo = new LocalStorageInfo(ORIGIN, storageSize, false);
         LocalStorageInfo fakeImportantLocalStorageInfo =
                 new LocalStorageInfo(chromiumOrigin, storageSize, true);

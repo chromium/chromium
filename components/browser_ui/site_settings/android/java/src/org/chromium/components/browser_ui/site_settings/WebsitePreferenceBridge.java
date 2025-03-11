@@ -79,8 +79,8 @@ public class WebsitePreferenceBridge {
 
     @CalledByNative
     private static void insertStorageInfoIntoList(
-            ArrayList<StorageInfo> list, String host, int type, long size) {
-        list.add(new StorageInfo(host, type, size));
+            ArrayList<StorageInfo> list, String host, long size) {
+        list.add(new StorageInfo(host, size));
     }
 
     @CalledByNative
@@ -526,10 +526,7 @@ public class WebsitePreferenceBridge {
                 Object callback);
 
         void clearStorageData(
-                BrowserContextHandle browserContextHandle,
-                String origin,
-                int type,
-                Object callback);
+                BrowserContextHandle browserContextHandle, String origin, Object callback);
 
         void getChosenObjects(
                 BrowserContextHandle browserContextHandle,
