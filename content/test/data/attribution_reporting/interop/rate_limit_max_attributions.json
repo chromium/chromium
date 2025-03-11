@@ -5,6 +5,7 @@
   },
   "input": {
     "registrations": [
+      // S1
       {
         "timestamp": "0",
         "registration_request": {
@@ -76,7 +77,7 @@
           }
         ]
       },
-      // Should be preferred over the first source as it's more recent.
+      // S2, should be preferred over S1 as it's more recent.
       {
         "timestamp": "2000",
         "registration_request": {
@@ -224,7 +225,7 @@
           }
         ]
       },
-      // Should be preferred over the second source as it's more recent.
+      // S3, Should be preferred over S2 as it's more recent.
       {
         "timestamp": "4000",
         "registration_request": {
@@ -345,7 +346,7 @@
           }
         ]
       },
-      // Should be preferred over the third source as it's more recent.
+      // S4, should be preferred over S3 as it's more recent.
       {
         "timestamp": "10000",
         "registration_request": {
@@ -388,8 +389,8 @@
           }
         ]
       },
-      // Should result in an event-level report because the first report falls
-      // outside the rate limit window.
+      // Should be dropped due to attribution limit which is based on
+      // the attributed source time instead of trigger time.
       {
         "timestamp": "2592000000",
         "registration_request": {
@@ -403,6 +404,48 @@
                 "event_trigger_data": [
                   {
                     "trigger_data": "6"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // S5, should be preferred over S4 as it's more recent.
+      {
+        "timestamp": "2592000001",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "777"
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an event-level report because the first report falls
+      // outside the rate limit window based on attributed source time.
+      {
+        "timestamp": "2592000002",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
                   }
                 ]
               }
@@ -570,14 +613,14 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "2592010",
-          "source_event_id": "666",
-          "source_type": "event",
-          "trigger_data": "0"
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "2764800",
+          "source_event_id": "777",
+          "source_type": "navigation",
+          "trigger_data": "7"
         },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "2592010000"
+        "report_time": "2764800001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]
   }
