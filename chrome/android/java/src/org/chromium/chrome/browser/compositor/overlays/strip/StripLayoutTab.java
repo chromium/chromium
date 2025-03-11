@@ -749,6 +749,15 @@ public class StripLayoutTab extends StripLayoutView {
         return mIsPlaceholder;
     }
 
+    @Override
+    public void setIsDraggedOffStrip(boolean isDraggedOffStrip) {
+        super.setIsDraggedOffStrip(isDraggedOffStrip);
+
+        // Views that are dragged off strip need to hide their dividers.
+        setStartDividerVisible(/* visible= */ false);
+        setEndDividerVisible(/* visible= */ false);
+    }
+
     /**
      * @return The left-side of the tab's touch target.
      */
