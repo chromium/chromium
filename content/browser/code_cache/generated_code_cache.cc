@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include <iostream>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -519,7 +515,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     // change shared memory before we can compute the hash and write the data.
     // TODO(crbug.com/40151989) Eliminate this copy when the shared memory can't
     // be written by the sender.
-    mojo_base::BigBuffer copy({data.data(), data.size()});
+    mojo_base::BigBuffer copy(base::span{data});
     if (copy.size() != data.size())
       return;
     data = mojo_base::BigBuffer();  // Release the old buffer.
@@ -912,7 +908,7 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
         DCHECK_EQ(static_cast<int>(kHeaderSizeInBytes + kSHAKeySizeInBytes),
                   op->small_buffer()->size());
         std::string checksum_key(
-            op->small_buffer()->data() + kHeaderSizeInBytes,
+            UNSAFE_TODO(op->small_buffer()->data() + kHeaderSizeInBytes),
             kSHAKeySizeInBytes);
         auto small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
         auto large_buffer = base::MakeRefCounted<BigIOBuffer>(data_size);
