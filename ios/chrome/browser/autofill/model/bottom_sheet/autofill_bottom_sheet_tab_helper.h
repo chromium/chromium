@@ -82,6 +82,9 @@ class AutofillBottomSheetTabHelper
   void ShowPlusAddressesBottomSheet(
       plus_addresses::PlusAddressCallback callback);
 
+  // Send a command to show save card bottomsheet.
+  void ShowSaveCardBottomSheet();
+
   // Send a command to show the VCN enrollment Bottom Sheet.
   void ShowVirtualCardEnrollmentBottomSheet(
       std::unique_ptr<autofill::VirtualCardEnrollUiModel> model,

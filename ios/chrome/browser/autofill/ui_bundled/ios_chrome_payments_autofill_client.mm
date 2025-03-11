@@ -58,6 +58,18 @@ std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
   return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                       std::move(delegate));
 }
+
+// Returns true if the card to be saved has 0 strikes (i.e the user has not
+// rejected upload offer for the card previously) and, both cardholder name
+// and expiration date are present and `kAutofillSaveCardBottomSheet` feature
+// is enabled.
+bool ShowSaveCardBottomSheet(
+    const PaymentsAutofillClient::SaveCreditCardOptions& options) {
+  return options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
+         !options.should_request_name_from_user &&
+         !options.should_request_expiration_date_from_user &&
+         base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
+}
 }  // namespace
 
 IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
@@ -103,6 +115,14 @@ void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     SaveCreditCardOptions options,
     UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
+
+  if (ShowSaveCardBottomSheet(options)) {
+    AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
+        AutofillBottomSheetTabHelper::FromWebState(web_state_);
+    // TODO(crbug.com/6333818): Create and pass model to the tab helper.
+    bottom_sheet_tab_helper->ShowSaveCardBottomSheet();
+    return;
+  }
 
   AccountInfo account_info =
       client_->GetIdentityManager()->FindExtendedAccountInfo(

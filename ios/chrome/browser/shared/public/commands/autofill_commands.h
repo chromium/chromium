@@ -37,6 +37,10 @@ class WebState;
 // Shows the plus address bottom sheet view controller.
 - (void)showPlusAddressesBottomSheet;
 
+// Commands to manage save card bottomsheet.
+- (void)showSaveCardBottomSheet;
+- (void)dismissSaveCardBottomSheet;
+
 // Sends a command to show the VCN enrollment Bottom Sheet.
 - (void)showVirtualCardEnrollmentBottomSheet:
             (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
