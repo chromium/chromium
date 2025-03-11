@@ -637,9 +637,10 @@ TEST_P(NoVarySearchCacheTest, ClearDataEverything) {
   cache().MaybeInsert(TestRequest(GURL("https://example.com/search?q=z")),
                       TestHeaders("key-order"));
 
-  cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {}, base::Time(),
-                    base::Time::Max());
+  const bool cleared = cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {},
+                                         base::Time(), base::Time::Max());
 
+  EXPECT_TRUE(cleared);
   EXPECT_EQ(cache().GetSizeForTesting(), 0u);
   EXPECT_TRUE(cache().IsTopLevelMapEmptyForTesting());
 }
@@ -651,10 +652,12 @@ TEST_P(NoVarySearchCacheTest, ClearDataMatchOrigin) {
   cache().MaybeInsert(TestRequest(GURL("http://example.com/q?a=b")),
                       TestHeaders("key-order"));
 
-  cache().ClearData(UrlFilterType::kTrueIfMatches,
-                    {url::Origin::Create(GURL("https://example.com/"))}, {},
-                    base::Time(), base::Time::Max());
+  const bool cleared =
+      cache().ClearData(UrlFilterType::kTrueIfMatches,
+                        {url::Origin::Create(GURL("https://example.com/"))}, {},
+                        base::Time(), base::Time::Max());
 
+  EXPECT_TRUE(cleared);
   EXPECT_EQ(cache().GetSizeForTesting(), 1u);
   EXPECT_TRUE(cache()
                   .Lookup(TestRequest(GURL("http://example.com/q?a=b")))
@@ -670,9 +673,11 @@ TEST_P(NoVarySearchCacheTest, ClearDataMatchDomain) {
   cache().MaybeInsert(TestRequest(GURL("https://other.example/q?a=b")),
                       TestHeaders("key-order"));
 
-  cache().ClearData(UrlFilterType::kTrueIfMatches, {}, {"example.com"},
-                    base::Time(), base::Time::Max());
+  const bool cleared =
+      cache().ClearData(UrlFilterType::kTrueIfMatches, {}, {"example.com"},
+                        base::Time(), base::Time::Max());
 
+  EXPECT_TRUE(cleared);
   EXPECT_EQ(cache().GetSizeForTesting(), 1u);
   EXPECT_TRUE(cache()
                   .Lookup(TestRequest(GURL("https://other.example/q?a=b")))
@@ -708,13 +713,37 @@ TEST_P(NoVarySearchCacheTest, ClearDataMatchTime) {
   advance_time_to("14:00:00");
   Insert("a=3", "key-order");
 
-  cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {}, time("12:30:00"),
-                    time("13:30:00"));
+  const bool cleared = cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {},
+                                         time("12:30:00"), time("13:30:00"));
 
+  EXPECT_TRUE(cleared);
   EXPECT_EQ(cache().GetSizeForTesting(), 2u);
   EXPECT_TRUE(Exists("a=1"));
   EXPECT_FALSE(Exists("a=2"));
   EXPECT_TRUE(Exists("a=3"));
+}
+
+TEST_P(NoVarySearchCacheTest, ClearDataEmptyCache) {
+  const bool cleared =
+      cache().ClearData(UrlFilterType::kTrueIfMatches,
+                        {url::Origin::Create(GURL("https://example.com/"))}, {},
+                        base::Time(), base::Time::Max());
+
+  EXPECT_FALSE(cleared);
+  EXPECT_EQ(cache().GetSizeForTesting(), 0u);
+}
+
+TEST_P(NoVarySearchCacheTest, ClearDataNoMatch) {
+  Insert("a=1", "key-order");
+
+  const bool cleared = cache().ClearData(
+      UrlFilterType::kTrueIfMatches,
+      {url::Origin::Create(GURL("https://nomatch.com:9999/"))}, {},
+      base::Time(), base::Time::Max());
+
+  EXPECT_FALSE(cleared);
+  EXPECT_EQ(cache().GetSizeForTesting(), 1u);
+  EXPECT_TRUE(Exists("a=1"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

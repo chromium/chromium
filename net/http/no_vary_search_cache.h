@@ -117,8 +117,9 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // meaning of `origins` and `domains` as with DoesURlMatchFilter(), but
   // doesn't affect the interpretation of `delete_begin` and `delete_end`.
   // In particular, ClearData(URLFilterType::kFalseIfMatching, {}, {},
-  // base::Time(), base::Time::Max()) will delete everything.
-  void ClearData(UrlFilterType filter_type,
+  // base::Time(), base::Time::Max()) will delete everything. Returns `true` if
+  // anything was removed.
+  bool ClearData(UrlFilterType filter_type,
                  const base::flat_set<url::Origin>& origins,
                  const base::flat_set<std::string>& domains,
                  base::Time delete_begin,
