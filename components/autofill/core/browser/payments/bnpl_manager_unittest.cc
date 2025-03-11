@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,6 +53,13 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                std::string context_token,
                                std::unique_ptr<base::Value::Dict>)>));
+
+  MOCK_METHOD(
+      void,
+      GetBnplPaymentInstrumentForFetchingUrl,
+      (GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               const BnplFetchUrlResponseDetails&)> callback));
 };
 }  // namespace
 
@@ -65,12 +73,16 @@ class BnplManagerTest : public Test {
   const std::string kIssuerId = "ISSUER_ID";
   const std::string kAppLocale = "en-GB";
   const std::u16string kLegalMessage = u"LEGAL_MESSAGE";
+  const std::string kCurrency = "USD";
+  const GURL kDomain = GURL("https://dummytest.com/");
+  const uint64_t kAmount = 1'000'000;
 
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
     autofill_client_->SetPrefs(test::PrefServiceForTesting());
     autofill_client_->set_app_locale(kAppLocale);
     autofill_client_->SetAutofillPaymentMethodsEnabled(true);
+    autofill_client_->set_last_committed_primary_main_frame_url(kDomain);
     autofill_client_->GetPersonalDataManager()
         .payments_data_manager()
         .SetSyncingForTest(true);
@@ -96,7 +108,7 @@ class BnplManagerTest : public Test {
                                uint64_t price_higher_bound,
                                const std::string& issuer_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
-    eligible_price_ranges.emplace_back(/*currency=*/"USD",
+    eligible_price_ranges.emplace_back(kCurrency,
                                        price_lower_bound * kMicrosPerDollar,
                                        price_higher_bound * kMicrosPerDollar);
     test_api(autofill_client_->GetPersonalDataManager().payments_data_manager())
@@ -110,7 +122,7 @@ class BnplManagerTest : public Test {
                              const std::string& issuer_id,
                              const int64_t instrument_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
-    eligible_price_ranges.emplace_back(/*currency=*/"USD",
+    eligible_price_ranges.emplace_back(kCurrency,
                                        price_lower_bound * kMicrosPerDollar,
                                        price_higher_bound * kMicrosPerDollar);
 
@@ -152,11 +164,10 @@ class BnplManagerTest : public Test {
 // Tests that the initial state for a BNPL flow is set when
 // BnplManager::InitBnplFlow() is triggered.
 TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
-  uint64_t final_checkout_amount = 1'000'000;
-  bnpl_manager_->InitBnplFlow(final_checkout_amount, base::DoNothing());
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
 
   EXPECT_EQ(
-      final_checkout_amount,
+      kAmount,
       test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount);
   EXPECT_EQ(autofill_client_->GetAppLocale(),
             test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale);
@@ -270,7 +281,7 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
 // request details filled out correctly, and verifies that the VCN is correctly
 // filled and the state of BnplManager is reset.
 TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
   // TODO(crbug.com/400500799): Remove test helper method and set arguments from
   // source.
   test_api(*bnpl_manager_)
@@ -360,12 +371,176 @@ TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
+// Tests that `OnIssuerSelected()` calls with a linked BNPL issuer will call
+// the payments network interface with the request details filled out correctly.
+TEST_F(
+    BnplManagerTest,
+    OnIssuerSelected_CallsGetBnplPaymentInstrumentForFetchingUrl_LinkedIssuer) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  ongoing_flow_state->risk_data.clear();
+  ASSERT_TRUE(ongoing_flow_state->risk_data.empty());
+
+  EXPECT_CALL(
+      *payments_network_interface_,
+      GetBnplPaymentInstrumentForFetchingUrl(
+          /*request_details=*/
+          FieldsAre(kBillingCustomerNumber,
+                    base::NumberToString(
+                        linked_issuer.payment_instrument()->instrument_id()),
+                    _, kDomain, kAmount, kCurrency),
+          /*callback=*/_))
+      .Times(1);
+
+  OnIssuerSelected(linked_issuer);
+
+  EXPECT_EQ(ongoing_flow_state->issuer_id, linked_issuer.issuer_id());
+  EXPECT_EQ(ongoing_flow_state->instrument_id,
+            base::NumberToString(
+                linked_issuer.payment_instrument()->instrument_id()));
+  EXPECT_FALSE(ongoing_flow_state->risk_data.empty());
+}
+
+// Tests that `OnIssuerSelected()` calls with a linked BNPL issuer will not
+// load risk data again when there is a risk data string saved.
+TEST_F(
+    BnplManagerTest,
+    OnIssuerSelected_CallsGetBnplPaymentInstrumentForFetchingUrl_LinkedIssuer_RiskDataLoaded) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+
+  // Set up risk data cache.
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  ongoing_flow_state->risk_data = kRiskData;
+  ASSERT_FALSE(ongoing_flow_state->risk_data.empty());
+
+  autofill_client_->GetPaymentsAutofillClient()->set_risk_data_loaded(false);
+
+  EXPECT_CALL(
+      *payments_network_interface_,
+      GetBnplPaymentInstrumentForFetchingUrl(
+          /*request_details=*/
+          FieldsAre(kBillingCustomerNumber,
+                    base::NumberToString(
+                        linked_issuer.payment_instrument()->instrument_id()),
+                    kRiskData, kDomain, kAmount, kCurrency),
+          /*callback=*/_))
+      .Times(1);
+
+  OnIssuerSelected(linked_issuer);
+
+  EXPECT_EQ(ongoing_flow_state->issuer_id, linked_issuer.issuer_id());
+  EXPECT_EQ(ongoing_flow_state->instrument_id,
+            base::NumberToString(
+                linked_issuer.payment_instrument()->instrument_id()));
+  EXPECT_EQ(ongoing_flow_state->risk_data, kRiskData);
+
+  // Since risk data was cached, it was directly used, thus loading risk data
+  // was skipped.
+  EXPECT_FALSE(
+      autofill_client_->GetPaymentsAutofillClient()->risk_data_loaded());
+}
+
+// Tests that the manager set flow state based on the url fetch result and
+// init the flow to redirect user to the site of the selected issuer.
+TEST_F(BnplManagerTest, OnIssuerSelected_OnRedirectUrlFetched) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+
+  BnplFetchUrlResponseDetails response;
+  response.redirect_url = kRedirectUrl;
+  response.success_url_prefix = GURL("success");
+  response.failure_url_prefix = GURL("failure");
+  response.context_token = kContextToken;
+
+  EXPECT_CALL(*static_cast<MockPaymentsWindowManager*>(
+                  autofill_client_->GetPaymentsAutofillClient()
+                      ->GetPaymentsWindowManager()),
+              InitBnplFlow(FieldsAre(kRedirectUrl, response.success_url_prefix,
+                                     response.failure_url_prefix,
+                                     /*completion_callback=*/_)))
+      .Times(1);
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response));
+
+  OnIssuerSelected(linked_issuer);
+
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  EXPECT_EQ(ongoing_flow_state->issuer_id, linked_issuer.issuer_id());
+  EXPECT_EQ(ongoing_flow_state->context_token, kContextToken);
+  EXPECT_EQ(ongoing_flow_state->redirect_url, kRedirectUrl);
+}
+
+// Tests that when BNPL flow completed successfully, the manager will attempt to
+// fetch VCN.
+TEST_F(BnplManagerTest, OnPopupWindowCompleted_WithSuccess) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+
+  // Init the `PaymentsWindowManager` BNPL flow.
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+          BnplFetchUrlResponseDetails()));
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+  auto& payments_window_manager = *static_cast<MockPaymentsWindowManager*>(
+      autofill_client_->GetPaymentsAutofillClient()
+          ->GetPaymentsWindowManager());
+
+  EXPECT_CALL(payments_window_manager, InitBnplFlow)
+      .WillOnce([&](PaymentsWindowManager::BnplContext bnpl_context) {
+        std::move(bnpl_context.completion_callback)
+            .Run(PaymentsWindowManager::BnplFlowResult::kSuccess);
+      });
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingVcn)
+      .Times(1);
+
+  OnIssuerSelected(linked_issuer);
+}
+
+// Tests that when BNPL flow completed with user closed, the flow status will
+// be reset.
+TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+
+  // Init the `PaymentsWindowManager` BNPL flow.
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+          BnplFetchUrlResponseDetails()));
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+  auto& payments_window_manager = *static_cast<MockPaymentsWindowManager*>(
+      autofill_client_->GetPaymentsAutofillClient()
+          ->GetPaymentsWindowManager());
+
+  EXPECT_CALL(payments_window_manager, InitBnplFlow)
+      .WillOnce([&](PaymentsWindowManager::BnplContext bnpl_context) {
+        std::move(bnpl_context.completion_callback)
+            .Run(PaymentsWindowManager::BnplFlowResult::kUserClosed);
+      });
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingVcn)
+      .Times(0);
+
+  OnIssuerSelected(linked_issuer);
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
 // Tests that `OnIssuerSelected()` calls with an unlinked BNPL issuer will call
 // the payments network interface with the request details filled out correctly.
 TEST_F(
     BnplManagerTest,
     OnIssuerSelected_CallsGetDetailsForCreateBnplPaymentInstrument_UnlinkedIssuer) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
 
   ASSERT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale,
             kAppLocale);

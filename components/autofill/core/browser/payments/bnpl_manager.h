@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -31,6 +32,7 @@ using UpdateSuggestionsCallback =
                                  AutofillSuggestionTriggerSource)>;
 
 struct BnplFetchVcnResponseDetails;
+struct BnplFetchUrlResponseDetails;
 
 // Owned by PaymentsAutofillClient. There is one instance of this class per Web
 // Contents. This class manages the flow for BNPL to complete a payment
@@ -161,6 +163,33 @@ class BnplManager {
       PaymentsAutofillClient::PaymentsRpcResult result,
       std::string context_token,
       std::unique_ptr<base::Value::Dict> legal_message);
+
+  // Runs when a linked issuer is selected by the user. Will load risk data
+  // if it is not cached, and then call the functions for fetching issuer
+  // redirect urls.
+  void LoadRiskDataForFetchingRedirectUrl();
+
+  // Runs after the risk data is loaded. Will set the risk data for the flow,
+  // and redirect to 'FetchRedirectUrl()' for sending the fetch redirect url
+  // request.
+  void OnRiskDataLoadedAfterIssuerSelectionDialogAcceptance(
+      const std::string& risk_data);
+
+  // Makes the appropriate call to the payments server to fetch the redirect
+  // urls from the selected issuer.
+  void FetchRedirectUrl();
+
+  // The callback after
+  // `PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingUrl()` calls.
+  // The callback contains the result of the call as well as `context_token`
+  // and urls from the issuer for redirecting and result checking.
+  void OnRedirectUrlFetched(PaymentsAutofillClient::PaymentsRpcResult result,
+                            const BnplFetchUrlResponseDetails& response);
+
+  // The callback after `PaymentsWindowManager::InitBnplFlow()` calls.
+  // The callback contains the result of the flow and will continue to
+  // VCN fetching if successful.
+  void OnPopupWindowCompleted(PaymentsWindowManager::BnplFlowResult result);
 
   // Combines `responses` from suggestion shown event and amount extraction,
   // and try to show card suggestions with buy-now-pay-later suggestion.
