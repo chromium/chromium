@@ -23,6 +23,9 @@ class ColumnPseudoElement : public PseudoElement {
   const PhysicalRect& ColumnRect() const { return column_rect_; }
   void SetColumnRect(PhysicalRect column_rect) { column_rect_ = column_rect; }
 
+  // Return the first element that starts in the column, in DOM order.
+  Element* FirstChildInDOMOrder() const;
+
   void AttachLayoutTree(AttachContext&) final;
   void DetachLayoutTree(bool performing_reattach) final;
 
