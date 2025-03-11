@@ -12227,21 +12227,6 @@
             ]
         }
     ],
-    "IOSInactiveTabsIPad": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InactiveTabsIPadFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSIncognitoSoftLock": [
         {
             "platforms": [

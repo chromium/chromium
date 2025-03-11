@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -183,11 +182,6 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
 }
 
 TEST_F(BrowserViewWranglerTest, TestBrowserList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {/* Enabled features */},
-      {/* Disabled features */ kInactiveTabsIPadFeature});
-
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithProfile:profile()
                                         sceneState:scene_state()
@@ -255,10 +249,6 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
 }
 
 TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
-  // Enabled inactive tabs feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kInactiveTabsIPadFeature);
-
   BrowserViewWrangler* wrangler =
       [[BrowserViewWrangler alloc] initWithProfile:profile()
                                         sceneState:scene_state()

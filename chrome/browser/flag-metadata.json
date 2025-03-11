@@ -5200,11 +5200,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "inactive-tabs",
-    "owners": [ "gambard@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "incognito-screenshot",
     "owners": [ "zalmashni@google.com", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
     "expiry_milestone": 140

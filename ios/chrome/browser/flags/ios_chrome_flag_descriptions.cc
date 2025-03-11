@@ -1265,10 +1265,6 @@ const char kTabGroupsIPadDescription[] =
     "When enabled, tab groups can be created and edited on iPad. Requires "
     "#modern-tab-strip to also be enabled on iPad.";
 
-const char kInactiveTabsIPadName[] = "Enable inactive tabs";
-const char kInactiveTabsIPadDescription[] =
-    "When turned on, the tabs will be moved to \"inactive\" after some time.";
-
 const char kTabResumptionName[] = "Enable Tab Resumption";
 const char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "

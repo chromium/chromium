@@ -745,9 +745,6 @@ extern const char kTabGridNewTransitionsDescription[];
 extern const char kTabGroupsIPadName[];
 extern const char kTabGroupsIPadDescription[];
 
-extern const char kInactiveTabsIPadName[];
-extern const char kInactiveTabsIPadDescription[];
-
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 

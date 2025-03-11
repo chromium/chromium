@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -457,14 +456,9 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
   CreateController();
   CheckController();
 
-  // The section to check for depends on some other features.
-  SettingsSectionIdentifier section = IsInactiveTabsAvailable()
-                                          ? SettingsSectionIdentifierInfo
-                                          : SettingsSectionIdentifierAdvanced;
-
   EXPECT_TRUE([controller().tableViewModel
       hasItemForItemType:SettingsItemTypeDownloadsSettings
-       sectionIdentifier:section]);
+       sectionIdentifier:SettingsSectionIdentifierInfo]);
 }
 
 // Verifies that the default browser blue dot is displayed when indicated.

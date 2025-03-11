@@ -14,44 +14,16 @@
 
 const int kInactiveTabsDisabledByUser = -1;
 
-BASE_FEATURE(kInactiveTabsIPadFeature,
-             "InactiveTabsIPadFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsInactiveTabsAvailable() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    return true;
-  }
-
-  return base::FeatureList::IsEnabled(kInactiveTabsIPadFeature);
-}
-
-bool IsInactiveTabsEnabled(PrefService* prefs) {
-  return IsInactiveTabsEnabled(
-      prefs->GetInteger(prefs::kInactiveTabsTimeThreshold));
-}
-
-bool IsInactiveTabsEnabled(int raw_threshold_value) {
-  if (!IsInactiveTabsAvailable()) {
-    return false;
-  }
-
-  return !IsInactiveTabsExplicitlyDisabledByUser(raw_threshold_value);
-}
-
 bool IsInactiveTabsExplicitlyDisabledByUser(PrefService* prefs) {
   return IsInactiveTabsExplicitlyDisabledByUser(
       prefs->GetInteger(prefs::kInactiveTabsTimeThreshold));
 }
 
 bool IsInactiveTabsExplicitlyDisabledByUser(int raw_threshold_value) {
-  CHECK(IsInactiveTabsAvailable());
   return raw_threshold_value == kInactiveTabsDisabledByUser;
 }
 
 const base::TimeDelta InactiveTabsTimeThreshold(PrefService* prefs) {
-  CHECK(IsInactiveTabsAvailable());
-
   if (experimental_flags::ShouldUseInactiveTabsTestThreshold()) {
     return base::Seconds(0);
   }

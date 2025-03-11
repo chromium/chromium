@@ -42,7 +42,6 @@ using ScopedWebStateListObservation =
 - (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
                     webStateList:(WebStateList*)webStateList
               profilePrefService:(PrefService*)prefService {
-  CHECK(IsInactiveTabsAvailable());
   // TODO(crbug.com/40923937): Reinstate this CHECK once
   // InactiveTabsButtonMediator is not created when not needed (for example when
   // a policy disables the regular tab grid).
