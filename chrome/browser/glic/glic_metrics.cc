@@ -42,7 +42,8 @@ enum class EntryPointImpression {
   kAfterFreOsOnly = 2,
   kAfterFreEnabled = 3,
   kAfterFreDisabled = 4,
-  kMaxValue = kAfterFreDisabled,
+  kNotPermitted = 5,
+  kMaxValue = kNotPermitted,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
 
@@ -140,13 +141,13 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   no_url_source_id_ = ukm::NoURLSourceId();
   source_id_ = no_url_source_id_;
 
-  is_allowed_ = enabling_->IsAllowed();
-  subscriptions_.push_back(
-      enabling_->RegisterAllowedChanged(base::BindRepeating(
-          &GlicMetrics::OnAllowedChanged, base::Unretained(this))));
-
+  is_enabled_ = enabling_->IsEnabledAndConsentForProfile(profile_);
   is_pinned_ = profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Add(
+      prefs::kGlicCompletedFre,
+      base::BindRepeating(&GlicMetrics::OnGlicCompletedFrePrefChanged,
+                          base::Unretained(this)));
   pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
                       base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
                                           base::Unretained(this)));
@@ -307,9 +308,9 @@ void GlicMetrics::OnImpressionTimerFired() {
                                   EntryPointImpression::kBeforeFre);
     return;
   }
-  if (!is_allowed_) {
+  if (!enabling_->IsAllowed()) {
     base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
-                                  EntryPointImpression::kAfterFreDisabled);
+                                  EntryPointImpression::kNotPermitted);
     return;
   }
 
@@ -328,17 +329,14 @@ void GlicMetrics::OnImpressionTimerFired() {
   base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
 }
 
-void GlicMetrics::OnAllowedChanged() {
-  bool is_allowed = enabling_->IsAllowed();
-  if (is_allowed == is_allowed_) {
+void GlicMetrics::OnGlicCompletedFrePrefChanged() {
+  bool is_enabled = enabling_->IsEnabledAndConsentForProfile(profile_);
+  if (is_enabled == is_enabled_) {
     // No change, early exit.
     return;
   }
-  is_allowed_ = is_allowed;
-  // TODO(crbug.com/391417447): Fix how/where these metrics are recorded.
-  // They're recording whether the user is allowed to use glic, when they should
-  // record whether the user enabled/disabled glic.
-  if (is_allowed_) {
+  is_enabled_ = is_enabled;
+  if (is_enabled_) {
     base::RecordAction(base::UserMetricsAction("Glic.Enabled"));
   } else {
     base::RecordAction(base::UserMetricsAction("Glic.Disabled"));

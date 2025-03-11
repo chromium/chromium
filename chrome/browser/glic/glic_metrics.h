@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
-#include <vector>
-
-#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
@@ -64,7 +61,8 @@ class GlicMetrics {
   // Stores the source id at the time that context is requested.
   void StoreSourceId();
 
-  void OnAllowedChanged();
+  // Called when kGlicCompletedFre changes.
+  void OnGlicCompletedFrePrefChanged();
 
   // Called when kGlicPinnedToTabstrip changes.
   void OnPinningPrefChanged();
@@ -97,16 +95,13 @@ class GlicMetrics {
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_;
 
-  // Glic access status, tracked to trigger 'disabled'/'enabled' metrics on
-  // change, and also informs other metric reports.
-  bool is_allowed_ = false;
+  // Whether Glic is enabled and FRE has been completed. Tracked to trigger
+  // metric(s) on change.
+  bool is_enabled_ = false;
 
   // Set to true in OnResponseStarted() and set to false in OnResponseStopped().
   // This is a workaround and should be removed, see crbug.com/399151164.
   bool response_started_ = false;
-
-  // Holds subscriptions for callbacks.
-  std::vector<base::CallbackListSubscription> subscriptions_;
 
   // Cache the last value of the kGlicPinnedToTabstrip pref so that we only emit
   // metrics for changes to the last value.

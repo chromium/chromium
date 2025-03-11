@@ -307,12 +307,12 @@ class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
   base::test::ScopedFeatureList scoped_feature_list;
 };
 
-TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabledPolicy) {
+TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionNotPermittedByPolicy) {
   profile_.GetPrefs()->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
 
-  ExpectEntryPointImpressionLogged(/*kAfterFreDisabled=*/4);
+  ExpectEntryPointImpressionLogged(/*kNotPermitted*/5);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
@@ -350,14 +350,10 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
 TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
-  profile_.GetPrefs()->SetInteger(
-      ::prefs::kGeminiSettings,
-      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
-  profile_.GetPrefs()->SetInteger(
-      ::prefs::kGeminiSettings,
-      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
 }
