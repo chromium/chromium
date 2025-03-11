@@ -1146,7 +1146,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'dc1da75aecdb1a30ca6c39070e7686386b74e1e5',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '0e30de6ed084706269b083b4ae334d49e14c66c7',
       'condition': 'checkout_chrome_release_scripts',
   },
 
