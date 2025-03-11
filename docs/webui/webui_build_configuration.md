@@ -594,9 +594,10 @@ Under the cover, build_webui() defines the following targets
 10. `merge_js_source_maps("merge_source_maps")`
 11. `bundle_js("build_bundle")`
 12. `minify_js("build_min_js")`
-13. `generate_grd("build_grd")`
-14. `generate_grd("build_grdp")`
-15. `grit("resources")`
+13. `generate_code_cache("build_code_cache")`
+14. `generate_grd("build_grd")`
+15. `generate_grd("build_grdp")`
+16. `grit("resources")`
 
 Some targets are only conditionally defined based on `build_webui()` input
 parameters.
@@ -681,6 +682,10 @@ optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
 optimize_webui_in_files: See |in_files| in bundle_js().
+generate_code_cache: Specifies whether code cache resources should be generated
+                     for the minified files. Use
+                     `generate_code_cache = enable_webui_generate_code_cache` to
+                     opt-in.
 
 Other params:
 webui_context_type: See |webui_context_type| in webui_path_mappings(). Optional,

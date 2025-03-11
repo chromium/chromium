@@ -2287,6 +2287,11 @@ WebContentSettingsClient* LocalFrame::GetContentSettingsClient() {
   return Client() ? Client()->GetContentSettingsClient() : nullptr;
 }
 
+const mojom::RendererContentSettingsPtr& LocalFrame::GetContentSettings()
+    const {
+  return Loader().GetDocumentLoader()->GetContentSettings();
+}
+
 PluginData* LocalFrame::GetPluginData() const {
   if (!Loader().AllowPlugins())
     return nullptr;

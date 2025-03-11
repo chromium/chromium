@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Provides the set of colors used by BrowserServicesIntentDataProvider. */
+@NullMarked
 public interface ColorProvider {
     /**
      * @return The color of the bottom bar.
@@ -21,14 +23,12 @@ public interface ColorProvider {
     /**
      * @return The navigation bar color specified in the intent, or null if not specified.
      */
-    @Nullable
-    Integer getNavigationBarColor();
+    @Nullable Integer getNavigationBarColor();
 
     /**
      * @return The navigation bar divider color specified in the intent, or null if not specified.
      */
-    @Nullable
-    Integer getNavigationBarDividerColor();
+    @Nullable Integer getNavigationBarDividerColor();
 
     /**
      * @return The color of the bottom bar.

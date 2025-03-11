@@ -62,6 +62,7 @@ class AIModelDownloadProgressManager {
 
    private:
     void OnRemoteDisconnect();
+    void ProcessEvent(const component_updater::CrxUpdateItem& item);
 
     // `manager_` owns `this`.
     base::raw_ref<AIModelDownloadProgressManager> manager_;
@@ -75,7 +76,16 @@ class AIModelDownloadProgressManager {
     // The ids of the components we're reporting the progress for.
     base::flat_set<std::string> component_ids_;
 
-    bool has_previous_progress_event_ = false;
+    // Map of the components to their observed downloaded bytes. Also serves as
+    // a way to keep track of what components we've observed the total bytes of.
+    std::map<std::string, int64_t> observed_downloaded_bytes_;
+
+    // Sum of all observed components' total_bytes.
+    int64_t components_total_bytes_ = 0;
+
+    // True if we know the total bytes of the components we'll be watching.
+    // Meaning we can start reporting.
+    bool ready_to_report_ = false;
 
     int last_reported_progress_ = 0;
     base::TimeTicks last_progress_time_;

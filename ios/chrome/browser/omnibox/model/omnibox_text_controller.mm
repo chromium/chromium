@@ -40,7 +40,12 @@
 
 #pragma mark - Omnibox text events
 
-- (void)onThumbnailRemoved {
+- (void)onThumbnailSet:(BOOL)hasThumbnail {
+  [self.omniboxAutocompleteController.omniboxPopupController
+      setHasThumbnail:hasThumbnail];
+}
+
+- (void)onThumbnailRemovedDuringEdit {
   // Update the client state.
   if (_omniboxController && _omniboxController->client()) {
     _omniboxController->client()->OnThumbnailRemoved();

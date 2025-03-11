@@ -4,13 +4,14 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_vcn_request.h"
 
+#include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 using base::MockCallback;
-using base::test::IsJson;
 using Dict = base::Value::Dict;
 using testing::Field;
 }  // namespace
@@ -56,12 +57,14 @@ class GetBnplPaymentInstrumentForFetchingVcnRequestTest : public testing::Test {
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestUrlPath) {
   EXPECT_EQ(request_->GetRequestUrlPath(),
-            "payments/apis-secure/chromepaymentsservice/getpaymentinstrument");
+            "payments/apis-secure/chromepaymentsservice/"
+            "getpaymentinstrument?s7e_suffix=chromewallet");
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
        GetRequestContentType) {
-  EXPECT_EQ(request_->GetRequestContentType(), "application/json");
+  EXPECT_EQ(request_->GetRequestContentType(),
+            "application/json/x-www-form-urlencoded");
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {
@@ -87,7 +90,12 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {
                                    request_details_.redirect_url.spec())
                               .Set("issuer_id", request_details_.issuer_id)));
 
-  EXPECT_THAT(request_->GetRequestContent(), IsJson(request_dict));
+  EXPECT_EQ(request_->GetRequestContent(),
+            base::StringPrintf(
+                "requestContentType=application/json; charset=utf-8&request=%s",
+                base::EscapeUrlEncodedData(
+                    base::WriteJson(request_dict).value(), /*use_plus=*/true)
+                    .c_str()));
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,

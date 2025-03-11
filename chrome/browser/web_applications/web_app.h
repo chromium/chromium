@@ -21,13 +21,13 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/features.h"
+#include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -337,7 +337,8 @@ class WebApp {
     return always_show_toolbar_in_fullscreen_;
   }
 
-  const proto::WebAppOsIntegrationState& current_os_integration_states() const {
+  const proto::os_state::WebAppOsIntegration& current_os_integration_states()
+      const {
     return current_os_integration_states_;
   }
 
@@ -353,7 +354,7 @@ class WebApp {
 
   const base::Time& latest_install_time() const { return latest_install_time_; }
 
-  const std::optional<GeneratedIconFix>& generated_icon_fix() const;
+  const std::optional<proto::GeneratedIconFix>& generated_icon_fix() const;
 
   int supported_links_offer_ignore_count() const {
     return supported_links_offer_ignore_count_;
@@ -461,7 +462,7 @@ class WebApp {
       ExternalConfigMap management_to_external_config_map);
   void SetTabStrip(std::optional<blink::Manifest::TabStrip> tab_strip);
   void SetCurrentOsIntegrationStates(
-      proto::WebAppOsIntegrationState current_os_integration_states);
+      proto::os_state::WebAppOsIntegration current_os_integration_states);
   void SetIsolationData(IsolationData isolation_data);
   void SetLinkCapturingUserPreference(
       proto::LinkCapturingUserPreference user_link_capturing_preference);
@@ -501,7 +502,8 @@ class WebApp {
 
   void SetLatestInstallTime(const base::Time& latest_install_time);
 
-  void SetGeneratedIconFix(std::optional<GeneratedIconFix> generated_icon_fix);
+  void SetGeneratedIconFix(
+      std::optional<proto::GeneratedIconFix> generated_icon_fix);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -593,17 +595,16 @@ class WebApp {
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen_ = true;
 
-  proto::WebAppOsIntegrationState current_os_integration_states_ =
-      proto::WebAppOsIntegrationState();
+  proto::os_state::WebAppOsIntegration current_os_integration_states_;
 
   std::optional<IsolationData> isolation_data_;
 
   proto::LinkCapturingUserPreference user_link_capturing_preference_ =
-      proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT;
+      proto::NAVIGATION_CAPTURING_PREFERENCE_DEFAULT;
 
   base::Time latest_install_time_;
 
-  std::optional<GeneratedIconFix> generated_icon_fix_;
+  std::optional<proto::GeneratedIconFix> generated_icon_fix_;
 
   int supported_links_offer_ignore_count_ = 0;
   int supported_links_offer_dismiss_count_ = 0;
@@ -662,15 +663,15 @@ bool operator==(const WebApp::ExternalManagementConfig& management_config1,
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2);
 
-namespace proto {
+namespace proto::os_state {
 
-bool operator==(const WebAppOsIntegrationState& os_integration_state1,
-                const WebAppOsIntegrationState& os_integration_state2);
+bool operator==(const WebAppOsIntegration& os_integration_state1,
+                const WebAppOsIntegration& os_integration_state2);
 
-bool operator!=(const WebAppOsIntegrationState& os_integration_state1,
-                const WebAppOsIntegrationState& os_integration_state2);
+bool operator!=(const WebAppOsIntegration& os_integration_state1,
+                const WebAppOsIntegration& os_integration_state2);
 
-}  // namespace proto
+}  // namespace proto::os_state
 
 std::vector<std::string> GetSerializedAllowedOrigins(
     const network::ParsedPermissionsPolicyDeclaration

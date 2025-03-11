@@ -127,9 +127,24 @@ suite('<settings-tts-voice-subpage>', function() {
 
   test('Preview Voice Select Options', () => {
     subpage.set('allVoices', [
-      {id: 'A', displayLanguage: 'Klingon', name: 'Star Trek'},
-      {id: 'B', displayLanguage: 'Goa\'uld', name: 'Star Gate'},
-      {id: 'C', displayLanguage: 'Dothraki', name: 'Game of Thrones'},
+      {
+        id: 'A',
+        displayLanguage: 'Klingon',
+        name: 'Star Trek',
+        displayName: 'Star Trek',
+      },
+      {
+        id: 'B',
+        displayLanguage: 'Goa\'uld',
+        name: 'Star Gate',
+        displayName: 'Star Gate',
+      },
+      {
+        id: 'C',
+        displayLanguage: 'Dothraki',
+        name: 'Game of Thrones',
+        displayName: 'Game of Thrones',
+      },
     ]);
     flush();
 
@@ -142,5 +157,69 @@ suite('<settings-tts-voice-subpage>', function() {
     assertTrue(!!secondVoice);
     assertEquals(
         'Goa\'uld - Star Gate', String(secondVoice.textContent).trim());
+  });
+
+  test('Preview voice select omits internal speaker name', () => {
+    subpage.populateVoiceListForTesting([
+      {
+        id: 'A',
+        name: 'en-us-x-abc-network',
+        displayName: 'en-us-x-abc-network',
+        // The remaining information isn't used and is present to allow this to
+        // compile.
+        fullLanguageCode: 'en-US',
+        languageCode: 'en',
+        displayLanguage: 'English (US)',
+        languageScore: 100,
+        extensionId: '1234',
+      },
+      {
+        id: 'B',
+        name: 'en-us-x-abc-local',
+        displayName: 'en-us-x-abc-local',
+        // The remaining information isn't used and is present to allow this to
+        // compile.
+        fullLanguageCode: 'en-US',
+        languageCode: 'en',
+        displayLanguage: 'English (US)',
+        languageScore: 100,
+        extensionId: '1234',
+      },
+      {
+        id: 'C',
+        name: 'fr-fr-x-abc-local',
+        // Verify that we handle malformed data gracefully.
+        displayName: '',
+        // The remaining information isn't used and is present to allow this to
+        // compile.
+        fullLanguageCode: 'fr-FR',
+        languageCode: 'fr',
+        displayLanguage: 'French (francais)',
+        languageScore: 100,
+        extensionId: '1234',
+      },
+      {
+        id: 'D',
+        // Verify that we handle malformed data gracefully.
+        name: 'Not a voice name',
+        displayName: 'Not a voice name',
+        fullLanguageCode: 'Not a language code',
+        languageCode: 'Not a language code',
+        displayLanguage: 'Not a language',
+        languageScore: 0,
+        extensionId: '1234',
+      },
+    ]);
+    flush();
+
+    const previewVoice = subpage.$.previewVoice;
+    assertTrue(!!previewVoice);
+    assertEquals(4, previewVoice.length);
+    // Verify that the speaker name (the 'abc' part in between '-x-' and
+    // '-network' or '-local') has been stripped.
+    assertEquals('English (US) - en-us-x-network', previewVoice[0]!.label);
+    assertEquals('English (US) - en-us-x-local', previewVoice[1]!.label);
+    assertEquals('French (francais) - fr-fr-x-local', previewVoice[2]!.label);
+    assertEquals('Not a language - Not a voice name', previewVoice[3]!.label);
   });
 });

@@ -86,7 +86,7 @@ public class TabGroupListBottomSheetCoordinator {
             TabGroupModelFilter filter,
             BottomSheetController bottomSheetController,
             boolean showNewGroupRow) {
-        mView = new TabGroupListBottomSheetView(context, showNewGroupRow);
+        mView = new TabGroupListBottomSheetView(context, bottomSheetController, showNewGroupRow);
         mBottomSheetController = bottomSheetController;
 
         MVCListAdapter.ModelList modelList = new MVCListAdapter.ModelList();

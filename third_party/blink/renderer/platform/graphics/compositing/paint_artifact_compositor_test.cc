@@ -4003,6 +4003,19 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaque) {
   EXPECT_TRUE(LayerAt(0)->contents_opaque());
 }
 
+TEST_P(PaintArtifactCompositorTest, ContentsOpaqueNonIntegralOffset) {
+  TestPaintArtifact artifact;
+  auto* transform = Create2DTranslation(t0(), 1.25, 2.75);
+  artifact.Chunk(*transform, c0(), e0())
+      .RectDrawing(gfx::Rect(100, 100, 200, 200), Color::kBlack)
+      .RectKnownToBeOpaque(gfx::Rect(100, 100, 200, 200));
+  Update(artifact.Build());
+  ASSERT_EQ(1u, LayerCount());
+  EXPECT_EQ(gfx::Vector2dF(101.25, 102.75),
+            LayerAt(0)->offset_to_transform_parent());
+  EXPECT_TRUE(LayerAt(0)->contents_opaque());
+}
+
 TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedNonOpaque) {
   TestPaintArtifact artifact;
   artifact.Chunk()

@@ -146,6 +146,7 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
     return browser()->browser_window_features()->toast_controller();
   }
 
+
   auto ShowToast(ToastParams params) {
     return Do(base::BindOnce(
         [](ToastController* toast_controller, ToastParams toast_params) {

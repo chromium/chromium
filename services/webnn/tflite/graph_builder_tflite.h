@@ -59,7 +59,8 @@ class GraphBuilderTflite final {
     Result(flatbuffers::DetachedBuffer buffer,
            base::flat_map<std::string, int> input_name_to_index,
            base::flat_map<std::string, int> output_name_to_index,
-           std::vector<uint8_t> buffer_data);
+           std::vector<uint8_t> buffer_data,
+           bool graph_requires_fp32_precision);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     Result(Result&&);
@@ -70,6 +71,7 @@ class GraphBuilderTflite final {
     base::flat_map<std::string, int> input_name_to_index;
     base::flat_map<std::string, int> output_name_to_index;
     std::vector<uint8_t> buffer_data;
+    bool graph_requires_fp32_precision;
   };
 
   GraphBuilderTflite(const GraphBuilderTflite&) = delete;

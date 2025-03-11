@@ -1803,4 +1803,122 @@ TEST_F(RateLimitTableTest, CountUniqueReportingOriginsPerSiteForAttribution) {
             0);
 }
 
+TEST_F(RateLimitTableTest,
+       CountUniqueDailyReportingOriginsPerReportingSiteForSource) {
+  constexpr base::TimeDelta kTimeWindow = base::Days(1);
+  delegate_.set_rate_limits([kTimeWindow] {
+    AttributionConfig::RateLimitConfig r;
+    r.origins_per_site_window = kTimeWindow;
+    return r;
+  }());
+
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    RateLimitInput input;
+  } kRateLimitsToAdd[] = {
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://a.r1.test",
+                              now + base::Milliseconds(1))},
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://b.r1.test", now + base::Hours(1))},
+      // Duplicate reporting origin, not counted in first test.
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://a.r1.test", now + base::Hours(3))},
+      // Before time window, not counted.
+      {RateLimitInput::Source("https://source.test", "https://foo4.test",
+                              "https://c.r1.test", now - base::Hours(14))},
+      {RateLimitInput::Source("https://source.test", "https://foo5.test",
+                              "https://d.r1.test", now + base::Hours(9))},
+      // Different reporting site, not counted.
+      {RateLimitInput::Source("https://source.test", "https://foo4.test",
+                              "https://e.r2.test", now + base::Hours(2))},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    SCOPED_TRACE(rate_limit.input);
+
+    ASSERT_TRUE(AddRateLimitForSource(rate_limit.input));
+  }
+
+  EXPECT_EQ(
+      table_.CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+          &db_,
+          net::SchemefulSite(*SuitableOrigin::Deserialize("https://r1.test")),
+          /*source_time=*/now + kTimeWindow),
+      3);
+
+  EXPECT_EQ(
+      table_.CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+          &db_,
+          net::SchemefulSite(*SuitableOrigin::Deserialize("https://r1.test")),
+          /*source_time=*/now + kTimeWindow + base::Minutes(30)),
+      3);
+}
+
+TEST_F(
+    RateLimitTableTest,
+    CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource) {
+  constexpr base::TimeDelta kTimeWindow = base::Days(1);
+  delegate_.set_rate_limits([kTimeWindow] {
+    AttributionConfig::RateLimitConfig r;
+    r.origins_per_site_window = kTimeWindow;
+    return r;
+  }());
+
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    RateLimitInput input;
+  } kRateLimitsToAdd[] = {
+      {RateLimitInput::Source("https://source.test", "https://d1.test",
+                              "https://a.r1.test",
+                              now + base::Milliseconds(1))},
+      {RateLimitInput::Source("https://source.test", "https://d1.test",
+                              "https://b.r1.test", now + base::Hours(1))},
+      // Duplicate reporting origin, not counted in first test.
+      {RateLimitInput::Source("https://source.test", "https://d1.test",
+                              "https://a.r1.test", now + base::Hours(3))},
+      // Before time window, not counted.
+      {RateLimitInput::Source("https://source.test", "https://d1.test",
+                              "https://c.r1.test", now - base::Hours(14))},
+      {RateLimitInput::Source("https://source.test", "https://d1.test",
+                              "https://d.r1.test", now + base::Hours(6))},
+      // Different reporting site, not counted.
+      {RateLimitInput::Source("https://source.test", "https://d1.test",
+                              "https://e.r2.test", now + base::Hours(8))},
+      // Different destination site, not counted.
+      {RateLimitInput::Source("https://source.test", "https://d2.test",
+                              "https://f.r1.test", now + base::Hours(12))},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    SCOPED_TRACE(rate_limit.input);
+
+    ASSERT_TRUE(AddRateLimitForSource(rate_limit.input));
+  }
+
+  EXPECT_EQ(
+      table_
+          .CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+              &db_,
+              net::SchemefulSite(
+                  *SuitableOrigin::Deserialize("https://d1.test")),
+              net::SchemefulSite(
+                  *SuitableOrigin::Deserialize("https://r1.test")),
+              /*source_time=*/now + kTimeWindow),
+      3);
+
+  EXPECT_EQ(
+      table_
+          .CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+              &db_,
+              net::SchemefulSite(
+                  *SuitableOrigin::Deserialize("https://d1.test")),
+              net::SchemefulSite(
+                  *SuitableOrigin::Deserialize("https://r1.test")),
+              /*source_time=*/now + kTimeWindow + base::Minutes(30)),
+      3);
+}
+
 }  // namespace content

@@ -31,11 +31,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HTTP cache hit"/>
 </enum>
 
-<enum name="BooleanHasDiscount">
-  <int value="0" label="No discount"/>
-  <int value="1" label="has discount"/>
-</enum>
-
 <enum name="FailToShowHomeSurfaceReason">
   <int value="0" label="Fail to create a NTP Tab"/>
   <int value="1" label="Fail to find a NTP Tab"/>

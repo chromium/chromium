@@ -35,13 +35,15 @@ import {TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy
 
 /**
  * Represents a voice as sent from the TTS Handler class. |languageCode| is
- * the language, not the locale, i.e. 'en' rather than 'en-us'. |name| is the
- * user-facing voice name, and |id| is the unique ID for that voice name (which
- * is generated in tts_voice_subpage.js and not passed from tts_handler.cc).
+ * the language, not the locale, i.e. 'en' rather than 'en-us'.
+ * |name| is the internal voice name.
+ * |id| is the unique ID for that voice name (which is generated in
+ * tts_voice_subpage.js and not passed from tts_handler.cc).
  * |displayLanguage| is the user-facing display string, i.e. 'English'.
  * |fullLanguageCode| is the code with locale, i.e. 'en-us' or 'en-gb'.
  * |languageScore| is a relative measure of how closely the voice's language
  * matches the app language, and can be used to set a default voice.
+ * |displayName| is the user-facing voice name.
  */
 interface TtsHandlerVoice {
   languageCode: string;
@@ -51,6 +53,7 @@ interface TtsHandlerVoice {
   id: string;
   fullLanguageCode: string;
   languageScore: number;
+  displayName: string;
 }
 
 interface TtsHandlerExtension {
@@ -174,6 +177,14 @@ export class SettingsTtsVoiceSubpageElement extends
   private previewText_: string;
   private ttsBrowserProxy_: TtsVoiceSubpageBrowserProxy;
 
+  // Regular expressions that will match against a voice name if it contains a
+  // speaker ID in it.
+  private omitLocalSpeakerName_: RegExp = /-x-.*-local/;
+  private omitNetworkSpeakerName_: RegExp = /-x-.*-network/;
+  // Replacements that are used if the above regular expressions match.
+  private localSpeakerNameReplacement_ = '-x-local';
+  private networkSpeakerNameReplacement_ = '-x-network';
+
   constructor() {
     super();
 
@@ -282,6 +293,10 @@ export class SettingsTtsVoiceSubpageElement extends
     return this.hasVoices_(voices) && !isPreviewing && hasPreviewText;
   }
 
+  populateVoiceListForTesting(voices: TtsHandlerVoice[]): void {
+    this.populateVoiceList_(voices);
+  }
+
   /**
    * Populates the list of languages and voices for the UI to use in display.
    */
@@ -292,6 +307,19 @@ export class SettingsTtsVoiceSubpageElement extends
     const preferredLangs =
         this.get('prefs.intl.accept_languages.value').split(',');
     voices.forEach(voice => {
+      voice.name = voice.name || '';
+      voice.displayName = voice.displayName || voice.name;
+
+      if (this.omitLocalSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitLocalSpeakerName_, this.localSpeakerNameReplacement_);
+      } else if (this.omitNetworkSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitNetworkSpeakerName_, this.networkSpeakerNameReplacement_);
+      }
+
       if (!result[voice.languageCode]) {
         result[voice.languageCode] = {
           language: voice.displayLanguage,

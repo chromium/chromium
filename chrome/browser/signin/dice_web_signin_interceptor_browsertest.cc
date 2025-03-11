@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/settings/people_handler.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -320,6 +321,10 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
   std::map<content::BrowserContext*,
            raw_ptr<FakeDiceWebSigninInterceptorDelegate, CtnExperimental>>
       interceptor_delegates_;
+  // `GetLocalProfileName` validation would fail without enabling the feature
+  // in non-fieldtrial tests where `UserAcceptedAccountManagement` is true.
+  base::test::ScopedFeatureList feature_list_{
+      features::kEnterpriseProfileBadgingForAvatar};
 };
 
 // Tests the complete profile switch flow when the profile is not loaded.
@@ -1863,7 +1868,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(new_profile->GetPath());
   ASSERT_TRUE(entry);
-  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  EXPECT_EQ("Work", base::UTF16ToUTF8(entry->GetLocalProfileName()));
   // Check the profile color.
   EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
                   ->GetUserColor()
@@ -2108,7 +2113,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(new_profile->GetPath());
   ASSERT_TRUE(entry);
-  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  EXPECT_EQ("Work", base::UTF16ToUTF8(entry->GetLocalProfileName()));
   // Check the profile color.
   EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
                   ->GetUserColor()

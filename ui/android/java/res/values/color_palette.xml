@@ -96,6 +96,10 @@ found in the LICENSE file.
     <color name="gm3_baseline_surface_light">#FFFFFF</color>
     <color name="gm3_baseline_surface_dark">#131314</color>
     <color name="gm3_baseline_surface_container_low_light">#F8FAFD</color>
+    <color name="gm3_baseline_surface_container_low_dark">#1B1B1B</color>
+    <color name="gm3_baseline_surface_container_high_light">#E9EEF6</color>
+    <color name="gm3_baseline_surface_container_high_dark">#282A2C</color>
+    <color name="gm3_baseline_surface_container_highest_light">#DDE3EA</color>
     <color name="gm3_baseline_surface_container_highest_dark">#333537</color>
     <color name="gm3_baseline_surface_bright_light">@color/gm3_baseline_surface_light</color>
     <color name="gm3_baseline_surface_bright_dark">#37393B</color>

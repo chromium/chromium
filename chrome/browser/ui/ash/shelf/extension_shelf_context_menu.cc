@@ -25,6 +25,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/browser/management_policy.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"

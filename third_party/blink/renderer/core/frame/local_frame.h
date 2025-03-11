@@ -517,6 +517,7 @@ class CORE_EXPORT LocalFrame final
   FrameWidget* GetWidgetForLocalRoot();
 
   WebContentSettingsClient* GetContentSettingsClient();
+  const mojom::RendererContentSettingsPtr& GetContentSettings() const;
 
   PluginData* GetPluginData() const;
 

@@ -2,6 +2,7 @@
   "name": "webui-node-modules",
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
+  "type": "module",
   "dependencies": {
     "@azure/msal-browser": "4.2.1",
     "@mediapipe/tasks-vision": "0.10.9",

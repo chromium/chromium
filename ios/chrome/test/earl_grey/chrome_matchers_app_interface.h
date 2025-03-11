@@ -702,11 +702,8 @@
 
 #pragma mark - Promo style view controller
 
-// Returns matcher for the primary action button.
-+ (id<GREYMatcher>)promoStylePrimaryActionButtonMatcher;
-
 // Returns matcher for the secondary action button.
-+ (id<GREYMatcher>)promoStyleSecondaryActionButtonMatcher;
++ (id<GREYMatcher>)promoScreenSecondaryButtonMatcher;
 
 #pragma mark - Incognito Interstitial
 

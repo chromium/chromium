@@ -955,14 +955,14 @@ class Parameter:
 
 class Result:
 
-  def __init__(self, success_type, failure_type):
-    self.success_type = success_type
-    self.failure_type = failure_type
+  def __init__(self, success_kind, failure_kind):
+    self.success_kind = success_kind
+    self.failure_kind = failure_kind
 
   def Repr(self):
     return GenericRepr(self, {
-        'success_type': self.success_type,
-        'failure_type': self.failure_type,
+        'success_kind': self.success_kind,
+        'failure_kind': self.failure_kind,
     })
 
 

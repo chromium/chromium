@@ -42,10 +42,12 @@ class ImageSkia;
 }
 
 namespace web_app {
-namespace proto {
-class WebAppOsIntegrationState;
+
+namespace proto::os_state {
+class WebAppOsIntegration;
 class ShortcutMenus;
-}
+}  // namespace proto::os_state
+
 class WebApp;
 class WebAppIconManager;
 
@@ -103,7 +105,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const GURL& start_url,
     const base::FilePath& profile_path,
     const std::string& profile_name,
-    const proto::WebAppOsIntegrationState& state);
+    const proto::os_state::WebAppOsIntegration& state);
 
 void PopulateFaviconForShortcutInfo(
     const WebApp* app,
@@ -112,7 +114,7 @@ void PopulateFaviconForShortcutInfo(
     base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback);
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
-    const proto::ShortcutMenus& shortcut_menus);
+    const proto::os_state::ShortcutMenus& shortcut_menus);
 
 // This specifies a folder in the system applications menu (e.g the Start Menu
 // on Windows).

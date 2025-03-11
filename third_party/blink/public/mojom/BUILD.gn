@@ -281,10 +281,6 @@ mojom("mojom_platform") {
     sources += [ "input/text_input_host.mojom" ]
   }
 
-  if (use_blink_extensions_chromeos) {
-    sources += [ "chromeos/diagnostics/cros_diagnostics.mojom" ]
-  }
-
   if (use_blink_extensions_webview) {
     sources += [ "webview/webview_media_integrity.mojom" ]
   }

@@ -126,7 +126,7 @@ Exemption updated to 1.0.143 in February 2025.
 """
 
 [[exemptions.icu_experimental]]
-version = "0.2.0"
+version = "0.3.0-beta2"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
@@ -136,48 +136,6 @@ Is not needed by the actual packages enabled in the ICU4X import.
 Part of Google-co-maintained ICU4X project.
 
 https://crbug.com/366411886
-"""
-
-[[exemptions.icu_normalizer]]
-version = "2.0.0-beta1"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
-
-Is not needed by the actual packages enabled in the ICU4X import.
-
-Part of Google-co-maintained ICU4X project.
-
-https://crbug.com/366411886
-"""
-
-[[exemptions.icu_properties]]
-version = "2.0.0-beta1"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Unsafe code is either authored or reviewed by a
-crabal member, but a formal audit is yet to be performed.
-
-Partial review has resulted in this PR: https://github.com/unicode-org/icu4x/pull/6059,
-which has identified suboptimal unsafety that can be improved. It does not currently cause
-soundness issues.
-
-Part of Google-co-maintained ICU4X project.
-
-https://crbug.com/366411886
-"""
-
-[[exemptions.icu_provider_baked]]
-version = "2.0.0-beta1"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Audited by Manishearth, but currently found issues make it unsafe to audit with ub-risk-2.
-
-Can be audited for ub-risk-2 after https://github.com/unicode-org/icu4x/pull/6055 is published.
-
-Part of Google-co-maintained ICU4X project.
-
-https://crbug.com/393810918
 """
 
 [[exemptions.memchr]]

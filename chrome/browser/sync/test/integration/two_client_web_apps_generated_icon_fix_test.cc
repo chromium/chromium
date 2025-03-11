@@ -24,12 +24,15 @@
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
+namespace proto {
 
 // Used by GTEST for pretty printing in EXPECT_EQ.
 static void PrintTo(const GeneratedIconFix& generated_icon_fix,
                     std::ostream* out) {
   *out << generated_icon_fix_util::ToDebugValue(&generated_icon_fix);
 }
+
+}  // namespace proto
 
 namespace {
 
@@ -53,12 +56,12 @@ struct GeneratedIconFixFutures {
 
 class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
  public:
-  static GeneratedIconFix MakeGeneratedIconFix(
-      GeneratedIconFixSource source,
+  static proto::GeneratedIconFix MakeGeneratedIconFix(
+      proto::GeneratedIconFixSource source,
       base::Time window_start_time,
       std::optional<base::Time> last_attempt_time,
       uint32_t attempt_count) {
-    GeneratedIconFix generated_icon_fix;
+    proto::GeneratedIconFix generated_icon_fix;
     generated_icon_fix.set_source(source);
     generated_icon_fix.set_window_start_time(
         syncer::TimeToProtoTime(window_start_time));
@@ -191,10 +194,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   EnableIconServing(GetProfile(1));
   base::Time second_now = first_now + base::Minutes(1);
@@ -215,10 +219,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
             (IconState{.is_generated = false, .is_correct_color = true}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/second_now,
-                           /*attempt_count=*/1));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/second_now,
+          /*attempt_count=*/1));
 
   histogram_tester.ExpectUniqueSample(
       "WebApp.GeneratedIconFix.ScheduleDecision",
@@ -244,10 +249,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   EnableIconServing(GetProfile(1));
   base::Time second_now = first_now + base::Minutes(1);
@@ -272,10 +278,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   histogram_tester.ExpectUniqueSample(
       "WebApp.GeneratedIconFix.ScheduleDecision",
@@ -301,10 +308,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
             (IconState{.is_generated = false, .is_correct_color = true}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   GeneratedIconFixFutures futures(provider1);
 
@@ -319,10 +327,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
 
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   histogram_tester.ExpectUniqueSample(
       "WebApp.GeneratedIconFix.ScheduleDecision",
@@ -346,10 +355,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   GeneratedIconFixFutures futures(provider1);
 
@@ -394,17 +404,18 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
-  const std::optional<GeneratedIconFix> generated_icon_fix =
+  const std::optional<proto::GeneratedIconFix> generated_icon_fix =
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix();
   // The fix time window should have started.
   ASSERT_TRUE(generated_icon_fix.has_value());
   // Delete the fix time window to simulate a web app install that happened
-  // prior to updating to the GeneratedIconFix code.
+  // prior to updating to the proto::GeneratedIconFix code.
   {
     provider1.sync_bridge_unsafe()
         .BeginUpdate()
@@ -429,10 +440,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
   }
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_RETROACTIVE,
-                           /*window_start_time=*/second_now,
-                           /*last_attempt_time=*/second_now,
-                           /*attempt_count=*/1));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_RETROACTIVE,
+          /*window_start_time=*/second_now,
+          /*last_attempt_time=*/second_now,
+          /*attempt_count=*/1));
 
   // Fast forward outside of the new time window.
   base::Time third_now = second_now + base::Days(7);
@@ -448,10 +460,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
   }
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_RETROACTIVE,
-                           /*window_start_time=*/second_now,
-                           /*last_attempt_time=*/second_now,
-                           /*attempt_count=*/1));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_RETROACTIVE,
+          /*window_start_time=*/second_now,
+          /*last_attempt_time=*/second_now,
+          /*attempt_count=*/1));
 
   histogram_tester.ExpectBucketCount(
       "WebApp.GeneratedIconFix.ScheduleDecision",
@@ -486,10 +499,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   base::Time second_now = first_now + base::Hours(1);
   generated_icon_fix_util::SetNowForTesting(second_now);
@@ -512,10 +526,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   const WebApp& app = *provider1.registrar_unsafe().GetAppById(app_id);
   EXPECT_EQ(app.generated_icon_fix(),
-            MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                                 /*window_start_time=*/first_now,
-                                 /*last_attempt_time=*/second_now,
-                                 /*attempt_count=*/1));
+            MakeGeneratedIconFix(
+                /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+                /*window_start_time=*/first_now,
+                /*last_attempt_time=*/second_now,
+                /*attempt_count=*/1));
 
   base::Time third_now = second_now + base::Hours(1);
   generated_icon_fix_util::SetNowForTesting(third_now);
@@ -574,21 +589,22 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AttemptLimit) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   EXPECT_EQ(
       provider1.registrar_unsafe().GetAppById(app_id)->generated_icon_fix(),
-      MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                           /*window_start_time=*/first_now,
-                           /*last_attempt_time=*/std::nullopt,
-                           /*attempt_count=*/0));
+      MakeGeneratedIconFix(
+          /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+          /*window_start_time=*/first_now,
+          /*last_attempt_time=*/std::nullopt,
+          /*attempt_count=*/0));
 
   // Fake there being (limit - 1) attempts.
   {
     provider1.sync_bridge_unsafe()
         .BeginUpdate()
         ->UpdateApp(app_id)
-        ->SetGeneratedIconFix(
-            MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                                 /*window_start_time=*/first_now,
-                                 /*last_attempt_time=*/first_now,
-                                 /*attempt_count=*/6));
+        ->SetGeneratedIconFix(MakeGeneratedIconFix(
+            /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+            /*window_start_time=*/first_now,
+            /*last_attempt_time=*/first_now,
+            /*attempt_count=*/6));
   }
 
   base::Time second_now = first_now + base::Days(1);
@@ -612,10 +628,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AttemptLimit) {
             (IconState{.is_generated = true, .is_correct_color = false}));
   const WebApp& app = *provider1.registrar_unsafe().GetAppById(app_id);
   EXPECT_EQ(app.generated_icon_fix(),
-            MakeGeneratedIconFix(/*source=*/GeneratedIconFixSource_SYNC_INSTALL,
-                                 /*window_start_time=*/first_now,
-                                 /*last_attempt_time=*/second_now,
-                                 /*attempt_count=*/7));
+            MakeGeneratedIconFix(
+                /*source=*/proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL,
+                /*window_start_time=*/first_now,
+                /*last_attempt_time=*/second_now,
+                /*attempt_count=*/7));
 
   base::Time third_now = second_now + base::Days(1);
   generated_icon_fix_util::SetNowForTesting(third_now);

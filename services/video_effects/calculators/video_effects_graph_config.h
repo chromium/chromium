@@ -7,7 +7,15 @@
 
 #include <vector>
 
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
+
 namespace video_effects {
+
+// The ML model we use expects 256x144 input buffer.
+inline constexpr uint32_t kInferenceInputBufferWidth = 256;
+inline constexpr uint32_t kInferenceInputBufferHeight = 144;
+inline constexpr wgpu::TextureFormat kInferenceInputBufferFormat =
+    wgpu::TextureFormat::RGBA32Float;
 
 enum BlurState {
   kDisabled,

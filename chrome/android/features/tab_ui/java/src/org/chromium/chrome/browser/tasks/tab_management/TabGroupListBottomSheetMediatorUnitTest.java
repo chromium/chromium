@@ -9,7 +9,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -77,7 +81,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mModelList = new ModelList();
+        mModelList = spy(new ModelList());
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
@@ -111,7 +115,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
 
         verify(mBottomSheetController, never()).addObserver(any());
-        assertTrue(mModelList.isEmpty());
     }
 
     @Test
@@ -120,7 +123,12 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
 
-        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        InOrder inOrder = inOrder(mModelList, mDelegate, mBottomSheetController);
+        // Verify that model list is populated before requesting show content
+        inOrder.verify(mModelList).clear();
+        inOrder.verify(mModelList, times(3)).add(any());
+        inOrder.verify(mDelegate).requestShowContent();
+        inOrder.verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         assertEquals(3, mModelList.size());
         assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
     }

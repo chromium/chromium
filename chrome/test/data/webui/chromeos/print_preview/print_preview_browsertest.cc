@@ -684,18 +684,18 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       PrinterSetupAssistanceHasDestinations) {
-  RunTestCase("PrinterSetupAssistanceHasDestinations");
+                       DialogHasDestinations) {
+  RunTestCase("DialogHasDestinations");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       PrinterSetupAssistanceHasDestinationsSearching) {
-  RunTestCase("PrinterSetupAssistanceHasDestinationsSearching");
+                       DiaglogShowsThrobberWhileSearching) {
+  RunTestCase("DiaglogShowsThrobberWhileSearching");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       PrinterSetupAssistanceHasNoDestinations) {
-  RunTestCase("PrinterSetupAssistanceHasNoDestinations");
+                       DialogHasNoDestinations) {
+  RunTestCase("DialogHasNoDestinations");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
@@ -708,10 +708,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
   RunTestCase("ManagePrintersMetrics_HasNoDestinations");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PrintPreviewDestinationDialogCrosTest,
-    PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse) {
-  RunTestCase("PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse");
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
+                       DialogHasDestinations_ShowManagedPrintersFalse) {
+  RunTestCase("DialogHasDestinations_ShowManagedPrintersFalse");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,

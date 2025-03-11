@@ -642,6 +642,7 @@ mojom("url_loader_base") {
     ":mojom_ip_address",
     ":mojom_network_isolation_partition",
     ":mojom_network_param",
+    ":mojom_permissions_policy",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",

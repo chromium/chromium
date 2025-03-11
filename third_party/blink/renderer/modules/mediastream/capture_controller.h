@@ -46,11 +46,12 @@ class MODULES_EXPORT CaptureController final
   ScriptPromise<IDLUndefined> captureWheel(ScriptState* script_state,
                                            HTMLElement* element);
 
-  // Captured Surface Control IDL interface - zooming
+  // Captured Surface Control IDL interface - zoom controls.
   static Vector<int> getSupportedZoomLevels();
   int getZoomLevel(ExceptionState& exception_state);
-  ScriptPromise<IDLUndefined> setZoomLevel(ScriptState* script_state,
-                                           int zoom_level);
+  ScriptPromise<IDLUndefined> increaseZoomLevel(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> decreaseZoomLevel(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> resetZoomLevel(ScriptState* script_state);
 
   void SetIsBound(bool value) { is_bound_ = value; }
   bool IsBound() const { return is_bound_; }
@@ -113,6 +114,10 @@ class MODULES_EXPORT CaptureController final
   };
 
   ValidationResult ValidateCapturedSurfaceControlCall() const;
+
+  ScriptPromise<IDLUndefined> UpdateZoomLevel(
+      ScriptState* script_state,
+      mojom::blink::ZoomLevelAction action);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   class WheelEventListener;

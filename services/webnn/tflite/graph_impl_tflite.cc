@@ -108,7 +108,8 @@ class GraphImplTflite::ComputeResources {
          flatbuffers::DetachedBuffer buffer,
          std::vector<uint8_t> buffer_data,
          const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-             constant_operands) {
+             constant_operands,
+         bool graph_requires_fp32_precision) {
     auto self = std::make_unique<ComputeResources>();
 
     self->model_content_ = std::move(buffer);
@@ -126,7 +127,7 @@ class GraphImplTflite::ComputeResources {
       DumpModelToFile(self->model_content_);
     }
 
-    OpResolver op_resolver(context->options());
+    OpResolver op_resolver(context->options(), graph_requires_fp32_precision);
 
     self->model_weights_ = std::move(buffer_data);
     self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
@@ -296,10 +297,11 @@ GraphImplTflite::CreateAndBuild(
                          std::move(error));
                    });
 
-  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(context, std::move(result.buffer),
-                                            std::move(result.buffer_data),
-                                            constant_operands));
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<ComputeResources> compute_resources,
+      ComputeResources::Create(context, std::move(result.buffer),
+                               std::move(result.buffer_data), constant_operands,
+                               result.graph_requires_fp32_precision));
 
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(

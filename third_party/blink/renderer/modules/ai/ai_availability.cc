@@ -62,6 +62,8 @@ AIAvailability HandleTranslatorAvailabilityCheckResult(
         kAfterDownloadLanguagePackNotReady:
     case mojom::blink::CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
+    case mojom::blink::CanCreateTranslatorResult::
+        kAfterDownloadTranslatorCreationRequired:
       return HandleModelAvailabilityCheckResult(
           execution_context, AIMetrics::AISessionType::kTranslator,
           mojom::blink::ModelAvailabilityCheckResult::kDownloadable);

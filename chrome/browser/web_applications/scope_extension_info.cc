@@ -36,7 +36,7 @@ ScopeExtensionInfo ScopeExtensionInfo::CreateForScope(
 
 // static
 ScopeExtensionInfo ScopeExtensionInfo::CreateForProto(
-    const WebAppScopeExtensionProto& scope_extension_proto) {
+    const proto::WebAppScopeExtension& scope_extension_proto) {
   url::Origin origin =
       url::Origin::Create(GURL(scope_extension_proto.origin()));
   CHECK(!origin.opaque());

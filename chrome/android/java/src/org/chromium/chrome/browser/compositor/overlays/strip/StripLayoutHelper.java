@@ -48,6 +48,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -83,6 +84,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -97,12 +99,15 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationService;
@@ -234,7 +239,8 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
+                public void willMoveTabOutOfGroup(
+                        Tab movedTab, @Nullable Token destinationTabGroupId) {
                     // TODO(crbug.com/326494015): Refactor #didMoveTabOutOfGroup to pass in previous
                     //  root ID.
                     mSourceRootId = movedTab.getRootId();
@@ -326,6 +332,11 @@ public class StripLayoutHelper
                 }
 
                 @Override
+                public void willCloseTabGroup(Token tabGroupId, boolean isHiding) {
+                    onWillCloseView(StripLayoutUtils.findGroupTitle(mStripGroupTitles, tabGroupId));
+                }
+
+                @Override
                 public void didRemoveTabGroup(
                         int oldRootId,
                         @Nullable Token oldTabGroupId,
@@ -352,6 +363,8 @@ public class StripLayoutHelper
     private TabGroupModelFilter mTabGroupModelFilter;
     private TabCreator mTabCreator;
     private LayerTitleCache mLayerTitleCache;
+    @NonNull private final BottomSheetController mBottomSheetController;
+    @NonNull private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
     // Internal State
     private StripLayoutView[] mStripViews = new StripLayoutView[0];
@@ -369,7 +382,6 @@ public class StripLayoutHelper
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private ReorderDelegate mReorderDelegate = new ReorderDelegate();
-    private final Callback<Boolean> mInReorderModeObserver = this::onInReorderModeChanged;
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -489,6 +501,10 @@ public class StripLayoutHelper
     // Tab group context menu.
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
 
+    // Tab context menu.
+    @Nullable private TabContextMenuCoordinator mTabContextMenuCoordinator;
+    @Nullable private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
+
     // Tab group share.
     @NonNull private DataSharingService mDataSharingService;
     @NonNull private CollaborationService mCollaborationService;
@@ -527,6 +543,8 @@ public class StripLayoutHelper
      * @param tabStripVisibleSupplier Supplier of the boolean indicating whether the tab strip is
      *     visible. The tab strip can be hidden due to the tab switcher being displayed or the
      *     window width is less than 600dp.
+     * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
+     * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      */
     public StripLayoutHelper(
             Context context,
@@ -541,7 +559,9 @@ public class StripLayoutHelper
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager,
-            Supplier<Boolean> tabStripVisibleSupplier) {
+            Supplier<Boolean> tabStripVisibleSupplier,
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP;
@@ -553,6 +573,8 @@ public class StripLayoutHelper
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
         mDataSharingTabManager = dataSharingTabManager;
         mModalDialogManager = modalDialogManager;
+        mBottomSheetController = bottomSheetController;
+        mShareDelegateSupplier = shareDelegateSupplier;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -690,7 +712,6 @@ public class StripLayoutHelper
 
         mActionConfirmationManager = actionConfirmationManager;
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
-        mReorderDelegate.addInReorderModeObserver(mInReorderModeObserver);
 
         mIsFirstLayoutPass = true;
     }
@@ -699,7 +720,6 @@ public class StripLayoutHelper
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
         mLastHoveredTab = null;
-        mReorderDelegate.removeInReorderModeObserver(mInReorderModeObserver);
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
@@ -720,6 +740,7 @@ public class StripLayoutHelper
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
             mTabGroupSyncService = null;
         }
+        mTabContextMenuCoordinator = null;
     }
 
     /**
@@ -1396,7 +1417,10 @@ public class StripLayoutHelper
      * @param tab The tab that will be closed.
      */
     public void willCloseTab(long time, Tab tab) {
-        if (tab != null) updateGroupTextAndSharedState(tab.getRootId());
+        if (tab == null) return;
+
+        updateGroupTextAndSharedState(tab.getRootId());
+        onWillCloseView(findTabById(tab.getId()));
     }
 
     /**
@@ -1782,7 +1806,7 @@ public class StripLayoutHelper
 
     private void updateTouchableRect() {
         // Make the entire strip touchable when during dragging / reordering mode.
-        boolean isTabDraggingInProgress = isTabDraggingInProgress();
+        boolean isTabDraggingInProgress = isViewDraggingInProgress();
         if (isTabStripFull() || mReorderDelegate.getInReorderMode() || isTabDraggingInProgress) {
             mTouchableRect.set(getVisibleLeftBound(), 0, getVisibleRightBound(), mHeight);
             return;
@@ -1893,12 +1917,13 @@ public class StripLayoutHelper
                 !(mDelayedReorderView instanceof StripLayoutGroupTitle)
                         || ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER);
         if (shouldTriggerReorder && canReorderViewType) {
-            if (isViewContextMenuShowing()) mTabGroupContextMenuCoordinator.dismiss();
+            if (isViewContextMenuShowing()) dismissContextMenu();
             // Intentionally start the reorder at the initial long-press x. The difference from the
             // current event (accumulatedDeltaX in step 3) will then "snap" the interacting view to
             // its expected position.
             startReorderMode(
                     mDelayedReorderInitialX, y, mDelayedReorderView, ReorderType.START_DRAG_DROP);
+            resetDelayedReorderState();
         } else if (mReorderDelegate.getInReorderMode()) {
             // 2.b. If already reordering, instead update the in-progress reorder.
             mReorderDelegate.updateReorderPosition(
@@ -2004,11 +2029,18 @@ public class StripLayoutHelper
             } else {
                 resetResizeTimeout(false);
 
-                startReorderMode(x, y, clickedTab, ReorderType.START_DRAG_DROP);
+                if (clickedTab != null
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)) {
+                    showTabContextMenu(clickedTab);
+                    mDelayedReorderView = clickedTab;
+                    mDelayedReorderInitialX = x;
+                } else {
+                    startReorderMode(x, y, clickedTab, ReorderType.START_DRAG_DROP);
+                }
             }
         } else {
             StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
-            showTabGroupContextMenu(groupTitle);
+            showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
             mDelayedReorderView = groupTitle;
             mDelayedReorderInitialX = x;
         }
@@ -2019,12 +2051,29 @@ public class StripLayoutHelper
      * not include the context menu from long-pressing the
      */
     private boolean isViewContextMenuShowing() {
-        // TODO(crbug.com/382293975): Include tab context menu when implemented.
-        return mTabGroupContextMenuCoordinator != null
-                && mTabGroupContextMenuCoordinator.isMenuShowing();
+        return (mTabGroupContextMenuCoordinator != null
+                        && mTabGroupContextMenuCoordinator.isMenuShowing())
+                || (mTabContextMenuCoordinator != null
+                        && mTabContextMenuCoordinator.isMenuShowing());
     }
 
-    private void showTabGroupContextMenu(StripLayoutGroupTitle groupTitle) {
+    private void dismissContextMenu() {
+        if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
+        if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
+    }
+
+    /**
+     * Shows the tab group context menu for group with title {@code groupTitle}. {@code
+     * shouldWaitForUpdate} should be true when we expect that the tab strip is actually changing,
+     * but it should be false otherwise; if it is incorrectly true, the context menu will not be
+     * shown until after the tab strip changes in some way.
+     *
+     * @param groupTitle The title of the group to open.
+     * @param shouldWaitForUpdate Whether we expect that the tab strip needs to change before the
+     *     tab group context menu can be shown.
+     */
+    private void showTabGroupContextMenu(
+            StripLayoutGroupTitle groupTitle, boolean shouldWaitForUpdate) {
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     TabGroupContextMenuCoordinator.createContextMenuCoordinator(
@@ -2035,11 +2084,64 @@ public class StripLayoutHelper
                             mWindowAndroid,
                             mDataSharingTabManager);
         }
+        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
+
+        if (shouldWaitForUpdate) {
+            // We do this after a requestUpdate so that the view will have the correct position for
+            // the tab group title.
+            // We may need to do something different after adding animations.
+            // TODO(crbug.com/354983679): Investigate adding animations.
+            mUpdateHost.requestUpdate(() -> showTabGroupContextMenuHelper(groupTitle));
+        } else {
+            showTabGroupContextMenuHelper(groupTitle);
+        }
+    }
+
+    /**
+     * Shows {@code mTabGroupContextMenuCoordinator} given a group title. This method assumes that
+     * {@code mTabGroupContextMenuCoordinator} has been correctly set. See {@link
+     * this#showTabGroupContextMenu(StripLayoutGroupTitle, boolean)}.
+     *
+     * @param groupTitle The title of the group.
+     */
+    private void showTabGroupContextMenuHelper(StripLayoutGroupTitle groupTitle) {
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(groupTitle, anchorRectProvider);
-        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
+        // If the menu is already showing (which may happen if the user does two long presses in
+        // quick succession and showing the menu is slow), then abort.
+        if (mTabGroupContextMenuCoordinator.isMenuShowing()) return;
         mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getTabGroupId());
+    }
+
+    private void showTabContextMenu(StripLayoutTab tab) {
+        if (mTabContextMenuCoordinator == null) {
+            if (mTabGroupListBottomSheetCoordinator == null) {
+                mTabGroupListBottomSheetCoordinator =
+                        new TabGroupListBottomSheetCoordinator(
+                                mContext,
+                                mTabGroupModelFilter.getTabModel().getProfile(),
+                                (newTabGroupId) -> {
+                                    showTabGroupContextMenu(
+                                            findGroupTitle(newTabGroupId),
+                                            /* shouldWaitForUpdate= */ true);
+                                },
+                                mTabGroupModelFilter,
+                                mBottomSheetController,
+                                /* showNewGroupRow= */ true);
+            }
+            mTabContextMenuCoordinator =
+                    TabContextMenuCoordinator.createContextMenuCoordinator(
+                            () -> mModel,
+                            mTabGroupModelFilter,
+                            mTabGroupListBottomSheetCoordinator,
+                            mShareDelegateSupplier,
+                            mWindowAndroid);
+        }
+        RectProvider anchorRectProvider = new RectProvider();
+        getAnchorRect(tab, anchorRectProvider);
+        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
+        mTabContextMenuCoordinator.showMenu(anchorRectProvider, tab.getTabId());
     }
 
     /**
@@ -2147,14 +2249,13 @@ public class StripLayoutHelper
         }
     }
 
-    private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {
+    private void getAnchorRect(StripLayoutView stripLayoutView, RectProvider anchorRectProvider) {
         int[] toolbarCoordinates = new int[2];
         Rect backgroundPadding = new Rect();
         mToolbarContainerView.getLocationInWindow(toolbarCoordinates);
-        Drawable background =
-                mTabGroupContextMenuCoordinator.getMenuBackground(mContext, mIncognito);
+        Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, mIncognito);
         background.getPadding(backgroundPadding);
-        groupTitle.getPaddedBoundsPx(anchorRectProvider.getRect());
+        stripLayoutView.getAnchorRect(anchorRectProvider.getRect());
         // Use parent toolbar view coordinates to offset title rect.
         // Also shift the anchor left by menu padding to align the menu exactly with title x.
         int xOffset =
@@ -2309,6 +2410,12 @@ public class StripLayoutHelper
     void setTabGroupContextMenuCoordinatorForTesting(
             TabGroupContextMenuCoordinator tabGroupContextMenuCoordinator) {
         mTabGroupContextMenuCoordinator = tabGroupContextMenuCoordinator;
+    }
+
+    void setTabContextMenuCoordinatorForTesting(
+            TabContextMenuCoordinator tabGroupContextMenuCoordinator) {
+        mTabContextMenuCoordinator = tabGroupContextMenuCoordinator;
+        ResettersForTesting.register(() -> mTabContextMenuCoordinator = null);
     }
 
     private void clearLastHoveredTab() {
@@ -2570,9 +2677,7 @@ public class StripLayoutHelper
          * immediately after View#startDrag to stop ongoing gesture events. Do not stop reorder in
          * this case.
          */
-        if (mReorderDelegate.getInReorderMode() && !isTabDraggingInProgress()) {
-            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
-        }
+        if (!isViewDraggingInProgress()) stopReorderMode();
 
         // 2. Reset state
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
@@ -3894,12 +3999,6 @@ public class StripLayoutHelper
         }
     }
 
-    private void onInReorderModeChanged(boolean inReorderMode) {
-        if (!inReorderMode) {
-            mDelayedReorderView = null;
-        }
-    }
-
     /**
      * @param id The id of the selected tab.
      * @return The outline color if the selected tab will show its Tab Group Indicator outline.
@@ -4284,7 +4383,7 @@ public class StripLayoutHelper
     /**
      * @return The view that we'll delay enter reorder mode for.
      */
-    StripLayoutView getDelayedReorderView() {
+    StripLayoutView getDelayedReorderViewForTesting() {
         return mDelayedReorderView;
     }
 
@@ -4450,8 +4549,20 @@ public class StripLayoutHelper
         return mStripTabs.length;
     }
 
-    private boolean isTabDraggingInProgress() {
-        return mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
+    private boolean isViewDraggingInProgress() {
+        return mTabDragSource != null && mTabDragSource.isViewDraggingInProgress();
+    }
+
+    private void onWillCloseView(StripLayoutView view) {
+        if (view == null) return;
+
+        if (view == mDelayedReorderView) resetDelayedReorderState();
+        if (view == mReorderDelegate.getInteractingView()) stopReorderMode();
+    }
+
+    private void resetDelayedReorderState() {
+        mDelayedReorderView = null;
+        mDelayedReorderInitialX = 0.f;
     }
 
     private void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

@@ -3441,7 +3441,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     substitution.set_string_template("%s");
     *substitution.add_substitutions()
          ->add_candidates()
-         ->mutable_image_field()
+         ->mutable_media_field()
          ->mutable_proto_field() = ProtoField(
         {RequestProto::kNested1FieldNumber, NestedProto::kMediaFieldNumber});
   }
@@ -3450,7 +3450,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     substitution.set_string_template("%s");
     *substitution.add_substitutions()
          ->add_candidates()
-         ->mutable_image_field()
+         ->mutable_media_field()
          ->mutable_proto_field() = ProtoField(
         {RequestProto::kNested2FieldNumber, NestedProto::kMediaFieldNumber});
   }

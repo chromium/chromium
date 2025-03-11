@@ -296,6 +296,7 @@ NOTIFY_OBSERVERS(NotifyObserversDeviceListsComplete(), OnDeviceListsComplete())
 
 NOTIFY_OBSERVERS(NotifyObserversStylusStateChanged(StylusState state),
                  OnStylusStateChanged(state))
+#undef NOTIFY_OBSERVERS
 
 void DeviceDataManager::AddObserver(InputDeviceEventObserver* observer) {
   observers_.AddObserver(observer);

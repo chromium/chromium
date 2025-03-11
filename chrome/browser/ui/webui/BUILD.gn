@@ -95,7 +95,7 @@ source_set("webui") {
     "//chrome/common",
     "//extensions/buildflags",
   ]
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
   }
   if (!is_android) {

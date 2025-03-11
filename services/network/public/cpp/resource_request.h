@@ -25,6 +25,7 @@
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/attribution.mojom.h"
@@ -245,10 +246,13 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool is_ad_tagged = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;
+
   // Whether this request is allowed to register device bound sessions
   // or accept challenges for device bound sessions (e.g. due to an
   // origin trial).
   bool allows_device_bound_sessions = false;
+
+  std::optional<network::PermissionsPolicy> permissions_policy;
 };
 // LINT.ThenChange(//services/network/prefetch_matches.cc)
 

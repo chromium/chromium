@@ -39,6 +39,7 @@ include_rules = [
   "+chrome/browser/android/content",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/browser_controls/android/java",
+  "+chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceDropNotificationManagerFactory.java",
   "+chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingFeatures.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",

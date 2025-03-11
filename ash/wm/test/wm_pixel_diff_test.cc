@@ -41,11 +41,6 @@ namespace ash {
 // dark/light mode, tablet mode, etc.
 class WmPixelDiffTest : public AshTestBase {
  public:
-  WmPixelDiffTest() {
-    scoped_features_.InitWithFeatures(
-        {features::kForestFeature, features::kSavedDeskUiRevamp}, {});
-  }
-
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
@@ -53,7 +48,7 @@ class WmPixelDiffTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
+  base::test::ScopedFeatureList scoped_features_{features::kForestFeature};
 };
 
 // A basic overview pixel test that shows three overview windows and the virtual

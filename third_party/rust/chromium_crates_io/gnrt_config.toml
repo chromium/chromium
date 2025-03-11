@@ -219,7 +219,7 @@ extra_src_roots = ['../data']
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 
-[crate.icu_timezone_data]
+[crate.icu_time_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 

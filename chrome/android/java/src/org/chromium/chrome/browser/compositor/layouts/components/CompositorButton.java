@@ -84,7 +84,7 @@ public class CompositorButton extends StripLayoutView {
             float height,
             StripLayoutViewOnClickHandler clickHandler,
             float clickSlopDp) {
-        super(false, clickHandler);
+        super(false, clickHandler, context);
         mDrawBounds.set(0, 0, width, height);
 
         mType = type;

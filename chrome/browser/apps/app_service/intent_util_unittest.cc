@@ -379,19 +379,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
-class IntentUtilsForExtensionsTest : public IntentUtilsTest {
- public:
-  IntentUtilsForExtensionsTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(IntentUtilsForExtensionsTest,
-       CreateIntentFiltersForExtension_WebFileHandlers) {
+TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_WebFileHandlers) {
   // Create extension that provides file_handlers.
   extensions::ExtensionBuilder extension_builder("Test");
   static const char kManifest[] = R"(

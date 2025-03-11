@@ -914,7 +914,7 @@ EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
 
 std::optional<blink::Color> Scrollbar::RootScrollbarThemeColor() const {
   if (RuntimeEnabledFeatures::RootScrollbarFollowsBrowserThemeEnabled() &&
-      scrollable_area_->IsGlobalRootNonOverlayScroller()) {
+      scrollable_area_ && scrollable_area_->IsGlobalRootNonOverlayScroller()) {
     if (const auto* layout_box = GetLayoutBox()) {
       if (const auto theme_color = layout_box->GetDocument()
                                        .GetSettings()

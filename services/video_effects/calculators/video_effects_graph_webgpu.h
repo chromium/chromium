@@ -39,7 +39,6 @@ class VideoEffectsGraphWebGpu {
              base::RepeatingCallback<void(wgpu::Texture)> on_frame_cb);
   bool ProcessFrame(base::TimeDelta timedelta,
                     wgpu::Texture input_texture,
-                    wgpu::Texture input_texture_downscaled,
                     wgpu::Texture output_texture,
                     const RuntimeConfig& runtime_config);
   bool WaitUntilIdle();

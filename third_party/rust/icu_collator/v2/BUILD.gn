@@ -12,20 +12,20 @@ cargo_crate("lib") {
   crate_name = "icu_collator"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/comparison.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/docs.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/elements.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/options.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta1/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/comparison.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/docs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/elements.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_collator-2.0.0-beta2/src/provider.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_version = "2.0.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_collator"
   cargo_pkg_description =

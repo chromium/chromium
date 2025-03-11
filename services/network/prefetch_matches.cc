@@ -123,7 +123,8 @@ namespace {
   DO_FIELD(prefetch_token) __VA_ARGS__                         \
   DO_FIELD(socket_tag) __VA_ARGS__                             \
   DO_FIELD(keepalive_token) __VA_ARGS__                        \
-  DO_FIELD(allows_device_bound_sessions)
+  DO_FIELD(allows_device_bound_sessions) __VA_ARGS__           \
+  DO_FIELD(permissions_policy)
 
 // clang-format on
 
@@ -221,7 +222,8 @@ enum class FieldsForUma {
   kIsAdTagged = 62,
   kKeepaliveToken = 63,
   kExpectedSignatures = 64,
-  kMaxValue = kExpectedSignatures,
+  kPermissionsPolicy = 65,
+  kMaxValue = kPermissionsPolicy,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
@@ -300,6 +302,7 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
      FieldsForUma::kAttributionReportingSrcToken},
     {Fields::kis_ad_tagged, FieldsForUma::kIsAdTagged},
     {Fields::kkeepalive_token, FieldsForUma::kKeepaliveToken},
+    {Fields::kpermissions_policy, FieldsForUma::kPermissionsPolicy},
 });
 
 // Fields that should be completely ignored for the purposes of matching should

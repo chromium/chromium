@@ -229,7 +229,7 @@ FakeDisplayItemClient& TestPaintArtifact::Client(wtf_size_t i) const {
 void TestPaintArtifact::DidAddDisplayItem() {
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   DCHECK_EQ(chunk.end_index, paint_artifact_->GetDisplayItemList().size() - 1);
-  const auto& item = paint_artifact_->GetDisplayItemList().back();
+  const auto& item = UNSAFE_TODO(paint_artifact_->GetDisplayItemList().back());
   chunk.bounds.Union(item.VisualRect());
   if (item.DrawsContent()) {
     chunk.drawable_bounds.Union(item.VisualRect());

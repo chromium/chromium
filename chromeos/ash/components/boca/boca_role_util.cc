@@ -14,8 +14,9 @@
 namespace ash::boca_util {
 
 namespace {
-inline constexpr char kDisabled[] = "disabled";
-inline constexpr char kStudent[] = "student";
+inline constexpr std::string_view kDisabled = "disabled";
+inline constexpr std::string_view kStudent = "student";
+inline constexpr std::string_view kRemoteAdmin = "remote_admin_was_present";
 }  // namespace
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
@@ -24,11 +25,21 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   // Fixes a dangling pointer crash associated with this pref not being
   // registered. Need to revisit if this is the best place for this pref to be
   // set.
-  registry->RegisterBooleanPref("remote_admin_was_present", false);
+  registry->RegisterBooleanPref(kRemoteAdmin, false);
   registry->RegisterDictionaryPref(
       ash::prefs::kClassManagementToolsNavRuleSetting);
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsCaptionEnablementSetting, false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kClassManagementToolsCaptionEligibilitySetting, true);
+  registry->RegisterBooleanPref(
+      ash::prefs::kClassManagementToolsClassroomEligibilitySetting, true);
+  registry->RegisterBooleanPref(
+      ash::prefs::kClassManagementToolsSendingContentEligibilitySetting, true);
+  registry->RegisterBooleanPref(
+      ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, true);
+  registry->RegisterBooleanPref(
+      ash::prefs::kClassManagementToolsNetworkRestrictionSetting, false);
 }
 
 bool IsEnabled(const user_manager::User* user) {

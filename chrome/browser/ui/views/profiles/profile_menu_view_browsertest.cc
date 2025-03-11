@@ -1691,6 +1691,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
 constexpr std::array
     kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised = {
+        ProfileMenuViewBase::ActionableItem::kProfileManagementLabel,
         ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
         ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
@@ -1702,12 +1703,15 @@ constexpr std::array
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
         // The first button is added again to finish the cycle and test that
         // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton};
+        ProfileMenuViewBase::ActionableItem::kProfileManagementLabel,
+};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised,
     ProfileMenuClickTest_GuestProfileButtonNotAvailable_SignedInSupervised,
-    /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
+    std::vector<base::test::FeatureRef>(
+        {switches::kImprovedSigninUIOnDesktop,
+         features::kEnterpriseProfileBadgingForMenu}),
     /*disabled_features=*/{}) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "child@gmail.com", signin::ConsentLevel::kSignin);

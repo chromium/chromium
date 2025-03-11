@@ -386,6 +386,8 @@ source_set("browser_sources") {
     "json_file_sanitizer.h",
     "l10n_file_util.cc",
     "l10n_file_util.h",
+    "launch_util.cc",
+    "launch_util.h",
     "lazy_background_task_queue.cc",
     "lazy_background_task_queue.h",
     "lazy_background_task_queue_factory.cc",

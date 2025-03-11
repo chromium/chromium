@@ -234,7 +234,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int rootId = tab.getRootId();
         mGroupIdToRootIdMap.put(tabGroupId, rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.willMergeTabToGroup(tab, rootId);
+            observer.willMergeTabToGroup(tab, rootId, tabGroupId);
         }
         tab.setTabGroupId(tabGroupId);
 
@@ -301,7 +301,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.willMergeTabToGroup(tab, destinationRootId);
+                    observer.willMergeTabToGroup(tab, destinationRootId, destinationTabGroupId);
                 }
 
                 // Skip unnecessary work of populating the lists if logic is skipped below.
@@ -425,7 +425,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             Tab tab = tabs.get(i);
 
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.willMergeTabToGroup(tab, destinationRootId);
+                observer.willMergeTabToGroup(tab, destinationRootId, destinationTabGroupId);
             }
 
             if (tab.getId() == destinationTab.getId()) continue;
@@ -516,7 +516,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (sourceTabGroup.size() == 1) {
             int prevFilterIndex = mRootIdToGroupIndexMap.get(oldRootId);
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.willMoveTabOutOfGroup(sourceTab, oldRootId);
+                observer.willMoveTabOutOfGroup(sourceTab, /* destinationTabGroupId= */ null);
             }
             // When moving the last tab out of a tab group of size 1 we should decrement the number
             // of tab groups.
@@ -559,7 +559,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         assert newRootId != Tab.INVALID_TAB_ID;
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.willMoveTabOutOfGroup(sourceTab, newRootId);
+            observer.willMoveTabOutOfGroup(sourceTab, /* destinationTabGroupId= */ null);
         }
 
         TabStateAttributes tabStateAttributes = TabStateAttributes.from(sourceTab);
@@ -644,7 +644,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // Notify that the tab will be removed from its current group.
         if (isTabInTabGroup(tab)) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.willMoveTabOutOfGroup(tab, originalRootId);
+                observer.willMoveTabOutOfGroup(
+                        tab, /* destinationTabGroupId= */ originalTabGroupId);
             }
         }
 
@@ -772,7 +773,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 int newRootId = parentTab.getRootId();
                 mGroupIdToRootIdMap.put(newTabGroupId, newRootId);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.willMergeTabToGroup(tab, newRootId);
+                    observer.willMergeTabToGroup(tab, newRootId, newTabGroupId);
                 }
                 tab.setRootId(newRootId);
                 tab.setTabGroupId(newTabGroupId);

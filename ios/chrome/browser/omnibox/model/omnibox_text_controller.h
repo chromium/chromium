@@ -37,8 +37,11 @@ class OmniboxViewIOS;
 
 #pragma mark - Omnibox text event
 
-/// Called when the thumbnail has been removed.
-- (void)onThumbnailRemoved;
+/// Called when a thumbnail is set.
+- (void)onThumbnailSet:(BOOL)hasThumbnail;
+
+/// Called when the thumbnail has been removed during omnibox edit.
+- (void)onThumbnailRemovedDuringEdit;
 
 @end
 

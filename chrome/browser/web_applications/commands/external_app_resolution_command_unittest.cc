@@ -1217,12 +1217,12 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
             registrar().GetInstallState(*result.app_id));
 
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       registrar().GetAppCurrentOsIntegrationState(*result.app_id);
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-            proto::RunOnOsLoginMode::WINDOWED);
+            proto::os_state::RunOnOsLogin::MODE_WINDOWED);
 }
 
 TEST_F(ExternalAppResolutionCommandTest, WriteDataToDiskFailed) {

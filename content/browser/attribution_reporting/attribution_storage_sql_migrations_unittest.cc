@@ -782,4 +782,34 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion67ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion68ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(68), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(db.DoesIndexExist("rate_limit_source_reporting_site_idx"));
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+    ASSERT_TRUE(db.DoesIndexExist("rate_limit_source_reporting_site_idx"));
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

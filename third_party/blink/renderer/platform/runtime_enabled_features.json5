@@ -581,12 +581,6 @@
       browser_process_read_write_access: true,
     },
     {
-      name: "BlinkExtensionDiagnostics",
-      depends_on: ["BlinkExtensionChromeOS"],
-      browser_process_read_write_access: true,
-      base_feature: "none",
-    },
-    {
       name: "BlinkExtensionWebView",
       public: true,
     },
@@ -792,7 +786,7 @@
     // the common ancestor of pointerdown and pointerup targets.
     {
       name: "ClickToCapturedPointer",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allows top-level sites to restrict collection of high-entropy UA client
@@ -2301,6 +2295,14 @@
       name: "HasUAVisualTransition",
       status: "stable",
     },
+    // TODO(crbug.com/333628468): Enables the `headingoffset` and
+    // `headingreset` attributes, which allow for alternate styles of building
+    // structured headings. This is being actively prototyped, starting ~M136.
+    // For more see https://github.com/whatwg/html/issues/5033
+    {
+      name: "HeadingOffset",
+      status: "experimental",
+    },
     {
       name: "HighlightInheritance",
       status: "stable",
@@ -3017,7 +3019,7 @@
     },
     {
       name: "ObservableAPI",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {

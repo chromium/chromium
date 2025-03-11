@@ -986,6 +986,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileGroupDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileRenderer.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileUtils.java",
+  "java/src/org/chromium/chrome/browser/suggestions/tile/TilesLinearLayout.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/tile_edit_dialog/CustomTileEditDelegates.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/tile_edit_dialog/CustomTileEditMediator.java",
   "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",

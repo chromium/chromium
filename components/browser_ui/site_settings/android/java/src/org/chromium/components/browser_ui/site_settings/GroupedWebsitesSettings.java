@@ -30,6 +30,8 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 /** Shows the permissions and other settings for a group of websites. */
 @NullMarked
@@ -264,15 +266,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
         if (shouldRelatedSitesPrefBeVisible) {
             assumeNonNull(rwsInfo);
-
-            relatedSitesText.setTitle(
-                    getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.allsites_rws_summary,
-                                    rwsInfo.getMembersCount(),
-                                    Integer.toString(rwsInfo.getMembersCount()),
-                                    rwsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(
                     new ForwardingManagedPreferenceDelegate(
                             getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
@@ -288,10 +281,24 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             return false;
                         }
                     });
-            relatedSitesHeader.addPreference(relatedSitesText);
 
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-                relatedSitesHeader.removeAll();
+                relatedSitesText.setSummary(
+                        SpanApplier.applySpans(
+                                getContext()
+                                        .getString(R.string.site_settings_rws_description_android),
+                                new SpanApplier.SpanInfo(
+                                        "<link>",
+                                        "</link>",
+                                        new ChromeClickableSpan(
+                                                getContext(),
+                                                (unused) -> {
+                                                    getSiteSettingsDelegate()
+                                                            .launchUrlInCustomTab(
+                                                                    getActivity(),
+                                                                    WebsiteSettingsConstants
+                                                                            .RWS_LEARN_MORE_URL);
+                                                }))));
                 relatedSitesHeader.addPreference(relatedSitesText);
                 for (Website site : rwsInfo.getMembers()) {
                     WebsiteRowPreference preference =
@@ -302,6 +309,16 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                     getActivity().getLayoutInflater());
                     relatedSitesHeader.addPreference(preference);
                 }
+            } else {
+                relatedSitesText.setTitle(
+                        getContext()
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.allsites_rws_summary,
+                                        rwsInfo.getMembersCount(),
+                                        Integer.toString(rwsInfo.getMembersCount()),
+                                        rwsInfo.getOwner()));
+                relatedSitesHeader.addPreference(relatedSitesText);
             }
         }
     }
@@ -316,7 +333,8 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             category.getContext(),
                             getSiteSettingsDelegate(),
                             site,
-                            getActivity().getLayoutInflater());
+                            getActivity().getLayoutInflater(),
+                            /* showRwsMembershipLabels= */ false);
             preference.setOnDeleteCallback(
                     () -> {
                         category.removePreference(preference);

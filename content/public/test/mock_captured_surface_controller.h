@@ -36,11 +36,11 @@ class MockCapturedSurfaceController final : public CapturedSurfaceController {
       std::optional<int> get_zoom_level_value,
       blink::mojom::CapturedSurfaceControlResult get_zoom_level_result);
 
-  void SetSetZoomLevelResponse(
-      blink::mojom::CapturedSurfaceControlResult set_zoom_level_result);
+  void SetUpdateZoomLevelResponse(
+      blink::mojom::CapturedSurfaceControlResult update_zoom_level_result);
 
-  void SetZoomLevel(
-      int zoom_level,
+  void UpdateZoomLevel(
+      blink::mojom::ZoomLevelAction action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           reply_callback) override;
 
@@ -53,11 +53,13 @@ class MockCapturedSurfaceController final : public CapturedSurfaceController {
 
  private:
   std::optional<blink::mojom::CapturedSurfaceControlResult> send_wheel_result_;
+  // TODO(crbug.com/40276312): Remove `get_zoom_level_result_` and anything else
+  // connected to an async getZoomLevel() - it's been obsolete for a while.
   std::optional<
       std::pair<std::optional<int>, blink::mojom::CapturedSurfaceControlResult>>
       get_zoom_level_result_;
   std::optional<blink::mojom::CapturedSurfaceControlResult>
-      set_zoom_level_result_;
+      update_zoom_level_result_;
   std::optional<blink::mojom::CapturedSurfaceControlResult>
       request_permission_result_;
 };

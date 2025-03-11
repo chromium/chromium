@@ -329,7 +329,7 @@ class PLATFORM_EXPORT ImageFrame final {
   raw_ptr<SkBitmap::Allocator> allocator_ = nullptr;
   bool has_alpha_ = true;
   PixelFormat pixel_format_ = kN32;
-  // This will always just be the entire buffer except for GIF or WebP
+  // This will always just be the entire buffer except for GIF/WebP/APNG
   // frames whose original rect was smaller than the overall image size.
   gfx::Rect original_frame_rect_;
   Status status_ = kFrameEmpty;

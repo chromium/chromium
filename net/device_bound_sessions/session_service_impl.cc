@@ -363,7 +363,7 @@ void SessionServiceImpl::AddSession(const SchemefulSite& site,
   if (session_store_) {
     session_store_->SaveSession(site, *session);
   }
-  // TODO(crbug.com/353774923): Enforce unique session ids per site.
+  // TODO(crbug.com/402020386): Enforce unique session ids per site.
   unpartitioned_sessions_.emplace(site, std::move(session));
 }
 

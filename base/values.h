@@ -30,6 +30,7 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace base {
 

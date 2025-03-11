@@ -101,11 +101,11 @@ bool IsSyncDataEqualIfApplied(const WebApp& expected_app,
   // Remove OS integration state, as this is never applied with the sync system.
   WebApp expected_app_copy = WebApp(expected_app);
   expected_app_copy.SetCurrentOsIntegrationStates(
-      proto::WebAppOsIntegrationState());
+      proto::os_state::WebAppOsIntegration());
 
   WebApp app_applied_sync_data_copy = WebApp(*app_to_apply_sync_data);
   app_applied_sync_data_copy.SetCurrentOsIntegrationStates(
-      proto::WebAppOsIntegrationState());
+      proto::os_state::WebAppOsIntegration());
 
   // The same as what applies to OS integration state also applies to the
   // "user installed" installation source. So remove that as well.

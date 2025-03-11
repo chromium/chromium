@@ -3377,16 +3377,6 @@ Called by update_extension_permission.py.-->
   <int value="13" label="Bad App Status"/>
 </enum>
 
-<enum name="ManifestVersion">
-  <int value="1" label="Manifest Version 1"/>
-  <int value="2" label="Manifest Version 2"/>
-  <int value="3" label="Manifest Version 3"/>
-  <int value="4" label="Manifest Version 4"/>
-  <int value="5" label="Manifest Version 5"/>
-  <int value="6" label="Manifest Version 6"/>
-  <int value="7" label="Manifest Version 7"/>
-</enum>
-
 <enum name="ManifestVersionPopulationSplit">
   <int value="0" label="No extensions"/>
   <int value="1" label="Manifest Version 2 extensions only"/>

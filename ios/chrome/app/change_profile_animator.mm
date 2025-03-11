@@ -54,7 +54,7 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 }
 
 - (void)waitForSceneState:(SceneState*)sceneState
-         toInitReachStage:(ProfileInitStage)initStage
+         toReachInitStage:(ProfileInitStage)initStage
              continuation:(ChangeProfileContinuation)continuation {
   DCHECK(continuation);
   DCHECK(sceneState.profileState);

@@ -44,8 +44,7 @@ class PLATFORM_EXPORT PendingLayer {
   void Trace(Visitor*) const;
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
-  gfx::Vector2dF LayerOffset() const;
-  gfx::Size LayerBounds() const;
+  std::pair<gfx::Vector2dF, gfx::Size> Bounds() const;
 
   const gfx::RectF& BoundsForTesting() const { return bounds_; }
 

@@ -174,10 +174,15 @@ if (enable_webui_generate_code_cache) {
   generate_grd("build_code_cache_grd") {
     grd_prefix = "webui_code_cache"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-    grdp_files =
-        [ "$root_gen_dir/third_party/lit/v3_0/code_cache_resources.grdp" ]
+    grdp_files = [
+      "$root_gen_dir/third_party/lit/v3_0/code_cache_resources.grdp",
+      "$target_gen_dir/cr_elements/code_cache_resources.grdp",
+    ]
 
-    public_deps = [ "//third_party/lit/v3_0:build_code_cache_grdp" ]
+    public_deps = [
+      "cr_elements:build_code_cache_grdp",
+      "//third_party/lit/v3_0:build_code_cache_grdp",
+    ]
   }
 
   grit("code_cache_resources") {

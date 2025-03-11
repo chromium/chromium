@@ -37,6 +37,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const url::Origin& data_origin,
+      blink::mojom::SharedStorageDataOriginType data_origin_type,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,

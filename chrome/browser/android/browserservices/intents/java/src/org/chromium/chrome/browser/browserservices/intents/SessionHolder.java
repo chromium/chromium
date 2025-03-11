@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.AuthTabSessionToken;
@@ -15,6 +13,8 @@ import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Class that holds either a {@link CustomTabsSessionToken} or {@link AuthTabSessionToken}.
@@ -23,16 +23,16 @@ import org.chromium.base.IntentUtils;
  *     AuthTabSessionToken}.
  */
 @OptIn(markerClass = ExperimentalAuthTab.class)
+@NullMarked
 public class SessionHolder<T> {
-    @NonNull private final T mSession;
+    private final T mSession;
 
-    public SessionHolder(@NonNull T session) {
+    public SessionHolder(T session) {
         mSession = session;
         assert isCustomTab() || isAuthTab();
     }
 
-    @Nullable
-    public static SessionHolder<?> getSessionHolderFromIntent(Intent intent) {
+    public static @Nullable SessionHolder<?> getSessionHolderFromIntent(Intent intent) {
         boolean isAuthTab =
                 IntentUtils.safeGetBooleanExtra(intent, AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, false);
         if (isAuthTab) {
@@ -50,19 +50,16 @@ public class SessionHolder<T> {
     }
 
     /** Returns the session held by this object. */
-    @NonNull
     public T getSession() {
         return mSession;
     }
 
     /** Returns the session as a {@link CustomTabsSessionToken}. */
-    @NonNull
     public CustomTabsSessionToken getSessionAsCustomTab() {
         return (CustomTabsSessionToken) mSession;
     }
 
     /** Returns the session as an {@link AuthTabSessionToken}. */
-    @NonNull
     public AuthTabSessionToken getSessionAsAuthTab() {
         return (AuthTabSessionToken) mSession;
     }

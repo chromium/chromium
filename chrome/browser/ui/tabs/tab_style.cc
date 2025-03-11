@@ -31,6 +31,7 @@ class ChromeRefresh2023TabStyle : public TabStyle {
  public:
   ~ChromeRefresh2023TabStyle() override = default;
   int GetStandardWidth() const override;
+  int GetStandardSplitWidth() const override;
   int GetPinnedWidth() const override;
   int GetMinimumActiveWidth() const override;
   int GetMinimumInactiveWidth() const override;
@@ -60,6 +61,11 @@ int ChromeRefresh2023TabStyle::GetStandardWidth() const {
   constexpr int kTabWidth = 240;
   // The overlap includes one separator, so subtract it here.
   return kTabWidth + GetTabOverlap() - GetSeparatorSize().width();
+}
+
+int ChromeRefresh2023TabStyle::GetStandardSplitWidth() const {
+  // TODO(agale): Update to a more precise calculation.
+  return GetStandardWidth() / 2;
 }
 
 int ChromeRefresh2023TabStyle::GetPinnedWidth() const {

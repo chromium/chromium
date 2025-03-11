@@ -46,7 +46,7 @@ BASE_FEATURE(kEnableBandATriggeredUpdates,
 // Enable response authorization using the Ad-Auction-Result-Nonce header.
 BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
              "FledgeBiddingAndAuctionNonceSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Force sampling of forDebuggingOnly reports, for testing purpose. This flag
 // will always be disabled by default, and will only be enabled in some tests,

@@ -32,6 +32,12 @@ enum SharedStorageWorkletCreationMethod {
   kCreateWorklet,
 };
 
+enum SharedStorageDataOriginType {
+  kContextOrigin,
+  kScriptOrigin,
+  kCustomOrigin,
+};
+
 // Bundles information passed to the worklet via the `privateAggregationConfig`
 // parameter on `sharedStorage.run()` or `sharedStorage.selectURL()`.
 struct PrivateAggregationConfig {
@@ -112,6 +118,7 @@ interface SharedStorageDocumentService {
   // `origin_trial_features` (i.e. inherit the creator document's OT features).
   CreateWorklet(url.mojom.Url script_source_url,
                 url.mojom.Origin data_origin,
+                SharedStorageDataOriginType data_origin_type,
                 network.mojom.CredentialsMode credentials_mode,
                 SharedStorageWorkletCreationMethod creation_method,
                 array<OriginTrialFeature> origin_trial_features,

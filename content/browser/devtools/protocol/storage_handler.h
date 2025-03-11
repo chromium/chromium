@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace storage {
 class QuotaOverrideHandle;
@@ -211,8 +212,9 @@ class StorageHandler
 
   void NotifySharedStorageAccessed(
       const base::Time& access_time,
-      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType
-          type,
+      blink::SharedStorageAccessScope scope,
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+          method,
       FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);

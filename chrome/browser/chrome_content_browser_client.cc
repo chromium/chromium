@@ -44,6 +44,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
@@ -4178,7 +4179,10 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     // result in always proceeding with no certificate for any request from an
     // extension service worker. That decision would be remembered across the
     // entire profile, potentially locking the user out of the origin.
-#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+    // Allow background requests on desktop android even if there are no
+    // matching certificates.
+#if BUILDFLAG(ENABLE_EXTENSIONS) && \
+    !(BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID))
     if (matching_certificates.empty() && nonmatching_certificates.empty()) {
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(profile);
@@ -4648,22 +4652,14 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   // If the pref is not set, the default value (true) will be used:
   web_prefs->webxr_immersive_ar_allowed =
       prefs->GetBoolean(prefs::kWebXRImmersiveArEnabled);
-
-  // Only set `databases_enabled` if disabled, otherwise check blink::feature
-  // settings.
-  web_prefs->databases_enabled =
-      !web_prefs->databases_enabled
-          ? false
-          : base::FeatureList::IsEnabled(blink::features::kWebSQLAccess);
-#else
-  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-  // WebView.
-  web_prefs->databases_enabled = false;
 #endif
 
   for (auto& parts : extra_parts_) {
     parts->OverrideWebPreferences(web_contents, main_frame_site, web_prefs);
   }
+
+  // TODO(crbug.com/395838064): Cleanup WebSQL WebPreference.
+  web_prefs->databases_enabled = false;
 
   web_prefs->prefers_default_scrollbar_styles =
       prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);

@@ -60,105 +60,6 @@ namespace {
   return destination;
 }
 
-[[maybe_unused]] wgpu::Texture CreateFloat32Texture(
-    const wgpu::Device& device,
-    uint32_t width,
-    uint32_t height,
-    wgpu::TextureUsage usage,
-    base::cstring_view label = {}) {
-  wgpu::TextureDescriptor texture_descriptor = {
-      .label = label.c_str(),
-      .usage = usage,
-      .dimension = wgpu::TextureDimension::e2D,
-      .size = {.width = width, .height = height, .depthOrArrayLayers = 1},
-      .format = wgpu::TextureFormat::RGBA32Float};
-  return device.CreateTexture(&texture_descriptor);
-}
-
-enum class Conversion {
-  kFromFloats,
-  kToFloats,
-};
-
-[[maybe_unused]] wgpu::CommandBuffer GetTextureConversionCommandBuffer(
-    const wgpu::Device& device,
-    const wgpu::Texture& source,
-    const wgpu::Texture& destination,
-    const wgpu::RenderPipeline& render_pipeline,
-    Conversion conversion,
-    const wgpu::Buffer& uniforms_buffer,
-    bool perform_y_flip,
-    base::cstring_view label_prefix = {}) {
-  const std::string command_encoder_label =
-      base::StringPrintf("%s%s", label_prefix, "CommandEncoder");
-  wgpu::CommandEncoderDescriptor command_encoder_descriptor = {
-      .label = command_encoder_label.c_str()};
-  wgpu::CommandEncoder command_encoder =
-      device.CreateCommandEncoder(&command_encoder_descriptor);
-
-  wgpu::RenderPassColorAttachment destination_color_attachment = {
-      .view = destination.CreateView(),
-      .loadOp = wgpu::LoadOp::Clear,
-      .storeOp = wgpu::StoreOp::Store,
-      // Set the clear color for the destination texture with the color
-      // depending on the conversion direction. This helps with debugging - in
-      // case there is an underdraw, the pixels that weren't written to will
-      // still have the clear color.
-      .clearValue =
-          {
-              .r = conversion == Conversion::kToFloats ? 1.0 : 0.0,
-              .g = 0.0,
-              .b = conversion == Conversion::kFromFloats ? 1.0 : 0.0,
-              .a = 1.0,
-          },
-  };
-
-  const std::vector<wgpu::BindGroupEntry> entries = {
-      {.binding = 0, .sampler = device.CreateSampler()},
-      {.binding = 1, .textureView = source.CreateView()},
-      {.binding = 2, .buffer = uniforms_buffer},
-  };
-
-  const std::string bind_group_label =
-      base::StringPrintf("%s%s", label_prefix, "BindGroup");
-  wgpu::BindGroupDescriptor bind_group_descriptor = {
-      .label = bind_group_label.c_str(),
-      .layout = render_pipeline.GetBindGroupLayout(0),
-      .entryCount = entries.size(),
-      .entries = entries.data(),
-  };
-
-  const uint32_t uniforms_perform_y_flip = perform_y_flip;
-  auto uniforms_bytes = base::bit_cast<
-      std::array<const uint8_t, sizeof(uniforms_perform_y_flip)>>(
-      uniforms_perform_y_flip);
-  command_encoder.WriteBuffer(uniforms_buffer, 0, uniforms_bytes.data(),
-                              uniforms_bytes.size());
-
-  const std::string render_pass_label =
-      base::StringPrintf("%s%s", label_prefix, "RenderPass");
-  wgpu::RenderPassDescriptor render_pass_descriptor = {
-      .label = render_pass_label.c_str(),
-      .colorAttachmentCount = 1,
-      .colorAttachments = &destination_color_attachment,
-  };
-  wgpu::RenderPassEncoder render_pass_encoder =
-      command_encoder.BeginRenderPass(&render_pass_descriptor);
-  render_pass_encoder.SetPipeline(render_pipeline);
-  render_pass_encoder.SetBindGroup(
-      0, device.CreateBindGroup(&bind_group_descriptor));
-  // We're rendering a quad which we built from 2 triangles (hard-coded in the
-  // shader).
-  render_pass_encoder.Draw(6);
-  render_pass_encoder.End();
-
-  const std::string command_buffer_label =
-      base::StringPrintf("%s%s", label_prefix, "CommandBuffer");
-  wgpu::CommandBufferDescriptor command_buffer_descriptor = {
-      .label = command_buffer_label.c_str()};
-  return command_encoder.Finish(&command_buffer_descriptor);
-}
-
 }  // namespace
 
 namespace video_effects {
@@ -201,12 +102,6 @@ VideoEffectsProcessorWebGpu::VideoEffectsProcessorWebGpu(
 VideoEffectsProcessorWebGpu::~VideoEffectsProcessorWebGpu() = default;
 
 bool VideoEffectsProcessorWebGpu::Initialize() {
-  compute_pipeline_ = CreateComputePipeline();
-  render_pipeline_texture_copy_into_rgbaf32_ =
-      CreateRenderPipelineForTextureCopy(wgpu::TextureFormat::RGBA32Float);
-  render_pipeline_texture_copy_into_rgba8unorm_ =
-      CreateRenderPipelineForTextureCopy(wgpu::TextureFormat::RGBA8Unorm);
-
   EnsureFlush();
   return true;
 }
@@ -352,6 +247,13 @@ void VideoEffectsProcessorWebGpu::PostProcess(
     std::move(post_process_cb)
         .Run(mojom::PostProcessResult::NewError(
             mojom::PostProcessError::kNotReady));
+    return;
+  }
+
+  if (runtime_config.blur_state != BlurState::kEnabled) {
+    std::move(post_process_cb)
+        .Run(mojom::PostProcessResult::NewError(
+            mojom::PostProcessError::kUnknown));
     return;
   }
 
@@ -526,27 +428,13 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   wgpu::Texture out_texture = out_reservation.texture;
   out_texture.SetLabel("VideoEffectsProcessorOutTexture");
 
-  wgpu::Texture in_texture_downscaled_float32 = CreateFloat32Texture(
-      device_, 256, 144,
-      wgpu::TextureUsage::StorageBinding | wgpu::TextureUsage::TextureBinding |
-          wgpu::TextureUsage::RenderAttachment,
-      "VideoEffectsProcessorInTextureDownscaledFloat32");
-  wgpu::CommandBuffer pre_inference_into_floats_downscale =
-      GetTextureConversionCommandBuffer(
-          device_, in_texture, in_texture_downscaled_float32,
-          render_pipeline_texture_copy_into_rgbaf32_, Conversion::kToFloats,
-          texture_copy_uniforms_buffer_, /*perform_y_flip=*/true,
-          "PreInferenceIntoFloatsDownscale");
-  device_.GetQueue().Submit(1, &pre_inference_into_floats_downscale);
-
   // w2<-RunPipeline(w1):
   // Note: this only submits the WebGPU commands to the device queue. The fact
   // that `ProcessFrame()` returned does not mean that the frame was already
   // processed - just that the appropriate commands have been scheduled to run
   // on the GPU. Same for `WaitUntilIdle()`.
   CHECK(graph_->ProcessFrame(input_frame_info->timestamp, in_texture,
-                             in_texture_downscaled_float32, out_texture,
-                             runtime_config));
+                             out_texture, runtime_config));
   // We can block since all the graph does is it schedules more work on the GPU.
   // This itself should be near-instant, so the call won't block for long.
   CHECK(graph_->WaitUntilIdle());
@@ -660,280 +548,6 @@ void VideoEffectsProcessorWebGpu::MaybeInitializeInferenceEngine() {
                             weak_ptr_factory_.GetWeakPtr())));
   }
 #endif
-}
-
-wgpu::ComputePipeline VideoEffectsProcessorWebGpu::CreateComputePipeline() {
-  wgpu::BufferDescriptor uniforms_descriptor = {
-      .label = "VideoEffectsProcessorUniformBuffer",
-      .usage = wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst,
-      .size = sizeof(Uniforms),
-      .mappedAtCreation = false,
-  };
-
-  uniforms_buffer_ = device_.CreateBuffer(&uniforms_descriptor);
-
-  std::vector<wgpu::BindGroupLayoutEntry> bindings;
-  bindings.push_back({
-      .binding = 0,
-      .visibility = wgpu::ShaderStage::Compute,
-      .texture =
-          {
-              .sampleType = wgpu::TextureSampleType::Float,
-              .viewDimension = wgpu::TextureViewDimension::e2D,
-              .multisampled = false,
-          },
-  });
-
-  bindings.push_back({
-      .binding = 1,
-      .visibility = wgpu::ShaderStage::Compute,
-      .storageTexture =
-          {
-              .access = wgpu::StorageTextureAccess::WriteOnly,
-              .format = wgpu::TextureFormat::RGBA8Unorm,
-              .viewDimension = wgpu::TextureViewDimension::e2D,
-          },
-  });
-
-  bindings.push_back({.binding = 2,
-                      .visibility = wgpu::ShaderStage::Compute,
-                      .buffer = {
-                          .type = wgpu::BufferBindingType::Uniform,
-                      }});
-
-  wgpu::BindGroupLayoutDescriptor bind_group_layout_descriptor = {
-      .label = "VideoEffectsProcessorBindGroupLayout",
-      .entryCount = bindings.size(),
-      .entries = bindings.data(),
-  };
-  wgpu::BindGroupLayout bind_group_layout =
-      device_.CreateBindGroupLayout(&bind_group_layout_descriptor);
-
-  wgpu::PipelineLayoutDescriptor pipeline_layout_descriptor = {
-      .label = "VideoEffectsProcessorPipelineLayout",
-      .bindGroupLayoutCount = 1,
-      .bindGroupLayouts = &bind_group_layout,
-  };
-  wgpu::PipelineLayout pipeline_layout =
-      device_.CreatePipelineLayout(&pipeline_layout_descriptor);
-
-  wgpu::ShaderSourceWGSL compute_shader_wgsl_descriptor;
-  compute_shader_wgsl_descriptor.code = R"(
-struct Uniforms {
-    // Valid range: [-1; -1].
-    brightness: f32,
-    // Valid range: [-1; -1].
-    contrast: f32,
-    // Valid range: [-1; -1].
-    saturation: f32,
-}
-
-@group(0) @binding(0) var inputBuffer: texture_2d<f32>;
-@group(0) @binding(1) var outputBuffer: texture_storage_2d<rgba8unorm, write>;
-@group(0) @binding(2) var<uniform> uniforms: Uniforms;
-
-// TODO(bialpio): We may want to have multiple shader versions depending on the
-// maximum supported workgroup size. WebGPU guarantees that the maximum is not
-// going to be lower than 256 invocations, so let's start with that.
-// Note: `workgroup_size()` MUST be updated at the same time that the call to
-// `wgpu::ComputePassEncoder::DispatchWorkgroups()` that dispatches this shader
-// is updated.
-@compute @workgroup_size(16, 16, 1)
-fn postProcess(@builtin(global_invocation_id) id: vec3<u32>) {
-  let size = textureDimensions(inputBuffer);
-  let position = id.xy;
-  if (all(position < size)) {
-    var color: vec4<f32> = textureLoad(inputBuffer, position, 0);
-
-    color = (color - 0.5) * (uniforms.contrast + 1) + 0.5;
-    color = color + uniforms.brightness;
-    // TODO(bialpio): apply saturation here.
-
-    textureStore(outputBuffer, position, color);
-  }
-}
-    )";
-
-  wgpu::ShaderModuleDescriptor compute_shader_descriptor = {
-      .nextInChain = &compute_shader_wgsl_descriptor,
-      .label = "VideoEffectsProcessorComputeShader",
-  };
-  wgpu::ShaderModule compute_shader =
-      device_.CreateShaderModule(&compute_shader_descriptor);
-
-  wgpu::ComputePipelineDescriptor compute_pipeline_descriptor = {
-      .label = "VideoEffectsProcessorComputePipeline",
-      .layout = pipeline_layout,
-      .compute =
-          {
-              .module = compute_shader,
-              .entryPoint = "postProcess",
-          },
-  };
-
-  return device_.CreateComputePipeline(&compute_pipeline_descriptor);
-}
-
-wgpu::RenderPipeline
-VideoEffectsProcessorWebGpu::CreateRenderPipelineForTextureCopy(
-    wgpu::TextureFormat destination_format) {
-  if (!texture_copy_uniforms_buffer_) {
-    wgpu::BufferDescriptor uniforms_descriptor = {
-        .label = "VideoEffectsProcessorTextureCopyUniforms",
-        .usage = wgpu::BufferUsage::Uniform | wgpu::BufferUsage::CopyDst,
-        .size = sizeof(uint32_t),
-        .mappedAtCreation = false,
-    };
-    texture_copy_uniforms_buffer_ = device_.CreateBuffer(&uniforms_descriptor);
-  }
-
-  std::vector<wgpu::BindGroupLayoutEntry> entries;
-  entries.push_back({
-      .binding = 0,
-      .visibility = wgpu::ShaderStage::Fragment,
-      .sampler =
-          {
-              .type = wgpu::SamplerBindingType::NonFiltering,
-          },
-  });
-
-  entries.push_back(
-      {.binding = 1,
-       .visibility = wgpu::ShaderStage::Fragment,
-       .texture = {
-           .sampleType = wgpu::TextureSampleType::UnfilterableFloat,
-           .viewDimension = wgpu::TextureViewDimension::e2D,
-           .multisampled = false,
-       }});
-
-  entries.push_back({
-      .binding = 2,
-      .visibility = wgpu::ShaderStage::Fragment,
-      .buffer =
-          {
-              .type = wgpu::BufferBindingType::Uniform,
-          },
-  });
-
-  const std::string bind_group_layout_label =
-      base::StrCat({"VideoEffectsProcessorTextureCopyBindGroupLayout::",
-                    base::ToString(destination_format)});
-  wgpu::BindGroupLayoutDescriptor bind_group_layout_descriptor = {
-      .label = bind_group_layout_label.c_str(),
-      .entryCount = entries.size(),
-      .entries = entries.data(),
-  };
-  wgpu::BindGroupLayout bind_group_layout =
-      device_.CreateBindGroupLayout(&bind_group_layout_descriptor);
-
-  const std::string pipeline_layout_label =
-      base::StrCat({"VideoEffectsProcessorTextureCopyPipelineLayout::",
-                    base::ToString(destination_format)});
-  wgpu::PipelineLayoutDescriptor pipeline_layout_descriptor = {
-      .label = pipeline_layout_label.c_str(),
-      .bindGroupLayoutCount = 1,
-      .bindGroupLayouts = &bind_group_layout,
-  };
-
-  wgpu::ShaderModuleWGSLDescriptor shader_module_wgsl_descriptor;
-  shader_module_wgsl_descriptor.code = R"(
-
-struct Uniforms {
-    perform_y_flip: u32,    // bools are not host-shareable
-}
-
-@group(0) @binding(0) var sourceTextureSampler: sampler;
-@group(0) @binding(1) var sourceTexture: texture_2d<f32>;
-@group(0) @binding(2) var<uniform> uniforms: Uniforms;
-
-struct VertexOutput {
-  @builtin(position) position: vec4f,
-  @location(0) uv: vec2f,
-};
-
-@vertex
-fn vertex_main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
-  // x,y coordinates of our triangles, in clip space:
-  var triangle_points = array<vec2<f32>, 6>(
-    // 1st triangle:
-    vec2<f32>(-1.0, -1.0), // lower left
-    vec2<f32>( 1.0,  1.0), // upper right
-    vec2<f32>(-1.0,  1.0), // upper left
-    // 2nd triangle:
-    vec2<f32>(-1.0, -1.0), // lower left
-    vec2<f32>( 1.0, -1.0), // lower right
-    vec2<f32>( 1.0,  1.0), // upper right
-  );
-
-  let xy = triangle_points[in_vertex_index];
-
-  var out: VertexOutput;
-  // `position` is a vec4 so let's extend x,y with z=0.0 (at near plane), w=1.0.
-  // (with w=1.0, x,y,z will be unchanged during clip space -> NDC conversion)
-  out.position = vec4f(xy, 0.0, 1.0);
-  // Transform from clip space to UV:
-  out.uv = xy.xy * 0.5 + 0.5;   // [-1; 1] => [0; 1]
-  return out;
-}
-
-@fragment
-fn fragment_main(in: VertexOutput) -> @location(0) vec4f {
-  let uvs = select(
-    in.uv, vec2f(in.uv.x, 1.0 - in.uv.y), uniforms.perform_y_flip == 1);
-  return textureSample(sourceTexture, sourceTextureSampler, uvs);
-}
-  )";
-
-  const std::string shader_label =
-      base::StrCat({"VideoEffectsProcessorTextureCopyShader::",
-                    base::ToString(destination_format)});
-  wgpu::ShaderModuleDescriptor shader_module_descriptor = {
-      .nextInChain = &shader_module_wgsl_descriptor,
-      .label = shader_label.c_str(),
-  };
-  wgpu::ShaderModule shader_module =
-      device_.CreateShaderModule(&shader_module_descriptor);
-
-  wgpu::ColorTargetState color_target_state = {
-      .format = destination_format,
-      .blend = nullptr,
-      .writeMask = wgpu::ColorWriteMask::All,
-  };
-  wgpu::FragmentState fragment_state = {
-      .module = shader_module,
-      .entryPoint = "fragment_main",
-      .constantCount = 0,
-      .constants = nullptr,
-      .targetCount = 1,
-      .targets = &color_target_state,
-  };
-
-  const std::string pipeline_label =
-      base::StrCat({"VideoEffectsProcessorTextureCopyRenderPipeline::",
-                    base::ToString(destination_format)});
-  wgpu::RenderPipelineDescriptor pipeline_descriptor = {
-      .label = pipeline_label.c_str(),
-      .layout = device_.CreatePipelineLayout(&pipeline_layout_descriptor),
-      .vertex =
-          {
-              .module = shader_module,
-              .entryPoint = "vertex_main",
-              .constantCount = 0,
-              .constants = nullptr,
-          },
-      .primitive =
-          {
-              .topology = wgpu::PrimitiveTopology::TriangleList,
-              .stripIndexFormat = wgpu::IndexFormat::Undefined,
-              .frontFace = wgpu::FrontFace::CCW,
-              .cullMode = wgpu::CullMode::Back,
-          },
-      .depthStencil = nullptr,  // no need for depth test
-      .multisample = {},        // no need to multisample
-      .fragment = &fragment_state,
-  };
-
-  return device_.CreateRenderPipeline(&pipeline_descriptor);
 }
 
 void VideoEffectsProcessorWebGpu::EnsureFlush() {

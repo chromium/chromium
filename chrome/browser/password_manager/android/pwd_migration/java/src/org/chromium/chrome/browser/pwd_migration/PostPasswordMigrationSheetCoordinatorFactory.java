@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -47,6 +48,7 @@ public class PostPasswordMigrationSheetCoordinatorFactory {
     public static void setCoordinatorInstanceForTesting(
             PostPasswordMigrationSheetCoordinator testingCoordinator) {
         sCoordinatorInstanceForTesting = testingCoordinator;
+        ResettersForTesting.register(() -> sCoordinatorInstanceForTesting = null);
     }
 
     private PostPasswordMigrationSheetCoordinatorFactory() {}

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 
 #include <bitset>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
@@ -1225,10 +1221,9 @@ StyleRuleNestedDeclarations* CreateNestedDeclarationsRule(
     HeapVector<CSSPropertyValue, 64>& declarations) {
   return MakeGarbageCollected<StyleRuleNestedDeclarations>(
       nesting_type,
-      StyleRule::Create(
-          base::span<CSSSelector>{selectors.begin(), selectors.size()},
-          CreateCSSPropertyValueSet(declarations, context.Mode(),
-                                    context.GetDocument())));
+      StyleRule::Create(selectors,
+                        CreateCSSPropertyValueSet(declarations, context.Mode(),
+                                                  context.GetDocument())));
 }
 
 }  // namespace
@@ -1244,8 +1239,9 @@ StyleRuleBase* CSSParserImpl::CreateDeclarationsRule(
   // Create a nested declarations rule containing all declarations
   // in [start_index, end_index).
   HeapVector<CSSPropertyValue, 64> declarations;
-  declarations.AppendRange(parsed_properties_.begin() + start_index,
-                           parsed_properties_.begin() + end_index);
+  declarations.AppendRange(
+      UNSAFE_TODO(parsed_properties_.begin() + start_index),
+      UNSAFE_TODO(parsed_properties_.begin() + end_index));
 
   // Create the selector for StyleRuleNestedDeclarations's inner StyleRule.
 

@@ -1253,9 +1253,6 @@ class ListBoxSelectType final : public SelectType {
   Member<HTMLOptionElement> option_to_scroll_to_;
   Member<HTMLOptionElement> active_selection_anchor_;
   Member<HTMLOptionElement> active_selection_end_;
-  // TODO(crbug.com/1511354): Remove option_slot_ when the CustomizableSelect
-  // flag is enabled and removed. It is only used when CustomizableSelect is
-  // disabled.
   Member<HTMLSlotElement> option_slot_;
   bool is_in_non_contiguous_selection_ = false;
   bool active_selection_state_ = false;

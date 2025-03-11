@@ -63,6 +63,7 @@ static_library("personalization_app") {
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/camera_presence_notifier",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//components/account_id",
     "//components/keyed_service/core",

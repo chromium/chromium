@@ -24,12 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,6 +53,25 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = extensions::ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = extensions::ExtensionApiTest;
+#endif
 
 namespace extensions {
 namespace {
@@ -112,7 +126,7 @@ class MessageSender : public ExtensionHostRegistry::Observer {
       host_registry_observation_{this};
 };
 
-class MessagingApiTest : public ExtensionApiTest {
+class MessagingApiTest : public ExtensionApiTestBase {
  public:
   explicit MessagingApiTest(bool enable_back_forward_cache = true) {
     if (!enable_back_forward_cache) {
@@ -132,7 +146,7 @@ class MessagingApiTest : public ExtensionApiTest {
   ~MessagingApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -153,6 +167,8 @@ class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
   MessagingApiWithoutBackForwardCacheTest()
       : MessagingApiTest(/*enable_back_forward_cache=*/false) {}
 };
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect", {.custom_arg = "bfcache"}))
@@ -247,6 +263,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, SendMessageDisconnect) {
   ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
 }
 
+#endif
+
 // Tests that message passing from one extension to another works.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(
@@ -257,6 +275,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Tests that a content script can exchange messages with a tab even if there is
 // no background page.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
@@ -264,6 +284,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
                                {.extension_url = "page_in_main_frame.html"}))
       << message_;
 }
+
+#endif
 
 // Tests that messages with event_urls are only passed to extensions with
 // appropriate permissions.
@@ -280,7 +302,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingBackgroundOnly) {
 // TODO(kalman): Most web messaging tests disabled on windows due to extreme
 // flakiness. See http://crbug.com/350517.
 #if !BUILDFLAG(IS_WIN)
-
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingUserGesture) {
   const char kManifest[] = "{"
@@ -506,6 +527,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
 
 #endif  // !BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Tests that messages sent in the pagehide handler of a window arrive.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnPagehide) {
   const Extension* extension =
@@ -721,6 +744,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiFencedFrameTest, Load) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames", {}))
       << message_;
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 

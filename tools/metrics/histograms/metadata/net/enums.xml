@@ -660,13 +660,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chain contained only one certificate"/>
 </enum>
 
-<enum name="NetCertVerifierNSSCertMigrationResult">
-  <int value="0" label="NSS DB empty"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Partial Success"/>
-  <int value="3" label="Failure"/>
-</enum>
-
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
     An error page was shown. This bucket encompasses all others and works as a
@@ -778,32 +771,6 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Sign in to network button clicked">
     An error page was shown with at least a &quot;Sign in to network&quot;
     button on it and the user pressed that button.
-  </int>
-</enum>
-
-<enum name="NetFilterType2">
-  <summary>
-    Specific content decoding filter. See net::SourceStream::SourceType for more
-    details
-  </summary>
-  <int value="0" label="Brotli"/>
-  <int value="1" label="Deflate"/>
-  <int value="2" label="GZIP"/>
-  <int value="3" label="GZIPFallback"/>
-  <int value="4" label="SDCH"/>
-  <int value="5" label="SDCHPossible"/>
-  <int value="6" label="Invalid"/>
-  <int value="7" label="None"/>
-  <int value="8" label="Rejected">
-    Unlike other values, this one is reported from HttpNetworkTransaction in a
-    case when an unadvertised, but known encoding appears in a
-    &quot;Content-Encoding&quot; header, and is thus not comparable with the
-    other values, which are potentially returned from cached entries.
-  </int>
-  <int value="9" label="Unknown">
-    Reported from URLRequestHttpJob::SetUpSourceStream when an unknown encoding
-    appears in a &quot;Content-Encoding&quot; header. Despite being reported in
-    this histogram, this does not cause a CONTENT_DECODING_FAILED error.
   </int>
 </enum>
 

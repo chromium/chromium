@@ -86,6 +86,7 @@ static_library("core") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/chromeos/extensions/external_loader",
+    "//chrome/browser/policy:policy_util",
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

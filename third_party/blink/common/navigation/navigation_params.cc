@@ -39,7 +39,7 @@ mojom::RendererContentSettingsPtr CreateDefaultRendererContentSettings() {
   //   allow_image is not supported on Android), then these defaults are used.
   return mojom::RendererContentSettings::New(
       /*allow_script=*/true, /*allow_image=*/true, /*allow_popup=*/false,
-      /*allow_mixed_content=*/false);
+      /*allow_mixed_content=*/false, /*allow_controlled_frame=*/false);
 }
 
 }  // namespace blink

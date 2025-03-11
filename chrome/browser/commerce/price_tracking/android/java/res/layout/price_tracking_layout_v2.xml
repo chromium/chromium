@@ -12,6 +12,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height= "wrap_content"
     android:orientation="horizontal"
+    android:padding="@dimen/content_item_container_padding"
     android:layout_marginTop="@dimen/price_insights_content_top_margin">
 
     <!-- Price tracking title and description -->

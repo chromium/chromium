@@ -21,7 +21,7 @@
 #include "base/library_loader_jni/LibraryLoader_jni.h"
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
-#include "base/android/orderfile/orderfile_instrumentation.h"
+#include "base/android/orderfile/orderfile_instrumentation.h"  // nogncheck
 #endif
 
 namespace base {

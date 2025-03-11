@@ -39,11 +39,6 @@ BASE_FEATURE(kBlinkExtension,
              "BlinkExtension",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the ChromeOS Diagnostics API.
-BASE_FEATURE(kBlinkExtensionDiagnostics,
-             "BlinkExtensionDiagnostics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables ChromeOS Kiosk APIs.
 BASE_FEATURE(kBlinkExtensionKiosk,
              "BlinkExtensionKiosk",
@@ -62,7 +57,7 @@ BASE_FEATURE(kCrosComponents,
 
 // Enables an app to discover and install other apps. This flag will be enabled
 // with Finch.
-BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Mall app for managed users. Only has an effect when kCrosMall is
 // also enabled.
@@ -380,11 +375,6 @@ bool IsAlmanacLauncherPayloadEnabled() {
 
 bool IsBlinkExtensionEnabled() {
   return base::FeatureList::IsEnabled(kBlinkExtension);
-}
-
-bool IsBlinkExtensionDiagnosticsEnabled() {
-  return IsBlinkExtensionEnabled() &&
-         base::FeatureList::IsEnabled(kBlinkExtensionDiagnostics);
 }
 
 bool IsCrosComponentsEnabled() {

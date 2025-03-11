@@ -231,6 +231,11 @@ void RecordStoreSourceStatus(const StoreSourceResult& result) {
   base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
                                 result.status());
 
+  dwa::builders::AttributionConversionsStoreSource()
+      .SetContent(result.source().common_info().reporting_origin().Serialize())
+      .SetStatus(static_cast<int64_t>(result.status()))
+      .Record(metrics::dwa::DwaRecorder::Get());
+
   if (ukm::SourceId ukm_source_id = result.source().ukm_source_id();
       ukm_source_id != ukm::kInvalidSourceId) {
     ukm::builders::Conversions_SourceRegistration(ukm_source_id)

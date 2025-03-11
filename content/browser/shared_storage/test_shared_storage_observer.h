@@ -14,6 +14,7 @@
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -21,14 +22,24 @@ namespace content {
 class TestSharedStorageObserver
     : public SharedStorageRuntimeManager::SharedStorageObserverInterface {
  public:
-  using Access = std::
-      tuple<AccessType, FrameTreeNodeId, std::string, SharedStorageEventParams>;
+  using AccessScope = blink::SharedStorageAccessScope;
+
+  struct Access {
+    blink::SharedStorageAccessScope scope;
+    AccessMethod method;
+    FrameTreeNodeId main_frame_id;
+    std::string owner_origin;
+    SharedStorageEventParams params;
+    friend bool operator==(const TestSharedStorageObserver::Access& lhs,
+                           const TestSharedStorageObserver::Access& rhs);
+  };
 
   TestSharedStorageObserver();
   ~TestSharedStorageObserver() override;
 
   void OnSharedStorageAccessed(const base::Time& access_time,
-                               AccessType type,
+                               AccessScope scope,
+                               AccessMethod method,
                                FrameTreeNodeId main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;

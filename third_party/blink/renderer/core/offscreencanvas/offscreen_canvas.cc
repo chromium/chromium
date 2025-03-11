@@ -727,7 +727,7 @@ UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
         To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
   }
   auto* unique_font_selector =
-      MakeGarbageCollected<UniqueFontSelector>(*base_selector);
+      MakeGarbageCollected<UniqueFontSelector>(base_selector);
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
 }

@@ -91,7 +91,7 @@ class YUVReadbackTest : public testing::Test {
     auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json_data);
     CHECK(parsed_json.has_value())
         << "JSON parsing failed (" << parsed_json.error().message
-        << ") JSON data:" << std::endl
+        << ") JSON data:\n"
         << json_data;
 
     CHECK(parsed_json->is_list());

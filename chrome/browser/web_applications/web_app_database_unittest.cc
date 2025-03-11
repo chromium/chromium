@@ -157,7 +157,7 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
             std::string(WebAppDatabase::kDatabaseMetadataKey),
             metadata.SerializeAsString());
       }
-      std::unique_ptr<WebAppProto> proto =
+      std::unique_ptr<proto::WebApp> proto =
           WebAppDatabase::CreateWebAppProto(*app);
       const webapps::AppId app_id = app->app_id();
 
@@ -475,11 +475,11 @@ TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   const std::string name = "App Name";
 
-  std::vector<std::unique_ptr<WebAppProto>> protos;
+  std::vector<std::unique_ptr<proto::WebApp>> protos;
 
   // Create a proto with |required| only fields.
   // Do not add new fields in this test: any new fields should be |optional|.
-  auto proto = std::make_unique<WebAppProto>();
+  auto proto = std::make_unique<proto::WebApp>();
   {
     sync_pb::WebAppSpecifics sync_proto;
     sync_proto.set_start_url(start_url.spec());
@@ -536,21 +536,21 @@ TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 
 TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
-  std::unique_ptr<WebAppProto> base_proto =
+  std::unique_ptr<proto::WebApp> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
   base_proto->mutable_sync_data()->set_user_display_mode_cros(
       sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
   base_proto->mutable_sync_data()->clear_user_display_mode_default();
 
-  std::vector<std::unique_ptr<WebAppProto>> protos;
+  std::vector<std::unique_ptr<proto::WebApp>> protos;
   protos.push_back(std::move(base_proto));
   database_factory().WriteProtos(protos);
 
   InitSyncBridge();
 
   const WebApp* app = registrar().GetAppById(base_app->app_id());
-  std::unique_ptr<WebAppProto> new_proto =
+  std::unique_ptr<proto::WebApp> new_proto =
       WebAppDatabase::CreateWebAppProto(*app);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -574,14 +574,14 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
 TEST_P(WebAppDatabaseTest,
        UserDisplayModeDefaultOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
-  std::unique_ptr<WebAppProto> base_proto =
+  std::unique_ptr<proto::WebApp> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
   base_proto->mutable_sync_data()->set_user_display_mode_default(
       sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
   base_proto->mutable_sync_data()->clear_user_display_mode_cros();
 
-  std::vector<std::unique_ptr<WebAppProto>> protos;
+  std::vector<std::unique_ptr<proto::WebApp>> protos;
   protos.push_back(std::move(base_proto));
   database_factory().WriteProtos(protos);
 
@@ -593,7 +593,7 @@ TEST_P(WebAppDatabaseTest,
   // default value should have been migrated in CrOS.
   EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kBrowser);
 
-  std::unique_ptr<WebAppProto> new_proto =
+  std::unique_ptr<proto::WebApp> new_proto =
       WebAppDatabase::CreateWebAppProto(*app);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -793,7 +793,7 @@ TEST_P(WebAppDatabaseTest, WebAppWithManyIcons) {
 
 TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
-  std::unique_ptr<WebAppProto> base_proto =
+  std::unique_ptr<proto::WebApp> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
   // "launch_handler": {
@@ -804,13 +804,13 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   // "launch_handler": {
   //   "client_mode": "navigate-existing"
   // }
-  WebAppProto old_navigate_proto(*base_proto);
+  proto::WebApp old_navigate_proto(*base_proto);
   old_navigate_proto.mutable_launch_handler()->set_route_to(
-      LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT);
+      proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT);
   old_navigate_proto.mutable_launch_handler()->set_navigate_existing_client(
-      LaunchHandlerProto_DeprecatedNavigateExistingClient_ALWAYS);
+      proto::LaunchHandler_DeprecatedNavigateExistingClient_ALWAYS);
   old_navigate_proto.mutable_launch_handler()->set_client_mode(
-      LaunchHandlerProto_ClientMode_UNSPECIFIED_CLIENT_MODE);
+      proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
 
   std::unique_ptr<WebApp> new_navigate_app =
       WebAppDatabase::CreateWebApp(old_navigate_proto);
@@ -820,15 +820,16 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   EXPECT_TRUE(
       new_navigate_app->launch_handler()->client_mode_valid_and_specified());
 
-  std::unique_ptr<WebAppProto> new_navigate_proto =
+  std::unique_ptr<proto::WebApp> new_navigate_proto =
       WebAppDatabase::CreateWebAppProto(*new_navigate_app);
   EXPECT_EQ(new_navigate_proto->launch_handler().route_to(),
-            LaunchHandlerProto_DeprecatedRouteTo_UNSPECIFIED_ROUTE);
+            proto::LaunchHandler_DeprecatedRouteTo_UNSPECIFIED_ROUTE);
   EXPECT_EQ(
       new_navigate_proto->launch_handler().navigate_existing_client(),
-      LaunchHandlerProto_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
+      proto::
+          LaunchHandler_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
   EXPECT_EQ(new_navigate_proto->launch_handler().client_mode(),
-            LaunchHandlerProto_ClientMode_NAVIGATE_EXISTING);
+            proto::LaunchHandler::CLIENT_MODE_NAVIGATE_EXISTING);
 
   // "launch_handler": {
   //   "route_to": "existing-client",
@@ -838,13 +839,13 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   // "launch_handler": {
   //   "client_mode": "focus-existing"
   // }
-  WebAppProto old_focus_proto(*base_proto);
+  proto::WebApp old_focus_proto(*base_proto);
   old_focus_proto.mutable_launch_handler()->set_route_to(
-      LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT);
+      proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT);
   old_focus_proto.mutable_launch_handler()->set_navigate_existing_client(
-      LaunchHandlerProto_DeprecatedNavigateExistingClient_NEVER);
+      proto::LaunchHandler_DeprecatedNavigateExistingClient_NEVER);
   old_focus_proto.mutable_launch_handler()->set_client_mode(
-      LaunchHandlerProto_ClientMode_UNSPECIFIED_CLIENT_MODE);
+      proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
 
   std::unique_ptr<WebApp> new_focus_app =
       WebAppDatabase::CreateWebApp(old_focus_proto);
@@ -855,15 +856,16 @@ TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   EXPECT_TRUE(
       new_focus_app->launch_handler()->client_mode_valid_and_specified());
 
-  std::unique_ptr<WebAppProto> new_focus_proto =
+  std::unique_ptr<proto::WebApp> new_focus_proto =
       WebAppDatabase::CreateWebAppProto(*new_focus_app);
   EXPECT_EQ(new_focus_proto->launch_handler().route_to(),
-            LaunchHandlerProto_DeprecatedRouteTo_UNSPECIFIED_ROUTE);
+            proto::LaunchHandler_DeprecatedRouteTo_UNSPECIFIED_ROUTE);
   EXPECT_EQ(
       new_focus_proto->launch_handler().navigate_existing_client(),
-      LaunchHandlerProto_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
+      proto::
+          LaunchHandler_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
   EXPECT_EQ(new_focus_proto->launch_handler().client_mode(),
-            LaunchHandlerProto_ClientMode_FOCUS_EXISTING);
+            proto::LaunchHandler::CLIENT_MODE_FOCUS_EXISTING);
 }
 
 // Tests handling crashes fixed in crbug.com/1417955.
@@ -877,10 +879,10 @@ TEST_P(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   shortcut_item_info.downloaded_icon_sizes.monochrome = {123};
   base_app->SetShortcutsMenuInfo({shortcut_item_info});
 
-  std::unique_ptr<WebAppProto> base_proto =
+  std::unique_ptr<proto::WebApp> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
-  WebAppProto proto_without_shortcut_info(*base_proto);
+  proto::WebApp proto_without_shortcut_info(*base_proto);
   proto_without_shortcut_info.clear_shortcuts_menu_item_infos();
   // Fail to parse when fewer shortcut infos than downloaded sizes. No evidence
   // this happens in the wild.
@@ -889,7 +891,7 @@ TEST_P(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   // If DB is missing downloaded shortcut icon sizes information, expect to pad
   // the vector with empty IconSizes structs so the vectors in WebApp have equal
   // length.
-  WebAppProto proto_without_downloaded_sizes(*base_proto);
+  proto::WebApp proto_without_downloaded_sizes(*base_proto);
   proto_without_downloaded_sizes.clear_downloaded_shortcuts_menu_icons_sizes();
   auto roundtrip_app =
       WebAppDatabase::CreateWebApp(proto_without_downloaded_sizes);
@@ -916,7 +918,8 @@ TEST_P(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
   std::string relative_manifest_id_path =
       app->sync_proto().relative_manifest_id();
 
-  std::unique_ptr<WebAppProto> proto = WebAppDatabase::CreateWebAppProto(*app);
+  std::unique_ptr<proto::WebApp> proto =
+      WebAppDatabase::CreateWebAppProto(*app);
   proto->mutable_sync_data()->set_relative_manifest_id(
       relative_manifest_id_path + "#fragment");
   EXPECT_EQ(proto->sync_data().relative_manifest_id(),
@@ -943,8 +946,9 @@ TEST_P(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
   std::string scope_path_with_queries_and_fragment =
       base::StrCat({basic_scope_path, "?query=abc", "fragment"});
 
-  // Create a WebAppProto with a scope that has queries and fragments.
-  std::unique_ptr<WebAppProto> proto = WebAppDatabase::CreateWebAppProto(*app);
+  // Create a proto::WebApp with a scope that has queries and fragments.
+  std::unique_ptr<proto::WebApp> proto =
+      WebAppDatabase::CreateWebAppProto(*app);
   proto->set_scope(scope_path_with_queries_and_fragment);
   EXPECT_EQ(proto->scope(), scope_path_with_queries_and_fragment);
 
@@ -1026,7 +1030,7 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedOwnedBundleIsolationData) {
           base::Version("1.0.0"))
           .Build());
 
-  std::unique_ptr<WebAppProto> web_app_proto =
+  std::unique_ptr<proto::WebApp> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
 
@@ -1064,7 +1068,7 @@ TEST_F(WebAppDatabaseProtoDataTest,
                                                   base::Version("1.0.0"))
                                .Build());
 
-  std::unique_ptr<WebAppProto> web_app_proto =
+  std::unique_ptr<proto::WebApp> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
 
@@ -1104,7 +1108,7 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedProxyIsolationData) {
                              base::Version("1.0.0"))
           .Build());
 
-  std::unique_ptr<WebAppProto> web_app_proto =
+  std::unique_ptr<proto::WebApp> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
 
@@ -1125,7 +1129,7 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
           base::Version("1.2.3"))
           .Build());
 
-  std::unique_ptr<WebAppProto> web_app_proto =
+  std::unique_ptr<proto::WebApp> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
   web_app_proto->mutable_isolation_data()->mutable_version()->assign("abc");
@@ -1146,7 +1150,7 @@ TEST_F(WebAppDatabaseProtoDataTest,
               base::Version("1.2.3")))
           .Build());
 
-  std::unique_ptr<WebAppProto> web_app_proto =
+  std::unique_ptr<proto::WebApp> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
   web_app_proto->mutable_isolation_data()
@@ -1170,7 +1174,7 @@ TEST_F(WebAppDatabaseProtoDataTest,
               base::Version("2.0.0")))
           .Build());
 
-  std::unique_ptr<WebAppProto> web_app_proto =
+  std::unique_ptr<proto::WebApp> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   std::unique_ptr<WebApp> protoed_web_app =
       WebAppDatabase::CreateWebApp(*web_app_proto);
@@ -1191,7 +1195,7 @@ TEST_F(WebAppDatabaseProtoDataTest,
   // Test what happens if both are owned bundles, but one is dev mode and
   // the other one is not.
   {
-    std::unique_ptr<WebAppProto> web_app_proto =
+    std::unique_ptr<proto::WebApp> web_app_proto =
         WebAppDatabase::CreateWebAppProto(*web_app);
     ASSERT_THAT(web_app_proto, NotNull());
     web_app_proto->mutable_isolation_data()
@@ -1210,7 +1214,7 @@ TEST_F(WebAppDatabaseProtoDataTest,
   // Test what happens if one is an owned non-dev-mode bundle, but the other one
   // is a proxy.
   {
-    std::unique_ptr<WebAppProto> web_app_proto =
+    std::unique_ptr<proto::WebApp> web_app_proto =
         WebAppDatabase::CreateWebAppProto(*web_app);
     ASSERT_THAT(web_app_proto, NotNull());
     web_app_proto->mutable_isolation_data()
@@ -1311,7 +1315,7 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
   };
   std::unique_ptr<WebApp> web_app = CreateWebAppWithPermissionsPolicy(policy);
 
-  std::unique_ptr<WebAppProto> proto =
+  std::unique_ptr<proto::WebApp> proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_EQ(proto->permissions_policy().size(), 3);
   EXPECT_EQ(proto->permissions_policy().at(0).feature(), "gyroscope");

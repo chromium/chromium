@@ -81,7 +81,7 @@ void DisplayItemRasterInvalidator::Generate() {
 
   // Invalidate remaining unmatched (disappeared or uncacheable) old items.
   for (auto it = old_display_items_.begin(); it != old_display_items_.end();
-       ++it) {
+       UNSAFE_TODO(++it)) {
     if (old_display_items_matched[static_cast<wtf_size_t>(
             it - old_display_items_.begin())])
       continue;
@@ -105,12 +105,12 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
   if (!new_item.IsCacheable())
     return old_display_items_.end();
   for (; next_old_item_to_match != old_display_items_.end();
-       next_old_item_to_match++) {
+       UNSAFE_TODO(next_old_item_to_match++)) {
     const auto& old_item = *next_old_item_to_match;
     if (!old_item.IsCacheable())
       continue;
     if (old_item.GetId() == new_item.GetId())
-      return next_old_item_to_match++;
+      return UNSAFE_TODO(next_old_item_to_match++);
     // Add the skipped old item into index.
     old_display_items_index_
         .insert(old_item.ClientId(), Vector<DisplayItemIterator>())

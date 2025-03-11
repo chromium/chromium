@@ -1789,6 +1789,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_headingWithHeadingOffset() {
+        performHtmlTest("heading-with-headingoffset.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_headingWithHeadingOffsetDialog() {
+        performHtmlTest("heading-with-headingoffset-dialog.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_headingWithTabindex() {
         performHtmlTest("heading-with-tabIndex.html");
     }

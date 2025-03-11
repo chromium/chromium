@@ -15,8 +15,10 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "services/video_effects/calculators/background_blur_calculator_webgpu.h"
+#include "services/video_effects/calculators/downscale_calculator_webgpu.h"
 #include "services/video_effects/calculators/in_place_copy_calculator_webgpu.h"
 #include "services/video_effects/calculators/inference_calculator_webgpu.h"
+#include "services/video_effects/calculators/mediapipe_webgpu_utils.h"
 #include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/mediapipe/src/mediapipe/framework/calculator.pb.h"
@@ -32,18 +34,6 @@ namespace video_effects {
 
 namespace {
 
-mediapipe::GpuBufferFormat WebGpuTextureFormatToGpuBufferFormat(
-    wgpu::TextureFormat format) {
-  switch (format) {
-    case wgpu::TextureFormat::RGBA8Unorm:
-      return mediapipe::GpuBufferFormat::kRGBA32;
-    case wgpu::TextureFormat::RGBA32Float:
-      return mediapipe::GpuBufferFormat::kRGBAFloat128;
-    default:
-      NOTREACHED();
-  }
-}
-
 std::string StreamFromTagAndName(std::string_view tag,
                                  std::string_view stream_name) {
   return base::StrCat({tag, ":", stream_name});
@@ -55,12 +45,11 @@ std::string StreamFromTagAndName(std::string_view tag,
 constexpr char kStaticConfigInputStreamName[] = "static_config";
 constexpr char kRuntimeConfigInputStreamName[] = "runtime_config";
 constexpr char kInputTextureInputStreamName[] = "input_texture";
-constexpr char kInputTextureDownscaledInputStreamName[] =
-    "input_texture_downscaled";
 constexpr char kOutputTextureInputStreamName[] = "output_texture";
 
 // Intermediate streams:
-constexpr char kBackgroundMaskOutputStreamName[] = "mask";
+constexpr char kDownscaledTextureStreamName[] = "downscaled_texture";
+constexpr char kBackgroundMaskStreamName[] = "mask";
 constexpr char kBluredTextureStreamName[] = "blurred_texture";
 
 // Graph outputs:
@@ -79,11 +68,19 @@ std::unique_ptr<VideoEffectsGraphWebGpu> VideoEffectsGraphWebGpu::Create() {
   config.add_input_side_packet(kStaticConfigInputStreamName);
   config.add_input_stream(kRuntimeConfigInputStreamName);
   config.add_input_stream(kInputTextureInputStreamName);
-  config.add_input_stream(kInputTextureDownscaledInputStreamName);
   // Note: output texture is also provided as an input, the graph will be
   // pouplating those with contents:
   config.add_input_stream(kOutputTextureInputStreamName);
   config.add_output_stream(kOutputTextureOutputStreamName);
+
+  auto* downscale_node = config.add_node();
+  downscale_node->set_calculator(DownscaleCalculatorWebGpu::kCalculatorName);
+  downscale_node->add_input_stream(
+      StreamFromTagAndName(DownscaleCalculatorWebGpu::kInputStreamTag,
+                           kInputTextureInputStreamName));
+  downscale_node->add_output_stream(
+      StreamFromTagAndName(DownscaleCalculatorWebGpu::kOutputStreamTag,
+                           kDownscaledTextureStreamName));
 
   auto* inference_node = config.add_node();
   inference_node->set_calculator(InferenceCalculatorWebGpu::kCalculatorName);
@@ -96,10 +93,10 @@ std::unique_ptr<VideoEffectsGraphWebGpu> VideoEffectsGraphWebGpu::Create() {
       kRuntimeConfigInputStreamName));
   inference_node->add_input_stream(
       StreamFromTagAndName(InferenceCalculatorWebGpu::kInputTextureStreamTag,
-                           kInputTextureDownscaledInputStreamName));
+                           kDownscaledTextureStreamName));
   inference_node->add_output_stream(
       StreamFromTagAndName(InferenceCalculatorWebGpu::kOutputTextureStreamTag,
-                           kBackgroundMaskOutputStreamName));
+                           kBackgroundMaskStreamName));
 
   auto* blur_node = config.add_node();
   blur_node->set_calculator(BackgroundBlurCalculatorWebGpu::kCalculatorName);
@@ -111,7 +108,7 @@ std::unique_ptr<VideoEffectsGraphWebGpu> VideoEffectsGraphWebGpu::Create() {
       kInputTextureInputStreamName));
   blur_node->add_input_stream(StreamFromTagAndName(
       BackgroundBlurCalculatorWebGpu::kMaskTextureStreamTag,
-      kBackgroundMaskOutputStreamName));
+      kBackgroundMaskStreamName));
 
   blur_node->add_output_stream(StreamFromTagAndName(
       BackgroundBlurCalculatorWebGpu::kOutputTextureStreamTag,
@@ -185,10 +182,13 @@ bool VideoEffectsGraphWebGpu::Start(
 bool VideoEffectsGraphWebGpu::ProcessFrame(
     base::TimeDelta timedelta,
     wgpu::Texture input_texture,
-    wgpu::Texture input_texture_downscaled,
     wgpu::Texture output_texture,
     const RuntimeConfig& runtime_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (runtime_config.blur_state != BlurState::kEnabled) {
+    return false;
+  }
 
   const mediapipe::Timestamp ts =
       mediapipe::Timestamp::FromSeconds(timedelta.InSecondsF());
@@ -197,12 +197,6 @@ bool VideoEffectsGraphWebGpu::ProcessFrame(
       std::make_shared<mediapipe::WebGpuTextureBuffer>(
           input_texture, input_texture.GetWidth(), input_texture.GetHeight(),
           WebGpuTextureFormatToGpuBufferFormat(input_texture.GetFormat())));
-  mediapipe::GpuBuffer input_texture_downscaled_buffer(
-      std::make_shared<mediapipe::WebGpuTextureBuffer>(
-          input_texture_downscaled, input_texture_downscaled.GetWidth(),
-          input_texture_downscaled.GetHeight(),
-          WebGpuTextureFormatToGpuBufferFormat(
-              input_texture_downscaled.GetFormat())));
   mediapipe::GpuBuffer output_texture_buffer(
       std::make_shared<mediapipe::WebGpuTextureBuffer>(
           output_texture, output_texture.GetWidth(), output_texture.GetHeight(),
@@ -212,15 +206,6 @@ bool VideoEffectsGraphWebGpu::ProcessFrame(
       kInputTextureInputStreamName, mediapipe::MakePacket<mediapipe::GpuBuffer>(
                                         std::move(input_texture_buffer))
                                         .At(ts));
-  if (!status.ok()) {
-    return false;
-  }
-
-  status = graph_->AddPacketToInputStream(
-      kInputTextureDownscaledInputStreamName,
-      mediapipe::MakePacket<mediapipe::GpuBuffer>(
-          std::move(input_texture_downscaled_buffer))
-          .At(ts));
   if (!status.ok()) {
     return false;
   }

@@ -30,7 +30,7 @@ bool IsOsUninstallationSupported() {
 }
 
 bool ShouldRegisterOsUninstall(
-    const proto::WebAppOsIntegrationState& os_integration_state) {
+    const proto::os_state::WebAppOsIntegration& os_integration_state) {
   return os_integration_state.has_uninstall_registration() &&
          os_integration_state.uninstall_registration().registered_with_os();
 }
@@ -47,7 +47,7 @@ UninstallationViaOsSettingsSubManager::
 
 void UninstallationViaOsSettingsSubManager::Configure(
     const webapps::AppId& app_id,
-    proto::WebAppOsIntegrationState& desired_state,
+    proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_uninstall_registration());
 
@@ -62,7 +62,7 @@ void UninstallationViaOsSettingsSubManager::Configure(
     return;
   }
 
-  proto::OsUninstallRegistration* os_uninstall_registration =
+  proto::os_state::OsUninstallRegistration* os_uninstall_registration =
       desired_state.mutable_uninstall_registration();
   os_uninstall_registration->set_registered_with_os(should_register);
   os_uninstall_registration->set_display_name(
@@ -74,8 +74,8 @@ void UninstallationViaOsSettingsSubManager::Configure(
 void UninstallationViaOsSettingsSubManager::Execute(
     const webapps::AppId& app_id,
     const std::optional<SynchronizeOsOptions>& synchronize_options,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure callback) {
   if (!IsOsUninstallationSupported()) {
     std::move(callback).Run();

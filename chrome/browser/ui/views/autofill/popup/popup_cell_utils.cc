@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -66,6 +67,9 @@ namespace {
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
 constexpr int kChromeRefreshIconSize = 20;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr int kGooglePayLogoWidth = 40;
+#endif
 
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 16;
@@ -130,7 +134,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kGoogleMonochrome:
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
-    case Suggestion::Icon::kGooglePayDark:
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIban:
@@ -335,13 +338,14 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePasswordManager:
       return ImageModelFromVectorIcon(GooglePasswordManagerVectorIcon(),
                                       kGooglePasswordManagerIconSize);
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case Suggestion::Icon::kGooglePay:
-    case Suggestion::Icon::kGooglePayDark:
-      return std::nullopt;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ui::ImageModel::FromImageGenerator(
+          base::BindRepeating(&CreateTiledGooglePayLogo, kGooglePayLogoWidth,
+                              kIconSize),
+          gfx::Size(kGooglePayLogoWidth, kIconSize));
 #else
-    case Suggestion::Icon::kGooglePay:
-    case Suggestion::Icon::kGooglePayDark:
+      return ImageModelFromVectorIcon(kCreditCardIcon, kIconSize);
 #endif
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kCreate:

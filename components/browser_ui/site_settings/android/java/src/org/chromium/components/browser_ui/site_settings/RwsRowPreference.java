@@ -23,15 +23,25 @@ import org.chromium.build.annotations.NullMarked;
  * <p>Note: We leverage the existing implementation of the {@link WebsiteRowPreference} limiting its
  * functionality for now (remove delete button) + make it not selectable.
  */
+// TODO(crbug.com/394302220): Investigate removing/refactoring during RWS clean-up.
 @NullMarked
 public class RwsRowPreference extends WebsiteRowPreference {
+    private final SiteSettingsDelegate mSiteSettingsDelegate;
 
     RwsRowPreference(
             Context context,
             SiteSettingsDelegate siteSettingsDelegate,
             WebsiteEntry siteEntry,
             LayoutInflater layoutInflater) {
-        super(context, siteSettingsDelegate, siteEntry, layoutInflater);
+        // RwsRowPreference displays websites in a related set under a related sites header
+        // making the membership label redundant
+        super(
+                context,
+                siteSettingsDelegate,
+                siteEntry,
+                layoutInflater,
+                /* showRwsMembershipLabels= */ false);
+        mSiteSettingsDelegate = siteSettingsDelegate;
         setSelectable(false);
     }
 
@@ -39,8 +49,11 @@ public class RwsRowPreference extends WebsiteRowPreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        ImageView button = (ImageView) holder.findViewById(R.id.image_view_widget);
-        assumeNonNull(button);
-        button.setVisibility(View.INVISIBLE);
+        if (!mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()) {
+            // Previous version of the RWS UI hides the delete button for the row
+            ImageView button = (ImageView) holder.findViewById(R.id.image_view_widget);
+            assumeNonNull(button);
+            button.setVisibility(View.INVISIBLE);
+        }
     }
 }

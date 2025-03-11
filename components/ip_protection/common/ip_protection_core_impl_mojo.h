@@ -11,6 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ip_protection/common/ip_protection_core_impl.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +48,8 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
+          ipp_prt_manager,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito);
 
@@ -67,6 +71,8 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
+          ipp_prt_manager,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito);
 

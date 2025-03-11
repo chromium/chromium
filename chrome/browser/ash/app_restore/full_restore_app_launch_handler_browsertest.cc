@@ -1004,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ToggleOverview();
   WaitForOverviewEnterAnimation();
 
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     SelectSaveDeskAsTemplateMenuItem(/*index=*/1);
   } else {
     ClickSaveDeskAsTemplateButton();
@@ -2207,7 +2207,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Capture the active desk as a template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  if (features::IsSavedDeskUiRevampEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     SelectSaveDeskAsTemplateMenuItem(/*index=*/2);
   } else {
     ClickSaveDeskAsTemplateButton();

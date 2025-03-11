@@ -203,8 +203,7 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSourceAllowedSql),
-              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                                {"scope", "source_site"})));
+              ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest,
@@ -220,16 +219,14 @@ TEST_F(AttributionSqlQueryPlanTest,
        kRateLimitSourceAllowedDestinationPerDayRateLimitSql) {
   EXPECT_THAT(GetPlan(attribution_queries::
                           kRateLimitSourceAllowedDestinationPerDayRateLimitSql),
-              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                                {"scope", "source_site"})));
+              ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
   EXPECT_THAT(
       GetPlan(
           attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql),
-      ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                        {"scope", "source_site"})));
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest,
@@ -240,6 +237,23 @@ TEST_F(AttributionSqlQueryPlanTest,
               kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql),
       ValueIs(
           UsesIndex("rate_limit_attribution_destination_reporting_site_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitCountUniqueReportingOriginsPerReportingSiteForSourceSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::
+              kRateLimitCountUniqueReportingOriginsPerReportingSiteForSourceSql),
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::
+                  kRateLimitCountUniqueReportingOriginsPerSitesForSourceSql),
+      ValueIs(UsesIndex("rate_limit_source_reporting_site_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectSourceReportingOriginsSql) {

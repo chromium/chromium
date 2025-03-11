@@ -631,36 +631,39 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             [self.homeStartDataSource isStartSurface]));
   }
-  int mvtFreshnessImpressionCount = _localState->GetInteger(
+  int mvtFreshnessImpressionCount = _prefService->GetInteger(
       prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(
       segmentation_platform::kMostVisitedTilesFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           mvtFreshnessImpressionCount));
-  int shortcutsFreshnessImpressionCount = _localState->GetInteger(
+  int shortcutsFreshnessImpressionCount = _prefService->GetInteger(
       prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(
       segmentation_platform::kShortcutsFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           shortcutsFreshnessImpressionCount));
-  int safetyCheckFreshnessImpressionCount = _localState->GetInteger(
+  int safetyCheckFreshnessImpressionCount = _prefService->GetInteger(
       prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(
       segmentation_platform::kSafetyCheckFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           safetyCheckFreshnessImpressionCount));
-  int tabResumptionFreshnessImpressionCount = _localState->GetInteger(
+  int tabResumptionFreshnessImpressionCount = _prefService->GetInteger(
       prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(
       segmentation_platform::kTabResumptionFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           tabResumptionFreshnessImpressionCount));
+  // TODO(crbug.com/398880309): This pref is deprecated and will always have its
+  // default value - remove its usage here.
   int parcelTrackingFreshnessImpressionCount = _localState->GetInteger(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcelTrackingFreshnessImpressionCount));
+  // TODO(crbug.com/398173021): Migrate this pref from localstate to profile.
   int shopCardFreshnessImpressionCount = _localState->GetInteger(
       prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(

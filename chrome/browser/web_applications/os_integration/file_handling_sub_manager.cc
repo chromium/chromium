@@ -32,7 +32,7 @@ namespace web_app {
 namespace {
 
 apps::FileHandlers ConvertFileHandlingProtoToFileHandlers(
-    const proto::FileHandling file_handling_proto) {
+    const proto::os_state::FileHandling file_handling_proto) {
   apps::FileHandlers file_handlers;
   for (const auto& file_handler_proto : file_handling_proto.file_handlers()) {
     apps::FileHandler file_handler;
@@ -54,7 +54,7 @@ apps::FileHandlers ConvertFileHandlingProtoToFileHandlers(
 }
 
 bool HasFileHandling(
-    const proto::WebAppOsIntegrationState& os_integration_state) {
+    const proto::os_state::WebAppOsIntegration& os_integration_state) {
   return (os_integration_state.has_file_handling() &&
           os_integration_state.file_handling().file_handlers_size() > 0);
 }
@@ -62,7 +62,7 @@ bool HasFileHandling(
 }  // namespace
 
 std::set<std::string> GetFileExtensionsFromFileHandlingProto(
-    const proto::FileHandling& file_handling) {
+    const proto::os_state::FileHandling& file_handling) {
   std::set<std::string> file_extensions;
   for (const auto& file_handler : file_handling.file_handlers()) {
     for (const auto& accept_entry : file_handler.accept()) {
@@ -76,7 +76,7 @@ std::set<std::string> GetFileExtensionsFromFileHandlingProto(
 }
 
 std::set<std::string> GetMimeTypesFromFileHandlingProto(
-    const proto::FileHandling& file_handling) {
+    const proto::os_state::FileHandling& file_handling) {
   std::set<std::string> mime_types;
   for (const auto& file_handler : file_handling.file_handlers()) {
     for (const auto& accept_entry : file_handler.accept()) {
@@ -95,7 +95,7 @@ FileHandlingSubManager::~FileHandlingSubManager() = default;
 
 void FileHandlingSubManager::Configure(
     const webapps::AppId& app_id,
-    proto::WebAppOsIntegrationState& desired_state,
+    proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_file_handling());
 
@@ -107,12 +107,13 @@ void FileHandlingSubManager::Configure(
     return;
   }
 
-  proto::FileHandling* os_file_handling = desired_state.mutable_file_handling();
+  proto::os_state::FileHandling* os_file_handling =
+      desired_state.mutable_file_handling();
   // GetAppFileHandlers should never return a nullptr because of the provider
   // checks above.
   for (const auto& file_handler :
        *provider_->registrar_unsafe().GetAppFileHandlers(app_id)) {
-    proto::FileHandling::FileHandler* file_handler_proto =
+    proto::os_state::FileHandling::FileHandler* file_handler_proto =
         os_file_handling->add_file_handlers();
     DCHECK(file_handler.action.is_valid());
     file_handler_proto->set_action(file_handler.action.spec());
@@ -135,8 +136,8 @@ void FileHandlingSubManager::Configure(
 void FileHandlingSubManager::Execute(
     const webapps::AppId& app_id,
     const std::optional<SynchronizeOsOptions>& synchronize_options,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure callback) {
   if (!ShouldRegisterFileHandlersWithOs()) {
     std::move(callback).Run();
@@ -184,8 +185,8 @@ void FileHandlingSubManager::ForceUnregister(const webapps::AppId& app_id,
 
 void FileHandlingSubManager::Unregister(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure callback) {
   if (!HasFileHandling(current_state)) {
     std::move(callback).Run();
@@ -204,7 +205,7 @@ void FileHandlingSubManager::Unregister(
 
 void FileHandlingSubManager::Register(
     const webapps::AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure callback) {
   if (!HasFileHandling(desired_state)) {
     std::move(callback).Run();

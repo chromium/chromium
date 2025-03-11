@@ -60,7 +60,7 @@ version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
 
 [dependencies.icu_capi]
-version = "2.0.0-beta1"
+version = "2.0.0-beta2"
 default-features = false
 features = ["calendar", "compiled_data"]
 

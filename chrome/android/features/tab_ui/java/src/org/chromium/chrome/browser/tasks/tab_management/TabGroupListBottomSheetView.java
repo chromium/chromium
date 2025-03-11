@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
@@ -26,29 +27,29 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * shared tab group will be visible to everyone in the group.
  */
 @NullMarked
-public class TabGroupListBottomSheetView extends LinearLayout implements BottomSheetContent {
+public class TabGroupListBottomSheetView implements BottomSheetContent {
     private final RecyclerView mRecyclerView;
     private final ViewGroup mContentView;
+    private final BottomSheetController mBottomsheetController;
     private final boolean mShowNewGroupRow;
 
     /**
      * @param context The {@link Context} to attach the bottom sheet to.
+     * @param bottomSheetController The {@link BottomSheetController} that will be used to display
+     *     this view. This is used to measure content (see {@link
+     *     BottomSheetController#getMaxSheetWidth()}).
      * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
      */
-    TabGroupListBottomSheetView(Context context, boolean showNewGroupRow) {
-        super(context);
+    TabGroupListBottomSheetView(
+            Context context, BottomSheetController bottomSheetController, boolean showNewGroupRow) {
         mContentView =
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.tab_group_list_bottom_sheet, /* root= */ null);
         mRecyclerView = mContentView.findViewById(R.id.tab_group_parity_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mBottomsheetController = bottomSheetController;
         mShowNewGroupRow = showNewGroupRow;
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
     }
 
     void setRecyclerViewAdapter(SimpleRecyclerViewAdapter adapter) {
@@ -87,7 +88,13 @@ public class TabGroupListBottomSheetView extends LinearLayout implements BottomS
 
     @Override
     public float getFullHeightRatio() {
-        return HeightMode.WRAP_CONTENT;
+        return Math.min(getSheetContentHeight(), mBottomsheetController.getContainerHeight())
+                / (float) mBottomsheetController.getContainerHeight();
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        return Math.min(getFullHeightRatio(), 0.5f);
     }
 
     @Override
@@ -121,5 +128,14 @@ public class TabGroupListBottomSheetView extends LinearLayout implements BottomS
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.tab_group_list_bottom_sheet_closed;
+    }
+
+    private float getSheetContentHeight() {
+        mContentView.measure(
+                MeasureSpec.makeMeasureSpec(
+                        mBottomsheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(
+                        mBottomsheetController.getContainerHeight(), MeasureSpec.AT_MOST));
+        return mContentView.getMeasuredHeight();
     }
 }

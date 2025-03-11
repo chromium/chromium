@@ -12,45 +12,44 @@ cargo_crate("lib") {
   crate_name = "icu_calendar"
   epoch = "2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/any_calendar.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/buddhist.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/calendar.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/calendar_arithmetic.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/chinese.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/chinese_based.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/coptic.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/dangi.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/date.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/datetime.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/duration.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/ethiopian.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/gregorian.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/hebrew.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/indian.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/islamic.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/iso.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/ixdtf.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/japanese.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/julian.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/persian.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/provider.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/provider/chinese_based.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/provider/islamic.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/roc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/tests/continuity_test.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/tests/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/types.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta1/src/week_of.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/any_calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/buddhist.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/calendar_arithmetic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/chinese.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/chinese_based.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/coptic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/dangi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/duration.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/ethiopian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/gregorian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/hebrew.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/indian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/islamic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/iso.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/ixdtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/japanese.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/julian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/persian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/provider/chinese_based.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/provider/islamic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/roc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/tests/continuity_test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/tests/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-2.0.0-beta2/src/week_of.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_version = "2.0.0-beta2"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_calendar"
   cargo_pkg_description = "API for supporting various types of calendars"
@@ -67,12 +66,13 @@ cargo_crate("lib") {
     "//third_party/rust/icu_calendar_data/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
-    "//third_party/rust/ixdtf/v0_3:lib",
+    "//third_party/rust/ixdtf/v0_4:lib",
     "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
   features = [
+    "alloc",
     "compiled_data",
     "ixdtf",
   ]

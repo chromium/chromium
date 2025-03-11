@@ -113,6 +113,12 @@ class MockIpProtectionCore : public IpProtectionCore {
     return std::move(auth_token_);
   }
 
+  std::optional<ProbabilisticRevealToken> GetProbabilisticRevealToken(
+      const std::string& top_level,
+      const std::string& third_party) override {
+    return ProbabilisticRevealToken{1, "u", "e"};
+  }
+
   // Set the auth token that will be returned from the next call to
   // `GetAuthToken()`.
   void SetNextAuthToken(std::optional<BlindSignedAuthToken> auth_token) {

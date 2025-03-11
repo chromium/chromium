@@ -682,6 +682,9 @@ extern const char kEnterpriseProfileBadgingForAvatarDescription[];
 extern const char kEnterpriseProfileBadgingForMenuName[];
 extern const char kEnterpriseProfileBadgingForMenuDescription[];
 
+extern const char kEnterpriseBadgingForNtpFooterName[];
+extern const char kEnterpriseBadgingForNtpFooterDescription[];
+
 extern const char kEnterpriseUpdatedProfileCreationScreenName[];
 extern const char kEnterpriseUpdatedProfileCreationScreenDescription[];
 
@@ -1070,10 +1073,6 @@ extern const char kExtensionDisableUnsupportedDeveloperDescription[];
 extern const char kExtensionTelemetryForEnterpriseName[];
 extern const char kExtensionTelemetryForEnterpriseDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kExtensionWebFileHandlersName[];
-extern const char kExtensionWebFileHandlersDescription[];
-#endif  // IS_CHROMEOS
 #endif  // ENABLE_EXTENSIONS
 
 extern const char kExtensionsOnChromeUrlsName[];
@@ -1218,6 +1217,9 @@ extern const char kCastStreamingWinHardwareH264Description[];
 
 extern const char kCastEnableStreamingWithHiDPIName[];
 extern const char kCastEnableStreamingWithHiDPIDescription[];
+
+extern const char kChromeWebStoreNavigationThrottleName[];
+extern const char kChromeWebStoreNavigationThrottleDescription[];
 
 extern const char kContextualPageActionsName[];
 extern const char kContextualPageActionsDescription[];
@@ -2758,9 +2760,6 @@ extern const char kRelatedSearchesAllLanguageDescription[];
 extern const char kRelatedSearchesSwitchName[];
 extern const char kRelatedSearchesSwitchDescription[];
 
-extern const char kRichAutocompletionAndroidName[];
-extern const char kRichAutocompletionAndroidDescription[];
-
 extern const char kRightEdgeGoesForwardGestureNavName[];
 extern const char kRightEdgeGoesForwardGestureNavDescription[];
 
@@ -2844,9 +2843,6 @@ extern const char kTabStripTransitionInDesktopWindowDescription[];
 
 extern const char kTabSwitcherColorBlendAnimateName[];
 extern const char kTabSwitcherColorBlendAnimateDescription[];
-
-extern const char kTabSwitcherFullNewTabButtonName[];
-extern const char kTabSwitcherFullNewTabButtonDescription[];
 
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];

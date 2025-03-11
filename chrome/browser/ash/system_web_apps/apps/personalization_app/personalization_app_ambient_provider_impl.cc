@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/backoff_entry.h"
@@ -193,6 +195,9 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   // Call it once to get the current ambient mode enabled status.
   BroadcastAmbientModeEnabledStatus(IsAmbientModeEnabled());
 
+  // Call it once to get the ambient theme preview images.
+  NotifyAmbientThemePreviewImagesChanged();
+
   // Call it once to get the current ambient ui settings.
   OnAmbientUiSettingsChanged();
 
@@ -222,7 +227,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
 
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
-  AmbientVideo video = orig_settings.video().value_or(kDefaultAmbientVideo);
+  AmbientVideo video = orig_settings.video().value_or(GetDefaultAmbientVideo());
   if (to_theme == mojom::AmbientTheme::kVideo) {
     LogAmbientModeVideo(video);
   }
@@ -513,7 +518,7 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
   // Video:
   AppendAmbientVideoAlbums(
       /*currently_selected_video*/ GetCurrentUiSettings().video().value_or(
-          kDefaultAmbientVideo),
+          GetDefaultAmbientVideo()),
       albums);
 
   ambient_observer_remote_->OnAlbumsChanged(std::move(albums));
@@ -704,6 +709,41 @@ void PersonalizationAppAmbientProviderImpl::OnPreviewsFetched(
     const std::vector<GURL>& preview_urls) {
   DVLOG(4) << __func__ << " preview_urls_size=" << preview_urls.size();
   ambient_observer_remote_->OnPreviewsFetched(preview_urls);
+}
+
+void PersonalizationAppAmbientProviderImpl::
+    NotifyAmbientThemePreviewImagesChanged() {
+  if (!ambient_observer_remote_.is_bound()) {
+    return;
+  }
+  system::StatisticsProvider::GetInstance()->ScheduleOnMachineStatisticsLoaded(
+      base::BindOnce(
+          &PersonalizationAppAmbientProviderImpl::OnMachineStatisticsReady,
+          ambient_theme_previews_weak_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppAmbientProviderImpl::OnMachineStatisticsReady() {
+  base::flat_map<mojom::AmbientTheme, GURL> previews;
+  previews.emplace(mojom::AmbientTheme::kSlideshow,
+                   GURL("chrome://personalization/images/slideshow.png"));
+  previews.emplace(mojom::AmbientTheme::kFeelTheBreeze,
+                   GURL("chrome://personalization/images/feel_the_breeze.png"));
+  previews.emplace(mojom::AmbientTheme::kFloatOnBy,
+                   GURL("chrome://personalization/images/float_on_by.png"));
+  if (features::IsTimeOfDayScreenSaverEnabled()) {
+    const std::optional<std::string_view> customization_id =
+        system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+            system::kCustomizationIdKey);
+    DVLOG(1) << __func__
+             << " customization_id= " << customization_id.value_or("null");
+    previews.emplace(
+        mojom::AmbientTheme::kVideo,
+        GURL(customization_id == kJupiterScreensaverCustomizationId
+                 ? "chrome://personalization/time_of_day/thumbnails/jupiter.jpg"
+                 : "chrome://personalization/time_of_day/thumbnails/"
+                   "new_mexico.jpg"));
+  }
+  ambient_observer_remote_->OnAmbientThemePreviewImagesChanged(previews);
 }
 
 ash::PersonalAlbum*

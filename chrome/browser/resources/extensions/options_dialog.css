@@ -47,8 +47,6 @@ cr-dialog #body {
 }
 
 cr-dialog {
-  --cr-dialog-body-border-bottom: none;
-  --cr-dialog-body-border-top: none;
   --cr-scrollable-border-color: transparent;
 }
 

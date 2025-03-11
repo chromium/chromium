@@ -185,6 +185,39 @@ public class OptionalButtonCoordinatorTest {
     }
 
     @Test
+    public void testUpdateButton_hasErrorBadge() {
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        OnLongClickListener longClickListener =
+                view -> {
+                    return false;
+                };
+        IphCommandBuilder mockIphCommandBuilder = mock(IphCommandBuilder.class);
+        String contentDescription = "description";
+        boolean isEnabled = true;
+        ButtonSpec buttonSpec =
+                new ButtonSpec(
+                        iconDrawable,
+                        clickListener,
+                        longClickListener,
+                        contentDescription,
+                        true,
+                        mockIphCommandBuilder,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* actionChipLabelResId= */ 0,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false,
+                        /* hasErrorBadge= */ true);
+        ButtonDataImpl buttonData = new ButtonDataImpl();
+        buttonData.setButtonSpec(buttonSpec);
+        buttonData.setEnabled(isEnabled);
+
+        mOptionalButtonCoordinator.updateButton(buttonData);
+
+        verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+    }
+
+    @Test
     public void testUpdateButton_backgroundVisible() {
         Drawable iconDrawable = mock(Drawable.class);
         OnClickListener clickListener = view -> {};
@@ -476,7 +509,8 @@ public class OptionalButtonCoordinatorTest {
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* actionChipLabelResId= */ 0,
                         /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* showHoverHighlight= */ false);
+                        /* showHoverHighlight= */ false,
+                        /* hasErrorBadge= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setEnabled(isEnabled);

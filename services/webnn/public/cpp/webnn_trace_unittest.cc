@@ -72,7 +72,7 @@ class ScopedTraceTest : public testing::Test {
         base::JSONReader::ReadAndReturnValueWithError(json_data.json_output);
     CHECK(parsed_json.has_value())
         << "JSON parsing failed (" << parsed_json.error().message
-        << ") JSON data:" << std::endl
+        << ") JSON data:\n"
         << json_data.json_output;
 
     CHECK(parsed_json->is_list());

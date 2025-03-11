@@ -2200,6 +2200,12 @@ chromium-metrics-reviews@google.com.
   <int value="1335" label="GeminiSettings"/>
   <int value="1336" label="GenAISmartGroupingSettings"/>
   <int value="1337" label="GenAiChromeOsSmartActionsSettings"/>
+  <int value="1338" label="RelaunchSupersededReleaseAge"/>
+  <int value="1339" label="ClassManagementCaptionsEnabled"/>
+  <int value="1340" label="ClassManagementClassroomIntegrationEnabled"/>
+  <int value="1341" label="ClassManagementNetworkRestrictionEnabled"/>
+  <int value="1342" label="ClassManagementSendingContentEnabled"/>
+  <int value="1343" label="ClassManagementViewScreenEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2534,16 +2540,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="ownership unknown"/>
   <int value="1" label="not yet owned"/>
   <int value="2" label="ownership taken"/>
-</enum>
-
-<enum name="PrintScanningContext">
-  <int value="0" label="System print: Before system dialog"/>
-  <int value="1" label="Normal print: Before preview dialog"/>
-  <int value="2" label="System print: Before print document"/>
-  <int value="3" label="Normal print: Before print document"/>
-  <int value="4" label="System print: Before print job"/>
-  <int value="5" label="Normal print: Before print job"/>
-  <int value="6" label="Normal print: Open PDF in Preview"/>
 </enum>
 
 <enum name="PromotionBannerAction">

@@ -752,7 +752,7 @@ void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
 
 gfx::Size Tab::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(tab_style()->GetStandardWidth(),
+  return gfx::Size(GetTabSizeInfo().standard_width,
                    GetLayoutConstant(TAB_HEIGHT));
 }
 
@@ -811,7 +811,8 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 TabSizeInfo Tab::GetTabSizeInfo() const {
   return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
           tab_style()->GetMinimumInactiveWidth(),
-          tab_style()->GetStandardWidth()};
+          split() ? tab_style()->GetStandardSplitWidth()
+                  : tab_style()->GetStandardWidth()};
 }
 
 void Tab::SetClosing(bool closing) {

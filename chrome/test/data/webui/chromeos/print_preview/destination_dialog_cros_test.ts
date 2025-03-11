@@ -235,7 +235,7 @@ suite('DestinationDialogCrosTest', function() {
   // Test that the correct elements are displayed when the destination store has
   // destinations.
   test(
-      'PrinterSetupAssistanceHasDestinations', async () => {
+      'DialogHasDestinations', async () => {
         await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
 
         // Manage printers button hidden when there are valid destinations.
@@ -262,10 +262,9 @@ suite('DestinationDialogCrosTest', function() {
         assertTrue(isVisible(searchBox));
       });
 
-  // Test that the correct elements are displayed when the printer setup
-  // assistance flag is on and destination store has found destinations but
-  // is still searching for more.
-  test('PrinterSetupAssistanceHasDestinationsSearching', async () => {
+  // Test that the correct elements are displayed when the destination store is
+  // still searching but has returned valid destinations.
+  test('DiaglogShowsThrobberWhileSearching', async () => {
     nativeLayer.setSimulateNoResponseForGetPrinters(true);
 
     document.body.appendChild(dialog);
@@ -305,10 +304,10 @@ suite('DestinationDialogCrosTest', function() {
     assertTrue(isVisible(searchBox));
   });
 
-  // Test that the correct elements are displayed when the printer setup
-  // assistance flag is on and destination store has no destinations.
+  // Test that the correct elements are displayed when destination store has no
+  // destinations.
   test(
-      'PrinterSetupAssistanceHasNoDestinations', async () => {
+      'DialogHasNoDestinations', async () => {
         await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
 
         // Manage printers button hidden when there are no destinations.
@@ -382,13 +381,11 @@ suite('DestinationDialogCrosTest', function() {
         verifyRecordInHistogramCall(/*callIndex=*/ 0, /*bucket=*/ 1);
       });
 
-  // Test that the correct elements are displayed when the printer setup
-  // assistance flag is on, destination store has destinations, and
-  // getShowManagePrinters return false. Simulates opening print preview from
-  // a UI which cannot launch settings (ex. OS Settings app).
+  // Test that the correct elements are displayed when the destination store has
+  // destinations, and getShowManagePrinters return false. Simulates opening
+  // print preview from a UI which cannot launch settings (ex. OS Settings app).
   test(
-      'PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse',
-      async () => {
+      'DialogHasDestinations_ShowManagedPrintersFalse', async () => {
         nativeLayerCros.setShowManagePrinters(false);
         await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
 

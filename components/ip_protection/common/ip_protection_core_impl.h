@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "net/base/network_change_notifier.h"
 
 namespace net {
@@ -48,6 +49,8 @@ class IpProtectionCoreImpl
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
+      std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
+          ipp_prt_manager,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito);
   ~IpProtectionCoreImpl() override;
@@ -77,6 +80,10 @@ class IpProtectionCoreImpl
       ProxyLayer proxy_layer);
   IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
 
+  std::optional<ProbabilisticRevealToken> GetProbabilisticRevealToken(
+      const std::string& top_level,
+      const std::string& third_party) override;
+
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
@@ -105,6 +112,7 @@ class IpProtectionCoreImpl
   // The PRT registry, owned by the NetworkService.
   raw_ptr<ProbabilisticRevealTokenRegistry>
       probabilistic_reveal_token_registry_;
+  std::unique_ptr<IpProtectionProbabilisticRevealTokenManager> ipp_prt_manager_;
 
   bool is_ip_protection_enabled_;
 

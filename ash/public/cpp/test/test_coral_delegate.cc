@@ -33,4 +33,8 @@ bool TestCoralDelegate::GetGenAILocationAvailability() {
   return true;
 }
 
+bool TestCoralDelegate::GetLanguageAvailability() {
+  return true;
+}
+
 }  // namespace ash

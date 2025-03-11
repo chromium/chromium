@@ -248,17 +248,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tab.BackgroundLoadStatus" enum="TabBackgroundLoadStatus"
-    expires_after="M77">
-  <owner>ppi@chromium.org</owner>
-  <summary>
-    Mobile-specific metric: when a tab that was opened in background (via
-    &quot;Open link in new tab&quot;) is switched to, we record whether the
-    eagerly loaded tab was still memory resident, or we lost the loaded page due
-    to memory pressure.
-  </summary>
-</histogram>
-
 <histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs.{CloseType}"
     enum="Boolean" expires_after="2025-06-08">
   <owner>ckitagawa@chromium.org</owner>
@@ -2052,29 +2041,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.FirstSwitchedToForegroundCreationRank" units="units"
-    expires_after="M77">
-  <owner>pkotwicz@chromium.org</owner>
-  <summary>
-    Records the &quot;Tab Creation Rank&quot; for the first background tab which
-    was switched to the foreground. The &quot;Tab Creation Rank&quot; is
-    relative to other background tabs which were opened from the same URL via
-    the context menu. The oldest background tab has a rank of zero.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.FirstSwitchedToForegroundCreationReverseRank"
-    units="units" expires_after="M77">
-  <owner>pkotwicz@chromium.org</owner>
-  <summary>
-    Records the &quot;Reverse Tab Creation Rank&quot; for the first background
-    background tab which was switched to the foreground. The &quot;Reverse Tab
-    Creation Rank&quot; is relative to other background tabs which were opened
-    from the same URL via the context menu. The newest background tab has a
-    &quot;Reverse Tab Creation Rank&quot; of zero.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.FreezeAndAppendPendingNavigationResult"
     enum="BooleanSuccess" expires_after="2025-04-26">
   <owner>ckitagawa@chromium.org</owner>
@@ -2724,19 +2690,6 @@ chromium-metrics-reviews@google.com.
     {TabModelSelectorType}.
   </summary>
   <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
-</histogram>
-
-<histogram name="Tabs.StateTransfer.TabDistanceInactiveToActive" units="tabs"
-    expires_after="M85">
-  <owner>kouhei@chromium.org</owner>
-  <owner>tzik@chromium.org</owner>
-  <summary>
-    Number of tabs between the previously active tab and the new active tab.
-
-    This metric is to be removed after M46 hits stable. We don't expect this
-    metric to change over release, so we will remove this once we have the
-    numbers from stable.
-  </summary>
 </histogram>
 
 <histogram name="Tabs.TabArchived.FoundDuplicateInRegularModel" units="count"

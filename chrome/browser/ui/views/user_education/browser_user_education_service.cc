@@ -244,7 +244,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillCreditCardBenefitFeature,
-          kAutofillCreditCardBenefitElementId,
+          autofill::PopupViewViews::kAutofillCreditCardBenefitElementId,
           IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL,
           IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
@@ -259,7 +259,7 @@ void MaybeRegisterChromeFeaturePromos(
       std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                     &feature_engagement::
                         kIPHAutofillExternalAccountProfileSuggestionFeature,
-                    kAutofillSuggestionElementId,
+                    autofill::PopupViewViews::kAutofillSuggestionElementId,
                     IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
                     .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
                     .SetMetadata(115, "vykochko@chromium.org",
@@ -269,7 +269,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHAutofillPredictionImprovementsFeature,
-          kAutofillPredictionImprovementsIphElementId,
+          autofill::PopupViewViews::kAutofillPredictionImprovementsIphElementId,
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY,
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS,
           base::BindRepeating(
@@ -295,7 +295,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
-          kAutofillStandaloneCvcSuggestionElementId,
+          autofill::PopupViewViews::kAutofillStandaloneCvcSuggestionElementId,
           IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL,
           IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
@@ -307,7 +307,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForLegacyPromo(
           &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
-          kAutofillCreditCardSuggestionEntryElementId,
+          autofill::PopupViewViews::kAutofillCreditCardSuggestionEntryElementId,
           IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL)
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(100, "siyua@chromium.org",
@@ -329,7 +329,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillCardInfoRetrievalSuggestionFeature,
-          kAutofillCreditCardSuggestionEntryElementId,
+          autofill::PopupViewViews::kAutofillCreditCardSuggestionEntryElementId,
           IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL,
           IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
@@ -342,7 +342,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillDisabledVirtualCardSuggestionFeature,
-          kAutofillCreditCardSuggestionEntryElementId,
+          autofill::PopupViewViews::kAutofillCreditCardSuggestionEntryElementId,
           IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP,
           IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())

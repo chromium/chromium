@@ -1,0 +1,13 @@
+This is a wdspec test.
+[FAIL] test_unsubscribe
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+[FAIL] test_subscribe
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+[FAIL] test_multiple[True]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+[FAIL] test_multiple[False]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+[FAIL] test_element
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: input.fileDialogOpened)
+Harness: the test ran to completion.
+

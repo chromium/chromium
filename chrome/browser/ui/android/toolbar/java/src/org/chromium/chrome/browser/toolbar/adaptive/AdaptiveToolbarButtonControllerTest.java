@@ -468,6 +468,7 @@ public class AdaptiveToolbarButtonControllerTest {
                 variant,
                 /* actionChipLabelResId= */ 0,
                 /* tooltipTextResId= */ Resources.ID_NULL,
-                /* showHoverHighlight= */ false);
+                /* showHoverHighlight= */ false,
+                /* hasErrorBadge= */ false);
     }
 }

@@ -228,12 +228,12 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       const Element& element,
       const Animation* animation,
       const EffectModel& effect_model,
-      PropertyHandleSet* unsupported_properties = nullptr) {
+      PropertyHandleSet* unsupported_properties_for_tracing = nullptr) {
     const PaintArtifactCompositor* paint_artifact_compositor =
         GetDocument().View()->GetPaintArtifactCompositor();
     return CompositorAnimations::CheckCanStartEffectOnCompositor(
         timing, NormalizedTiming(timing), element, animation, effect_model,
-        paint_artifact_compositor, 1, unsupported_properties);
+        paint_artifact_compositor, 1, unsupported_properties_for_tracing);
   }
 
   CompositorAnimations::FailureReasons CheckCanStartElementOnCompositor(
@@ -1399,11 +1399,12 @@ TEST_P(AnimationCompositorAnimationsTest,
                                                      nullptr);
 
   // Make sure supported properties do not register a failure
-  PropertyHandleSet unsupported_properties1;
-  EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(), animation1,
-                                            *effect1, &unsupported_properties1),
+  PropertyHandleSet unsupported_properties_for_tracing1;
+  EXPECT_EQ(CheckCanStartEffectOnCompositor(
+                timing_, *inline_.Get(), animation1, *effect1,
+                &unsupported_properties_for_tracing1),
             CompositorAnimations::kNoFailure);
-  EXPECT_TRUE(unsupported_properties1.empty());
+  EXPECT_TRUE(unsupported_properties_for_tracing1.empty());
 
   StringKeyframeEffectModel* effect2 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kHeight, "100px", 0),
@@ -1417,15 +1418,16 @@ TEST_P(AnimationCompositorAnimationsTest,
                                                      nullptr);
 
   // Make sure unsupported properties are reported
-  PropertyHandleSet unsupported_properties2;
-  EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(),
-                                              animation2, *effect2,
-                                              &unsupported_properties2) &
+  PropertyHandleSet unsupported_properties_for_tracing2;
+  EXPECT_TRUE(CheckCanStartEffectOnCompositor(
+                  timing_, *inline_.Get(), animation2, *effect2,
+                  &unsupported_properties_for_tracing2) &
               CompositorAnimations::kUnsupportedCSSProperty);
-  EXPECT_EQ(unsupported_properties2.size(), 1U);
-  EXPECT_EQ(
-      unsupported_properties2.begin()->GetCSSPropertyName().ToAtomicString(),
-      "height");
+  EXPECT_EQ(unsupported_properties_for_tracing2.size(), 1U);
+  EXPECT_EQ(unsupported_properties_for_tracing2.begin()
+                ->GetCSSPropertyName()
+                .ToAtomicString(),
+            "height");
 
   StringKeyframeEffectModel* effect3 =
       MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector({
@@ -1449,15 +1451,16 @@ TEST_P(AnimationCompositorAnimationsTest,
                                                      nullptr);
 
   // Make sure only the unsupported properties are reported
-  PropertyHandleSet unsupported_properties3;
-  EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(),
-                                              animation3, *effect3,
-                                              &unsupported_properties3) &
+  PropertyHandleSet unsupported_properties_for_tracing3;
+  EXPECT_TRUE(CheckCanStartEffectOnCompositor(
+                  timing_, *inline_.Get(), animation3, *effect3,
+                  &unsupported_properties_for_tracing3) &
               CompositorAnimations::kUnsupportedCSSProperty);
-  EXPECT_EQ(unsupported_properties3.size(), 1U);
-  EXPECT_EQ(
-      unsupported_properties3.begin()->GetCSSPropertyName().ToAtomicString(),
-      "height");
+  EXPECT_EQ(unsupported_properties_for_tracing3.size(), 1U);
+  EXPECT_EQ(unsupported_properties_for_tracing3.begin()
+                ->GetCSSPropertyName()
+                .ToAtomicString(),
+            "height");
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

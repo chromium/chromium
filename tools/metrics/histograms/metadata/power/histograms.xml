@@ -888,44 +888,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryRemainingAtEndOfSessionOnAC" units="%"
-    expires_after="M85">
-  <owner>tbroch@chromium.org</owner>
-  <summary>
-    Chrome OS remaining battery charge as percent of the maximum battery charge,
-    sampled at the end of a user session when the device is on AC.
-  </summary>
-</histogram>
-
-<histogram name="Power.BatteryRemainingAtEndOfSessionOnBattery" units="%"
-    expires_after="2022-05-01">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Chrome OS remaining battery charge as percent of the maximum battery charge,
-    sampled at the end of a user session when the device is on battery.
-  </summary>
-</histogram>
-
-<histogram name="Power.BatteryRemainingAtStartOfSessionOnAC" units="%"
-    expires_after="2022-04-10">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Chrome OS remaining battery charge as percent of the maximum battery charge,
-    sampled at the start of a user session when the device is on AC.
-  </summary>
-</histogram>
-
-<histogram name="Power.BatteryRemainingAtStartOfSessionOnBattery" units="%"
-    expires_after="2021-03-15">
-  <owner>tbroch@chromium.org</owner>
-  <summary>
-    Chrome OS remaining battery charge as percent of the maximum battery charge,
-    sampled at the start of a user session when the device is on battery.
-  </summary>
-</histogram>
-
 <histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
     expires_after="2025-08-24">
   <owner>puthik@chromium.org</owner>
@@ -946,26 +908,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS time from Battery Saver activation that it took the user to
     increase the backlight brightness above what Battery Saver set.
-  </summary>
-</histogram>
-
-<histogram name="Power.BitfixChunks" units="units" expires_after="M77">
-  <owner>dianders@chromium.org</owner>
-  <summary>
-    Chrome OS (Snow RO firmware 2695.90.0 only) number of 8K chunks that were
-    fixed (memory corruption corrected) for each suspend/resume cycle. Expect 0
-    around 97% of the time and a non-zero value around 3% of the time.
-  </summary>
-</histogram>
-
-<histogram name="Power.BitfixFixes" units="units" expires_after="M77">
-  <owner>dianders@chromium.org</owner>
-  <summary>
-    Chrome OS (Snow RO firmware 2695.90.0 only) number of 4-byte words that were
-    fixed (memory corruption corrected) for each suspend/resume cycle. Expect 0
-    around 97% of the time and a non-zero value around 3% of the time. Would be
-    exactly equal to Power.BitfixChunks if there were only one corrupted word in
-    each chunk but is sometimes several times higher.
   </summary>
 </histogram>
 

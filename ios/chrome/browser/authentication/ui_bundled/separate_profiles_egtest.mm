@@ -140,8 +140,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                  enterpriseOnboardingCondition),
              @"Enterprise onboarding didn't appear.");
   // Confirm the enterprise onboarding screen.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::PromoStylePrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Ensure the enterprise onboarding screen did disapepar.
@@ -281,8 +281,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                  enterpriseOnboardingCondition),
              @"Enterprise onboarding didn't appear.");
   // Refuse the enterprise onboarding screen.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait for the new profile to finish loading.

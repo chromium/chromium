@@ -280,6 +280,9 @@ class GlicWindowController : public views::WidgetObserver {
   // to its target position.
   void AttachToBrowser(Browser& browser);
 
+  // Clamp the mouse drag offsets to keep glic within the visible region.
+  gfx::Vector2d GetClampedMouseDragOffset(const gfx::Vector2d& mouse_offset);
+
   // Handles end-of-drag:
   //  - If glic is within attachment distance of a browser window's glic button,
   //    attach the glic window to the button's position.

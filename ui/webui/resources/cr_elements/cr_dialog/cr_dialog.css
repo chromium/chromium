@@ -7,8 +7,9 @@
  * #import=../cr_shared_vars.css.js
  * #import=../cr_hidden_style_lit.css.js
  * #import=../cr_icons_lit.css.js
+ * #import=../cr_scrollable_lit.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit cr-icons-lit
+ * #include=cr-hidden-style-lit cr-icons-lit cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
 dialog {
@@ -126,27 +127,6 @@ dialog::backdrop {
   overflow: auto;
 }
 
-:host {
-  --transparent-border: 1px solid transparent;
-}
-
-/* Cr Dialog uses borders instead of box-shadows. */
-#cr-container-shadow-top {
-  border-bottom: var(--cr-dialog-body-border-top,
-      var(--transparent-border));
-}
-
-#cr-container-shadow-bottom {
-  border-bottom: var(--cr-dialog-body-border-bottom,
-      var(--transparent-border));
-}
-
-#cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top)),
-#container.can-scroll:not(.scrolled-to-bottom) +
-    #cr-container-shadow-bottom {
-  border-bottom: 1px solid var(--cr-scrollable-border-color);
-}
-
 .top-container {
   align-items: flex-start;
   display: flex;
@@ -167,3 +147,14 @@ dialog::backdrop {
   margin-inline-end: 4px;
   margin-top: 4px;
 }
+
+/* If --cr-dialog-body-border-top is defined, force show the scrollable top
+ * border and override its styling. */
+/* clean-css ignore:start */
+@container style(--cr-dialog-body-border-top) {
+  .cr-scrollable-top {
+    display: block;
+    border-top: var(--cr-dialog-body-border-top);
+  }
+}
+/* clean-css ignore:end */

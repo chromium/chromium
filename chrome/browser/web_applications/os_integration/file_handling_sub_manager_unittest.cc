@@ -123,7 +123,8 @@ TEST_F(FileHandlingSubManagerConfigureTest, InstallWithFilehandlers) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   ASSERT_TRUE(os_integration_state.has_file_handling());
   auto file_handling = os_integration_state.file_handling();
 
@@ -184,7 +185,8 @@ TEST_F(FileHandlingSubManagerConfigureTest, UpdateUserChoiceDisallowed) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   ASSERT_FALSE(os_integration_state.has_file_handling());
 }
 
@@ -269,7 +271,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, InstallWithFilehandlers) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(
@@ -301,7 +304,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
@@ -321,7 +325,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto new_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& new_os_integration_state =
+  const proto::os_state::WebAppOsIntegration& new_os_integration_state =
       new_state.value();
   ASSERT_FALSE(new_os_integration_state.has_file_handling());
 
@@ -354,7 +358,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  proto::WebAppOsIntegrationState os_integration_state = state.value();
+  proto::os_state::WebAppOsIntegration os_integration_state = state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(
@@ -399,7 +403,8 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     ASSERT_EQ(IsFileHandlingEnabled(),
@@ -442,7 +447,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  proto::WebAppOsIntegrationState os_integration_state = state.value();
+  proto::os_state::WebAppOsIntegration os_integration_state = state.value();
   for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
            os_integration_state.file_handling())) {
     EXPECT_EQ(IsFileHandlingEnabled(),

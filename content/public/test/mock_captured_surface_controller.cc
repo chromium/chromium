@@ -41,20 +41,20 @@ void MockCapturedSurfaceController::SetGetZoomLevelResponse(
       std::make_pair(get_zoom_level_value, get_zoom_level_result);
 }
 
-void MockCapturedSurfaceController::SetSetZoomLevelResponse(
-    blink::mojom::CapturedSurfaceControlResult set_zoom_level_result) {
-  set_zoom_level_result_ = set_zoom_level_result;
+void MockCapturedSurfaceController::SetUpdateZoomLevelResponse(
+    blink::mojom::CapturedSurfaceControlResult update_zoom_level_result) {
+  update_zoom_level_result_ = update_zoom_level_result;
 }
 
-void MockCapturedSurfaceController::SetZoomLevel(
-    int zoom_level,
+void MockCapturedSurfaceController::UpdateZoomLevel(
+    blink::mojom::ZoomLevelAction action,
     base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
         reply_callback) {
-  CHECK(set_zoom_level_result_);
-  const blink::mojom::CapturedSurfaceControlResult set_zoom_level_result =
-      *set_zoom_level_result_;
-  set_zoom_level_result_ = std::nullopt;
-  std::move(reply_callback).Run(set_zoom_level_result);
+  CHECK(update_zoom_level_result_);
+  const blink::mojom::CapturedSurfaceControlResult update_zoom_level_result =
+      *update_zoom_level_result_;
+  update_zoom_level_result_ = std::nullopt;
+  std::move(reply_callback).Run(update_zoom_level_result);
 }
 
 void MockCapturedSurfaceController::SetRequestPermissionResponse(

@@ -46,19 +46,12 @@ bool IsChecked(const FormFieldData::CheckStatus& check_status) {
 }
 
 void SetCheckStatus(FormFieldData* form_field_data,
-                    bool isCheckable,
-                    bool isChecked) {
-  if (isChecked) {
-    form_field_data->set_check_status(FormFieldData::CheckStatus::kChecked);
-  } else {
-    if (isCheckable) {
-      form_field_data->set_check_status(
-          FormFieldData::CheckStatus::kCheckableButUnchecked);
-    } else {
-      form_field_data->set_check_status(
-          FormFieldData::CheckStatus::kNotCheckable);
-    }
-  }
+                    bool is_checkable,
+                    bool is_checked) {
+  using enum FormFieldData::CheckStatus;
+  form_field_data->set_check_status(!is_checkable ? kNotCheckable
+                                    : is_checked  ? kChecked
+                                                  : kCheckableButUnchecked);
 }
 
 std::optional<size_t> FindShortestSubstringMatchInSelect(

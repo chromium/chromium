@@ -34,12 +34,13 @@ CREATE PERFETTO MACRO _chrome_scroll_jank_tag_long_stage(
   -- Threshold in milliseconds.
   threshold_ms Expr
 )
-RETURNS TableOrSubquery AS
-SELECT
+RETURNS TableOrSubquery
+AS
+(SELECT
   id AS frame_id,
   $tag AS tag
 FROM _chrome_janky_scroll_frames
-WHERE $stage > time_from_ms($threshold_ms);
+WHERE $stage > time_from_ms($threshold_ms));
 
 -- List of scroll jank causes that apply to janky scroll frames.
 -- Each frame can have zero or multiple tags.
@@ -52,99 +53,131 @@ CREATE PERFETTO TABLE chrome_scroll_jank_tags(
 -- Start of the the long stage tags.
 -- We use 16ms as the threshold for most stages, as if they take O(vsync) or
 -- more, then we have a problem.
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   first_input_generation_to_browser_main_dur,
   'long_generation_to_browser_main',
   6
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   first_input_touch_move_processing_dur,
   'long_touch_move',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   first_input_browser_to_compositor_delay_dur,
   'long_browser_to_compositor',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   first_input_compositor_dispatch_dur,
   'long_compositor_dispatch',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   first_input_compositor_dispatch_to_on_begin_frame_delay_dur,
   'long_wait_for_begin_frame',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   compositor_on_begin_frame_dur,
   'long_on_begin_frame',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   compositor_on_begin_frame_to_generation_delay_dur,
   'long_on_begin_frame_to_generation',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   compositor_generate_frame_to_submit_frame_dur,
   'long_generate_to_submit',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   compositor_submit_frame_dur,
   'long_submit_frame',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   compositor_to_viz_delay_dur,
   'long_compositor_to_viz',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   viz_receive_compositor_frame_dur,
   'long_viz_receive_frame',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   viz_wait_for_draw_dur,
   'long_viz_wait_for_draw',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   viz_draw_and_swap_dur,
   'long_viz_draw_and_swap',
   16
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   viz_to_gpu_delay_dur,
   'long_viz_to_gpu',
   -- We use lower threshold, as jump to GPU should be fast.
   6
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   viz_swap_buffers_dur,
   'long_viz_swap_buffers',
   -- We use lower threshold, as swap buffers should be fast.
   6
 )
 UNION ALL
-_chrome_scroll_jank_tag_long_stage!(
+SELECT
+  *
+FROM _chrome_scroll_jank_tag_long_stage!(
   viz_swap_buffers_to_latch_dur,
   'long_viz_swap_to_latch',
   -- This stage should be highly consistent and usually takes 16.6ms, so we use

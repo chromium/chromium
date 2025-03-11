@@ -132,24 +132,12 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="PENDING_JOB_REASON_USER"/>
 </enum>
 
-<enum name="NotificationSchedulerActionButtonEvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Helpful"/>
-  <int value="2" label="Unhelpful"/>
-</enum>
-
 <enum name="NotificationSchedulerNotificationLifeCycleEvent">
   <int value="0" label="Schedule request"/>
   <int value="1" label="Scheduled"/>
   <int value="2" label="Invalid input parameters"/>
   <int value="3" label="Shown"/>
   <int value="4" label="Client Cancel"/>
-</enum>
-
-<enum name="NotificationSchedulerUserActionType">
-  <int value="0" label="Click"/>
-  <int value="1" label="Button Click"/>
-  <int value="2" label="Dismiss"/>
 </enum>
 
 <enum name="NotificationTypeDetailed">

@@ -33,36 +33,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.DocumentLoad.Activation.CPUDuration"
-    units="microseconds" expires_after="M77">
-  <owner>pkalinnikov@chromium.org</owner>
-  <summary>
-    Records how much thread CPU time it takes to decide whether subresource
-    filtering should be activated for a main frame or subframe.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceFilter.DocumentLoad.Activation.WallDuration"
-    units="microseconds" expires_after="M77">
-  <owner>pkalinnikov@chromium.org</owner>
-  <summary>
-    Records how long it takes to decide whether subresource filtering should be
-    activated for a main frame or subframe.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.DocumentLoad.RulesetIsAvailable"
     enum="BooleanAvailable" expires_after="2026-01-26">
   <owner>alexmt@chromium.org</owner>

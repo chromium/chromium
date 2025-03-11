@@ -20,10 +20,10 @@ namespace web_app {
 class WebAppProvider;
 
 std::set<std::string> GetFileExtensionsFromFileHandlingProto(
-    const proto::FileHandling& file_handling);
+    const proto::os_state::FileHandling& file_handling);
 
 std::set<std::string> GetMimeTypesFromFileHandlingProto(
-    const proto::FileHandling& file_handling);
+    const proto::os_state::FileHandling& file_handling);
 
 // Used to track updates to the file handlers for a web app.
 class FileHandlingSubManager : public OsIntegrationSubManager {
@@ -33,24 +33,24 @@ class FileHandlingSubManager : public OsIntegrationSubManager {
   ~FileHandlingSubManager() override;
 
   void Configure(const webapps::AppId& app_id,
-                 proto::WebAppOsIntegrationState& desired_state,
+                 proto::os_state::WebAppOsIntegration& desired_state,
                  base::OnceClosure configure_done) override;
   void Execute(const webapps::AppId& app_id,
                const std::optional<SynchronizeOsOptions>& synchronize_options,
-               const proto::WebAppOsIntegrationState& desired_state,
-               const proto::WebAppOsIntegrationState& current_state,
+               const proto::os_state::WebAppOsIntegration& desired_state,
+               const proto::os_state::WebAppOsIntegration& current_state,
                base::OnceClosure callback) override;
   void ForceUnregister(const webapps::AppId& app_id,
                        base::OnceClosure callback) override;
 
  private:
   void Unregister(const webapps::AppId& app_id,
-                  const proto::WebAppOsIntegrationState& desired_state,
-                  const proto::WebAppOsIntegrationState& current_state,
+                  const proto::os_state::WebAppOsIntegration& desired_state,
+                  const proto::os_state::WebAppOsIntegration& current_state,
                   base::OnceClosure callback);
 
   void Register(const webapps::AppId& app_id,
-                const proto::WebAppOsIntegrationState& desired_state,
+                const proto::os_state::WebAppOsIntegration& desired_state,
                 base::OnceClosure callback);
 
   const base::FilePath profile_path_;

@@ -390,6 +390,11 @@ public class ReorderDelegate {
         mActiveStrategy = null;
     }
 
+    /** See {@link ReorderStrategy#getInteractingView()} */
+    public StripLayoutView getInteractingView() {
+        return mActiveStrategy != null ? mActiveStrategy.getInteractingView() : null;
+    }
+
     private float computeScrollOffsetDeltaForAutoScroll(
             long time, float stripWidth, float leftMargin, float rightMargin) {
         // 1. Track the delta time since the last auto scroll.

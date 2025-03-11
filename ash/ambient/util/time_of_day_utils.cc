@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash {
@@ -109,6 +111,19 @@ void GetAmbientVideoHtmlPath(std::string dlc_metrics_label,
 void InstallAmbientVideoDlcInBackground() {
   GetAmbientVideoHtmlPath(ambient::kAmbientVideoDlcBackgroundLabel,
                           base::DoNothing());
+}
+
+AmbientVideo GetDefaultAmbientVideo() {
+  const std::optional<std::string_view> customization_id =
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kCustomizationIdKey);
+  VLOG(1) << __func__
+          << " customization_id: " << customization_id.value_or("null");
+  if (customization_id == kJupiterScreensaverCustomizationId) {
+    // TODO (b:398026518): Use actual video.
+    return AmbientVideo::kNewMexico;
+  }
+  return AmbientVideo::kNewMexico;
 }
 
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =

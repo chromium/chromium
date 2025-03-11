@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
 #include "services/on_device_model/ml/chrome_ml_holder.h"
+#include "services/video_effects/calculators/mediapipe_webgpu_utils.h"
 #include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -27,11 +28,11 @@
 
 namespace {
 
-// The ML model we use expects 256x144 input buffer.
-constexpr uint32_t kBufferWidth = 256;
-constexpr uint32_t kBufferHeight = 144;
+constexpr uint32_t kBufferWidth = video_effects::kInferenceInputBufferWidth;
+constexpr uint32_t kBufferHeight = video_effects::kInferenceInputBufferHeight;
 constexpr mediapipe::GpuBufferFormat kBufferFormat =
-    mediapipe::GpuBufferFormat::kRGBAFloat128;
+    video_effects::WebGpuTextureFormatToGpuBufferFormat(
+        video_effects::kInferenceInputBufferFormat);
 
 const ChromeMLAPI* GetChromeMlApi() {
   static base::NoDestructor<std::unique_ptr<ml::ChromeMLHolder>> holder{

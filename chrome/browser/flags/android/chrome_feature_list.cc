@@ -342,7 +342,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripTransitionInDesktopWindow,
     &kTabSwitcherColorBlendAnimate,
     &kTabSwitcherForeignFaviconSupport,
-    &kTabSwitcherFullNewTabButton,
     &kTabWindowManagerIndexReassignmentActivityFinishing,
     &kTabWindowManagerIndexReassignmentActivityInSameTask,
     &kTabWindowManagerIndexReassignmentActivityNotInAppTasks,
@@ -1109,7 +1108,7 @@ BASE_FEATURE(kTabStripGroupDragDropAndroid,
 
 BASE_FEATURE(kTabStripGroupReorderAndroid,
              "TabStripGroupReorderAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",
@@ -1129,10 +1128,6 @@ BASE_FEATURE(kTabSwitcherColorBlendAnimate,
 
 BASE_FEATURE(kTabSwitcherForeignFaviconSupport,
              "TabSwitcherForeignFaviconSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabSwitcherFullNewTabButton,
-             "TabSwitcherFullNewTabButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing,

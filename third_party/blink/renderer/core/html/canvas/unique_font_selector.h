@@ -22,12 +22,14 @@ class FontSelectorClient;
 class CORE_EXPORT UniqueFontSelector
     : public GarbageCollected<UniqueFontSelector> {
  public:
-  explicit UniqueFontSelector(FontSelector& base_selector);
+  explicit UniqueFontSelector(FontSelector* base_selector);
   void Trace(Visitor* visitor) const;
 
   const Font* FindOrCreateFont(const FontDescription& description);
   void DidSwitchFrame();
 
+  // The return value is nullptr if this UniqueFontSelector was created with
+  // a detached Document.
   FontSelector* BaseFontSelector() const { return base_selector_; }
   void RegisterForInvalidationCallbacks(FontSelectorClient* client);
 

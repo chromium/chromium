@@ -28,13 +28,13 @@ class RunOnOsLoginSubManager : public OsIntegrationSubManager {
   ~RunOnOsLoginSubManager() override;
 
   void Configure(const webapps::AppId& app_id,
-                 proto::WebAppOsIntegrationState& desired_state,
+                 proto::os_state::WebAppOsIntegration& desired_state,
                  base::OnceClosure configure_done) override;
 
   void Execute(const webapps::AppId& app_id,
                const std::optional<SynchronizeOsOptions>& synchronize_options,
-               const proto::WebAppOsIntegrationState& desired_state,
-               const proto::WebAppOsIntegrationState& current_state,
+               const proto::os_state::WebAppOsIntegration& desired_state,
+               const proto::os_state::WebAppOsIntegration& current_state,
                base::OnceClosure execute_done) override;
 
   void ForceUnregister(const webapps::AppId& app_id,
@@ -42,19 +42,20 @@ class RunOnOsLoginSubManager : public OsIntegrationSubManager {
 
  private:
   // Unregistration logic.
-  void StartUnregistration(const webapps::AppId& app_id,
-                           const proto::WebAppOsIntegrationState& current_state,
-                           const proto::WebAppOsIntegrationState& desired_state,
-                           base::OnceClosure registration_callback);
+  void StartUnregistration(
+      const webapps::AppId& app_id,
+      const proto::os_state::WebAppOsIntegration& current_state,
+      const proto::os_state::WebAppOsIntegration& desired_state,
+      base::OnceClosure registration_callback);
 
   // Registration logic.
   void CreateShortcutInfoWithFavicons(
       const webapps::AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
+      const proto::os_state::WebAppOsIntegration& desired_state,
       base::OnceClosure execute_done);
   void OnShortcutInfoCreatedStartRegistration(
       const webapps::AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
+      const proto::os_state::WebAppOsIntegration& desired_state,
       base::OnceClosure execute_done,
       std::unique_ptr<ShortcutInfo> shortcut_info);
 

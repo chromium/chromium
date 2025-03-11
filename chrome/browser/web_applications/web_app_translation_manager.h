@@ -59,7 +59,8 @@ class WebAppTranslationManager {
   // TODO(crbug.com/40183274): Add a method to get the short_name.
 
  private:
-  void OnTranslationsRead(ReadCallback callback, const AllTranslations& proto);
+  void OnTranslationsRead(ReadCallback callback,
+                          const proto::AllTranslations& proto);
 
   raw_ptr<WebAppProvider> provider_ = nullptr;
   base::FilePath web_apps_directory_;

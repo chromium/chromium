@@ -55,7 +55,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/ic_error_badge_14dp.xml",
+    "java/res/drawable/ic_error_badge_16dp.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

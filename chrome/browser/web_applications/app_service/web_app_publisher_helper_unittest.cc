@@ -299,14 +299,14 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
     new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
-    proto::WebAppOsIntegrationState test_state;
+    proto::os_state::WebAppOsIntegration test_state;
 
     accept_entry.mime_type = "text/plain";
     accept_entry.file_extensions.insert(".txt");
     apps::FileHandler file_handler;
     file_handler.action = GURL("https://example.com/path/handler.html");
 
-    proto::FileHandling::FileHandler* file_handler_proto =
+    proto::os_state::FileHandling::FileHandler* file_handler_proto =
         test_state.mutable_file_handling()->add_file_handlers();
     file_handler_proto->set_action(file_handler.action.spec());
     auto* accept_entry_proto = file_handler_proto->add_accept();

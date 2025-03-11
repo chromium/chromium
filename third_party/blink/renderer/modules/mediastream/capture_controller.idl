@@ -63,7 +63,21 @@ interface CaptureController : EventTarget {
     MeasureAs = CapturedSurfaceControl,
     CallWith = ScriptState
   ]
-  Promise<undefined> setZoomLevel(long zoomLevel);
+  Promise<undefined> increaseZoomLevel();
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl,
+    CallWith = ScriptState
+  ]
+  Promise<undefined> decreaseZoomLevel();
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl,
+    CallWith = ScriptState
+  ]
+  Promise<undefined> resetZoomLevel();
 
   [
     RuntimeEnabled = CapturedSurfaceControl,

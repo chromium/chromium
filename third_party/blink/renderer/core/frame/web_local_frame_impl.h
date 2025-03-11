@@ -278,6 +278,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const std::vector<WebString>& words) override;
   WebContentSettingsClient* GetContentSettingsClient() const override;
   void SetContentSettingsClient(WebContentSettingsClient*) override;
+  const mojom::RendererContentSettingsPtr& GetContentSettings() const override;
   void ReloadImage(const WebNode&) override;
   bool IsAllowedToDownload() const override;
   bool IsCrossOriginToOutermostMainFrame() const override;

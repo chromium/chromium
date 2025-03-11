@@ -48,9 +48,6 @@ class OmniboxViewIOS : public OmniboxView,
     popup_provider_ = provider;
   }
 
-  /// Sets the image used in image search.
-  void SetThumbnailImage(UIImage* image);
-
   // OmniboxView implementation.
   std::u16string GetText() const override;
   void SetWindowTextAndCaretPos(const std::u16string& text,

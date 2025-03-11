@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -20,8 +21,12 @@ class GPUSupportedFeatures : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(
+      wgpu::FeatureName f);
+
   GPUSupportedFeatures();
-  explicit GPUSupportedFeatures(const Vector<V8GPUFeatureName>& feature_names);
+  explicit GPUSupportedFeatures(
+      const wgpu::SupportedFeatures& supported_features);
 
   void AddFeatureName(const V8GPUFeatureName feature_name);
 
