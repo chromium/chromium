@@ -502,12 +502,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Preference related to the tab pickup feature.
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
 
-  // Pref used to store the number of impressions of the shop card
-  // module in the Home Surface since a shop card freshness signal.
-  // TODO(crbug.com/398173021): Migrate from LocalState to Profile.
-  registry->RegisterIntegerPref(
-      prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness, -1);
-
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(
       prefs::kIosSafetyCheckManagerUpdateCheckResult,
@@ -932,6 +926,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
       -1);
+  // Pref used to store the number of impressions of the shop card
+  // module in the Home Surface since a shop card freshness signal.
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness, -1);
 
   registry->RegisterIntegerPref(
       lens::prefs::kLensOverlaySettings,
