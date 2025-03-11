@@ -60,6 +60,11 @@ constexpr uint32_t kSampleSizeAndCount = 8u;
 constexpr size_t kVideoIndex = 0;
 constexpr size_t kAudioIndex = 1;
 
+// ISO/IEC 14496-12.
+// 16 bits of fixed based decimal is enough to give 6 decimals of precision for
+// the rotation values of the display matrix.
+static constexpr int32_t kMaxMatrixRotation = 1 << 16;
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 constexpr uint8_t kProfileIndicationNoChroma = 77;
 constexpr uint8_t kProfileIndication = 122;
@@ -336,6 +341,14 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     video_track.header.duration = base::Milliseconds(kDuration1);
     video_track.header.natural_size = gfx::Size(kWidth, kHeight);
 
+    // Apply 90 degree rotation display matrix, no mirroring.
+    std::array<int32_t, 4> mat =
+        media::VideoTransformation(VIDEO_ROTATION_90, false).GetMatrix();
+    video_track.header.matrix[0] = mat[0];
+    video_track.header.matrix[1] = mat[1];
+    video_track.header.matrix[3] = mat[2];
+    video_track.header.matrix[4] = mat[3];
+
     video_track.media.header.creation_time = creation_time;
     video_track.media.header.modification_time = modification_time;
     video_track.media.header.duration = base::Milliseconds(kDuration1);
@@ -403,6 +416,14 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   EXPECT_EQ(track_boxes[kVideoIndex].header.volume, 0);
   EXPECT_EQ(track_boxes[kVideoIndex].header.width, kWidth);
   EXPECT_EQ(track_boxes[kVideoIndex].header.height, kHeight);
+
+  // Track header display matrix validation.
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[0], 0);
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[1],
+            kMaxMatrixRotation);
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[3],
+            -1 * kMaxMatrixRotation);
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[4], 0);
 
   EXPECT_EQ(track_boxes[kAudioIndex].header.track_id, 2u);
   EXPECT_EQ(track_boxes[kAudioIndex].header.creation_time,

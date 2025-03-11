@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MUXERS_CONSTANTS_H_
-#define MEDIA_MUXERS_CONSTANTS_H_
+#ifndef MEDIA_FORMATS_MP4_BOX_CONSTANTS_H_
+#define MEDIA_FORMATS_MP4_BOX_CONSTANTS_H_
 
 #include <cstdint>
 
@@ -28,4 +28,4 @@ inline constexpr int32_t kDisplayIdentityMatrix[9] = {
 
 }  // namespace media
 
-#endif  // MEDIA_MUXERS_CONSTANTS_H_
+#endif  // MEDIA_FORMATS_MP4_BOX_CONSTANTS_H_
