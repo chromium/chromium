@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/crowdstrike_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,7 +68,8 @@ class AgentSignalsCollectorTest : public testing::Test {
     SignalsAggregationResponse captured_response;
 
     base::RunLoop run_loop;
-    collector_->GetSignal(SignalName::kAgent, empty_request, captured_response,
+    collector_->GetSignal(SignalName::kAgent, UserPermission::kGranted,
+                          empty_request, captured_response,
                           run_loop.QuitClosure());
 
     run_loop.Run();
@@ -138,14 +140,29 @@ TEST_F(AgentSignalsCollectorTest, GetSignal_Unsupported) {
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  collector_->GetSignal(signal_name, empty_request, response,
-                        run_loop.QuitClosure());
+  collector_->GetSignal(signal_name, UserPermission::kGranted, empty_request,
+                        response, run_loop.QuitClosure());
 
   run_loop.Run();
 
   ASSERT_TRUE(response.top_level_error.has_value());
   EXPECT_EQ(response.top_level_error.value(),
             SignalCollectionError::kUnsupported);
+}
+
+// Tests that signal collection is halted if permission is not sufficient.
+TEST_F(AgentSignalsCollectorTest, GetSignal_MissingConsent) {
+  SignalName signal_name = SignalName::kAgent;
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  collector_->GetSignal(signal_name, UserPermission::kMissingConsent,
+                        empty_request, response, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_FALSE(response.agent_signals_response);
 }
 
 TEST_F(AgentSignalsCollectorTest, GetSignal_Success) {

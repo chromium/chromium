@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 
@@ -30,9 +31,14 @@ FileSystemSignalsCollector::FileSystemSignalsCollector(
 FileSystemSignalsCollector::~FileSystemSignalsCollector() = default;
 
 void FileSystemSignalsCollector::GetFileSystemInfoSignal(
+    UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  if (permission != UserPermission::kGranted) {
+    std::move(done_closure).Run();
+    return;
+  }
   if (request.file_system_signal_parameters.empty()) {
     FileSystemInfoResponse signal_response;
     signal_response.collection_error =
