@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -90,7 +91,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to divider_line_bg_color. */
     public static @ColorInt int getDividerLineBgColor(Context context) {
-        return resolve(R.attr.colorSurfaceVariant, context);
+        return resolve(R.attr.colorSurfaceContainerHighest, context);
     }
 
     /** Returns the semantic color value that corresponds to bottom_system_nav_color. */
@@ -171,7 +172,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to menu_bg_color. */
     public static @ColorInt int getMenuBgColor(Context context) {
-        return resolveSurfaceColorElev(R.dimen.menu_bg_color_elev, context);
+        return ContextCompat.getColor(context, R.color.menu_bg_color);
     }
 
     /** Returns the semantic color values that corresponds to colorPrimaryContainer. */
