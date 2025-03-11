@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -19,10 +18,10 @@ void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
                                      const gfx::RectF& dest_rect,
                                      const gfx::RectF& src_rect,
                                      const ImageDrawOptions& draw_options) {
-  canvas->drawImageRect(
-      image_, gfx::RectFToSkRect(src_rect), gfx::RectFToSkRect(dest_rect),
-      draw_options.sampling_options, &flags,
-      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
+  canvas->drawImageRect(image_, gfx::RectFToSkRect(src_rect),
+                        gfx::RectFToSkRect(dest_rect),
+                        draw_options.sampling_options, &flags,
+                        ToSkiaRectConstraint(draw_options.clamping_mode));
 }
 
 void PaintWorkletDeferredImage::DrawTile(cc::PaintCanvas*,
