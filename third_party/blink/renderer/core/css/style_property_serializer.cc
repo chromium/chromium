@@ -1233,7 +1233,6 @@ String StylePropertySerializer::FontValue() const {
     return g_empty_string;
   }
 
-  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
     int font_variant_emoji_property_index =
         property_set_.FindPropertyIndex(GetCSSPropertyFontVariantEmoji());
     DCHECK_NE(font_variant_emoji_property_index, -1);
@@ -1243,7 +1242,6 @@ String StylePropertySerializer::FontValue() const {
                              CSSValueID::kNormal)) {
       return g_empty_string;
     }
-  }
 
   if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
     int font_size_adjust_property_index =
@@ -1329,10 +1327,8 @@ String StylePropertySerializer::FontVariantValue() const {
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantPosition(),
                                      result);
-  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
     AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEmoji(),
                                        result);
-  }
 
   // The font-variant shorthand should return an empty string where
   // it cannot represent "font-variant-ligatures: none" along

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using blink::test::CreateTestFont;
@@ -27,7 +26,6 @@ INSTANTIATE_TEST_SUITE_P(FontFallbackIteratorTest,
                          testing::ValuesIn(FallbackPriorities));
 
 TEST_P(TestReset, TestResetWithFallbackPriority) {
-  ScopedFontVariationSequencesForTest scoped_feature(true);
   const FontFallbackPriority fallback_priorities = TestReset::GetParam();
   FontDescription::VariantLigatures ligatures(
       FontDescription::kDisabledLigaturesState);
