@@ -72,8 +72,8 @@ def GetDepsObjectInfo(object_name: str) -> str:
   #     ETag:                   COvj8aXjj4YDEAE=
   #     Generation:             1715780189975019
   #     Metageneration:         1
-  generation = re.search('Generation:\s+([0-9]+)', output).group(1)
-  size_bytes = re.search('Content-Length:\s+([0-9]+)', output).group(1)
+  generation = re.search(r'Generation:\s+([0-9]+)', output).group(1)
+  size_bytes = re.search(r'Content-Length:\s+([0-9]+)', output).group(1)
   with tempfile.NamedTemporaryFile() as f:
     DownloadUrl(url, f)
     f.seek(0)
