@@ -94,6 +94,9 @@ TEST_F(AutocompleteMatchWrapperTest,
   // Expect 1 wrapped group.
   EXPECT_EQ(wrappedGroups.count, 1u);
 
+  EXPECT_EQ(wrappedGroups[0].type,
+            SuggestionGroupType::kUnspecifiedSuggestionGroup);
+
   // expect 2 wrapped suggestions in the group.
   EXPECT_EQ(wrappedGroups[0].suggestions.count, 2u);
 
@@ -213,8 +216,12 @@ TEST_F(AutocompleteMatchWrapperTest, testWrapPedalMatch) {
   // The result should be wrapped into 2 groups where the first one is for
   // pedal.
   EXPECT_EQ(wrappedGroups.count, 2u);
+  EXPECT_EQ(wrappedGroups[0].type, SuggestionGroupType::kPedalSuggestionGroup);
+  EXPECT_EQ(wrappedGroups[1].type,
+            SuggestionGroupType::kUnspecifiedSuggestionGroup);
 
   EXPECT_EQ(wrappedGroups[0].suggestions.count, 1u);
+  EXPECT_EQ(wrappedGroups[1].suggestions.count, 1u);
 
   // Wrapped suggestions should be pedal.
   EXPECT_TRUE([wrappedGroups[0].suggestions[0]

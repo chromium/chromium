@@ -21,9 +21,13 @@
 // How suggestion are displayed.
 @property(nonatomic, readonly) SuggestionGroupDisplayStyle displayStyle;
 
+// The suggestion group type.
+@property(nonatomic, readonly) SuggestionGroupType type;
+
 - (instancetype)initWithTitle:(NSString*)title
                   suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
                  displayStyle:(SuggestionGroupDisplayStyle)displayStyle
+                         type:(SuggestionGroupType)type
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -31,13 +35,15 @@
 + (AutocompleteSuggestionGroupImpl*)
     groupWithTitle:(NSString*)title
        suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
-      displayStyle:(SuggestionGroupDisplayStyle)displayStyle;
+      displayStyle:(SuggestionGroupDisplayStyle)displayStyle
+              type:(SuggestionGroupType)type;
 
 // Instantiates a suggestion group with `SuggestionGroupDisplayStyleDefault` as
 // displayStyle.
 + (AutocompleteSuggestionGroupImpl*)
     groupWithTitle:(NSString*)title
-       suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions;
+       suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+              type:(SuggestionGroupType)type;
 
 @end
 

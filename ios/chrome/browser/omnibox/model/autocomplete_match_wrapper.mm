@@ -244,10 +244,18 @@
       displayStyle = SuggestionGroupDisplayStyleCarousel;
     }
 
-    [groups addObject:[AutocompleteSuggestionGroupImpl
-                          groupWithTitle:groupTitle
-                             suggestions:currentGroup
-                            displayStyle:displayStyle]];
+    SuggestionGroupType groupType =
+        SuggestionGroupType::kUnspecifiedSuggestionGroup;
+
+    if (displayStyle == SuggestionGroupDisplayStyleCarousel) {
+      groupType = SuggestionGroupType::kMVTilesSuggestionGroup;
+    }
+
+    [groups
+        addObject:[AutocompleteSuggestionGroupImpl groupWithTitle:groupTitle
+                                                      suggestions:currentGroup
+                                                     displayStyle:displayStyle
+                                                             type:groupType]];
     currentGroup = [[NSMutableArray alloc] init];
   };
 
