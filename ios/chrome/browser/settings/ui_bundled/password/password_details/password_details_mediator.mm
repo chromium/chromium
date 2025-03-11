@@ -18,9 +18,9 @@
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
-#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -623,7 +623,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 // Returns YES if all of the following conditions are met:
 // * Build is branded (bypassed with a command line switch in EG tests).
-// * User is syncing or signed in with account storage enabled.
+// * User is signed in with account storage enabled.
 - (BOOL)shouldDisplayShareButton {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -632,9 +632,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                          _syncService)
-      .has_value();
+  return password_manager::features_util::IsAccountStorageEnabled(_prefService,
+                                                                  _syncService);
 }
 
 @end
