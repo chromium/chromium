@@ -217,7 +217,8 @@ std::unique_ptr<views::Widget> DisclaimerView::CreateWidget(
       views::Widget::InitParams::TYPE_POPUP);
   const gfx::Rect work_area(
       display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
-  params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
+  params.parent =
+      Shell::GetContainer(root, kShellWindowId_CaptureModeSearchResultsPanel);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
