@@ -11257,17 +11257,32 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
       begin_navigation_time_ <= loader_start_time &&
       loader_start_time <= receive_response_time_ &&
       receive_response_time_ <= navigation_commit_sent_time) {
-    ukm::builders::NavigationRequestBreakDown(GetNextPageUkmSourceId())
-        .SetNavigationStartToBeginNavigation(
-            (begin_navigation_time_ - navigation_start_time).InMilliseconds())
+    ukm::builders::NavigationRequestBreakDown ukm(GetNextPageUkmSourceId());
+    ukm.SetNavigationStartToBeginNavigation(
+           (begin_navigation_time_ - navigation_start_time).InMilliseconds())
         .SetBeginNavigationToLoaderStart(
             (loader_start_time - begin_navigation_time_).InMilliseconds())
         .SetLoaderStartToReceiveResponse(
             (receive_response_time_ - loader_start_time).InMilliseconds())
         .SetReceiveResponseToCommitNavigation(
             (navigation_commit_sent_time - receive_response_time_)
-                .InMilliseconds())
-        .Record(ukm::UkmRecorder::Get());
+                .InMilliseconds());
+
+    // To avoid affecting other metrics, we check the following conditions
+    // separately. These conditions should usually be true, but there can be
+    // uncommon error cases.
+    if (!first_fetch_start_time_.is_null() &&
+        !first_request_start_time.is_null() &&
+        loader_start_time <= first_fetch_start_time_ &&
+        first_fetch_start_time_ <= first_request_start_time) {
+      ukm.SetLoaderStartToFetchStart(
+             (first_fetch_start_time_ - loader_start_time).InMilliseconds())
+          .SetFetchStartToRequestStart(
+              (first_request_start_time - first_fetch_start_time_)
+                  .InMilliseconds());
+    }
+
+    ukm.Record(ukm::UkmRecorder::Get());
   }
 
 #undef MAYBE_RECORD_TRACE_AND_HISTOGRAM0
