@@ -165,7 +165,6 @@
   autocompleteMatchWrapper.delegate = self.mediator;
 
   self.mediator.autocompleteMatchWrapper = autocompleteMatchWrapper;
-  self.mediator.pedalAnnotator = annotator;
 
   self.mediator.applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);

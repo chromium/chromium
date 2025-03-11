@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
