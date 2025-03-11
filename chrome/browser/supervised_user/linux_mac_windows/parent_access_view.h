@@ -97,6 +97,9 @@ class ParentAccessView : public views::View, public views::WidgetObserver {
   // views::WidgetObserver implementation:
   void OnWidgetClosing(views::Widget* widget) override;
 
+  // views::View override:
+  void ChildPreferredSizeChanged(View* child) override;
+
   void ShowWebViewAndDestroyTimeoutObserver();
 
   base::OnceClosure dialog_result_reset_callback_;

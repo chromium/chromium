@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -34,15 +35,17 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
-// TODO(crbug.com/383997522): Configure according to the mocks.
-constexpr int kDialogWidth = 650;
-constexpr int kDialogHeight = 450;
-constexpr int kMaxDialogWidth = 700;
-constexpr int kMaxDialogHeight = 500;
+constexpr int kViewWidth = 448;
+constexpr int kViewHeight = 376;
+constexpr int kMaxWebViewHeight = 500;
+constexpr gfx::Size kViewPreferredSize = gfx::Size(kViewWidth, kViewHeight);
+constexpr gfx::Size kErrorViewPreferredSize =
+    gfx::Size(kViewWidth, kViewHeight);
 
 const GURL GetPacpUrl(
     const GURL& blocked_url,
@@ -147,7 +150,7 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
       std::move(dialog_result_reset_callback));
   const GURL pacp_url = GetPacpUrl(target_url, filtering_reason);
   parent_access_view->Initialize(pacp_url, corner_radius);
-  // Keeps a pointer to the parent access views as it's ownership is transferred
+  // Keeps a pointer to the parent access views as its ownership is transferred
   // to the delegate.
   auto view_weak_ptr = parent_access_view->GetWeakPtr();
   dialog_delegate->SetContentsView(std::move(parent_access_view));
@@ -197,6 +200,25 @@ void ParentAccessView::ShowWebViewAndDestroyTimeoutObserver() {
   content_loader_timeout_observer_.reset();
 }
 
+void ParentAccessView::ChildPreferredSizeChanged(View* child) {
+  // Adjusts the widget's size and position to fit its contents.
+  // Need as the size of the web_view_ can change dynamically once its web
+  // contents are loaded, so the widget size needs adjustment.
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  if (child != web_view_ && child != error_view_) {
+    return;
+  }
+  if (!child->GetVisible()) {
+    return;
+  }
+  // Update the widget's size.
+  CHECK(widget->non_client_view());
+  widget->SetSize(widget->non_client_view()->GetPreferredSize());
+}
+
 void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
@@ -239,6 +261,8 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
       l10n_util::GetStringUTF16(IDS_PARENT_WEBSITE_LOCAL_WEB_APPROVAL_ERROR)));
 
   error_view_ = AddChildView(std::move(error_view));
+  // Triggers the dialog resizing.
+  error_view_->SetPreferredSize(kErrorViewPreferredSize);
   widget->Show();
 }
 
@@ -264,12 +288,11 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
   web_view_->SetProperty(views::kElementIdentifierKey,
                          kLocalWebParentApprovalDialogId);
 
-  gfx::Size size = gfx::Size(kDialogWidth, kDialogHeight);
-  gfx::Size maxsize = gfx::Size(kMaxDialogWidth, kMaxDialogHeight);
-  web_view_->EnableSizingFromWebContents(size, maxsize);
+  gfx::Size maxsize = gfx::Size(kViewWidth, kMaxWebViewHeight);
+  web_view_->EnableSizingFromWebContents(kViewPreferredSize, maxsize);
   // TODO(crbug.com/394839768): Investigate if `SetPreferredSize` can be
   // replaced by using a layout manager.
-  web_view_->SetPreferredSize(size);
+  web_view_->SetPreferredSize(kViewPreferredSize);
 
   corner_radius_ = corner_radius;
   is_initialized_ = true;
