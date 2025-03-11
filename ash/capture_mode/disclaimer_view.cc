@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -42,7 +41,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
@@ -170,7 +168,6 @@ DisclaimerView::DisclaimerView(
                           .SetHorizontalAlignment(
                               gfx::HorizontalAlignment::ALIGN_LEFT)
                           .SetText(GetTextTitle())
-                          .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
                       GetTextBodyBuilder(GetBodyTextParagraphOne()),
                       GetTextBodyBuilder(GetBodyTextParagraphTwo())))
@@ -215,22 +212,17 @@ std::unique_ptr<views::Widget> DisclaimerView::CreateWidget(
       std::move(press_accept_button_callback),
       std::move(press_decline_button_callback));
 
-  auto delegate = std::make_unique<views::WidgetDelegate>();
-  delegate->SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-  delegate->SetAccessibleTitle(GetTextTitle());
-  delegate->SetInitiallyFocusedView(disclaimer_view->accept_button());
-
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   const gfx::Rect work_area(
       display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
-  params.delegate = delegate.release();
   params.parent =
       Shell::GetContainer(root, kShellWindowId_CaptureModeSearchResultsPanel);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.corner_radius = kRadius;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
 

@@ -35,8 +35,6 @@ class ASH_EXPORT DisclaimerView : public views::View {
   DisclaimerView& operator=(const DisclaimerView&) = delete;
   ~DisclaimerView() override;
 
-  views::MdTextButton* accept_button() { return accept_button_; }
-
   static std::unique_ptr<views::Widget> CreateWidget(
       aura::Window* const root,
       base::RepeatingClosure press_accept_button_callback,
