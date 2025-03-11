@@ -581,12 +581,6 @@
       browser_process_read_write_access: true,
     },
     {
-      name: "BlinkExtensionDiagnostics",
-      depends_on: ["BlinkExtensionChromeOS"],
-      browser_process_read_write_access: true,
-      base_feature: "none",
-    },
-    {
       name: "BlinkExtensionWebView",
       public: true,
     },
