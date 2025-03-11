@@ -203,8 +203,10 @@ void BtmPageVisitObserver::OnCookiesAccessed(
     RenderFrameHost* render_frame_host,
     const CookieAccessDetails& details) {
   // Ignore irrelevant cookie accesses.
-  if (details.blocked_by_policy ||
-      details.type != CookieAccessDetails::Type::kChange ||
+  bool is_passive_access =
+      details.type == CookieAccessDetails::Type::kRead &&
+      details.source == CookieAccessDetails::Source::kNavigation;
+  if (details.blocked_by_policy || is_passive_access ||
       !btm::IsOrWasInPrimaryPage(render_frame_host)) {
     return;
   }
