@@ -8,9 +8,6 @@
 
 namespace passage_embeddings {
 
-// Close enough to be considered near zero.
-constexpr float kEpsilon = 0.00001f;
-
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
 Embedding::Embedding() = default;
 Embedding::Embedding(std::vector<float> data, size_t passage_word_count)
@@ -38,9 +35,12 @@ float Embedding::Magnitude() const {
 
 void Embedding::Normalize() {
   float magnitude = Magnitude();
-  CHECK_GT(magnitude, kEpsilon) << data_.size() << " ; " << magnitude;
-  for (float& s : data_) {
-    s /= magnitude;
+  if (std::abs(magnitude - 1) > 0.0001f) {
+    CHECK(!data_.empty());
+    CHECK_GT(magnitude, std::numeric_limits<float>::epsilon());
+    for (float& s : data_) {
+      s /= magnitude;
+    }
   }
 }
 

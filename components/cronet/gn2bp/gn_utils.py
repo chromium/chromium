@@ -21,6 +21,7 @@ import logging as log
 import os
 import re
 import collections
+import shlex
 
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library',
                      'source_set')
@@ -120,6 +121,10 @@ def label_without_toolchain(label):
 
 def _is_java_source(src):
   return os.path.splitext(src)[1] == '.java' and not src.startswith("//out/")
+
+
+def _remove_out_prefix(label):
+  return re.sub('^//out/.+?/(gen|obj)/', '', label)
 
 
 class GnParser(object):
@@ -224,6 +229,14 @@ class GnParser(object):
       self.build_file_path = ""
       self.crate_name = None
       self.crate_root = None
+      # For _java targets, this holds the target that outputs the raw jar before
+      # filtering ("__process_device") takes place. This would typically be the
+      # "__compile_java" target, but it can also be this target itself if there
+      # is no compile target.
+      self.unfiltered_java_target = None
+      # Java only. Dependencies that are only used to build this specific
+      # target and should not be propagated up the build tree.
+      self.build_only_deps = set()
 
     # Properties to forward access to common arch.
     # TODO: delete these after the transition has been completed.
@@ -391,19 +404,12 @@ class GnParser(object):
     self.jni_java_sources = set()
 
   def _get_response_file_contents(self, action_desc):
-    # response_file_contents are formatted as:
-    # ['--flags', '--flag=true && false'] and need to be formatted as:
-    # '--flags --flag=\"true && false\"'
-    flags = action_desc.get('response_file_contents', [])
-    formatted_flags = []
-    for flag in flags:
-      if '=' in flag:
-        key, val = flag.split('=')
-        formatted_flags.append('%s=\\"%s\\"' % (key, val))
-      else:
-        formatted_flags.append(flag)
-
-    return ' '.join(formatted_flags)
+    # GN response_file_contents docs state "The response file contents will
+    # always be quoted and escaped according to Unix shell rules". Reproduce
+    # GN's behavior.
+    return ' '.join(
+        shlex.quote(arg)
+        for arg in action_desc.get('response_file_contents', []))
 
   def _is_java_group(self, type_, target_name):
     # Per https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
@@ -439,7 +445,9 @@ class GnParser(object):
   def parse_gn_desc(self,
                     gn_desc,
                     gn_target_name,
-                    is_test_target=False):
+                    is_test_target=False,
+                    custom_processor=None,
+                    override_deps=None):
     """Parses a gn desc tree and resolves all target dependencies.
 
         It bubbles up variables from source_set dependencies as described in the
@@ -466,9 +474,22 @@ class GnParser(object):
     else:
       return target  # Target already processed.
 
-    if 'target_type' in metadata.keys(
-    ) and metadata["target_type"][0] == 'java_library':
-      target.type = 'java_library'
+    def turn_into_java_library(java_target):
+      java_target.type = 'java_library'
+      java_target.sdk_version = metadata.get('sdk_version', ['current'])[0]
+      # Assume the target is unfiltered by default. This may be reassigned
+      # later.
+      java_target.unfiltered_java_target = java_target
+
+    # In GN, java libraries are actually a hierarchy of targets with a `group`
+    # target at the root. We surface the target as a `java_library` for clarity.
+    # See below for more details on how we handle java_library.
+    #
+    # The reason why we do this now and not alongside the java_library logic is
+    # so that, if this target is a builtin (see below), it is still returned as
+    # a java_library, not as a group (which would just get ignored).
+    if metadata.get("target_type", None) == ['java_library']:
+      turn_into_java_library(target)
 
     if target.name in self.builtin_deps:
       # return early, no need to parse any further as the module is a builtin.
@@ -483,8 +504,11 @@ class GnParser(object):
 
     target.testonly = desc.get('testonly', False)
 
-    deps = desc.get("deps", {})
-    if desc.get("script", "") == "//tools/protoc_wrapper/protoc_wrapper.py":
+    deps = desc.get("deps", [])
+    build_only_deps = []
+    if custom_processor is not None:
+      custom_processor(target, desc, deps, build_only_deps)
+    elif desc.get("script", "") == "//tools/protoc_wrapper/protoc_wrapper.py":
       target.type = 'proto_library'
       target.proto_plugin = "proto"
       target.proto_paths.update(self.get_proto_paths(desc))
@@ -504,39 +528,158 @@ class GnParser(object):
       target.arch[arch].sources.update(source
                                        for source in desc.get('sources', [])
                                        if not source.startswith("//out"))
-    elif target.type == 'java_library':
-      sources = set()
-      for java_source in metadata.get("source_files", []):
-        if not java_source.startswith(
-            "//out") and java_source not in JAVA_FILES_TO_IGNORE:
-          sources.add(java_source)
-      target.sources.update(sources)
-      # Metadata attributes must be list, for jar_path, it is always a list
-      # of size one, the first element is an empty string if `jar_path` is not
-      # defined otherwise it is a path.
-      if metadata.get("jar_path", [""])[0]:
-        target.jar_path = label_to_path(metadata["jar_path"][0])
-      target.sdk_version = metadata.get('sdk_version', ['current'])[0]
-      deps = metadata.get("all_deps", {})
-      log.info('Found Java Target %s', target.name)
     elif target.script == "//build/android/gyp/aidl.py":
-      target.type = "java_library"
+      turn_into_java_library(target)
       target.sources.update(desc.get('sources', {}))
       target.local_aidl_includes = _extract_includes_from_aidl_args(
           desc.get('args', ''))
+    elif target.type == "java_library":
+      log.info('Found Java Target %s', target.name)
+
+      # Java GN targets are... complicated. The relevant GN rules are in
+      # //build/config/android/internal_rules.gni, specifically
+      # java_library_impl. What makes this challenging is this GN rule is
+      # extremely flexible and has tons of extra features - it's not just
+      # running javac like Soong's java_library does. We don't support all of
+      # GN's java_library features, but hopefully we support the subset that
+      # matters to get things to work.
+      #
+      # In the general case, GN's java_library("foo_java") generates the
+      # following GN target structure:
+      #   foo_java (group)
+      #     -> some_dependency_java
+      #     -> foo_java__process_device (action, postprocesses the JAR)
+      #       -> foo_java__compile_java (action, runs javac)
+      #         -> some_dependency_java__compile_java
+      # ...as well as a few other subtargets that are not relevant here.
+      # (Note: in reality foo_java__compile_java would depend on
+      # some_dependency_java__header, but the distinction is not relevant for
+      # our purposes - __header is like __compile_java but running Turbine
+      # instead of javac.)
+      #
+      # The main purpose of the __process_device target is to filter classes
+      # from the output of javac; it implements the jar_excluded_patterns and
+      # jar_included_patterns java_library options. Most java_library targets
+      # don't really use this feature, but there are notable exceptions: for
+      # example some jni_zero generator targets rely on this to remove
+      # placeholder classes, which would conflict with the real classes
+      # otherwise.
+      #
+      # Note there is an additional subtlety here. When `__compile_java` runs,
+      # it runs against the output of `__compile_java` from its dependencies.
+      # That means it runs against *unfiltered* jars. This is important - some
+      # targets rely on this (e.g. //base:log_java pulling BuildConfig from
+      # //build/android:build_java), so we need to preserve this behavior.
+      # The unfiltered jar is a build time dependency only - i.e. it is only
+      # used in the build time classpath of dependent targets. It is the
+      # filtered jar that is included in the final build output.
+      # TODO: as if this wasn't complicated enough, in GN a `java_library`
+      # can use a flag, `prevent_excluded_classes_from_classpath`, that flips
+      # the above behavior and makes dependent targets pull the *filtered* jars
+      # instead of the unfiltered ones. This flag is notably used in
+      # `generate_jni()` autogenerated java_library targets to prevent the
+      # jni_zero placeholder classes from bubbling up and potentially
+      # conflicting with their real counterparts up the build tree. We currently
+      # do not support this flag (i.e. we behave as if it is false).
+      # Surprisingly the resulting build rules work anyway - presumably by sheer
+      # luck. In the future we may have to support it (look out for for
+      # duplicate class build failures). This should be easy - just depend on
+      # the root `_java` target (or `_java__process_device`) instead of the
+      # `_java__compile_java` target when the flag is true on the dependency.
+      #
+      # For even more more background, see https://crbug.com/397396295.
+
+      # Ignore the sources on the GN target; it's easier to reconstruct them
+      # from `source_files` metadata.
+      target.sources.clear()
+
+      all_deps = metadata.get("all_deps", [])
+      # Use the root target to propagate the *filtered* jars from the
+      # dependencies up the build tree.
+      deps.clear()
+      deps.extend(all_deps)
+
+      def add_jar_path(target):
+        # Metadata attributes must be list, for jar_path, it is always a list
+        # of size one, the first element is an empty string if `jar_path` is not
+        # defined otherwise it is a path.
+        jar_path = metadata.get("jar_path", [])
+        if jar_path:
+          assert len(jar_path) == 1, target.name
+          jar_path = jar_path[0]
+          if jar_path:
+            target.jar_path = label_to_path(jar_path)
+
+      process_device_target_name = f"{gn_target_name}__process_device"
+      has_process_device_target = process_device_target_name in gn_desc
+      compile_java_target_name = f"{gn_target_name}__compile_java"
+      has_compile_java_target = compile_java_target_name in gn_desc
+      if not has_process_device_target and not has_compile_java_target:
+        # This is an empty target with no compilation step and no
+        # post-processing. It could be an empty target, or it could just be a
+        # pre-built jar used as-is.
+        add_jar_path(target)
+      else:
+        if has_compile_java_target:
+
+          def process_compile_java_target(compile_java_target,
+                                          compile_java_desc, compile_java_deps,
+                                          compile_java_build_only_deps):
+            turn_into_java_library(compile_java_target)
+            # We always get the dependency info from the metadata of the root group
+            # target - that's easier than trying to make sense of the deps of the
+            # various (sub)targets.
+            compile_java_target.sources.update(
+                java_source for java_source in metadata.get("source_files", [])
+                if not java_source.startswith("//out")
+                and java_source not in JAVA_FILES_TO_IGNORE)
+            # Make sure we surface the input list - downstream logic needs it to
+            # make some decisions, e.g. deciding which jni_zero generated
+            # srcjars to depend on.
+            compile_java_target.inputs.update([
+                _remove_out_prefix(input)
+                for input in compile_java_desc.get('inputs', [])
+            ])
+            # Note we adjust this later on while processing dependencies to depend
+            # on the *unfiltered* jars, as Chromium does.
+            compile_java_deps.clear()
+            compile_java_build_only_deps.extend(all_deps)
+
+          target.unfiltered_java_target = self.parse_gn_desc(
+              gn_desc,
+              compile_java_target_name,
+              is_test_target=is_test_target,
+              custom_processor=process_compile_java_target)
+
+        if has_process_device_target:
+          process_device_target_name = f"{gn_target_name}__process_device"
+          process_device_target = self.parse_gn_desc(
+              gn_desc,
+              process_device_target_name,
+              is_test_target=is_test_target,
+              # In some rare cases (e.g. //third_party/netty4:netty_all_java),
+              # there is a __process_java target but no __compile_java target,
+              # because what is a being post-processed is a prebuilt jar.
+              override_deps=[compile_java_target_name]
+              if has_compile_java_target else [])
+          deps.append(process_device_target_name)
+          add_jar_path(process_device_target)
+        else:
+          deps.append(compile_java_target_name)
+          add_jar_path(target)
     elif target.script == "//build/rust/run_bindgen.py":
       # rust_bindgen is a supported module in Soong but GN depend on actions
       # so we need to copy the action fields (sources, outputs and args) in
       # order to correctly generate the `rust_bindgen` module.
       target.sources.update(desc.get('sources', []))
-      outs = [re.sub('^//out/.+?/gen/', '', x) for x in desc['outputs']]
+      outs = [_remove_out_prefix(x) for x in desc['outputs']]
       target.outputs.update(outs)
       target.args = desc['args']
       target.type = "rust_bindgen"
     elif target.type in ['action', 'action_foreach']:
       target.arch[arch].inputs.update(desc.get('inputs', []))
       target.arch[arch].sources.update(desc.get('sources', []))
-      outs = [re.sub('^//out/.+?/gen/', '', x) for x in desc['outputs']]
+      outs = [_remove_out_prefix(x) for x in desc['outputs']]
       target.arch[arch].outputs.update(outs)
       # While the arguments might differ, an action should always use the same script for every
       # architecture. (gen_android_bp's get_action_sanitizer actually relies on this fact.
@@ -599,8 +742,11 @@ class GnParser(object):
       dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
       target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)
 
+    if override_deps is not None:
+      deps = override_deps
+
     # Recurse in dependencies.
-    for gn_dep_name in set(deps):
+    for gn_dep_name in set(deps) | set(build_only_deps):
       dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
 
       if dep.type == 'proto_library':
@@ -620,7 +766,12 @@ class GnParser(object):
       elif dep.type == "rust_executable":
         target.arch[arch].deps.add(dep.name)
       elif dep.type == 'java_library':
-        target.deps.add(dep.name)
+        if gn_dep_name in build_only_deps:
+          # Chromium builds Java code against the unfiltered dependencies
+          # (_java__header). This reproduces this behavior.
+          target.build_only_deps.add(dep.unfiltered_java_target.name)
+        else:
+          target.deps.add(dep.name)
         target.transitive_jni_java_sources.update(
             dep.transitive_jni_java_sources)
       elif dep.type in [
@@ -639,6 +790,7 @@ class GnParser(object):
             dep.arch[arch].transitive_static_libs_deps)
         target.arch[arch].deps.update(
             target.arch[arch].transitive_static_libs_deps)
+
     return target
 
   def get_proto_exports(self, proto_desc):

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Ekraanisäästja animatsioon</translation>
 <translation id="152892567002884378">Helitugevuse suurendamine</translation>
 <translation id="1539864135338521185">lasuriidist</translation>
+<translation id="1548555207631326346">Valige teema ja seejärel allajoonitud sõnad, et oma AI pilte isikupärastada.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ainulaadsemate ja mitmekesisemate AI-piltide saamiseks valige „Inspireeri mind”.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kui loote AI-ga, saadetakse Google'i AI serveritele päring, et genereerida pilte ja täiustada toodet kooskõlas<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'i privaatsuseeskirjadega<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI on katseline ja varajases arendusjärgus ning sellel on praegu piiratud saadavus.</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="155865706765934889">Puuteplaat</translation>
 <translation id="1561927818299383735">tausta värv</translation>
@@ -1553,6 +1562,16 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8183975772394450380">rand</translation>
 <translation id="819278132617411009">Kasutage Google'i AI-d, et olla produktiivsem</translation>
+<translation id="82003371436638355">Kui valite „Loo oma”, kirjutage kohandatud päring. Või saate teema valimiseks teha valiku „Vali teema”, et AI taustapildi isikupärastamiseks allajoonitud sõnad valida.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ainulaadsemate ja mitmekesisemate AI-piltide saamiseks valige „Inspireeri mind”.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kui loote oma taustapildi, saadetakse Google'i serveritele päring, et genereerida pilte ja täiustada toodet kooskõlas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'i teenusetingimuste ja privaatsuseeskirjadega<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiivne AI võib anda ebatäpset teavet, sealhulgas inimeste kohta, seega kontrollige selle vastused üle. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lisateave<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
@@ -1574,6 +1593,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8312330582793120272">esitab meediat</translation>
 <translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8320910311642849813">mets</translation>
+<translation id="8322464149031882595">Klõpsake edasiliikumiseks</translation>
 <translation id="8329018942023753850">rakendus Kalkulaator</translation>
 <translation id="8336739000755212683">Seadme kontopildi muutmine</translation>
 <translation id="8339024191194156249">Lisateave automaatse käivitamise kohta</translation>
@@ -1720,6 +1740,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8961025972867871808">pingviinid</translation>
 <translation id="8968751544471797276">Laadimiskiirus</translation>
 <translation id="8970109610781093811">Käita uuesti</translation>
+<translation id="8972061581514441296">Klikkige tagasiliikumiseks</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanni}=1{Skanni {NUMBER_OF_PAGES}. lehte}other{Skanni {NUMBER_OF_PAGES}. lehte}}</translation>
 <translation id="89945434909472341">küla</translation>

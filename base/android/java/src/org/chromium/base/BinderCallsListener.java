@@ -39,7 +39,12 @@ public class BinderCallsListener {
 
     private static @Nullable BinderCallsListener sInstance;
 
+    /** A means of reporting an exception/stack without crashing. */
+    private static @Nullable Callback<Throwable> sExceptionReporter;
+
     private static final long LONG_BINDER_CALL_LIMIT_MILLIS = 2;
+    private static final double UPLOAD_PROBABILITY = 0.2;
+    private static final int MAX_UPLOADS_PER_SESSION = 3;
     private static final HashSet<String> sSlowBinderCallAllowList = new HashSet<>();
 
     // The comments mostly correspond to the slow use cases.
@@ -73,6 +78,10 @@ public class BinderCallsListener {
                 "android.app.job.IJobCallback",
                 "android.app.trust.ITrustManager",
                 "android.media.IAudioService",
+                "com.android.internal.inputmethod.IImeTracker",
+                "com.android.internal.inputmethod.IInputMethodSession",
+                "com.android.internal.app.IVoiceInteractionManagerService",
+                "com.android.internal.textservice.ITextServicesManager",
                 // Gets activity task ID during startup; cached.
                 "android.app.IActivityClientController",
                 // Used to check if stylus is enabled.
@@ -102,7 +111,21 @@ public class BinderCallsListener {
                 // AppTask#getTaskInfo
                 "android.app.IAppTask",
                 // Used to determine if device can authenticate with a given level of strength.
-                "android.hardware.biometrics.IAuthService");
+                "android.hardware.biometrics.IAuthService",
+                // Context#getExternalFilesDirs for download directories.
+                "android.os.storage.IStorageManager",
+                // Watches changes to Android prefs backed up using Android KV backup.
+                "android.app.backup.IBackupManager",
+                // Used in test screenshots.
+                "android.app.IUiAutomationConnection",
+                // PowerMonitor#getCurrentThermalStatus.
+                "android.os.IThermalService",
+                // StrictMode#setVmPolicy. Only enabled for local builds and 1% of Dev users.
+                "android.os.INetworkManagementService",
+                // Records background restrictions imposed on Chrome by Android.
+                "android.app.usage.IUsageStatsManager",
+                // Used for EditText UI elements.
+                "android.view.autofill.IAutoFillManager");
     }
 
     private @Nullable Object mImplementation;
@@ -115,6 +138,13 @@ public class BinderCallsListener {
 
         if (sInstance == null) sInstance = new BinderCallsListener();
         return sInstance;
+    }
+
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
+    public static void setExceptionReporter(Callback<Throwable> reporter) {
+        sExceptionReporter = reporter;
     }
 
     private BinderCallsListener() {
@@ -194,6 +224,7 @@ public class BinderCallsListener {
         private @Nullable String mCurrentInterfaceDescriptor;
         private @Nullable BiConsumer<String, String> mObserver;
         private int mCurrentTransactionId;
+        private int mNumUploads;
         private long mCurrentTransactionStartTimeMillis;
 
         @Override
@@ -232,13 +263,25 @@ public class BinderCallsListener {
 
                     long transactionDurationMillis =
                             SystemClock.uptimeMillis() - mCurrentTransactionStartTimeMillis;
-                    if (transactionDurationMillis >= LONG_BINDER_CALL_LIMIT_MILLIS) {
-                        Log.e(
-                                TAG,
-                                "Slow call on UI thread by: %s duration=%dms (max allowed: %dms)",
-                                mCurrentInterfaceDescriptor,
-                                transactionDurationMillis,
-                                LONG_BINDER_CALL_LIMIT_MILLIS);
+
+                    // Only report a subset of slow calls for non-local builds.
+                    boolean shouldReportSlowCall =
+                            transactionDurationMillis >= LONG_BINDER_CALL_LIMIT_MILLIS
+                                    && Math.random() < UPLOAD_PROBABILITY
+                                    && mNumUploads < MAX_UPLOADS_PER_SESSION;
+                    if (shouldReportSlowCall && sExceptionReporter != null) {
+                        // If there was a new Binder call introduced, consider moving it to a
+                        // background thread if possible. If not, add it to the allow list.
+                        String message =
+                                "BinderCallsListener detected a slow call on the UI thread by: "
+                                        + mCurrentInterfaceDescriptor
+                                        + " with duration="
+                                        + transactionDurationMillis
+                                        + "ms (max allowed: "
+                                        + LONG_BINDER_CALL_LIMIT_MILLIS
+                                        + "ms)";
+                        sExceptionReporter.onResult(new Throwable(message));
+                        mNumUploads++;
                     }
                     return null;
             }

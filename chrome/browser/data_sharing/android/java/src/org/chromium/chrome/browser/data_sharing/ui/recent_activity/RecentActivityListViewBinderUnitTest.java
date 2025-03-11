@@ -75,11 +75,12 @@ public class RecentActivityListViewBinderUnitTest {
 
     @Test
     public void testDescriptionWithTimestamp() {
-        DescriptionAndTimestamp descriptionAndTimestamp = new DescriptionAndTimestamp();
-        descriptionAndTimestamp.description = "description 1";
-        descriptionAndTimestamp.timestamp = "8h ago";
-        descriptionAndTimestamp.separator = ".";
-        descriptionAndTimestamp.descriptionFullTextResId = 5;
+        DescriptionAndTimestamp descriptionAndTimestamp =
+                new DescriptionAndTimestamp(
+                        /* description= */ "description 1",
+                        /* separator= */ ".",
+                        /* timestamp= */ "8h ago",
+                        /* descriptionFullTextResId= */ 5);
         mPropertyModel.set(
                 RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
                 descriptionAndTimestamp);
@@ -94,11 +95,12 @@ public class RecentActivityListViewBinderUnitTest {
 
     @Test
     public void testTimestampWithEmptyDescription() {
-        DescriptionAndTimestamp descriptionAndTimestamp = new DescriptionAndTimestamp();
-        descriptionAndTimestamp.description = "";
-        descriptionAndTimestamp.timestamp = "8h ago";
-        descriptionAndTimestamp.separator = ".";
-        descriptionAndTimestamp.descriptionFullTextResId = 5;
+        DescriptionAndTimestamp descriptionAndTimestamp =
+                new DescriptionAndTimestamp(
+                        /* description= */ "",
+                        /* separator= */ ".",
+                        /* timestamp= */ "8h ago",
+                        /* descriptionFullTextResId= */ 5);
         mPropertyModel.set(
                 RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
                 descriptionAndTimestamp);

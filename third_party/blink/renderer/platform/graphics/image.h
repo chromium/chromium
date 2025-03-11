@@ -304,6 +304,13 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
     kDoNotClampImageToSourceRect
   };
 
+  static SkCanvas::SrcRectConstraint ToSkiaRectConstraint(
+      Image::ImageClampingMode clamp_mode) {
+    return clamp_mode == Image::kClampImageToSourceRect
+               ? SkCanvas::kStrict_SrcRectConstraint
+               : SkCanvas::kFast_SrcRectConstraint;
+  }
+
   virtual void Draw(cc::PaintCanvas*,
                     const cc::PaintFlags&,
                     const gfx::RectF& dst_rect,

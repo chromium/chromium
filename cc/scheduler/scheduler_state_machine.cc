@@ -1449,14 +1449,6 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   if (active_tree_needs_first_draw_)
     return true;
 
-  // We did not send a BeginMainFrame(), don't expect a commit.
-  //
-  // Order matters here: if we have !needs_redraw_ (which is typical), if we
-  // move that further down, then there is an unconditional "return false".
-  if (last_begin_impl_frame_time_ != last_sent_begin_main_frame_time_) {
-    return true;
-  }
-
   // TODO(XXX): This condition should not need to be there. There was an attempt
   // to remove it, which was reverted due to regressions (see
   // https://chromium-review.googlesource.com/c/chromium/src/+/1211664).
@@ -1464,13 +1456,23 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   if (!needs_redraw_)
     return false;
 
+  // We did not send a BeginMainFrame() and main is not busy, we can trigger the
+  // deadline immediately.
+  bool wait_for_main = CommitPending() || has_pending_tree_;
+  if (last_begin_impl_frame_time_ != last_sent_begin_main_frame_time_ &&
+      !wait_for_main) {
+    TRACE_EVENT_INSTANT("cc", "TriggerDeadlineDueToThrottling");
+    return true;
+  }
+
   // This is used to prioritize impl-thread draws when the main thread isn't
   // producing anything, e.g., after an aborted commit. We also check that we
   // don't have a pending tree -- otherwise we should give it a chance to
   // activate.
   // TODO(skyostil): Revisit this when we have more accurate deadline estimates.
-  if (!CommitPending() && !has_pending_tree_)
+  if (!wait_for_main) {
     return true;
+  }
 
   // Prioritize impl-thread draws in ImplLatencyTakesPriority mode.
   if (ImplLatencyTakesPriority())

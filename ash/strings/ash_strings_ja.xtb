@@ -1055,6 +1055,7 @@
 <translation id="450584155212756404">Dev チャンネル</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">フィードバック</translation>
+<translation id="4518096944902121253">この言語に対するその他の操作はありません</translation>
 <translation id="4518404433291145981">Chromebook のロックを解除するには、先にスマートフォンのロックを解除します</translation>
 <translation id="4525887279712865285">Quick Share の設定を表示</translation>
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
@@ -1885,6 +1886,7 @@
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="7219573373513695352">接続されているデバイスはありません</translation>
+<translation id="7228968829656641943">画面上の範囲を選択して検索します。キーボード ナビゲーションを使用するには、Tab キーを押し、スペースキーを押してください。</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">マウスの両方のボタン</translation>
 <translation id="7244725679040769470">バッテリー残量が <ph name="PERCENTAGE" />% です。デバイスを電源に接続してください。</translation>

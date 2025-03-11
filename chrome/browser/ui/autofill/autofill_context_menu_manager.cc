@@ -424,7 +424,7 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
 bool AutofillContextMenuManager::ShouldAddAutofillAiItem(
     AutofillAiDelegate* delegate,
     const GURL& url) {
-  // TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
+  // TODO(crbug.com/372158654): Remove everything related to Autofill AI.
   return false;
 }
 

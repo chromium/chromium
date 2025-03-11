@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -27,8 +28,7 @@ class DataSharingBubbleController
 
   // `request_info` contains the values we want to pass into the loaded WebUI in
   // this bubble.
-  void Show(std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>
-                request_info);
+  void Show(data_sharing::RequestInfo request_info);
   // Closes the instance of the data sharing bubble.
   void Close();
 

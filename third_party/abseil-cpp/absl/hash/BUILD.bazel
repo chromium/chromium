@@ -191,6 +191,7 @@ cc_library(
     visibility = ["//visibility:private"],
     deps = [
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/base:endian",
         "//absl/base:prefetch",
         "//absl/numeric:int128",

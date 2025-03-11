@@ -104,6 +104,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_util.h"
 
@@ -772,8 +773,12 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown, bool by_key_event) {
         capture_label_widget_->Hide();
       }
     }
+    std::u16string capture_mode_settings_a11y_title =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE);
     capture_mode_settings_widget_->GetNativeWindow()->SetTitle(
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE));
+        capture_mode_settings_a11y_title);
+    capture_mode_settings_widget_->widget_delegate()->SetAccessibleTitle(
+        capture_mode_settings_a11y_title);
     capture_mode_settings_widget_->Show();
   }
 }
@@ -3855,8 +3860,14 @@ void CaptureModeSession::InitInternal() {
                          "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       active_behavior_->CreateCaptureModeBarView());
+  // TODO(crbug.com/401570359): Use a different accessible title in Sunfish
+  // mode.
+  std::u16string capture_mode_bar_a11y_title =
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE);
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
+      capture_mode_bar_a11y_title);
+  capture_mode_bar_widget_->widget_delegate()->SetAccessibleTitle(
+      capture_mode_bar_a11y_title);
   capture_mode_bar_widget_->Show();
 
   // Advance focus once if spoken feedback is on so that the capture bar takes

@@ -177,10 +177,10 @@ BASE_FEATURE(kBrokerFileOperationsOnDiskCacheInNetworkService,
 // Allows pages with cache-control:no-store to enter the back/forward cache.
 // Feature params can specify whether pages with cache-control:no-store can be
 // restored if cookies change / if HTTPOnly cookies change.
-// TODO(crbug.com/40189625): Enable this feature.
+// TODO(crbug.com/40189625): Remove this feature and clean up.
 BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This killswitch is distinct from the OT.
 // It allows us to remotely disable the feature, and get it to stop working even
@@ -188,12 +188,6 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
 // calls gated by the killswitch will fail graceully.
 BASE_FEATURE(kCapturedSurfaceControlKillswitch,
              "CapturedSurfaceControlKillswitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, CSC permissions are sticky - as all other permissions.
-// If disabled, CSC permissions are scoped to the capture session's duration.
-BASE_FEATURE(kCapturedSurfaceControlStickyPermissions,
-             "CapturedSurfaceControlStickyPermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Clear the window.name property for the top-level cross-site navigations that

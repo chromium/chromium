@@ -2674,8 +2674,6 @@ TEST(Btree, HeterogeneousInsertOrAssign) {
 }
 #endif
 
-// This test requires std::launder for mutable key access in node handles.
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
 TEST(Btree, NodeHandleMutableKeyAccess) {
   {
     absl::btree_map<std::string, std::string> map;
@@ -2701,7 +2699,6 @@ TEST(Btree, NodeHandleMutableKeyAccess) {
     EXPECT_THAT(map, ElementsAre(Pair("key", "mapped")));
   }
 }
-#endif
 
 struct MultiKey {
   int i1;

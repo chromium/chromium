@@ -3020,6 +3020,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6337133576188860026">Oslobodit će se <ph name="SIZE" />. Neke bi se web-lokacije pri sljedećem otvaranju mogle sporije učitavati.</translation>
 <translation id="6337534724793800597">Filtriranje pravila prema nazivu</translation>
 <translation id="633770708279464947">Vrijednost <ph name="SECURE_DNS_SALT" /> nije važeća i neće se upotrebljavati.</translation>
+<translation id="6338645927051849741">Zaporka • Google upravitelj zaporki</translation>
 <translation id="6340739886198108203">Prema pravilima administratora ne preporučuje se izrada snimki zaslona ili snimki kad je vidljiv povjerljiv sadržaj:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Prema pravilima administratora ne preporučuje se prijenos te datoteke na <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Upravo sada</translation>

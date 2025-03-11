@@ -996,6 +996,7 @@
 <translation id="5696597120588531049">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响</translation>
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
 <translation id="570347048394355941">切换至标签页</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> 想连接到串行端口</translation>
 <translation id="5715150588940290235">删除已保存的安全码？</translation>
 <translation id="571930967925877633">您的书签、历史记录和其他 Chrome 数据将不再同步到您的 Google 账号中</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
@@ -1128,6 +1129,7 @@
 <translation id="6296366034485697675">导出并删除</translation>
 <translation id="629730747756840877">账号</translation>
 <translation id="6303969859164067831">退出账号并关闭同步功能</translation>
+<translation id="6307241780749477694">请验证您的身份，以便在此设备上获取您的所有密码</translation>
 <translation id="6312687380483398334">Web 应用（安静）</translation>
 <translation id="6315386555979018699">删除并继续</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
@@ -1387,6 +1389,7 @@
 <translation id="7359002509206457351">查询付款方式</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
 <translation id="7364103838544876661">用于删除浏览数据的更多选项</translation>
+<translation id="7365073365123878797">如需开始使用 Google 密码管理工具保存和使用密码，请更新 Google Play 服务</translation>
 <translation id="7375125077091615385">类型：</translation>
 <translation id="7376560087009844242">如果选择纳入相应页面上的更多文字，您便可能会在使用“轻触搜索”功能时看到相关性更高的结果。您随时可访问<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />以更改此设置。</translation>
 <translation id="7379900596734708416">可为网站启用深色主题</translation>
@@ -1465,10 +1468,12 @@
 <translation id="7686086654630106285">详细了解网站建议的广告</translation>
 <translation id="7690596512217303514">您的设备无法打开 Chrome。若要解决此问题，请从应用商店下载最新的 Chrome 更新。</translation>
 <translation id="7691043218961417207">探索值得关注的内容</translation>
+<translation id="7692761875510935111">快速在浏览器中打开。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
 <translation id="7702420606070050505">显示近期活动的底部动作条已全屏打开</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
+<translation id="7708994397325774423">获取您的所有密码</translation>
 <translation id="7733878270780732638">设备上的存储空间不足。</translation>
 <translation id="7746817319925672889">Google 密码管理工具即将停止在此设备上运行</translation>
 <translation id="774876555279732384">您也可以在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中管理自动填充服务。</translation>
@@ -1610,6 +1615,7 @@
 <translation id="8310451567823644042">密码即将失效</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
 <translation id="8320212361750431956">近期活动</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome 会通知您哪些网站可能发送了过多通知</translation>
 <translation id="834313815369870491">一律不翻译网站</translation>
 <translation id="8348430946834215779">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告</translation>
@@ -1741,6 +1747,7 @@
 <translation id="8937772741022875483">从“数字健康”应用中移除您的 Chrome 活动记录？</translation>
 <translation id="8942627711005830162">在其他窗口中打开</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 无法下载此语言。请稍后再试。</translation>
+<translation id="8946759102391960088">继续使用您的密码</translation>
 <translation id="8957528460562961174">如需继续使用您的密码，请立即将其导出，然后将其导入您偏好的密码管理工具。由于未安装 Google Play 服务，Google 密码管理工具已停止运行。</translation>
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8965591936373831584">待下载</translation>

@@ -1318,3 +1318,48 @@ BASE_FEATURE(kNonModalSignInPromo,
 bool IsNonModalSignInPromoEnabled() {
   return base::FeatureList::IsEnabled(kNonModalSignInPromo);
 }
+
+BASE_FEATURE(kIOSOneTapMiniMapRestrictions,
+             "IOSOneTapMiniMapRestrictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kIOSOneTapMiniMapRestrictionCrossValidateParamName[] =
+    "ios-one-tap-minimap-cross-validate";
+constexpr base::FeatureParam<bool>
+    kIOSOneTapMiniMapRestrictionCrossValidateParam{
+        &kIOSOneTapMiniMapRestrictions,
+        /*name=*/kIOSOneTapMiniMapRestrictionCrossValidateParamName,
+        /*default_value=*/false};
+const char kIOSOneTapMiniMapRestrictionThreshholdParamName[] =
+    "ios-one-tap-minimap-threshhold";
+constexpr base::FeatureParam<double>
+    kIOSOneTapMiniMapRestrictionThreshholdParam{
+        &kIOSOneTapMiniMapRestrictions,
+        /*name=*/kIOSOneTapMiniMapRestrictionThreshholdParamName,
+        /*default_value=*/0};
+const char kIOSOneTapMiniMapRestrictionMinCharsParamName[] =
+    "ios-one-tap-minimap-min-chars";
+constexpr base::FeatureParam<int> kIOSOneTapMiniMapRestrictionMinCharsParam{
+    &kIOSOneTapMiniMapRestrictions,
+    /*name=*/kIOSOneTapMiniMapRestrictionMinCharsParamName,
+    /*default_value=*/0};
+const char kIOSOneTapMiniMapRestrictionMaxSectionsParamName[] =
+    "ios-one-tap-minimap-max-section";
+constexpr base::FeatureParam<int> kIOSOneTapMiniMapRestrictionMaxSectionsParam{
+    &kIOSOneTapMiniMapRestrictions,
+    /*name=*/kIOSOneTapMiniMapRestrictionMaxSectionsParamName,
+    /*default_value=*/0};
+const char kIOSOneTapMiniMapRestrictionLongestWordMinCharsParamName[] =
+    "ios-one-tap-minimap-longest-word-min-chars";
+constexpr base::FeatureParam<int>
+    kIOSOneTapMiniMapRestrictionLongestWordMinCharsParam{
+        &kIOSOneTapMiniMapRestrictions,
+        /*name=*/kIOSOneTapMiniMapRestrictionLongestWordMinCharsParamName,
+        /*default_value=*/0};
+const char kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName[] =
+    "ios-one-tap-minimap-min-alphanum-proportion";
+constexpr base::FeatureParam<double>
+    kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam{
+        &kIOSOneTapMiniMapRestrictions,
+        /*name=*/kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName,
+        /*default_value=*/0};

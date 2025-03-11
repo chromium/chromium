@@ -694,11 +694,13 @@ if (is_android) {
     deps = [
       ":content_shell_app",
       ":content_shell_lib",
-      "//content/app/ios/appex:child_process_bridge",
       "//content/public/app",
       "//content/public/common",
       "//third_party/icu:icudata",
     ]
+    if (target_platform != "tvos") {
+      deps += [ "//content/app/ios/appex:child_process_bridge" ]
+    }
     info_plist = "app/ios/ios-app.plist"
   }
 

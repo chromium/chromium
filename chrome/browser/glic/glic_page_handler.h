@@ -67,7 +67,7 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
  private:
-  void EnableChange();
+  void AllowedChanged();
   GlicKeyedService* GetGlicService();
 
   // There should at most one WebClientHandler at a time. A new one is created

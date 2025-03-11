@@ -417,7 +417,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     all_test_names = []
     for test_class in all_test_classes:
       test_class_name = test_class['name']
-      test_methods = test_class['children']
+      test_methods = test_class.get('children', [])
 
       for test_method in test_methods:
         all_test_names.append((test_class_name, test_method['name']))

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.annotation.SuppressLint;
@@ -23,6 +24,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -49,11 +52,12 @@ import java.util.List;
  * Coordinator to construct the instance switcher dialog.
  * TODO: Resolve various inconsistencies that can be caused by Ui from multiple instances.
  */
+@NullMarked
 public class InstanceSwitcherCoordinator {
     // Last switcher dialog instance. This is used to prevent the user from interacting with
     // multiple instances of switcher UI.
     @SuppressLint("StaticFieldLeak")
-    static InstanceSwitcherCoordinator sPrevInstance;
+    static @Nullable InstanceSwitcherCoordinator sPrevInstance;
 
     /** Type of the entries shown on the dialog. */
     @Retention(RetentionPolicy.SOURCE)
@@ -74,9 +78,9 @@ public class InstanceSwitcherCoordinator {
     private final View mDialogView;
     private final Drawable mArrowBackIcon;
 
-    private PropertyModel mDialog;
-    private InstanceInfo mItemToDelete;
-    private PropertyModel mNewWindowModel;
+    private @Nullable PropertyModel mDialog;
+    private @Nullable InstanceInfo mItemToDelete;
+    private @Nullable PropertyModel mNewWindowModel;
     private boolean mNewWindowEnabled;
 
     /**
@@ -212,6 +216,7 @@ public class InstanceSwitcherCoordinator {
 
     private void enableNewWindowCommand(boolean enabled) {
         if (mNewWindowEnabled && enabled) return;
+        assumeNonNull(mNewWindowModel);
         mNewWindowModel.set(InstanceSwitcherItemProperties.ENABLE_COMMAND, enabled);
         if (enabled) {
             mNewWindowModel.set(

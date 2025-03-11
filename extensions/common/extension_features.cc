@@ -32,6 +32,10 @@ BASE_FEATURE(kApiPermissionsHostAccessRequests,
              "ApiPermissionsHostAccessRequests",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiPrintingMarginsAndScale,
+             "ApiPrintingMarginsAndScale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiUserScriptsExecute,
              "ApiUserScriptsExecute",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -615,7 +615,11 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.BINDING_TOKEN, null);
     }
 
-    void onReset(@Nullable List<Tab> tabs) {
+    /**
+     * Loads the provided list of tabs into the dialog and returns whether the dialog started to
+     * show.
+     */
+    boolean onReset(@Nullable List<Tab> tabs) {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         if (tabs == null) {
             mCurrentTabId = Tab.INVALID_TAB_ID;
@@ -644,9 +648,11 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
             requestShowBottomSheet();
+            return true;
         } else if (isVisible()) {
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
         }
+        return false;
     }
 
     /** Destroy any members that needs clean up. */

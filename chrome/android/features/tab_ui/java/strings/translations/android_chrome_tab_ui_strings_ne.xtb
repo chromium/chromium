@@ -30,6 +30,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब}other{<ph name="TABS_COUNT_MANY" /> ट्याबहरू}}</translation>
 <translation id="1909810060368225529">सूचना: यो साझा ट्याब समूहमा गरिएका परिवर्तनहरू सबैले देख्छन्। तपाईंका साझा ट्याब समूहहरूमा सबै जना परिवर्तनहरू गर्न सक्छन्</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब बुकमार्क गर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब बुकमार्क गर्नुहोस्}}</translation>
+<translation id="2055057176188061528">ट्याब समूह चयन गर्नुहोस् वा नयाँ ट्याब समूह बनाउनुहोस्</translation>
 <translation id="2118649612461486615">स्टोरसम्बन्धी जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंको इन्कोग्निटो ट्याब उपलब्ध हुने छैन।}other{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंका # वटा इन्कोग्निटो ट्याब उपलब्ध हुने छैनन्।}}</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
@@ -64,6 +65,7 @@
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="3547352561153509682">यसो गर्नुभयो भने <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नयाँ ट्याब}other{<ph name="MANY_ADDED" /> वटा नयाँ ट्याब}}</translation>
 <translation id="3613492231657284463">निष्क्रिय ट्याबहरू देखाइने डायलग लुकाउनुहोस्</translation>
 <translation id="3619255692378312441">एक्सेस व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -71,6 +73,7 @@
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="381219490185664296">ट्याबहरू समूहबाट हटाउने हो?</translation>
 <translation id="3940195383040445971">ट्याबहरूमा मूल्य ट्र्याक गर्नुहोस्</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नयाँ ट्याब, <ph name="ANY_CLOSED" /> ट्याब बन्द गरियो}other{<ph name="MANY_ADDED" /> वटा नयाँ ट्याब, <ph name="ANY_CLOSED" /> वटा ट्याब बन्द गरिए}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ट्याब समूहबद्ध गर्नुहोस्}other{ट्याबहरू समूहबद्ध गर्नुहोस्}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब निष्क्रिय छ}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब निष्क्रिय छन्}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> खोल्नुहोस्</translation>

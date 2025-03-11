@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_iph_coordinator.h"
+#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -132,8 +133,8 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
 // Schedules the downloaded file for automatic deletion when the user hits the
 // action sheet's primary action button.
 - (void)scheduleFileForDeletion {
-  // TODO(crbug.com/390200553) Implement this function when the auto-deletion
-  // models have been created and passes in `_downloadTask`.
+  GetApplicationContext()->GetAutoDeletionService()->ScheduleFileForDeletion(
+      _downloadTask);
 }
 
 // Creates a handler that conforms to the AutoDeletionCommands protocol and

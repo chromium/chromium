@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animação do protetor de tela</translation>
 <translation id="152892567002884378">Aumentar volume</translation>
 <translation id="1539864135338521185">lápis-lazúli</translation>
+<translation id="1548555207631326346">Escolha um tema e selecione as palavras sublinhadas para personalizar suas imagens de IA.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecione "Buscar inspiração" para receber opções de imagens de IA mais exclusivas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando você cria com IA, o comando é enviado aos servidores da IA do Google para gerar imagens e melhorar o produto, sujeito à <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidade do Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA generativa é uma tecnologia experimental e está nos estágios iniciais de desenvolvimento. No momento, ela tem disponibilidade limitada.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">cor da retroiluminação</translation>
@@ -1040,7 +1049,7 @@
 <translation id="5908813850962688338">A instalação da atualização vai levar alguns minutos. Deixe o dispositivo conectado e ligado enquanto a atualização estiver sendo baixada. O dispositivo pode ser reiniciado várias vezes e mostrar uma tela preta durante o processo. Você vai receber uma solicitação para reiniciar o dispositivo e concluir a instalação.</translation>
 <translation id="5915794087373112615">O professor verá sua tela em <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="5916084858004523819">Proibido</translation>
-<translation id="5916664084637901428">Ativada</translation>
+<translation id="5916664084637901428">Ativado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os arquivos foram digitalizados e salvos em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Botão "Excluir" para o atalho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Paisagem dos sonhos</translation>
@@ -1553,6 +1562,16 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8179976553408161302">Entrar</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Use a IA do Google para impulsionar sua produtividade</translation>
+<translation id="82003371436638355">Ao selecionar para criar, escreva um comando personalizado. Você também pode selecionar "Escolher um tema" e, em seguida, as palavras sublinhadas para personalizar o plano de fundo.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecione "Buscar inspiração" para receber opções de imagens de IA mais exclusivas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando você cria seu próprio plano de fundo, o comando é enviado aos servidores do Google para gerar imagens e melhorar o produto, sujeito aos <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termos de Serviço e à Política de Privacidade do Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Não inclua informações pessoais, sensíveis ou confidenciais.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, é importante checar as respostas. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Saiba mais<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Benefícios</translation>
@@ -1574,6 +1593,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8312330582793120272">reproduzir mídia</translation>
 <translation id="8318753676953949627">Sem imagens</translation>
 <translation id="8320910311642849813">floresta</translation>
+<translation id="8322464149031882595">Clique para continuar</translation>
 <translation id="8329018942023753850">app calculadora</translation>
 <translation id="8336739000755212683">Alterar imagem da conta do dispositivo</translation>
 <translation id="8339024191194156249">Saiba mais sobre o início automático</translation>
@@ -1720,6 +1740,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8961025972867871808">pinguins</translation>
 <translation id="8968751544471797276">Taxa de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
+<translation id="8972061581514441296">Clique para voltar</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Digitalizar}=1{Digitalizar {NUMBER_OF_PAGES} página}one{Digitalizar {NUMBER_OF_PAGES} página}other{Digitalizar {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="89945434909472341">aldeia</translation>

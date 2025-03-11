@@ -8,10 +8,12 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for displaying a single recent activity row. */
+@NullMarked
 class RecentActivityListProperties {
     public static final WritableObjectPropertyKey<String> TITLE_TEXT =
             new WritableObjectPropertyKey<>();

@@ -7,6 +7,7 @@ desc: |-
   If set to "google_drive", local files are moved to Google Drive and local folders are hidden.
   If set to "microsoft_onedrive", local files are moved to OneDrive and local folders are hidden.
   If set to "read-only" or left unset: local files remain in read-only mode.
+  If set to "delete": existing local files are deleted.
 example_value: "read_only"
 features:
   can_be_recommended: false
@@ -22,6 +23,9 @@ items:
 - caption: Keep local files in read-only mode
   name: "read_only"
   value: "read_only"
+- caption: Delete existing local files  (supported since version 136)
+  name: "delete"
+  value: "delete"
 owners:
 - file://chrome/browser/ash/policy/skyvault/OWNERS
 schema:
@@ -30,6 +34,7 @@ schema:
     - "google_drive"
     - "microsoft_onedrive"
     - "read_only"
+    - "delete"
 supported_on:
 - chrome_os:132-
 tags: []

@@ -3565,8 +3565,11 @@ class raw_hash_set {
     static constexpr size_t kBackingArrayAlignment =
         BackingArrayAlignment(alignof(slot_type));
     static constexpr PolicyFunctions value = {
-        sizeof(key_type), sizeof(value_type), sizeof(slot_type),
-        alignof(slot_type), SooEnabled() ? SooCapacity() : 0,
+        static_cast<uint32_t>(sizeof(key_type)),
+        static_cast<uint32_t>(sizeof(value_type)),
+        static_cast<uint16_t>(sizeof(slot_type)),
+        static_cast<uint16_t>(alignof(slot_type)),
+        static_cast<uint8_t>(SooEnabled() ? SooCapacity() : 0),
         ShouldSampleHashtablezInfoForAlloc<CharAlloc>(),
         // TODO(b/328722020): try to type erase
         // for standard layout and alignof(Hash) <= alignof(CommonFields).

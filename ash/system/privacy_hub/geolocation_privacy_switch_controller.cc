@@ -40,9 +40,17 @@ GeolocationPrivacySwitchController* GeolocationPrivacySwitchController::Get() {
 
 void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
-  pref_change_registrar_->Add(
+  // The primary user has an exclusive control over the system geolocation
+  // setting. Return preemptively for the secondary users.
+  if (primary_user_pref_change_registrar_) {
+    return;
+  }
+
+  // At this point the `pref_service` belongs to the primary user of the
+  // seession. Subscribing to pref changes.
+  primary_user_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  primary_user_pref_change_registrar_->Init(pref_service);
+  primary_user_pref_change_registrar_->Add(
       prefs::kUserGeolocationAccessLevel,
       base::BindRepeating(
           &GeolocationPrivacySwitchController::OnPreferenceChanged,
@@ -50,7 +58,7 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
 
   // Establish the initial value for the cached_access_level_.
   cached_access_level_ = static_cast<GeolocationAccessLevel>(
-      pref_change_registrar_->prefs()->GetInteger(
+      primary_user_pref_change_registrar_->prefs()->GetInteger(
           prefs::kUserGeolocationAccessLevel));
 
   if (features::IsCrosPrivacyHubLocationEnabled()) {
@@ -62,16 +70,16 @@ void GeolocationPrivacySwitchController::OnPreferenceChanged() {
   VLOG(1) << "Privacy Hub: Geolocation switch state = "
           << static_cast<int>(AccessLevel());
   if (features::IsCrosPrivacyHubLocationEnabled()) {
-    CHECK(pref_change_registrar_);
+    CHECK(primary_user_pref_change_registrar_);
     const GeolocationAccessLevel new_access_level =
         static_cast<GeolocationAccessLevel>(
-            pref_change_registrar_->prefs()->GetInteger(
+            primary_user_pref_change_registrar_->prefs()->GetInteger(
                 prefs::kUserGeolocationAccessLevel));
 
     CHECK(cached_access_level_.has_value());
     if (new_access_level != *cached_access_level_) {
       // update the pref that tracks the previous access level.
-      pref_change_registrar_->prefs()->SetInteger(
+      primary_user_pref_change_registrar_->prefs()->SetInteger(
           prefs::kUserPreviousGeolocationAccessLevel,
           static_cast<int>(*cached_access_level_));
       cached_access_level_ = new_access_level;
@@ -79,8 +87,8 @@ void GeolocationPrivacySwitchController::OnPreferenceChanged() {
     UpdateNotification();
   } else {
     // Feature disabled means geolocation is always allowed
-    CHECK(pref_change_registrar_);
-    pref_change_registrar_->prefs()->SetInteger(
+    CHECK(primary_user_pref_change_registrar_);
+    primary_user_pref_change_registrar_->prefs()->SetInteger(
         prefs::kUserGeolocationAccessLevel,
         static_cast<int>(GeolocationAccessLevel::kAllowed));
   }
@@ -138,10 +146,10 @@ GeolocationAccessLevel GeolocationPrivacySwitchController::AccessLevel() const {
 
 GeolocationAccessLevel GeolocationPrivacySwitchController::PreviousAccessLevel()
     const {
-  CHECK(pref_change_registrar_);
+  CHECK(primary_user_pref_change_registrar_);
   const GeolocationAccessLevel previous_level =
       static_cast<GeolocationAccessLevel>(
-          pref_change_registrar_->prefs()->GetInteger(
+          primary_user_pref_change_registrar_->prefs()->GetInteger(
               prefs::kUserPreviousGeolocationAccessLevel));
   // Previous level should be distinct.
   CHECK_NE(previous_level, AccessLevel());
@@ -153,8 +161,8 @@ void GeolocationPrivacySwitchController::SetAccessLevel(
   if (!features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
-  CHECK(pref_change_registrar_);
-  pref_change_registrar_->prefs()->SetInteger(
+  CHECK(primary_user_pref_change_registrar_);
+  primary_user_pref_change_registrar_->prefs()->SetInteger(
       prefs::kUserGeolocationAccessLevel, static_cast<int>(access_level));
 }
 

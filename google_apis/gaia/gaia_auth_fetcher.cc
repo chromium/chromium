@@ -187,6 +187,9 @@ std::string GaiaSource::ToString() {
       // should not be changed as it is passed server-side.
       source_string = "ChromiumSigninManager";
       break;
+    case Type::kChromeGlic:
+      source_string = "ChromiumGlic";
+      break;
   }
 
   // All sources should start with Chromium or chromeos for better server logs.

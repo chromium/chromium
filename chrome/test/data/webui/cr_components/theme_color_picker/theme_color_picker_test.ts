@@ -372,7 +372,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals('chrome-color', checkedColors[0]!.className);
     assertEquals(checkedColors[0]!.getAttribute('aria-checked'), 'true');
     assertEquals(2, checkedColors[0]!.foregroundColor.value);
-    assertEquals(3, checkedColors[0]!.baseColor!.value);
+    assertEquals(3, checkedColors[0]!.baseColor.value);
     indexedColors = colorsElement.shadowRoot.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
     assertEquals('chrome-color', indexedColors[0]!.className);

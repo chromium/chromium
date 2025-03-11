@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -465,7 +464,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // there are inactive tabs but no regular tabs.
 - (void)testCloseAllAndUndoCloseAllWithInactiveTabs {
   [self loadTestURLsInNewTabs];
-  [self relaunchAppWithInactiveTabsEnabled];
+  [self relaunchAppWithInactiveTabsTestMode];
 
   [ChromeEarlGreyUI openTabGrid];
   GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
@@ -3224,7 +3223,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // at each step.
 - (void)testSearchHeaderWithInactiveTabs {
   [self loadTestURLsInNewTabs];
-  [self relaunchAppWithInactiveTabsEnabled];
+  [self relaunchAppWithInactiveTabsTestMode];
 
   [ChromeEarlGreyUI openTabGrid];
   GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
@@ -3780,11 +3779,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
 }
 
-// Relaunches the app with Inactive Tabs enabled.
-- (void)relaunchAppWithInactiveTabsEnabled {
+// Relaunches the app with Inactive Tabs in test mode (i.e. considers tabs as
+// inactive immediately).
+- (void)relaunchAppWithInactiveTabsTestMode {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

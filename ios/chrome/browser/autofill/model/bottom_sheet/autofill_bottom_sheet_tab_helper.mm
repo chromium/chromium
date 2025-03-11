@@ -123,6 +123,10 @@ void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
   [commands_handler_ showPlusAddressesBottomSheet];
 }
 
+void AutofillBottomSheetTabHelper::ShowSaveCardBottomSheet() {
+  [commands_handler_ showSaveCardBottomSheet];
+}
+
 void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
     std::unique_ptr<autofill::VirtualCardEnrollUiModel> model,
     autofill::VirtualCardEnrollmentCallbacks callbacks) {

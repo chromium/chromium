@@ -3689,46 +3689,64 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
        StopSyncingRemovesAccountOnlyTemplateURLs) {
   // Add local and account template urls.
   model()->Add(CreateTestTemplateURL(
-      /*keyword=*/u"abc", /*url=*/"http://abc.com", /*guid=*/"localguid"));
-  std::optional<syncer::ModelError> merge_error =
-      model()->MergeDataAndStartSyncing(
-          syncer::SEARCH_ENGINES, CreateInitialSyncData(), PassProcessor());
-  ASSERT_FALSE(merge_error.has_value());
-  ASSERT_TRUE(model()->GetTemplateURLForGUID("guid1"));
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid"));
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_THAT(model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                                initial_data, PassProcessor()),
+              Eq(std::nullopt));
+  ASSERT_TRUE(model()->GetTemplateURLForGUID("accountguid"));
   ASSERT_TRUE(model()->GetTemplateURLForGUID("localguid"));
 
+  base::HistogramTester histogram_tester;
   model()->StopSyncing(syncer::SEARCH_ENGINES);
 
   // Only account template urls should get removed.
-  EXPECT_FALSE(model()->GetTemplateURLForGUID("guid1"));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
   EXPECT_TRUE(model()->GetTemplateURLForGUID("localguid"));
+  // Logged when removing the account only turl.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.HasLocalDataDuringStopSyncing", false, 1);
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
        StopSyncingRemovesAccountData) {
   // Add local and account template urls.
   model()->Add(CreateTestTemplateURL(
-      /*keyword=*/u"abc", /*url=*/"http://abc.com", /*guid=*/"guid1",
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com", /*guid=*/"guid",
       /*last_modified=*/base::Time::FromTimeT(10)));
-  std::optional<syncer::ModelError> merge_error =
-      model()->MergeDataAndStartSyncing(
-          syncer::SEARCH_ENGINES,
-          CreateInitialSyncData(/*last_modified=*/base::Time::FromTimeT(100)),
-          PassProcessor());
-  ASSERT_FALSE(merge_error.has_value());
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"guid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_THAT(model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                                initial_data, PassProcessor()),
+              Eq(std::nullopt));
 
   // Account value wins as it has a more recent last_modified time.
-  const TemplateURL* turl = model()->GetTemplateURLForGUID("guid1");
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("guid");
   ASSERT_TRUE(turl);
-  ASSERT_EQ(turl->keyword(), u"key1");
-  ASSERT_EQ(turl->url(), "http://key1.com");
+  ASSERT_EQ(turl->keyword(), u"accountkey");
+  ASSERT_EQ(turl->url(), "http://accounturl.com");
 
+  base::HistogramTester histogram_tester;
   model()->StopSyncing(syncer::SEARCH_ENGINES);
 
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.HasLocalDataDuringStopSyncing", true, 1);
   // Only account data is removed.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid1"));
-  EXPECT_EQ(turl->keyword(), u"abc");
-  EXPECT_EQ(turl->url(), "http://abc.com");
+  EXPECT_TRUE(model()->GetTemplateURLForGUID("guid"));
+  EXPECT_EQ(turl->keyword(), u"localkey");
+  EXPECT_EQ(turl->url(), "http://localurl.com");
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
@@ -3789,6 +3807,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   ASSERT_THAT(turl->GetAccountData(),
               Optional(Property(&TemplateURLData::keyword, u"accountkey")));
 
+  base::HistogramTester histogram_tester;
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
   // The local value takes over.
@@ -3798,6 +3817,9 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
               Optional(Property(&TemplateURLData::keyword, u"localkey")));
   // The account value is removed.
   EXPECT_FALSE(turl->GetAccountData());
+  // The histogram is not logged since a local value already existed.
+  histogram_tester.ExpectTotalCount(
+      "Sync.SearchEngine.AccountDefaultSearchEngineCopiedToLocal", 0);
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
@@ -3842,6 +3864,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   ASSERT_THAT(turl->GetAccountData(),
               Optional(Property(&TemplateURLData::keyword, u"accountkey")));
 
+  base::HistogramTester histogram_tester;
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   // The default search provider has not changed.
   EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
@@ -3852,6 +3875,9 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
               Optional(Property(&TemplateURLData::keyword, u"localkey")));
   // The account value is removed.
   EXPECT_FALSE(turl->GetAccountData());
+  // The histogram is not logged since a local value already existed.
+  histogram_tester.ExpectTotalCount(
+      "Sync.SearchEngine.AccountDefaultSearchEngineCopiedToLocal", 0);
 }
 
 // Regression test for crbug.com/401189582.
@@ -3881,8 +3907,11 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   ASSERT_THAT(turl->GetAccountData(),
               Optional(Property(&TemplateURLData::keyword, u"accountkey")));
 
+  base::HistogramTester histogram_tester;
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.AccountDefaultSearchEngineCopiedToLocal", true, 1);
   // Since only the account value existed, it was copied to local to avoid any
   // unsafe behavior.
   EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"accountkey"));
@@ -4186,14 +4215,70 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
-       DualWriteUponAdd) {
+       DualWriteUponAddingLocalOnlySearchEngine) {
   model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
                                     syncer::SyncDataList{}, PassProcessor());
 
+  base::HistogramTester histogram_tester;
   // Add a template url.
-  model()->Add(CreateTestTemplateURL(
-      /*keyword=*/u"abc", /*url=*/"http://abc.com", /*guid=*/"guid"));
+  const TemplateURLData data =
+      CreateTestTemplateURL(
+          /*keyword=*/u"abc", /*url=*/"http://abc.com", /*guid=*/"guid")
+          ->data();
+  model()->Add(std::make_unique<TemplateURL>(data, std::nullopt));
 
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.AddedKeywordHasAccountData", false, 1);
+  // Both local and account values should have been populated.
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("guid");
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  EXPECT_THAT(GetKeywordsFromDatabase(),
+              Contains(Field(&TemplateURLData::sync_guid, "guid")));
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_ADD);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       DualWriteUponAddingAccountOnlySearchEngine) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  base::HistogramTester histogram_tester;
+  // Add a template url.
+  const TemplateURLData data =
+      CreateTestTemplateURL(
+          /*keyword=*/u"abc", /*url=*/"http://abc.com", /*guid=*/"guid")
+          ->data();
+  model()->Add(std::make_unique<TemplateURL>(std::nullopt, data));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.AddedKeywordHasAccountData", true, 1);
+  // Both local and account values should have been populated.
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("guid");
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->GetLocalData(), turl->GetAccountData());
+  EXPECT_THAT(GetKeywordsFromDatabase(),
+              Contains(Field(&TemplateURLData::sync_guid, "guid")));
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_ADD);
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       DualWriteUponAddingSearchEngineWithLocalAndAccountData) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  base::HistogramTester histogram_tester;
+  // Add a template url.
+  const TemplateURLData data =
+      CreateTestTemplateURL(
+          /*keyword=*/u"abc", /*url=*/"http://abc.com", /*guid=*/"guid")
+          ->data();
+  model()->Add(std::make_unique<TemplateURL>(data, data));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.AddedKeywordHasAccountData", true, 1);
   // Both local and account values should have been populated.
   const TemplateURL* turl = model()->GetTemplateURLForGUID("guid");
   ASSERT_TRUE(turl);
@@ -4694,6 +4779,74 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       Contains(AllOf(Field(&TemplateURLData::sync_guid, "guid2"),
                      Property(&TemplateURLData::keyword, u"localkey2"),
                      Field(&TemplateURLData::last_visited, null_time))));
+}
+
+TEST_F(
+    TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+    ShouldNotDualWriteUponUpdateTemplateURLVisitTimeForLocalOnlyTemplateURL) {
+  TemplateURL* turl1 = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey1", /*url=*/"http://localurl1.com",
+      /*guid=*/"guid1",
+      /*last_modified=*/base::Time::FromTimeT(100)));
+
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  const base::Time time_now = base::Time::Now();
+  ASSERT_FALSE(time_now.is_null());
+
+  // Update last_visited time for `turl1`. This should update the account value.
+  model()->UpdateTemplateURLVisitTime(turl1);
+
+  // No account data is created.
+  EXPECT_FALSE(turl1->GetAccountData());
+  EXPECT_GE(turl1->GetLocalData()->last_visited, time_now);
+  // No change is committed since only the local data was updated.
+  EXPECT_EQ(0u, processor()->change_list_size());
+  EXPECT_THAT(turl1,
+              Pointee(AllOf(Property(&TemplateURL::sync_guid, "guid1"),
+                            Property(&TemplateURL::keyword, u"localkey1"))));
+  EXPECT_THAT(GetKeywordsFromDatabase(),
+              Contains(AllOf(Field(&TemplateURLData::sync_guid, "guid1"),
+                             Property(&TemplateURLData::keyword, u"localkey1"),
+                             Field(&TemplateURLData::last_visited,
+                                   turl1->last_visited()))));
+}
+
+TEST_F(
+    TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+    ShouldNotDualWriteUponUpdateTemplateURLVisitTimeForAccountOnlyTemplateURL) {
+  // Start syncing.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey1", /*url=*/"http://accounturl1.com",
+          /*guid=*/"guid1", /*last_modified=*/base::Time::FromTimeT(10))
+          ->data()));
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  const base::Time time_now = base::Time::Now();
+  ASSERT_FALSE(time_now.is_null());
+
+  TemplateURL* turl1 = model()->GetTemplateURLForGUID("guid1");
+  ASSERT_TRUE(turl1);
+  // Update last_visited time for `turl1`. This should update the local value.
+  model()->UpdateTemplateURLVisitTime(turl1);
+
+  // No local data is created.
+  EXPECT_FALSE(turl1->GetLocalData());
+  EXPECT_GE(turl1->GetAccountData()->last_visited, time_now);
+  // Change is committed since the account data was updated.
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_THAT(turl1,
+              Pointee(AllOf(Property(&TemplateURL::sync_guid, "guid1"),
+                            Property(&TemplateURL::keyword, u"accountkey1"))));
+  // Account search engine is not added to the database.
+  EXPECT_THAT(GetKeywordsFromDatabase(), IsEmpty());
 }
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
@@ -5354,6 +5507,7 @@ TEST_F(
 TEST_F(
     TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
     ShouldOverrideDuplicateLocalIfBetter) {
+  base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(ShouldOverrideDuplicateLocalIfBetter());
 
   // Sync guid of the local keyword should be updated.
@@ -5366,6 +5520,8 @@ TEST_F(
               Optional(AllOf(
                   Field(&TemplateURLData::sync_guid, "accountguid"),
                   Property(&TemplateURLData::url, "http://accounturl.com"))));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.DuplicateIsDefaultSearchProvider", false, 1);
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   // Account keyword is removed, but the local keyword stays behind, with
@@ -5429,6 +5585,7 @@ TEST_F(
 TEST_F(
     TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
     ShouldNotOverrideDuplicateLocalIfNotBetter) {
+  base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(ShouldNotOverrideDuplicateLocalIfNotBetter());
 
   // Nothing is committed to the server.
@@ -5444,6 +5601,8 @@ TEST_F(
               Optional(AllOf(
                   Field(&TemplateURLData::sync_guid, "accountguid"),
                   Property(&TemplateURLData::url, "http://accounturl.com"))));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.DuplicateIsDefaultSearchProvider", false, 1);
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   // Account keyword is removed, but the local keyword stays behind, with
@@ -5511,6 +5670,7 @@ TEST_F(
 TEST_F(
     TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
     ShouldNotOverrideDuplicateLocalDefaultSearchProvider) {
+  base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       ShouldNotOverrideDuplicateLocalDefaultSearchProvider());
 
@@ -5525,6 +5685,8 @@ TEST_F(
                      Property(&TemplateURLData::url, "http://localurl.com"))));
   // Account data is ignored.
   EXPECT_FALSE(turl->GetAccountData());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SearchEngine.DuplicateIsDefaultSearchProvider", true, 1);
 
   model()->StopSyncing(syncer::SEARCH_ENGINES);
   // The local keyword stays behind with updated sync guid.

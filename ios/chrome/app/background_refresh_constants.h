@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// NSUserDefaults key for the last time background refresh was called.
-extern NSString* const kFeedLastBackgroundRefreshTimestamp;
-
 // The identifier used to register and schedule background app refresh tasks.
 extern NSString* const kAppBackgroundRefreshTaskIdentifier;
 

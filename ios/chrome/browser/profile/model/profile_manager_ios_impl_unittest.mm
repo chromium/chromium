@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 
 #import "base/containers/contains.h"
+#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/scoped_observation.h"
@@ -641,4 +642,67 @@ TEST_F(ProfileManagerIOSImplTest,
   profile_manager().MarkProfileForDeletion(kProfileName2);
   EXPECT_FALSE(profile_manager().CanCreateProfileWithName(kProfileName2));
   EXPECT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
+}
+
+// Tests that PurgeProfilesMarkedForDeletion(...) works correctly and delete
+// the data for the profile from the disk.
+TEST_F(ProfileManagerIOSImplTest, PurgeProfilesMarkedForDeletion) {
+  // Reserve profiles without creating them, then write data on disk and
+  // mark them for deletion. By not loading the profile we ensure that
+  // there is no risk for the test to be flaky because WKWebsiteStoage
+  // is still in use on the IO thread.
+  const std::string profile1 = profile_manager().ReserveNewProfileName();
+  const std::string profile2 = profile_manager().ReserveNewProfileName();
+  const std::string profile3 = profile_manager().ReserveNewProfileName();
+
+  ASSERT_TRUE(profile_manager().HasProfileWithName(profile1));
+  ASSERT_TRUE(profile_manager().HasProfileWithName(profile2));
+  ASSERT_TRUE(profile_manager().HasProfileWithName(profile3));
+
+  // Create fake data for the profiles (just a directory is enough for
+  // this test).
+  const base::FilePath profile1_dir = profile_data_dir().Append(profile1);
+  const base::FilePath profile2_dir = profile_data_dir().Append(profile2);
+  const base::FilePath profile3_dir = profile_data_dir().Append(profile3);
+
+  ASSERT_TRUE(base::CreateDirectory(profile1_dir));
+  ASSERT_TRUE(base::CreateDirectory(profile2_dir));
+  ASSERT_TRUE(base::CreateDirectory(profile3_dir));
+
+  // Mark some of the profiles for deletion.
+  profile_manager().MarkProfileForDeletion(profile1);
+  profile_manager().MarkProfileForDeletion(profile2);
+
+  // Check that the data has not been deleted yet.
+  EXPECT_TRUE(base::DirectoryExists(profile1_dir));
+  EXPECT_TRUE(base::DirectoryExists(profile2_dir));
+  EXPECT_TRUE(base::DirectoryExists(profile3_dir));
+
+  EXPECT_TRUE(profile_manager().IsProfileMarkedForDeletion(profile1));
+  EXPECT_TRUE(profile_manager().IsProfileMarkedForDeletion(profile2));
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile3));
+
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile1));
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile2));
+  EXPECT_TRUE(profile_manager().HasProfileWithName(profile3));
+
+  // Schedule the profile deletion and wait for the operation to complete.
+  base::RunLoop run_loop;
+  profile_manager().PurgeProfilesMarkedForDeletion(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the data has been deleted, and the profiles are no longer
+  // marked for deletion. The data should not be deleted for the profiles
+  // not marked for deletion.
+  EXPECT_FALSE(base::DirectoryExists(profile1_dir));
+  EXPECT_FALSE(base::DirectoryExists(profile2_dir));
+  EXPECT_TRUE(base::DirectoryExists(profile3_dir));
+
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile1));
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile2));
+  EXPECT_FALSE(profile_manager().IsProfileMarkedForDeletion(profile3));
+
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile1));
+  EXPECT_FALSE(profile_manager().HasProfileWithName(profile2));
+  EXPECT_TRUE(profile_manager().HasProfileWithName(profile3));
 }

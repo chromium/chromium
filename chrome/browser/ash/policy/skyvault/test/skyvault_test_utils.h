@@ -48,12 +48,12 @@ class MockMigrationNotificationManager : public MigrationNotificationManager {
 
   MOCK_METHOD(void,
               ShowMigrationInfoDialog,
-              (CloudProvider, base::Time, base::OnceClosure),
+              (MigrationDestination, base::Time, base::OnceClosure),
               (override));
 
   MOCK_METHOD(void,
               ShowConfigurationErrorNotification,
-              (CloudProvider),
+              (MigrationDestination),
               (override));
 };
 
@@ -74,7 +74,7 @@ class MockMigrationCoordinator : public MigrationCoordinator {
   // By default waits some minutes and completes the upload successfully.
   MOCK_METHOD(void,
               Run,
-              (CloudProvider,
+              (MigrationDestination,
                std::vector<base::FilePath>,
                const std::string&,
                MigrationDoneCallback),

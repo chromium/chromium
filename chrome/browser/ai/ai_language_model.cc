@@ -12,6 +12,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
@@ -69,12 +71,11 @@ PromptApiRole ConvertRole(blink::mojom::AILanguageModelPromptRole role) {
   }
 }
 
-// Construct a PromptApiPrompt containing text.
-PromptApiPrompt MakePrompt(PromptApiRole role, const std::string& content) {
-  PromptApiPrompt prompt;
-  prompt.set_role(role);
-  prompt.set_content(content);
-  return prompt;
+blink::mojom::AILanguageModelPromptPtr MakeTextPrompt(
+    blink::mojom::AILanguageModelPromptRole role,
+    const std::string& text) {
+  return blink::mojom::AILanguageModelPrompt::New(
+      role, blink::mojom::AILanguageModelPromptContent::NewText(text));
 }
 
 // Get the corresponding ml::Token for the given `role`.
@@ -130,11 +131,39 @@ MultimodalMessage EmptyMessage() {
   return MultimodalMessage((PromptApiRequest()));
 }
 
+void AddPromptToField(
+    const blink::mojom::AILanguageModelPrompt& prompt,
+    optimization_guide::RepeatedMultimodalMessageEditView view) {
+  PromptApiPrompt prompt_proto;
+  prompt_proto.set_role(ConvertRole(prompt.role));
+  auto prompt_view = view.Add(prompt_proto);
+  if (prompt.content->is_text()) {
+    prompt_view.Set(PromptApiPrompt::kTextFieldNumber,
+                    prompt.content->get_text());
+  } else if (prompt.content->is_bitmap()) {
+    prompt_view.Set(PromptApiPrompt::kMediaFieldNumber,
+                    prompt.content->get_bitmap());
+  } else if (prompt.content->is_audio()) {
+    // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
+    const on_device_model::mojom::AudioDataPtr& audio_data =
+        prompt.content->get_audio();
+    ml::AudioBuffer audio_buffer;
+    audio_buffer.sample_rate_hz = audio_data->sample_rate;
+    audio_buffer.num_channels = audio_data->channel_count;
+    audio_buffer.num_frames = audio_data->frame_count;
+    audio_buffer.data = audio_data->data;
+    prompt_view.Set(PromptApiPrompt::kMediaFieldNumber,
+                    std::move(audio_buffer));
+  } else {
+    NOTREACHED();
+  }
+}
+
 // Fill the 'view'ed Repeated<PromptApiPrompt> field with the prompts of 'item'.
 void AddPrompts(optimization_guide::RepeatedMultimodalMessageEditView view,
-                const AILanguageModel::Context::ContextItem item) {
-  for (auto prompt : item.prompts) {
-    view.Add(prompt);
+                const AILanguageModel::Context::ContextItem& item) {
+  for (const auto& prompt : item.prompts) {
+    AddPromptToField(*prompt, view);
   }
 }
 
@@ -159,8 +188,12 @@ void AddCurrentRequest(MultimodalMessage& request,
 }  // namespace
 
 AILanguageModel::Context::ContextItem::ContextItem() = default;
-AILanguageModel::Context::ContextItem::ContextItem(const ContextItem&) =
-    default;
+AILanguageModel::Context::ContextItem::ContextItem(const ContextItem& other) {
+  tokens = other.tokens;
+  for (const auto& prompt : other.prompts) {
+    prompts.emplace_back(prompt.Clone());
+  }
+}
 AILanguageModel::Context::ContextItem::ContextItem(ContextItem&&) = default;
 AILanguageModel::Context::ContextItem::~ContextItem() = default;
 
@@ -280,18 +313,31 @@ void AILanguageModel::SetInitialPrompts(
     CreateLanguageModelCallback callback) {
   Context::ContextItem item;
   if (system_prompt) {
-    *item.prompts.Add() =
-        MakePrompt(PromptApiRole::PROMPT_API_ROLE_SYSTEM, *system_prompt);
+    item.prompts.emplace_back(MakeTextPrompt(
+        blink::mojom::AILanguageModelPromptRole::kSystem, *system_prompt));
   }
-  for (const auto& prompt : initial_prompts) {
-    if (prompt->content->is_text()) {
-      *item.prompts.Add() =
-          MakePrompt(ConvertRole(prompt->role), prompt->content->get_text());
-    } else if (base::FeatureList::IsEnabled(
-                   blink::features::kAIPromptAPIMultimodalInput)) {
-      NOTIMPLEMENTED();
-    } else {
-      NOTREACHED();
+  for (auto& prompt : initial_prompts) {
+    item.prompts.emplace_back(std::move(prompt));
+  }
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  // If multimodal input is enabled, the initial prompts have to get added
+  // manually.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIMultimodalInput)) {
+    if (system_prompt) {
+      auto system_prompt_ptr = blink::mojom::AILanguageModelPrompt::New();
+      system_prompt_ptr->role =
+          blink::mojom::AILanguageModelPromptRole::kSystem;
+      system_prompt_ptr->content =
+          blink::mojom::AILanguageModelPromptContent::NewText(*system_prompt);
+      initial_prompts.insert(initial_prompts.begin(),
+                             std::move(system_prompt_ptr));
+    }
+    if (!initial_prompts.empty()) {
+      auto append_options = on_device_model::mojom::AppendOptions::New();
+      append_options->input = BuildOnDeviceModelInput(initial_prompts);
+      append_options->max_tokens = context_->max_tokens();
+      session_->GetSession().Append(std::move(append_options), {});
     }
   }
   MultimodalMessage request = MakeInitialPrompt(item);
@@ -386,8 +432,9 @@ void AILanguageModel::ModelExecutionCallback(
     if (token_count) {
       Context::ContextItem copy = item;
       copy.tokens = token_count;
-      copy.prompts.Add(MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT,
-                                  current_response_));
+      copy.prompts.emplace_back(
+          MakeTextPrompt(blink::mojom::AILanguageModelPromptRole::kAssistant,
+                         current_response_));
       if (context_->AddContextItem(std::move(copy)) ==
           Context::SpaceReservationResult::kSpaceMadeAvailable) {
         responder->OnContextOverflow();
@@ -547,20 +594,6 @@ void AILanguageModel::Prompt(
                                     std::move(response_remote));
     return;
   }
-  if (prompts.size() != 1) {
-    mojo::ReportBadMessage("Number of prompts must be 1.");
-    return;
-  }
-  if (!prompts[0]->content->is_text()) {
-    mojo::ReportBadMessage("Unsupported prompt content type.");
-    return;
-  }
-  if (prompts[0]->role != blink::mojom::AILanguageModelPromptRole::kUser) {
-    mojo::ReportBadMessage("Unsupported prompt role.");
-    return;
-  }
-
-  const std::string& input_text = prompts[0]->content->get_text();
 
   // Clear the response from the previous execution.
   current_response_ = "";
@@ -568,8 +601,7 @@ void AILanguageModel::Prompt(
       responder_set_.Add(std::move(pending_responder));
 
   Context::ContextItem item;
-  *item.prompts.Add() =
-      MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input_text);
+  item.prompts = std::move(prompts);
 
   MultimodalMessage request = EmptyMessage();
   AddCurrentRequest(request, item);
@@ -607,12 +639,19 @@ void AILanguageModel::Fork(
   const optimization_guide::SamplingParams sampling_param =
       session_->GetSamplingParams();
 
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      override_session;
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIMultimodalInput)) {
+    override_session = session_->Clone();
+  }
   ai_manager_->CreateLanguageModelForCloning(
       base::PassKey<AILanguageModel>(),
       blink::mojom::AILanguageModelSamplingParams::New(
           sampling_param.top_k, sampling_param.temperature),
       context_bound_object_set_.get(), GetExpectedInputLanguagesCopy(),
-      *context_, std::move(client_remote));
+      *context_, std::move(client_remote), std::move(override_session));
 }
 
 void AILanguageModel::Destroy() {
@@ -644,12 +683,15 @@ void AILanguageModel::CountPromptTokens(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
         client) {
-  PromptApiRequest request;
-  *request.add_current_prompts() =
-      MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
+  Context::ContextItem item;
+  item.prompts.emplace_back(
+      MakeTextPrompt(blink::mojom::AILanguageModelPromptRole::kUser, input));
+
+  MultimodalMessage request = EmptyMessage();
+  AddCurrentRequest(request, item);
 
   session_->GetExecutionInputSizeInTokens(
-      MultimodalMessageReadView(request),
+      request.read(),
       base::BindOnce(
           [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
                  client_remote,

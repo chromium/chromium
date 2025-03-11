@@ -120,14 +120,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Switch to different webcontents"/>
 </enum>
 
-<enum name="ParcelRequestStatus">
-  <summary>Request status from parcel tracking server</summary>
-  <int value="0" label="Request succeeded"/>
-  <int value="1" label="Invalid parcel identifiers"/>
-  <int value="2" label="Server error"/>
-  <int value="3" label="Error parsing server response"/>
-</enum>
-
 <enum name="PriceInsightsIconLabelType">
   <int value="0" label="No label"/>
   <int value="1" label="Price is low"/>

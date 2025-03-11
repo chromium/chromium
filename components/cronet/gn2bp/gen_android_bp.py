@@ -26,6 +26,7 @@
 # libraries are also mapped to their Android equivalents -- see |builtin_deps|.
 
 import argparse
+import enum
 import json
 import logging as log
 import operator
@@ -36,6 +37,7 @@ import copy
 from typing import List, Dict, Set, Union
 from pathlib import Path
 import hashlib
+import shlex
 
 import gn_utils
 import targets as gn2bp_targets
@@ -58,7 +60,6 @@ EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
 # All module names are prefixed with this string to avoid collisions.
 module_prefix = 'cronet_aml_'
 
-REMOVE_GEN_JNI_JARJAR_RULES_FILE = ":remove_gen_jni_jarjar_rules"
 # Shared libraries which are directly translated to Android system equivalents.
 shared_library_allowlist = [
     'android',
@@ -153,18 +154,20 @@ def get_linker_script_ldflag(script_path):
 
 # Additional arguments to apply to Android.bp rules.
 additional_args = {
-    'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen_headers':
-    [('export_include_dirs', {
-        "net/third_party/quiche/src",
-    })],
+    'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen_headers': [
+        ('export_include_dirs', {
+            "net/third_party/quiche/src",
+        })
+    ],
     'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers':
     [('export_include_dirs', {
         "net/third_party/quiche/src",
     })],
-    'cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers':
-    [('export_include_dirs', {
-        "third_party/quic_trace/src",
-    })],
+    'cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers': [
+        ('export_include_dirs', {
+            "third_party/quic_trace/src",
+        })
+    ],
     # TODO: fix upstream. Both //base:base and
     # //base/allocator/partition_allocator:partition_alloc do not create a
     # dependency on gtest despite using gtest_prod.h.
@@ -182,19 +185,21 @@ additional_args = {
         }),
     ],
     # TODO(b/309920629): Remove once upstreamed.
-    'cronet_aml_components_cronet_android_cronet_api_java': [
+    'cronet_aml_components_cronet_android_cronet_api_java__compile_java': [
         ('srcs', {
             'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
             'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
         }),
     ],
-    'cronet_aml_components_cronet_android_cronet_api_java__testing': [
+    'cronet_aml_components_cronet_android_cronet_api_java__compile_java__testing':
+    [
         ('srcs', {
             'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
             'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
         }),
     ],
-    'cronet_aml_components_cronet_android_cronet_javatests__testing': [
+    'cronet_aml_components_cronet_android_cronet_javatests__compile_java__testing':
+    [
         # Needed to @SkipPresubmit annotations
         ('static_libs', {
             'net-tests-utils',
@@ -219,11 +224,9 @@ additional_args = {
     'cronet_aml_third_party_netty_tcnative_netty_tcnative_so__testing': [
         ('cflags', {"-Wno-error=pointer-bool-conversion"})
     ],
-    'cronet_aml_third_party_apache_portable_runtime_apr__testing': [
-        ('cflags', {
-            "-Wno-incompatible-pointer-types-discards-qualifiers",
-        })
-    ],
+    'cronet_aml_third_party_apache_portable_runtime_apr__testing': [('cflags', {
+        "-Wno-incompatible-pointer-types-discards-qualifiers",
+    })],
     # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
     # include_dir from the public_configs
     # We had to add the export_include_dirs for each target because soong generates each header
@@ -290,6 +293,37 @@ _RUST_FLAGS_TO_REMOVE = [
     "@",  # Used by build_script outputs to have rustc load flags from a file.
     "-Z",  # Those are unstable features, completely remove those.
 ]
+
+
+class JniZeroTargetType(enum.Enum):
+  GENERATOR = enum.auto()
+  REGISTRATION_GENERATOR = enum.auto()
+
+
+def get_jni_zero_target_type(target):
+  if target.script != '//third_party/jni_zero/jni_zero.py':
+    return None
+  if target.args[0] == 'generate-final':
+    return JniZeroTargetType.REGISTRATION_GENERATOR
+  return JniZeroTargetType.GENERATOR
+
+
+# Given a jni_zero generator module, returns the path to the generated proxy
+# and placeholders srcjars.
+def get_jni_zero_generator_proxy_and_placeholder_paths(module):
+  assert module.jni_zero_target_type == JniZeroTargetType.GENERATOR
+
+  def is_placeholder(path):
+    return path.endswith('_placeholder.srcjar')
+
+  placeholder_paths = [out for out in module.out if is_placeholder(out)]
+  assert len(placeholder_paths) == 1, module.name
+  proxy_paths = [
+      out for out in module.out
+      if out.endswith('.srcjar') and not is_placeholder(out)
+  ]
+  assert len(proxy_paths) == 1, module.name
+  return proxy_paths[0], placeholder_paths[0]
 
 
 def always_disable(module, arch):
@@ -524,8 +558,19 @@ root_modules_visibility = {
 # End of configuration.
 # ----------------------------------------------------------------------------
 
-def write_blueprint_key_value(output, name, value, sort=True):
-  """Writes a Blueprint key-value pair to the output"""
+
+def write_blueprint_key_value(output,
+                              name,
+                              value,
+                              sort=True,
+                              list_to_multiline_string=False):
+  """Writes a Blueprint key-value pair to the output.
+
+  If list_to_multiline_string is set, and the value is a list, then the output
+  value will be the list elements concatenated into a single Blueprint string,
+  formatted such that each list element appears on its own line. This is a
+  purely cosmetic feature to make the Blueprint file more readable.
+  """
 
   if isinstance(value, bool):
     if value:
@@ -537,7 +582,7 @@ def write_blueprint_key_value(output, name, value, sort=True):
     return
   if isinstance(value, set):
     value = sorted(value)
-  if isinstance(value, list):
+  if isinstance(value, list) and not list_to_multiline_string:
     output.append('    %s: [' % name)
     for item in sorted(value) if sort else value:
       output.append('        "%s",' % item)
@@ -556,7 +601,12 @@ def write_blueprint_key_value(output, name, value, sort=True):
       output.append('    %s' % line)
     output.append('    },')
     return
-  output.append('    %s: "%s",' % (name, value))
+  output.append(
+      '    %s: "%s",' %
+      (name,
+       NEWLINE.join(
+           str(line).replace('\\', '\\\\').replace('"', '\\"')
+           for line in (value if isinstance(value, list) else [value]))))
 
 
 class Module(object):
@@ -617,9 +667,18 @@ class Module(object):
           output.append('    %s' % line)
         output.append('    },')
 
-    def _output_field(self, output, name, sort=True):
+    def _output_field(self,
+                      output,
+                      name,
+                      sort=True,
+                      list_to_multiline_string=False):
       value = getattr(self, name)
-      return write_blueprint_key_value(output, name, value, sort)
+      return write_blueprint_key_value(
+          output,
+          name,
+          value,
+          sort=sort,
+          list_to_multiline_string=list_to_multiline_string)
 
   def __init__(self, mod_type, name, gn_target):
     self.type = mod_type
@@ -712,6 +771,7 @@ class Module(object):
     self.bindgen_flags = set()
     self.handle_static_inline = None
     self.static_inline_library = ""
+    self.jni_zero_target_type = None
 
   def to_string(self, output):
     if self.comment:
@@ -723,7 +783,7 @@ class Module(object):
     self._output_field(output, 'static_libs')
     self._output_field(output, 'whole_static_libs')
     self._output_field(output, 'tools')
-    self._output_field(output, 'cmd', sort=False)
+    self._output_field(output, 'cmd', sort=False, list_to_multiline_string=True)
     if self.host_supported:
       self._output_field(output, 'host_supported')
     if not self.host_cross_supported:
@@ -820,9 +880,18 @@ class Module(object):
       ])
     return False
 
-  def _output_field(self, output, name, sort=True):
+  def _output_field(self,
+                    output,
+                    name,
+                    sort=True,
+                    list_to_multiline_string=False):
     value = getattr(self, name)
-    return write_blueprint_key_value(output, name, value, sort)
+    return write_blueprint_key_value(
+        output,
+        name,
+        value,
+        sort=sort,
+        list_to_multiline_string=list_to_multiline_string)
 
   def is_compiled(self):
     return self.type not in ('cc_genrule', 'filegroup', 'java_genrule')
@@ -1133,7 +1202,7 @@ def create_proto_modules(blueprint, gn, target):
     cmd += absolute_sources
 
     descriptor_module = Module('cc_genrule', target_module_name, target.name)
-    descriptor_module.cmd = ' '.join(cmd)
+    descriptor_module.cmd = cmd
     descriptor_module.out = [out]
     descriptor_module.tools = tools
     blueprint.add_module(descriptor_module)
@@ -1184,7 +1253,7 @@ def create_proto_modules(blueprint, gn, target):
     raise Exception('Unsupported proto plugin: %s' % target.proto_plugin)
 
   cmd += absolute_sources
-  source_module.cmd = ' '.join(cmd)
+  source_module.cmd = cmd
   header_module.cmd = source_module.cmd
   source_module.tools = tools
   header_module.tools = tools
@@ -1247,10 +1316,10 @@ def create_gcc_preprocess_modules(blueprint, target):
   module = Module('genrule', bp_module_name, target.name)
   module.srcs.add(':' + preprocess_module.name)
   module.out.add(stem + '.srcjar')
-  module.cmd = NEWLINE.join([
+  module.cmd = [
       f'cp $(in) $(genDir)/{stem}.java &&',
       f'$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/{stem}.java'
-  ])
+  ]
   module.tools.add('soong_zip')
   blueprint.add_module(module)
   return module
@@ -1277,10 +1346,8 @@ class BaseActionSanitizer():
 
   def _normalize_args(self):
     # Convert ['--param=value'] to ['--param', 'value'] for consistency.
-    # Escape quotations.
     normalized_args = []
     for arg in self.target.args:
-      arg = arg.replace('"', r'\"')
       if arg.startswith('-'):
         normalized_args.extend(arg.split('='))
       else:
@@ -1393,20 +1460,27 @@ class BaseActionSanitizer():
     # Sort the list to make the output deterministic.
     for out_dir in sorted(set(out_dirs)):
       pre_cmd.append("mkdir -p $(genDir)/{} && ".format(out_dir))
-    return NEWLINE.join(pre_cmd)
+    return pre_cmd
 
   def get_base_cmd(self):
-    arg_string = NEWLINE.join(self.target.args)
-    cmd = '$(location %s) %s' % (gn_utils.label_to_path(
-        self.target.script), arg_string)
-
-    if self.use_response_file:
-      # Pipe response file contents into script
-      cmd = 'echo \'%s\' |%s%s' % (self.target.response_file_contents, NEWLINE,
-                                   cmd)
-    return cmd
+    # TODO: most sanitizer logic does not really handle "$" characters very
+    # well, and will likely do the wrong thing if the GN target contains args
+    # with literal "$" characters in them. Also, if a sanitizer deliberately
+    # shoves a $() macro in an arg, we still run that through shell quoting,
+    # which does preserve the "$" but that's mostly luck. We should design
+    # a better mechanism for handling "$" and $() macros.
+    return (([f"echo {shlex.quote(self.target.response_file_contents)} |"]
+             if self.target.response_file_contents else []) +
+            [f"$(location {gn_utils.label_to_path(self.target.script)})"] +
+            [shlex.quote(arg) for arg in self.target.args])
 
   def get_cmd(self):
+    # Note: don't be confused by the return type. This function returns a list,
+    # but the list is *NOT* an argv array, it's a list of lines for Blueprint
+    # file formatting for cosmetic purposes. The actual command is the list
+    # elements concatenated together into a single string, which is ultimately
+    # fed as a shell command at build time. This means what we are returning
+    # here is expected to have been properly shell-escaped beforehand.
     return self.get_pre_cmd() + self.get_base_cmd()
 
   def get_outputs(self):
@@ -1439,6 +1513,9 @@ class BaseActionSanitizer():
         if not is_supported_source_file(file) and not file.startswith("//out/")
     }
     tool_files.add(gn_utils.label_to_path(self.target.script))
+    # Make sure there is no duplication between `srcs` and `tool_files` - Soong
+    # fails with a "multiple locations for label" error otherwise.
+    tool_files -= self.get_srcs()
     return tool_files
 
   def _sanitize_args(self):
@@ -1518,7 +1595,7 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
 
   def get_cmd(self):
     # Remove the script and use the binary right away
-    return self.get_pre_cmd() + NEWLINE.join(self.target.args)
+    return self.get_pre_cmd() + [shlex.quote(arg) for arg in self.target.args]
 
 
 class JniGeneratorSanitizer(BaseActionSanitizer):
@@ -1568,10 +1645,6 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
   def get_outputs(self):
     outputs = set()
     for out in super().get_outputs():
-      # placeholder.srcjar contains empty placeholder classes used to compile generated java files
-      # without any other deps. This is not used in aosp.
-      if out.endswith("_placeholder.srcjar"):
-        continue
       # fix target.output directory to match #include statements.
       outputs.add(re.sub('^jni_headers/', '', out))
     return outputs
@@ -1673,19 +1746,22 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
   def get_cmd(self):
-    # jni_registration_generator.py doesn't work with python2
-    cmd = "python3 " + super().get_base_cmd()
+    base_cmd = super().get_base_cmd()
     # Path in the original sources file does not work in genrule.
     # So creating sources file in cmd based on the srcs of this target.
     # Adding ../$(current_dir)/ to the head because jni_registration_generator.py uses the files
     # whose path startswith(..)
-    commands = [
-        "current_dir=`basename \\\`pwd\\\``;", "for f in $(in);", "do",
-        "echo \\\"../$$current_dir/$$f\\\" >> $(genDir)/java.sources;", "done;",
-        cmd
-    ]
+    base_cmd = ([
+        "current_dir=`basename \\`pwd\\``;",
+        "for f in $(in);",
+        "do",
+        "echo \"../$$current_dir/$$f\" >> $(genDir)/java.sources;",
+        "done;",
+    ] +
+                # jni_registration_generator.py doesn't work with python2
+                [f"python3 {base_cmd[0]}"] + base_cmd[1:])
 
-    return self.get_pre_cmd() + NEWLINE.join(commands)
+    return self.get_pre_cmd() + base_cmd
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
@@ -1716,11 +1792,7 @@ class VersionSanitizer(BaseActionSanitizer):
     # args for the version.py contain file path without leading --arg key. So apply sanitize
     # function for all the args.
     self._update_all_args(self._sanitize_filepath_with_location_tag)
-    self._update_list_arg('-e', self._sanitize_eval)
     super()._sanitize_args()
-
-  def _sanitize_eval(self, eval_arg):
-    return "'%s'" % eval_arg.replace("\'", "\\\"")
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
@@ -1798,6 +1870,38 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
     return tools
 
 
+class FilterZipSanitizer(BaseActionSanitizer):
+
+  def _get_src(self):
+    # Get the "filter prebuilt jar" case out of the way first.
+    jar_path = self.target.jar_path
+    if jar_path:
+      return jar_path
+
+    # We assume we only have one dep, which is the target generating the zip we
+    # want to filter. This always holds currently, as the only filter_zip
+    # actions we process are the bespoke ones generated by parse_gn_desc() which
+    # only ever outputs a single dependency for those.
+    deps = self.get_deps()
+    assert len(deps) == 1, f"{self.target.name} -> {deps}"
+    return f":{label_to_module_name(list(deps)[0])}"
+
+  def _sanitize_args(self):
+    super()._sanitize_args()
+    self._set_value_arg("--input", "$(in)")
+    self._set_value_arg("--output", "$(out)")
+
+    # TODO: we shouldn't have to do this here - it should be done automatically.
+    def escape(s):
+      return s.replace('$', '$$')
+
+    self._update_value_arg('--exclude-globs', escape)
+    self._update_value_arg('--include-globs', escape)
+
+  def get_srcs(self):
+    return {self._get_src()}
+
+
 def get_action_sanitizer(gn, target, type, arch, is_test_target):
   if target.script == "//build/write_buildflag_header.py" or target.script == "//base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py":
     # PartitionAlloc has forked the same write_buildflag_header.py script from
@@ -1821,8 +1925,10 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
     return GnRunBinarySanitizer(target, arch)
   elif target.script == '//build/protoc_java.py':
     return ProtocJavaSanitizer(target, arch, gn)
-  elif target.script == '//third_party/jni_zero/jni_zero.py':
-    if target.args[0] == 'generate-final':
+  elif target.script == '//build/android/gyp/filter_zip.py':
+    return FilterZipSanitizer(target, arch)
+  elif jni_zero_target_type := get_jni_zero_target_type(target):
+    if jni_zero_target_type == JniZeroTargetType.REGISTRATION_GENERATOR:
       if type == 'java_genrule':
         # Fill up the sources of the target for JniRegistrationGenerator
         # actions with all the java sources found under targets of type
@@ -1865,14 +1971,19 @@ def create_action_foreach_modules(blueprint, gn, target, is_test_target):
   "gen/net/base/registry_controlled_domains/{{source_name_part}}-reversed-inc.cc"
   So each source file will generate an output whose name is the {source_name-reversed-inc.cc}
   """
-  new_args = []
-  for i, src in enumerate(sorted(target.sources)):
-    # don't add script arg for the first source -- create_action_module
-    # already does this.
-    if i != 0:
-      new_args.append('&&')
-      new_args.append('python3 $(location %s)' %
-                      gn_utils.label_to_path(target.script))
+
+  # We create one genrule per individual source, with numbered names (e.g.
+  # "foo_0", "foo_1", etc.).
+  # Note: currently we return the collection of the resulting genrules, instead
+  # of a single module. Arguably this is a bit cumbersome. We could centralize
+  # the outputs into a single "cp everything" genrule so that dependent modules
+  # only have to depend on a single module.
+
+  def create_subtarget(i, src):
+    subtarget = copy.deepcopy(target)
+    subtarget.name += f"_{i}"
+    subtarget.sources = {src}
+    new_args = []
     for arg in target.args:
       if '{{source}}' in arg:
         new_args.append('$(location %s)' % (gn_utils.label_to_path(src)))
@@ -1887,16 +1998,22 @@ def create_action_foreach_modules(blueprint, gn, target, is_test_target):
         for out in target.outputs:
           if out.endswith(file_name):
             new_args.append('$(location %s)' % out)
+            subtarget.outputs = {out}
 
         for file in (target.sources | target.inputs):
           if file.endswith(file_name):
             new_args.append('$(location %s)' % gn_utils.label_to_path(file))
       else:
         new_args.append(arg)
+    subtarget.args = new_args
+    return subtarget
 
-  target.args = new_args
-  return create_action_module(blueprint, gn, target, 'cc_genrule',
-                              is_test_target)
+  return [
+      create_action_module(blueprint, gn, create_subtarget(i, src),
+                           'cc_genrule', is_test_target)
+      for i, src in enumerate(sorted(target.sources))
+  ]
+
 
 
 def create_action_module_internal(gn,
@@ -1949,10 +2066,10 @@ def merge_cmd(modules, genrule_type):
   :param genrule_type: cc_genrule or java_genrule
   :return: merged command or common command if all the archs have the same command.
   '''
-  commands = list({module.cmd for module in modules.values()})
+  commands = list({"\n".join(module.cmd) for module in modules.values()})
   if len(commands) == 1:
     # If all the archs have the same command, return the command
-    return commands[0]
+    return list(modules.values())[0].cmd
 
   if genrule_type != 'cc_genrule':
     raise Exception(f'{genrule_type} can not have different cmd between archs')
@@ -1961,9 +2078,9 @@ def merge_cmd(modules, genrule_type):
   for arch, module in sorted(modules.items()):
     merged_cmd.append(f'if [[ {get_cmd_condition(arch)} ]];')
     merged_cmd.append('then')
-    merged_cmd.append(module.cmd + ';')
-    merged_cmd.append('fi;')
-  return NEWLINE.join(merged_cmd)
+    merged_cmd.extend(module.cmd)
+    merged_cmd.append(';fi;')
+  return merged_cmd
 
 def merge_modules(modules, genrule_type):
   '''
@@ -1984,6 +2101,17 @@ def merge_modules(modules, genrule_type):
 
   merged_module.cmd = merge_cmd(modules, genrule_type)
   return merged_module
+
+
+def create_java_module(type, bp_module_name, target, is_test_target):
+  module = Module(type, bp_module_name, target.name)
+  module.min_sdk_version = _MIN_SDK_VERSION
+  module.apex_available = [tethering_apex]
+  if is_test_target:
+    module.sdk_version = target.sdk_version
+  else:
+    module.defaults.add(java_framework_defaults_module)
+  return module
 
 
 def get_bindgen_source_stem(outputs: List[str]) -> str:
@@ -2127,6 +2255,32 @@ def create_action_module(blueprint, gn, target, genrule_type, is_test_target):
   return module
 
 
+def create_jni_zero_proxy_only_module(jni_zero_generator_module):
+  '''
+  Creates a module that filters the output of an existing jni_zero generator
+  action module, outputting the proxy classes only, leaving out the placeholder
+  classes.
+
+  This is used to work around a Soong limitation where it's not possible to
+  refer to specific files from the output of a genrule. Instead, we create an
+  additional trivial genrule that merely copies a specific subset of the
+  original output files. We can then depend on these genrules to pull the files
+  we want.
+  '''
+  assert jni_zero_generator_module.jni_zero_target_type == JniZeroTargetType.GENERATOR
+  proxy_path, _ = get_jni_zero_generator_proxy_and_placeholder_paths(
+      jni_zero_generator_module)
+
+  proxy_only_module = Module(jni_zero_generator_module.type,
+                             f"{jni_zero_generator_module.name}_proxy_only",
+                             jni_zero_generator_module.gn_target)
+  proxy_only_module.cmd = "cp $(in) $(genDir)"
+  proxy_only_module.srcs = [f":{jni_zero_generator_module.name}"]
+  proxy_only_module.out = [os.path.basename(proxy_path)]
+
+  return proxy_only_module
+
+
 def _get_cflags(cflags, defines):
   cflags = {flag for flag in cflags if flag in cflag_allowlist}
   # Consider proper allowlist or denylist if needed
@@ -2256,16 +2410,18 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   elif target.type == "rust_bindgen":
     modules = (create_bindgen_module(blueprint, target, bp_module_name), )
   elif target.type == 'action':
-    modules = (create_action_module(
+    module = create_action_module(
         blueprint, gn, target,
         'java_genrule' if parent_gn_type == "java_library" else 'cc_genrule',
-        is_test_target), )
+        is_test_target)
+    module.jni_zero_target_type = get_jni_zero_target_type(target)
+    modules = (module, )
   elif target.type == 'action_foreach':
     if target.script == "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py":
       modules = create_rust_cxx_modules(blueprint, target)
     else:
-      modules = (create_action_foreach_modules(blueprint, gn, target,
-                                               is_test_target), )
+      modules = create_action_foreach_modules(blueprint, gn, target,
+                                              is_test_target)
   elif target.type == 'copy':
     # TODO: careful now! copy targets are not supported yet, but this will stop
     # traversing the dependency tree. For //base:base, this is not a big
@@ -2273,24 +2429,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     # leaf node.
     return ()
   elif target.type == 'java_library':
+    module = create_java_module(
+        'java_import' if target.jar_path else 'java_library', bp_module_name,
+        target, is_test_target)
     if target.jar_path:
-      module = Module('java_import', bp_module_name, gn_target_name)
       module.jars.add(target.jar_path)
-    else:
-      module = Module('java_library', bp_module_name, gn_target_name)
-      # Don't remove GEN_JNI from those modules as they have the real GEN_JNI that we want to include
-      if gn_target_name not in [
-          '//components/cronet/android:cronet_jni_registration_java',
-          '//components/cronet/android:cronet_jni_registration_java__testing',
-          '//components/cronet/android:cronet_tests_jni_registration_java__testing'
-      ]:
-        module.jarjar_rules = REMOVE_GEN_JNI_JARJAR_RULES_FILE
-    module.min_sdk_version = _MIN_SDK_VERSION
-    module.apex_available = [tethering_apex]
-    if is_test_target:
-      module.sdk_version = target.sdk_version
-    else:
-      module.defaults.add(java_framework_defaults_module)
     modules = (module, )
   else:
     # Note we don't have to handle `group` targets because parse_gn_desc() never
@@ -2401,31 +2544,29 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     if module.type == 'cc_library_static':
       module.export_generated_headers = module.generated_headers
 
-    if module.name in [
-        'cronet_aml_components_cronet_android_cronet',
-        'cronet_aml_components_cronet_android_cronet' + gn_utils.TESTING_SUFFIX
-    ]:
-      if target.output_name is None:
-        raise Exception('Failed to get output_name for libcronet name')
-      # .so file name needs to match with CronetLibraryLoader.java (e.g. libcronet.109.0.5386.0.so)
-      # So setting the output name based on the output_name from the desc.json
-      module.stem = 'libmainline' + target.output_name
-    elif module.is_test() and module.type == 'cc_library_shared':
-      if target.output_name:
-        # If we have an output name already declared, use it.
-        module.stem = 'lib' + target.output_name
+    if module.type == 'cc_library_shared':
+      output_name = target.output_name
+      if output_name is None:
+        module.stem = 'lib' + target.get_target_name().removesuffix(
+            gn_utils.TESTING_SUFFIX)
+      elif output_name.startswith("cronet."):
+        # The AOSP version of CronetLibraryLoader looks for the libcronet so
+        # with an extra suffix. Make sure the shared library name matches what
+        # the loader expects.
+        module.stem = 'libmainline' + output_name
       else:
-        # Tests output should be a shared library in the format of 'lib[module_name]'
-        module.stem = 'lib' + target.get_target_name()[:target.get_target_name(
-        ).find(gn_utils.TESTING_SUFFIX)]
+        module.stem = 'lib' + output_name
 
     # dep_name is an unmangled GN target name (e.g. //foo:bar(toolchain)).
-    all_deps = [(dep_name, 'common') for dep_name in target.proto_deps]
+    # The boolean stands for build only.
+    all_deps = [(dep_name, 'common', False) for dep_name in target.proto_deps]
     for arch_name, arch in target.arch.items():
-      all_deps += [(dep_name, arch_name) for dep_name in arch.deps]
+      all_deps += [(dep_name, arch_name, False) for dep_name in arch.deps]
+    all_deps += [(dep_name, 'common', True)
+                 for dep_name in target.build_only_deps]
 
     # Sort deps before iteration to make result deterministic.
-    for (dep_name, arch_name) in sorted(all_deps):
+    for (dep_name, arch_name, build_only) in sorted(all_deps):
       module_target = module.target[
           arch_name] if arch_name != 'common' else module
       # |builtin_deps| override GN deps with Android-specific ones. See the
@@ -2544,9 +2685,94 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             # This is needed to go around the case where `url` component depends
             # on `url_java`.
             # TODO(aymanm): Remove the if condition once crrev/4902547 has been imported downstream
-            module_target.static_libs.add(dep_module.name)
+            if build_only:
+              # "Build only" means we only want to use this dependency on the
+              # build classpath; we don't want to include it in the final build
+              # output. (Typically, this is because there may be "placeholder"
+              # classes that we want to swap for their real counterparts in a
+              # separate part of the build tree. For example: jni_zero
+              # placeholders.)
+              #
+              # In Soong this can be done by using `libs` instead of
+              # `static_libs`. However, in contrast to `static_libs`, `libs`
+              # also has the side effect of stopping the dependency from
+              # "bubbling up" the build tree (in other words, dependents will
+              # not automatically get the dependency). This side effect is
+              # undesirable for us, so we undo it by recursing into the
+              # dependency's own `libs` and bubbling up the dependencies
+              # ourselves.
+              #
+              # (You may wonder: "wait, doesn't Chromium already enforce that
+              # a Java target list all the classes it refers to in its direct
+              # dependencies? Why do we need to pull indirect dependencies
+              # then?" Well the problem is that enforcement has gaps - e.g.
+              # http://crbug.com/400952169. Until Chromium enforces this rule
+              # properly, we have to assume a Java GN target can directly
+              # refer to any class in its transitive closure of dependencies.)
+              #
+              # For more background, see https://crbug.com/397396295.
+              #
+              # Note this current code only works for chains of build only
+              # dependencies. We don't recurse into `static_libs` dependencies.
+              # In other words, if a module has a `static_libs` dependency on
+              # another module which has build-only dependencies, we do not
+              # bubble up these build-only dependencies across the `static_libs`
+              # boundary. This is intentional, as it prevents
+              # `_java__compile_java` modules from potentially bubbling up
+              # through `_java` root targets (which would be bad, as we don't
+              # want to bubble up pre-`__process_device` unfiltered jars).
+              module_target.libs.add(dep_module.name)
+              module_target.libs.update(dep_module.libs)
+            else:
+              module_target.static_libs.add(dep_module.name)
+        elif dep_module.type == 'java_genrule' and any(
+            out.endswith('.jar') for out in dep_module.out):
+          # If a java_genrule is generating a jar (e.g. the jar filtering
+          # done by __process_device modules), it needs to be added to
+          # static_libs, not srcs.
+          module_target.static_libs.add(dep_module.name)
         elif dep_module.type in ['genrule', 'java_genrule']:
-          module_target.srcs.add(":" + dep_module.name)
+          if target.unfiltered_java_target is not target:
+            # This is a root java_library module that has a `__compile_java`
+            # module under it. `dep_module` is some Java source code generator
+            # (e.g. protoc, jni_zero, etc.). Generated Java source files must
+            # only be fed to the __compile_java module, not the root module, so
+            # drop the dependency from the root module.
+            # TODO: it is awkward that we have to special case this here. Come
+            # up with a cleaner way of handling this case.
+            pass
+          elif dep_module.jni_zero_target_type == JniZeroTargetType.GENERATOR:
+            # TODO: we are special-casing jni_zero here. Ideally this should be
+            # handled more generically, by making gn2bp understand the general
+            # concept of a target depending on only a subset of the outputs of
+            # an action.
+            proxy_path, placeholder_path = get_jni_zero_generator_proxy_and_placeholder_paths(
+                dep_module)
+            assert proxy_path in target.inputs, f"{target.name} depends on {dep_name} but does not mention jni_zero proxy classes {proxy_path} as input"
+            if placeholder_path in target.inputs:
+              # The target depends on both jni_zero generator outputs (proxy and
+              # placeholder). We can simply pull both of them at the same time
+              # by depending on the jni_zero generator module directly. In
+              # practice this branch is taken when a standalone jni_zero library
+              # is being built separately from the JNI user code, such as the
+              # java_library generated by jni_zero's generate_jni() GN rule. One
+              # example is //base:command_line_jni_java.
+              module_target.srcs.add(":" + dep_module.name)
+            else:
+              # The target only depends on the generated proxy classes but not
+              # the placeholder classes. Typically this happens when the
+              # proxy classes are being compiled alongside the JNI user code: in
+              # this case there is no need for the placeholder classes since the
+              # user code provides all the necessary definitions. One example is
+              # //components/cronet/android:cronet_impl_native_java. In this
+              # situation it is imperative that we do *not* pull the
+              # placeholder classes, as they would conflict with user code. See
+              # https://crbug.com/397396295 for more background.
+              proxy_only_module = create_jni_zero_proxy_only_module(dep_module)
+              blueprint.add_module(proxy_only_module)
+              module_target.srcs.add(f":{proxy_only_module.name}")
+          else:
+            module_target.srcs.add(":" + dep_module.name)
         else:
           raise Exception(
               'Unsupported arch-specific dependency %s of target %s with type %s'

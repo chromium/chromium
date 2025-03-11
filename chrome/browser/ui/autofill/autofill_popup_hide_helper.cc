@@ -56,11 +56,7 @@ void AutofillPopupHideHelper::OnWebContentsLostFocus(
 void AutofillPopupHideHelper::PrimaryMainFrameWasResized(bool width_changed) {
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     // Ignore virtual keyboard showing and hiding a strip of suggestions.
-    if (!width_changed ||
-        base::FeatureList::IsEnabled(
-            features::kAutofillDoNotHideKeyboardAccessoryOnMainFrameResized)) {
-      return;
-    }
+    return;
   }
   hiding_callback_.Run(SuggestionHidingReason::kWidgetChanged);
 }

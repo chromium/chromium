@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -280,10 +279,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       performAction:grey_tap()];
 }
 
-void RelaunchAppWithInactiveTabs2WeeksEnabled() {
+void RelaunchApp() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -721,7 +719,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
                  @"Inactive tab count should be 0");
 
-  RelaunchAppWithInactiveTabs2WeeksEnabled();
+  RelaunchApp();
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];

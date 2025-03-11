@@ -59,6 +59,8 @@ class PermissionsPolicyTest : public testing::Test {
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kAttributionReporting,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
+             {network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kSharedStorage,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
@@ -2735,6 +2737,161 @@ TEST_F(PermissionsPolicyTest,
     EXPECT_FALSE(IsFeatureEnabledForSubresourceRequestAssumingOptIn(
         policy.get(), network::mojom::PermissionsPolicyFeature::kSharedStorage,
         origin_c_));
+  }
+}
+
+// For script features that act on behalf of an origin that may be
+// x-origin to the calling context, allow the request if and only if
+// a subframe for the origin with allow=feature would be allowed.
+TEST_F(PermissionsPolicyTest, ProposedTestIsFeatureEnabledForOriginDefaultAll) {
+  const mojom::PermissionsPolicyFeature kJoinFeature =
+      network::mojom::PermissionsPolicyFeature::kSharedStorage;
+
+  {
+    // In these tests, we have a  x-origin js method, `joinAdInterestGroup` that
+    // is backed by permission with default self. Since the method acts on an
+    // owner origin that may be different from the caller, it must check the
+    // destination origin with IsFeatureEnabledInOrigin, and set
+    // override_default_policy_to_all to true since the owner has opted in.
+    // +--------------------------------------------------------+
+    // |(1)Origin A                                             |
+    // |No Policy                                               |
+    // |                                                        |
+    // | joinAdInterestGroup({owner: origin-b})                 |
+    // +--------------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_a_));
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_a_,
+        /*override_default_policy_to_all=*/true));
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_b_));
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_b_,
+        /*override_default_policy_to_all=*/true));
+  }
+
+  {
+    // +--------------------------------------------------------+
+    // |(1)Origin A                                             |
+    // |Permissions-Policy: join-ad-interest-group=(self)       |
+    // |                                                        |
+    // | joinAdInterestGroup({owner: origin-b})                 |
+    // +--------------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr,
+                               {{{kJoinFeature,
+                                  /*allowed_origins=*/{},
+                                  /*self_if_matches=*/origin_a_,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false}}},
+                               origin_a_);
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_a_));
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_a_,
+        /*override_default_policy_to_all=*/true));
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_b_));
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_b_,
+        /*override_default_policy_to_all=*/true));
+  }
+
+  {
+    // +--------------------------------------------------------+
+    // |(1)Origin A                                             |
+    // |Permissions-Policy: join-ad-interest-group=(none)       |
+    // |                                                        |
+    // | joinAdInterestGroup({owner: origin-b})                 |
+    // +--------------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr,
+                               {{{kJoinFeature,
+                                  /*allowed_origins=*/{},
+                                  /*self_if_matches=*/std::nullopt,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false}}},
+                               origin_a_);
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_a_));
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_a_,
+        /*override_default_policy_to_all=*/true));
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_b_));
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_b_,
+        /*override_default_policy_to_all=*/true));
+  }
+
+  {
+    // +--------------------------------------------------------+
+    // |(1)Origin A                                             |
+    // |Permissions-Policy: join-ad-interest-group=*            |
+    // |                                                        |
+    // | joinAdInterestGroup({owner: origin-b})                 |
+    // +--------------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr,
+                               {{{kJoinFeature,
+                                  /*allowed_origins=*/{},
+                                  /*self_if_matches=*/std::nullopt,
+                                  /*matches_all_origins=*/true,
+                                  /*matches_opaque_src=*/false}}},
+                               origin_a_);
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_a_));
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_a_,
+        /*override_default_policy_to_all=*/true));
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_b_));
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_b_,
+        /*override_default_policy_to_all=*/true));
+  }
+
+  {
+    // +--------------------------------------------------------+
+    // |(1)Origin A                                             |
+    // |Permissions-Policy: join-ad-interest-group=(Origin B)   |
+    // |                                                        |
+    // | joinAdInterestGroup({owner: origin-b})                 |
+    // | joinAdInterestGroup({owner: origin-c})                 |
+    // +--------------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr,
+                               {{{kJoinFeature, /*allowed_origins=*/
+                                  {*network::OriginWithPossibleWildcards::
+                                       FromOriginAndWildcardsForTest(
+                                           origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+                                  /*self_if_matches=*/std::nullopt,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false}}},
+                               origin_a_);
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_a_));
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_a_ /*override_default_policy_to_all=*/));
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_b_));
+    EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_b_,
+        /*override_default_policy_to_all=*/true));
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(kJoinFeature, origin_c_));
+    EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
+        kJoinFeature, origin_c_,
+        /*override_default_policy_to_all=*/true));
   }
 }
 

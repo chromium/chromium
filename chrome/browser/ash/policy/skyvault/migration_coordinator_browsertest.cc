@@ -177,8 +177,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
                          base::FilePath, base::FilePath>
       future;
   // Upload the files.
-  coordinator.Run(CloudProvider::kOneDrive, {file_path, nested_file_path},
-                  kUploadRootPrefix, future.GetCallback());
+  coordinator.Run(MigrationDestination::kOneDrive,
+                  {file_path, nested_file_path}, kUploadRootPrefix,
+                  future.GetCallback());
   auto [errors, upload_root_path, log_error_path] = future.Get();
   ASSERT_TRUE(errors.empty());
   EXPECT_EQ(ash::cloud_upload::GetODFS(profile())
@@ -223,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
                          base::FilePath, base::FilePath>
       future;
   // Upload the file.
-  coordinator.Run(CloudProvider::kOneDrive, {file_path}, kUploadRootPrefix,
-                  future.GetCallback());
+  coordinator.Run(MigrationDestination::kOneDrive, {file_path},
+                  kUploadRootPrefix, future.GetCallback());
   auto errors = future.Get<0>();
   ASSERT_TRUE(errors.size() == 1u);
   auto error = errors.find(file_path);
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
                          base::FilePath, base::FilePath>
       future;
-  coordinator.Run(CloudProvider::kOneDrive, {}, kUploadRootPrefix,
+  coordinator.Run(MigrationDestination::kOneDrive, {}, kUploadRootPrefix,
                   future.GetCallback());
   auto [errors, upload_root_path, log_error_path] = future.Get();
   ASSERT_TRUE(errors.empty());
@@ -279,8 +280,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
 
   MigrationCoordinator coordinator(profile());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
-  coordinator.Run(CloudProvider::kOneDrive, {file_path}, kUploadRootPrefix,
-                  base::DoNothing());
+  coordinator.Run(MigrationDestination::kOneDrive, {file_path},
+                  kUploadRootPrefix, base::DoNothing());
 
   // The uploader is only created during the Run call. At this point, its Run
   // method has also already been called
@@ -459,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, SuccessfulUpload) {
                          base::FilePath, base::FilePath>
       future;
   // Upload the files.
-  coordinator.Run(CloudProvider::kGoogleDrive, {nested_file_path},
+  coordinator.Run(MigrationDestination::kGoogleDrive, {nested_file_path},
                   kUploadRootPrefix, future.GetCallback());
 
   auto [errors, upload_root_path, log_error_path] = future.Get();
@@ -504,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
                          base::FilePath, base::FilePath>
       future;
   // Upload the files.
-  coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kUploadRootPrefix,
-                  future.GetCallback());
+  coordinator.Run(MigrationDestination::kGoogleDrive, {file_path},
+                  kUploadRootPrefix, future.GetCallback());
   auto [errors, upload_root_path, log_error_path] = future.Get();
   ASSERT_EQ(1u, errors.size());
   auto error = errors.find(file_path);
@@ -548,8 +549,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
       base::BindLambdaForTesting([&coordinator, &cancel_future] {
         coordinator.Cancel(cancel_future.GetCallback());
       });
-  coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kUploadRootPrefix,
-                  base::DoNothing());
+  coordinator.Run(MigrationDestination::kGoogleDrive, {file_path},
+                  kUploadRootPrefix, base::DoNothing());
   run_loop.Run();
   EXPECT_TRUE(cancel_future.Get());
 

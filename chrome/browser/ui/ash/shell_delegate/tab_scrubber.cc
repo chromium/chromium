@@ -195,7 +195,6 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   if (highlighted_tab_ != -1) {
     gfx::Point hover_point(swipe_x_, swipe_y_);
     views::View::ConvertPointToTarget(tab_strip_, new_tab, &hover_point);
-    new_tab->tab_style_views()->SetHoverLocation(hover_point);
   }
 }
 

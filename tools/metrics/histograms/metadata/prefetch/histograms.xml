@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
-    enum="CanaryCheckLookupResult" expires_after="2025-07-06">
+    enum="CanaryCheckLookupResult" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
-    enum="BooleanSuccess" expires_after="2025-07-06">
+    enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
-    enum="NetErrorCodes" expires_after="2025-07-06">
+    enum="NetErrorCodes" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -375,7 +375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
-    enum="NetErrorCodes" expires_after="2025-07-06">
+    enum="NetErrorCodes" expires_after="2025-09-07">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

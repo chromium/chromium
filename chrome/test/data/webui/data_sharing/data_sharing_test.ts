@@ -57,6 +57,8 @@ suite('Start flows', () => {
         'runJoinFlow', Promise.resolve({status: Code.OK}));
     testDataSharingSdk.setResultFor(
         'runManageFlow', Promise.resolve({status: Code.OK}));
+    testDataSharingSdk.setResultFor(
+        'runDeleteFlow', Promise.resolve({status: Code.OK}));
   });
 
   test('Invite flow', async () => {
@@ -83,6 +85,37 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Leave flow', async () => {
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing/?flow=leave&group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
+    const arg = testDataSharingSdk.getArgs('runManageFlow')[0];
+    assertEquals('fake_id', arg.groupId);
+    assertEquals(true, arg.showLeaveDialogAtStartup);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Delete flow', async () => {
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=delete&group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runDeleteFlow'));
+    assertEquals(
+        'fake_id', testDataSharingSdk.getArgs('runDeleteFlow')[0].groupId);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });

@@ -2290,6 +2290,7 @@
 <translation id="256517381556987641">การซิงค์ไฟล์พบไฟล์ <ph name="ITEMS_FOUND" /> รายการ และยังคงตรวจสอบพื้นที่เก็บข้อมูลอยู่ โปรดลองเปิดการซิงค์ไฟล์อีกครั้งในอีกสักครู่</translation>
 <translation id="2565214867520763227">เปิดโปรแกรมอ่านหน้าจอ</translation>
 <translation id="2566146433999774844">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
+<translation id="256726287944589768">แสดงส่วนท้ายในหน้าแท็บใหม่</translation>
 <translation id="2568694057933302218">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์จะใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ ไม่ได้ ระบบจะไม่ใช้กิจกรรมการท่องเว็บเพื่อวัตถุประสงค์ต่างๆ เช่น การปรับโฆษณาตามโปรไฟล์ของผู้ใช้ ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="2568774940984945469">ที่เก็บแถบข้อมูล</translation>
 <translation id="2569972178052279830">ชื่อผู้ค้าปลีก</translation>
@@ -2798,6 +2799,7 @@
 <translation id="2921081876747860777">โปรดสร้างรหัสผ่านเพื่อปกป้องข้อมูลในเครื่อง</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> ของคุณจะล็อกในตอนนี้
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ต่อไปได้</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" /> งานอื่นๆ <ph name="OTHER_TASK_NUM" /> งานในกลุ่มงานเดียวกัน: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">นำบัญชีนี้ออก</translation>
 <translation id="2923644930701689793">เข้าถึงรูปภาพจากกล้องในโทรศัพท์</translation>
 <translation id="292371311537977079">การตั้งค่า Chrome</translation>

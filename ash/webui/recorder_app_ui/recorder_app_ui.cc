@@ -547,27 +547,40 @@ void RecorderAppUI::GetAvailableLangPacks(
   std::move(callback).Run(std::move(lang_packs));
 }
 
+void RecorderAppUI::GetDefaultLanguage(GetDefaultLanguageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto default_language = delegate_->GetDefaultTranscriptionLanguage();
+  if (IsSodaAvailable(speech::GetLanguageCode(default_language))) {
+    std::move(callback).Run(default_language);
+  } else {
+    std::move(callback).Run(speech::GetLanguageName(kDefaultLanguageCode));
+  }
+}
+
 recorder_app::mojom::ModelState RecorderAppUI::GetSodaState(
     const speech::LanguageCode& language_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsSodaAvailable(language_code)) {
+    return {recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt};
+  }
+  auto* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer->IsSodaInstalled(language_code)) {
+    return {recorder_app::mojom::ModelStateType::kInstalled, std::nullopt};
+  } else if (soda_installer->IsSodaDownloading(language_code)) {
+    // The download progress will be updated via `OnSodaProgress`.
+    return {recorder_app::mojom::ModelStateType::kInstalling, 0};
+  } else {
+    return {recorder_app::mojom::ModelStateType::kNotInstalled, std::nullopt};
+  }
+}
 
+recorder_app::mojom::ModelState RecorderAppUI::GetCachedSodaState(
+    const speech::LanguageCode& language_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recorder_app::mojom::ModelState soda_state;
   auto soda_state_iter = soda_states_.find(language_code);
   if (soda_state_iter == soda_states_.end()) {
-    if (IsSodaAvailable(language_code)) {
-      if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-              language_code)) {
-        soda_state = {recorder_app::mojom::ModelStateType::kInstalled,
-                      std::nullopt};
-      } else {
-        soda_state = {recorder_app::mojom::ModelStateType::kNotInstalled,
-                      std::nullopt};
-      }
-    } else {
-      soda_state = {recorder_app::mojom::ModelStateType::kUnavailable,
-                    std::nullopt};
-    }
-
+    soda_state = GetSodaState(language_code);
     soda_states_.insert({language_code, soda_state});
   } else {
     soda_state = soda_state_iter->second;
@@ -584,7 +597,8 @@ void RecorderAppUI::AddSodaMonitor(
   auto language_code = speech::GetLanguageCode(language);
   CHECK(language_code != speech::LanguageCode::kNone);
 
-  recorder_app::mojom::ModelState soda_state = GetSodaState(language_code);
+  recorder_app::mojom::ModelState soda_state =
+      GetCachedSodaState(language_code);
   soda_monitors_[language_code].Add(std::move(monitor));
   std::move(callback).Run(soda_state.Clone());
 }
@@ -596,20 +610,21 @@ void RecorderAppUI::InstallSoda(const std::string& language,
   auto language_code = speech::GetLanguageCode(language);
   CHECK(language_code != speech::LanguageCode::kNone);
 
-  if (IsSodaAvailable(language_code)) {
-    // Check Soda state directly from SodaInstaller in case the cached state is
-    // outdated.
-    // TODO: b/375306309 - Check the cached state instead when soda states are
-    // always consistent after having `OnSodaUninstalled` event.
-    auto* soda_installer = speech::SodaInstaller::GetInstance();
-    if (!soda_installer->IsSodaInstalled(language_code) &&
-        !soda_installer->IsSodaDownloading(language_code)) {
-      // Update SODA state to installing so the UI will show downloading
-      // immediately, since the DLC download might start later.
-      UpdateSodaState(language_code,
-                      {recorder_app::mojom::ModelStateType::kInstalling, 0});
-      delegate_->InstallSoda(language_code);
-    }
+  // Get SODA state directly from SodaInstaller in case the cached state is
+  // outdated.
+  // TODO: b/375306309 - Get cached state instead when SODA states are always
+  // consistent after having `OnSodaUninstalled` event.
+  auto soda_state = GetSodaState(language_code);
+  if (soda_state.type == recorder_app::mojom::ModelStateType::kNotInstalled ||
+      soda_state.type == recorder_app::mojom::ModelStateType::kError) {
+    // Update SODA state to installing so the UI will show downloading
+    // immediately, since the DLC download might start later.
+    UpdateSodaState(language_code,
+                    {recorder_app::mojom::ModelStateType::kInstalling, 0});
+    delegate_->InstallSoda(language_code);
+  } else if (soda_state != GetCachedSodaState(language_code)) {
+    // Update cached state when it's outdated.
+    UpdateSodaState(language_code, soda_state);
   }
   std::move(callback).Run();
 }

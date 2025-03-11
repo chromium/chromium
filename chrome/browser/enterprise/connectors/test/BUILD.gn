@@ -9,6 +9,7 @@ source_set("test_support") {
   public = [
     "deep_scanning_browsertest_base.h",
     "deep_scanning_test_utils.h",
+    "fake_clipboard_request_handler.h",
     "fake_content_analysis_delegate.h",
     "fake_files_request_handler.h",
     "management_context_mixin.h",
@@ -20,6 +21,7 @@ source_set("test_support") {
   sources = [
     "deep_scanning_browsertest_base.cc",
     "deep_scanning_test_utils.cc",
+    "fake_clipboard_request_handler.cc",
     "fake_content_analysis_delegate.cc",
     "fake_files_request_handler.cc",
     "management_context_mixin.cc",

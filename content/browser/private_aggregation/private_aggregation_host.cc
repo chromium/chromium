@@ -318,7 +318,8 @@ bool PrivateAggregationHost::BindNewReceiver(
 
   std::optional<PrivateAggregationPendingContributions>
       pending_contributions_if_error_reporting_enabled;
-  if (base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     pending_contributions_if_error_reporting_enabled =
         PrivateAggregationPendingContributions(
             effective_max_contributions,
@@ -426,7 +427,8 @@ void PrivateAggregationHost::ContributeToHistogram(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions;
     base::Extend(
@@ -490,7 +492,8 @@ void PrivateAggregationHost::ContributeToHistogramOnEvent(
     blink::mojom::PrivateAggregationErrorEvent error_event,
     std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
         contribution_ptrs) {
-  if (!base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     mojo::ReportBadMessage(
         "ContributeToHistogramOnErrorEvent() called when error reporting "
         "feature is disabled");
@@ -707,7 +710,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
       pending_contributions_wrapper;
   bool is_pending_contributions_empty;
 
-  if (base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
     is_pending_contributions_empty =
         receiver_context.pending_contributions_if_error_reporting_enabled
             ->IsEmpty();
@@ -758,7 +762,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
         // Null reports caused by no contributions don't have debug mode
         // enabled if `kPrivateAggregationApiErrorReporting` is disabled.
         if (!base::FeatureList::IsEnabled(
-                kPrivateAggregationApiErrorReporting)) {
+                blink::features::kPrivateAggregationApiErrorReporting)) {
           receiver_context.report_debug_details =
               blink::mojom::DebugModeDetails::New();
         }
@@ -807,7 +811,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   // recorded if `kPrivateAggregationApiErrorReporting` is enabled as truncation
   // does not occur until later.
   RecordPipeResultHistogram(
-      !base::FeatureList::IsEnabled(kPrivateAggregationApiErrorReporting) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting) &&
               receiver_context.pending_contributions_if_error_reporting_disabled
                   .did_truncate_contributions
           ? PipeResult::kReportSuccessButTruncatedDueToTooManyContributions

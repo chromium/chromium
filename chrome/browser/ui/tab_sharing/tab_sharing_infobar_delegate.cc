@@ -296,9 +296,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   //
   // TODO(crbug.com/324468211): Hide the button if Captured Surface Control
   // is set to BLOCKED or ASK through the user's interaction with PageInfo.
-  if (role == TabRole::kCapturingTab && captured_surface_control_active &&
-      base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlStickyPermissions)) {
+  if (role == TabRole::kCapturingTab && captured_surface_control_active) {
     csc_indicator_button_ = std::make_unique<CscIndicatorButton>(web_contents);
   }
 }

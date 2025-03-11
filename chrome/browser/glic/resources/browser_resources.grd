@@ -242,6 +242,9 @@ found in the LICENSE file.
 
       <!-- Screenpicker Menu String -->
       <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Glic." translateable="false">Glic</message>
+
+      <!-- Glic Window Title -->
+      <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Glic Window." translateable="false">Glic</message>
     </messages>
   </release>
 </grit>

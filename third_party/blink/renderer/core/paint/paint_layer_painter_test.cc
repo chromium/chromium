@@ -795,6 +795,39 @@ TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
   EXPECT_FALSE(absolute.SelfOrDescendantNeedsRepaint());
 }
 
+TEST_P(PaintLayerPainterTest, EmptyFilterReference) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #div1 {
+        width: 0px;
+        height: 0px;
+        filter: url(#flood);
+      }
+    </style>
+    <div id='div1'></div>
+    <svg height='0'>
+      <filter id='flood' filterUnits='userSpaceOnUse' x='0' y='0' width='100'
+              height='100'>
+        <feFlood flood-color='green'/>
+      </filter>
+    </svg>
+  )HTML");
+
+  auto& div1 = *GetLayoutBoxByElementId("div1");
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                  // Div1 gets an empty layer chunk for the filter reference.
+                  IsPaintChunk(1, 1,
+                               PaintChunk::Id(div1.Layer()->Id(),
+                                              DisplayItem::kLayerChunk),
+                               div1.FirstFragment().LocalBorderBoxProperties(),
+                               nullptr, gfx::Rect(0, 0, 0, 0))));
+}
+
 TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
   SetBodyInnerHTML(R"HTML(
     <div id=scroller style="width: 400px; height: 400px; overflow-y: scroll;

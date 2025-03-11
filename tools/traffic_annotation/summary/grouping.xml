@@ -442,12 +442,6 @@ after discussions on the right group.
       <annotation id="chrome_commerce_comparable_products"/>
       <annotation id="product_specifications_fetcher"/>
     </sender>
-    <sender name="Parcel Tracking">
-      <annotation id="chrome_commerce_parcels_status"/>
-      <annotation id="chrome_commerce_start_tracking_parcel"/>
-      <annotation id="chrome_commerce_stop_tracking_parcel"/>
-      <annotation id="chrome_commerce_stop_tracking_all_parcel"/>
-    </sender>
     <sender name="Subscription">
       <annotation id="chrome_commerce_subscriptions_create"/>
       <annotation id="chrome_commerce_subscriptions_delete"/>

@@ -528,8 +528,7 @@ void LensOverlayController::ShowUI(
     if (!permission_bubble_controller_) {
       permission_bubble_controller_ =
           std::make_unique<lens::LensPermissionBubbleController>(
-              tab_->GetBrowserWindowInterface(), pref_service_,
-              invocation_source);
+              *tab_, pref_service_, invocation_source);
     }
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),

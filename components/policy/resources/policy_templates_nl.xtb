@@ -2504,7 +2504,6 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2872968825059227580">Zet Gif-ondersteuning uit.</translation>
 <translation id="2874209944580848064">Opmerking voor <ph name="PRODUCT_OS_NAME" />-apparaten die Android-apps ondersteunen:</translation>
 <translation id="287474029350993681">Content casten naar het apparaat uitzetten</translation>
-<translation id="2874983257003956579">Tools voor lesgroepbeheer instellen</translation>
 <translation id="2875192972412983412">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters beschikbaar met ID's die overeenkomen met de waarden in dit beleid.
@@ -4524,7 +4523,6 @@ Als je het beleid niet toepast, kunnen gebruikers hun pakketten op <ph name="PRO
       Dit beleid is verwijderd in versie M121 van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="439661169333921592">Toetsenbordfocusmarking op het inlogscherm uitzetten</translation>
 <translation id="4397045637922200204">Accountherstel deactiveren</translation>
-<translation id="4397157269508242312">Als je het beleid instelt, bepaal je daarmee of gebruikers tools voor lesgroepbeheer gebruiken om content te sturen/ontvangen, ondertiteling te sturen/ontvangen als leerlingen, docenten, of dat tools voor lesgroepbeheer zijn uitgezet voor gebruikers.</translation>
 <translation id="4397464099112037398">Standaardinstelling voor het recht voor vensterplaatsing</translation>
 <translation id="4398803806072237638">De <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />-syntaxis voor de functie voor de aangepaste css-status wordt in <ph name="PRODUCT_NAME" /> gewijzigd in <ph name="CUSTOM_STATE_NEW_SYNTAX" /> om te voldoen aan wijzigingen die zijn aangebracht in <ph name="FIREFOX_PRODUCT_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" />. Met dit beleid kan de oude beëindigde syntaxis worden aangezet tot M133.
 
@@ -5009,7 +5007,6 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4739596156184678950">Toestaan dat bestanden rechtstreeks worden opgeslagen in <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">De modus voor afdrukken met achtergrondbeelden beperken</translation>
 <translation id="4745232963710538589">Extensie voor inzichten aanzetten om gebruiksstatistieken te rapporteren</translation>
-<translation id="4746394249367607432">Gebruikers kunnen deelnemen aan en worden toegevoegd aan een sessie voor lesgroepbeheer. Docenten kunnen content naar deze gebruikers sturen.</translation>
 <translation id="4749670563834935149">Zet <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aan voor een lijst met URL's op het inlog- en vergrendelscherm.
 
 Als je dit beleid instelt, geef je op welke URL's <ph name="PRODUCT_OS_NAME" /> aanbiedt om het attestproces te starten. Met de laatstgenoemde optie kunnen die websites een attest van contextbewuste signalen van het apparaat krijgen.
@@ -9307,7 +9304,6 @@ Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;sel
 <translation id="782661371433719637">Geen sites toestemming geven om leestoegang tot bestanden of directory's te vragen via de File System API</translation>
 <translation id="7827127381981620448">Platform-app</translation>
 <translation id="7829436838673974723">Toestaan dat pagina's synchrone XHR-verzoeken sturen tijdens het sluiten van pagina's</translation>
-<translation id="7829546795016635784">Gebruikers kunnen geen van de functies voor lesgroepbeheer gebruiken en kunnen niet worden toegevoegd aan een sessie voor lesgroepbeheer.</translation>
 <translation id="782978857350824974">Verzoeken voor webverificatie toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="7830775338190021763">De mogelijkheid voor bestandsoverdracht aanzetten in zakelijke sessies voor externe support</translation>
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>

@@ -800,7 +800,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
               child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
                   ? PathType::kLocal
                   : PathType::kExternal,
-              child_url.path(), entry.name.AsUTF8Unsafe()),
+              child_url.path(), basename),
           HandleType::kFile, UserAction::kNone, context().frame_id,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,

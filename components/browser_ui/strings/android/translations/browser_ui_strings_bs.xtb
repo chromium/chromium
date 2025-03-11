@@ -519,6 +519,7 @@
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8206354486702514201">Ovu postavku je nametnuo vaš administrator.</translation>
 <translation id="8211406090763984747">Veza je sigurna</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Premjesti na vrh</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8284326494547611709">Titlovi</translation>
@@ -585,6 +586,7 @@
 <translation id="8993853206419610596">Proširi sve zahtjeve</translation>
 <translation id="9002538116239926534">Kada je postavka uključena, web lokacije mogu pohranjivati podatke na vaš uređaj. Kada je postavka isključena, web lokacije ne mogu pohranjivati podatke na vaš uređaj.</translation>
 <translation id="9011903857143958461">Web lokacija <ph name="SITE_NAME" /> je dozvoljena</translation>
+<translation id="9017522656123387064">Zatvoren je način odabira</translation>
 <translation id="9019902583201351841">Upravljaju tvoji roditelji</translation>
 <translation id="902236149563113779">Web lokacije obično prate položaj kamere radi funkcija AR-a, kao što su igre ili smjernice u visini očiju</translation>
 <translation id="9039697262778250930">Možda ćete se odjaviti s tih web lokacija</translation>

@@ -36,7 +36,7 @@ interface CaptureController : EventTarget {
     MeasureAs = CapturedSurfaceControl,
     CallWith = ScriptState
   ]
-  Promise<undefined> captureWheel(HTMLElement? element);
+  Promise<undefined> forwardWheel(HTMLElement? element);
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
@@ -47,16 +47,16 @@ interface CaptureController : EventTarget {
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
-    MeasureAs = CapturedSurfaceControl
-  ]
-  static sequence<long> getSupportedZoomLevels();
-
-  [
-    RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl,
     RaisesException
   ]
-  long getZoomLevel();
+  sequence<long> getSupportedZoomLevels();
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl
+  ]
+  readonly attribute long? zoomLevel;
 
   [
     RuntimeEnabled = CapturedSurfaceControl,
@@ -83,5 +83,5 @@ interface CaptureController : EventTarget {
     RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl
   ]
-  attribute EventHandler oncapturedzoomlevelchange;
+  attribute EventHandler onzoomlevelchange;
 };

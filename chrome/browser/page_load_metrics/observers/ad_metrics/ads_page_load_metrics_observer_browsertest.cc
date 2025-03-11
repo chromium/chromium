@@ -2569,25 +2569,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 0);
 }
 
-// DummyMemoryObserver is a subclass of V8DetailedMemoryObserverAnySeq so
-// that we can spin up a request in the AdsMemoryMeasurementBrowserTest with
-// MeasurementMode::kEagerForTesting, which will make measurements available
-// to the PageLoadMetricsMemoryTracker much more quickly than they would be
-// otherwise.
-class DummyMemoryObserver
-    : public performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq {
- public:
-  DummyMemoryObserver() = default;
-  ~DummyMemoryObserver() override = default;
-
-  void OnV8MemoryMeasurementAvailable(
-      performance_manager::RenderProcessHostId process_id,
-      const performance_manager::v8_memory::V8DetailedMemoryProcessData&
-          process_data,
-      const performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq::
-          FrameDataMap& frame_data) override {}
-};
-
 class AdsMemoryMeasurementBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
@@ -2646,15 +2627,14 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Instantiate a memory request and observer to set memory measurement
-  // polling parameters.
-  std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>
-      memory_request = std::make_unique<
-          performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
-          base::Seconds(1),
-          performance_manager::v8_memory::V8DetailedMemoryRequest::
-              MeasurementMode::kEagerForTesting);
-  auto memory_observer = std::make_unique<DummyMemoryObserver>();
-  memory_request->AddObserver(memory_observer.get());
+  // polling parameters. PageLoadMetricsMemoryTracker will get results as soon
+  // as they're available for this request, which is able to use
+  // kEagerForTesting mode.
+  using performance_manager::v8_memory::V8DetailedMemoryRequest;
+  auto memory_request = std::make_unique<V8DetailedMemoryRequest>(
+      base::Seconds(1),
+      V8DetailedMemoryRequest::MeasurementMode::kEagerForTesting);
+  memory_request->StartMeasurement();
 
   // cross_site_iframe_factory loads URLs like:
   // http://b.com:40919/cross_site_iframe_factory.html?b()
@@ -2692,8 +2672,6 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   histogram_tester.ExpectTotalCount(kMemoryUpdateCountHistogramId, 1);
   EXPECT_GE(
       histogram_tester.GetAllSamples(kMemoryUpdateCountHistogramId)[0].min, 1);
-
-  memory_request->RemoveObserver(memory_observer.get());
 }
 
 class AdsPageLoadMetricsObserverPrerenderingBrowserTest

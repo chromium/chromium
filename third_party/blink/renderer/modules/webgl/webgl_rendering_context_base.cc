@@ -251,17 +251,18 @@ WebGLRenderingContextBaseSet& ActiveContexts() {
 using WebGLRenderingContextBaseMap =
     HeapHashMap<WeakMember<WebGLRenderingContextBase>, int>;
 WebGLRenderingContextBaseMap& ForciblyEvictedContexts() {
+  using WebGLRenderingContextBaseMapHolder =
+      DisallowNewWrapper<WebGLRenderingContextBaseMap>;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<WebGLRenderingContextBaseMap>>,
-      forcibly_evicted_contexts, ());
-  Persistent<WebGLRenderingContextBaseMap>&
-      forcibly_evicted_contexts_persistent = *forcibly_evicted_contexts;
-  if (!forcibly_evicted_contexts_persistent) {
-    forcibly_evicted_contexts_persistent =
-        MakeGarbageCollected<WebGLRenderingContextBaseMap>();
-    LEAK_SANITIZER_IGNORE_OBJECT(&forcibly_evicted_contexts_persistent);
+      ThreadSpecific<Persistent<WebGLRenderingContextBaseMapHolder>>, holder,
+      ());
+  Persistent<WebGLRenderingContextBaseMapHolder>& holder_persistent = *holder;
+  if (!holder_persistent) {
+    holder_persistent =
+        MakeGarbageCollected<WebGLRenderingContextBaseMapHolder>();
+    LEAK_SANITIZER_IGNORE_OBJECT(&holder_persistent);
   }
-  return *forcibly_evicted_contexts_persistent;
+  return holder_persistent->Value();
 }
 
 }  // namespace

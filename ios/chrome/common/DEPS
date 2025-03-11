@@ -4,4 +4,7 @@ include_rules = [
   "+net",
   "-ios/chrome",
   "+ios/chrome/common",
+  "+ios/chrome/grit",
+  "+ios/chrome/browser/shared",
 ]
+

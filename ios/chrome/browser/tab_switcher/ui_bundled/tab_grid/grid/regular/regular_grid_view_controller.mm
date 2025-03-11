@@ -245,10 +245,6 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 // Updates the inactive tabs button (reconfigure, show or remove) based on its
 // visible state.
 - (void)updateInactiveTabsButtonInSnapshot:(GridSnapshot*)snapshot {
-  if (!IsInactiveTabsAvailable()) {
-    return;
-  }
-
   BOOL isEnabled = _inactiveTabsDaysThreshold != kInactiveTabsDisabledByUser;
   BOOL hasInactiveTabs = _inactiveTabsCount != 0;
   BOOL isInNormalMode = self.mode == TabGridMode::kNormal;

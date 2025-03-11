@@ -204,8 +204,13 @@ bool PermissionsPolicy::IsFeatureEnabled(
 
 bool PermissionsPolicy::IsFeatureEnabledForOrigin(
     network::mojom::PermissionsPolicyFeature feature,
-    const url::Origin& origin) const {
-  return IsFeatureEnabledForOriginImpl(feature, origin, /*opt_in_features=*/{});
+    const url::Origin& origin,
+    bool override_default_policy_to_all) const {
+  std::set<network::mojom::PermissionsPolicyFeature> opt_in_features;
+  if (override_default_policy_to_all) {
+    opt_in_features.insert(feature);
+  }
+  return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
 bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
@@ -483,7 +488,8 @@ const network::mojom::PermissionsPolicyFeature
         network::mojom::PermissionsPolicyFeature::
             kBrowsingTopicsBackwardCompatible,
         network::mojom::PermissionsPolicyFeature::kSharedStorage,
-        network::mojom::PermissionsPolicyFeature::kRunAdAuction};
+        network::mojom::PermissionsPolicyFeature::kRunAdAuction,
+        network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup};
 
 PermissionsPolicy::PermissionsPolicy(mojo::DefaultConstruct::Tag)
     : feature_list_(GetPermissionsPolicyFeatureListUnloadNone()) {}
@@ -622,6 +628,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   // https://github.com/w3c/webappsec-permissions-policy/pull/499: if
   // optInFeatures contains feature, then return "Enabled".
   if (base::Contains(opt_in_features, feature)) {
+    DCHECK(base::Contains(defined_opt_in_features_, feature));
     return true;
   }
 

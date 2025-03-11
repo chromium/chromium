@@ -409,6 +409,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     return Promise.resolve();
   }
 
+  override getDefaultLanguage(): LanguageCode {
+    return LanguageCode.EN_US;
+  }
+
   override getLangPackList(): readonly LangPackInfo[] {
     return Array.from(this.langPacks.values());
   }

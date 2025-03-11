@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_helper.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -161,7 +160,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
                                    browser:(Browser*)browser
                                   delegate:(id<InactiveTabsCoordinatorDelegate>)
                                                delegate {
-  CHECK(IsInactiveTabsAvailable());
   CHECK(delegate);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {

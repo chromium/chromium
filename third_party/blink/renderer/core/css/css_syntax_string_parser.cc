@@ -59,8 +59,7 @@ std::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   if (type == "custom-ident") {
     return CSSSyntaxType::kCustomIdent;
   }
-  if (RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled() &&
-      type == "string") {
+  if (type == "string") {
     return CSSSyntaxType::kString;
   }
   return std::nullopt;

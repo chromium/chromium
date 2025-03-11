@@ -1768,8 +1768,10 @@ public class StripLayoutHelper
 
     private void updateTabContainersAndDividers() {
         int hoveredId = mLastHoveredTab != null ? mLastHoveredTab.getTabId() : Tab.INVALID_TAB_ID;
-        for (int i = 0; i < mStripViews.length; ++i) {
-            if (!(mStripViews[i] instanceof StripLayoutTab currTab)) continue;
+
+        StripLayoutView[] viewsOnStrip = StripLayoutUtils.getViewsOnStrip(mStripViews);
+        for (int i = 0; i < viewsOnStrip.length; ++i) {
+            if (!(viewsOnStrip[i] instanceof StripLayoutTab currTab)) continue;
 
             // 1. Set container visibility. Handled in a separate animation for hovered tabs.
             if (hoveredId != currTab.getTabId()) {
@@ -1778,14 +1780,11 @@ public class StripLayoutHelper
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
 
             // 2. Set start divider visibility.
-            // TODO(crbug.com/384969886): Account for dragging off entire groups.
-            if (i > 0 && mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
+            if (i > 0 && viewsOnStrip[i - 1] instanceof StripLayoutTab prevTab) {
                 boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
-                boolean prevTabNotLeftMostAndDraggedOffStrip = prevTab.isDraggedOffStrip() && i > 1;
                 boolean startDividerVisible =
-                        (currContainerHidden && (prevContainerHidden || prevTabHasMargin))
-                                || prevTabNotLeftMostAndDraggedOffStrip;
+                        currContainerHidden && (prevContainerHidden || prevTabHasMargin);
                 currTab.setStartDividerVisible(startDividerVisible);
             } else {
                 currTab.setStartDividerVisible(/* visible= */ false);
@@ -1795,9 +1794,9 @@ public class StripLayoutHelper
             if (currTab.shouldForceHideEndDivider()) {
                 currTab.setEndDividerVisible(/* visible= */ false);
             } else {
-                boolean isLastTab = i == (mStripViews.length - 1);
+                boolean isLastTab = i == (viewsOnStrip.length - 1);
                 boolean endDividerVisible =
-                        (isLastTab || mStripViews[i + 1] instanceof StripLayoutGroupTitle)
+                        (isLastTab || viewsOnStrip[i + 1] instanceof StripLayoutGroupTitle)
                                 && currContainerHidden;
                 currTab.setEndDividerVisible(endDividerVisible);
             }

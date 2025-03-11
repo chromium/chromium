@@ -214,6 +214,9 @@ NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
 // Constant for deffered memory experimentation.
 NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
 
+// Constant for deferred automatic download deletion.
+NSString* const kAutoDeletionFileRemoval = @"AutoDeletionFileRemoval";
+
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
   component_updater::ComponentUpdateService* cus =
@@ -377,6 +380,9 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 - (void)scheduleDeleteTempPasswordsDirectory;
 // Schedule the start of memory experimentation.
 - (void)scheduleMemoryExperimentation;
+// Schedules the removal of files that were scheduled for automatic deletion and
+// were downloaded more than 30 days ago.
+- (void)scheduleAutoDeletionFileRemoval;
 // Crashes the application if requested.
 - (void)crashIfRequested;
 // Initializes the application to the minimum initialization needed in all
@@ -994,8 +1000,15 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
       case ProfileInitStage::kChoiceScreen:
       case ProfileInitStage::kNormalUI:
-      case ProfileInitStage::kFinal:
         // Nothing to do.
+        break;
+
+      case ProfileInitStage::kFinal:
+        // Request the deletion of the data for all profiles marked for
+        // deletion when the first profile is successfully loaded.
+        GetApplicationContext()
+            ->GetProfileManager()
+            ->PurgeProfilesMarkedForDeletion(base::DoNothing());
         break;
     }
   }
@@ -1405,6 +1418,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   [self scheduleSaveFieldTrialValuesForExternals];
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleMemoryExperimentation];
+  [self scheduleAutoDeletionFileRemoval];
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1446,6 +1460,15 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
                                         block:^{
                                           [startupTasks logSiriShortcuts];
                                         }];
+}
+
+- (void)scheduleAutoDeletionFileRemoval {
+  __weak StartupTasks* startupTasks = _startupTasks;
+  [_appState.deferredRunner
+      enqueueBlockNamed:kAutoDeletionFileRemoval
+                  block:^{
+                    [startupTasks removeFilesScheduledForAutoDeletion];
+                  }];
 }
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)

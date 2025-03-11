@@ -770,7 +770,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "SpellcheckService",
 #endif
 
-    "StorageAccessHeaderService",
     "StorageFrontend",
     "StorageNotificationService",
     "SupervisedUserService",

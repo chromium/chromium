@@ -62,6 +62,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
             const gfx::ColorSpace& color_space);
     virtual ~Backing();
 
+    void CreateSharedImage(gpu::SharedImageInterface* sii,
+                           const gpu::SharedImageUsageSet& usage,
+                           std::string_view debug_label);
+
     void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
       shared_image_ = std::move(si);
     }

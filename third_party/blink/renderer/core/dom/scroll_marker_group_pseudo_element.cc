@@ -125,18 +125,16 @@ void ScrollMarkerGroupPseudoElement::ClearFocusGroup() {
   scroll_marker_group_data_->ClearFocusGroup();
 }
 
-bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
-    const ScrollOffset& offset) {
+void ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker() {
   // Implements scroll tracking for scroll marker controls as per
   // https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll.
   auto* scroller =
       DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
   if (!scroller || !scroller->IsScrollContainer()) {
-    return false;
+    return;
   }
 
-  return scroll_marker_group_data_->UpdateSelectedScrollMarker(offset,
-                                                               scroller);
+  scroll_marker_group_data_->UpdateSelectedScrollMarker();
 }
 
 void ScrollMarkerGroupPseudoElement::DetachLayoutTree(

@@ -676,6 +676,12 @@ const char kAutofillEnableLoyaltyCardsFillingDescription[] =
     "When enabled, Autofill will offer support for filling the user's loyalty "
     "cards stored in Google Wallet.";
 
+const char kAutofillEnableNewFopDisplayDesktopName[] =
+    "Enable Autofill new FOP display on Desktop";
+const char kAutofillEnableNewFopDisplayDesktopDescription[] =
+    "When enabled, updates payment method Autofill suggestions and settings "
+    "UI.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
@@ -1701,6 +1707,14 @@ const char kEnableProcessPerSiteUpToMainFrameThresholdName[] =
 const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+const char kEnablePrintingMarginsAndScale[] =
+    "Enable printing margins and scale support in chrome.Printing API.";
+const char kEnablePrintingMarginsAndScaleDescription[] =
+    "Allows extensions to specify margins and scale in chrome.Printing API "
+    "based on supported values provided by the printer.";
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 const char kBoundaryEventDispatchTracksNodeRemovalName[] =
     "Boundary Event Dispatch Tracks Node Removal";
@@ -5611,6 +5625,14 @@ const char kAndroidMinimalUiLargeScreenName[] =
 const char kAndroidMinimalUiLargeScreenDescription[] =
     "Display new minimal ui for PWAs on devices that support "
     "desktop windowing.";
+
+const char kAndroidWindowPopupLargeScreenName[] =
+    "Enable desktop-like behavior of window popup web API in desktop windowing "
+    "on Android.";
+const char kAndroidWindowPopupLargeScreenDescription[] =
+    "Open an actual new window instead of new tab on window.open() Javascript "
+    "call and make moving windows with window.{move|resize}{By|To}() "
+    "possible.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------

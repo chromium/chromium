@@ -29,6 +29,8 @@ source_set("toolbar") {
     "overflow_button.h",
     "pinned_action_toolbar_button.cc",
     "pinned_action_toolbar_button.h",
+    "pinned_action_toolbar_button_menu_model.cc",
+    "pinned_action_toolbar_button_menu_model.h",
     "pinned_toolbar_actions_container.cc",
     "pinned_toolbar_actions_container.h",
     "pinned_toolbar_actions_container_layout.cc",

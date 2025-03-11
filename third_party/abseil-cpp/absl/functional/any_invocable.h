@@ -279,11 +279,10 @@ class AnyInvocable : private internal_any_invocable::Impl<Sig> {
   //
   // WARNING: An `AnyInvocable` that wraps an empty `std::function` is not
   // itself empty. This behavior is consistent with the standard equivalent
-  // `std::move_only_function`.
-  //
-  // In other words:
+  // `std::move_only_function`. In the following example, `a()` will actually
+  // invoke `f()`, leading to an `std::bad_function_call` exception:
   //   std::function<void()> f;  // empty
-  //   absl::AnyInvocable<void()> a = std::move(f);  // not empty
+  //   absl::AnyInvocable<void()> a = f;  // not empty
   //
   // Invoking an empty `AnyInvocable` results in undefined behavior.
   explicit operator bool() const noexcept { return this->HasValue(); }

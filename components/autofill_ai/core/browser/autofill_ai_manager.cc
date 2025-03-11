@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
@@ -71,6 +72,7 @@ namespace {
 using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AutofillAiSaveStrikeDatabaseByHost;
+using autofill::AutofillClient;
 using autofill::DenseSet;
 using autofill::EntityInstance;
 using autofill::EntityType;
@@ -280,27 +282,6 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillAiManager::IsFormAndFieldEligibleForAutofillAi(
-    const autofill::FormStructure& form,
-    const autofill::AutofillField& field) const {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiWithDataSchema)) {
-    // TODO(crbug.com/389629573): If triggering via manual fallback, the check
-    // `field.GetAutofillAiServerTypePredictions()` does not apply.
-    return field.GetAutofillAiServerTypePredictions() &&
-           IsUserEligibleForFillingAndImporting();
-  }
-  return false;
-}
-
-bool AutofillAiManager::IsUserEligible() const {
-  return client_->IsUserEligible();
-}
-
-bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
-  return client_->IsAutofillAiEnabledPref() && IsUserEligible();
-}
-
 void AutofillAiManager::OnSuggestionsShown(
     const DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormGlobalId& form_id) {
@@ -339,6 +320,11 @@ void AutofillAiManager::OnEditedAutofilledField(
 }
 
 bool AutofillAiManager::MaybeImportForm(const autofill::FormStructure& form) {
+  if (!autofill::MayPerformAutofillAiAction(
+          client_->GetAutofillClient(), autofill::AutofillAiAction::kImport)) {
+    return false;
+  }
+
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     LOG_AF(GetCurrentLogManager())
@@ -430,6 +416,12 @@ void AutofillAiManager::HandleUpdatePromptResult(
 std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     autofill::FormGlobalId form_global_id,
     autofill::FieldGlobalId field_global_id) {
+  const AutofillClient& autofill_client = client_->GetAutofillClient();
+  if (!autofill::MayPerformAutofillAiAction(
+          autofill_client, autofill::AutofillAiAction::kFilling)) {
+    return {};
+  }
+
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return {};
@@ -449,23 +441,25 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
 
   const autofill::AutofillField* autofill_field =
       form_structure->GetFieldById(field_global_id);
-  if (!autofill_field) {
+  if (!autofill_field ||
+      !autofill_field->GetAutofillAiServerTypePredictions()) {
     return {};
   }
 
-  CHECK(autofill_field->GetAutofillAiServerTypePredictions());
   return CreateFillingSuggestions(*form_structure, field_global_id, entities,
-                                  client_->GetAutofillClient().GetAppLocale());
+                                  autofill_client.GetAppLocale());
 }
 
 bool AutofillAiManager::ShouldDisplayIph(
     const autofill::AutofillField& field) const {
-  // Iph can be shown if:
-  // 1. The pref is off.
-  // 2. The user can access the feature (for example the experiment flag is on).
-  // 3. The focused form can trigger the feature.
-  return !client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
-         field.GetAutofillAiServerTypePredictions();
+  if (!autofill::MayPerformAutofillAiAction(
+          client_->GetAutofillClient(),
+          autofill::AutofillAiAction::kIphForOptIn)) {
+    return false;
+  }
+
+  // TODO(crbug.com/402367669): Implement IPH conditions.
+  return false;
 }
 
 autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {

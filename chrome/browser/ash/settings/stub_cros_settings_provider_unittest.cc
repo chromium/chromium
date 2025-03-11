@@ -43,8 +43,10 @@ class StubCrosSettingsProviderTest : public testing::Test {
     observer_count_[path]++;
   }
 
-  std::unique_ptr<StubCrosSettingsProvider> provider_;
+  // Callback passed to StubCrosSettingsProvider depends on observer_count_,
+  // so declare it first.
   std::map<std::string, int> observer_count_;
+  std::unique_ptr<StubCrosSettingsProvider> provider_;
 };
 
 TEST_F(StubCrosSettingsProviderTest, HandlesSettings) {

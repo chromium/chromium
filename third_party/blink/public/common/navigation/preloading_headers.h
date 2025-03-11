@@ -24,6 +24,10 @@ inline constexpr char kSecPurposePrefetchAnonymousClientIpHeaderValue[] =
 inline constexpr char kSecPurposePrefetchPrerenderHeaderValue[] =
     "prefetch;prerender";
 
+// This value indicates that the request is a preview request.
+inline constexpr char kSecPurposePrefetchPrerenderPreviewHeaderValue[] =
+    "prefetch;prerender;preview";
+
 // The Chromium specific header equivalent for 'Sec-Purpose':
 inline constexpr char kPurposeHeaderName[] = "Purpose";
 

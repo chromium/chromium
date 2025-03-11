@@ -138,7 +138,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
   // Verify the `OverviewGroupItem` visuals.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overviewgroupitem",
-      /*revision_number=*/2, group_item_widget));
+      /*revision_number=*/3, group_item_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed.
   w2.reset();
@@ -148,7 +148,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
   ASSERT_TRUE(item_after_destruction);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "remaining_item_widget",
-      /*revision_number=*/2, remaining_item_widget));
+      /*revision_number=*/3, remaining_item_widget));
 }
 
 // Visual regression test for Snap Group in window cycle view.
@@ -186,13 +186,13 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_secondary_focused",
-      /*revision_number=*/2, window_cycle_widget));
+      /*revision_number=*/3, window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_primary_focused",
-      /*revision_number=*/2, window_cycle_widget));
+      /*revision_number=*/3, window_cycle_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed
   // while stepping.
@@ -208,7 +208,7 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_window_destruction",
-      /*revision_number=*/2, updated_window_cycle_widget));
+      /*revision_number=*/3, updated_window_cycle_widget));
 }
 
 // -----------------------------------------------------------------------------
@@ -278,7 +278,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
   // Verify the `OverviewGroupItem` visuals in portrait.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overviewgroupitem_in_portrait",
-      /*revision_number=*/2, group_item_widget));
+      /*revision_number=*/3, group_item_widget));
 }
 
 // Portrait mode visual regression test for Snap Group visuals in window cycle
@@ -319,13 +319,13 @@ TEST_F(SnapGroupPixelTest, WindowCycleViewInPortrait) {
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_secondary_focused_in_portrait",
-      /*revision_number=*/2, window_cycle_widget));
+      /*revision_number=*/3, window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_primary_focused_in_portrait",
-      /*revision_number=*/2, window_cycle_widget));
+      /*revision_number=*/3, window_cycle_widget));
 }
 
 }  // namespace ash

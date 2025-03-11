@@ -473,19 +473,12 @@ void CookieSettings::AugmentInclusionStatus(
       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
 }
 
+// TODO(crbug.com/388550981): Deprecate this function; Storage Access Headers
+// is enabled by default.
 bool CookieSettings::IsStorageAccessHeadersEnabled(
     const GURL& url,
     base::optional_ref<const url::Origin> top_frame_origin) const {
-  if (base::FeatureList::IsEnabled(network::features::kStorageAccessHeaders)) {
-    return true;
-  }
-  return top_frame_origin &&
-         base::FeatureList::IsEnabled(
-             network::features::kStorageAccessHeadersTrial) &&
-         GetContentSetting(
-             url, top_frame_origin->GetURL(),
-             ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
-             /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
+  return base::FeatureList::IsEnabled(network::features::kStorageAccessHeaders);
 }
 
 bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(

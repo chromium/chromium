@@ -15,6 +15,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/view_class_properties.h"
 
 namespace page_actions {
 
@@ -29,6 +30,9 @@ PageActionView::PageActionView(
       icon_insets_(params.icon_insets),
       chip_state_changed_callback_(chip_state_changed_callback) {
   CHECK(action_item_->GetActionId().has_value());
+
+  SetProperty(views::kElementIdentifierKey,
+              action_item_->GetProperty(views::kElementIdentifierKey));
 
   if (params.font_list) {
     SetFontList(*params.font_list);

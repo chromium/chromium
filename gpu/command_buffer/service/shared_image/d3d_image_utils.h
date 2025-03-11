@@ -11,12 +11,13 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 
+#include <variant>
+
 // clang-format off
 #include <webgpu/webgpu_cpp.h>
 // clang-format on
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/buildflags.h"

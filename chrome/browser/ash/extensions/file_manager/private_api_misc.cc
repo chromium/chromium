@@ -263,12 +263,15 @@ api::file_manager_private::CloudProvider GetSkyVaultMigrationDestination() {
 
   auto cloud_provider = policy::local_user_files::GetMigrationDestination();
   switch (cloud_provider) {
-    case policy::local_user_files::CloudProvider::kNotSpecified:
+    case policy::local_user_files::MigrationDestination::kNotSpecified:
       return api::file_manager_private::CloudProvider::kNotSpecified;
-    case policy::local_user_files::CloudProvider::kGoogleDrive:
+    case policy::local_user_files::MigrationDestination::kGoogleDrive:
       return api::file_manager_private::CloudProvider::kGoogleDrive;
-    case policy::local_user_files::CloudProvider::kOneDrive:
+    case policy::local_user_files::MigrationDestination::kOneDrive:
       return api::file_manager_private::CloudProvider::kOnedrive;
+    case policy::local_user_files::MigrationDestination::kDelete:
+      // TODO(399394369): Add delete option to the IDL.
+      return api::file_manager_private::CloudProvider::kNotSpecified;
   }
 }
 

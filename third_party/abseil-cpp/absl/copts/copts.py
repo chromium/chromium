@@ -118,10 +118,6 @@ MSVC_WARNING_FLAGS = [
     "/wd4068",  # unknown pragma
     # qualifier applied to function type has no meaning; ignored
     "/wd4180",
-    # conversion from 'type1' to 'type2', possible loss of data
-    "/wd4244",
-    # conversion from 'size_t' to 'type', possible loss of data
-    "/wd4267",
     # The decorated name was longer than the compiler limit
     "/wd4503",
     # forcing value to bool 'true' or 'false' (performance warning)
@@ -158,24 +154,33 @@ def GccStyleFilterAndCombine(default_flags, test_flags):
 COPT_VARS = {
     "ABSL_GCC_FLAGS": ABSL_GCC_FLAGS,
     "ABSL_GCC_TEST_FLAGS": GccStyleFilterAndCombine(
-        ABSL_GCC_FLAGS, ABSL_GCC_TEST_ADDITIONAL_FLAGS),
+        ABSL_GCC_FLAGS, ABSL_GCC_TEST_ADDITIONAL_FLAGS
+    ),
     "ABSL_LLVM_FLAGS": ABSL_LLVM_FLAGS,
     "ABSL_LLVM_TEST_FLAGS": GccStyleFilterAndCombine(
-        ABSL_LLVM_FLAGS, ABSL_LLVM_TEST_ADDITIONAL_FLAGS),
-    "ABSL_CLANG_CL_FLAGS":
-        MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES,
-    "ABSL_CLANG_CL_TEST_FLAGS":
-        MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES + ABSL_LLVM_TEST_ADDITIONAL_FLAGS,
-    "ABSL_MSVC_FLAGS":
-        MSVC_BIG_WARNING_FLAGS + MSVC_WARNING_FLAGS + MSVC_DEFINES,
-    "ABSL_MSVC_TEST_FLAGS":
-        MSVC_BIG_WARNING_FLAGS + MSVC_WARNING_FLAGS + MSVC_DEFINES + [
+        ABSL_LLVM_FLAGS, ABSL_LLVM_TEST_ADDITIONAL_FLAGS
+    ),
+    "ABSL_CLANG_CL_FLAGS": MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES,
+    "ABSL_CLANG_CL_TEST_FLAGS": (
+        MSVC_BIG_WARNING_FLAGS + MSVC_DEFINES + ABSL_LLVM_TEST_ADDITIONAL_FLAGS
+    ),
+    "ABSL_MSVC_FLAGS": (
+        MSVC_BIG_WARNING_FLAGS + MSVC_WARNING_FLAGS + MSVC_DEFINES
+    ),
+    "ABSL_MSVC_TEST_FLAGS": (
+        MSVC_BIG_WARNING_FLAGS
+        + MSVC_WARNING_FLAGS
+        + MSVC_DEFINES
+        + [
             "/wd4018",  # signed/unsigned mismatch
             "/wd4101",  # unreferenced local variable
+            "/wd4244",  # shortening conversion
+            "/wd4267",  # shortening conversion
             "/wd4503",  # decorated name length exceeded, name was truncated
             "/wd4996",  # use of deprecated symbol
             "/DNOMINMAX",  # disable the min() and max() macros from <windows.h>
-        ],
+        ]
+    ),
     "ABSL_MSVC_LINKOPTS": [
         # Object file doesn't export any previously undefined symbols
         "-ignore:4221",

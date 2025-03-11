@@ -41,17 +41,15 @@
     _consumer = consumer;
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-    if (IsInactiveTabsAvailable()) {
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
 
-      // Use InactiveTabsTimeThreshold() instead of reading the pref value
-      // directly as this function also manage flag and default value.
-      int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser(_prefs)
-                                 ? kInactiveTabsDisabledByUser
-                                 : InactiveTabsTimeThreshold(_prefs).InDays();
-      [_consumer setInactiveTabsTimeThreshold:currentThreshold];
-    }
+    // Use InactiveTabsTimeThreshold() instead of reading the pref value
+    // directly as this function also manage flag and default value.
+    int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser(_prefs)
+                               ? kInactiveTabsDisabledByUser
+                               : InactiveTabsTimeThreshold(_prefs).InDays();
+    [_consumer setInactiveTabsTimeThreshold:currentThreshold];
   }
   return self;
 }
@@ -67,7 +65,6 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
-    CHECK(IsInactiveTabsAvailable());
     [_consumer
         setInactiveTabsTimeThreshold:_prefs->GetInteger(
                                          prefs::kInactiveTabsTimeThreshold)];

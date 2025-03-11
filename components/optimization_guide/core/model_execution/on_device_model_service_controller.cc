@@ -157,8 +157,6 @@ OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
     ExecuteRemoteFn execute_remote_fn,
     base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
-    base::WeakPtr<ModelQualityLogsUploaderService>
-        model_quality_uploader_service,
     const std::optional<SessionConfigParams>& config_params) {
   OnDeviceModelEligibilityReason reason = CanCreateSession(feature);
   CHECK_NE(reason, OnDeviceModelEligibilityReason::kUnknown);
@@ -198,11 +196,6 @@ OnDeviceModelServiceController::CreateSession(
   opts.adapter = adaptation_metadata->adapter();
 
   opts.logger = optimization_guide_logger;
-  opts.log_uploader =
-      (config_params && config_params->logging_mode ==
-                            SessionConfigParams::LoggingMode::kAlwaysDisable
-           ? nullptr
-           : model_quality_uploader_service);
 
   return std::make_unique<SessionImpl>(
       feature, std::move(opts), std::move(execute_remote_fn), config_params);

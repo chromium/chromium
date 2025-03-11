@@ -12,8 +12,4 @@ BASE_FEATURE(kPrivateAggregationApiDebugModeRequires3pcEligibility,
              "PrivateAggregationApiDebugModeRequires3pcEligibility",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateAggregationApiErrorReporting,
-             "PrivateAggregationApiErrorReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace content

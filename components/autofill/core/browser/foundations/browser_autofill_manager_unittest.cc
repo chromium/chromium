@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
-#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_executor.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -78,7 +76,10 @@
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
@@ -3353,6 +3354,45 @@ TEST_F(BrowserAutofillManagerTest,
               testing::Optional(filled_card.instrument_id()));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST_F(BrowserAutofillManagerTest, FillOrPreviewCreditCardForm_Bnpl) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+
+  CreditCard bnpl_virtual_card = test::GetVirtualCard();
+  bnpl_virtual_card.set_issuer_id(kBnplAffirmIssuerId);
+  bnpl_virtual_card.set_is_bnpl_card(/*is_bnpl_card=*/true);
+
+  TestPaymentsDataManager& test_paydm = static_cast<TestPaymentsDataManager&>(
+      payments_client().GetPaymentsDataManager());
+  test_paydm.AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  prefs::SetAutofillBnplEnabled(client().GetPrefs(), true);
+
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
+
+  using Options = FilledCardInformationBubbleOptions;
+  EXPECT_CALL(
+      payments_client(),
+      OnCardDataAvailable(AllOf(
+          Field(&Options::masked_card_name,
+                bnpl_virtual_card.CardNameForAutofillDisplay()),
+          Field(&Options::masked_card_number_last_four,
+                bnpl_virtual_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+          Field(&Options::cvc, bnpl_virtual_card.cvc()),
+          Field(&Options::filled_card, bnpl_virtual_card))));
+
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      bnpl_virtual_card, AutofillTriggerSource::kPopup);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_CardInfoRetrievalEnrolledCard) {
   CreditCard filled_card = test::WithCvc(test::GetFullServerCard());
@@ -3397,6 +3437,7 @@ TEST_F(BrowserAutofillManagerTest,
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   CreditCard credit_card = test::GetVirtualCard();
   credit_card.set_issuer_id(issuer.issuer_id());
+  credit_card.set_is_bnpl_card(/*is_bnpl_card=*/true);
   test_api(client().GetPersonalDataManager().payments_data_manager())
       .AddBnplIssuer(issuer);
 
@@ -6803,8 +6844,6 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   FormsSeen({form});
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsFormAndFieldEligibleForAutofillAi)
-      .WillByDefault(Return(true));
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
   EXPECT_CALL(delegate, GetSuggestions).WillOnce(Return(suggestions));
@@ -6823,8 +6862,6 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
   FormsSeen({form});
 
   MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsFormAndFieldEligibleForAutofillAi)
-      .WillByDefault(Return(false));
   ON_CALL(delegate, ShouldDisplayIph).WillByDefault(Return(true));
 
   EXPECT_CALL(client(), ShowAutofillFieldIphForFeature(
@@ -6835,17 +6872,13 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
 }
 
 // Tests that an Autofill profile is not imported into the address data manager
-// when the submitted form was imported into user annotations successfully.
+// when the submitted form was imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest,
        ProfileNotImportedOnSuccessfulUserAnnotationsImport) {
   using optimization_guide::proto::UserAnnotationsEntry;
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligibleForFillingAndImporting)
-      .WillByDefault(Return(true));
 
   // Fill the form.
   FormData response_data =
@@ -6859,22 +6892,19 @@ TEST_F(BrowserAutofillManagerTest,
   // prediction improvements.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(delegate, MaybeImportForm).WillOnce(Return(true));
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), MaybeImportForm)
+      .WillOnce(Return(true));
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
 
 // Tests that an Autofill profile is imported into the address data manager when
-// the submitted form was not imported into user annotations.
+// the submitted form was not imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest,
        ProfileImportedOnFailedUserAnnotationsImport) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligibleForFillingAndImporting)
-      .WillByDefault(Return(true));
 
   // Fill the form.
   FormData response_data =
@@ -6887,32 +6917,10 @@ TEST_F(BrowserAutofillManagerTest,
   // that the profile is imported again.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(delegate, MaybeImportForm).WillOnce(Return(false));
+  EXPECT_CALL(*client().GetAutofillAiDelegate(), MaybeImportForm)
+      .WillOnce(Return(false));
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
-}
-
-// Tests that the filled-in form is not imported into user annotations if
-// the user is not eligible for the improved autofill prediction experience.
-TEST_F(BrowserAutofillManagerTest, CC) {
-  TestAddressDataManager& adm = personal_data().test_address_data_manager();
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
-  MockAutofillAiDelegate& delegate = *client().GetAutofillAiDelegate();
-  ON_CALL(delegate, IsUserEligible).WillByDefault(Return(false));
-  EXPECT_CALL(delegate, MaybeImportForm).Times(0);
-
-  // Fill the form.
-  FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
-
-  // Remove the filled profile and simulate form submission. Since the
-  // `personal_data()`'s auto accept imports for testing is enabled, expect
-  // that the profile is imported again.
-  adm.ClearProfiles();
-  ASSERT_TRUE(adm.GetProfiles().empty());
-  FormSubmitted(response_data);
 }
 
 class BrowserAutofillManagerWithAiModelTest

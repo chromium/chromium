@@ -269,7 +269,9 @@ AIManager::CreateLanguageModelInternal(
     AIContextBoundObjectSet& context_bound_object_set,
     AIUtils::LanguageCodes expected_input_languages,
     base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
-    const std::optional<const AILanguageModel::Context>& context) {
+    const std::optional<const AILanguageModel::Context>& context,
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        override_session) {
   blink::mojom::AILanguageModelParamsPtr language_model_params =
       GetLanguageModelParams();
 
@@ -320,6 +322,7 @@ AIManager::CreateLanguageModelInternal(
           browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
           std::move(expected_input_languages), context, std::ref(*this),
           std::move(callback)));
+  task->set_override_session(std::move(override_session));
   task->Start();
   return task;
 }
@@ -616,7 +619,9 @@ void AIManager::CreateLanguageModelForCloning(
     AIUtils::LanguageCodes expected_input_languages,
     const AILanguageModel::Context& context,
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote) {
+        client_remote,
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        override_session) {
   auto create_language_model_callback = base::BindOnce(
       [](AIContextBoundObjectSet& context_bound_object_set,
          mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
@@ -641,7 +646,8 @@ void AIManager::CreateLanguageModelForCloning(
   auto task = CreateLanguageModelInternal(
       std::move(sampling_params), context_bound_object_set,
       std::move(expected_input_languages),
-      std::move(create_language_model_callback), context);
+      std::move(create_language_model_callback), context,
+      std::move(override_session));
   // The on-device model must be available before the existing language model
   // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
   // complete without waiting for the on-device model availability changes.

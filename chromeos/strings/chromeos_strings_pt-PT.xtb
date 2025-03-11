@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animação de proteção de ecrã</translation>
 <translation id="152892567002884378">Aumentar o volume</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Escolha um tema e, de seguida, selecione as palavras sublinhadas para personalizar as suas imagens de IA.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecione "Inspirar-me" para ver mais opções de imagens de IA únicas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando cria com IA, o comando é enviado para os servidores de IA da Google para gerar imagens e melhorar o produto, sujeito à <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidade da Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA generativa é experimental, está em desenvolvimento inicial e tem atualmente disponibilidade limitada.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">cor retroiluminada</translation>
@@ -1553,6 +1562,16 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Use a IA da Google para aumentar a produtividade</translation>
+<translation id="82003371436638355">Quando selecionar "Crie a sua", escreva um comando personalizado. Em alternativa, pode selecionar "Escolher tema" e, de seguida, selecionar as palavras sublinhadas para personalizar o seu fundo de IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecione "Inspirar-me" para ver mais opções de imagens de IA únicas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando cria a sua imagem de fundo, o comando é enviado para os servidores da Google para gerar imagens e melhorar o produto, sujeito aos <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termos de Utilização e à Política de Privacidade da Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Não inclua informações pessoais nem confidenciais.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, verifique as informações. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Saiba mais<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
@@ -1574,6 +1593,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8312330582793120272">reproduzir conteúdo multimédia</translation>
 <translation id="8318753676953949627">Não existem imagens</translation>
 <translation id="8320910311642849813">floresta</translation>
+<translation id="8322464149031882595">Clique para avançar</translation>
 <translation id="8329018942023753850">app calculadora</translation>
 <translation id="8336739000755212683">Alterar imagem da conta do dispositivo</translation>
 <translation id="8339024191194156249">Saber mais sobre o início automático</translation>
@@ -1720,6 +1740,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8961025972867871808">pinguins</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
+<translation id="8972061581514441296">Clicar para voltar</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">aldeia</translation>

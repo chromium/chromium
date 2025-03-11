@@ -54,7 +54,10 @@ class AIManager : public base::SupportsUserData::Data,
       AIUtils::LanguageCodes expected_input_languages,
       const AILanguageModel::Context& context,
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-          client_remote);
+          client_remote,
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>
+          override_session);
 
   size_t GetContextBoundObjectSetSizeForTesting() {
     return context_bound_object_set_.GetSizeForTesting();
@@ -148,7 +151,10 @@ class AIManager : public base::SupportsUserData::Data,
       AIUtils::LanguageCodes expected_input_languages,
       base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
       const std::optional<const AILanguageModel::Context>& context =
-          std::nullopt);
+          std::nullopt,
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>
+          override_session = nullptr);
 
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);

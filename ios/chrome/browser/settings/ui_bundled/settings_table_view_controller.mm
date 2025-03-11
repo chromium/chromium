@@ -141,7 +141,6 @@
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs.h"
@@ -553,37 +552,21 @@ struct EnhancedSafeBrowsingActivePromoData
   bool shouldShowDownloadsSettings =
       (photosService && photosService->IsSupported()) ||
       IsDownloadAutoDeletionFeatureEnabled();
-  if (IsInactiveTabsAvailable()) {
-    [model addItem:[self tabsSettingsDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  [model addItem:[self tabsSettingsDetailItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-    // Info Section
-    [model addSectionWithIdentifier:SettingsSectionIdentifierInfo];
-    [model addItem:[self languageSettingsDetailItem]
+  // Info Section
+  [model addSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  [model addItem:[self languageSettingsDetailItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  [model addItem:[self contentSettingsDetailItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  if (shouldShowDownloadsSettings) {
+    [model addItem:[self downloadsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
-    [model addItem:[self contentSettingsDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
-    if (shouldShowDownloadsSettings) {
-      [model addItem:[self downloadsSettingsDetailItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierInfo];
-    }
-    [model addItem:[self bandwidthManagementDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
-  } else {
-    [model addItem:[self languageSettingsDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-    [model addItem:[self contentSettingsDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-    if (shouldShowDownloadsSettings) {
-      [model addItem:[self downloadsSettingsDetailItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-    }
-    [model addItem:[self bandwidthManagementDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-
-    // Info Section
-    [model addSectionWithIdentifier:SettingsSectionIdentifierInfo];
   }
+  [model addItem:[self bandwidthManagementDetailItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   [model addItem:[self aboutChromeDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierInfo];
 

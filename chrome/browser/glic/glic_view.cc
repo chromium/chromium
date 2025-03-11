@@ -32,6 +32,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicView, kWebViewElementIdForTesting);
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetBackground(views::CreateRoundedRectBackground(kDefaultBackgroundColor,
+                                                   kCornerRadius));
   auto web_view = std::make_unique<views::WebView>(profile);
   web_view->SetProperty(views::kElementIdentifierKey,
                         kWebViewElementIdForTesting);

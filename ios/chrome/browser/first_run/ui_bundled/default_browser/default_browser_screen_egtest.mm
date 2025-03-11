@@ -112,6 +112,12 @@ id<GREYMatcher> DefaultPromoSubtitle() {
     config.additional_args.push_back("true");
   }
   // Disable feature since SegmentedDefaultBrowserPromo and
+  // AnimatedDefaultBrowserPromoInFRE experiments will be run disjointly and
+  // Animated Default Browser introduces a new Default Browser screen with a
+  // different ID.
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
+  // Disable feature since SegmentedDefaultBrowserPromo and
   // UpdatedFirstRunSequence experiments will be run disjointly and only one
   // will be launched.
   config.additional_args.push_back(

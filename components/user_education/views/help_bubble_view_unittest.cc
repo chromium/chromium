@@ -350,7 +350,7 @@ class HelpBubbleViewsTest : public HelpBubbleViewTest {
     help_bubble_ = CreateHelpBubble(std::move(params), test_element_.get());
 
     // CreateHelpBubble() will trigger an asynchronous autosize task.
-    views::test::RunScheduledLayout(help_bubble_->bubble_view());
+    views::test::RunScheduledLayout(help_bubble_->bubble_view_for_testing());
   }
 
   void TearDown() override {
@@ -360,7 +360,7 @@ class HelpBubbleViewsTest : public HelpBubbleViewTest {
 
  protected:
   gfx::Rect GetHelpBubbleAnchorRect() const {
-    return help_bubble_->bubble_view()->GetAnchorRect();
+    return help_bubble_->bubble_view_for_testing()->GetAnchorRect();
   }
 
   std::unique_ptr<ui::test::TestElement> test_element_;
@@ -426,7 +426,9 @@ TEST_F(HelpBubbleViewsTest, AnchorRectOverlapsEdge) {
 
   // Bubble may have mirrored horizontally. Check which orientation it's in and
   // verify the position is appropriate to the new anchor region.
-  switch (help_bubble_->bubble_view()->GetBubbleFrameView()->GetArrow()) {
+  switch (help_bubble_->bubble_view_for_testing()
+              ->GetBubbleFrameView()
+              ->GetArrow()) {
     case views::BubbleBorder::RIGHT_CENTER:
       EXPECT_LT(help_bubble_bounds.x(), old_bounds.x());
       EXPECT_LT(help_bubble_bounds.right(), kNewAnchorBounds.x());
@@ -503,20 +505,20 @@ TEST_F(HelpBubbleViewsTest, MoveAnchorWidget) {
 
 TEST_F(HelpBubbleViewsTest, RootViewAccessibleName) {
   ui::AXNodeData root_view_data;
-  help_bubble_->bubble_view()
+  help_bubble_->bubble_view_for_testing()
       ->GetWidget()
       ->GetRootView()
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&root_view_data);
   EXPECT_EQ(
       root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      help_bubble_->bubble_view()->GetAccessibleWindowTitle());
+      help_bubble_->bubble_view_for_testing()->GetAccessibleWindowTitle());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 TEST_F(HelpBubbleViewsTest, MinimizeAnchorWidget) {
   views::test::WidgetDestroyedWaiter waiter(
-      help_bubble_->bubble_view()->GetWidget());
+      help_bubble_->bubble_view_for_testing()->GetWidget());
   widget_->Minimize();
   waiter.Wait();
 }

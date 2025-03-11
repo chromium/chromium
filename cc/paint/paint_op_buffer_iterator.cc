@@ -4,6 +4,8 @@
 
 #include "cc/paint/paint_op_buffer_iterator.h"
 
+#include <variant>
+
 namespace cc {
 
 namespace {
@@ -42,10 +44,10 @@ static const PaintOp* GetNestedSingleDrawingOp(const PaintOp* op) {
 PaintOpBuffer::CompositeIterator::CompositeIterator(
     const PaintOpBuffer& buffer,
     const std::vector<size_t>* offsets)
-    : iter_(offsets == nullptr ? absl::variant<Iterator, OffsetIterator>(
+    : iter_(offsets == nullptr ? std::variant<Iterator, OffsetIterator>(
                                      std::in_place_type<Iterator>,
                                      buffer)
-                               : absl::variant<Iterator, OffsetIterator>(
+                               : std::variant<Iterator, OffsetIterator>(
                                      std::in_place_type<OffsetIterator>,
                                      buffer,
                                      *offsets)) {}

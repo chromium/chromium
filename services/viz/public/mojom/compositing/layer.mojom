@@ -285,14 +285,6 @@ struct EffectNode {
 
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;
-
-  // State related to copy output requests.
-  // TODO(crbug.com/396060177): Stop passing this state over the wire once it is
-  // updated on EffectNodes via EffectTree::AddCopyRequest(), as it will then be
-  // properly updated on the Viz side by LayerContextImpl's handling of the
-  // `copy_output_requests` that are passed over the wire for each node.
-  bool subtree_has_copy_request;
-  int32 closest_ancestor_with_copy_request_id;
 };
 
 // Details about a new or updated node within a scroll property tree.

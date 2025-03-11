@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -44,7 +45,6 @@
 #include "headless/lib/utility/headless_content_utility_client.h"
 #include "headless/public/switches.h"
 #include "sandbox/policy/switches.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -82,7 +82,6 @@
 #if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
 #include "content/public/app/initialize_mojo_core.h"
 #include "headless/lib/browser/headless_field_trials.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #endif
 
 namespace headless {
@@ -442,7 +441,7 @@ void HeadlessContentMainDelegate::PreSandboxStartup() {
   InitApplicationLocale(command_line);
 }
 
-absl::variant<int, content::MainFunctionParams>
+std::variant<int, content::MainFunctionParams>
 HeadlessContentMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
@@ -559,8 +558,9 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
 
 std::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
-  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in))
+  if (std::holds_alternative<InvokedInChildProcess>(invoked_in)) {
     return std::nullopt;
+  }
 
 #if defined(HEADLESS_USE_PREFS)
   browser_->CreatePrefService();
@@ -604,7 +604,7 @@ bool HeadlessContentMainDelegate::ShouldCreateFeatureList(
     InvokedIn invoked_in) {
   // The content layer is always responsible for creating the FeatureList in
   // child processes.
-  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in)) {
+  if (std::holds_alternative<InvokedInChildProcess>(invoked_in)) {
     return true;
   }
 

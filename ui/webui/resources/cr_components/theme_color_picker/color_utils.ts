@@ -7,12 +7,13 @@ import type {BrowserColorVariant} from '//resources/mojo/ui/base/mojom/themes.mo
 export interface Color {
   background: SkColor;
   foreground: SkColor;
-  base?: SkColor;
+  base: SkColor;
 }
 
 export const EMPTY_COLOR: Color = {
   background: {value: 0},
   foreground: {value: 0},
+  base: {value: 0},
 };
 
 export const LIGHT_DEFAULT_COLOR: Color = {

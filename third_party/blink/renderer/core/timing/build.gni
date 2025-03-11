@@ -32,6 +32,8 @@ blink_core_sources_timing = [
   "not_restored_reason_details.h",
   "performance.cc",
   "performance.h",
+  "performance_container_timing.cc",
+  "performance_container_timing.h",
   "performance_element_timing.cc",
   "performance_element_timing.h",
   "performance_entry.cc",

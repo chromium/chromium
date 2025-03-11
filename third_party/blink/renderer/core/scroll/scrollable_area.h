@@ -373,6 +373,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Returns a floored version of the scroll offset as the web-exposed scroll
   // offset to ensure web compatibility in DOM APIs.
   virtual ScrollOffset GetWebExposedScrollOffset() const;
+  ScrollOffset GetScrollOffsetForScrollMarkerUpdate();
   virtual gfx::Vector2d MinimumScrollOffsetInt() const = 0;
   virtual ScrollOffset MinimumScrollOffset() const {
     return ScrollOffset(MinimumScrollOffsetInt());

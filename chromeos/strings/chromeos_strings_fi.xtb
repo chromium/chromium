@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Näytönsäästäjän animaatio</translation>
 <translation id="152892567002884378">Lisää äänenvoimakkuutta</translation>
 <translation id="1539864135338521185">lapislatsuli</translation>
+<translation id="1548555207631326346">Valitse teema ja sitten alleviivatut sanat, niin voit personoida tekoälyn generoimia kuviasi.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Valitse "Kaipaan inspiraatiota", jos haluat nähdä yksilöllisempiä ja monipuolisempia tekoälyn generoimia kuvavaihtoehtoja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kun käytät tekoälyä, kehote lähetetään Googlen tekoälypalvelimille ja sitä käytetään kuvien luomiseen ja tuotteen parantamiseen <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiivinen tekoäly on kokeellinen ja se on vielä kehitysvaiheessa, ja sen saatavuus on tällä hetkellä rajoitettu.</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1561927818299383735">taustavalon väri</translation>
@@ -1553,6 +1562,16 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ranta</translation>
 <translation id="819278132617411009">Käytä Google tekoälyä tuottavuuden tehostamiseen</translation>
+<translation id="82003371436638355">Kirjoita oma kehote, kun valitset "Luo oma". Voit myös valita "Valitse teema" ja sitten alleviivatut sanat, niin voit personoida AI-taustakuvaasi.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Valitse "Kaipaan inspiraatiota", jos haluat nähdä yksilöllisempiä ja monipuolisempia tekoälyn generoimia kuvavaihtoehtoja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kun luot oman taustakuvan, kehote lähetetään Googlen palvelimille ja sitä käytetään kuvien luomiseen ja tuotteen parantamiseen <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen käyttöehtojen ja tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiivinen tekoäly voi tehdä virheitä, myös ihmisiin liittyviä, joten tarkista sen vastaukset. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lue lisää<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
@@ -1574,6 +1593,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8312330582793120272">toista mediaa</translation>
 <translation id="8318753676953949627">Ei kuvia</translation>
 <translation id="8320910311642849813">metsä</translation>
+<translation id="8322464149031882595">Siirry eteenpäin klikkaamalla</translation>
 <translation id="8329018942023753850">laskin-sovellus</translation>
 <translation id="8336739000755212683">Vaihda laitteen tilikuva</translation>
 <translation id="8339024191194156249">Lue lisää automaattisesta käynnistyksestä</translation>
@@ -1720,6 +1740,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8961025972867871808">pingviinit</translation>
 <translation id="8968751544471797276">Latausnopeus</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
+<translation id="8972061581514441296">Siirry takaisin klikkaamalla</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skannaa}=1{Skannaa sivu {NUMBER_OF_PAGES}}other{Skannaa sivu {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">kylä</translation>

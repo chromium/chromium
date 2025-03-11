@@ -4,11 +4,11 @@
 
 package org.chromium.components.collaboration;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.url.GURL;
@@ -17,6 +17,7 @@ import org.chromium.url.GURL;
  * CollaborationService is the core class for managing collaboration group flows. It represents a
  * native CollaborationService object in Java.
  */
+@NullMarked
 public interface CollaborationService {
     /** Observers for listening updates from the CollaborationService. */
     interface Observer {
@@ -56,7 +57,6 @@ public interface CollaborationService {
     void startShareOrManageFlow(CollaborationControllerDelegate delegate, String syncId);
 
     /** Returns the current {@link ServiceStatus} of the service. */
-    @NonNull
     ServiceStatus getServiceStatus();
 
     /**
@@ -75,8 +75,7 @@ public interface CollaborationService {
      * @param collaborationId The collaboration group id.
      * @return The {@link GroupData} of the group.
      */
-    @Nullable
-    GroupData getGroupData(String collaborationId);
+    @Nullable GroupData getGroupData(String collaborationId);
 
     /**
      * Attempt to leave a collaboration group.

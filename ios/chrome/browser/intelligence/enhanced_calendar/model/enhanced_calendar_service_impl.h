@@ -14,10 +14,17 @@ class OptimizationGuideService;
 namespace optimization_guide {
 class ModelQualityLogEntry;
 struct OptimizationGuideModelExecutionResult;
+
+namespace proto {
+class PageContext;
+class EnhancedCalendarRequest;
+}  // namespace proto
 }  // namespace optimization_guide
 
+@class PageContextWrapper;
+
 namespace web {
-class BrowserState;
+class WebState;
 }  // namespace web
 
 namespace ai {
@@ -26,7 +33,7 @@ class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService {
  public:
   explicit EnhancedCalendarServiceImpl(
       mojo::PendingReceiver<mojom::EnhancedCalendarService> receiver,
-      web::BrowserState* browser_state);
+      web::WebState* web_state);
   ~EnhancedCalendarServiceImpl() override;
   EnhancedCalendarServiceImpl(const EnhancedCalendarServiceImpl&) = delete;
   EnhancedCalendarServiceImpl& operator=(const EnhancedCalendarServiceImpl&) =
@@ -34,10 +41,17 @@ class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService {
 
   // ai::mojom::EnhancedCalendarServiceImpl:
   void ExecuteEnhancedCalendarRequest(
-      ::mojo_base::ProtoWrapper request,
+      mojom::EnhancedCalendarServiceRequestParamsPtr request_params,
       ExecuteEnhancedCalendarRequestCallback request_callback) override;
 
  private:
+  // Handles the generated PageContext proto and executes the Enhanced Calendar
+  // request.
+  void OnPageContextGenerated(
+      optimization_guide::proto::EnhancedCalendarRequest request,
+      ExecuteEnhancedCalendarRequestCallback request_callback,
+      std::unique_ptr<optimization_guide::proto::PageContext> page_context);
+
   // Handles the Enhanced Calendar response (calls `request_callback` with the
   // response proto or error).
   void OnEnhancedCalendarResponse(
@@ -50,6 +64,12 @@ class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService {
 
   // Receiver throughout the EnhancedCalendarService lifecycle.
   mojo::Receiver<mojom::EnhancedCalendarService> receiver_;
+
+  // Weak WebState.
+  base::WeakPtr<web::WebState> web_state_;
+
+  // The service's PageContext wrapper.
+  PageContextWrapper* page_context_wrapper_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<EnhancedCalendarServiceImpl> weak_ptr_factory_{this};

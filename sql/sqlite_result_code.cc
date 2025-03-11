@@ -308,6 +308,22 @@ file lock requests"
      static_cast<int>(SqliteLoggedResultCode::kIoCorruptFileSystem)},
 };
 
+// Number of #defines in https://www.sqlite.org/c3ref/c_abort.html
+//
+// This number is also stated at
+// https://www.sqlite.org/rescode.html#primary_result_code_list
+static constexpr int kPrimaryResultCodes = 31;
+
+// Number of #defines in https://www.sqlite.org/c3ref/c_abort_rollback.html
+//
+// This number is also stated at
+// https://www.sqlite.org/rescode.html#extended_result_code_list
+static constexpr int kExtendedResultCodes = 74;
+
+static_assert(std::size(kResultCodeMapping) ==
+                  size_t{kPrimaryResultCodes + kExtendedResultCodes},
+              "Mapping table has incorrect number of entries");
+
 // Looks up a `sqlite_result_code` in the mapping tables.
 //
 // Returns an entry in kResultCodeMapping or kUnknownResultCodeMappingEntry.
@@ -447,22 +463,6 @@ void CheckSqliteLoggedResultCodeForTesting() {
         << "Unmapped SQLite result code: " << result_code
         << " SQLite message: " << error_message;
   }
-
-  // Number of #defines in https://www.sqlite.org/c3ref/c_abort.html
-  //
-  // This number is also stated at
-  // https://www.sqlite.org/rescode.html#primary_result_code_list
-  static constexpr int kPrimaryResultCodes = 31;
-
-  // Number of #defines in https://www.sqlite.org/c3ref/c_abort_rollback.html
-  //
-  // This number is also stated at
-  // https://www.sqlite.org/rescode.html#extended_result_code_list
-  static constexpr int kExtendedResultCodes = 74;
-
-  DCHECK_EQ(std::size(kResultCodeMapping),
-            size_t{kPrimaryResultCodes + kExtendedResultCodes})
-      << "Mapping table has incorrect number of entries";
 }
 
 }  // namespace sql

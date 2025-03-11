@@ -96,7 +96,7 @@ MojoVideoDecoder::MojoVideoDecoder(
     : task_runner_(task_runner),
       pending_remote_decoder_(std::move(pending_remote_decoder)),
       gpu_factories_(gpu_factories),
-      media_log_(media_log),
+      media_log_(media_log->Clone()),
       timestamps_(128),
       writer_capacity_(
           GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO)),

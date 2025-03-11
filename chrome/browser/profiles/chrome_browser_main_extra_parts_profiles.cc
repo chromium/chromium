@@ -187,7 +187,6 @@
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
-#include "chrome/browser/storage_access_api/storage_access_header_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
@@ -1285,7 +1284,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   SpellcheckServiceFactory::GetInstance();
 #endif
   StatefulSSLHostStateDelegateFactory::GetInstance();
-  storage_access_api::trial::StorageAccessHeaderServiceFactory::GetInstance();
   StorageAccessAPIServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   StorageNotificationServiceFactory::GetInstance();

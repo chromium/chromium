@@ -107,8 +107,7 @@ class GlicCookieSynchronizerTest : public testing::Test {
 
   GURL RequestURL() const {
     return GaiaUrls::GetInstance()->oauth_multilogin_url().Resolve(
-        base::StringPrintf("?source=%s&reuseCookies=0",
-                           GaiaConstants::kChromeSource));
+        base::StringPrintf("?source=%s&reuseCookies=0", "ChromiumGlic"));
   }
 
   void SetUp() override {

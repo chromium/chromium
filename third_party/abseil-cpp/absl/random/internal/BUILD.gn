@@ -44,7 +44,7 @@ absl_source_set("seed_material") {
   }
   deps = [
     ":fast_uniform_bits",
-    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/strings",
@@ -55,18 +55,16 @@ absl_source_set("seed_material") {
   visibility = [ "//third_party/abseil-cpp/absl/random/*" ]
 }
 
-absl_source_set("pool_urbg") {
-  public = [ "pool_urbg.h" ]
-  sources = [ "pool_urbg.cc" ]
+absl_source_set("entropy_pool") {
+  public = [ "entropy_pool.h" ]
+  sources = [ "entropy_pool.cc" ]
   deps = [
+    ":platform",
     ":randen",
     ":seed_material",
-    ":traits",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:endian",
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/random:seed_gen_exception",
     "//third_party/abseil-cpp/absl/types:span",
   ]
@@ -143,13 +141,12 @@ absl_source_set("wide_multiply") {
 absl_source_set("nonsecure_base") {
   public = [ "nonsecure_base.h" ]
   deps = [
-    ":pool_urbg",
+    ":entropy_pool",
     ":salted_seed_seq",
     ":seed_material",
-    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/meta:type_traits",
-    "//third_party/abseil-cpp/absl/types:span",
   ]
   visibility = [ "//third_party/abseil-cpp/absl/random/*" ]
 }
@@ -300,9 +297,11 @@ absl_test("nonsecure_base_test") {
   sources = [ "nonsecure_base_test.cc" ]
   deps = [
     ":nonsecure_base",
+    "//third_party/abseil-cpp/absl/container:flat_hash_set",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/random:distributions",
+    "//third_party/abseil-cpp/absl/synchronization",
   ]
 }
 

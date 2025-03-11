@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_
 
+#include <set>
 #include <string>
 
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -44,6 +45,9 @@ class MutableProfileAttributesStorageIOS : public ProfileAttributesStorageIOS {
 
   // Ensures that the "personal profile" exists.
   void EnsurePersonalProfileExists();
+
+  // Returns the list of all profiles marked for deletion.
+  std::set<std::string> GetProfilesMarkedForDeletion() const;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_

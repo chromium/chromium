@@ -573,6 +573,16 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
   return false;
 }
 
+void ChromeAutocompleteProviderClient::OpenLensOverlay() {
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/401583049): Prepare lens overlay controller directly.
+  if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
+    browser->command_controller()->ExecuteCommand(
+        IDC_CONTENT_CONTEXT_LENS_OVERLAY);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void ChromeAutocompleteProviderClient::PromptPageTranslation() {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();

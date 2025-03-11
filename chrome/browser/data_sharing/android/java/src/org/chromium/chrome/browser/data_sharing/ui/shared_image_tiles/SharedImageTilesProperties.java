@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** List of properties used by the SharedImageTiles component. */
+@NullMarked
 class SharedImageTilesProperties {
     // This will indicate the loading state of the shared_image_tiles view.
     public static final PropertyModel.WritableBooleanPropertyKey IS_LOADING =

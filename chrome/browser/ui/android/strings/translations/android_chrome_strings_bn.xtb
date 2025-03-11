@@ -1128,6 +1128,7 @@
 <translation id="6296366034485697675">এক্সপোর্ট করুন ও মুছে দিন</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
+<translation id="6307241780749477694">এই ডিভাইসে যাতে আপনার সব পাসওয়ার্ড পেতে পারেন সেই জন্য নিজের পরিচয় যাচাই করুন</translation>
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
 <translation id="6315386555979018699">মুছুন এবং এগিয়ে যান</translation>
 <translation id="6316139424528454185">এই Android ভার্সন সমর্থিত নয়</translation>
@@ -1389,6 +1390,7 @@
 <translation id="7359002509206457351">পেমেন্টের পদ্ধতি অ্যাক্সেস করুন</translation>
 <translation id="7363349185727752629">আপনার গোপনীয়তা পছন্দ গাইড</translation>
 <translation id="7364103838544876661">ব্রাউজ করা ডেটা মুছে দেওয়ার আরও বিকল্প</translation>
+<translation id="7365073365123878797">Google Password Manager-এর সাহায্যে পাসওয়ার্ড সেভ করা শুরু এবং ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন</translation>
 <translation id="7375125077091615385">প্রকার:</translation>
 <translation id="7376560087009844242">কোনও পৃষ্ঠার টেক্সটে আরও শব্দ যোগ করলে, 'সার্চ করতে টাচ করুন' ফিচার ব্যবহার করার সময় আপনি হয়ত আরও ভাল ফলাফল দেখতে পারবেন। এটি পরিবর্তন করতে আপনি সব সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" />-এ যেতে পারবেন।</translation>
 <translation id="7379900596734708416">সাইটের জন্য ডার্ক থিম উপলভ্য আছে</translation>
@@ -1467,10 +1469,12 @@
 <translation id="7686086654630106285">সাইট-প্রস্তাবিত বিজ্ঞাপন সম্পর্কে আরও অনেক কিছু</translation>
 <translation id="7690596512217303514">আপনার ডিভাইসে Chrome খোলা যায়নি। এই সমস্যার সমাধান করতে, নিজের অ্যাপ স্টোর থেকে লেটেস্ট Chrome আপডেট ডাউনলোড করুন।</translation>
 <translation id="7691043218961417207">ফলো করতে কন্টেন্ট এক্সপ্লোর করুন</translation>
+<translation id="7692761875510935111">ব্রাউজারে দ্রুত খুলুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে রাখুন।</translation>
 <translation id="7697383401610880082">টেনে আনার হ্যান্ডেল</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />-এ ইমেল আইডি তৈরি করুন</translation>
 <translation id="7702420606070050505">সাম্প্রতিক কার্যকলাপের স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="7707922173985738739">মোবাইল ডেটা ব্যবহার করুন</translation>
+<translation id="7708994397325774423">আপনার সব পাসওয়ার্ড পেয়ে যান</translation>
 <translation id="7733878270780732638">ডিভাইসে পর্যাপ্ত জায়গা নেই।</translation>
 <translation id="7746817319925672889">এই ডিভাইসে Google Password Manager শীঘ্রই কাজ করা বন্ধ করে দেবে</translation>
 <translation id="774876555279732384">এছাড়াও, অটোফিল পরিষেবা <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে ম্যানেজ করা হয়।</translation>
@@ -1612,6 +1616,7 @@
 <translation id="8310451567823644042">পাসওয়ার্ড শীঘ্রই কাজ করা বন্ধ করে দেবে</translation>
 <translation id="831192587911042850">আপনার ফলো করা ওয়েবসাইটের তালিকায় বর্তমান ওয়েব সাইট যোগ করে।</translation>
 <translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">যেসব সাইট অনেক বেশি বিজ্ঞপ্তি পাঠাতে পারে, Chrome আপনাকে তার সম্পর্কে জানাবে</translation>
 <translation id="834313815369870491">সাইট কখনও অনুবাদ করবেন না</translation>
 <translation id="8348430946834215779">যখনই সম্ভব, তখনই HTTPS ব্যবহার করুন এবং এখানে কাজ করে না এমন সাইট লোড করার আগে সতর্কতা পান</translation>
@@ -1743,6 +1748,7 @@
 <translation id="8937772741022875483">ডিজিটাল ওয়েলবিয়িং থেকে আপনার Chrome অ্যাক্টিভিটি সরিয়ে দিতে চান?</translation>
 <translation id="8942627711005830162">অন্য উইন্ডোতে খুলুন</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটি ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
+<translation id="8946759102391960088">আপনার পাসওয়ার্ডে অ্যাক্সেস রাখুন</translation>
 <translation id="8957528460562961174">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখতে, সেগুলি এখন এক্সপোর্ট করুন তারপর তা আপনার পছন্দের Password Manager-এ ইমপোর্ট করুন। Google Play পরিষেবা উপলভ্য না হওয়ার কারণে Google Password Manager কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8965591936373831584">বাকি আছে</translation>

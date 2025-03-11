@@ -28,11 +28,13 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -124,7 +126,7 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
         filled_card->ObfuscatedNumberWithVisibleLastFourDigits();
     options.filled_card = *filled_card;
     options.cvc = cvc;
-    options.card_image = gfx::test::CreateImage(32, 20);
+    options.card_image = card_image_;
     GetController()->ShowBubble(options);
     ASSERT_TRUE(event_waiter_->Wait());
   }
@@ -179,6 +181,9 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
     event_waiter_ =
         std::make_unique<EventWaiter<BubbleEvent>>(std::move(event_sequence));
   }
+
+ protected:
+  gfx::Image card_image_ = gfx::test::CreateImage(32, 20);
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
@@ -516,6 +521,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
+  card.set_is_bnpl_card(true);
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
@@ -555,6 +561,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
+  card.set_is_bnpl_card(true);
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
@@ -594,6 +601,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
+  card.set_is_bnpl_card(true);
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
@@ -640,6 +648,49 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
   EXPECT_EQ(u"John Smith " + clicked_button_tooltip,
             cardholder_name_button->GetViewAccessibility().GetCachedName());
+}
+
+// Test that the card image and name views are set from the credit card options.
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       CardImageAndName) {
+  CreditCard card = test::GetVirtualCard();
+  ShowBubble(&card, /*cvc=*/u"123");
+
+  ASSERT_TRUE(GetBubbleViews());
+  EXPECT_EQ(views::AsViewClass<views::Label>(
+                GetBubbleViews()->GetViewByID(
+                    FilledCardInformationBubbleViews::kCardName))
+                ->GetText(),
+            CreditCard::NetworkForDisplay(card.network()));
+  EXPECT_TRUE(views::AsViewClass<views::ImageView>(
+                  GetBubbleViews()->GetViewByID(
+                      FilledCardInformationBubbleViews::kCardImage))
+                  ->GetImage()
+                  .BackedBySameObjectAs(*card_image_.ToImageSkia()));
+}
+
+// Test BNPL-specific card image and name views.
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       BnplCardImageAndName) {
+  CreditCard card = test::GetVirtualCard();
+  card.set_is_bnpl_card(true);
+  test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
+  ShowBubble(&card, u"345");
+
+  ASSERT_TRUE(GetBubbleViews());
+  EXPECT_EQ(views::AsViewClass<views::Label>(
+                GetBubbleViews()->GetViewByID(
+                    FilledCardInformationBubbleViews::kCardName))
+                ->GetText(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  EXPECT_TRUE(
+      views::AsViewClass<views::ImageView>(
+          GetBubbleViews()->GetViewByID(
+              FilledCardInformationBubbleViews::kCardImage))
+          ->GetImage()
+          .BackedBySameObjectAs(*ui::ResourceBundle::GetSharedInstance()
+                                     .GetImageNamed(IDR_AUTOFILL_ZIP_LINKED)
+                                     .ToImageSkia()));
 }
 
 class FilledCardInformationBubbleViewsPrerenderTest

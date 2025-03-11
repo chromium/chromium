@@ -39,6 +39,9 @@ constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPoint = 0.94;
 // The form suggestion view's layer mask gradient's end point.
 constexpr CGFloat kFormSuggestionViewLayerMaskGradientEndPoint = 1.0;
 
+// Manual fill icon point size (tablets only).
+constexpr CGFloat kManualFillSymbolPointSize = 20;
+
 // Logs the right metrics when the manual fallback menu is opened from the
 // keyboard accessory's expand icon.
 void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
@@ -408,6 +411,16 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       self.formAccessoryVisible;
 }
 
+// Returns the manual fill symbol used for the current device form factor.
+UIImage* GetManualFillSymbol() {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return DefaultSymbolWithPointSize(kListBulletSymbol,
+                                      kManualFillSymbolPointSize);
+  }
+
+  return DefaultSymbolWithPointSize(kExpandSymbol, kSymbolActionPointSize);
+}
+
 // Creates formInputAccessoryView if not done yet.
 - (void)createFormInputAccessoryViewIfNeeded {
   if (self.formInputAccessoryView) {
@@ -438,10 +451,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     [formInputAccessoryView
               setUpWithLeadingView:self.leadingView
                 navigationDelegate:self.navigationDelegate
-                  manualFillSymbol:DefaultSymbolWithPointSize(
-                                       isTabletFormFactor ? kListBulletSymbol
-                                                          : kExpandSymbol,
-                                       kSymbolActionPointSize)
+                  manualFillSymbol:GetManualFillSymbol()
           passwordManualFillSymbol:CustomSymbolWithPointSize(
                                        kPasswordSymbol, kSymbolActionPointSize)
         creditCardManualFillSymbol:DefaultSymbolWithPointSize(

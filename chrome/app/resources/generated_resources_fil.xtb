@@ -2304,6 +2304,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="256517381556987641">Sa ngayon, may nahanap na <ph name="ITEMS_FOUND" /> file ang Pag-sync ng file at sinusuri pa rin ang storage space. Subukang i-on ulit ang Pag-sync ng file sa loob ng ilang minuto.</translation>
 <translation id="2565214867520763227">I-on ang screen reader</translation>
 <translation id="2566146433999774844">Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUM_OTHER_MEMBERS" /> pang iba</translation>
+<translation id="256726287944589768">Ipakita ang footer sa page na Bagong Tab</translation>
 <translation id="2568694057933302218">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Pangalan ng Retailer</translation>
@@ -2812,6 +2813,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2921081876747860777">Mangyaring gumawa ng password upang protektahan ang iyong lokal na data.</translation>
 <translation id="2923006468155067296">Ila-lock ngayon ang iyong <ph name="DEVICE_TYPE" />.
 Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart card.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> pang task sa parehong grupo ng gawain: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> pang task sa parehong grupo ng gawain: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Alisin ang account na ito</translation>
 <translation id="2923644930701689793">I-access ang camera roll ng iyong telepono</translation>
 <translation id="292371311537977079">Mga setting ng Chrome</translation>

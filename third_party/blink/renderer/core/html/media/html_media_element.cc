@@ -107,6 +107,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -195,9 +196,10 @@ String UrlForLoggingMedia(const KURL& url) {
 }
 
 DocumentElementSetMap& DocumentToElementSetMap() {
-  DEFINE_STATIC_LOCAL(Persistent<DocumentElementSetMap>, map,
-                      (MakeGarbageCollected<DocumentElementSetMap>()));
-  return *map;
+  using DocumentElementSetMapHolder = DisallowNewWrapper<DocumentElementSetMap>;
+  DEFINE_STATIC_LOCAL(Persistent<DocumentElementSetMapHolder>, holder,
+                      (MakeGarbageCollected<DocumentElementSetMapHolder>()));
+  return holder->Value();
 }
 
 void AddElementToDocumentMap(HTMLMediaElement* element, Document* document) {

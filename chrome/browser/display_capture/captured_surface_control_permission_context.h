@@ -21,16 +21,11 @@ class CapturedSurfaceControlPermissionContext
   CapturedSurfaceControlPermissionContext& operator=(
       const CapturedSurfaceControlPermissionContext&) = delete;
 
-  bool UsesAutomaticEmbargo() const override;
-
  protected:
   void UpdateContentSetting(const GURL& requesting_origin,
                             const GURL& embedding_origin,
                             ContentSetting content_setting,
                             bool is_one_time) override;
-
- private:
-  const bool sticky_permissions_;
 };
 
 }  // namespace permissions

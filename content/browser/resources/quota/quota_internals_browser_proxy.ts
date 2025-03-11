@@ -7,12 +7,6 @@ import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.
 import type {BucketTableEntry} from './quota_internals.mojom-webui.js';
 import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
-export enum StorageType {
-  TEMPORARY = 0,
-  // PERSISTENT = 1, DEPRECATED
-  SYNCABLE = 2,
-}
-
 interface GetDiskAvailabilityAndTempPoolSizeResult {
   totalSpace: bigint;
   availableSpace: bigint;
@@ -52,8 +46,8 @@ export class QuotaInternalsBrowserProxy {
     return this.handler.getDiskAvailabilityAndTempPoolSize();
   }
 
-  getGlobalUsage(storageType: number): Promise<GetGlobalUsageResult> {
-    return this.handler.getGlobalUsageForInternals(storageType);
+  getGlobalUsage(): Promise<GetGlobalUsageResult> {
+    return this.handler.getGlobalUsageForInternals();
   }
 
   getStatistics(): Promise<{evictionStatistics: {[key: string]: string}}> {

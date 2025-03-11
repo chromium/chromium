@@ -74,9 +74,9 @@ public final class MostVisitedTilesViewBinderUnitTest {
                     mFirstChildView = new TileView(sActivity, null);
                     mSecondChildView = new TileView(sActivity, null);
                     mThirdChildView = new TileView(sActivity, null);
-                    mMvTilesLayout.addTile(mFirstChildView);
-                    mMvTilesLayout.addTile(mSecondChildView);
-                    mMvTilesLayout.addTile(mThirdChildView);
+                    mMvTilesLayout.addView(mFirstChildView);
+                    mMvTilesLayout.addView(mSecondChildView);
+                    mMvTilesLayout.addView(mThirdChildView);
 
                     mNoMvPlaceholder = new View(sActivity);
                     mNoMvPlaceholder.setId(R.id.tile_grid_placeholder);
@@ -84,7 +84,7 @@ public final class MostVisitedTilesViewBinderUnitTest {
                     mNoMvPlaceholderStub.setId(R.id.mv_tiles_placeholder_stub);
                     mNoMvPlaceholderStub.setInflatedId(R.id.tile_grid_placeholder);
 
-                    mMvTilesContainerLayout = new LinearLayout(sActivity, null);
+                    mMvTilesContainerLayout = new LinearLayout(sActivity);
                     mMvTilesContainerLayout.addView(mMvTilesLayout);
                     mMvTilesContainerLayout.addView(mNoMvPlaceholderStub);
                     sActivity.setContentView(mMvTilesContainerLayout);

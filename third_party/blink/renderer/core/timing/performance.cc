@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
+#include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
@@ -462,6 +463,11 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kResource:
       UseCounter::Count(GetExecutionContext(), WebFeature::kResourceTiming);
       entries = &resource_timing_buffer_;
+      break;
+
+    case PerformanceEntry::kContainer:
+      // TODO(jdapena): implementation of container timing entries storage and
+      // retrieval.
       break;
 
     case PerformanceEntry::kElement:
@@ -1088,6 +1094,25 @@ void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
     UseCounter::Count(GetExecutionContext(), WebFeature::kPaintTimingObserved);
 }
 
+void Performance::NotifyObserversOfContainerEntry(
+    PerformanceEntry& entry) const {
+  CHECK(entry.EntryTypeEnum() == PerformanceEntry::kContainer);
+  for (auto& observer : observers_) {
+    if (observer->FilterOptions() & entry.EntryTypeEnum() &&
+        observer->CanObserve(entry)) {
+      observer->EnqueuePerformanceEntry(entry);
+    }
+  }
+}
+
+void Performance::NotifyObserversOfContainerTiming() {
+  for (auto& observer : observers_) {
+    if (observer->FilterOptions() & PerformanceEntry::EntryType::kContainer) {
+      ActivateObserver(*observer);
+    }
+  }
+}
+
 bool Performance::HasObserverFor(
     PerformanceEntry::EntryType filter_type) const {
   return observer_filter_options_ & filter_type;
@@ -1111,6 +1136,9 @@ void Performance::SuspendObserver(PerformanceObserver& observer) {
 }
 
 void Performance::DeliverObservationsTimerFired(TimerBase*) {
+  if (HasObserverFor(PerformanceEntry::kContainer)) {
+    PopulateContainerTimingEntries();
+  }
   decltype(active_observers_) observers;
   active_observers_.Swap(observers);
   for (const auto& observer : observers) {

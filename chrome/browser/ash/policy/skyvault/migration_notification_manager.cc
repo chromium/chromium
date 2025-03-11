@@ -93,16 +93,17 @@ void HandleErrorNotificationClick(Profile* profile,
   CloseNotification(profile);
 }
 
-// Returns the translation string corresponding to `provider`.
-std::u16string CloudProviderToString(CloudProvider provider) {
-  switch (provider) {
-    case CloudProvider::kGoogleDrive:
+// Returns the translation string corresponding to `destination`.
+std::u16string CloudProviderToString(MigrationDestination destination) {
+  switch (destination) {
+    case MigrationDestination::kGoogleDrive:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_GOOGLE_DRIVE);
-    case CloudProvider::kOneDrive:
+    case MigrationDestination::kOneDrive:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_ONEDRIVE);
-    case CloudProvider::kNotSpecified:
+    case MigrationDestination::kNotSpecified:
+    case MigrationDestination::kDelete:
       NOTREACHED();
   }
 }
@@ -118,16 +119,23 @@ MigrationNotificationManager::~MigrationNotificationManager() {
 }
 
 void MigrationNotificationManager::ShowMigrationInfoDialog(
-    CloudProvider provider,
+    MigrationDestination destination,
     base::Time migration_start_time,
     base::OnceClosure migration_callback) {
-  LocalFilesMigrationDialog::Show(provider, migration_start_time,
+  if (destination == MigrationDestination::kDelete) {
+    // TODO(399392370): Adapt dialog for the delete case.
+    return;
+  }
+
+  LocalFilesMigrationDialog::Show(destination, migration_start_time,
                                   std::move(migration_callback));
 }
 
 void MigrationNotificationManager::ShowMigrationProgressNotification(
-    CloudProvider provider) {
-  std::u16string provider_str = CloudProviderToString(provider);
+    MigrationDestination destination) {
+  DCHECK(IsCloudDestination(destination));
+
+  std::u16string provider_str = CloudProviderToString(destination);
 
   std::u16string title = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_PROGRESS_TITLE),
@@ -147,9 +155,11 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
 }
 
 void MigrationNotificationManager::ShowMigrationCompletedNotification(
-    CloudProvider provider,
+    MigrationDestination destination,
     const base::FilePath& destination_path) {
-  std::u16string provider_str = CloudProviderToString(provider);
+  DCHECK(IsCloudDestination(destination));
+
+  std::u16string provider_str = CloudProviderToString(destination);
   std::u16string folder_name = destination_path.BaseName().AsUTF16Unsafe();
 
   std::u16string title = base::ReplaceStringPlaceholders(
@@ -178,12 +188,13 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
 }
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
-    CloudProvider provider,
+    MigrationDestination destination,
     const std::string& folder_name,
     const base::FilePath& error_log_path) {
   DCHECK(!error_log_path.empty());
+  DCHECK(IsCloudDestination(destination));
 
-  std::u16string provider_str = CloudProviderToString(provider);
+  std::u16string provider_str = CloudProviderToString(destination);
 
   std::u16string title = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_TITLE),
@@ -208,8 +219,10 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
 }
 
 void MigrationNotificationManager::ShowConfigurationErrorNotification(
-    CloudProvider provider) {
-  std::u16string provider_str = CloudProviderToString(provider);
+    MigrationDestination destination) {
+  DCHECK(IsCloudDestination(destination));
+
+  std::u16string provider_str = CloudProviderToString(destination);
 
   std::u16string title = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(
@@ -273,7 +286,7 @@ void MigrationNotificationManager::OnSignInResponse(base::File::Error error) {
 
   if (error == base::File::Error::FILE_OK) {
     // This is only reached for OneDrive.
-    ShowMigrationProgressNotification(CloudProvider::kOneDrive);
+    ShowMigrationProgressNotification(MigrationDestination::kOneDrive);
   }
   // If there was an error, the notification will be shown when migration fails.
   sign_in_callbacks_.Notify(error);

@@ -53,6 +53,10 @@ BASE_DECLARE_FEATURE(kApiRuntimeActionData);
 // the permissions API.
 BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
 
+// Controls whether chrome.Printing API uses margins and scale ticket items when
+// submitting a print job.
+BASE_DECLARE_FEATURE(kApiPrintingMarginsAndScale);
+
 // Controls the availability of executing user scripts programmatically using
 // the userScripts API.
 BASE_DECLARE_FEATURE(kApiUserScriptsExecute);

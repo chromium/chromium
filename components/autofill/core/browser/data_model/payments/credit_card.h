@@ -533,6 +533,9 @@ class CreditCard : public FormGroup {
   UsageHistoryInformation& usage_history();
   const UsageHistoryInformation& usage_history() const;
 
+  bool is_bnpl_card() const { return is_bnpl_card_; }
+  void set_is_bnpl_card(bool is_bnpl_card) { is_bnpl_card_ = is_bnpl_card; }
+
  private:
   friend class CreditCardTestApi;
 
@@ -666,6 +669,9 @@ class CreditCard : public FormGroup {
       CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
 
   UsageHistoryInformation usage_history_information_;
+
+  // True if this card was created during the BNPL flow, false otherwise.
+  bool is_bnpl_card_ = false;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

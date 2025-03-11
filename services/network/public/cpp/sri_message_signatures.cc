@@ -29,12 +29,11 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@query-param", "@query", "@path", "@status"
+    "@authority", "@query-param", "@query", "@path", "@status"
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
-    // "@authority",      "@method", "@query-param", "@query",
-    // "@request-target", "@scheme", "@status",      "@target-uri",
+    // "@method", "@request-target", "@scheme", "@target-uri",
 };
 
 ParameterType ParamNameToType(std::string_view name) {
@@ -273,7 +272,14 @@ std::string SerializeDerivedComponent(
     const mojom::SRIMessageSignatureComponentPtr& component) {
   DCHECK(base::Contains(kDerivedComponents, component->name));
 
-  if (component->name == "@query") {
+  if (component->name == "@authority") {
+    // https://www.rfc-editor.org/rfc/rfc9421.html#name-authority
+    if (request_url.has_port()) {
+      return base::StrCat(
+          {request_url.host_piece(), ":", request_url.port_piece()});
+    }
+    return request_url.host();
+  } else if (component->name == "@query") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-query
     return base::StrCat({"?", request_url.query()});
   } else if (component->name == "@query-param") {

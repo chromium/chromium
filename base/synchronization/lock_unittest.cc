@@ -263,10 +263,10 @@ TEST(LockTest, InvariantIsCalled) {
   std::unique_ptr<InvariantChecker> checker;
   auto check = [&] { checker->Check(); };
   auto check_ref = base::FunctionRef<void()>(check);
-  Lock lock([&] {
-    checker = std::make_unique<InvariantChecker>(lock);
+  Lock lock([&](Lock* lp) {
+    checker = std::make_unique<InvariantChecker>(*lp);
     return check_ref;
-  }());
+  }(&lock));
 
   EXPECT_FALSE(checker->TestAndReset());
 

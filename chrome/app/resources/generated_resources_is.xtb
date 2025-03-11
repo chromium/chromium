@@ -2304,6 +2304,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="256517381556987641">Skráasamstilling hefur fundið <ph name="ITEMS_FOUND" /> skrár og er enn að athuga geymslurýmið. Prófaðu að kveikja á skráasamstillingu aftur eftir nokkrar mínútur.</translation>
 <translation id="2565214867520763227">Kveikja á skjálesara</translation>
 <translation id="2566146433999774844">Taktu þátt í flipahópnum sem <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> til viðbótar eru í</translation>
+<translation id="256726287944589768">Sýna fót á síðunni „Nýr flipi“</translation>
 <translation id="2568694057933302218">Í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="2568774940984945469">Rammi upplýsingastiku</translation>
 <translation id="2569972178052279830">Heiti söluaðila</translation>
@@ -2812,6 +2813,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2921081876747860777">Búðu til aðgangsorð til að vernda staðbundin gögn.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> verður læst núna.
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Önnur <ph name="OTHER_TASK_NUM" /> verkefni í sama verkefnahópi: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Önnur <ph name="OTHER_TASK_NUM" /> verkefni í sama verkefnahópi: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Fjarlægja þennan reikning</translation>
 <translation id="2923644930701689793">Opna myndavélarmöppu símans</translation>
 <translation id="292371311537977079">Stillingar Chrome</translation>

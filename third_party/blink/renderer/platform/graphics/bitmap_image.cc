@@ -331,11 +331,10 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
         this, &dark_mode_flags.value(), gfx::RectFToSkRect(src_rect));
     image_flags = &dark_mode_flags.value();
   }
-  canvas->drawImageRect(
-      std::move(image), gfx::RectFToSkRect(adjusted_src_rect),
-      gfx::RectFToSkRect(adjusted_dst_rect), draw_options.sampling_options,
-      image_flags,
-      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
+  canvas->drawImageRect(std::move(image), gfx::RectFToSkRect(adjusted_src_rect),
+                        gfx::RectFToSkRect(adjusted_dst_rect),
+                        draw_options.sampling_options, image_flags,
+                        ToSkiaRectConstraint(draw_options.clamping_mode));
 
   if (is_lazy_generated) {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),

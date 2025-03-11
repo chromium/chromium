@@ -17,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for the single recent activity row UI. */
+@NullMarked
 class RecentActivityListViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {

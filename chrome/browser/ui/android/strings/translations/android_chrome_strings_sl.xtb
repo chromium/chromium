@@ -1128,6 +1128,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6296366034485697675">Izvozi in izbriši</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6303969859164067831">Odjava in izklop sinhronizacije</translation>
+<translation id="6307241780749477694">Preverite, ali ste to vi, da boste imeli dostop do vseh gesel v tej napravi</translation>
 <translation id="6312687380483398334">Spletni programi (tiho)</translation>
 <translation id="6315386555979018699">Izbriši in nadaljuj</translation>
 <translation id="6316139424528454185">Različica Androida ni podprta</translation>
@@ -1389,6 +1390,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7359002509206457351">Dostop do plačilnih sredstev</translation>
 <translation id="7363349185727752629">Vodnik po vaših izbirah zasebnosti</translation>
 <translation id="7364103838544876661">Več možnosti za izbris podatkov brskanja</translation>
+<translation id="7365073365123878797">Če želite začeti shranjevati in uporabljati gesla z Googlovim upraviteljem gesel, posodobite storitve Google Play</translation>
 <translation id="7375125077091615385">Vrsta:</translation>
 <translation id="7376560087009844242">Če vključite več besedila na strani, bodo morda prikazani boljši rezultati, ko uporabljate dotikanje za iskanje. To lahko kadar koli spremenite v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Temna tema za spletna mesta je na voljo</translation>
@@ -1467,10 +1469,12 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7686086654630106285">Več o oglasih, ki jih predlaga spletno mesto</translation>
 <translation id="7690596512217303514">Naprava ni mogla odpreti Chroma. Če želite odpraviti težavo, prenesite najnovejšo posodobitev za Chrome iz trgovine z aplikacijami.</translation>
 <translation id="7691043218961417207">Raziščite vsebino, ki jo želite spremljati</translation>
+<translation id="7692761875510935111">Hitro odprite v brskalniku. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="7697383401610880082">Ročica za vlečenje</translation>
 <translation id="7698359219371678927">Ustvarite e-poštno sporočilo v aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Razdelek na dnu zaslona za nedavno dejavnost je odprt pri polni višini</translation>
 <translation id="7707922173985738739">Uporaba prenosa podatkov v mobilnem omrežju</translation>
+<translation id="7708994397325774423">Zagotovitev dostopa do vseh gesel</translation>
 <translation id="7733878270780732638">V napravi ni dovolj prostora.</translation>
 <translation id="7746817319925672889">Googlov upravitelj gesel bo kmalu nehal delovati v tej napravi</translation>
 <translation id="774876555279732384">Storitve samodejnega izpolnjevanja lahko upravljate tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -1612,6 +1616,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8310451567823644042">Gesla bodo kmalu nehala delovati</translation>
 <translation id="831192587911042850">Doda trenutno spletno mesto na seznam spletnih mest, ki jih spremljate.</translation>
 <translation id="8320212361750431956">Nedavna dejavnost</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome vas bo obvestil o spletnih mestih, ki morda pošiljajo preveč obvestil</translation>
 <translation id="834313815369870491">Nikoli ne prevedi spletnih mest</translation>
 <translation id="8348430946834215779">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo.</translation>
@@ -1743,6 +1748,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8937772741022875483">Ali želite svojo dejavnost v Chromu odstraniti iz Digitalne dobrobiti?</translation>
 <translation id="8942627711005830162">Odpri v drugem oknu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – tega jezika ni bilo mogoče prenesti. Poskusite pozneje.</translation>
+<translation id="8946759102391960088">Ohranite dostop do gesel</translation>
 <translation id="8957528460562961174">Če želite ohraniti dostop do gesel, jih izvozite in nato uvozite v želenega upravitelja gesel. Googlov upravitelj gesel je prenehal delovati, ker Storitve Google Play niso na voljo.</translation>
 <translation id="8963117664422609631">Na nastavitve spletnega mesta</translation>
 <translation id="8965591936373831584">poteka</translation>

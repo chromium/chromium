@@ -431,14 +431,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
-  constexpr char kCount[] = "18";
-#else
-  constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
-  constexpr char kCount[] = "17";
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   constexpr char kTest[] = R"(
     chrome.test.assertEq(
       'function',
@@ -446,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
     chrome.enterprise.reportingPrivate.getContextInfo((info) => {
       chrome.test.assertNoLastError();
 
-      chrome.test.assertEq(%s, Object.keys(info).length);
+      chrome.test.assertEq(17, Object.keys(info).length);
       chrome.test.assertTrue(info.browserAffiliationIds instanceof Array);
       chrome.test.assertTrue(info.profileAffiliationIds instanceof Array);
       chrome.test.assertTrue(info.onFileAttachedProviders instanceof Array);
@@ -463,14 +455,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
         (typeof info.passwordProtectionWarningTrigger, 'string');
       chrome.test.assertEq
         (typeof info.chromeRemoteDesktopAppBlocked, 'boolean');
-      chrome.test.assertEq(typeof info.thirdPartyBlockingEnabled,'%s');
       chrome.test.assertEq(typeof info.osFirewall, 'string');
       chrome.test.assertTrue(info.systemDnsServers instanceof Array);
       chrome.test.assertEq(typeof info.enterpriseProfileId, 'string');
 
       chrome.test.notifyPass();
     });)";
-  RunTest(base::StringPrintf(kTest, kCount, kThirdPartyBlockingEnabledType));
+  RunTest(kTest);
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetCertificate) {

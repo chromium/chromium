@@ -519,6 +519,7 @@
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8206354486702514201">ผู้ดูแลระบบของคุณกำหนดให้ใช้การตั้งค่านี้</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">เลื่อนไปบนสุด</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
@@ -585,6 +586,7 @@
 <translation id="8993853206419610596">ขยายคำขอทั้งหมด</translation>
 <translation id="9002538116239926534">เมื่อเปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณได้ เมื่อปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณไม่ได้</translation>
 <translation id="9011903857143958461">อนุญาตให้เข้าถึง <ph name="SITE_NAME" /> ได้</translation>
+<translation id="9017522656123387064">ออกจากโหมดการเลือกแล้ว</translation>
 <translation id="9019902583201351841">จัดการโดยผู้ปกครอง</translation>
 <translation id="902236149563113779">โดยปกติแล้วเว็บไซต์จะติดตามตำแหน่งกล้องของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ ของ AR เช่น เกมหรือการแจ้งทิศทางล่วงหน้า</translation>
 <translation id="9039697262778250930">ระบบอาจนำคุณออกจากระบบเว็บไซต์เหล่านี้</translation>

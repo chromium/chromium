@@ -1527,8 +1527,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
       (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled() &&
        style.GetFontDescription().HasSizeAdjust()) ||
       variant_position != FontDescription::kNormalVariantPosition ||
-      (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
-       variant_emoji != kNormalVariantEmoji)) {
+      (variant_emoji != kNormalVariantEmoji)) {
     return nullptr;
   }
 

@@ -209,13 +209,10 @@ class TabSharingUIViewsBrowserTest
 #if BUILDFLAG(IS_CHROMEOS)
     features_.InitWithFeatureStates(
         {{features::kTabCaptureBlueBorderCrOS, true},
-         {features::kCapturedSurfaceControlStickyPermissions, true},
          { features::kHttpsUpgrades,
            false }});
 #else
-    features_.InitWithFeatureStates(
-        {{features::kHttpsUpgrades, false},
-         {features::kCapturedSurfaceControlStickyPermissions, true}});
+    features_.InitWithFeatureStates({{features::kHttpsUpgrades, false}});
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 

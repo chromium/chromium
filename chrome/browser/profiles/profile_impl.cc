@@ -104,7 +104,6 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
-#include "chrome/browser/storage_access_api/storage_access_header_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tpcd/support/origin_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
@@ -880,15 +879,13 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // as it depends on the default StoragePartition being initialized.
   GetOriginTrialsControllerDelegate();
 
-  // The TpcdTrialService, TopLevelTrialService, OriginTrialService, and
-  // StorageAccessHeaderService for third-party cookie deprecation must be
-  // created with the profile, but after the initialization of the
-  // OriginTrialsControllerDelegate, as it depends on it.
+  // The TpcdTrialService, TopLevelTrialService, and OriginTrialService for
+  // third-party cookie deprecation must be created with the profile, but after
+  // the initialization of the OriginTrialsControllerDelegate, as it depends on
+  // it.
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(this);
   tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(this);
   tpcd::trial::OriginTrialServiceFactory::GetForProfile(this);
-  storage_access_api::trial::StorageAccessHeaderServiceFactory::GetForProfile(
-      this);
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {

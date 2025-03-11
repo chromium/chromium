@@ -7,10 +7,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -106,12 +107,7 @@ std::string ValueAsString(const base::Value::Dict* value) {
 
   base::Value::Dict dict = value->Clone();
   RemoveEmptyValueDictEntries(dict);
-
-  std::string value_as_string;
-  JSONStringValueSerializer serializer(&value_as_string);
-  serializer.Serialize(dict);
-
-  return value_as_string;
+  return base::WriteJson(base::Value(std::move(dict))).value_or(std::string());
 }
 
 std::string ValueAsString(const base::Value* value) {
@@ -121,11 +117,7 @@ std::string ValueAsString(const base::Value* value) {
   if (value->is_dict())
     return ValueAsString(&value->GetDict());
 
-  std::string value_as_string;
-  JSONStringValueSerializer serializer(&value_as_string);
-  serializer.Serialize(*value);
-
-  return value_as_string;
+  return base::WriteJson(*value).value_or(std::string());
 }
 
 // Concatenates |device_id|, |path|, and |value_as_string| to give the hash

@@ -134,8 +134,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetContents());
 
     chrome_autofill_ai_client_ =
-        ChromeAutofillAiClient::MaybeCreateForWebContents(tab.GetContents(),
-                                                          profile);
+        ChromeAutofillAiClient::MaybeCreateForWebContents(tab.GetContents());
 
     pinned_translate_action_listener_ =
         std::make_unique<PinnedTranslateActionListener>(&tab);
@@ -304,8 +303,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
   if (chrome_autofill_ai_client_) {
     chrome_autofill_ai_client_ =
-        ChromeAutofillAiClient::MaybeCreateForWebContents(new_contents,
-                                                          profile);
+        ChromeAutofillAiClient::MaybeCreateForWebContents(new_contents);
   }
 
   if (privacy_sandbox_tab_observer_) {

@@ -1189,10 +1189,10 @@ bool RunOneFrameAndReturnWhetherMainFrameIsIssued(
     EXPECT_TRUE(state.active_tree_needs_first_draw());
     EXPECT_TRUE(state.needs_redraw());
   } else {
-    EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE,
-              state.CurrentBeginImplFrameDeadlineMode());
     // Still need to require a draw, otherwise nothing will happen below.
     state.SetNeedsRedraw(true);
+    EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE,
+              state.CurrentBeginImplFrameDeadlineMode());
   }
 
   // Expect to do nothing until BeginImplFrame deadline

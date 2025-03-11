@@ -1791,7 +1791,11 @@ bool CSSRadialGradientValue::IsUsingCurrentColor() const {
 }
 
 bool CSSRadialGradientValue::IsUsingContainerRelativeUnits() const {
-  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_);
+  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_) ||
+         blink::cssvalue::IsUsingContainerRelativeUnits(first_x_) ||
+         blink::cssvalue::IsUsingContainerRelativeUnits(first_y_) ||
+         blink::cssvalue::IsUsingContainerRelativeUnits(end_horizontal_size_) ||
+         blink::cssvalue::IsUsingContainerRelativeUnits(end_vertical_size_);
 }
 
 void CSSRadialGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {

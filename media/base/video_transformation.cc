@@ -61,7 +61,7 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
   return VideoTransformation(matrix2x2);
 }
 
-std::array<int32_t, 4> VideoTransformation::GetMatrix() {
+std::array<int32_t, 4> VideoTransformation::GetMatrix() const {
   int32_t m = mirrored ? -1 : 1;
   int32_t fp1 = 1 << 16;
   switch (rotation) {

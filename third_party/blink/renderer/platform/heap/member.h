@@ -180,6 +180,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
 template <typename T>
 struct MemberHashTraits : BaseMemberHashTraits<T, blink::Member<T>> {
   static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
 };
 template <typename T>
 struct HashTraits<blink::Member<T>> : MemberHashTraits<T> {};
@@ -188,6 +189,7 @@ struct HashTraits<blink::Member<T>> : MemberHashTraits<T> {};
 template <typename T>
 struct WeakMemberHashTraits : BaseMemberHashTraits<T, blink::WeakMember<T>> {
   static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
 };
 template <typename T>
 struct HashTraits<blink::WeakMember<T>> : WeakMemberHashTraits<T> {};

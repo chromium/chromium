@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Contains the logic to set the state of the model and react to clicks. */
+@NullMarked
 class SharedImageTilesMediator {
 
     /**
      * @param model the {@link PropertyModel} for this UI.
      */
-    public SharedImageTilesMediator(@NonNull PropertyModel model) {}
+    public SharedImageTilesMediator(PropertyModel model) {}
 
     // TODO(b/325533985): Handle clicks and fill out this class.
 }

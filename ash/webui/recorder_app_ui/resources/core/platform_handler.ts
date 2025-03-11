@@ -88,6 +88,14 @@ export abstract class PlatformHandler {
   }
 
   /**
+   * Returns the default language based on the application locale or profile
+   * preference.
+   *
+   * Returns EN_US if default language is not available.
+   */
+  abstract getDefaultLanguage(): LanguageCode;
+
+  /**
    * Returns a readonly list of language pack info.
    */
   abstract getLangPackList(): readonly LangPackInfo[];

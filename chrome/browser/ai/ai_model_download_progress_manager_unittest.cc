@@ -137,6 +137,9 @@ class AIModelDownloadProgressManagerTest : public testing::Test {
   }
 
  private:
+  void SetUp() override {
+    EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
+  }
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
@@ -158,6 +161,10 @@ TEST_F(AIModelDownloadProgressManagerTest,
     EXPECT_EQ(manager.GetNumberOfReportersForTesting(), 1);
 
     {
+      // Adding a second observer we'll result in component ids being called
+      // again.
+      EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
+
       // Adding an Observer, should create a reporter.
       FakeMonitor monitor2;
       manager.AddObserver(&component_update_service_,
@@ -501,6 +508,86 @@ TEST_F(AIModelDownloadProgressManagerTest,
       AIUtils::NormalizeModelDownloadProgress(downloaded_bytes, total_bytes);
 
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+class AIModelDownloadProgressManagerHasPreviousDownloadsTest
+    : public AIModelDownloadProgressManagerTest {
+ public:
+  AIModelDownloadProgressManagerHasPreviousDownloadsTest() = default;
+  ~AIModelDownloadProgressManagerHasPreviousDownloadsTest() override = default;
+
+ private:
+  // Don't expect that GetComponentIDs will return an empty vector.
+  void SetUp() override {}
+};
+
+TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
+       AlreadyInstalledComponentsAreNotObserved) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component1("component_id1", 100);
+  FakeComponent component2("component_id2", 1000);
+
+  EXPECT_CALL(component_update_service_, GetComponentIDs())
+      .WillOnce(testing::Return(std::vector<std::string>({component1.id()})));
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component1.id(), component2.id()});
+
+  // Should receive this despite not observing component 1 yet since component1
+  // is already downloaded.
+  SendUpdate(component2, ComponentState::kDownloading, 0);
+  monitor.ExpectReceivedNormalizedUpdate(0, component2.total_bytes());
+}
+
+TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
+       ProgressIsNormalizedAgainstOnlyUninstalledComponents) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component1("component_id1", 100);
+  FakeComponent component2("component_id2", 1000);
+  FakeComponent component3("component_id3", 500);
+
+  EXPECT_CALL(component_update_service_, GetComponentIDs())
+      .WillOnce(testing::Return(std::vector<std::string>({component1.id()})));
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component1.id(), component2.id(), component3.id()});
+
+  // Fire the zero progress event by sending events for component 2 and 3.
+  SendUpdate(component2, ComponentState::kDownloading, 0);
+  SendUpdate(component3, ComponentState::kDownloading, 0);
+  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Progress should be normalized against only components 2 and 3 since 1 is
+  // already installed.
+  SendUpdate(component2, ComponentState::kDownloading, 10);
+  uint64_t total_bytes = component2.total_bytes() + component3.total_bytes();
+  monitor.ExpectReceivedNormalizedUpdate(10, total_bytes);
+}
+
+TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
+       ReceiveZeroAndHundredPercentWhenEverythingIsInstalled) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component1("component_id1", 100);
+  FakeComponent component2("component_id2", 1000);
+
+  EXPECT_CALL(component_update_service_, GetComponentIDs())
+      .WillOnce(testing::Return(
+          std::vector<std::string>({component1.id(), component2.id()})));
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component1.id(), component2.id()});
+  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
                                AIUtils::kNormalizedDownloadProgressMax);
 }
 

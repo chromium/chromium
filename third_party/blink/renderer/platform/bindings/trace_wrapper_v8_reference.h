@@ -64,6 +64,7 @@ struct HashTraits<blink::TraceWrapperV8Reference<T>>
     : GenericHashTraits<blink::TraceWrapperV8Reference<T>> {
   STATIC_ONLY(HashTraits);
   static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
 };
 
 }  // namespace WTF

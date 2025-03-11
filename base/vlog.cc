@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -58,11 +57,9 @@ std::vector<VlogInfo::VmodulePattern> VlogInfo::ParseVmoduleLevels(
 
 VlogInfo::VlogInfo(const std::string& v_switch,
                    const std::string& vmodule_switch,
-                   int* min_log_level)
+                   int& min_log_level)
     : vmodule_levels_(ParseVmoduleLevels(vmodule_switch)),
       min_log_level_(min_log_level) {
-  DCHECK_NE(min_log_level, nullptr);
-
   int vlog_level = 0;
   if (!v_switch.empty()) {
     if (base::StringToInt(v_switch, &vlog_level)) {
@@ -122,7 +119,7 @@ int VlogInfo::GetMaxVlogLevel() const {
 }
 
 VlogInfo::VlogInfo(std::vector<VmodulePattern> vmodule_levels,
-                   int* min_log_level)
+                   int& min_log_level)
     : vmodule_levels_(std::move(vmodule_levels)),
       min_log_level_(min_log_level) {}
 
@@ -132,7 +129,7 @@ VlogInfo* VlogInfo::WithSwitches(const std::string& vmodule_switch) const {
       ParseVmoduleLevels(vmodule_switch);
   vmodule_levels.insert(vmodule_levels.end(), additional_vmodule_levels.begin(),
                         additional_vmodule_levels.end());
-  return new VlogInfo(std::move(vmodule_levels), min_log_level_);
+  return new VlogInfo(std::move(vmodule_levels), *min_log_level_);
 }
 
 bool MatchVlogPattern(std::string_view string, std::string_view vlog_pattern) {

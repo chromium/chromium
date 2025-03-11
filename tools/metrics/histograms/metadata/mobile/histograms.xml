@@ -974,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.FromLaunch.{Target}" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -1056,81 +1056,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: The amount of time that the small spinner, which become visible
     after the ToS is accepted, is showing on screen.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.DurationAfterPotraitRotation" units="ms"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the duration that a fullscreen video is played after device
-    rotates from portrait to landscape mode for the first time, and before it
-    exits fullscreen. If there is no device rotation or if the video starts with
-    landscape mode, it is not recorded. If there are mutiple rotations between
-    portrait and landscape mode, only one record is emitted and it is equal to
-    the time period from the first rotation to the moment when the video exits
-    fullscreen.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.LandscapeDuration" units="ms"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the duration that a fullscreen video is played in landscape
-    mode. If a video starts playing in landscape mode, and then it is switched
-    back and forth between landscape and portrait mode, only the time period
-    before the first switch is accounted. If a video starts playing in portrait
-    mode, it is not recorded.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.LandscapeRotation" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records whether a fullscreen video is switched from landscape to
-    portrait mode at any point during playback.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.OrientationPortrait"
-    enum="BooleanEnabled" expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the device orientation when a video enters fullscreen. The
-    value is true if device orientation is portrait, or false otherwise. The
-    video doesn't necessarily needs to be in a playing state.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.PortraitDuration" units="ms"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the duration that a fullscreen video is played in portrait
-    mode. If a video starts playing in portrait mode, and then it is switched
-    back and forth between landscape and portrait mode, only the time period
-    before the first switch is accounted. If a video starts playing in landscape
-    mode, it is not recorded.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.PortraitRotation" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records whether a fullscreen video is switched from portrait to
-    landscape mode at any point during playback.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.VideoPortrait" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records whether a video has a larger height than width when it
-    enters the fullscreen mode.
   </summary>
 </histogram>
 

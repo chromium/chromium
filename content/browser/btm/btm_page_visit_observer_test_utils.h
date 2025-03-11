@@ -77,6 +77,48 @@ MATCHER_P(HasSourceId,
   return testing::ExplainMatchResult(matcher, arg.source_id, result_listener);
 }
 
+MATCHER(HasUrlAndSourceIdForBlankPage,
+        "has url and source_id for a blank page (url=GURL(), "
+        "source_id=ukm::kInvalidSourceId)") {
+  bool matched = true;
+  if (arg.url != GURL()) {
+    matched = false;
+    *result_listener << "url was " << arg.url;
+  }
+  if (arg.source_id != ukm::kInvalidSourceId) {
+    if (!matched) {
+      *result_listener << " and ";
+    }
+    matched = false;
+    *result_listener << "source_id was " << arg.source_id;
+  }
+  return matched;
+}
+
+MATCHER_P2(HasUrlAndMatchingSourceId,
+           matcher,
+           ukm_recorder_ptr,
+           "has url that " + testing::DescribeMatcher<GURL>(matcher, negation) +
+               " and source_id with a corresponding source URL that also " +
+               testing::DescribeMatcher<GURL>(matcher, negation)) {
+  bool matched = true;
+  if (!testing::ExplainMatchResult(matcher, arg.url, result_listener)) {
+    *result_listener << "url was " << arg.url;
+    matched = false;
+  }
+  const GURL url_for_source_id =
+      ukm_recorder_ptr->GetSourceForSourceId(arg.source_id)->url();
+  if (!testing::ExplainMatchResult(matcher, url_for_source_id,
+                                   result_listener)) {
+    if (!matched) {
+      *result_listener << " and ";
+    }
+    *result_listener << "source_id had corresponding URL " << url_for_source_id;
+    matched = false;
+  }
+  return matched;
+}
+
 // Matches the URL for the `source_id` property of `BtmPageVisitInfo` or
 // `BtmServerRedirectInfo`, as recorded by `ukm_recorder`.
 MATCHER_P2(HasSourceIdForUrl,
@@ -84,9 +126,29 @@ MATCHER_P2(HasSourceIdForUrl,
            ukm_recorder,
            "has source_id with a corresponding URL that " +
                testing::DescribeMatcher<GURL>(matcher, negation)) {
-  return testing::ExplainMatchResult(
-      matcher, ukm_recorder->GetSourceForSourceId(arg.source_id)->url(),
-      result_listener);
+  const GURL url_for_source_id =
+      ukm_recorder->GetSourceForSourceId(arg.source_id)->url();
+  if (!testing::ExplainMatchResult(matcher, url_for_source_id,
+                                   result_listener)) {
+    *result_listener << "source_id had corresponding URL " << url_for_source_id;
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P2(SourceIdUrlIs,
+           matcher,
+           ukm_recorder_ptr,
+           "has a corresponding URL that " +
+               testing::DescribeMatcher<GURL>(matcher, negation)) {
+  const GURL url_for_source_id =
+      ukm_recorder_ptr->GetSourceForSourceId(arg)->url();
+  if (!testing::ExplainMatchResult(matcher, url_for_source_id,
+                                   result_listener)) {
+    *result_listener << "corresponding URL was " << url_for_source_id;
+    return false;
+  }
+  return true;
 }
 
 // Matches `VisitTuple::prev_page`.
@@ -145,6 +207,16 @@ MATCHER_P(PageTransitionCoreTypeIs,
       ui::PageTransitionGetCoreTransitionString(matcher),
       ui::PageTransitionGetCoreTransitionString(arg.page_transition),
       result_listener);
+}
+
+// Matches a `ui::PageTransition`. Param must also be a `ui::PageTransition`.
+MATCHER_P(CoreTypeIs,
+          matcher,
+          "has core type that " + std::string(negation ? "is " : "isn't ") +
+              ui::PageTransitionGetCoreTransitionString(matcher)) {
+  return testing::ExplainMatchResult(
+      ui::PageTransitionGetCoreTransitionString(matcher),
+      ui::PageTransitionGetCoreTransitionString(arg), result_listener);
 }
 
 // Matches `BtmPageVisitInfo::had_qualifying_storage_access`.

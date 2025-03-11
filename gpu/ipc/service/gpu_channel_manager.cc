@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -611,8 +612,7 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
 
   switch (gpu::GetHandleType(handle)) {
     case gpu::GpuDiskCacheType::kGlShaders: {
-      auto gl_shader_handle =
-          absl::get<gpu::GpuDiskCacheGlShaderHandle>(handle);
+      auto gl_shader_handle = std::get<gpu::GpuDiskCacheGlShaderHandle>(handle);
       if (gl_shader_handle == kGrShaderGpuDiskCacheHandle) {
         if (gr_shader_cache_)
           gr_shader_cache_->PopulateCache(key, data);

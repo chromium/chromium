@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_TREE_FIXING_INTERNAL_AX_TREE_FIXING_SCREEN_AI_SERVICE_H_
 #define CHROME_BROWSER_ACCESSIBILITY_TREE_FIXING_INTERNAL_AX_TREE_FIXING_SCREEN_AI_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,10 +65,11 @@ class AXTreeFixingScreenAIService final {
 
   // Delegate provided by client to receive main node identification results.
   // Use a raw_ref since we do not own the delegate or control its lifecycle.
-  raw_ref<MainNodeIdentificationDelegate> main_node_identification_delegate_;
+  const raw_ref<MainNodeIdentificationDelegate>
+      main_node_identification_delegate_;
 
   // Profile for the KeyedService that owns us.
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   // The remote of the ScreenAI service, the receiver is in a utility process.
   mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>

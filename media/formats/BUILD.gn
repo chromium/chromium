@@ -27,6 +27,7 @@ source_set("formats") {
     "common/opus_constants.h",
     "mp4/bitstream_converter.cc",
     "mp4/bitstream_converter.h",
+    "mp4/box_constants.h",
     "mp4/box_definitions.cc",
     "mp4/box_definitions.h",
     "mp4/box_reader.cc",

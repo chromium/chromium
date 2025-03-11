@@ -4,26 +4,31 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
+#include <memory>
+
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
-#include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
+#include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using V8DetailedMemoryExecutionContextData =
-    performance_manager::v8_memory::V8DetailedMemoryExecutionContextData;
-using FrameDataMap = base::flat_map<content::GlobalRenderFrameHostId,
-                                    V8DetailedMemoryExecutionContextData>;
+using performance_manager::v8_memory::V8DetailedMemoryExecutionContextData;
+using performance_manager::v8_memory::V8DetailedMemoryProcessData;
 
 const char kMainUrl[] = "https://main.com/";
 const char kSubUrl[] = "https://foo.com/";
@@ -101,7 +106,7 @@ class TestMestricsWebContentsObserver : public MetricsWebContentsObserver {
 };
 
 class PageLoadMetricsMemoryTrackerTest
-    : public content::RenderViewHostTestHarness {
+    : public performance_manager::PerformanceManagerTestHarness {
  public:
   PageLoadMetricsMemoryTrackerTest() = default;
   ~PageLoadMetricsMemoryTrackerTest() override = default;
@@ -114,9 +119,12 @@ class PageLoadMetricsMemoryTrackerTest
     scoped_feature_list_.InitAndEnableFeature(
         features::kV8PerFrameMemoryMonitoring);
 
-    content::RenderViewHostTestHarness::SetUp();
+    performance_manager::PerformanceManagerTestHarness::SetUp();
     original_browser_client_ =
         content::SetBrowserClientForTesting(&browser_client_);
+
+    // Create a WebContents backed by Performance Manager objects.
+    SetContents(CreateTestWebContents());
 
     auto embedder_interface =
         std::make_unique<TestPageLoadMetricsEmbedder>(web_contents());
@@ -133,7 +141,7 @@ class PageLoadMetricsMemoryTrackerTest
   void TearDown() override {
     content::SetBrowserClientForTesting(original_browser_client_);
     tracker_->Shutdown();
-    content::RenderViewHostTestHarness::TearDown();
+    performance_manager::PerformanceManagerTestHarness::TearDown();
   }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -170,19 +178,18 @@ class PageLoadMetricsMemoryTrackerTest
     if (!render_frame_host || !render_frame_host->GetProcess())
       return;
 
-    content::GlobalRenderFrameHostId global_routing_id =
-        render_frame_host->GetGlobalId();
-    performance_manager::RenderProcessHostId pm_process_id =
-        render_frame_host->GetProcess()->GetID();
-    performance_manager::v8_memory::V8DetailedMemoryProcessData process_data;
-    V8DetailedMemoryExecutionContextData frame_data;
-    frame_data.set_v8_bytes_used(bytes);
+    base::WeakPtr<performance_manager::FrameNode> frame_node =
+        performance_manager::PerformanceManager::GetFrameNodeForRenderFrameHost(
+            render_frame_host);
+    ASSERT_TRUE(frame_node);
+    const performance_manager::ProcessNode* process_node =
+        frame_node->GetProcessNode();
+    ASSERT_TRUE(process_node);
 
-    FrameDataMap frame_map;
-    frame_map[global_routing_id] = frame_data;
-
-    tracker_->OnV8MemoryMeasurementAvailable(pm_process_id, process_data,
-                                             frame_map);
+    V8DetailedMemoryExecutionContextData::CreateForTesting(frame_node.get())
+        ->set_v8_bytes_used(bytes);
+    V8DetailedMemoryProcessData process_data;
+    tracker_->OnV8MemoryMeasurementAvailable(process_node, &process_data);
   }
 
   int num_updates_received() const { return observer_->num_updates_received(); }

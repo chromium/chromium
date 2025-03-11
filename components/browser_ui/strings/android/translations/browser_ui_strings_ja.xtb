@@ -519,6 +519,7 @@
 <translation id="8200772114523450471">再開</translation>
 <translation id="8206354486702514201">この設定は管理者によって制御されています。</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">一番上に移動</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -585,6 +586,7 @@
 <translation id="8993853206419610596">すべてのリクエストを開く</translation>
 <translation id="9002538116239926534">オンにすると、サイトはデバイスにデータを保存できます。オフにすると、サイトはデバイスにデータを保存できません。</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> を許可しました</translation>
+<translation id="9017522656123387064">選択モードを終了しました</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="902236149563113779">多くのサイトは、ゲームや HUD のナビ表示などで AR 機能を使用するためにカメラ位置を追跡します。</translation>
 <translation id="9039697262778250930">これらのサイトからログアウトされる可能性があります</translation>

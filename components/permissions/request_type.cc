@@ -120,7 +120,6 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kSmartCardReaderIcon;
 #endif
     case RequestType::kWebAppInstallation:
-      // TODO(crbug.com/333795265): provide a dedicated icon.
       return vector_icons::kInstallDesktopIcon;
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     case RequestType::kWebPrinting:
@@ -173,7 +172,6 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kPointerLock:
       return vector_icons::kPointerLockOffIcon;
     case RequestType::kWebAppInstallation:
-      // TODO(crbug.com/333795265): provide a dedicated icon.
       return vector_icons::kInstallDesktopOffIcon;
     default:
       NOTREACHED();

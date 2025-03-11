@@ -94,8 +94,21 @@ class ChunkGraphBuilder {
     corpus_chunk_list_.push_back(parent_chunk_);
 
     while (node && node != just_after_block) {
-      if (FindBuffer::ShouldIgnoreContents(*node)) {
+      auto skip_contents = [this, end_node, &did_see_range_end_node,
+                            &next_start](const Node* node) {
         const Node* next = FlatTreeTraversal::NextSkippingChildren(*node);
+        if (next && !FlatTreeTraversal::NextSibling(*node)) {
+          // We must have left some parent elements. We might need to call
+          // HandleAnnotationEnd() and HandleRubyContainerEnd().
+          const Node* next_parent = FlatTreeTraversal::ParentElement(*next);
+          for (const Node* parent = FlatTreeTraversal::ParentElement(*node);
+               parent != next_parent;
+               parent = FlatTreeTraversal::ParentElement(*parent)) {
+            if (HandleLeavingParent(*parent, did_see_range_end_node)) {
+              break;
+            }
+          }
+        }
         if (end_node && (end_node == node ||
                          FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
           did_see_range_end_node = true;
@@ -103,6 +116,11 @@ class ChunkGraphBuilder {
             next_start = next;
           }
         }
+        return next;
+      };
+
+      if (FindBuffer::ShouldIgnoreContents(*node)) {
+        const Node* next = skip_contents(node);
         if (std::optional<UChar> ch = FindBuffer::CharConstantForNode(*node)) {
           if (did_see_range_start_node && !did_see_range_end_node) {
             chunk_text_list_.push_back(TextOrChar(nullptr, *ch));
@@ -114,15 +132,7 @@ class ChunkGraphBuilder {
       const ComputedStyle* style =
           GetComputedStyleForElementOrLayoutObject(*node);
       if (!style) {
-        const Node* next = FlatTreeTraversal::NextSkippingChildren(*node);
-        if (end_node && (end_node == node ||
-                         FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
-          did_see_range_end_node = true;
-          if (!next_start) {
-            next_start = next;
-          }
-        }
-        node = next;
+        node = skip_contents(node);
         continue;
       }
 
@@ -191,19 +201,8 @@ class ChunkGraphBuilder {
       while (!FlatTreeTraversal::NextSibling(*node) &&
              node != &block_ancestor) {
         node = FlatTreeTraversal::ParentElement(*node);
-        display = EDisplay::kNone;
-        if ((style = GetComputedStyleForElementOrLayoutObject(*node))) {
-          display = style->Display();
-        }
-        if (display == EDisplay::kRubyText) {
-          if (HandleAnnotationEnd(*node, did_see_range_end_node)) {
-            break;
-          }
-        } else if (display == EDisplay::kRuby ||
-                   display == EDisplay::kBlockRuby) {
-          if (HandleRubyContainerEnd(did_see_range_end_node)) {
-            break;
-          }
+        if (HandleLeavingParent(*node, did_see_range_end_node)) {
+          break;
         }
       }
       if (node == &block_ancestor) {
@@ -246,6 +245,19 @@ class ChunkGraphBuilder {
     auto* new_base_chunk = PushBaseChunk();
     parent_chunk_->Link(new_base_chunk);
     parent_chunk_ = new_base_chunk;
+  }
+
+  bool HandleLeavingParent(const Node& node, bool did_see_range_end_node) {
+    EDisplay display = EDisplay::kNone;
+    if (const auto* style = GetComputedStyleForElementOrLayoutObject(node)) {
+      display = style->Display();
+    }
+    if (display == EDisplay::kRubyText) {
+      return HandleAnnotationEnd(node, did_see_range_end_node);
+    } else if (display == EDisplay::kRuby || display == EDisplay::kBlockRuby) {
+      return HandleRubyContainerEnd(did_see_range_end_node);
+    }
+    return false;
   }
 
   void HandleAnnotationStart(const Node& node) {

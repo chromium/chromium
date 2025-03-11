@@ -56,7 +56,7 @@ class SupervisedUserWebContentHandlerImpl
   }
 
  private:
-  void StartObervingPacpContents(content::WebContents* contents);
+  void StartObservingPacpContents(content::WebContents* contents);
 
   void CompleteUrlApprovalAndCloseOrUpdateDialog(
       const GURL& target_url,

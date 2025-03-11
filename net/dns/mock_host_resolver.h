@@ -298,6 +298,7 @@ class MockHostResolverBase : public HostResolver {
       DnsQueryType query_type) override;
   HostCache* GetHostCache() override;
   void SetRequestContext(URLRequestContext* request_context) override {}
+  bool IsHappyEyeballsV3Enabled() const override;
 
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
@@ -512,12 +513,14 @@ class MockHostResolverFactory : public HostResolver::Factory {
   std::unique_ptr<HostResolver> CreateResolver(
       HostResolverManager* manager,
       std::string_view host_mapping_rules,
-      bool enable_caching) override;
+      bool enable_caching,
+      bool enable_stale) override;
   std::unique_ptr<HostResolver> CreateStandaloneResolver(
       NetLog* net_log,
       const HostResolver::ManagerOptions& options,
       std::string_view host_mapping_rules,
-      bool enable_caching) override;
+      bool enable_caching,
+      bool enable_stale) override;
 
  private:
   const MockHostResolverBase::RuleResolver rules_;
@@ -713,6 +716,8 @@ class HangingHostResolver : public HostResolver {
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
 
   void SetRequestContext(URLRequestContext* url_request_context) override;
+
+  bool IsHappyEyeballsV3Enabled() const override;
 
   // Use to detect cancellations since there's otherwise no externally-visible
   // differentiation between a cancelled and a hung task.

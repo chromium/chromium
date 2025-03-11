@@ -53,9 +53,6 @@
 
 namespace blink {
 
-class AudioBus;
-class WebAudioDestinationConsumer;
-
 // GarbageCollected wrapper of a WebPlatformMediaStreamSource, which acts as a
 // source backing one or more MediaStreamTracks.
 class PLATFORM_EXPORT MediaStreamSource final
@@ -162,50 +159,10 @@ class PLATFORM_EXPORT MediaStreamSource final
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
   void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
 
-  // Returns true if MediaStreamSource should receive audio from
-  // MediaStreamAudioDestinationNode.
-  bool RequiresWebAudioConsumer() const { return requires_webaudio_consumer_; }
-
-  // Sets the WebAudioDestinationConsumer that will receive audio data from this
-  // MediaStreamSource. It is called when this MediaStreamSource is connected to
-  // a Web Audio graph via a MediaStreamAudioDestinationNode.
-  void SetWebAudioConsumer(WebAudioDestinationConsumer*);
-
-  // Removes the association with the current WebAudioDestinationConsumer.
-  // The WebAudioDestinationConsumer is not owned by this class, and has to be
-  // disposed separately after calling this method.
-  bool RemoveWebAudioConsumer();
-
-  // Sets the audio format (number of channels and sample rate) for this
-  // MediaStreamSource. This method can be called from either the main thread
-  // (during MediaStreamAudioDestinationHandler construction) or the Web Audio
-  // rendering thread (during the Process() method call).
-  void SetAudioFormat(int number_of_channels, float sample_rate);
-
-  // Provides rendered WebAudio data to the associated
-  // WebAudioDestinationConsumer. Called on the Web Audio rendering thread.
-  void ConsumeAudio(AudioBus*, int number_of_frames);
-
   void Trace(Visitor*) const;
   void Dispose();
 
  private:
-  class PLATFORM_EXPORT ConsumerWrapper final {
-    USING_FAST_MALLOC(ConsumerWrapper);
-
-   public:
-    explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer);
-
-    void SetFormat(int number_of_channels, float sample_rate);
-    void ConsumeAudio(AudioBus* bus, int number_of_frames);
-
-    // m_consumer is not owned by this class.
-    raw_ptr<WebAudioDestinationConsumer, DanglingUntriaged> consumer_;
-    // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
-    // member variable is to not have to reallocate it for each call.
-    Vector<const float*> bus_vector_;
-  };
-
   // The ID of this MediaStreamSource object itself.
   String id_;
   // If this MediaStreamSource object is associated with a display,
@@ -219,14 +176,6 @@ class PLATFORM_EXPORT MediaStreamSource final
   bool remote_;
   ReadyState ready_state_;
   HeapHashSet<WeakMember<Observer>> observers_;
-
-  // True if the audio source is MediaStreamAudioDestinationNode.
-  bool requires_webaudio_consumer_;
-
-  base::Lock webaudio_consumer_lock_;
-  std::unique_ptr<ConsumerWrapper> webaudio_consumer_
-      GUARDED_BY(webaudio_consumer_lock_);
-
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   Capabilities capabilities_;
   std::optional<bool> echo_cancellation_;

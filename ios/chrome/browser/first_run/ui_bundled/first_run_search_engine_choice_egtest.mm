@@ -47,6 +47,8 @@
   config.additional_args.push_back("true");
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
+  config.additional_args.push_back(
+      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   return config;
 }
 

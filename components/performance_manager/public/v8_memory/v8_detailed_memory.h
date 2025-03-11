@@ -174,13 +174,15 @@ class V8DetailedMemoryExecutionContextData {
   static const V8DetailedMemoryExecutionContextData* ForExecutionContext(
       const execution_context::ExecutionContext* ec);
 
- private:
-  friend class WebMemoryTestHarness;
-
+  // Returns frame data for the given node, creating an empty data object if no
+  // measurement has been taken.
   static V8DetailedMemoryExecutionContextData* CreateForTesting(
       const FrameNode* node);
   static V8DetailedMemoryExecutionContextData* CreateForTesting(
       const WorkerNode* node);
+
+ private:
+  friend class WebMemoryTestHarness;
 
   uint64_t v8_bytes_used_ = 0;
   std::optional<uint64_t> canvas_bytes_used_;
@@ -330,8 +332,9 @@ class V8DetailedMemoryRequest {
 
   // Requests measurements for all ProcessNode's in |graph|. There must be at
   // most one call to this or StartMeasurementForProcess for each
-  // V8DetailedMemoryRequest.
-  void StartMeasurement(Graph* graph);
+  // V8DetailedMemoryRequest. If |graph| is null, uses the default graph
+  // returned by PerformanceManager::GetGraph().
+  void StartMeasurement(Graph* graph = nullptr);
 
   // Requests measurements only for the given |process_node|, which must be a
   // renderer process. There must be at most one call to this or

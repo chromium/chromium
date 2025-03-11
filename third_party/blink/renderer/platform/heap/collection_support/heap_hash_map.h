@@ -56,14 +56,15 @@ class HeapHashMap final
                     "non-traceable types as keys.");
       static_assert(
           WTF::IsMemberOrWeakMemberType<MappedArg>::value ||
+              WTF::IsTraceable<MappedArg>::value ||
               IsValidNonTraceableType<MappedArg>() ||
               WTF::IsSubclassOfTemplate<MappedArg, v8::TracedReference>::value,
           "HeapHashMap supports only Member, WeakMember, "
-          "TraceWrapperV8Reference and "
+          "TraceWrapperV8Reference, objects with Trace(), and "
           "non-traceable types as values.");
     }
   };
-  // NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 }  // namespace blink

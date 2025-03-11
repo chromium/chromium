@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 
 #include <cstdint>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -145,7 +141,7 @@ void FileSystemAccessFileDelegateHostImpl::DidRead(
   // information across processes.
   if (static_cast<size_t>(bytes_read) < result.size()) {
     size_t bytes_to_fill = result.size() - static_cast<size_t>(bytes_read);
-    memset(result.data() + bytes_read, 0, bytes_to_fill);
+    UNSAFE_TODO(memset(result.data() + bytes_read, 0, bytes_to_fill));
   }
 
   std::move(callback).Run(std::move(result), base::File::Error::FILE_OK,

@@ -519,6 +519,7 @@
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
 <translation id="8211406090763984747">이 연결은 안전합니다.</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">맨 위로 이동</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8284326494547611709">자막</translation>
@@ -585,6 +586,7 @@
 <translation id="8993853206419610596">모든 요청 펼치기</translation>
 <translation id="9002538116239926534">사용 설정하면 사이트에서 기기에 데이터를 저장할 수 있습니다. 사용 중지하면 사이트에서 기기에 데이터를 저장할 수 없습니다.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> 허용됨</translation>
+<translation id="9017522656123387064">선택 모드 종료됨</translation>
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>
 <translation id="902236149563113779">사이트에서는 일반적으로 게임 또는 전방 방향 안내와 같은 AR 기능을 사용하기 위해 카메라 위치를 추적합니다.</translation>
 <translation id="9039697262778250930">다음 사이트에서 로그아웃될 수 있습니다.</translation>

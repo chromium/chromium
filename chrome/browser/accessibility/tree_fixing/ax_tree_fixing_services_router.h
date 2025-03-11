@@ -8,13 +8,37 @@
 #include <list>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "ui/accessibility/ax_mode.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/callback_list.h"
+#else
+#include "base/scoped_observation.h"
+#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Profile;
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace ash {
+struct AccessibilityStatusEventDetails;
+}  // namespace ash
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace ui {
 struct AXTreeUpdate;
+struct AXUpdatesAndEvents;
 }  // namespace ui
 
 namespace tree_fixing {
@@ -27,8 +51,27 @@ using MainNodeIdentificationCallback =
 // Screen2x, Aratea, etc.
 class AXTreeFixingServicesRouter
     : public KeyedService,
-      public AXTreeFixingScreenAIService::MainNodeIdentificationDelegate {
+      public AXTreeFixingScreenAIService::MainNodeIdentificationDelegate
+#if !BUILDFLAG(IS_CHROMEOS)
+    ,
+      public ui::AXModeObserver
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+{
  public:
+  class WebContentsObserver : public content::WebContentsObserver {
+   public:
+    explicit WebContentsObserver(content::WebContents& web_contents);
+    WebContentsObserver(WebContentsObserver&&) = delete;
+    WebContentsObserver(const WebContentsObserver&) = delete;
+    WebContentsObserver& operator=(WebContentsObserver&&) = delete;
+    WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+    ~WebContentsObserver();
+
+    // content::WebContentsObserver:
+    void AccessibilityEventReceived(
+        const ui::AXUpdatesAndEvents& details) override;
+  };
+
   explicit AXTreeFixingServicesRouter(Profile* profile);
   AXTreeFixingServicesRouter(const AXTreeFixingServicesRouter&) = delete;
   AXTreeFixingServicesRouter& operator=(const AXTreeFixingServicesRouter&) =
@@ -45,19 +88,36 @@ class AXTreeFixingServicesRouter
   void IdentifyMainNode(const ui::AXTreeUpdate& ax_tree,
                         MainNodeIdentificationCallback callback);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  // ui::AXModeObserver:
+  void OnAXModeAdded(ui::AXMode mode) override;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
  private:
   // AXTreeFixingScreenAIService::MainNodeIdentificationDelegate overrides:
   void OnMainNodeIdentified(ui::AXTreeID tree_id,
                             ui::AXNodeID node_id,
                             int request_id) override;
 
+  void ToggleAccessibilityState();
+
+  base::ObserverList<WebContentsObserver> web_contents_observers_;
+  const raw_ptr<Profile> profile_;
   // ScreenAI related objects: service instance, and a list of callbacks/ids.
   std::unique_ptr<AXTreeFixingScreenAIService> screen_ai_service_;
   std::list<std::pair<int, MainNodeIdentificationCallback>> pending_callbacks_;
   int next_request_id_ = 0;
 
-  // The Profile for the KeyedService for this instance.
-  Profile* profile_;
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnAccessibilityStatusEvent(
+      const ash::AccessibilityStatusEventDetails& details);
+
+  base::CallbackListSubscription accessibility_status_subscription_;
+#else
+  ui::AXMode current_ax_mode_;
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace tree_fixing

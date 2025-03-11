@@ -72,6 +72,11 @@ AIModelDownloadProgressManager::Reporter::Reporter(
       &AIModelDownloadProgressManager::Reporter::OnRemoteDisconnect,
       weak_ptr_factory_.GetWeakPtr()));
 
+  // Don't watch any components that are already installed.
+  for (const auto& component_id : component_update_service->GetComponentIDs()) {
+    component_ids_.erase(component_id);
+  }
+
   // If there are no component ids to observe, just send zero and one hundred
   // percent.
   if (component_ids_.empty()) {

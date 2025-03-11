@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
 @class OmniboxAutocompleteController;
 class OmniboxController;
 @protocol OmniboxTextControllerDelegate;
@@ -35,7 +37,15 @@ class OmniboxViewIOS;
 /// Removes all C++ references.
 - (void)disconnect;
 
+#pragma mark - Autocomplete event
+
+/// Sets the additional text.
+- (void)setAdditionalText:(const std::u16string&)text;
+
 #pragma mark - Omnibox text event
+
+/// Called when the user removes the additional text.
+- (void)onUserRemoveAdditionalText;
 
 /// Called when a thumbnail is set.
 - (void)onThumbnailSet:(BOOL)hasThumbnail;

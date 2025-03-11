@@ -1456,20 +1456,20 @@ interface CanvasRenderingContext2D
     setter textRendering
     setter wordSpacing
 interface CaptureController : EventTarget
-    static method getSupportedZoomLevels
     attribute @@toStringTag
     getter oncapturedmousechange
-    getter oncapturedzoomlevelchange
-    method captureWheel
+    getter onzoomlevelchange
+    getter zoomLevel
     method constructor
     method decreaseZoomLevel
-    method getZoomLevel
+    method forwardWheel
+    method getSupportedZoomLevels
     method increaseZoomLevel
     method resetZoomLevel
     method sendWheel
     method setFocusBehavior
     setter oncapturedmousechange
-    setter oncapturedzoomlevelchange
+    setter onzoomlevelchange
 interface CapturedMouseEvent : Event
     attribute @@toStringTag
     getter surfaceX
@@ -7291,6 +7291,15 @@ interface Performance : EventTarget
     method setResourceTimingBufferSize
     method toJSON
     setter onresourcetimingbufferfull
+interface PerformanceContainerTiming : PerformanceEntry
+    attribute @@toStringTag
+    getter firstRenderTime
+    getter identifier
+    getter intersectionRect
+    getter lastPaintedElement
+    getter size
+    method constructor
+    method toJSON
 interface PerformanceElementTiming : PerformanceEntry
     attribute @@toStringTag
     getter element

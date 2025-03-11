@@ -20,9 +20,6 @@ namespace {
 constexpr static int kResizeAnimationDurationMs = 300;
 constexpr static int kAttachedWidgetOpacityDurationMs = 150;
 constexpr static int kDetachedWidgetOpacityDurationMs = 100;
-constexpr static SkColor kDefaultBackgroundColor =
-    SkColorSetARGB(255, 27, 28, 29);
-constexpr static int kCornerRadius = 12;
 constexpr static int kInitialDetachedYPosition = 48;
 
 }  // namespace
@@ -84,6 +81,9 @@ class GlicWindowAnimator::GlicViewOpacityAnimation {
     window_animator_->SetGlicWebViewVisibility(true);
     if (!web_view->layer()) {
       web_view->SetPaintToLayer();
+      web_view->layer()->SetRoundedCornerRadius(
+          gfx::RoundedCornersF{kCornerRadius});
+      web_view->layer()->SetIsFastRoundedCorner(true);
     }
     web_view->layer()->SetOpacity(start_opacity);
 
@@ -123,7 +123,6 @@ void GlicWindowAnimator::RunOpenAttachedAnimation(GlicButton* glic_button,
   target_bounds.set_x(top_left_x);
   target_bounds.set_width(target_size.width());
   target_bounds.set_height(target_size.height());
-  SetRoundedRectBackground();
 
   // Fade in widget while resizing out.
   AnimateWindowOpacity(0.0f, 1.0f,
@@ -136,7 +135,6 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
   gfx::Rect target_bounds =
       window_controller_->GetGlicWidget()->GetWindowBoundsInScreen();
   target_bounds.set_y(target_bounds.y() + kInitialDetachedYPosition);
-  SetRoundedRectBackground();
 
   // Fade in widget while animating down.
   AnimateWindowOpacity(0.0f, 1.0f,
@@ -148,7 +146,6 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
 void GlicWindowAnimator::RunCloseAnimation(GlicButton* glic_button,
                                            base::OnceClosure callback) {
   // The widget is going away so it's fine to replace any existing animation.
-  window_controller_->GetGlicView()->web_view()->DestroyLayer();
   AnimateBounds(glic_button->GetBoundsWithInset(),
                 base::Milliseconds(kResizeAnimationDurationMs),
                 std::move(callback));
@@ -181,14 +178,6 @@ void GlicWindowAnimator::AnimateWindowOpacity(float start_opacity,
   glic_window_opacity_animation_ = std::make_unique<GlicWindowOpacityAnimation>(
       this, window_controller_, duration, start_opacity, target_opacity);
   glic_window_opacity_animation_->Start();
-}
-
-void GlicWindowAnimator::SetRoundedRectBackground() {
-  // TODO(crbug.com/389982576): Match the background color of the widget with
-  // the web client background.
-  window_controller_->GetGlicView()->SetBackground(
-      views::CreateRoundedRectBackground(kDefaultBackgroundColor,
-                                         kCornerRadius));
 }
 
 void GlicWindowAnimator::AnimateBounds(const gfx::Rect& target_bounds,

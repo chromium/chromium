@@ -140,9 +140,10 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   no_url_source_id_ = ukm::NoURLSourceId();
   source_id_ = no_url_source_id_;
 
-  is_enabled_ = enabling_->IsEnabled();
-  subscriptions_.push_back(enabling_->RegisterEnableChanged(base::BindRepeating(
-      &GlicMetrics::OnEnabledChanged, base::Unretained(this))));
+  is_allowed_ = enabling_->IsAllowed();
+  subscriptions_.push_back(
+      enabling_->RegisterAllowedChanged(base::BindRepeating(
+          &GlicMetrics::OnAllowedChanged, base::Unretained(this))));
 
   is_pinned_ = profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   pref_registrar_.Init(profile_->GetPrefs());
@@ -306,7 +307,7 @@ void GlicMetrics::OnImpressionTimerFired() {
                                   EntryPointImpression::kBeforeFre);
     return;
   }
-  if (!is_enabled_) {
+  if (!is_allowed_) {
     base::UmaHistogramEnumeration("Glic.EntryPoint.Impression",
                                   EntryPointImpression::kAfterFreDisabled);
     return;
@@ -327,14 +328,17 @@ void GlicMetrics::OnImpressionTimerFired() {
   base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
 }
 
-void GlicMetrics::OnEnabledChanged() {
-  bool is_enabled = enabling_->IsEnabled();
-  if (is_enabled == is_enabled_) {
+void GlicMetrics::OnAllowedChanged() {
+  bool is_allowed = enabling_->IsAllowed();
+  if (is_allowed == is_allowed_) {
     // No change, early exit.
     return;
   }
-  is_enabled_ = is_enabled;
-  if (is_enabled_) {
+  is_allowed_ = is_allowed;
+  // TODO(crbug.com/391417447): Fix how/where these metrics are recorded.
+  // They're recording whether the user is allowed to use glic, when they should
+  // record whether the user enabled/disabled glic.
+  if (is_allowed_) {
     base::RecordAction(base::UserMetricsAction("Glic.Enabled"));
   } else {
     base::RecordAction(base::UserMetricsAction("Glic.Disabled"));

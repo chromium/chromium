@@ -1377,12 +1377,15 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                          GetWeakPtr()));
       break;
     case SuggestionType::kBnplEntry:
-      // TODO(crbug.com/401564124): Update checkout Amount.
+      CHECK(suggestion.GetPayload<Suggestion::PaymentsPayload>()
+                .extracted_amount_in_micros.has_value());
       manager_->client()
           .GetPaymentsAutofillClient()
           ->GetPaymentsBnplManager()
           ->InitBnplFlow(
-              /*final_checkout_amount=*/0,
+              /*final_checkout_amount=*/suggestion
+                  .GetPayload<Suggestion::PaymentsPayload>()
+                  .extracted_amount_in_micros.value(),
               base::BindOnce(
                   [](base::WeakPtr<AutofillExternalDelegate> delegate,
                      const CreditCard& card) {

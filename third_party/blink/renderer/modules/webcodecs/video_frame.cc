@@ -1011,61 +1011,57 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
   }
 
-  // Set up the copy to be minimally-sized.
-  gfx::Rect crop = src_visible_rect;
-  gfx::Size dest_coded_size = crop.size();
-  gfx::Rect dest_visible_rect = gfx::Rect(crop.size());
-
-  // Create a frame.
-  const auto timestamp = base::Microseconds(init->timestamp());
+  // Destination frame.
   scoped_refptr<media::VideoFrame> frame;
-  if (frame_contents.IsValid()) {
-    // We can directly use memory from the array buffer, no need to copy.
-    frame = media::VideoFrame::WrapExternalDataWithLayout(
-        src_layout.ToMediaLayout(), dest_visible_rect, display_size,
-        buffer.data(), buffer.size(), timestamp);
-    if (frame) {
-      base::OnceCallback<void()> cleanup_cb =
-          base::DoNothingWithBoundArgs(std::move(frame_contents));
-      auto runner = execution_context->GetTaskRunner(TaskType::kInternalMedia);
-      frame->AddDestructionObserver(
-          base::BindPostTask(runner, std::move(cleanup_cb)));
-    }
 
+  // Create a frame wrapping the source data.
+  const auto timestamp = base::Microseconds(init->timestamp());
+  auto src_frame = media::VideoFrame::WrapExternalDataWithLayout(
+      src_layout.ToMediaLayout(), src_visible_rect, display_size, buffer,
+      timestamp);
+
+  // All parameters should have been validated by this point and wrapping
+  // doesn't allocate new memory, so we should never fail to wrap.
+  CHECK(src_frame);
+
+  // We can directly use memory from the array buffer, no need to copy.
+  if (frame_contents.IsValid()) {
+    frame = src_frame;
+    base::OnceCallback<void()> cleanup_cb =
+        base::DoNothingWithBoundArgs(std::move(frame_contents));
+    auto runner = execution_context->GetTaskRunner(TaskType::kInternalMedia);
+    frame->AddDestructionObserver(
+        base::BindPostTask(runner, std::move(cleanup_cb)));
   } else {
+    // Set up the copy to be minimally-sized. Note: The parameters to the
+    // CopyPlane() method below depend on coded_size == visible_size.
+    gfx::Rect crop = src_visible_rect;
+    gfx::Size dest_coded_size = crop.size();
+    gfx::Rect dest_visible_rect = gfx::Rect(crop.size());
+
     // The array buffer hasn't been transferred, we need to allocate and
     // copy pixel data.
     auto& frame_pool = CachedVideoFramePool::From(*execution_context);
     frame = frame_pool.CreateFrame(media_fmt, dest_coded_size,
                                    dest_visible_rect, display_size, timestamp);
 
-    if (frame) {
-      for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
-        const gfx::Size sample_size =
-            media::VideoFrame::SampleSize(media_fmt, i);
-        const int sample_bytes =
-            media::VideoFrame::BytesPerElement(media_fmt, i);
-        const int rows = PlaneSize(crop.height(), sample_size.height());
-        const int columns = PlaneSize(crop.width(), sample_size.width());
-        const int row_bytes = columns * sample_bytes;
-        UNSAFE_TODO(libyuv::CopyPlane(
-            buffer.data() + src_layout.Offset(i),
-            static_cast<int>(src_layout.Stride(i)), frame->writable_data(i),
-            static_cast<int>(frame->stride(i)), row_bytes, rows));
-      }
+    if (!frame) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          String::Format("Failed to create a VideoFrame with format: %s, "
+                         "coded size: %s, visibleRect: %s, display size: %s.",
+                         VideoPixelFormatToString(media_fmt).c_str(),
+                         dest_coded_size.ToString().c_str(),
+                         dest_visible_rect.ToString().c_str(),
+                         display_size.ToString().c_str()));
+      return nullptr;
     }
-  }
 
-  if (!frame) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        String::Format("Failed to create a VideoFrame with format: %s, "
-                       "coded size: %s, visibleRect: %s, display size: %s.",
-                       VideoPixelFormatToString(media_fmt).c_str(),
-                       dest_coded_size.ToString().c_str(),
-                       dest_visible_rect.ToString().c_str(),
-                       display_size.ToString().c_str()));
-    return nullptr;
+    for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
+      libyuv::CopyPlane(src_frame->visible_data(i), src_frame->stride(i),
+                        frame->GetWritableVisibleData(i), frame->stride(i),
+                        frame->row_bytes(i), frame->rows(i));
+    }
   }
 
   if (init->hasColorSpace()) {

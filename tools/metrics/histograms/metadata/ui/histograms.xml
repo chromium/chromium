@@ -269,14 +269,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.SetDefaultResult2" enum="DefaultWebClientState"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The outcome of an attempt to set Chrome as the user's default browser.
-  </summary>
-</histogram>
-
 <histogram name="DefaultBrowser.State" enum="DefaultBrowserState"
     expires_after="never">
 <!-- expires-never: Used to keep track of desktop browser ecosystem. -->
@@ -445,7 +437,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.InvalidatesDuringLayout" units="count"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>dpranke@chromium.org</owner>
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
@@ -487,7 +479,7 @@ features through Chrome Labs. -->
 
 <histogram
     name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
-    units="providers" expires_after="2025-07-06">
+    units="providers" expires_after="2025-09-07">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -504,7 +496,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentInitializingColorProvider" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -521,7 +513,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentProcessingOnNativeThemeUpdatedEvent"
-    units="ms" expires_after="2025-07-06">
+    units="ms" expires_after="2025-09-07">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -552,7 +544,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
-    expires_after="2025-07-06">
+    expires_after="2025-09-07">
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>
   <summary>URLs for which Chrome creates WebUIControllers.</summary>

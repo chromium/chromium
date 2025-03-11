@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/devtools_pipe_handler.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -21,12 +16,14 @@
 #endif
 
 #include <stdio.h>
+
 #include <cstdlib>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -173,12 +170,13 @@ class PipeReaderBase : public PipeIOBase {
     while (bytes_read < size) {
 #if BUILDFLAG(IS_WIN)
       DWORD size_read = 0;
-      bool had_error =
+      bool had_error = UNSAFE_TODO(
           !ReadFile(read_handle_, static_cast<char*>(buffer) + bytes_read,
-                    size - bytes_read, &size_read, nullptr);
+                    size - bytes_read, &size_read, nullptr));
 #else
-      int size_read = read(read_fd_, static_cast<char*>(buffer) + bytes_read,
-                           size - bytes_read);
+      int size_read =
+          UNSAFE_TODO(read(read_fd_, static_cast<char*>(buffer) + bytes_read,
+                           size - bytes_read));
       if (size_read < 0 && errno == EINTR)
         continue;
       bool had_error = size_read <= 0;
@@ -259,11 +257,12 @@ class PipeWriterBase : public PipeIOBase {
         length = kWritePacketSize;
 #if BUILDFLAG(IS_WIN)
       DWORD bytes_written = 0;
-      bool had_error =
+      bool had_error = UNSAFE_TODO(
           !WriteFile(write_handle_, bytes + total_written,
-                     static_cast<DWORD>(length), &bytes_written, nullptr);
+                     static_cast<DWORD>(length), &bytes_written, nullptr));
 #else
-      int bytes_written = write(write_fd_, bytes + total_written, length);
+      int bytes_written =
+          UNSAFE_TODO(write(write_fd_, bytes + total_written, length));
       if (bytes_written < 0 && errno == EINTR)
         continue;
       bool had_error = bytes_written <= 0;
@@ -359,7 +358,8 @@ class PipeReaderCBOR : public PipeReaderBase {
 
  private:
   static uint32_t UInt32FromCBOR(const uint8_t* buf) {
-    return (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
+    return UNSAFE_TODO((buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) +
+                       buf[3]);
   }
 
   void ReadLoopInternal() override {
@@ -379,8 +379,10 @@ class PipeReaderCBOR : public PipeReaderBase {
       const size_t msg_size = (*status_or_header).outer_size();
       CHECK_GT(msg_size, kPeekSize);
       buffer.resize(msg_size);
-      if (!ReadBytes(&buffer.front() + kPeekSize, msg_size - kPeekSize, true))
+      if (!ReadBytes(UNSAFE_TODO(&buffer.front() + kPeekSize),
+                     msg_size - kPeekSize, true)) {
         return;
+      }
       HandleMessage(std::move(buffer));
     }
   }

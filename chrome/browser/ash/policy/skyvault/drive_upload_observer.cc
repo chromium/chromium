@@ -220,11 +220,13 @@ void DriveUploadObserver::OnIOTaskStatus(
   // Only log in case of final state.
   if (status.state == file_manager::io_task::State::kError) {
     policy::local_user_files::SkyVaultDeleteErrorHistogram(
-        trigger_, policy::local_user_files::CloudProvider::kGoogleDrive, true);
+        trigger_, policy::local_user_files::MigrationDestination::kGoogleDrive,
+        true);
   }
   if (status.state == file_manager::io_task::State::kSuccess) {
     policy::local_user_files::SkyVaultDeleteErrorHistogram(
-        trigger_, policy::local_user_files::CloudProvider::kGoogleDrive, false);
+        trigger_, policy::local_user_files::MigrationDestination::kGoogleDrive,
+        false);
   }
 
   switch (status.state) {

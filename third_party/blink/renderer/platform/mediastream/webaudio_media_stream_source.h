@@ -35,10 +35,6 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
 
   ~WebAudioMediaStreamSource() override;
 
-  void SetMediaStreamSource(MediaStreamSource* media_stream_source) {
-    media_stream_source_ = media_stream_source;
-  }
-
  private:
   // WebAudioDestinationConsumer implementation.
   //
@@ -55,17 +51,9 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
   void DeliverRebufferedAudio(const media::AudioBus& audio_bus,
                               int frame_delay);
 
-  // MediaStreamAudioSource implementation.
-  bool EnsureSourceIsStarted() final;
-  void EnsureSourceIsStopped() final;
-
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);
-
-  // True while this WebAudioMediaStreamSource is registered with
-  // |media_stream_source_| and is consuming audio.
-  bool is_registered_consumer_;
 
   // A wrapper used for providing audio to |fifo_|.
   std::unique_ptr<media::AudioBus> wrapper_bus_;
@@ -79,10 +67,6 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
   // Used to pass the reference timestamp between DeliverDecodedAudio() and
   // DeliverRebufferedAudio().
   base::TimeTicks current_reference_time_;
-
-  // This object registers with a MediaStreamSource. We keep track of
-  // that in order to be able to deregister before stopping this source.
-  Persistent<MediaStreamSource> media_stream_source_;
 };
 
 }  // namespace blink

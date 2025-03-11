@@ -3420,12 +3420,12 @@ public class SiteSettingsTest {
 
                 Assert.assertEquals(
                         "Preference text is not set correctly.",
-                        ContentSettingsResources.getBinaryStateSettingDescriptionIDs(
+                        ContentSettingsResources.getBinaryStateSettingResourceIDs(
                                 mContentSettingsType)[0],
                         radio_button.getDescriptionIds()[0]);
                 Assert.assertEquals(
                         "Preference text is not set correctly.",
-                        ContentSettingsResources.getBinaryStateSettingDescriptionIDs(
+                        ContentSettingsResources.getBinaryStateSettingResourceIDs(
                                 mContentSettingsType)[1],
                         radio_button.getDescriptionIds()[1]);
             } else {
