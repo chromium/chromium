@@ -387,6 +387,8 @@ class PLATFORM_EXPORT Color {
   void ConvertToColorSpace(ColorSpace destination_color_space,
                            bool resolve_missing_components = true);
 
+  void ConvertToColorSpaceForInterpolation(ColorSpace destination_color_space);
+
   // Colors can parse calc(NaN) and calc(Infinity). At computed value time this
   // function is called which resolves all NaNs to zero and +/-infinities to
   // maximum/minimum values, if they exist. It leaves finite values unchanged.

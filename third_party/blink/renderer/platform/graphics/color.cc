@@ -456,22 +456,8 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
                                Color color1,
                                Color color2,
                                float percentage) {
-  // https://www.w3.org/TR/css-color-4/#missing:
-  // When interpolating colors, missing components do not behave as zero values
-  // for color space conversions.
-  if (color1.GetColorSpace() != interpolation_space) {
-    const std::array<bool, 3> color1_missing =
-        color1.GetAnalogousMissingComponents(interpolation_space);
-    color1.ConvertToColorSpace(interpolation_space);
-    color1.CarryForwardAnalogousMissingComponents(color1_missing);
-  }
-
-  if (color2.GetColorSpace() != interpolation_space) {
-    const std::array<bool, 3> color2_missing =
-        color2.GetAnalogousMissingComponents(interpolation_space);
-    color2.ConvertToColorSpace(interpolation_space);
-    color2.CarryForwardAnalogousMissingComponents(color2_missing);
-  }
+  color1.ConvertToColorSpaceForInterpolation(interpolation_space);
+  color2.ConvertToColorSpaceForInterpolation(interpolation_space);
 
   if (!SubstituteMissingParameters(color1, color2)) {
     NOTREACHED();
@@ -828,6 +814,27 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       return;
     }
   }
+}
+
+void Color::ConvertToColorSpaceForInterpolation(
+    ColorSpace destination_color_space) {
+  if (color_space_ == destination_color_space) {
+    return;
+  }
+
+  // https://www.w3.org/TR/css-color-4/#missing:
+  // When interpolating colors, missing components do not behave as zero values
+  // for color space conversions.
+  // https://www.w3.org/TR/css-color-4/#interpolation:
+  // 1. Checking the two colors for analogous components which will be
+  // carried forward.
+  auto analogous = GetAnalogousMissingComponents(destination_color_space);
+  // 2. Converting them to a given color space which will be referred to as
+  // the interpolation color space below.
+  ConvertToColorSpace(destination_color_space);
+  // 3. (If required) Re-inserting carried-forward values in the converted
+  // colors.
+  CarryForwardAnalogousMissingComponents(analogous);
 }
 
 SkColor4f Color::toSkColor4f() const {
