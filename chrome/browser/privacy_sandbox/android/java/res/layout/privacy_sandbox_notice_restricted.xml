@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:orientation="vertical">
 
     <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_sandbox_notice_restricted_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -37,6 +38,7 @@ found in the LICENSE file.
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/privacy_sandbox_notice_restricted_logo"
                     android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
                     android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
                     android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
@@ -54,8 +56,9 @@ found in the LICENSE file.
                     android:text="@string/privacy_sandbox_m1_notice_restricted_title"
                     android:gravity="center"
                     style="@style/TextAppearance.Headline.Primary" />
-
+                <!-- PS Notice Restricted Description TextViewWithLeading IDs are named based on the order of each description in the dialog and not the underlying string resource ID. -->
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_restricted_description_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_restricted_description_1_android"
@@ -63,6 +66,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
+                    android:id="@+id/privacy_sandbox_notice_restricted_illustration"
                     android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
@@ -71,6 +75,7 @@ found in the LICENSE file.
                     android:importantForAccessibility="no" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_restricted_description_2"
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -79,6 +84,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_restricted_description_3"
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -87,6 +93,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_restricted_description_4"
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
