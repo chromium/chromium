@@ -981,7 +981,7 @@
       <message name="IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON" desc="Label of a button which starts Password Check [Length: 22em] [iOS only]" meaning="By clicking this button user will start checking all passwords for security issues.">
         Check now
       </message>
-      <message name="IDS_IOS_CLEAR_AUTOFILL" desc="Label for the option in settings to clear form data. In titlecase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_CLEAR_AUTOFILL" desc="Label for the option in settings to clear form data. [Length: 20em] [iOS only]">
         Autofill data
       </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_ACTIVITY_MODAL" desc="Message text for the activity indicator modal during delete browsing data.">
@@ -1020,46 +1020,46 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OPEN_HISTORY_BUTTON" desc="Title of a button that allows the user to open history.google.com. [Length: 15em]">
         Open history.google.com
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data since the beginning of time. In titlecase.">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data since the beginning of time.">
         All time
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the last 15 minutes. In titlecase.">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the last 15 minutes.">
         Last 15 minutes
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the last 4 weeks. In titlecase.">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the last 4 weeks.">
         Last 4 weeks
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_OLDER_THAN_30_DAYS" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data that is older than 30 days. In titlecase.">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_OLDER_THAN_30_DAYS" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data that is older than 30 days.">
         Older than 30 days
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_DAY" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the past day. In titlecase.">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_DAY" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the past day.">
         Last 24 hours
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the past hour. In titlecase.">
-        Last Hour
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the past hour.">
+        Last hour
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the past week. In titlecase.">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK" desc="Label of a time range option. This is used to specify that the user wishes to clear their browsing data for the past week.">
         Last 7 days
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE" desc="Title for the view that allows the user to pick a time range. The selector is used to pick the time period for which to clear the browsing data. In titlecase. [Length: 13em] [iOS only]">
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE" desc="Title for the view that allows the user to pick a time range. The selector is used to pick the time period for which to clear the browsing data. [Length: 13em] [iOS only]">
         Time range
       </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_TITLE" desc="Title for delete browsing data setting screen [Length: 10em] [iOS only]">
         Delete browsing data
       </message>
-      <message name="IDS_IOS_CLEAR_BROWSING_HISTORY" desc="Label for the option in settings to clear browsing history. In titlecase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_CLEAR_BROWSING_HISTORY" desc="Label for the option in settings to clear browsing history. [Length: 20em] [iOS only]">
         Browsing history
       </message>
       <message name="IDS_IOS_CLEAR_BUTTON" desc="Title for the button used to delete data. [Length: 20em] [iOS only]">
         Delete browsing data
       </message>
-      <message name="IDS_IOS_CLEAR_CACHE" desc="Label for the option in settings to clear the cache. In titlecase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_CLEAR_CACHE" desc="Label for the option in settings to clear the cache. [Length: 20em] [iOS only]">
         Cached images and files
       </message>
-      <message name="IDS_IOS_CLEAR_COOKIES" desc="Label for the option in settings to clear cookies and site data. In titlecase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_CLEAR_COOKIES" desc="Label for the option in settings to clear cookies and site data. [Length: 20em] [iOS only]">
         Cookies, site data
       </message>
-      <message name="IDS_IOS_CLEAR_SAVED_PASSWORDS" desc="Label for the option in settings to clear saved passwords. In titlecase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_CLEAR_SAVED_PASSWORDS" desc="Label for the option in settings to clear saved passwords. [Length: 20em] [iOS only]">
         Saved passwords
       </message>
       <message name="IDS_IOS_CLOSE_ALERT_BUTTON_LABEL" desc="Label of a button which will close the popup message with the full URL in the web context menu. [iOS only]">
