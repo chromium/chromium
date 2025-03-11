@@ -468,6 +468,18 @@ bool GlicWindowController::AcceleratorPressed(
     Close();
     return true;
   }
+  if (accelerator.key_code() == ui::VKEY_A && accelerator.IsAltDown() &&
+      accelerator.IsShiftDown()) {
+    // Transfer focus back to the browser.
+    if (IsAttached()) {
+      attached_browser_->window()->Activate();
+      return true;
+    }
+    if (auto* last_active = BrowserList::GetInstance()->GetLastActive()) {
+      last_active->window()->Activate();
+      return true;
+    }
+  }
 
   return false;
 }
@@ -484,6 +496,8 @@ void GlicWindowController::AddAccelerators() {
   }
 
   glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  glic_view->AddAccelerator(
+      ui::Accelerator(ui::VKEY_A, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN, ));
 }
 
 void GlicWindowController::Show(Browser* browser, InvocationSource source) {
