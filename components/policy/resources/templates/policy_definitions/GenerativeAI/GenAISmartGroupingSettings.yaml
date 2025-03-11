@@ -1,6 +1,6 @@
-caption: Settings for Generative AI Smart Grouping feature
+caption: Settings for Suggested Groups
 desc: |-
-  This policy controls the settings of the Generative AI Smart Grouping feature for <ph name="PRODUCT_OS_NAME">$1<ex>Google ChromeOS</ex></ph>.
+  This policy controls whether groups based on similar content will be suggested for <ph name="PRODUCT_OS_NAME">$1<ex>Google ChromeOS</ex></ph>. Content can include browser tabs and apps. Groups will be suggested when users login. Suggested desks for a group will be available during a session.
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
 
@@ -37,7 +37,7 @@ schema:
   - 1
   - 2
   type: integer
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:136-
 tags: []
 type: int-enum
