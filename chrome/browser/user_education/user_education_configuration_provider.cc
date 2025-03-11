@@ -81,6 +81,7 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     case user_education::FeaturePromoSpecification::PromoType::kSnooze:
     case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
     case user_education::FeaturePromoSpecification::PromoType::kTutorial:
+    case user_education::FeaturePromoSpecification::PromoType::kCustomUi:
       // Heavyweight promos prevent future low-priority heavyweight promos.
       config.session_rate_impact.type =
           feature_engagement::SessionRateImpact::Type::ALL;

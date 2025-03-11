@@ -121,6 +121,8 @@ std::string GetPromoTypeString(
       return "Tutorial";
     case user_education::FeaturePromoSpecification::PromoType::kRotating:
       return "Rotating";
+    case user_education::FeaturePromoSpecification::PromoType::kCustomUi:
+      return "Custom UI";
   }
 }
 
@@ -296,6 +298,9 @@ std::vector<std::string> GetPromoInstructions(
       oss << l10n_util::GetStringUTF8(promo->bubble_body_string_id());
       instructions.push_back(oss.str());
     }
+  } else if (spec.promo_type() !=
+             user_education::FeaturePromoSpecification::PromoType::kCustomUi) {
+    instructions.push_back("This is a custom help bubble.");
   } else {
     if (spec.bubble_title_string_id()) {
       instructions.push_back(

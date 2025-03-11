@@ -30,6 +30,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -106,13 +107,17 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
     user_education::FeaturePromoParams params,
     ShowPromoResult show_promo_result) {
   // Always attempt to show the promo.
-  bool is_web_bubble;
+  bool is_web_bubble = false;
+  ui::ElementIdentifier custom_bubble_id;
   user_education::FeaturePromoResult expected_result;
   if (std::holds_alternative<WebUiHelpBubbleShown>(show_promo_result)) {
     is_web_bubble = true;
     expected_result = user_education::FeaturePromoResult::Success();
+  } else if (auto* const shown =
+                 std::get_if<CustomHelpBubbleShown>(&show_promo_result)) {
+    custom_bubble_id = shown->expected_id;
+    expected_result = user_education::FeaturePromoResult::Success();
   } else {
-    is_web_bubble = false;
     expected_result =
         std::get<user_education::FeaturePromoResult>(show_promo_result);
   }
@@ -203,6 +208,10 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
   if (is_web_bubble) {
     steps += CheckPromoImpl(iph_feature, /*requested=*/true,
                             /*include_queued=*/false);
+  } else if (custom_bubble_id) {
+    steps += Steps(WaitForShow(custom_bubble_id),
+                   CheckPromoImpl(iph_feature, /*requested=*/true,
+                                  /*include_queued=*/false));
   } else if (expected_result) {
     steps += WaitForPromo(iph_feature);
   }

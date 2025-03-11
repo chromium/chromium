@@ -22875,6 +22875,7 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Custom Action"/>
   <int value="5" label="Legacy"/>
   <int value="6" label="Rotating"/>
+  <int value="7" label="CustomUi"/>
 </enum>
 
 <enum name="ProtoDatabaseInitState">

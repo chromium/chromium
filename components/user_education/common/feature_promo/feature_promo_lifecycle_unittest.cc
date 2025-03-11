@@ -186,6 +186,9 @@ class FeaturePromoLifecycleTest : public testing::Test {
       case PromoType::kRotating:
         name.append("Rotating");
         break;
+      case PromoType::kCustomUi:
+        name.append("CustomUi");
+        break;
       case PromoType::kUnspecified:
         NOTREACHED();
     }

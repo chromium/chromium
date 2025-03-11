@@ -17,6 +17,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/webui/chrome_urls/pref_names.h"
+#include "ui/base/interaction/element_identifier.h"
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic for testing User Education experiences.
@@ -88,8 +89,12 @@ class InteractiveFeaturePromoTestApi
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.
 
   struct WebUiHelpBubbleShown {};
-  using ShowPromoResult =
-      std::variant<WebUiHelpBubbleShown, user_education::FeaturePromoResult>;
+  struct CustomHelpBubbleShown {
+    ui::ElementIdentifier expected_id;
+  };
+  using ShowPromoResult = std::variant<WebUiHelpBubbleShown,
+                                       CustomHelpBubbleShown,
+                                       user_education::FeaturePromoResult>;
 
   // Possibly tries to show the promo with `params`, which should produce the
   // `show_promo_result`. If `show_promo_result` is not `WebUiHelpBubbleShown`

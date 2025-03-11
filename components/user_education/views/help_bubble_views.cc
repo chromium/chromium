@@ -60,6 +60,39 @@ HelpBubbleViews::~HelpBubbleViews() {
   Close(CloseReason::kBubbleDestroyed);
 }
 
+// static
+views::BubbleBorder::Arrow HelpBubbleViews::TranslateArrow(
+    HelpBubbleArrow arrow) {
+  switch (arrow) {
+    case HelpBubbleArrow::kNone:
+      return views::BubbleBorder::NONE;
+    case HelpBubbleArrow::kTopLeft:
+      return views::BubbleBorder::TOP_LEFT;
+    case HelpBubbleArrow::kTopRight:
+      return views::BubbleBorder::TOP_RIGHT;
+    case HelpBubbleArrow::kBottomLeft:
+      return views::BubbleBorder::BOTTOM_LEFT;
+    case HelpBubbleArrow::kBottomRight:
+      return views::BubbleBorder::BOTTOM_RIGHT;
+    case HelpBubbleArrow::kLeftTop:
+      return views::BubbleBorder::LEFT_TOP;
+    case HelpBubbleArrow::kRightTop:
+      return views::BubbleBorder::RIGHT_TOP;
+    case HelpBubbleArrow::kLeftBottom:
+      return views::BubbleBorder::LEFT_BOTTOM;
+    case HelpBubbleArrow::kRightBottom:
+      return views::BubbleBorder::RIGHT_BOTTOM;
+    case HelpBubbleArrow::kTopCenter:
+      return views::BubbleBorder::TOP_CENTER;
+    case HelpBubbleArrow::kBottomCenter:
+      return views::BubbleBorder::BOTTOM_CENTER;
+    case HelpBubbleArrow::kLeftCenter:
+      return views::BubbleBorder::LEFT_CENTER;
+    case HelpBubbleArrow::kRightCenter:
+      return views::BubbleBorder::RIGHT_CENTER;
+  }
+}
+
 bool HelpBubbleViews::ToggleFocusForAccessibility() {
   // // If the bubble isn't present or can't be meaningfully focused, stop.
   if (!help_bubble_view_) {

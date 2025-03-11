@@ -398,6 +398,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
       case user_education::FeaturePromoSpecification::PromoType::kTutorial:
       case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
       case user_education::FeaturePromoSpecification::PromoType::kSnooze:
+      case user_education::FeaturePromoSpecification::PromoType::kCustomUi:
         switch (spec.promo_subtype()) {
           case user_education::FeaturePromoSpecification::PromoSubtype::kNormal:
             // Standard promos should be session-limited and should limit other
