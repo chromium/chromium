@@ -466,6 +466,11 @@ const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on sites that users followed.";
 
+const char kEnhancedCalendarName[] = "Enable Enhanced Calendar integration";
+const char kEnhancedCalendarDescription[] =
+    "When enabled, the enhanced calendar flow will be available to eligible "
+    "users when adding a calendar event.";
+
 const char kEnhancedSafeBrowsingPromoName[] =
     "Enable Enhanced Safe Browsing Promos";
 const char kEnhancedSafeBrowsingPromoDescription[] =
