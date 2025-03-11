@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/pref_names.h"
@@ -1654,6 +1656,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   aida_availability.Set("enterprisePolicyValue",
                         static_cast<int>(availability.enterprise_policy_value));
   response_dict.Set("aidaAvailability", std::move(aida_availability));
+
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::UNKNOWN) {
+    response_dict.Set("channel", version_info::GetChannelString(channel));
+  }
 
   base::Value::Dict console_insights_dict;
   console_insights_dict.Set(
