@@ -246,7 +246,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
   // failure `PrefetchState`. See, for example, https://crbug.com/375333786.
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-      // All callsites of `PrefetchContainer::OnDeterminedHead2()` are
+      // All callsites of `PrefetchContainer::OnDeterminedHead()` are
       // `PrefetchStreamingURLLoader`, which implies the prefetch passed
       // eligibility check.
       NOTREACHED();
@@ -255,7 +255,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
     //
     //    PrefetchService::OnGotEligibilityForRedirect()
     // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
-    // -> PrefetchContainer::OnDeterminedHead2()
+    // -> PrefetchContainer::OnDeterminedHead()
     // -> here
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
     case PrefetchContainer::ServableState::kNotServable:
@@ -362,7 +362,7 @@ void PrefetchMatchResolver::MaybeUnblockForUnmatch(
 void PrefetchMatchResolver::UnblockForCookiesChanged(
     const PrefetchContainer::Key& key) {
   // Unregister remaining candidates as not served, with calling
-  // `PrefetchContainer::OnDetectedCookiesChange2()`.
+  // `PrefetchContainer::OnDetectedCookiesChange()`.
   for (auto& prefetch_key : Keys(candidates_)) {
     // By #prefetch-key-availability
     CHECK(candidates_.contains(prefetch_key));
@@ -372,7 +372,7 @@ void PrefetchMatchResolver::UnblockForCookiesChanged(
 
     UnregisterCandidate(prefetch_key, /*is_served=*/false);
 
-    prefetch_container.OnDetectedCookiesChange2(
+    prefetch_container.OnDetectedCookiesChange(
         /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
         prefetch_key == key);
   }

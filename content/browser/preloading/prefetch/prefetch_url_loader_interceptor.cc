@@ -90,7 +90,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       CHECK(prefetch_container);
       // Use `std::nullopt` as we need to record the crash key to identify
       // which case in `PrefetchMatchResolver` is the cause.
-      prefetch_container->OnDetectedCookiesChange2(
+      prefetch_container->OnDetectedCookiesChange(
           /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
           std::nullopt);
     } else {
