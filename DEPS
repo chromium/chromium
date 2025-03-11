@@ -1465,6 +1465,16 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/chrome/test/data/variations/cipd': {
+    'packages': [
+      {
+        'package': 'chromium/chrome/test/data/variations/cipd',
+        'version': 'o_1qt-7-7qn07nmoF_np1n-lr1mTxDWV06ZQevVkYbAC',
+      },
+    ],
+    'dep_type': 'cipd',
+  },
+
   'src/chrome/test/data/xr/webvr_info':
     Var('chromium_git') + '/external/github.com/toji/webvr.info.git' + '@' + 'c58ae99b9ff9e2aa4c524633519570bf33536248',
 

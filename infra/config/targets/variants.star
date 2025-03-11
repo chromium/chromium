@@ -135,7 +135,7 @@ targets.variant(
     identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
     generate_pyl_entry = False,
     args = [
-        "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+        "--variations-test-seed-path=../../chrome/test/data/variations/cipd/single_group_per_study_prefer_existing_behavior/seed.json",
         "--accept-empty-variations-seed-signature",
         "--webview-verbose-logging",
         "--disable-field-trial-config",
@@ -148,7 +148,7 @@ targets.variant(
     identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
     generate_pyl_entry = False,
     args = [
-        "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+        "--variations-test-seed-path=../../chrome/test/data/variations/cipd/single_group_per_study_prefer_new_behavior/seed.json",
         "--accept-empty-variations-seed-signature",
         "--webview-verbose-logging",
         "--disable-field-trial-config",
@@ -161,7 +161,7 @@ targets.variant(
     identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
     generate_pyl_entry = False,
     args = [
-        "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+        "--webview-variations-test-seed-path=../../chrome/test/data/variations/cipd/single_group_per_study_prefer_existing_behavior/seed.json",
         "--webview-command-line-arg=--accept-empty-variations-seed-signature",
         "--webview-command-line-arg=--webview-verbose-logging",
         "--webview-command-line-arg=--disable-field-trial-config",
@@ -174,7 +174,7 @@ targets.variant(
     identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
     generate_pyl_entry = False,
     args = [
-        "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+        "--webview-variations-test-seed-path=../../chrome/test/data/variations/cipd/single_group_per_study_prefer_new_behavior/seed.json",
         "--webview-command-line-arg=--accept-empty-variations-seed-signature",
         "--webview-command-line-arg=--webview-verbose-logging",
         "--webview-command-line-arg=--disable-field-trial-config",
