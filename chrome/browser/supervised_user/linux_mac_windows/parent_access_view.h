@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -63,6 +64,8 @@ class ParentAccessView : public views::View, public views::WidgetObserver {
   METADATA_HEADER(ParentAccessView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorDialogBackButtonElementId);
+
   ParentAccessView(content::BrowserContext* context,
                    base::OnceClosure dialog_result_reset_callback);
   ~ParentAccessView() override;

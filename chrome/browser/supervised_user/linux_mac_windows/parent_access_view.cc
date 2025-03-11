@@ -28,7 +28,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -304,6 +303,8 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
       l10n_util::GetStringUTF16(
           IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_BACK_BUTTON));
   back_button->SetStyle(ui::ButtonStyle::kProminent);
+  back_button->SetProperty(views::kElementIdentifierKey,
+                           kErrorDialogBackButtonElementId);
   // Pad the button size on the side.
   const int preferred_button_width = 155;
   const int preferred_button_height = 40;
@@ -369,3 +370,6 @@ void ParentAccessView::ShowNativeView() {
 
 BEGIN_METADATA(ParentAccessView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ParentAccessView,
+                                      kErrorDialogBackButtonElementId);
