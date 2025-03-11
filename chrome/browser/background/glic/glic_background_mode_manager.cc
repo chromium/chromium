@@ -89,8 +89,8 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   }
   GlicEnabling& enabling = service->enabling();
   profile_subscriptions_.emplace(
-      profile, enabling.RegisterEnableChanged(base::BindRepeating(
-                   &GlicBackgroundModeManager::OnProfileEnableChanged,
+      profile, enabling.RegisterAllowedChanged(base::BindRepeating(
+                   &GlicBackgroundModeManager::OnProfileAllowedChanged,
                    base::Unretained(this))));
   auto [it, inserted] = profile_observers_.emplace(profile, this);
   it->second.Observe(profile);
@@ -195,7 +195,7 @@ void GlicBackgroundModeManager::UpdateState() {
   }
 }
 
-void GlicBackgroundModeManager::OnProfileEnableChanged() {
+void GlicBackgroundModeManager::OnProfileAllowedChanged() {
   // Recompute whether the background launcher should change state based on the
   // updated policy.
   UpdateState();

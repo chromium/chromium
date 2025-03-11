@@ -64,8 +64,7 @@ class GlicMetrics {
   // Stores the source id at the time that context is requested.
   void StoreSourceId();
 
-  // Called when enabled changes.
-  void OnEnabledChanged();
+  void OnAllowedChanged();
 
   // Called when kGlicPinnedToTabstrip changes.
   void OnPinningPrefChanged();
@@ -98,9 +97,9 @@ class GlicMetrics {
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_;
 
-  // Cache the last value so that we only emit metrics for changes to the last
-  // value.
-  bool is_enabled_ = false;
+  // Glic access status, tracked to trigger 'disabled'/'enabled' metrics on
+  // change, and also informs other metric reports.
+  bool is_allowed_ = false;
 
   // Set to true in OnResponseStarted() and set to false in OnResponseStopped().
   // This is a workaround and should be removed, see crbug.com/399151164.
