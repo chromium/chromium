@@ -63,6 +63,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldAllowTroubleshootingTools() const;
   bool ShouldShowTroubleshootingTools() const;
   bool ShouldAllowFileTransfer() const;
+  bool ShouldAutoAcceptSession(bool is_in_managed_environment) const;
 
   Delegate::ErrorCallback GetErrorCallback();
 

@@ -46,6 +46,7 @@ using base::test::IsJson;
 using base::test::TestFuture;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
+using remoting::features::kAutoApproveEnterpriseSharedSessions;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 using remoting::features::kEnableCrdFileTransferForKiosk;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
@@ -59,6 +60,9 @@ constexpr char kResultCodeFieldName[] = "resultCode";
 constexpr char kResultMessageFieldName[] = "message";
 constexpr char kResultAccessCodeFieldName[] = "accessCode";
 constexpr char kResultLastActivityFieldName[] = "lastActivitySec";
+
+constexpr int kAutoApproveDeviceIdlenessCutoff = 300;
+constexpr base::TimeDelta kAutoApproveConnectionTimeout = base::Seconds(30);
 
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 
@@ -332,6 +336,12 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   test::FakeCrosNetworkConfig& fake_cros_network_config() {
     return fake_cros_network_config_;
+  }
+
+  void AddActiveManagedNetwork() {
+    fake_cros_network_config().AddActiveNetwork(
+        CreateNetwork(NetworkType::kWiFi)
+            .SetOncSource(OncSource::kDevicePolicy));
   }
 
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
@@ -794,6 +804,63 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   EXPECT_TRUE(delegate().session_parameters().show_confirmation_dialog);
 }
 
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       TestConnectionAutoApproveTimeoutForSharedSessions) {
+  EnableFeature(kAutoApproveEnterpriseSharedSessions);
+  AddActiveManagedNetwork();
+  SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
+
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+  EXPECT_EQ(delegate().session_parameters().connection_auto_accept_timeout,
+            kAutoApproveConnectionTimeout);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldNotSetConnectionAutoApproveTimeoutIfDisabledByFeatureFlag) {
+  DisableFeature(kAutoApproveEnterpriseSharedSessions);
+  AddActiveManagedNetwork();
+  SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
+
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+  EXPECT_EQ(delegate().session_parameters().connection_auto_accept_timeout,
+            std::nullopt);
+}
+
+TEST_F(
+    DeviceCommandStartCrdSessionJobTest,
+    ShouldNotSetConnectionAutoApproveTimeoutIfDeviceIsIdleMoreThanTheCutoff) {
+  EnableFeature(kAutoApproveEnterpriseSharedSessions);
+  AddActiveManagedNetwork();
+  SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff + 1);
+
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+  EXPECT_EQ(delegate().session_parameters().connection_auto_accept_timeout,
+            std::nullopt);
+}
+
+TEST_F(
+    DeviceCommandStartCrdSessionJobTest,
+    ShouldNotSetConnectionAutoApproveTimeoutIfDeviceIsNotConnectedToManagedNetwork) {
+  EnableFeature(kAutoApproveEnterpriseSharedSessions);
+  SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
+
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+  EXPECT_EQ(delegate().session_parameters().connection_auto_accept_timeout,
+            std::nullopt);
+}
+
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
        ShouldSendSessionDurationLogForRemoteSupport) {
   TestSessionType user_session_type = GetParam();
@@ -939,12 +1006,6 @@ class DeviceCommandStartCrdSessionJobRemoteAccessTest
   Payload RemoteAccessPayload() {
     return Payload().Set("crdSessionType",
                          CrdSessionType::REMOTE_ACCESS_SESSION);
-  }
-
-  void AddActiveManagedNetwork() {
-    fake_cros_network_config().AddActiveNetwork(
-        CreateNetwork(NetworkType::kWiFi)
-            .SetOncSource(OncSource::kDevicePolicy));
   }
 };
 
@@ -1257,6 +1318,18 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
+       ShouldNotSetConnectionAutoApproveTimeout) {
+  EnableFeature(kAutoApproveEnterpriseSharedSessions);
+  AddActiveManagedNetwork();
+  SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
+
+  EXPECT_EQ(delegate().session_parameters().connection_auto_accept_timeout,
+            std::nullopt);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
        ShouldRejectRequestIfThereAreNoActiveNetworks) {
   fake_cros_network_config().ClearActiveNetworks();
 
@@ -1427,7 +1500,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(user_session_type)),
-      ExtendedStartCrdSessionResultCode::kSuccess, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,

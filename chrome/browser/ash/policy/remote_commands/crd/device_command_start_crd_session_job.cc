@@ -79,6 +79,13 @@ const char kResultMessageFieldName[] = "message";
 // FAILURE_NOT_IDLE result code.
 const char kResultLastActivityFieldName[] = "lastActivitySec";
 
+// Cutoff time to check if the device was idle in the last 5 minutes.
+const base::TimeDelta kAutoApproveDeviceIdlenessCutoff = base::Minutes(5);
+
+// Timeout used to countdown before the connection request is auto accepted and
+// the session starts.
+const base::TimeDelta kConnectionAutoAcceptTimeout = base::Seconds(30);
+
 std::optional<std::string> FindString(const base::Value::Dict& dict,
                                       std::string_view key) {
   if (!dict.contains(key)) {
@@ -288,6 +295,9 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.show_troubleshooting_tools = ShouldShowTroubleshootingTools();
   parameters.allow_reconnections = ShouldAllowReconnections();
   parameters.allow_file_transfer = ShouldAllowFileTransfer();
+  if (ShouldAutoAcceptSession(is_in_managed_environment)) {
+    parameters.connection_auto_accept_timeout = kConnectionAutoAcceptTimeout;
+  }
 
   delegate_->StartCrdHostAndGetCode(
       parameters,
@@ -450,6 +460,17 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowFileTransfer() const {
   return IsKioskSession(GetCurrentUserSessionType()) &&
          base::FeatureList::IsEnabled(
              remoting::features::kEnableCrdFileTransferForKiosk);
+}
+
+bool DeviceCommandStartCrdSessionJob::ShouldAutoAcceptSession(
+    bool is_in_managed_environment) const {
+  if (!base::FeatureList::IsEnabled(
+          remoting::features::kAutoApproveEnterpriseSharedSessions)) {
+    return false;
+  }
+
+  return is_in_managed_environment && ShouldShowConfirmationDialog() &&
+         GetDeviceIdleTime() <= kAutoApproveDeviceIdlenessCutoff;
 }
 
 ErrorCallback DeviceCommandStartCrdSessionJob::GetErrorCallback() {
