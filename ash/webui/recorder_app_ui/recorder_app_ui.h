@@ -157,6 +157,8 @@ class RecorderAppUI
 
   void GetAvailableLangPacks(GetAvailableLangPacksCallback callback) override;
 
+  void GetDefaultLanguage(GetDefaultLanguageCallback callback) override;
+
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
   void GetMicrophoneInfo(const std::string& source_id,

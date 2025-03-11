@@ -547,6 +547,16 @@ void RecorderAppUI::GetAvailableLangPacks(
   std::move(callback).Run(std::move(lang_packs));
 }
 
+void RecorderAppUI::GetDefaultLanguage(GetDefaultLanguageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto default_language = delegate_->GetDefaultTranscriptionLanguage();
+  if (IsSodaAvailable(speech::GetLanguageCode(default_language))) {
+    std::move(callback).Run(default_language);
+  } else {
+    std::move(callback).Run(speech::GetLanguageName(kDefaultLanguageCode));
+  }
+}
+
 recorder_app::mojom::ModelState RecorderAppUI::GetSodaState(
     const speech::LanguageCode& language_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -58,7 +58,11 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraFeatureTourDialog>();
 
-  private readonly selectedLanguage = signal<LanguageCode|null>(null);
+  private readonly platformHandler = usePlatformHandler();
+
+  private readonly selectedLanguage = signal<LanguageCode>(
+    this.platformHandler.getDefaultLanguage(),
+  );
 
   private readonly availableLanguages = computed(() => {
     const languageList = this.platformHandler.getLangPackList();
@@ -71,8 +75,6 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
-
-  private readonly platformHandler = usePlatformHandler();
 
   async show(): Promise<void> {
     await this.dialog.value?.show();
@@ -99,7 +101,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    const onDropdownChange = (ev: CustomEvent<LanguageCode|null>) => {
+    const onDropdownChange = (ev: CustomEvent<LanguageCode>) => {
       this.selectedLanguage.value = ev.detail;
     };
 
@@ -115,6 +117,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
           ${i18n.onboardingDialogLanguageSelectionDescription}
           <language-dropdown
             .languageList=${this.availableLanguages.value}
+            .defaultLanguage=${this.platformHandler.getDefaultLanguage()}
             @dropdown-changed=${onDropdownChange}
           >
           </language-dropdown>

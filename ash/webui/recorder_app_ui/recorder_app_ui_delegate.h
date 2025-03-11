@@ -28,6 +28,8 @@ class RecorderAppUIDelegate {
   virtual std::u16string GetLanguageDisplayName(
       speech::LanguageCode language_code) = 0;
 
+  virtual std::string GetDefaultTranscriptionLanguage() = 0;
+
   virtual void OpenAiFeedbackDialog(
       const std::string& description_template) = 0;
 

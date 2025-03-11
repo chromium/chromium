@@ -15,12 +15,11 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {LangPackInfo, LanguageCode} from '../core/soda/language_info.js';
 import {
+  assertEnumVariant,
   assertInstanceof,
-  checkEnumVariant,
 } from '../core/utils/assert.js';
 
 import {CraDropdown} from './cra/cra-dropdown.js';
@@ -40,6 +39,7 @@ export class LanguageDropdown extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     languageList: {attribute: false},
+    defaultLanguage: {attribute: false},
   };
 
   static override shadowRootOptions: ShadowRootInit = {
@@ -49,6 +49,10 @@ export class LanguageDropdown extends ReactiveLitElement {
 
   languageList: LangPackInfo[] = [];
 
+  // Default language option of the dropdown. It's users' responsibility to make
+  // sure `defaultLanguage` is included in `languageList`.
+  defaultLanguage = LanguageCode.EN_US;
+
   private readonly dropdown = createRef<CraDropdown>();
 
   override async getUpdateComplete(): Promise<boolean> {
@@ -57,7 +61,7 @@ export class LanguageDropdown extends ReactiveLitElement {
   }
 
   private onChanged(ev: Event) {
-    const dropdownValue = checkEnumVariant(
+    const dropdownValue = assertEnumVariant(
       LanguageCode,
       assertInstanceof(ev.target, CraDropdown).value,
     );
@@ -72,6 +76,7 @@ export class LanguageDropdown extends ReactiveLitElement {
         <cros-dropdown-option
           headline=${langPack.displayName}
           value=${langPack.languageCode}
+          ?selected=${langPack.languageCode === this.defaultLanguage}
         >
         </cros-dropdown-option>
       `;
@@ -84,11 +89,6 @@ export class LanguageDropdown extends ReactiveLitElement {
     return html`
       <cra-dropdown @change=${this.onChanged} ${ref(this.dropdown)}>
         <cra-icon name="language" slot="leading"></cra-icon>
-        <cros-dropdown-option
-          headline=${i18n.languageDropdownHintOption}
-          selected
-        >
-        </cros-dropdown-option>
         ${this.renderDropdownOptions()}
       </cra-dropdown>
     `;
