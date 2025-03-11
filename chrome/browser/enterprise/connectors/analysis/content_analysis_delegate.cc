@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
@@ -177,41 +178,19 @@ void ContentAnalysisDelegate::BypassWarnings(
   }
 
   // Mark the full text as complying and report a warning bypass.
-  if (text_warning_) {
+  if (text_request_result_.final_result ==
+      FinalContentAnalysisResult::WARNING) {
     std::fill(result_.text_results.begin(), result_.text_results.end(), true);
 
-    int64_t content_size = 0;
-    for (const std::string& entry : data_.text) {
-      content_size += entry.size();
-    }
-
-    ReportAnalysisConnectorWarningBypass(
-        profile_, /*url*/ url_, /*tab_url*/ url_,
-        /*source*/
-        data_controls::ReportingService::GetClipboardSourceString(
-            data_.clipboard_source),
-        /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
-        "text/plain",
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-        GetContentTransferMethod(), access_point_, content_size, text_response_,
-        user_justification);
+    text_request_handler_->ReportWarningBypass(user_justification);
   }
 
   // Mark the full image as complying and report a warning bypass.
-  if (image_warning_) {
+  if (image_request_result_.final_result ==
+      FinalContentAnalysisResult::WARNING) {
     result_.image_result = true;
 
-    ReportAnalysisConnectorWarningBypass(
-        profile_, /*url*/ url_, /*tab_url*/ url_,
-        /*source*/
-        data_controls::ReportingService::GetClipboardSourceString(
-            data_.clipboard_source),
-        /*destination*/ url_.spec(), "Image data",
-        /*download_digest_sha256*/ "",
-        /*mime_type*/ "",
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-        GetContentTransferMethod(), access_point_, data_.image.size(),
-        image_response_, user_justification);
+    image_request_handler_->ReportWarningBypass(user_justification);
   }
 
   if (!warned_file_indices_.empty()) {
@@ -532,106 +511,41 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   files_request_complete_ = data_.paths.empty();
 }
 
-void ContentAnalysisDelegate::StringRequestCallback(
-    BinaryUploadService::Result result,
-    ContentAnalysisResponse response) {
-  // Remember to send an ack for this response.
-  if (result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
-    final_actions_[response.request_token()] = GetAckFinalAction(response);
-  }
+void ContentAnalysisDelegate::TextRequestCallback(RequestHandlerResult result) {
+  DCHECK(text_request_handler_);
 
-  int64_t content_size = 0;
-  for (const std::string& entry : data_.text) {
-    content_size += entry.size();
-  }
-  RecordDeepScanMetrics(
-      data_.settings.cloud_or_local_settings.is_cloud_analysis(), access_point_,
-      base::TimeTicks::Now() - upload_start_time_, content_size, result,
-      response);
+  text_request_result_ = std::move(result);
+
+  text_request_handler_->AppendFinalActionsTo(&final_actions_);
+
+  DVLOG(1) << __func__ << ": string result=" << text_request_result_.complies;
+  std::fill(result_.text_results.begin(), result_.text_results.end(),
+            text_request_result_.complies);
+
+  UpdateFinalResult(text_request_result_.final_result, text_request_result_.tag,
+                    text_request_result_.custom_rule_message);
 
   text_request_complete_ = true;
-
-  string_request_result_ =
-      CalculateRequestHandlerResult(data_.settings, result, response);
-
-  DVLOG(1) << __func__ << ": string result=" << string_request_result_.complies;
-
-  bool text_complies = string_request_result_.complies;
-  bool should_warn = string_request_result_.final_result ==
-                     FinalContentAnalysisResult::WARNING;
-
-  std::fill(result_.text_results.begin(), result_.text_results.end(),
-            text_complies);
-
-  MaybeReportDeepScanningVerdict(
-      profile_, /*url*/ url_, /*tab_url*/ url_,
-      /*source*/
-      data_controls::ReportingService::GetClipboardSourceString(
-          data_.clipboard_source),
-      /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
-      "text/plain",
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      GetContentTransferMethod(), access_point_, content_size, result, response,
-      CalculateEventResult(data_.settings, text_complies, should_warn));
-
-  UpdateFinalResult(string_request_result_.final_result,
-                    string_request_result_.tag,
-                    string_request_result_.custom_rule_message);
-
-  if (should_warn) {
-    text_warning_ = true;
-    text_response_ = std::move(response);
-  }
 
   MaybeCompleteScanRequest();
 }
 
 void ContentAnalysisDelegate::ImageRequestCallback(
-    BinaryUploadService::Result result,
-    ContentAnalysisResponse response) {
-  // Remember to send an ack for this response.
-  if (result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
-    final_actions_[response.request_token()] = GetAckFinalAction(response);
-  }
+    RequestHandlerResult result) {
+  DCHECK(image_request_handler_);
 
-  RecordDeepScanMetrics(
-      data_.settings.cloud_or_local_settings.is_cloud_analysis(), access_point_,
-      base::TimeTicks::Now() - upload_start_time_, data_.image.size(), result,
-      response);
+  image_request_result_ = std::move(result);
 
-  image_request_complete_ = true;
-
-  image_request_result_ =
-      CalculateRequestHandlerResult(data_.settings, result, response);
+  image_request_handler_->AppendFinalActionsTo(&final_actions_);
 
   DVLOG(1) << __func__ << ": image result=" << image_request_result_.complies;
-
-  bool image_complies = image_request_result_.complies;
-  bool should_warn =
-      image_request_result_.final_result == FinalContentAnalysisResult::WARNING;
-
-  result_.image_result = image_complies;
-
-  MaybeReportDeepScanningVerdict(
-      profile_, /*url*/ url_, /*tab_url*/ url_,
-      /*source*/
-      data_controls::ReportingService::GetClipboardSourceString(
-          data_.clipboard_source),
-      /*destination*/ url_.spec(), "Image data", /*download_digest_sha256*/ "",
-      /*mime_type*/ "",
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      GetContentTransferMethod(), access_point_, data_.image.size(), result,
-      response,
-      CalculateEventResult(data_.settings, image_complies, should_warn));
+  result_.image_result = image_request_result_.complies;
 
   UpdateFinalResult(image_request_result_.final_result,
                     image_request_result_.tag,
                     image_request_result_.custom_rule_message);
 
-  if (should_warn) {
-    image_warning_ = true;
-    image_response_ = std::move(response);
-  }
+  image_request_complete_ = true;
 
   MaybeCompleteScanRequest();
 }
@@ -794,27 +708,15 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
   }
 
   if (!text_request_complete_) {
-    auto request = std::make_unique<ClipboardAnalysisRequest>(
-        data_.settings.cloud_or_local_settings, std::move(full_text),
-        base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
+    text_request_handler_ = ClipboardRequestHandler::Create(
+        this, GetBinaryUploadService(), profile_, url_,
+        ClipboardRequestHandler::Type::kText, access_point_,
+        data_.clipboard_source, GetContentTransferMethod(),
+        std::move(full_text),
+        base::BindOnce(&ContentAnalysisDelegate::TextRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    InitializeRequest(request.get());
-    request->set_analysis_connector(BULK_DATA_ENTRY);
-    request->set_destination(url_.spec());
-    std::string source_string =
-        data_controls::ReportingService::GetClipboardSourceString(
-            data_.clipboard_source);
-    if (!source_string.empty()) {
-      request->set_source(source_string);
-    }
-    if (data_.clipboard_source.has_context()) {
-      request->set_clipboard_source_type(data_.clipboard_source.context());
-    }
-    if (data_.clipboard_source.has_url()) {
-      request->set_clipboard_source_url(data_.clipboard_source.url());
-    }
-    UploadTextForDeepScanning(std::move(request));
+    text_request_handler_->UploadData();
   }
 }
 
@@ -836,14 +738,14 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
   }
 
   if (!image_request_complete_) {
-    auto request = std::make_unique<ClipboardAnalysisRequest>(
-        data_.settings.cloud_or_local_settings, data_.image,
+    image_request_handler_ = ClipboardRequestHandler::Create(
+        this, GetBinaryUploadService(), profile_, url_,
+        ClipboardRequestHandler::Type::kImage, access_point_,
+        data_.clipboard_source, GetContentTransferMethod(), data_.image,
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    InitializeRequest(request.get());
-    request->set_analysis_connector(BULK_DATA_ENTRY);
-    UploadImageForDeepScanning(std::move(request));
+    image_request_handler_->UploadData();
   }
 }
 
@@ -872,22 +774,6 @@ void ContentAnalysisDelegate::FillAllResultsWith(bool status) {
 BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
   return safe_browsing::BinaryUploadService::GetForProfile(profile_,
                                                            data_.settings);
-}
-
-void ContentAnalysisDelegate::UploadTextForDeepScanning(
-    std::unique_ptr<BinaryUploadService::Request> request) {
-  BinaryUploadService* upload_service = GetBinaryUploadService();
-  if (upload_service) {
-    upload_service->MaybeUploadForDeepScanning(std::move(request));
-  }
-}
-
-void ContentAnalysisDelegate::UploadImageForDeepScanning(
-    std::unique_ptr<BinaryUploadService::Request> request) {
-  BinaryUploadService* upload_service = GetBinaryUploadService();
-  if (upload_service) {
-    upload_service->MaybeUploadForDeepScanning(std::move(request));
-  }
 }
 
 bool ContentAnalysisDelegate::UpdateDialog() {
@@ -957,10 +843,10 @@ void ContentAnalysisDelegate::RunCallback() {
 
   // If both image and text are present, synchronize their ack statuses if
   // needed.
-  if (!string_request_result_.request_token.empty() &&
+  if (!text_request_result_.request_token.empty() &&
       !image_request_result_.request_token.empty()) {
     if (!result_.image_result) {
-      final_actions_[string_request_result_.request_token] =
+      final_actions_[text_request_result_.request_token] =
           ContentAnalysisAcknowledgement::BLOCK;
     }
     // text_results is uniformly updated in StringRequestCallback(), so the

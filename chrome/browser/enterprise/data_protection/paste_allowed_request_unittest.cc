@@ -4,11 +4,16 @@
 
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -28,8 +33,6 @@
 namespace enterprise_data_protection {
 
 namespace {
-
-enterprise_connectors::ContentAnalysisDelegate* test_delegate_ = nullptr;
 
 constexpr char kScanId[] = "scan_id";
 
@@ -61,43 +64,43 @@ enterprise_connectors::ContentAnalysisResponse CreateResponse(
   return response;
 }
 
-class PasteTestContentAnalysisDelegate
-    : public enterprise_connectors::ContentAnalysisDelegate {
+class TestClipboardRequestHandler
+    : public enterprise_connectors::test::FakeClipboardRequestHandler {
  public:
-  PasteTestContentAnalysisDelegate(
-      enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
-          Action action,
-      content::WebContents* contents,
-      ContentAnalysisDelegate::Data data,
-      ContentAnalysisDelegate::CompletionCallback callback)
-      : ContentAnalysisDelegate(contents,
-                                std::move(data),
-                                std::move(callback),
-                                safe_browsing::DeepScanAccessPoint::PASTE),
-        action_(action) {}
-
-  static std::unique_ptr<enterprise_connectors::ContentAnalysisDelegate> Create(
-      enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
-          Action action,
-      content::WebContents* contents,
-      ContentAnalysisDelegate::Data data,
-      ContentAnalysisDelegate::CompletionCallback callback) {
-    auto delegate = std::make_unique<PasteTestContentAnalysisDelegate>(
-        action, contents, std::move(data), std::move(callback));
-    test_delegate_ = delegate.get();
-    return delegate;
+  static std::unique_ptr<ClipboardRequestHandler> Create(
+      enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
+      safe_browsing::BinaryUploadService* upload_service,
+      Profile* profile,
+      GURL url,
+      Type type,
+      safe_browsing::DeepScanAccessPoint access_point,
+      enterprise_connectors::ContentMetaData::CopiedTextSource clipboard_source,
+      std::string content_transfer_method,
+      std::string data,
+      CompletionCallback callback) {
+    return base::WrapUnique(new TestClipboardRequestHandler(
+        content_analysis_info, upload_service, profile, std::move(url), type,
+        access_point, std::move(clipboard_source),
+        std::move(content_transfer_method), std::move(data),
+        std::move(callback)));
   }
+
+ protected:
+  using FakeClipboardRequestHandler::FakeClipboardRequestHandler;
 
  private:
-  void UploadTextForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+  void UploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::ClipboardAnalysisRequest> request)
       override {
-    StringRequestCallback(safe_browsing::BinaryUploadService::Result::SUCCESS,
-                          CreateResponse(action_));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &TestClipboardRequestHandler::OnContentAnalysisResponse,
+            base::Unretained(this),
+            safe_browsing::BinaryUploadService::Result::SUCCESS,
+            CreateResponse(enterprise_connectors::ContentAnalysisResponse::
+                               Result::TriggeredRule::BLOCK)));
   }
-
-  enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::Action
-      action_;
 };
 
 class PasteAllowedRequestTest : public testing::Test {
@@ -563,10 +566,8 @@ TEST_F(PasteAllowedRequestTest, CleanupObsoleteScanRequests) {
 }
 
 TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
-  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&PasteTestContentAnalysisDelegate::Create,
-                          enterprise_connectors::ContentAnalysisResponse::
-                              Result::TriggeredRule::BLOCK));
+  enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(TestClipboardRequestHandler::Create));
 
   auto validator = helper_->CreateValidator();
   validator.ExpectSensitiveDataEvent(
@@ -608,8 +609,8 @@ TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
       /*source*/ secondary_endpoint(), /*destination*/ main_endpoint(),
       {.seqno = seqno}, clipboard_paste_data, future.GetCallback());
 
-  ASSERT_TRUE(future.Get());
-  ASSERT_EQ(future.Get()->text, kText);
+  ASSERT_TRUE(future.Wait());
+  ASSERT_FALSE(future.Get().has_value());
 
   EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
