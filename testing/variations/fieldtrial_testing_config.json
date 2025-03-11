@@ -12257,21 +12257,6 @@
             ]
         }
     ],
-    "IOSInterruptibleCoordinatorAlwaysDismissed": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "IOSInterruptibleCoordinatorAlwaysDismissed",
-                    "enable_features": [
-                        "IOSInterruptibleCoordinatorAlwaysDismissed"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
