@@ -28,8 +28,9 @@ def main(request, response):
 
     jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Sec-Session-Response").decode('utf-8'), session_key)
 
-    if test_session_manager.get_send_challenge_early():
-        challenge = "early_challenge"
+    early_challenge = test_session_manager.get_early_challenge(session_id)
+    if early_challenge is not None:
+        challenge = early_challenge
 
     if not verified or jwt_payload.get("jti") != challenge:
         return (400, response.headers, "")
