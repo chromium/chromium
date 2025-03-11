@@ -8839,7 +8839,6 @@ static_library("test_support") {
     "//chrome/browser/ash/printing:unit_tests",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/settings:unit_tests",
-    "//chrome/browser/autofill:interactive_ui_tests",
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/search_engine_choice:browser_tests",
