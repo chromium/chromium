@@ -53,7 +53,8 @@ typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 @property(weak, nonatomic, readonly) SceneState* sceneState;
 
 // Is profile associated with the `browser` off the record (incognito).
-// Returns NO if there is no associated profile or browser.
+// It is an error to call this method when the profile is nil (in most cases,
+// this is only the case when the coordinator stops). This will CHECK.
 - (BOOL)isOffTheRecord;
 
 // The basic lifecycle methods for coordinators are -start and -stop. These
