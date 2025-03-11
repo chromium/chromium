@@ -5135,6 +5135,9 @@ void LocalFrameView::RemovePendingSnapUpdate(PaintLayerScrollableArea* object) {
 
 void LocalFrameView::ExecutePendingSnapUpdates() {
   if (pending_snap_updates_) {
+    // Some scroll containers might be mid-scroll animation. Defer snapping
+    // those containers until after the scroll animation is done.
+    HeapHashSet<Member<PaintLayerScrollableArea>> deferred_updates;
     // Iteration order of the objects doesn't matter as the snap-areas are
     // contained within each scroll-container.
     for (PaintLayerScrollableArea* scrollable_area : *pending_snap_updates_) {
@@ -5145,10 +5148,14 @@ void LocalFrameView::ExecutePendingSnapUpdates() {
           pending_perform_snap_ = MakeGarbageCollected<
               GCedHeapHashSet<Member<PaintLayerScrollableArea>>>();
         }
-        pending_perform_snap_->insert(scrollable_area);
+        if (scrollable_area->HasRunningAnimation()) {
+          deferred_updates.insert(scrollable_area);
+        } else {
+          pending_perform_snap_->insert(scrollable_area);
+        }
       }
     }
-    pending_snap_updates_->clear();
+    pending_snap_updates_->swap(deferred_updates);
   }
 
   if (pending_perform_snap_ && !ShouldDeferLayoutSnap()) {
