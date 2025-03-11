@@ -173,6 +173,7 @@ source_set("unit_tests") {
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/page_load_metrics/common:test_support",
     "//components/performance_manager",
+    "//components/performance_manager/test_support",
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//content/public/browser",
