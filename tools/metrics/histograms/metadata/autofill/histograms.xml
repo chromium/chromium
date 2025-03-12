@@ -549,7 +549,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="VEHICLE_MAKE"/>
   <variant name="VEHICLE_MODEL"/>
   <variant name="VEHICLE_OWNER_TAG"/>
+  <variant name="VEHICLE_PLATE_STATE"/>
   <variant name="VEHICLE_VIN"/>
+  <variant name="VEHICLE_YEAR"/>
 </variants>
 
 <variants name="AutofillFormType">

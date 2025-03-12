@@ -204,10 +204,10 @@ public class ArchivedTabModelOrchestratorTest {
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        verify(mArchivedTabPersistentStore).setSkipSaveTabList(true);
-        verify(mArchivedTabPersistentStore).setSkipSaveTabList(false);
-        verify(mNormalTabPersistentStore).setSkipSaveTabList(true);
-        verify(mNormalTabPersistentStore).setSkipSaveTabList(false);
+        verify(mArchivedTabPersistentStore).pauseSaveTabList();
+        verify(mArchivedTabPersistentStore).resumeSaveTabList();
+        verify(mNormalTabPersistentStore).pauseSaveTabList();
+        verify(mNormalTabPersistentStore).resumeSaveTabList();
     }
 
     @Test
@@ -330,10 +330,10 @@ public class ArchivedTabModelOrchestratorTest {
 
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
-        verify(mArchivedTabPersistentStore).setSkipSaveTabList(true);
-        verify(mArchivedTabPersistentStore).setSkipSaveTabList(false);
-        verify(mNormalTabPersistentStore).setSkipSaveTabList(true);
-        verify(mNormalTabPersistentStore).setSkipSaveTabList(false);
+        verify(mArchivedTabPersistentStore).pauseSaveTabList();
+        verify(mArchivedTabPersistentStore).resumeSaveTabList();
+        verify(mNormalTabPersistentStore).pauseSaveTabList();
+        verify(mNormalTabPersistentStore).resumeSaveTabList();
     }
 
     @Test

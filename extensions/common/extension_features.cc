@@ -48,6 +48,10 @@ BASE_FEATURE(kApiOdfsConfigPrivate,
              "ApiOdfsConfigPrivate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
+             "ApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

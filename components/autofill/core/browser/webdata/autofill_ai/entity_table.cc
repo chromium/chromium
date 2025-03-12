@@ -99,7 +99,7 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
       AttributeInstance number((AttributeType(kPassportNumber)));
       AttributeInstance name((AttributeType(kPassportName)));
       AttributeInstance country((AttributeType(kPassportCountry)));
-      AttributeInstance expiry_date((AttributeType(kPassportExpiryDate)));
+      AttributeInstance expiry_date((AttributeType(kPassportExpirationDate)));
       AttributeInstance issue_date((AttributeType(kPassportIssueDate)));
       number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"",
                      /*format_string=*/u"", VerificationStatus::kNoStatus);

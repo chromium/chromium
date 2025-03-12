@@ -273,8 +273,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) = 0;
 
-  // Set the block_demode and check_enrollment flags to 0 in the VPD.
-  virtual void ClearForcedReEnrollmentVpd(
+  // Set the block_demode flag to 0 in the VPD.
+  virtual void ClearBlockDevmodeVpd(
       chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Triggers a TPM firmware update.

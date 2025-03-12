@@ -871,6 +871,16 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     }
   }
 
+  // The `client_side_content_decoding_enabled` flag is set only when the
+  // RendererSideContentDecoding feature is enabled.
+  if (request.client_side_content_decoding_enabled &&
+      !base::FeatureList::IsEnabled(features::kRendererSideContentDecoding)) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: client_side_content_decoding_enabled is set "
+        "unexpectedly.");
+    return false;
+  }
+
   // TODO(yhirano): If the request mode is "no-cors", the redirect mode should
   // be "follow".
   return true;

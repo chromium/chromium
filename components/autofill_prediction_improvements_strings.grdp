@@ -5,11 +5,11 @@
   <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="Used as a general label for the passport entity." translateable="false">
     Passport
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="Used as a general label for the vehicle entity." translateable="false">
-    Car
-  </message>
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="Used as a general label for the driver's license entity." translateable="false">
     Driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="Used as a general label for the vehicle entity." translateable="false">
+    Vehicle
   </message>
 
   <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
@@ -17,11 +17,11 @@
   <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="The title of the &quot;Add passport&quot; settings UI." translateable="false">
     Add passport
   </message>
-  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="The title of the &quot;Add car&quot; settings UI." translateable="false">
-    Add car
-  </message>
   <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY" desc="The title of the &quot;Add driver's license&quot; settings UI." translateable="false">
     Add driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="The title of the &quot;Add car&quot; settings UI." translateable="false">
+    Add vehicle
   </message>
 
   <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
@@ -30,7 +30,7 @@
     Edit passport
   </message>
   <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of the &quot;Edit car&quot; settings UI." translateable="false">
-    Edit car
+    Edit vehicle
   </message>
   <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of the &quot;Edit driver's license&quot; settings UI." translateable="false">
     Edit driver's license
@@ -47,29 +47,11 @@
   <message name="IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME" desc="Used as a general label for the passport country attribute." translateable="false">
     Country
   </message>
-  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRY_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport expiry date attribute." translateable="false">
-    Expiry date
+  <message name="IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport expiry date attribute." translateable="false">
+    Expiration date
   </message>
   <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport issue date attribute." translateable="false">
     Issue date
-  </message>
-
-  <!-- TODO(crbug.com/395807244): Make vehicle strings translateable. -->
-  <!-- Attributes of the vehicle entity -->
-  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle owner attribute." translateable="false">
-    Owner
-  </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_LICENSE_PLATE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle license plate attribute." translateable="false">
-    License plate
-  </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_VIN_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle VIN attribute." translateable="false">
-    Registration
-  </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle make attribute." translateable="false">
-    Make
-  </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle model attribute." translateable="false">
-    Model
   </message>
 
   <!-- TODO(crbug.com/395807244): Make driver's license strings translateable. -->
@@ -77,8 +59,8 @@
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute." translateable="false">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_REGION_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license region attribute." translateable="false">
-    Region
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license region attribute." translateable="false">
+    State
   </message>
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license number attribute." translateable="false">
     Number
@@ -88,6 +70,30 @@
   </message>
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license issue date attribute." translateable="false">
     Issue date
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make vehicle strings translateable. -->
+  <!-- Attributes of the vehicle entity -->
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle make attribute." translateable="false">
+    Make
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle model attribute." translateable="false">
+    Model
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle year attribute." translateable="false">
+    Year
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle owner attribute." translateable="false">
+    Owner
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle license plate attribute." translateable="false">
+    License plate
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle plate state attribute." translateable="false">
+    Plate state
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the vehicle VIN attribute." translateable="false">
+    VIN (vehicle identification number)
   </message>
 
   <!-- Fill suggestion -->

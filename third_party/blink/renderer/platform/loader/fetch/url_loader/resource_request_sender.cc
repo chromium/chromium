@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -40,6 +41,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/code_cache_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/content_decoding_url_loader_throttle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
@@ -265,6 +268,19 @@ int ResourceRequestSender::SendAsync(
   loading_task_runner_ = loading_task_runner;
   CheckSchemeForReferrerPolicy(*request);
 
+  if (base::FeatureList::IsEnabled(
+          network::features::kRendererSideContentDecoding)) {
+    // When RendererSideContentDecoding is enabled, set the
+    // `client_side_content_decoding_enabled` flag on the ResourceRequest to
+    // prevent the network service from performing decoding, and add a
+    // ContentDecodingURLLoaderThrottle to the beginning of the throttle chain
+    // to handle decoding of the response before other throttles process it.
+    // The cost of inserting entry in the top of vector is O(n). But size of
+    // `throttles` is not so large. So the cost should be acceptable.
+    request->client_side_content_decoding_enabled = true;
+    throttles.insert(throttles.begin(),
+                     std::make_unique<ContentDecodingURLLoaderThrottle>());
+  }
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1286053): This used to be a DCHECK asserting "Main frame
   // shouldn't come here", but after removing and re-landing the DCHECK later it

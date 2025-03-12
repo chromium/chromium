@@ -63,6 +63,7 @@ public class ToggleTabStackButtonCoordinator {
     private @Nullable Runnable mArchivedTabsIphShownCallback;
     private @Nullable Runnable mArchivedTabsIphDismissedCallback;
     private @Nullable Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
+    private boolean mAlreadyRequestedDeclutterIph;
 
     /**
      * @param context The Android context used for various view operations.
@@ -317,8 +318,9 @@ public class ToggleTabStackButtonCoordinator {
     private void maybeShowDeclutterIph(int tabCount) {
         if (!ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) return;
         if (mIsIncognitoSupplier.get()) return;
+        if (mAlreadyRequestedDeclutterIph) return;
         if (tabCount == 0) return;
-
+        mAlreadyRequestedDeclutterIph = true;
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
         mUserEducationHelper.requestShowIph(

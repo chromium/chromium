@@ -5,12 +5,9 @@
 """Siso configuration for clang/mac."""
 
 load("@builtin//lib/gn.star", "gn")
-load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_unix.star", "clang_unix")
-load("./config.star", "config")
-load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 

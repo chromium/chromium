@@ -167,6 +167,12 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-volteer-chrome",
+)
+
+# TODO(http://issues.chromium.org/339354084): Remove this after chromeos-volteer-chrome gets
+# stabilized.
+chrome_internal_verifier(
     builder = "chromeos-volteer-chrome-skylab",
 )
 

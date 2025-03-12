@@ -169,6 +169,13 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
 
   if (input.IsZeroSuggest() ||
       (input.type() == metrics::OmniboxInputType::EMPTY)) {
+    if (OmniboxFieldTrial::IsStarterPackPageEnabled()) {
+      if (TemplateURL* page_turl =
+              template_url_service_->FindStarterPackTemplateURL(
+                  TemplateURLStarterPackData::kPage)) {
+        AddStarterPackMatch(*page_turl, input);
+      }
+    }
     return;
   }
 
@@ -243,8 +250,10 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
           template_url.starter_pack_id());
   match.fill_into_edit = template_url.keyword();
-  match.inline_autocompletion =
-      match.fill_into_edit.substr(input.text().length());
+  if (match.fill_into_edit.starts_with(input.text())) {
+    match.inline_autocompletion =
+        match.fill_into_edit.substr(input.text().length());
+  }
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   if (input.current_page_classification() !=

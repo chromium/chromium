@@ -22,7 +22,8 @@ namespace ash {
 enum class AmbientVideo {
   kNewMexico = 0,
   kClouds = 1,
-  kMaxValue = kClouds,
+  kJupiter = 2,
+  kMaxValue = kJupiter,
 };
 
 // The returned string_view is guaranteed to be null-terminated and point to

@@ -309,6 +309,13 @@ BASE_FEATURE(kReduceTransferSizeUpdatedIPC,
              "ReduceTransferSizeUpdatedIPC",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables content decoding in the renderer process.
+// See https://crbug.com/391950057 and this doc for more details.
+// https://docs.google.com/document/d/1LwgPlrtQtUhGz_ilTsRun-7o4TuHo9jbXll6FRq-dKk/edit?usp=sharing
+BASE_FEATURE(kRendererSideContentDecoding,
+             "RendererSideContentDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature allows skipping TPCD mitigation checks when the cookie access
 // is tagged as being used for advertising purposes. This means that cookies
 // will continue to be blocked for cookie accesses on ad requests even if the

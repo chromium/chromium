@@ -463,10 +463,7 @@ bool IsSpecialSymbol(char16_t c) {
 bool IsSingleUsernameType(autofill::FieldType type) {
   return type == autofill::SINGLE_USERNAME ||
          type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD ||
-         (type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES &&
-          base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kUsernameFirstFlowWithIntermediateValuesPredictions));
+         type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES;
 }
 
 std::u16string GetHumanReadableRealm(const std::string& signon_realm) {

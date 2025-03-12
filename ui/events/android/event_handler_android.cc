@@ -60,4 +60,6 @@ void EventHandlerAndroid::OnControlsResizeViewChanged() {}
 
 void EventHandlerAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {}
+
+void EventHandlerAndroid::OnPointerLockRelease() {}
 }  // namespace ui

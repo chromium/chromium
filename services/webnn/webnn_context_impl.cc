@@ -214,16 +214,27 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.elu_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.gather_indices.RetainAll(
-      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
-  backend_context_properties.data_type_limits.gather_elements_indices.RetainAll(
-      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
-  backend_context_properties.data_type_limits.gather_nd_indices.RetainAll(
-      DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
+  backend_context_properties.data_type_limits.gather_input.ranks.IntersectWith(
+      SupportedRanks::NonScalarUpTo(8));
+  backend_context_properties.data_type_limits.gather_indices.data_types
+      .RetainAll(DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
+  backend_context_properties.data_type_limits.gather_elements_input.ranks
+      .IntersectWith(SupportedRanks::NonScalarUpTo(8));
+  backend_context_properties.data_type_limits.gather_elements_indices
+      .IntersectWith(
+          {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+           SupportedRanks::NonScalarUpTo(8)});
+  backend_context_properties.data_type_limits.gather_nd_input.ranks
+      .IntersectWith(SupportedRanks::NonScalarUpTo(8));
+  backend_context_properties.data_type_limits.gather_nd_indices.IntersectWith(
+      {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+       SupportedRanks::NonScalarUpTo(8)});
   backend_context_properties.data_type_limits.gelu_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.gemm_input.RetainAll(
-      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.gemm_a.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.gemm_c.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(2)});
   backend_context_properties.data_type_limits.gru_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gru_cell_input.RetainAll(

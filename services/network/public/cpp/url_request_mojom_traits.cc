@@ -185,6 +185,8 @@ bool StructTraits<
   out->is_ad_tagged = data.is_ad_tagged();
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
+  out->client_side_content_decoding_enabled =
+      data.client_side_content_decoding_enabled();
   out->required_ip_address_space = data.required_ip_address_space();
   out->allows_device_bound_sessions = data.allows_device_bound_sessions();
   return true;

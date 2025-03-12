@@ -298,6 +298,8 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   if (ShouldAutoAcceptSession(is_in_managed_environment)) {
     parameters.connection_auto_accept_timeout = kConnectionAutoAcceptTimeout;
   }
+  // TODO(b:402442753): Set maximum session duration to 8 hours for shared
+  // sessions.
 
   delegate_->StartCrdHostAndGetCode(
       parameters,

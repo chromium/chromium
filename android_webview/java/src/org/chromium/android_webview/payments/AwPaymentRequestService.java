@@ -232,6 +232,14 @@ import java.util.List;
         return this;
     }
 
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean isFullDelegationRequired() {
+        // The payment app must provide shipping address and contact information, if a merchant
+        // website requests it.
+        return true;
+    }
+
     // BrowserPaymentRequest:
     @Override
     public void maybeOverrideCanMakePaymentResponse(boolean response, Callback<Boolean> sender) {

@@ -94,7 +94,7 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettingsWithCustomizationId) {
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).video(),
       Eq(GetDefaultAmbientVideo()));
-  EXPECT_EQ(AmbientVideo::kNewMexico, GetDefaultAmbientVideo());
+  EXPECT_EQ(AmbientVideo::kJupiter, GetDefaultAmbientVideo());
 }
 
 TEST_F(AmbientUiSettingsTest, PrefManagement) {

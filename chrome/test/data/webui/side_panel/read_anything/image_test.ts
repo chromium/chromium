@@ -52,7 +52,7 @@ suite('Images', () => {
     app = await createApp();
     assertTrue(chrome.readingMode.imagesFeatureEnabled);
     imagesToggleButton =
-        app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
+        app.$.toolbar.shadowRoot.querySelector<CrIconButtonElement>(
             '#' + IMAGES_TOGGLE_BUTTON_ID);
     assertTrue(!!imagesToggleButton);
     if (!chrome.readingMode.imagesEnabled) {

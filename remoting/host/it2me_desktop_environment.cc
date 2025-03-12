@@ -10,10 +10,12 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/basic_desktop_environment.h"
@@ -62,6 +64,8 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
 
   bool enable_user_interface = options.enable_user_interface();
   bool enable_notifications = options.enable_notifications();
+  bool should_limit_session_length =
+      !options.maximum_session_duration().is_zero();
   // The host UI should be created on the UI thread.
 #if BUILDFLAG(IS_APPLE)
   // Don't try to display any UI on top of the system's login screen as this
@@ -78,7 +82,9 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   // session length will be limited.  If the user interface is disabled,
   // then sessions will not have a maximum length enforced by the continue
   // window timer.
-  if (enable_user_interface) {
+  if (should_limit_session_length) {
+    // TODO(b:402442753): Terminate session after maximum session duration.
+  } else if (enable_user_interface) {
     continue_window_ = HostWindow::CreateContinueWindow();
     continue_window_ = std::make_unique<HostWindowProxy>(
         caller_task_runner, ui_task_runner, std::move(continue_window_));

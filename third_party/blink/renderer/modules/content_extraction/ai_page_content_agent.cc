@@ -23,7 +23,9 @@
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
@@ -707,7 +709,38 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   AddPageInteractionInfo(document, *page_content);
   AddFrameInteractionInfo(frame, *page_content);
 
+  auto frame_data = mojom::blink::AIPageContentFrameData::New();
+  AddMetaData(document, frame_data->meta_data);
+  page_content->frame_data = std::move(frame_data);
+
   return page_content;
+}
+
+void AIPageContentAgent::ContentBuilder::AddMetaData(
+    const Document& document,
+    WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const {
+  int max = options_->max_meta_elements;
+  int count = 0;
+
+  const HTMLHeadElement* head = document.head();
+  if (!head) {
+    return;
+  }
+  for (HTMLMetaElement& meta_element :
+       Traversal<HTMLMetaElement>::ChildrenOf(*head)) {
+    auto name = meta_element.GetName();
+    if (name.empty()) {
+      continue;
+    }
+    auto meta = mojom::blink::AIPageContentMeta::New();
+    meta->name = name;
+    meta->content = meta_element.Content();
+    meta_data.push_back(std::move(meta));
+    count++;
+    if (count >= max) {
+      break;
+    }
+  }
 }
 
 bool AIPageContentAgent::ContentBuilder::WalkChildren(
@@ -764,6 +797,7 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
   auto iframe_data = mojom::blink::AIPageContentIframeData::New();
   iframe_data->frame_token = frame.GetFrameToken();
   iframe_data->likely_ad_frame = frame.IsAdFrame();
+
   content_node.content_attributes->iframe_data = std::move(iframe_data);
 
   auto* local_frame = DynamicTo<LocalFrame>(frame);
@@ -788,6 +822,14 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     // Must add frame interaction info after the entire frame subtree is built.
     AddFrameInteractionInfo(*local_frame,
                             *content_node.content_attributes->iframe_data);
+
+    auto frame_data = mojom::blink::AIPageContentFrameData::New();
+    content_node.content_attributes->iframe_data->local_frame_data =
+        std::move(frame_data);
+
+    AddMetaData(*local_frame->GetDocument(),
+                content_node.content_attributes->iframe_data->local_frame_data
+                    ->meta_data);
   }
 }
 

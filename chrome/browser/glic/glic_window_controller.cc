@@ -319,7 +319,7 @@ void GlicWindowController::OnWidgetDestroyed(views::Widget* widget) {
 
 void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
                                                  const gfx::Rect& new_bounds) {
-  if (in_move_loop_) {
+  if (in_move_loop_ && !AlwaysDetached()) {
     // While in a move loop, look for nearby browsers to toggle the drop to
     // attach indicator.
     HandleGlicButtonIndicator();
@@ -393,6 +393,9 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
         // Button clicked on a different browser: attach to that one.
         MovePositionToBrowserGlicButton(*new_attached_browser,
                                         /*animate=*/true);
+        if (AlwaysDetached()) {
+          return;
+        }
         AttachToBrowser(*new_attached_browser);
       }
       return;
@@ -541,7 +544,12 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
 
   glic_window_animator_ = std::make_unique<GlicWindowAnimator>(this);
   if (browser_for_attachment) {
-    OpenAttached(*browser_for_attachment.get());
+    if (AlwaysDetached()) {
+      MovePositionToBrowserGlicButton(*browser_for_attachment.get(), false);
+      OpenDetached();
+    } else {
+      OpenAttached(*browser_for_attachment.get());
+    }
   } else {
     OpenDetached();
   }
@@ -565,6 +573,11 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   NotifyIfPanelStateChanged();
 }
 
+// static
+bool GlicWindowController::AlwaysDetached() {
+  return base::FeatureList::IsEnabled(features::kGlicDetached);
+}
+
 gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   display::Display display = GetDisplayForOpeningDetached();
   gfx::Size widget_size = GetLastRequestedSizeClamped(display.size().height());
@@ -581,6 +594,7 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
 }
 
 void GlicWindowController::OpenAttached(Browser& browser) {
+  CHECK(!AlwaysDetached());
   GlicButton* glic_button = GetGlicButton(browser);
   CHECK(glic_button);
 
@@ -615,8 +629,14 @@ void GlicWindowController::OpenDetached() {
   glic_widget_observation_.Observe(glic_widget_.get());
   AddAccelerators();
 
-  // Be sure to reparent the widget and set its state first before showing it.
-  MaybeCreateHolderWindowAndReparent();
+  // When detached mode is on, there's no need for a holder window so it's
+  // simplified to just setting the z-order.
+  if (AlwaysDetached()) {
+    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  } else {
+    // Be sure to reparent the widget and set its state first before showing it.
+    MaybeCreateHolderWindowAndReparent();
+  }
   GetGlicWidget()->Show();
 
   glic_window_animator_->RunOpenDetachedAnimation(base::BindOnce(
@@ -754,6 +774,9 @@ void GlicWindowController::Attach() {
     return;
   }
   MovePositionToBrowserGlicButton(*browser, /*animate=*/true);
+  if (AlwaysDetached()) {
+    return;
+  }
   AttachToBrowser(*browser);
 }
 
@@ -762,7 +785,9 @@ void GlicWindowController::Detach() {
     return;
   }
   state_ = State::kDetaching;
-  MaybeCreateHolderWindowAndReparent();
+  if (!AlwaysDetached()) {
+    MaybeCreateHolderWindowAndReparent();
+  }
 
   // Move down a little bit when detaching.
   gfx::Point new_position = glic_widget_->GetWindowBoundsInScreen().origin();
@@ -778,6 +803,7 @@ void GlicWindowController::DetachFinished() {
 }
 
 void GlicWindowController::AttachToBrowser(Browser& browser) {
+  CHECK(!AlwaysDetached());
   CHECK(GetGlicWidget());
   attached_browser_ = &browser;
 
@@ -964,9 +990,11 @@ void GlicWindowController::HandleWindowDragWithOffset(
     in_move_loop_ = true;
     const views::Widget::MoveLoopSource move_loop_source =
         views::Widget::MoveLoopSource::kMouse;
-    // Set glic to a floating z-order while dragging so browsers brought into
-    // focus by HandleGlicButtonIndicator won't show in front of glic.
-    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+    if (!AlwaysDetached()) {
+      // Set glic to a floating z-order while dragging so browsers brought into
+      // focus by HandleGlicButtonIndicator won't show in front of glic.
+      GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+    }
 #if BUILDFLAG(IS_MAC)
     // Mac: Make the glic widget a top-level widget before starting drag.
     glic_widget_->Reparent(nullptr);
@@ -975,12 +1003,14 @@ void GlicWindowController::HandleWindowDragWithOffset(
         GetClampedMouseDragOffset(mouse_offset), move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
-    // set glic z-order back to normal after drag is done.
-    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
     scoped_glic_button_indicator_.reset();
-    // Check whether `GetGlicWidget()` is in a position to attach to a
-    // browser window.
-    OnDragComplete();
+    if (!AlwaysDetached()) {
+      // set glic z-order back to normal after drag is done.
+      GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+      // Check whether `GetGlicWidget()` is in a position to attach to a
+      // browser window.
+      OnDragComplete();
+    }
   }
 }
 
@@ -1091,6 +1121,10 @@ void GlicWindowController::MovePositionToBrowserGlicButton(
   // edge-case, not sure it's worth the effort.
   if (!GlicEnabling::IsEnabledForProfile(browser.profile())) {
     return;
+  }
+
+  if (AlwaysDetached() && !IsActive()) {
+    GetGlicWidget()->Activate();
   }
 
   // This will stack with a move animation below.

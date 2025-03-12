@@ -648,6 +648,9 @@ const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetMatchedTagName[] = "Invalidation set matched tagName";
 const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetMatchedPart[] = "Invalidation set matched part";
+const char inspector_style_invalidator_invalidate_event::
+    kInvalidationSetInvalidatesTreeCounting[] =
+        "Invalidation set invalidates tree-counting";
 
 namespace inspector_style_invalidator_invalidate_event {
 void FillCommonPart(perfetto::TracedDictionary& dict,

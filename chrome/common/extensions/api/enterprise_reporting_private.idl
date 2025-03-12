@@ -438,4 +438,21 @@ namespace enterprise.reportingPrivate {
                                        DoneCallback callback);
   };
 
+  dictionary DataMaskingRule {
+    // Corresponds to `MatchedUrlNavigationRule::DataMaskingAction::mask_type`.
+    DOMString level;
+
+    // Corresponds to `MatchedUrlNavigationRule::DataMaskingAction::pattern`.
+    DOMString regex_pattern;
+
+    // The URL being navigated to that triggered the rule.
+    DOMString url;
+
+    TriggeredRuleInfo triggeredRuleInfo;
+  };
+
+  interface Events {
+    static void onDataMaskingRulesTriggered(DataMaskingRule[] rules);
+  };
+
 };

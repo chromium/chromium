@@ -775,7 +775,7 @@ const TemplateURL* AutocompleteInput::AdjustInputForStarterPackEngines(
 
 // static
 const TemplateURL* AutocompleteInput::GetSubstitutingTemplateURLForInput(
-    TemplateURLService* model,
+    const TemplateURLService* model,
     AutocompleteInput* input) {
   if (!input->allow_exact_keyword_match()) {
     return nullptr;

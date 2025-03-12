@@ -50,6 +50,9 @@ GlicButtonController::~GlicButtonController() {
 void GlicButtonController::PanelStateChanged(
     const mojom::PanelState& panel_state,
     Browser*) {
+  if (GlicWindowController::AlwaysDetached()) {
+    return;
+  }
   bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
   if (detached) {
     glic_controller_delegate_->SetIcon(GlicVectorIconManager::GetVectorIcon(
@@ -70,7 +73,7 @@ void GlicButtonController::OnPrefsChanged() {
 void GlicButtonController::UpdateShowState(bool detached) {
   // If the glic window is detached, we want to show the re-attach icon
   // regardless of glic enabling/pinned state.
-  if (detached) {
+  if (detached && !GlicWindowController::AlwaysDetached()) {
     glic_controller_delegate_->SetShowState(true);
     return;
   }

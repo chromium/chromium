@@ -162,12 +162,21 @@ class MockSystemTrustStore : public SystemTrustStore {
     return mock_chrome_root_constraints_;
   }
 
+  bssl::TrustStore* eutl_trust_store() override { return &eutl_trust_store_; }
+
   void SetMockChromeRootConstraints(
       std::vector<StaticChromeRootCertConstraints> chrome_root_constraints) {
     mock_chrome_root_constraints_.clear();
     for (const auto& constraint : chrome_root_constraints) {
       mock_chrome_root_constraints_.emplace_back(constraint);
     }
+  }
+
+  void AddMockEutlRoot(CRYPTO_BUFFER* der_cert) {
+    auto parsed_cert =
+        bssl::ParsedCertificate::Create(bssl::UpRef(der_cert), {}, nullptr);
+    ASSERT_TRUE(parsed_cert);
+    eutl_trust_store_.AddTrustAnchor(std::move(parsed_cert));
   }
 #endif
 
@@ -177,6 +186,7 @@ class MockSystemTrustStore : public SystemTrustStore {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   bool mock_is_locally_trusted_root_ = false;
   std::vector<ChromeRootCertConstraints> mock_chrome_root_constraints_;
+  bssl::TrustStoreInMemory eutl_trust_store_;
 #endif
 };
 
@@ -360,6 +370,10 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
       std::vector<StaticChromeRootCertConstraints> chrome_root_constraints) {
     mock_system_trust_store_->SetMockChromeRootConstraints(
         std::move(chrome_root_constraints));
+  }
+
+  void AddMockEutlRoot(CRYPTO_BUFFER* der_cert) {
+    mock_system_trust_store_->AddMockEutlRoot(der_cert);
   }
 #endif
 
@@ -1855,6 +1869,214 @@ TEST_F(CertVerifyProcBuiltinTest,
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
 }
+
+class CertVerifyProcBuiltin1QwacTest
+    : public CertVerifyProcBuiltinTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CertVerifyProcBuiltin1QwacTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kVerifyQWACs);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kVerifyQWACs);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresEutl) {
+  // TODO(crbug.com/392931068): test netlogs, histograms
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  // intermediate->SetCertificatePolicies({"2.5.29.32.0"}); // anyPolicy
+
+  // CABF OV, ETSI QNCP-w
+  leaf->SetCertificatePolicies({"2.23.140.1.2.2", "0.4.0.194112.1.5"});
+
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    // If the intermediate is not on the EUTL, the certificate verifies
+    // successfully but does not have QWAC status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+  }
+
+  AddMockEutlRoot(intermediate->GetCertBuffer());
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    // If the intermediate is on the EUTL, the same certificate verifies
+    // successfully with the QWAC status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+  }
+}
+
+TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresPolicies) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  // CABF OV
+  leaf->SetCertificatePolicies({"2.23.140.1.2.2"});
+
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  AddMockEutlRoot(intermediate->GetCertBuffer());
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    // If the leaf doesn't have the necessary policies, the certificate
+    // verifies successfully but does not have QWAC status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+  }
+
+  // CABF OV, ETSI QNCP-w
+  leaf->SetCertificatePolicies({"2.23.140.1.2.2", "0.4.0.194112.1.5"});
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    // If the leaf has the qwac policies, verifies successfully with the QWAC
+    // status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+  }
+}
+
+TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresQcStatements) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  // CABF OV, ETSI QNCP-w
+  leaf->SetCertificatePolicies({"2.23.140.1.2.2", "0.4.0.194112.1.5"});
+
+  // Initially, set QcStatements with the wrong QcType.
+  // id-etsi-qct-eseal OBJECT IDENTIFIER ::= { id-etsi-qcs-QcType 2 }
+  constexpr uint8_t kEtsiQctEsealOid[] = {0x04, 0x00, 0x8e, 0x46,
+                                          0x01, 0x06, 0x02};
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctEsealOid)});
+
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  AddMockEutlRoot(intermediate->GetCertBuffer());
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    // If the leaf doesn't have the necessary QcStatements, the certificate
+    // verifies successfully but does not have QWAC status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+  }
+
+  // Try again with the correct QcType.
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    // If the leaf has the qwac QcStatements, verifies successfully with the
+    // QWAC status set.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+  }
+}
+
+TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacCanBuildAlternatePath) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  // CABF OV, ETSI QNCP-w
+  leaf->SetCertificatePolicies({"2.23.140.1.2.2", "0.4.0.194112.1.5"});
+
+  leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+
+  // Create separate intermediate which chains to a different root but has same
+  // subject, private key, and SKI so that `leaf` can also be verified with
+  // this chain.
+  auto [unused, root2] = CertBuilder::CreateSimpleChain2();
+  CertBuilder eutl_intermediate(/*orig_cert=*/intermediate->GetCertBuffer(),
+                                /*issuer=*/root2.get());
+  eutl_intermediate.SetSubjectTLV(
+      base::as_byte_span(intermediate->GetSubject()));
+  eutl_intermediate.SetKey(bssl::UpRef(intermediate->GetKey()));
+  eutl_intermediate.SetSubjectKeyIdentifier(
+      intermediate->GetSubjectKeyIdentifier());
+  AddMockEutlRoot(eutl_intermediate.GetCertBuffer());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(leaf->GetX509CertificateChain(), "www.example.com",
+         /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+  EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+
+  ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
+  // The verified chain has the cert chain from the normal TLS verification,
+  // not the QWAC verification.
+  EXPECT_EQ(intermediate->GetCertBuffer(),
+            verify_result.verified_cert->intermediate_buffers()[0].get());
+  EXPECT_EQ(root->GetCertBuffer(),
+            verify_result.verified_cert->intermediate_buffers()[1].get());
+  // TODO(crbug.com/392931068): test that the eutl chain was netlogged
+}
+
+INSTANTIATE_TEST_SUITE_P(, CertVerifyProcBuiltin1QwacTest, testing::Bool());
+
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {

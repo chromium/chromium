@@ -57,15 +57,15 @@ dictionary MLConv2dSupportLimits {
 };
 
 dictionary MLGatherSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits indices;
+  MLTensorLimits input;
+  MLTensorLimits indices;
   MLDataTypeLimits output;
 };
 
 dictionary MLGemmSupportLimits {
-  MLDataTypeLimits a;
-  MLDataTypeLimits b;
-  MLDataTypeLimits c;
+  MLTensorLimits a;
+  MLTensorLimits b;
+  MLTensorLimits c;
   MLDataTypeLimits output;
 };
 

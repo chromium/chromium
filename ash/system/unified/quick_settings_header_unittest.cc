@@ -357,8 +357,7 @@ TEST_F(QuickSettingsHeaderTest, ChildVisible) {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   TestSessionControllerClient* client = GetSessionControllerClient();
   client->Reset();
-  client->AddUserSession({"child@test.com", user_manager::UserType::kChild});
-  client->SetSessionState(session_manager::SessionState::ACTIVE);
+  SimulateUserLogin({"child@test.com", user_manager::UserType::kChild});
   UserSession user_session = *session->GetUserSession(0);
   user_session.custodian_email = "parent@test.com";
   session->UpdateUserSession(std::move(user_session));

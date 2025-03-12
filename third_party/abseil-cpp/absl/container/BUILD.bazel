@@ -756,6 +756,7 @@ cc_test(
         "//absl/log:check",
         "//absl/memory",
         "//absl/meta:type_traits",
+        "//absl/numeric:int128",
         "//absl/strings",
         "//absl/types:optional",
         "@googletest//:gtest",

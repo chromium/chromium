@@ -279,7 +279,9 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 
-  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
+  if ((RuntimeEnabledFeatures::NoFontAntialiasingEnabled() &&
+       !WebTestSupport::IsFontAntialiasingEnabledForTest()) ||
+      (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem())) {
     font.setEdging(SkFont::Edging::kAlias);
   }
 

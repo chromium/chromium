@@ -388,6 +388,8 @@ source_set("extensions") {
       "api/enterprise_reporting_private/conversion_utils.h",
       "api/enterprise_reporting_private/enterprise_reporting_private_api.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_api.h",
+      "api/enterprise_reporting_private/enterprise_reporting_private_event_router.cc",
+      "api/enterprise_reporting_private/enterprise_reporting_private_event_router.h",
       "api/feedback_private/chrome_feedback_private_delegate.cc",
       "api/feedback_private/chrome_feedback_private_delegate.h",
       "api/file_system/chrome_file_system_delegate.cc",

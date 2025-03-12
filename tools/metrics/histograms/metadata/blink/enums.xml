@@ -5967,6 +5967,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5362" label="BlockingAttributeFullFrameRateToken"/>
   <int value="5363" label="CrossOriginOwnerInterestGroupSubframeCheckFailed"/>
   <int value="5364" label="PreferredAudioOutputDevices"/>
+  <int value="5365" label="SharedStorageAPI_SelectURL_Method_CalledWithOneURL"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

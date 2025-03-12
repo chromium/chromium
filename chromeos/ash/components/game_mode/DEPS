@@ -1,13 +1,19 @@
 include_rules = [
-  "+chromeos/ash/experiences/arc",
-  "+ash/public/cpp",
-  "+ash/display",
-  "+ash/shell.h",
-  "+ash/wm",
-  "+chromeos/chromeos/ash/experiences/arc",
   "+chromeos/ash/components/borealis",
   "+chromeos/ash/components/dbus/resourced",
+  "+chromeos/chromeos/ash/experiences/arc",
   "+ui/aura",
   "+ui/base",
   "+ui/views",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/window_properties.h",
+  "+ash/wm/window_state.h",
+  "+ash/wm/window_state_observer.h",
+  "+ash/shell.h",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to
+  # //chromeos/ash/experiences. Resolve it.
+  "+chromeos/ash/experiences/arc",
 ]

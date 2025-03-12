@@ -232,6 +232,7 @@ extern const char kInvalidationSetMatchedClass[];
 extern const char kInvalidationSetMatchedId[];
 extern const char kInvalidationSetMatchedTagName[];
 extern const char kInvalidationSetMatchedPart[];
+extern const char kInvalidationSetInvalidatesTreeCounting[];
 
 void Data(perfetto::TracedValue context, Element&, const char* reason);
 void SelectorPart(perfetto::TracedValue context,

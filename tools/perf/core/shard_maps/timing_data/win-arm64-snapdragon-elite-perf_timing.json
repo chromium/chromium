@@ -1,83 +1,11 @@
 [
     {
-        "duration": "66.0",
-        "name": "jetstream2/JetStream2"
-    },
-    {
-        "duration": "319.0",
-        "name": "rendering.desktop.notracing/motionmark_ramp_composite"
-    },
-    {
-        "duration": "20.0",
-        "name": "rendering.desktop/css_value_type_shadow"
-    },
-    {
-        "duration": "20.0",
-        "name": "rendering.desktop/main_30fps_impl_60fps"
-    },
-    {
-        "duration": "26.0",
-        "name": "speedometer2/Speedometer2"
-    },
-    {
-        "duration": "30.0",
-        "name": "speedometer3/Speedometer3"
-    },
-    {
-        "duration": "38.0",
-        "name": "system_health.common_desktop/browse:news:cnn:2021"
-    },
-    {
-        "duration": "2.0",
-        "name": "system_health.common_desktop/browse:social:tumblr_infinite_scroll:2018"
-    },
-    {
-        "duration": "2.0",
-        "name": "system_health.common_desktop/browse:tools:sheets:2019"
-    },
-    {
-        "duration": "22.0",
-        "name": "system_health.common_desktop/load:media:youtube:2018"
-    },
-    {
-        "duration": "22.0",
-        "name": "system_health.common_desktop/load:media:youtubelivingroom:2020"
-    },
-    {
-        "duration": "22.0",
-        "name": "system_health.common_desktop/load:news:cnn:2020"
-    },
-    {
-        "duration": "22.0",
-        "name": "system_health.common_desktop/load:social:instagram:2018"
-    },
-    {
-        "duration": "23.0",
-        "name": "system_health.common_desktop/load:social:vk:2018"
-    },
-    {
-        "duration": "2.0",
-        "name": "system_health.common_desktop/load:tools:gmail:2019"
-    },
-    {
-        "duration": "22.0",
-        "name": "system_health.common_desktop/load:tools:weather:2019"
-    },
-    {
-        "duration": "2.0",
-        "name": "system_health.common_desktop/long_running:tools:gmail-foreground"
-    },
-    {
-        "duration": "46.0",
-        "name": "system_health.common_desktop/play:media:google_play_music"
+        "duration": "125.0",
+        "name": "components_perftests/_gtest_"
     },
     {
         "duration": "200.0",
         "name": "base_perftests/_gtest_"
-    },
-    {
-        "duration": "125.0",
-        "name": "components_perftests/_gtest_"
     },
     {
         "duration": "7.0",

@@ -11,26 +11,6 @@ declare global {
   export namespace chrome {
     export namespace developerPrivate {
 
-      export enum ItemType {
-        HOSTED_APP = 'hosted_app',
-        PACKAGED_APP = 'packaged_app',
-        LEGACY_PACKAGED_APP = 'legacy_packaged_app',
-        EXTENSION = 'extension',
-        THEME = 'theme',
-      }
-
-      export interface ItemInspectView {
-        path: string;
-        render_process_id: number;
-        render_view_id: number;
-        incognito: boolean;
-        generatedBackgroundPage: boolean;
-      }
-
-      export interface InstallWarning {
-        message: string;
-      }
-
       export enum ExtensionType {
         HOSTED_APP = 'HOSTED_APP',
         PLATFORM_APP = 'PLATFORM_APP',

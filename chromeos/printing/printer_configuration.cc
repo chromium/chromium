@@ -46,6 +46,20 @@ std::string ToString(Uri::ParserStatus status) {
 }
 }  // namespace
 
+IppPrinterInfo::IppPrinterInfo() = default;
+
+IppPrinterInfo::IppPrinterInfo(const IppPrinterInfo& other) = default;
+
+IppPrinterInfo::IppPrinterInfo(const std::vector<std::string>& document_formats,
+                               const std::string& document_format_default,
+                               const std::string& document_format_preferred) {
+  this->document_formats = document_formats;
+  this->document_format_default = document_format_default;
+  this->document_format_preferred = document_format_preferred;
+}
+
+IppPrinterInfo::~IppPrinterInfo() = default;
+
 std::string ToString(PrinterClass pclass) {
   switch (pclass) {
     case PrinterClass::kEnterprise:

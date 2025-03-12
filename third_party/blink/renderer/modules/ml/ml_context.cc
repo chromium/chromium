@@ -548,29 +548,29 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gather_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.gather_input));
   gather->setIndices(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gather_indices));
-  gather->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gather_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.gather_indices));
+  gather->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.gather_input.data_types));
   op_support_limits->setGather(gather);
 
   MLGatherSupportLimits* gather_elements = MLGatherSupportLimits::Create();
-  gather_elements->setInput(SupportedDataTypesToDataTypeLimits(
+  gather_elements->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.gather_elements_input));
-  gather_elements->setIndices(SupportedDataTypesToDataTypeLimits(
+  gather_elements->setIndices(SupportedTensorLimitsToTensorLimits(
       data_type_limits.gather_elements_indices));
   gather_elements->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.gather_elements_input));
+      data_type_limits.gather_elements_input.data_types));
   op_support_limits->setGatherElements(gather_elements);
 
   MLGatherSupportLimits* gather_nd = MLGatherSupportLimits::Create();
   gather_nd->setInput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gather_nd_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.gather_nd_input));
   gather_nd->setIndices(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gather_nd_indices));
-  gather_nd->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gather_nd_input));
+      SupportedTensorLimitsToTensorLimits(data_type_limits.gather_nd_indices));
+  gather_nd->setOutput(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.gather_nd_input.data_types));
   op_support_limits->setGatherND(gather_nd);
 
   MLSingleInputSupportLimits* gelu = MLSingleInputSupportLimits::Create();
@@ -581,11 +581,11 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   op_support_limits->setGelu(gelu);
 
   MLGemmSupportLimits* gemm = MLGemmSupportLimits::Create();
-  gemm->setA(SupportedDataTypesToDataTypeLimits(data_type_limits.gemm_input));
-  gemm->setB(SupportedDataTypesToDataTypeLimits(data_type_limits.gemm_input));
-  gemm->setC(SupportedDataTypesToDataTypeLimits(data_type_limits.gemm_input));
+  gemm->setA(SupportedTensorLimitsToTensorLimits(data_type_limits.gemm_a));
+  gemm->setB(SupportedTensorLimitsToTensorLimits(data_type_limits.gemm_a));
+  gemm->setC(SupportedTensorLimitsToTensorLimits(data_type_limits.gemm_c));
   gemm->setOutput(
-      SupportedDataTypesToDataTypeLimits(data_type_limits.gemm_input));
+      SupportedDataTypesToDataTypeLimits(data_type_limits.gemm_a.data_types));
   op_support_limits->setGemm(gemm);
 
   MLGruSupportLimits* gru = MLGruSupportLimits::Create();

@@ -11,7 +11,7 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
@@ -23,7 +23,7 @@
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
-@class AutocompleteMatchWrapper;
+@class AutocompleteResultWrapper;
 @class BrowserActionFactory;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
@@ -66,7 +66,7 @@ class Tracker;
            originView:(UIView*)originView;
 @end
 
-@interface OmniboxPopupMediator : NSObject <AutocompleteMatchWrapperDelegate,
+@interface OmniboxPopupMediator : NSObject <AutocompleteResultWrapperDelegate,
                                             AutocompleteResultConsumerDelegate,
                                             AutocompleteResultDataSource,
                                             OmniboxPopupControllerDelegate,
@@ -110,7 +110,8 @@ class Tracker;
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
 
 /// Autcomplete match wrapper.
-@property(nonatomic, strong) AutocompleteMatchWrapper* autocompleteMatchWrapper;
+@property(nonatomic, strong)
+    AutocompleteResultWrapper* autocompleteResultWrapper;
 
 /// Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)

@@ -118,7 +118,7 @@ struct HistoryEntry {
   string remote_icon_url_for_uma;
 
   // Optional debug info about a visit.
-  DebugInfo? debug_info;
+  DebugInfo? debug;
 };
 
 

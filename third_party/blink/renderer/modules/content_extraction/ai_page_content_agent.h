@@ -110,6 +110,9 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddNodeInteractionInfo(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
+    void AddMetaData(
+        const Document& document,
+        WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
 

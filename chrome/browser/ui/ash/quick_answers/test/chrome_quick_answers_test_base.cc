@@ -92,27 +92,18 @@ void ChromeQuickAnswersTestBase::SetUp() {
   profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
   profile_ = profile_builder.Build();
 
-  // To inject PrefService created outside of AshTestBase, we must not call
-  // SimulateUserLogin, because it forces to instantiate PrefService inside
-  // AshTestBase or requires the ownership of the PrefService instance.
-  // Instead, directly notify TestSessionController to inject PrefService.
   // TODO(crbug.com/383442863): the strategy of preference handling needs to be
   // redesigned.
   auto* test_session_controller_client = GetSessionControllerClient();
   test_session_controller_client->SetUnownedUserPrefService(
       user->GetAccountId(), profile_->GetPrefs());
-  test_session_controller_client->AddUserSession(
-      {.display_email = user->GetDisplayEmail(),
-       .user_type = user->GetType(),
-       .given_name = base::UTF16ToUTF8(user->GetGivenName())},
-      user->GetAccountId());
+  SimulateUserLogin({.display_email = user->GetDisplayEmail(),
+                     .user_type = user->GetType(),
+                     .given_name = base::UTF16ToUTF8(user->GetGivenName())},
+                    user->GetAccountId());
   CHECK(
       profile_->GetPrefs() ==
       test_session_controller_client->GetUserPrefService(user->GetAccountId()));
-  test_session_controller_client->SwitchActiveUser(user->GetAccountId());
-  test_session_controller_client->SetSessionState(
-      session_manager::SessionState::ACTIVE);
-
   SetUpInitialPrefValues();
   quick_answers_controller_ =
       CreateQuickAnswersControllerImpl(read_write_cards_ui_controller_);

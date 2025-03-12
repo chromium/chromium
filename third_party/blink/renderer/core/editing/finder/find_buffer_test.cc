@@ -1135,7 +1135,7 @@ TEST_P(FindBufferParamTest, PositionAfterBlock) {
 }
 
 // crbug.com/401444931
-TEST_P(FindBufferParamTest, IgnorableElementAtAnnoatationLastCrash) {
+TEST_P(FindBufferParamTest, IgnorableElementAtAnnotationLastCrash) {
   SetBodyContent("<p><ruby><rt><br></rt>\n</ruby></p>");
   FindBuffer buffer(WholeDocumentRange(), GetParam());
   FindResults results = buffer.FindMatches("aaa", kCaseInsensitive);

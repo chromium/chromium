@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/lobster/lobster_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,12 +23,7 @@ constexpr int kLobsterHeightThreshold = 400;
 
 LobsterView::LobsterView(WebUIContentsWrapper* contents_wrapper,
                          const gfx::Rect& caret_bounds)
-    : WebUIBubbleDialogView(nullptr,
-                            contents_wrapper->GetWeakPtr(),
-                            std::nullopt,
-                            views::BubbleBorder::TOP_RIGHT,
-                            /*autosize=*/false),
-      caret_bounds_(caret_bounds) {
+    : DraggableBubbleDialogView(contents_wrapper), caret_bounds_(caret_bounds) {
   set_has_parent(false);
   set_corner_radius(kLobsterResultCornerRadius);
   // Disable the default offscreen adjustment so that we can customise it.
@@ -84,6 +80,9 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
 
 void LobsterView::ShowUI() {
   WebUIBubbleDialogView::ShowUI();
+  if (base::FeatureList::IsEnabled(ash::features::kLobsterDraggingSupport)) {
+    SetupDraggingSupport();
+  }
 }
 
 void LobsterView::SetContentsBounds(content::WebContents* source,
@@ -92,6 +91,14 @@ void LobsterView::SetContentsBounds(content::WebContents* source,
     web_view_ptr->SetPreferredSize(bounds.size());
   }
   GetWidget()->SetBounds(bounds);
+}
+
+bool LobsterView::IsDraggingEnabled() {
+  return base::FeatureList::IsEnabled(ash::features::kLobsterDraggingSupport);
+}
+
+bool LobsterView::IsResizingEnabled() {
+  return false;
 }
 
 BEGIN_METADATA(LobsterView)

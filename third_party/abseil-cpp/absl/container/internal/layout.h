@@ -192,7 +192,6 @@
 #include <typeinfo>
 #include <utility>
 
-#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/debugging/internal/demangle.h"
 #include "absl/meta/type_traits.h"
@@ -591,10 +590,10 @@ class LayoutImpl<
   //
   // Requires: `p` is aligned to `Alignment()`.
   //
-  // Note: We mark the parameter as unused because GCC detects it is not used
-  // when `SizeSeq` is empty [-Werror=unused-but-set-parameter].
+  // Note: We mark the parameter as maybe_unused because GCC detects it is not
+  // used when `SizeSeq` is empty [-Werror=unused-but-set-parameter].
   template <class Char>
-  auto Slices(ABSL_ATTRIBUTE_UNUSED Char* p) const {
+  auto Slices([[maybe_unused]] Char* p) const {
     return std::tuple<SliceType<CopyConst<Char, ElementType<SizeSeq>>>...>(
         Slice<SizeSeq>(p)...);
   }

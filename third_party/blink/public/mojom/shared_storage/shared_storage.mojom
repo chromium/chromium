@@ -67,15 +67,20 @@ interface SharedStorageWorkletHost {
   // `keep_alive_after_operation` indicates whether or not the worklet should be
   // kept alive after this operation finishes. `private_aggregation_config`
   // contains (optional) parameters that are passed to Private Aggregation (if
-  // enabled). `saved_query_name`, if non-empty, is the name of this reusable
-  // query, whose index that results in `config`'s mapped URL will be cached in
-  // the browser process for future uses, or else will be retrieved for this use
-  // if the index for a query of name `saved_query_name` was previously cached.
+  // enabled). `resolve_to_config` indicates whether the promise for
+  // sharedStorage.selectURL() will resolve to a FencedFrameConfig or a
+  // URN:UUID; note that this merely notifies the browser of the action that the
+  // renderer's callback will take, so that it can also be reported to DevTools.
+  // `saved_query_name`, if non-empty, is the name of this reusable query, whose
+  // index that results in `config`'s mapped URL will be cached in the browser
+  // process for future uses, or else will be retrieved for this use if the
+  // index for a query of name `saved_query_name` was previously cached.
   SelectURL(string name,
             array<SharedStorageUrlWithMetadata> urls_with_metadata,
             CloneableMessage serialized_data,
             bool keep_alive_after_operation,
             PrivateAggregationConfig private_aggregation_config,
+            bool resolve_to_config,
             mojo_base.mojom.String16 saved_query_name)
       => (bool success,
           string error_message,

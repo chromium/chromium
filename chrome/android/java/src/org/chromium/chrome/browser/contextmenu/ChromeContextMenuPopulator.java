@@ -75,6 +75,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -274,11 +275,21 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
 
+    public static boolean shouldShowEmptySpaceContextMenu() {
+        return DeviceFormFactor.isDesktop()
+                && DeviceInput.supportsAlphabeticKeyboard()
+                && DeviceInput.supportsPrecisionPointer();
+    }
+
     @Override
     public List<Pair<Integer, ModelList>> buildContextMenu() {
         mShowEphemeralTabNewLabel = null;
 
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
+
+        if (mParams.isPage() && shouldShowEmptySpaceContextMenu()) {
+            // TODO (crbug.com/391719844): add new groups and items for page actions.
+        }
 
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();

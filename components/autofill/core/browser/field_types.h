@@ -512,6 +512,9 @@ enum FieldType {
   DRIVERS_LICENSE_EXPIRATION_DATE = 183,
   DRIVERS_LICENSE_ISSUE_DATE = 184,
 
+  VEHICLE_YEAR = 185,
+  VEHICLE_PLATE_STATE = 186,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -522,7 +525,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 185,
+  MAX_VALID_FIELD_TYPE = 187,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 

@@ -548,6 +548,7 @@ void SharedStorageWorkletHost::SelectURL(
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+    bool resolve_to_config,
     const std::u16string& saved_query_name,
     SelectURLCallback callback) {
   CHECK(private_aggregation_config);

@@ -114,22 +114,25 @@ void InstallAmbientVideoDlcInBackground() {
 }
 
 AmbientVideo GetDefaultAmbientVideo() {
+  return ShouldShowJupiterVideo() ? AmbientVideo::kJupiter
+                                  : AmbientVideo::kNewMexico;
+}
+
+bool ShouldShowJupiterVideo() {
   const std::optional<std::string_view> customization_id =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kCustomizationIdKey);
   VLOG(1) << __func__
           << " customization_id: " << customization_id.value_or("null");
-  if (customization_id == kJupiterScreensaverCustomizationId) {
-    // TODO (b:398026518): Use actual video.
-    return AmbientVideo::kNewMexico;
-  }
-  return AmbientVideo::kNewMexico;
+  return customization_id == kJupiterScreensaverCustomizationId;
 }
 
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =
     FILE_PATH_LITERAL("clouds.webm");
 const base::FilePath::CharType kTimeOfDayNewMexicoVideo[] =
     FILE_PATH_LITERAL("new_mexico.webm");
+const base::FilePath::CharType kTimeOfDayJupiterVideo[] =
+    FILE_PATH_LITERAL("jupiter.webm");
 const base::FilePath::CharType kTimeOfDayVideoHtmlSubPath[] =
     FILE_PATH_LITERAL("personalization/time_of_day/src/ambient_video.html");
 

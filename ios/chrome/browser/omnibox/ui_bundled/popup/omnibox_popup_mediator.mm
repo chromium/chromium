@@ -32,8 +32,8 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
@@ -133,7 +133,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)disconnect {
-  [self.autocompleteMatchWrapper disconnect];
+  [self.autocompleteResultWrapper disconnect];
   if (_remoteSuggestionsServiceObserverBridge) {
     self.remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());
@@ -197,7 +197,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)popupController:(OmniboxPopupController*)popupController
          didSortResults:(const AutocompleteResult&)result {
   _suggestionGroups =
-      [self.autocompleteMatchWrapper wrapAutocompleteResultInGroups:result];
+      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:result];
 
   // Preselect the verbatim match. It's the top match, unless we inserted pedals
   // and pushed it one section down.
@@ -225,7 +225,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)popupController:(OmniboxPopupController*)popupController
     didUpdateHasThumbnail:(BOOL)hasThumbnail {
   self.hasThumbnail = hasThumbnail;
-  self.autocompleteMatchWrapper.hasThumbnail = hasThumbnail;
+  self.autocompleteResultWrapper.hasThumbnail = hasThumbnail;
 }
 
 #pragma mark - AutocompleteResultDataSource
@@ -458,15 +458,15 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       });
 }
 
-#pragma mark - AutocompleteMatchWrapperDelegate
+#pragma mark - AutocompleteResultWrapperDelegate
 
 - (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
   return [self.popupController isStarredMatch:match];
 }
 
-- (void)autocompleteMatchWrapper:(AutocompleteMatchWrapper*)wrapper
-             didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
-                                     nonPedalSuggestionsGroups {
+- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
+              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                      nonPedalSuggestionsGroups {
   [self.consumer updateMatches:nonPedalSuggestionsGroups
       preselectedMatchGroupIndex:0];
 }

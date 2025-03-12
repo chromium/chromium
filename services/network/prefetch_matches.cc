@@ -120,6 +120,7 @@ namespace {
   DO_FIELD(shared_dictionary_writer_enabled) __VA_ARGS__       \
   DO_FIELD(attribution_reporting_src_token) __VA_ARGS__        \
   DO_FIELD(is_ad_tagged) __VA_ARGS__                           \
+  DO_FIELD(client_side_content_decoding_enabled) __VA_ARGS__   \
   DO_FIELD(prefetch_token) __VA_ARGS__                         \
   DO_FIELD(socket_tag) __VA_ARGS__                             \
   DO_FIELD(keepalive_token) __VA_ARGS__                        \
@@ -223,7 +224,8 @@ enum class FieldsForUma {
   kKeepaliveToken = 63,
   kExpectedSignatures = 64,
   kPermissionsPolicy = 65,
-  kMaxValue = kPermissionsPolicy,
+  kClientSideContentDecodingEnabled = 66,
+  kMaxValue = kClientSideContentDecodingEnabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
@@ -301,6 +303,8 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kattribution_reporting_src_token,
      FieldsForUma::kAttributionReportingSrcToken},
     {Fields::kis_ad_tagged, FieldsForUma::kIsAdTagged},
+    {Fields::kclient_side_content_decoding_enabled,
+     FieldsForUma::kClientSideContentDecodingEnabled},
     {Fields::kkeepalive_token, FieldsForUma::kKeepaliveToken},
     {Fields::kpermissions_policy, FieldsForUma::kPermissionsPolicy},
 });

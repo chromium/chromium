@@ -85,23 +85,35 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   void SetAvailableSize(LogicalSize available_size) {
 #if DCHECK_IS_ON()
     is_available_size_set_ = true;
+    DCHECK(!is_percentage_resolution_size_set_);
 #endif
 
     if (is_in_parallel_flow_) [[likely]] {
-      space_.available_size_ = available_size;
+      space_.available_size_ = space_.percentage_size_ = available_size;
     } else {
-      space_.available_size_ = {available_size.block_size,
-                                available_size.inline_size};
-      if (adjust_inline_size_if_needed_)
-        AdjustInlineSizeIfNeeded(&space_.available_size_.inline_size);
+      if (adjust_inline_size_if_needed_) {
+        AdjustInlineSizeIfNeeded(&available_size.block_size);
+      }
+      space_.available_size_ = space_.percentage_size_ = {
+          available_size.block_size, available_size.inline_size};
     }
   }
 
-  // Set percentage resolution size. Prior to calling this method,
-  // SetAvailableSize() must have been called, since we'll compare the input
-  // against the available size set, because if they are equal in either
-  // dimension, we won't have to store the values separately.
-  void SetPercentageResolutionSize(LogicalSize percentage_resolution_size);
+  // Set percentage resolution size.
+  void SetPercentageResolutionSize(LogicalSize percentage_size) {
+#if DCHECK_IS_ON()
+    is_percentage_resolution_size_set_ = true;
+#endif
+    if (is_in_parallel_flow_) [[likely]] {
+      space_.percentage_size_ = percentage_size;
+    } else {
+      if (adjust_inline_size_if_needed_) {
+        AdjustInlineSizeIfNeeded(&percentage_size.block_size);
+      }
+      space_.percentage_size_ = {percentage_size.block_size,
+                                 percentage_size.inline_size};
+    }
+  }
 
   // Sets the percentage resolution size for a replaced child.
   // Replaced children within a table-cell have *slightly* different rules for
@@ -110,7 +122,6 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   void SetReplacedChildPercentageResolutionSize(
       LogicalSize replaced_child_percentage_resolution_size) {
 #if DCHECK_IS_ON()
-    DCHECK(is_available_size_set_);
     DCHECK(is_percentage_resolution_size_set_);
     DCHECK(is_in_parallel_flow_);
 #endif

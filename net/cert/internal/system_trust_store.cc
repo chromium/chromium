@@ -166,6 +166,10 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->GetConstraintsForCert(cert);
   }
 
+  bssl::TrustStore* eutl_trust_store() override {
+    return trust_store_chrome_->eutl_trust_store();
+  }
+
   net::PlatformTrustStore* GetPlatformTrustStore() override {
     return platform_trust_store_;
   }

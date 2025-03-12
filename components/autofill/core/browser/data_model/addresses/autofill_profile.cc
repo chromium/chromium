@@ -555,7 +555,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 185,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 187,
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 

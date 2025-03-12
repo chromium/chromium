@@ -3175,6 +3175,13 @@ const char kRenderDocumentName[] = "Enable RenderDocument";
 const char kRenderDocumentDescription[] =
     "Enable swapping RenderFrameHosts on same-site navigations";
 
+const char kRendererSideContentDecodingName[] =
+    "Renderer-side content decoding";
+const char kRendererSideContentDecodingDescription[] =
+    "Enables renderer-side content decoding (decompression). When enabled, the "
+    "network service sends compressed HTTP response bodies to the renderer "
+    "process.";
+
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 const char kRustyPngName[] = "Rust-based PNG image handling";
 const char kRustyPngDescription[] =
@@ -3822,12 +3829,6 @@ const char kTrackingProtection3pcdDescription[] =
 
 const char kRwsV2UiName[] = "RWS V2 UI";
 const char kRwsV2UiDescription[] = "Updated RWS UI";
-
-const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
-    "Predictions on Username first flow with intermediate values";
-const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =
-    "New single username predictions based on voting from Username First Flow "
-    "with intermediate values.";
 
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";

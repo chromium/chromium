@@ -122,3 +122,21 @@ void ChromeOsSmartCardDelegate::NotifyLastConnectionLost(
       .OnLastDeviceConnectionLost(
           content_settings::mojom::ContentSettingsType::SMART_CARD_GUARD);
 }
+
+void ChromeOsSmartCardDelegate::AddObserver(
+    content::RenderFrameHost& render_frame_host,
+    PermissionObserver* observer) {
+  SmartCardPermissionContextFactory::GetForProfile(
+      CHECK_DEREF(
+          Profile::FromBrowserContext(render_frame_host.GetBrowserContext())))
+      .AddObserver(observer);
+}
+
+void ChromeOsSmartCardDelegate::RemoveObserver(
+    content::RenderFrameHost& render_frame_host,
+    PermissionObserver* observer) {
+  SmartCardPermissionContextFactory::GetForProfile(
+      CHECK_DEREF(
+          Profile::FromBrowserContext(render_frame_host.GetBrowserContext())))
+      .RemoveObserver(observer);
+}

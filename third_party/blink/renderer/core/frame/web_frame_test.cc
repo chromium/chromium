@@ -13748,6 +13748,8 @@ std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
 }  // namespace
 
 TEST_F(WebFrameTest, PrintSomePages) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   RegisterMockedHttpURLLoad("print-pages.html");
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "print-pages.html");
@@ -13763,6 +13765,8 @@ TEST_F(WebFrameTest, PrintSomePages) {
 }
 
 TEST_F(WebFrameTest, PrintAllPages) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   RegisterMockedHttpURLLoad("print-pages.html");
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "print-pages.html");

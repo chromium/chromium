@@ -308,6 +308,9 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the Glic feature is always detached.
+BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to sync @google.com account cookies. This is only for development and
 // testing.
 BASE_FEATURE(kGlicDevelopmentSyncGoogleCookies,
@@ -369,6 +372,28 @@ const base::FeatureParam<std::string> kGlicAllowedOriginsOverride{
     &kGlicCSPConfig, "glic-allowed-origins-override",
     // Space-delimited set of allowed origins.
     "https://*.google.com"};
+
+// Enable/disable Glic web client responsiveness check feature.
+BASE_FEATURE(kGlicClientResponsivenessCheck,
+             "GlicClientResponsivenessCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(crbug.com/402184931): Set appropriate default for the 3 following
+// parameters.
+// Time interval for periodically sending responsiveness check to the web client
+// in milliseconds.
+const base::FeatureParam<int> kGlicClientResponsivenessCheckIntervalMs{
+    &kGlicClientResponsivenessCheck,
+    "glic-client-responsiveness-check-interval-ms", 1000};
+// Maximum time to wait for glicWebClientCheckResponsive response during a
+// responsiveness check before flagging the web client as unresponsive.
+const base::FeatureParam<int> kGlicClientResponsivenessCheckTimeoutMs{
+    &kGlicClientResponsivenessCheck,
+    "glic-client-responsiveness-check-timeout-ms", 500};
+// Maximum time for showing client unresponsive UI before going to the error
+// state.
+const base::FeatureParam<int> kGlicClientUnresponsiveUiMaxTimeMs{
+    &kGlicClientResponsivenessCheck, "glic-client-unresponsive-ui-max-time-ms",
+    5000};
 
 BASE_FEATURE(kGlicKeyboardShortcutNewBadge,
              "GlicKeyboardShortcutNewBadge",

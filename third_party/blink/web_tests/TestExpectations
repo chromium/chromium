@@ -623,6 +623,8 @@ crbug.com/882975 [ Win10.20h2 ] virtual/threaded/fast/events/pinch/scroll-visual
 crbug.com/898394 [ Debug ] virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html [ Failure Timeout ]
 
 crbug.com/333831247 http/tests/devtools/elements/styles-3/styles-disable-then-delete.js [ Crash Failure Pass Timeout ]
+# Temporarily disabled for a devtools change
+crbug.com/401482931 http/tests/devtools/elements/styles-4/styles-keyframes.js [ Failure Pass ]
 
 # Subpixel rounding differences that are incorrect.
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
@@ -2607,7 +2609,8 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/402188092 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
+crbug.com/402570321 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
+crbug.com/402597630 external/wpt/svg/animations/reftests/discard-check-remove2.html [ Failure ]
 crbug.com/402195188 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash ]
 crbug.com/401111779 [ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
 crbug.com/401111779 [ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
@@ -9042,7 +9045,6 @@ crbug.com/400726001 [ Mac14 ] external/wpt/css/css-ruby/ruby-text-combine-uprigh
 crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Pass Timeout ]
 
 # Gardener 2025-03-07
-crbug.com/400818436 virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Pass Timeout ]
 crbug.com/398165466 [ Mac12 ] http/tests/inspector-protocol/tracing/screenshots.js [ Pass Timeout ]
 crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
 crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
@@ -9057,3 +9059,9 @@ crbug.com/402339999 [ Mac14-arm64 ] compositing/reflections/nested-reflection-an
 crbug.com/402377886 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.sharedworker.html [ Failure ]
 crbug.com/402495529 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
 crbug.com/402495529 [ Mac12 ] wpt_internal/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
+
+# Gardener 2025-03-12
+crbug.com/402546166 [ Linux ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
+crbug.com/402547571 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-setTimeout-redirect-to-cross-origin.sub.any.worker.html [ Failure Pass ]
+crbug.com/402547571 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-setTimeout-same-origin.sub.any.worker.html [ Failure Pass ]
+crbug.com/402686728 [ Linux ] external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Failure ]

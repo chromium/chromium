@@ -30,12 +30,6 @@ void SetLaunchType(content::BrowserContext* context,
 apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
                                          const Extension* extension);
 
-// Returns true if a launch container preference has been specified for
-// |extension|. GetLaunchContainer() will still return a default value even if
-// this returns false.
-bool HasPreferredLaunchContainer(const ExtensionPrefs* prefs,
-                                 const Extension* extension);
-
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_LAUNCH_UTIL_H_

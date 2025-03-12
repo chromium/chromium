@@ -125,7 +125,9 @@ void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
 void BiometricAuthenticationForFillingBubbleController::OnCanceled() {
   prefs_->SetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
-  delegate_->OnBiometricAuthBeforeFillingDeclined();
+  if (delegate_) {
+    delegate_->OnBiometricAuthBeforeFillingDeclined();
+  }
 }
 
 std::u16string BiometricAuthenticationForFillingBubbleController::GetTitle()

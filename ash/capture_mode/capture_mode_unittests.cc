@@ -325,10 +325,8 @@ class CaptureModeTestBase : public AshTestBase {
   }
 
   void SwitchToUser2() {
-    auto* session_controller = GetSessionControllerClient();
     constexpr char kUserEmail[] = "user2@capture_mode";
-    session_controller->AddUserSession({kUserEmail});
-    session_controller->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
+    SimulateUserLogin({kUserEmail});
   }
 
   void OpenSettingsView() {

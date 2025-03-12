@@ -218,27 +218,27 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.expand_input;
   }
-  static webnn::SupportedDataTypes gather_input(
+  static webnn::SupportedTensors gather_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_input;
   }
-  static webnn::SupportedDataTypes gather_indices(
+  static webnn::SupportedTensors gather_indices(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_indices;
   }
-  static webnn::SupportedDataTypes gather_elements_input(
+  static webnn::SupportedTensors gather_elements_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_elements_input;
   }
-  static webnn::SupportedDataTypes gather_elements_indices(
+  static webnn::SupportedTensors gather_elements_indices(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_elements_indices;
   }
-  static webnn::SupportedDataTypes gather_nd_input(
+  static webnn::SupportedTensors gather_nd_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_nd_input;
   }
-  static webnn::SupportedDataTypes gather_nd_indices(
+  static webnn::SupportedTensors gather_nd_indices(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gather_nd_indices;
   }
@@ -246,9 +246,13 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gelu_input;
   }
-  static webnn::SupportedDataTypes gemm_input(
+  static webnn::SupportedTensors gemm_a(
       const webnn::DataTypeLimits& data_type_limits) {
-    return data_type_limits.gemm_input;
+    return data_type_limits.gemm_a;
+  }
+  static webnn::SupportedTensors gemm_c(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gemm_c;
   }
   static webnn::SupportedDataTypes gru_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -511,7 +515,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGatherNdInput(&out->gather_nd_input) &&
            data.ReadGatherNdIndices(&out->gather_nd_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
-           data.ReadGemmInput(&out->gemm_input) &&
+           data.ReadGemmA(&out->gemm_a) && data.ReadGemmC(&out->gemm_c) &&
            data.ReadGruInput(&out->gru_input) &&
            data.ReadGruCellInput(&out->gru_cell_input) &&
            data.ReadHardSigmoidInput(&out->hard_sigmoid_input) &&

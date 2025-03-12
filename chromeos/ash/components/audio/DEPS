@@ -2,9 +2,7 @@ noparent = True
 
 include_rules = [
   "+ash/constants",
-  "+ash/public",
-  "+ash/resources",
-  "+ash/strings",
+  "+ash/strings/grit/ash_strings.h",
   "+base",
   "+chromeos/ash/components/dbus",
   "+chromeos/ash/grit/ash_resources.h",

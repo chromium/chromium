@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MetricsBrowserProxyImpl, playFromSelectionTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -65,7 +65,8 @@ export function playFromSelectionWithMockTimer(app: AppElement): void {
 
 // Returns the list of items in the given dropdown menu
 export function getItemsInMenu(
-    lazyMenu: CrLazyRenderElement<CrActionMenuElement>): HTMLButtonElement[] {
+    lazyMenu: CrLazyRenderLitElement<CrActionMenuElement>):
+    HTMLButtonElement[] {
   // We need to call menu.get here to ensure the menu has rendered before we
   // query the dropdown item elements.
   const menu = lazyMenu.get();

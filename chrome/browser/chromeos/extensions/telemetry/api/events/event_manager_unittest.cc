@@ -43,10 +43,15 @@ namespace {
 namespace crosapi = ::crosapi::mojom;
 
 constexpr char kExtensionId1[] = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-constexpr char kPwaPattern1[] = "*://googlechromelabs.github.io/*";
-constexpr char kPwaUrl1[] = "https://googlechromelabs.github.io";
+constexpr char kPwaPattern1[] =
+    "*://googlechromelabs.github.io/cros-sample-telemetry-extension/test-page/"
+    "*";
+constexpr char kPwaUrl1[] =
+    "https://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+    "test-page";
 constexpr char kPwaUrl1SameDomain[] =
-    "https://googlechromelabs.github.io/example/path";
+    "https://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+    "test-page";
 
 constexpr char kExtensionId2[] = "alnedpmllcfpgldkagbfbjkloonjlfjb";
 constexpr char kPwaPattern2[] = "https://hpcs-appschr.hpcloud.hp.com/*";

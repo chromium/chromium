@@ -39,6 +39,7 @@ found in the LICENSE file.
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/privacy_sandbox_notice_eea_logo"
                     android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
                     android:layout_width="@dimen/privacy_sandbox_chrome_logo_width"
                     android:layout_gravity="center"
@@ -58,6 +59,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.Headline.Primary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_notice_eea_description_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_eea_description_1_v2"
@@ -65,6 +67,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
+                    android:id="@+id/privacy_sandbox_notice_eea_illustration"
                     android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
@@ -73,6 +76,7 @@ found in the LICENSE file.
                     android:importantForAccessibility="no" />
 
                 <TextView
+                    android:id="@+id/privacy_sandbox_notice_eea_site_suggested_ads_title"
                     android:layout_marginBottom="@dimen/promo_between_text_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -81,6 +85,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMediumThick.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_notice_eea_site_suggested_ads_description"
                     android:layout_marginBottom="@dimen/promo_between_text_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,6 +102,7 @@ found in the LICENSE file.
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/privacy_sandbox_notice_eea_site_suggested_ads_learn_more_label"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -120,6 +126,7 @@ found in the LICENSE file.
                     android:visibility="gone" />
 
                 <TextView
+                    android:id="@+id/privacy_sandbox_notice_eea_ad_measurement_title"
                     android:layout_marginBottom="@dimen/promo_between_text_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -128,6 +135,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMediumThick.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_notice_eea_ad_measurement_description"
                     android:layout_marginBottom="@dimen/promo_between_text_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -144,6 +152,7 @@ found in the LICENSE file.
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/privacy_sandbox_notice_eea_ad_measurement_learn_more_label"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -167,6 +176,7 @@ found in the LICENSE file.
                     android:visibility="gone" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_notice_eea_last_text"
                     android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -248,6 +258,7 @@ found in the LICENSE file.
         android:visibility="gone">
 
         <LinearLayout
+            android:id="@+id/privacy_policy_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

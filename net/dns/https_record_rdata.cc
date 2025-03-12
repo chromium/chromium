@@ -133,7 +133,7 @@ bool ParseIpAddresses(std::string_view param_value,
 
 // static
 std::unique_ptr<HttpsRecordRdata> HttpsRecordRdata::Parse(
-    std::string_view data) {
+    base::span<const uint8_t> data) {
   if (!HasValidSize(data, kType))
     return nullptr;
 
@@ -186,8 +186,8 @@ AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
 
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
-    std::string_view data) {
-  auto reader = base::SpanReader(base::as_byte_span(data));
+    base::span<const uint8_t> data) {
+  auto reader = base::SpanReader(data);
 
   uint16_t priority;
   if (!reader.ReadU16BigEndian(priority)) {
@@ -296,8 +296,8 @@ bool ServiceFormHttpsRecordRdata::IsAlias() const {
 
 // static
 std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
-    std::string_view data) {
-  auto reader = base::SpanReader(base::as_byte_span(data));
+    base::span<const uint8_t> data) {
+  auto reader = base::SpanReader(data);
 
   uint16_t priority;
   if (!reader.ReadU16BigEndian(priority)) {

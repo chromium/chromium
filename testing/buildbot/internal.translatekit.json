@@ -5,8 +5,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "-t",
           "Release",
           "external/wpt/ai/translator"
@@ -17,7 +16,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "blink_wpt_tests",
+        "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31,8 +30,8 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "blink_wpt_tests",
-        "test_id_prefix": "ninja://:blink_wpt_tests/"
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },
@@ -40,8 +39,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "-t",
           "Release",
           "external/wpt/ai/translator"
@@ -52,7 +50,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "blink_wpt_tests",
+        "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -66,8 +64,8 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "blink_wpt_tests",
-        "test_id_prefix": "ninja://:blink_wpt_tests/"
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },
@@ -75,8 +73,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "-t",
           "Release",
           "external/wpt/ai/translator"
@@ -87,7 +84,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "blink_wpt_tests",
+        "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -101,8 +98,8 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "blink_wpt_tests",
-        "test_id_prefix": "ninja://:blink_wpt_tests/"
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },
@@ -110,8 +107,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "-t",
           "Release",
           "external/wpt/ai/translator"
@@ -122,7 +118,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "blink_wpt_tests",
+        "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -135,8 +131,8 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "blink_wpt_tests",
-        "test_id_prefix": "ninja://:blink_wpt_tests/"
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },
@@ -144,8 +140,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
           "-t",
           "Release",
           "external/wpt/ai/translator"
@@ -156,7 +151,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "blink_wpt_tests",
+        "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -169,8 +164,8 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "blink_wpt_tests",
-        "test_id_prefix": "ninja://:blink_wpt_tests/"
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   }

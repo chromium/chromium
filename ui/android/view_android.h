@@ -245,6 +245,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
  protected:
   void RemoveAllChildren(bool attached_to_window);
 
+  void OnPointerLockRelease();
+
   raw_ptr<ViewAndroid> parent_;
 
  private:
@@ -257,6 +259,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   FRIEND_TEST_ALL_PREFIXES(ViewAndroidBoundsTest, OnSizeChanged);
   friend class EventForwarder;
   friend class ViewAndroidBoundsTest;
+  friend class WindowAndroid;
 
   bool OnDragEvent(const DragEventAndroid& event);
   bool OnTouchEvent(const MotionEventAndroid& event);

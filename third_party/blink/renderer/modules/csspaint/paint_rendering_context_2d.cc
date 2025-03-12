@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
@@ -16,7 +15,6 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PaintWorkletGlobalScope* global_scope)
     : paint_recorder_(container_size, this),
       container_size_(container_size),

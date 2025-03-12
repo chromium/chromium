@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
@@ -1568,11 +1569,40 @@ public class TabPersistentStore {
     }
 
     /**
-     * Sets the condition which no-ops {#saveTabList} used in cases where there are batch updates to
+     * Pauses the async saving of the tab state. Used in cases where there are batch updates to
      * {@link TabModel}s.
      */
-    public void setSkipSaveTabList(boolean skipSaveTabList) {
-        mSkipSaveTabList = skipSaveTabList;
+    public void pauseSaveTabList() {
+        mSkipSaveTabList = true;
+    }
+
+    /** See {@link #resumeSaveTabList(Runnable)}. */
+    public void resumeSaveTabList() {
+        resumeSaveTabList(CallbackUtils.emptyRunnable());
+    }
+
+    /**
+     * Resumes the async saving of the tab state, then kicks off an AsyncTask to save the current
+     * list of tabs. Will execute the provided {@link Runnable} once the first {@link SaveListTask}
+     * has completed after resumption.
+     *
+     * @param onSaveTabListRunnable The {@link Runnable} to execute once the first {@link
+     *     SaveListTask} has completed after resumption.
+     */
+    public void resumeSaveTabList(@NonNull Runnable onSaveTabListRunnable) {
+        mSkipSaveTabList = false;
+
+        addObserver(
+                new TabPersistentStoreObserver() {
+                    @Override
+                    public void onMetadataSavedAsynchronously(
+                            TabModelSelectorMetadata modelSelectorMetadata) {
+                        onSaveTabListRunnable.run();
+                        removeObserver(this);
+                    }
+                });
+
+        saveTabListAsynchronously();
     }
 
     private class SaveTabTask extends AsyncTask<Void> {

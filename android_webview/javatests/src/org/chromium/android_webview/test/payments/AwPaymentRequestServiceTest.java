@@ -392,6 +392,484 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     }
 
     /**
+     * Tests that WebView indicates lack of ability to make payments when the merchant requests a
+     * shipping address, but the user's payment app does not support returning a shipping address.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCannotMakePaymentsWithAddressWithAppThatCannotReturnAddress() throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest cannot make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView indicates lack of ability to make payments when the merchant requests
+     * contact information, but the user's payment app does not support returning contact
+     * information.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCannotMakePaymentsWithContactInfoWithAppThatCannotReturnContactInfo()
+            throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest cannot make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView confirms ability to make payments when the merchant requests a shipping
+     * address and the user's payment app supports returning a shipping address.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCanMakePaymentsWithAddressWhenAppCanReturnAddress() throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp().setHandlesShippingAddress()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest can make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView confirms ability to make payments when the merchant requests contact
+     * information and the user's payment app supports returning contact information.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCanMakePaymentsWithContactInfosWhenAppCanReturnContactInfos() throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp().setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest can make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView confirms ability to make payments when the merchant requests both shipping
+     * address and contact information, and the user's payment app supports returning both of these.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCanMakePaymentsWithAddressAndContactWhenAppCanReturnBoth() throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(
+                        createPaymentApp()
+                                .setHandlesShippingAddress()
+                                .setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .requestShippingAddress()
+                        .requestContactInformation()
+                        .build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest can make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView indicates lack of enrolled instruments when the merchant requests a
+     * shipping address, but the user's payment app does not support returning a shipping address.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testHasNoEnrolledInstrumentWithAddressWithAppThatCannotReturnAddress()
+            throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest does not have enrolled instrument.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView indicates lack of enrolled instruments when the merchant requests contact
+     * information, but the user's payment app does not support returning contact information.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testHasNoEnrolledInstrumentWithContactInfoWithAppThatCannotReturnContactInfo()
+            throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest does not have enrolled instrument.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that WebView indicates presence of enrolled instruments when the merchant requests a
+     * shipping address and the user's payment app supports returning a shipping address.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testHasEnrolledInstrumentWithAddressWithAppThatCanReturnAddress() throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp().setHandlesShippingAddress()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest has enrolled instrument.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests presence of enrolled instruments when the merchant requests contact information and the
+     * user's payment app supports returning contact information.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testHasEnrolledInstrumentWithContactInfoWithAppThatCanReturnContactInfo()
+            throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp().setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest has enrolled instrument.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests presence of enrolled instruments when the merchant requests a shipping address and
+     * contact information and the user's payment app supports returning both.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testHasEnrolledInstrumentWithAddressAndContactWithAppThatCanReturnBoth()
+            throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(
+                        createPaymentApp()
+                                .setHandlesShippingAddress()
+                                .setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .requestShippingAddress()
+                        .requestContactInformation()
+                        .build());
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest has enrolled instrument.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that it is not possible to invoke a payment app that does not support returning a
+     * shipping address, if the merchant requests shipping address through PaymentRequest API in
+     * WebView.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCannotLaunchAppWithoutShippingAddressWhenMerchantRequestsShippingAddress()
+            throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        Assert.assertEquals(
+                String.format(
+                        "NotSupportedError: The payment method \"%s\" is not supported.",
+                        PAYMENT_METHOD_NAME),
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests that it is not possible to invoke a payment app that does not support returning contact
+     * information, if the merchant requests contact information through PaymentRequest API in
+     * WebView.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCannotLaunchAppWithoutContactInfoWhenMerchantRequestsContactInfo()
+            throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        Assert.assertEquals(
+                String.format(
+                        "NotSupportedError: The payment method \"%s\" is not supported.",
+                        PAYMENT_METHOD_NAME),
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * Tests launching a payment app that supports returning a shipping address when the merchant
+     * requests a shipping address through PaymentRequest API in WebView.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testLaunchAppWithShippingAddress() throws Exception {
+        mMockPaymentAppInstaller.addApp(createPaymentApp().setHandlesShippingAddress()).install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(
+                "Shipping address should be in " + response,
+                response.contains(String.format("\"shippingAddress\":{")));
+        Assert.assertTrue(
+                "Shipping address country code should be in " + response,
+                response.contains(String.format("\"country\":\"CA\"")));
+    }
+
+    /**
+     * Tests launching a payment app that supports returning contact information when the merchant
+     * requests contact information through PaymentRequest API in WebView.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testLaunchAppWithContactInformation() throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp().setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(
+                "Payer name should be in " + response,
+                response.contains(String.format("\"payerName\":\"John Smith\"")));
+        Assert.assertTrue(
+                "Payer phone should be in " + response,
+                response.contains(String.format("\"payerPhone\":\"+15555555555\"")));
+        Assert.assertTrue(
+                "Payer email should be in " + response,
+                response.contains(String.format("\"payerEmail\":\"John.Smith@gmail.com\"")));
+    }
+
+    /**
+     * Tests launching a payment app that supports returning both shipping addresses and contact
+     * information when the merchant requests both of these pieces of information.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testLaunchAppWithBothShippingAddressAndContactInformation() throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(
+                        createPaymentApp()
+                                .setHandlesShippingAddress()
+                                .setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .requestShippingAddress()
+                        .requestContactInformation()
+                        .build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(
+                "Shipping address should be in " + response,
+                response.contains(String.format("\"shippingAddress\":{")));
+        Assert.assertTrue(
+                "Shipping address country code should be in " + response,
+                response.contains(String.format("\"country\":\"CA\"")));
+        Assert.assertTrue(
+                "Payer name should be in " + response,
+                response.contains(String.format("\"payerName\":\"John Smith\"")));
+        Assert.assertTrue(
+                "Payer phone should be in " + response,
+                response.contains(String.format("\"payerPhone\":\"+15555555555\"")));
+        Assert.assertTrue(
+                "Payer email should be in " + response,
+                response.contains(String.format("\"payerEmail\":\"John.Smith@gmail.com\"")));
+    }
+
+    /**
+     * Tests launching a payment app that supports returning both shipping address and contact
+     * information when a merchant requests a strictly smaller set set of capabilities: only
+     * shipping address in this instance.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testLaunchWithBotShippingAddressAndContactInformationWhenMerchantWantsOnlyAddress()
+            throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(
+                        createPaymentApp()
+                                .setHandlesShippingAddress()
+                                .setHandlesContactInformation())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(
+                "Shipping address should be in " + response,
+                response.contains(String.format("\"shippingAddress\":{")));
+        Assert.assertTrue(
+                "Shipping address country code should be in " + response,
+                response.contains(String.format("\"country\":\"CA\"")));
+    }
+
+    /**
+     * Tests that the payment app that supports returning a shipping address is launched when the
+     * merchant requests a shipping address on user's device that has two payment apps that match
+     * the PaymentRequest API parameters, but one app does not support returning a shipping address.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testLaunchAppWithShippingAddressWhenMerchantRequestsItButOtherAppDoesNotSupportIt()
+            throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp())
+                .addApp(createOtherPaymentApp().setHandlesShippingAddress())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .requestShippingAddress()
+                        .build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(
+                        String.format("\"methodName\":\"%s\"", OTHER_PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(
+                "Shipping address should be in " + response,
+                response.contains(String.format("\"shippingAddress\":{")));
+        Assert.assertTrue(
+                "Shipping address country code should be in " + response,
+                response.contains(String.format("\"country\":\"CA\"")));
+    }
+
+    /**
+     * Tests that the payment app that supports returning contact information is launched when the
+     * merchant requests contact information on user's device that has two payment app that match
+     * the PaymentRequest API parameters, but the second app does not support returning contact
+     * information.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testLaunchAppWithContactInfoWhenMerchantRequestsItButOtherappDoesNotSupportIt()
+            throws Exception {
+        mMockPaymentAppInstaller
+                .addApp(createPaymentApp().setHandlesContactInformation())
+                .addApp(createOtherPaymentApp())
+                .install();
+        loadMerchantCheckoutPage(
+                mPageContents
+                        .addMethod(PAYMENT_METHOD_NAME)
+                        .addMethod(OTHER_PAYMENT_METHOD_NAME)
+                        .requestContactInformation()
+                        .build());
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(
+                "Payer name should be in " + response,
+                response.contains(String.format("\"payerName\":\"John Smith\"")));
+        Assert.assertTrue(
+                "Payer phone should be in " + response,
+                response.contains(String.format("\"payerPhone\":\"+15555555555\"")));
+        Assert.assertTrue(
+                "Payer email should be in " + response,
+                response.contains(String.format("\"payerEmail\":\"John.Smith@gmail.com\"")));
+    }
+
+    /**
      * Loads a test web-page for exercising the PaymentRequest API.
      *
      * @param webPageContents The contents of the test web page to load.

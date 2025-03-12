@@ -178,12 +178,20 @@ class CORE_EXPORT InvalidationSet
     return invalidation_flags_.InvalidatesParts();
   }
 
+  void SetInvalidatesTreeCounting() {
+    invalidation_flags_.SetInvalidatesTreeCounting(true);
+  }
+  bool InvalidatesTreeCounting() const {
+    return invalidation_flags_.InvalidatesTreeCounting();
+  }
+
   bool IsEmpty() const {
     return HasEmptyBackings() &&
            !invalidation_flags_.InvalidateCustomPseudo() &&
            !invalidation_flags_.InsertionPointCrossing() &&
            !invalidation_flags_.InvalidatesSlotted() &&
-           !invalidation_flags_.InvalidatesParts();
+           !invalidation_flags_.InvalidatesParts() &&
+           !invalidation_flags_.InvalidatesTreeCounting();
   }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -231,6 +239,20 @@ class CORE_EXPORT InvalidationSet
   // Returns a singleton DescendantInvalidationSet which invalidates all
   // shadow-including descendants with part attributes.
   static InvalidationSet* PartInvalidationSet();
+
+  // Returns a singleton NthSiblingInvalidationSet which invalidates all
+  // siblings whose ComputedStyle depends on tree-counting functions such as
+  // sibling-count() and sibling-index(). It does so by setting
+  // invalidates_tree_counting_ along with invalidates_self_, making it
+  // equivalent to an imaginary ':nth-child(n):has-tree-counting-style'
+  // selector, where ':has-tree-counting-style' matches an element with a
+  // ComputedStyle that relies on the evaluation of tree-counting functions.
+  //
+  // This set is scheduled on ContainerNodes marked with
+  // ChildrenAffectedByForwardPositionalRules() or
+  // ChildrenAffectedByBackwardPositionalRules() when child elements are
+  // inserted, removed, or change target slot.
+  static InvalidationSet* TreeCountingInvalidationSet();
 
   enum class BackingType {
     kClasses,
@@ -494,9 +516,12 @@ class CORE_EXPORT SiblingInvalidationSet : public InvalidationSet {
 
 // For invalidation of :nth-* selectors on dom mutations we use a sibling
 // invalidation set which is scheduled on the parent node of the DOM mutation
-// affected by the :nth-* selectors.
+// affected by the :nth-* selectors. Similarly, we use another
+// NthSiblingInvalidationSet for invalidating style for elements whose style
+// rely on tree-counting functions such as sibling-index(). See
+// InvalidationSet::TreeCountingInvalidationSet() for further documentation.
 //
-// During invalidation, the set is pushed into the SiblingData used for
+// During invalidation, such sets are pushed into the SiblingData used for
 // invalidating the direct children.
 //
 // Features are collected into this set as if the selectors were preceded by a

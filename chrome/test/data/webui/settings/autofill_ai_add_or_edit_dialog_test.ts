@@ -29,22 +29,29 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     testEntityInstance = {
       type: {
         typeName: 2,
-        typeNameAsString: 'Car',
-        addEntityTypeString: 'Add car',
-        editEntityTypeString: 'Edit car',
+        typeNameAsString: 'Vehicle',
+        addEntityTypeString: 'Add vehicle',
+        editEntityTypeString: 'Edit vehicle',
       },
       attributeInstances: [
         {
           type: {
-            typeName: 8,
+            typeName: 10,
+            typeNameAsString: 'Make',
+          },
+          value: 'Toyota',
+        },
+        {
+          type: {
+            typeName: 13,
             typeNameAsString: 'Owner',
           },
           value: 'Mark Nolan',
         },
         {
           type: {
-            typeName: 10,
-            typeNameAsString: 'Registration',
+            typeName: 16,
+            typeNameAsString: 'VIN',
           },
           value: 'ABCDE123',
         },
@@ -54,24 +61,32 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     };
     testAttributeTypes = [
       {
-        typeName: 8,
-        typeNameAsString: 'Owner',
-      },
-      {
-        typeName: 9,
-        typeNameAsString: 'License plate',
-      },
-      {
         typeName: 10,
-        typeNameAsString: 'Registration',
-      },
-      {
-        typeName: 11,
         typeNameAsString: 'Make',
       },
       {
-        typeName: 12,
+        typeName: 11,
         typeNameAsString: 'Model',
+      },
+      {
+        typeName: 12,
+        typeNameAsString: 'Year',
+      },
+      {
+        typeName: 13,
+        typeNameAsString: 'Owner',
+      },
+      {
+        typeName: 14,
+        typeNameAsString: 'Plate number',
+      },
+      {
+        typeName: 15,
+        typeNameAsString: 'Plate state',
+      },
+      {
+        typeName: 16,
+        typeNameAsString: 'VIN',
       },
     ];
     entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse(
@@ -99,7 +114,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
   addOrEditEntityInstanceParams.forEach(
       (params) => test(params.title, async function() {
-        const newAttributeInstanceValue = 'John Steven';
+        const newAttributeInstanceValue = 'BMW';
         let expectedEntityInstance: chrome.autofillPrivate.EntityInstance;
 
         // Populate the dialog's entity instance and title and set expectations.
@@ -109,8 +124,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
             attributeInstances: [
               {
                 type: {
-                  typeName: 8,
-                  typeNameAsString: 'Owner',
+                  typeName: 10,
+                  typeNameAsString: 'Make',
                 },
                 value: newAttributeInstanceValue,
               },
@@ -142,7 +157,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
             dialog.shadowRoot!.querySelector<HTMLElement>('div[slot="title"]');
         assertTrue(
             dialogTitle!.textContent!.includes(
-                params.add ? 'Add car' : 'Edit car'));
+                params.add ? 'Add vehicle' : 'Edit vehicle'));
 
         // Edit first field.
         const firstAttributeInstanceField =

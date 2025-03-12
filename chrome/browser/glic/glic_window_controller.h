@@ -231,6 +231,9 @@ class GlicWindowController : public views::WidgetObserver,
 
   GlicWindowAnimator* window_animator() { return glic_window_animator_.get(); }
 
+  // Helper function to get the always detached flag.
+  static bool AlwaysDetached();
+
  private:
   // ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
