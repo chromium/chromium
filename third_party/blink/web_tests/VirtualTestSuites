@@ -4317,6 +4317,17 @@
     "expires": "never"
   },
   {
+    "prefix": "renderer-side-content-decoding",
+    "owners": ["horo@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/fetch/content-encoding",
+      "external/wpt/service-workers/service-worker/navigation-preload/content-encoding.https.html"
+    ],
+    "args": ["--enable-features=RendererSideContentDecoding"],
+    "expires": "Apr 30, 2025"
+  },
+  {
     "prefix": "css-line-clamp-line-breaking-ellipsis",
     "platforms": [
       "Linux"

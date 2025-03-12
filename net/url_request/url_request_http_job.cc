@@ -1508,6 +1508,13 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
     return nullptr;
 
   std::unique_ptr<SourceStream> upstream = URLRequestJob::SetUpSourceStream();
+
+  if (request()->client_side_content_decoding_enabled()) {
+    // When client side content encoding is enabled, the client will decode the
+    // body. So returns the original stream.
+    return upstream;
+  }
+
   HttpResponseHeaders* headers = GetResponseHeaders();
   const std::vector<SourceStreamType> types =
       FilterSourceStream::GetContentEncodingTypes(

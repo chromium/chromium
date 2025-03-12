@@ -7620,6 +7620,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "renderer-side-content-decoding",
+    "owners": ["horo@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
       "name": "replace-sync-promos-with-sign-in-promos",
       "owners": [ "myuu@google.com", "bsazonov@chromium.org", "chrome-signin-team@google.com" ],
       "expiry_milestone": 136

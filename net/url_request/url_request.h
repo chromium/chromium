@@ -847,6 +847,18 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void set_ad_tagged(bool ad_tagged) { ad_tagged_ = ad_tagged; }
   bool ad_tagged() const { return ad_tagged_; }
 
+  // If true, disables content decoding (e.g., gzip, brotli) within the net
+  // stack for this request. The client becomes responsible for decoding the
+  // response body.
+  void set_client_side_content_decoding_enabled(
+      bool client_side_content_decoding_enabled) {
+    client_side_content_decoding_enabled_ =
+        client_side_content_decoding_enabled;
+  }
+  bool client_side_content_decoding_enabled() const {
+    return client_side_content_decoding_enabled_;
+  }
+
   // By default, client certs will be sent (provided via
   // Delegate::OnCertificateRequested) when cookies are disabled
   // (LOAD_DO_NOT_SEND_COOKIES / LOAD_DO_NOT_SAVE_COOKIES). As described at
@@ -1176,6 +1188,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   bool upgrade_if_insecure_ = false;
 
   bool ad_tagged_ = false;
+
+  bool client_side_content_decoding_enabled_ = false;
 
   bool send_client_certs_ = true;
 

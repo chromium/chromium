@@ -66,6 +66,8 @@ class NavigationPreloadRequest final : public WebNavigationPreloadRequest,
   const WebURL url_;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_;
 
+  mojo::PendingRemote<network::mojom::URLLoader> decoder_loader_;
+
   std::unique_ptr<WebURLResponse> response_;
   mojo::ScopedDataPipeConsumerHandle body_;
 };

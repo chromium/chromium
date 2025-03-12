@@ -10491,6 +10491,7 @@ from previous Chrome versions.
       label="UserDisplayModeSyncStandaloneMitigation:enabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411980923" label="LinkCapturingUiUpdate:enabled"/>
+  <int value="-1411837515" label="RendererSideContentDecoding:enabled"/>
   <int value="-1411777757" label="WebRtcSendPacketBatch:enabled"/>
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
   <int value="-1411459387" label="EnterprisePolicyOnSignin:enabled"/>
@@ -13980,6 +13981,7 @@ from previous Chrome versions.
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
   <int value="-35002051" label="DefaultBucketUsesRelaxedDurability:enabled"/>
+  <int value="-34898620" label="RendererSideContentDecoding:disabled"/>
   <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
   <int value="-31484570"

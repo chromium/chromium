@@ -9567,6 +9567,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBackgroundResourceFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kBackgroundResourceFetch)},
 
+    {"renderer-side-content-decoding",
+     flag_descriptions::kRendererSideContentDecodingName,
+     flag_descriptions::kRendererSideContentDecodingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kRendererSideContentDecoding)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"external-navigation-debug-logs",
      flag_descriptions::kExternalNavigationDebugLogsName,
