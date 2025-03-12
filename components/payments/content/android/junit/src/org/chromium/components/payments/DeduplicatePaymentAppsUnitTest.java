@@ -372,5 +372,11 @@ public class DeduplicatePaymentAppsUnitTest {
         public PaymentAppFactoryParams getParams() {
             return null;
         }
+
+        // PaymentAppFactoryDelegate:
+        @Override
+        public boolean isFullDelegationRequired() {
+            return false;
+        }
     }
 }

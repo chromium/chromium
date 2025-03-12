@@ -168,6 +168,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         public @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
             return mDelegate.getAndroidIntentLauncher();
         }
+
+        @Override
+        public boolean isFullDelegationRequired() {
+            return mDelegate.isFullDelegationRequired();
+        }
     }
 
     private static Set<PaymentApp> deduplicatePaymentApps(List<PaymentApp> apps) {

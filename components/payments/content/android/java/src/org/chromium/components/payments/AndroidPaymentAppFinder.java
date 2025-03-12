@@ -709,7 +709,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 getAppsSupportedDelegations(resolveInfo.activityInfo);
         // Allow-lists the Play Billing method for this feature in order for the Play Billing case
         // to skip the sheet in this case.
-        if (PaymentFeatureList.isEnabled(PaymentFeatureList.ENFORCE_FULL_DELEGATION)
+        if (mFactoryDelegate.isFullDelegationRequired()
                 || methodName.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
             if (!appSupportedDelegations.providesAll(
                     mFactoryDelegate.getParams().getPaymentOptions())) {

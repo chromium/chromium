@@ -700,6 +700,12 @@ public class ChromePaymentRequestService
         return mAndroidIntentLauncher;
     }
 
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean isFullDelegationRequired() {
+        return PaymentFeatureList.isEnabled(PaymentFeatureList.ENFORCE_FULL_DELEGATION);
+    }
+
     // Implement PaymentUiService.Delegate:
     @Override
     public void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail) {

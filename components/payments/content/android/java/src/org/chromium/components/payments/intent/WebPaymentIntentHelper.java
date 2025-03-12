@@ -405,12 +405,13 @@ public class WebPaymentIntentHelper {
                     EXTRA_MODIFIERS, PaymentDetailsModifier.serializeModifiers(modifiers.values()));
         }
 
-        // shippingOptions should not be null when shipping is requested.
-        if (paymentOptions != null && paymentOptions.requestShipping) {
-            if (shippingOptions == null || shippingOptions.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "shippingOptions should not be null or empty when shipping is requested.");
-            }
+        // `shippingOptions` can be null when the payment app needs to send the shipping address to
+        // the merchant website in order to get the different shipping options available and their
+        // corresponding prices.
+        if (paymentOptions != null
+                && paymentOptions.requestShipping
+                && shippingOptions != null
+                && !shippingOptions.isEmpty()) {
             // ShippingOptions are populated only when shipping is requested.
             Parcelable[] serializedShippingOptionList =
                     PaymentShippingOption.buildPaymentShippingOptionList(shippingOptions);
