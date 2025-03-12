@@ -39,8 +39,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -286,11 +285,8 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
                                    shape_image_threshold, writing_mode, margin);
       break;
     case ShapeValue::kBox: {
-      // TODO(crbug.com/402437726) support corner-shape in shape-outside
-      const FloatRoundedRect& shape_rect =
-          ContouredBorderGeometry::ContouredBorder(
-              style, PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize()))
-              .AsRoundedRect();
+      const FloatRoundedRect& shape_rect = RoundedBorderGeometry::RoundedBorder(
+          style, PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize()));
       shape_ = Shape::CreateLayoutBoxShape(shape_rect, writing_mode, margin);
       break;
     }

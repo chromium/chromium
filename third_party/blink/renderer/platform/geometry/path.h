@@ -50,7 +50,6 @@ class Vector2dF;
 namespace blink {
 
 class AffineTransform;
-class ContouredRect;
 class StrokeData;
 
 enum PathElementType {
@@ -190,7 +189,6 @@ class PLATFORM_EXPORT Path {
   void AddEllipse(const gfx::PointF& center, float radius_x, float radius_y);
 
   void AddRoundedRect(const FloatRoundedRect&, bool clockwise = true);
-  void AddContouredRect(const ContouredRect&);
 
   void AddPath(const Path&, const AffineTransform&);
 

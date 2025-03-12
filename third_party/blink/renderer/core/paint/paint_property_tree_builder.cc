@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/css_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/find_paint_offset_needing_update.h"
@@ -66,6 +65,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/core/paint/transform_utils.h"
 #include "third_party/blink/renderer/core/paint/view_painter.h"
@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -2551,28 +2550,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       const auto& box = To<LayoutBox>(object_);
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
       gfx::RectF layout_clip_rect =
-          ContouredBorderGeometry::ContouredInnerBorder(box.StyleRef(),
-                                                        box_rect)
+          RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect)
               .Rect();
-      ContouredRect paint_clip_rect =
-          ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
-              box.StyleRef(), box_rect);
+      FloatRoundedRect paint_clip_rect =
+          RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
+                                                                box_rect);
 
       gfx::Vector2dF offset(-OffsetInStitchedFragments(BoxFragment()));
       layout_clip_rect.Offset(offset);
       paint_clip_rect.Move(offset);
 
-      FloatRoundedRect rounded_rect = paint_clip_rect.AsRoundedRect();
-
-      // TODO(crbug.com/397459628) Apply corner-shape to overflow-clip-margin
       AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
-                                             rounded_rect);
+                                             paint_clip_rect);
       ClipPaintPropertyNode::State state(*context_.current.transform,
-                                         layout_clip_rect, rounded_rect);
-      if (!paint_clip_rect.HasRoundCurvature()) {
+                                         layout_clip_rect, paint_clip_rect);
+      if (!paint_clip_rect.HasSimpleRoundedCurvature()) {
         state.SetClipRect(layout_clip_rect,
                           FloatRoundedRect(paint_clip_rect.Rect()));
-        state.clip_path = paint_clip_rect.GetPath();
+        Path& path = state.clip_path.emplace();
+        path.AddRoundedRect(paint_clip_rect);
       }
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
           *context_.current.clip, std::move(state)));
@@ -2624,14 +2620,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         }
         // LayoutReplaced clips the foreground by rounded content box.
         auto clip_rect =
-            ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+            RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
                 replaced.StyleRef(), content_rect,
                 PhysicalBoxStrut(
                     -(replaced.PaddingTop() + replaced.BorderTop()),
                     -(replaced.PaddingRight() + replaced.BorderRight()),
                     -(replaced.PaddingBottom() + replaced.BorderBottom()),
-                    -(replaced.PaddingLeft() + replaced.BorderLeft())))
-                .AsRoundedRect();
+                    -(replaced.PaddingLeft() + replaced.BorderLeft())));
         if (replaced.IsLayoutEmbeddedContent()) {
           // Embedded objects are always sized to fit the content rect, but they
           // could overflow by 1px due to pre-snapping. Adjust clip rect to

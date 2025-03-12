@@ -16,11 +16,11 @@
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
@@ -30,8 +30,6 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
@@ -166,10 +164,10 @@ CompositedPaintStatus CompositedBackgroundColorStatus(Node* node) {
 }
 
 void ClipToBorderEdge(GraphicsContext& context,
-                      const ContouredRect& border,
+                      const FloatRoundedRect& border,
                       bool has_border_radius,
                       bool has_opaque_background) {
-  ContouredRect rect_to_clip_out = border;
+  FloatRoundedRect rect_to_clip_out = border;
 
   // If the box is opaque, it is unnecessary to clip it out. However,
   // doing so saves time when painting the shadow. On the other hand, it
@@ -181,7 +179,7 @@ void ClipToBorderEdge(GraphicsContext& context,
 
   if (has_border_radius) {
     if (!rect_to_clip_out.IsEmpty()) {
-      context.ClipOutContouredRect(rect_to_clip_out);
+      context.ClipOutRoundedRect(rect_to_clip_out);
     }
   } else {
     if (!rect_to_clip_out.IsEmpty()) {
@@ -191,7 +189,7 @@ void ClipToBorderEdge(GraphicsContext& context,
 }
 
 void ClipToSides(GraphicsContext& context,
-                 const gfx::RectF& border,
+                 const FloatRoundedRect& border,
                  const ShadowData& shadow,
                  PhysicalBoxSides sides_to_include) {
   // Create a "pseudo-infinite" clip rectangle that should be large enough to
@@ -211,7 +209,7 @@ void ClipToSides(GraphicsContext& context,
   if (!sides_to_include.bottom) {
     shadow_outsets.set_bottom(0);
   }
-  gfx::RectF keep = border;
+  gfx::RectF keep = border.Rect();
   keep.Outset(shadow_outsets);
   context.Clip(keep);
 }
@@ -257,7 +255,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     return;
   GraphicsContext& context = info.context;
 
-  ContouredRect border = ContouredBorderGeometry::PixelSnappedContouredBorder(
+  FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
       style, paint_rect, sides_to_include);
 
   bool has_border_radius = style.HasBorderRadius();
@@ -309,7 +307,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     GraphicsContextStateSaver sides_clip_saver(context, false);
     if (!sides_to_include.HasAllSides()) {
       sides_clip_saver.Save();
-      ClipToSides(context, border.Rect(), shadow, sides_to_include);
+      ClipToSides(context, border, shadow, sides_to_include);
       AdjustRectForSideClipping(fill_rect, shadow, sides_to_include);
     }
 
@@ -343,11 +341,8 @@ void BoxPainterBase::PaintInsetBoxShadowWithBorderRect(
     PhysicalBoxSides sides_to_include) {
   if (!style.BoxShadow())
     return;
-
-  // TODO(crbug.com/397459628) support corner-shape in shadows
-  auto bounds = ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
-                    style, border_rect, sides_to_include)
-                    .AsRoundedRect();
+  auto bounds = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+      style, border_rect, sides_to_include);
   PaintInsetBoxShadow(info, bounds, style, sides_to_include);
 }
 
@@ -357,10 +352,8 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
     const ComputedStyle& style) {
   if (!style.BoxShadow())
     return;
-  // TODO(crbug.com/397459628) support corner-shape in shadows
-  auto bounds = ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
-                    style, inner_rect, PhysicalBoxStrut())
-                    .AsRoundedRect();
+  auto bounds = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+      style, inner_rect, PhysicalBoxStrut());
   PaintInsetBoxShadow(info, bounds, style);
 }
 
@@ -421,8 +414,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     }
     GraphicsContextStateSaver state_saver(context);
     if (bounds.IsRounded()) {
-      // TODO(crbug.com/397459628) render corner-shape with box-shadow
-      context.ClipContouredRect(ContouredRect(bounds));
+      context.ClipRoundedRect(bounds);
     } else {
       context.Clip(bounds.Rect());
     }
@@ -911,6 +903,10 @@ inline bool PaintFastBottomLayer(const Document& document,
                                  const BackgroundImageGeometry& geometry,
                                  Image* image,
                                  SkBlendMode composite_op) {
+  // TODO(crbug.com/397377466) support fast-path for non-round curves
+  if (!border_rect.HasSimpleRoundedCurvature()) {
+    return false;
+  }
   // Compute the destination rect for painting the color here because we may
   // need it for computing the image painting rect for optimization.
   FloatRoundedRect color_border =
@@ -964,7 +960,7 @@ inline bool PaintFastBottomLayer(const Document& document,
     // When the rrect is not renderable, we resort to clipping.
     // RoundedInnerRectClipper handles this case via discrete, corner-wise
     // clipping.
-    clipper.emplace(context, rect, ContouredRect(color_border));
+    clipper.emplace(context, rect, color_border);
     color_border.SetRadii(FloatRoundedRect::Radii());
     image_border.SetRadii(FloatRoundedRect::Radii());
   }
@@ -1019,12 +1015,12 @@ inline bool PaintFastBottomLayer(const Document& document,
 
 // Inset the background rect by a "safe" amount: 1/2 border-width for opaque
 // border styles, 1/6 border-width for double borders.
-ContouredRect BackgroundContouredRectAdjustedForBleedAvoidance(
+FloatRoundedRect BackgroundRoundedRectAdjustedForBleedAvoidance(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     bool object_has_multiple_boxes,
     PhysicalBoxSides sides_to_include,
-    const ContouredRect& background_rounded_rect) {
+    const FloatRoundedRect& background_rounded_rect) {
   // TODO(fmalita): we should be able to fold these parameters into
   // BoxBorderInfo or BoxDecorationData and avoid calling getBorderEdgeInfo
   // redundantly here.
@@ -1048,12 +1044,12 @@ ContouredRect BackgroundContouredRectAdjustedForBleedAvoidance(
           .set_bottom(
               edges[static_cast<unsigned>(BoxSide::kBottom)].UsedWidth());
   insets.Scale(fractional_inset);
-  ContouredRect adjusted_rounded_rect = background_rounded_rect;
+  FloatRoundedRect adjusted_rounded_rect = background_rounded_rect;
   adjusted_rounded_rect.Inset(insets);
   return adjusted_rounded_rect;
 }
 
-ContouredRect ContouredBorderRectForClip(
+FloatRoundedRect RoundedBorderRectForClip(
     const ComputedStyle& style,
     const BoxPainterBase::FillLayerInfo& info,
     const FillLayer& bg_layer,
@@ -1063,25 +1059,24 @@ ContouredRect ContouredBorderRectForClip(
     BackgroundBleedAvoidance bleed_avoidance,
     const PhysicalBoxStrut& border_padding_insets) {
   if (!info.is_rounded_fill)
-    return ContouredRect();
+    return FloatRoundedRect();
 
-  ContouredRect border = ContouredBorderGeometry::PixelSnappedContouredBorder(
+  FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
       style, rect, info.sides_to_include);
   if (object_has_multiple_boxes) {
-    ContouredRect segment_border =
-        ContouredBorderGeometry::PixelSnappedContouredBorder(
+    FloatRoundedRect segment_border =
+        RoundedBorderGeometry::PixelSnappedRoundedBorder(
             style,
             PhysicalRect(PhysicalOffset(),
                          PhysicalSize(ToFlooredSize(flow_box_size))),
             info.sides_to_include);
     border.SetRadii(segment_border.GetRadii());
-    border.SetCornerCurvature(segment_border.GetCornerCurvature());
   }
 
   if (info.is_border_fill &&
       bleed_avoidance == kBackgroundBleedShrinkBackground &&
       !info.is_clipped_with_local_scrolling) {
-    border = BackgroundContouredRectAdjustedForBleedAvoidance(
+    border = BackgroundRoundedRectAdjustedForBleedAvoidance(
         style, rect, object_has_multiple_boxes, info.sides_to_include, border);
   }
 
@@ -1090,13 +1085,13 @@ ContouredRect ContouredBorderRectForClip(
   PhysicalRect border_rect = PhysicalRect::FastAndLossyFromRectF(border.Rect());
   if (bg_layer.Clip() == EFillBox::kFillBox ||
       bg_layer.Clip() == EFillBox::kContent) {
-    border = ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+    border = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
         style, border_rect, border_padding_insets, info.sides_to_include);
     // Background of 'background-attachment: local' without visible/clip
     // overflow also needs to use inner border which is equivalent to kPadding.
   } else if (bg_layer.Clip() == EFillBox::kPadding ||
              info.is_clipped_with_local_scrolling) {
-    border = ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+    border = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
         style, border_rect, info.sides_to_include);
   }
   return border;
@@ -1296,17 +1291,16 @@ void BoxPainterBase::PaintFillLayer(
   const PhysicalBoxStrut border = ComputeSnappedBorders(bg_paint_context);
   const PhysicalBoxStrut padding = bg_paint_context.PaddingOutsets();
   const PhysicalBoxStrut border_padding_insets = -(border + padding);
-  ContouredRect border_rect = ContouredBorderRectForClip(
+  FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);
 
   // Fast path for drawing simple color/image backgrounds.
   if (CanUseBottomLayerFastPath(fill_layer_info, bg_paint_context,
                                 bleed_avoidance, did_adjust_paint_rect) &&
-      border_rect.HasRoundCurvature() &&
       PaintFastBottomLayer(document_, node_, style_, context, fill_layer_info,
-                           rect, border_rect.AsRoundedRect(), geometry,
-                           image.get(), composite_op)) {
+                           rect, border_rect, geometry, image.get(),
+                           composite_op)) {
     return;
   }
 

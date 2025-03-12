@@ -10,11 +10,10 @@
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/fieldset_paint_info.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
@@ -92,10 +91,9 @@ void FieldsetPainter::PaintBoxDecorationBackground(
   if (BleedAvoidanceIsClipping(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
-
-    ContouredRect border = ContouredBorderGeometry::PixelSnappedContouredBorder(
+    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
         style, contracted_rect, fieldset_.SidesToInclude());
-    graphics_context.ClipContouredRect(border);
+    graphics_context.ClipRoundedRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
         kBackgroundBleedClipLayer) {

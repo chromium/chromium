@@ -14,16 +14,15 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -126,25 +125,24 @@ PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
   }
 }
 
-ContouredRect RoundedReferenceBox(GeometryBox geometry_box,
-                                  const LayoutObject& object) {
+FloatRoundedRect RoundedReferenceBox(GeometryBox geometry_box,
+                                     const LayoutObject& object) {
   if (object.IsSVGChild()) {
-    return ContouredRect(
-        FloatRoundedRect(ClipPathClipper::LocalReferenceBox(object)));
+    return FloatRoundedRect(ClipPathClipper::LocalReferenceBox(object));
   }
 
   const auto& box = To<LayoutBoxModelObject>(object);
   PhysicalRect border_box_rect = BorderBoxRect(box);
-  ContouredRect contoured_border_box_rect =
-      ContouredBorderGeometry::ContouredBorder(box.StyleRef(), border_box_rect);
+  FloatRoundedRect rounded_border_box_rect =
+      RoundedBorderGeometry::RoundedBorder(box.StyleRef(), border_box_rect);
   if (geometry_box == GeometryBox::kMarginBox) {
-    contoured_border_box_rect.OutsetForMarginOrShadow(
+    rounded_border_box_rect.OutsetForMarginOrShadow(
         gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
   } else {
-    contoured_border_box_rect.Outset(
+    rounded_border_box_rect.Outset(
         gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
   }
-  return contoured_border_box_rect;
+  return rounded_border_box_rect;
 }
 
 // Should the paint offset be applied to clip-path geometry for
@@ -499,8 +497,11 @@ bool ClipPathClipper::HitTest(const LayoutObject& clip_path_owner,
     return location.Intersects(path);
   }
   if (const auto* box = DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
-    return location.Intersects(
-        RoundedReferenceBox(box->GetGeometryBox(), reference_box_object));
+    Path path;
+    FloatRoundedRect rounded_reference_box =
+        RoundedReferenceBox(box->GetGeometryBox(), reference_box_object);
+    path.AddRoundedRect(rounded_reference_box);
+    return location.Intersects(path);
   }
   const auto& reference_clip = To<ReferenceClipPathOperation>(clip_path);
   if (reference_clip.IsLoading()) {
@@ -553,9 +554,11 @@ static std::optional<Path> PathBasedClipInternal(
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
   if (const auto* geometry_box_clip =
           DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
-    return RoundedReferenceBox(geometry_box_clip->GetGeometryBox(),
-                               reference_box_object)
-        .GetPath();
+    Path path;
+    FloatRoundedRect rounded_reference_box = RoundedReferenceBox(
+        geometry_box_clip->GetGeometryBox(), reference_box_object);
+    path.AddRoundedRect(rounded_reference_box);
+    return path;
   }
 
   if (const auto* reference_clip =

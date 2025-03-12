@@ -7,12 +7,11 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -162,8 +161,9 @@ gfx::Rect CalculateSideRect(const FloatRoundedRect& outer_border,
   return side_rect;
 }
 
-ContouredRect CalculateAdjustedInnerBorder(const ContouredRect& inner_border,
-                                           BoxSide side) {
+FloatRoundedRect CalculateAdjustedInnerBorder(
+    const FloatRoundedRect& inner_border,
+    BoxSide side) {
   // Expand the inner border as necessary to make it a rounded rect (i.e. radii
   // contained within each edge).  This function relies on the fact we only get
   // radii not contained within each edge if one of the radii for an edge is
@@ -246,8 +246,7 @@ ContouredRect CalculateAdjustedInnerBorder(const ContouredRect& inner_border,
       break;
   }
 
-  return ContouredRect(FloatRoundedRect(new_rect, new_radii),
-                       inner_border.GetCornerCurvature());
+  return FloatRoundedRect(new_rect, new_radii);
 }
 
 void DrawSolidBorderRect(GraphicsContext& context,
@@ -863,7 +862,7 @@ struct BoxBorderPainter::ComplexBorderInfo {
     BuildOpacityGroups(border_painter, sorted_sides);
 
     if (border_painter.is_rounded_) {
-      rounded_border_path = border_painter.outer_.GetPath();
+      rounded_border_path.AddRoundedRect(border_painter.outer_);
     }
   }
 
@@ -918,30 +917,27 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   const PhysicalBoxStrut outer_third_outsets =
       DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeOuter);
   FloatRoundedRect outer_third_rect =
-      ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
-          style_, border_rect_, outer_third_outsets, sides_to_include_)
-          .AsRoundedRect();
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+          style_, border_rect_, outer_third_outsets, sides_to_include_);
   if (force_rectangular)
     outer_third_rect.SetRadii(FloatRoundedRect::Radii());
-  DrawBleedAdjustedDRRect(context_, bleed_avoidance_, outer_.AsRoundedRect(),
-                          outer_third_rect, color, auto_dark_mode);
+  DrawBleedAdjustedDRRect(context_, bleed_avoidance_, outer_, outer_third_rect,
+                          color, auto_dark_mode);
 
   // inner stripe
   const PhysicalBoxStrut inner_third_outsets =
       DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeInner);
   FloatRoundedRect inner_third_rect =
-      ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
-          style_, border_rect_, inner_third_outsets, sides_to_include_)
-          .AsRoundedRect();
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+          style_, border_rect_, inner_third_outsets, sides_to_include_);
   if (force_rectangular)
     inner_third_rect.SetRadii(FloatRoundedRect::Radii());
-  context_.FillDRRect(inner_third_rect, inner_.AsRoundedRect(), color,
-                      auto_dark_mode);
+  context_.FillDRRect(inner_third_rect, inner_, color, auto_dark_mode);
 }
 
 bool BoxBorderPainter::PaintBorderFastPath() const {
   if (!is_uniform_color_ || !is_uniform_style_ || !inner_.IsRenderable() ||
-      !inner_.HasRoundCurvature()) {
+      !inner_.HasSimpleRoundedCurvature()) {
     return false;
   }
 
@@ -958,8 +954,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
                             PaintAutoDarkMode(style_, element_role_));
       } else {
         // 4-side, solid border => one drawDRRect()
-        DrawBleedAdjustedDRRect(context_, bleed_avoidance_,
-                                outer_.AsRoundedRect(), inner_.AsRoundedRect(),
+        DrawBleedAdjustedDRRect(context_, bleed_avoidance_, outer_, inner_,
                                 FirstEdge().GetColor(),
                                 PaintAutoDarkMode(style_, element_role_));
       }
@@ -985,8 +980,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
          {BoxSide::kTop, BoxSide::kRight, BoxSide::kBottom, BoxSide::kLeft}) {
       const BorderEdge& curr_edge = Edge(side);
       if (curr_edge.ShouldRender()) {
-        path.AddRect(gfx::RectF(
-            CalculateSideRect(outer_.AsRoundedRect(), curr_edge, side)));
+        path.AddRect(gfx::RectF(CalculateSideRect(outer_, curr_edge, side)));
       }
     }
 
@@ -1023,9 +1017,9 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
   if (!visible_edge_set_)
     return;
 
-  outer_ = ContouredBorderGeometry::PixelSnappedContouredBorder(
-      style_, border_rect, sides_to_include);
-  inner_ = ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+  outer_ = RoundedBorderGeometry::PixelSnappedRoundedBorder(style_, border_rect,
+                                                            sides_to_include);
+  inner_ = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
       style_, border_rect, sides_to_include);
 
   // Make sure that the border width isn't larger than the border box, which
@@ -1070,11 +1064,11 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
     e = edge;
   ComputeBorderProperties();
 
-  outer_ = ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+  outer_ = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
       style, border_rect, outer_outsets_);
   is_rounded_ = outer_.IsRounded();
 
-  inner_ = ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+  inner_ = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
       style, border_rect, inner_outsets);
 
   element_role_ = DarkModeFilter::ElementRole::kBackground;
@@ -1127,10 +1121,10 @@ void BoxBorderPainter::Paint() const {
     // For BackgroundBleedClip{Only,Layer}, the outer rrect clip is already
     // applied.
     if (!BleedAvoidanceIsClipping(bleed_avoidance_))
-      context_.ClipContouredRect(outer_);
+      context_.ClipRoundedRect(outer_);
 
     if (inner_.IsRenderable() && !inner_.IsEmpty())
-      context_.ClipOutContouredRect(inner_);
+      context_.ClipOutRoundedRect(inner_);
   }
 
   const ComplexBorderInfo border_info(*this);
@@ -1260,7 +1254,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kTop: {
       bool use_path =
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
-                          !inner_.HasRoundCurvature() ||
+                          !inner_.HasSimpleRoundedCurvature() ||
                           BorderWillArcInnerEdge(inner_.GetRadii().TopLeft(),
                                                  inner_.GetRadii().TopRight()));
       if (use_path) {
@@ -1276,7 +1270,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kBottom: {
       bool use_path = is_rounded_ &&
                       (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
-                       !inner_.HasRoundCurvature() ||
+                       !inner_.HasSimpleRoundedCurvature() ||
                        BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                               inner_.GetRadii().BottomRight()));
       if (use_path) {
@@ -1292,7 +1286,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kLeft: {
       bool use_path =
           is_rounded_ && (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
-                          !inner_.HasRoundCurvature() ||
+                          !inner_.HasSimpleRoundedCurvature() ||
                           BorderWillArcInnerEdge(inner_.GetRadii().BottomLeft(),
                                                  inner_.GetRadii().TopLeft()));
       if (use_path) {
@@ -1308,7 +1302,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
     case BoxSide::kRight: {
       bool use_path = is_rounded_ &&
                       (BorderStyleHasInnerDetail(edge.BorderStyle()) ||
-                       !inner_.HasRoundCurvature() ||
+                       !inner_.HasSimpleRoundedCurvature() ||
                        BorderWillArcInnerEdge(inner_.GetRadii().BottomRight(),
                                               inner_.GetRadii().TopRight()));
       if (use_path) {
@@ -1394,10 +1388,10 @@ void BoxBorderPainter::PaintOneBorderSide(
 
     ClipBorderSidePolygon(side, miter1, miter2);
     if (!inner_.IsRenderable()) {
-      ContouredRect adjusted_inner_rect =
+      FloatRoundedRect adjusted_inner_rect =
           CalculateAdjustedInnerBorder(inner_, side);
       if (!adjusted_inner_rect.IsEmpty()) {
-        context_.ClipOutContouredRect(adjusted_inner_rect);
+        context_.ClipOutRoundedRect(adjusted_inner_rect);
       }
     }
 
@@ -1484,9 +1478,8 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
   // Convert the path to be down the middle of the dots or dashes.
   Path centerline_path;
   centerline_path.AddRoundedRect(
-      ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
-          style_, border_rect_, CenterOutsets(), sides_to_include_)
-          .AsRoundedRect());
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+          style_, border_rect_, CenterOutsets(), sides_to_include_));
 
   context_.SetStrokeColor(color);
 
@@ -1542,10 +1535,11 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
     GraphicsContextStateSaver state_saver(context_);
     const PhysicalBoxStrut inner_outsets =
         DoubleStripeOutsets(BorderEdge::kDoubleBorderStripeInner);
-    ContouredRect inner_clip =
-        ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+    FloatRoundedRect inner_clip =
+        RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
             style_, border_rect_, inner_outsets, sides_to_include_);
-    context_.ClipContouredRect(inner_clip);
+
+    context_.ClipRoundedRect(inner_clip);
     DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
                         color, EBorderStyle::kSolid);
   }
@@ -1562,10 +1556,10 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,
       outer_outsets.Inflate(LayoutUnit(-1));
     }
 
-    ContouredRect outer_clip =
-        ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+    FloatRoundedRect outer_clip =
+        RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
             style_, used_border_rect, outer_outsets, sides_to_include_);
-    context_.ClipOutContouredRect(outer_clip);
+    context_.ClipOutRoundedRect(outer_clip);
     DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
                         color, EBorderStyle::kSolid);
   }
@@ -1594,11 +1588,11 @@ void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
 
   // Paint inner only
   GraphicsContextStateSaver state_saver(context_);
-  ContouredRect clip_rect =
-      ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
+  FloatRoundedRect clip_rect =
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
           style_, border_rect_, CenterOutsets(), sides_to_include_);
 
-  context_.ClipContouredRect(clip_rect);
+  context_.ClipRoundedRect(clip_rect);
   DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
                       color, s2);
 }

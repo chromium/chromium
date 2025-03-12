@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/fieldset_painter.h"
 #include "third_party/blink/renderer/core/paint/fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
@@ -48,6 +47,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -1538,10 +1537,9 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
       BleedAvoidanceIsClipping(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
-
-    ContouredRect border = ContouredBorderGeometry::PixelSnappedContouredBorder(
+    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
         style, paint_rect, box_fragment_.SidesToInclude());
-    paint_info.context.ClipContouredRect(border);
+    paint_info.context.ClipRoundedRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
         kBackgroundBleedClipLayer) {
@@ -2299,8 +2297,8 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     if (!skip_children && style.HasBorderRadius()) {
       PhysicalRect bounds_rect(physical_offset, size);
       skip_children = !hit_test.location.Intersects(
-          ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
-              style, bounds_rect));
+          RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(style,
+                                                                bounds_rect));
     }
   }
 
@@ -2518,10 +2516,9 @@ bool BoxFragmentPainter::HitTestLineBoxFragment(
   const ComputedStyle& containing_box_style = box_fragment_.Style();
   if (containing_box_style.HasBorderRadius() &&
       !hit_test.location.Intersects(
-          ContouredBorderGeometry::PixelSnappedContouredBorder(
-              containing_box_style, bounds_rect))) {
+          RoundedBorderGeometry::PixelSnappedRoundedBorder(containing_box_style,
+                                                           bounds_rect)))
     return false;
-  }
 
   if (cursor.ContainerFragment().IsSvgText())
     return false;
@@ -2957,7 +2954,7 @@ bool BoxFragmentPainter::HitTestClippedOutByBorder(
   PhysicalRect rect(PhysicalOffset(), GetPhysicalFragment().Size());
   rect.Move(border_box_location);
   return !hit_test_location.Intersects(
-      ContouredBorderGeometry::PixelSnappedContouredBorder(
+      RoundedBorderGeometry::PixelSnappedRoundedBorder(
           style, rect, box_fragment_.SidesToInclude()));
 }
 
