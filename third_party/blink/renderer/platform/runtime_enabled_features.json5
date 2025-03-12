@@ -3946,6 +3946,11 @@
       status: "stable",
     },
     {
+      // Killswitch M136.
+      name: "SelectionVisibilityAfterPaint",
+      status: "stable",
+    },
+    {
       // This flag is used to relax the rules used to slot elements into a
       // select with the multiple attribute or size >1. This could be enabled
       // in the case that SelectParserRelaxation causes a breaking change for
