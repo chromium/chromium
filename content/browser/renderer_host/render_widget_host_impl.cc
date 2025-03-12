@@ -3343,29 +3343,6 @@ RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParams() {
   return params;
 }
 
-mojom::CreateFrameWidgetParamsPtr
-RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParamsForNewWindow() {
-  auto params = mojom::CreateFrameWidgetParams::New();
-  params->routing_id = GetRoutingID();
-  mojo::PendingAssociatedRemote<blink::mojom::Widget> widget_remote;
-  params->widget = widget_remote.InitWithNewEndpointAndPassReceiver();
-  BindWidgetInterfaces(params->widget_host.InitWithNewEndpointAndPassReceiver(),
-                       std::move(widget_remote));
-  mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote;
-  params->frame_widget =
-      frame_widget_remote.InitWithNewEndpointAndPassReceiver();
-  BindFrameWidgetInterfaces(
-      params->frame_widget_host.InitWithNewEndpointAndPassReceiver(),
-      std::move(frame_widget_remote));
-  // TODO(danakj): For some reason, there is no RenderWidgetHostView here, but
-  // it seems like there should be one? In the meantime we send some nonsense
-  // with semi-valid but incorrect screen info (it needs a RenderWidgetHostView
-  // to be correct). An updated VisualProperties will get to the RenderWidget
-  // eventually.
-  params->visual_properties.screen_infos = GetScreenInfos();
-  return params;
-}
-
 void RenderWidgetHostImpl::OnWheelEventAck(
     const input::MouseWheelEventWithLatencyInfo& wheel_event,
     blink::mojom::InputEventResultSource ack_source,

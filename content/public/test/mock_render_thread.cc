@@ -241,34 +241,17 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 void MockRenderThread::OnCreateWindow(mojom::CreateNewWindowParams& params,
                                       mojom::CreateNewWindowReply* reply) {
   params.associated_interface_provider.EnableUnassociatedUsage();
+  params.widget_host.EnableUnassociatedUsage();
+  params.frame_widget_host.EnableUnassociatedUsage();
   reply->main_frame_route_id = GetNextRoutingID();
   frame_token_to_initial_browser_brokers_.emplace(
       reply->main_frame_token, std::move(params.main_frame_interface_broker));
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
 
-  auto widget_params = mojom::CreateFrameWidgetParams::New();
-  widget_params->routing_id = GetNextRoutingID();
-  mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
-      blink_frame_widget_receiver =
-          blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  std::ignore =
-      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
-      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  std::ignore = blink_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  widget_params->frame_widget = std::move(blink_frame_widget_receiver);
-  widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
-  widget_params->widget = std::move(blink_widget_receiver);
-  widget_params->widget_host = blink_widget_host.Unbind();
-  widget_params->visual_properties.screen_infos =
+  reply->widget_routing_id = GetNextRoutingID();
+  reply->visual_properties.screen_infos =
       display::ScreenInfos(display::ScreenInfo());
-  reply->widget_params = std::move(widget_params);
 
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
   page_broadcast.Bind(std::move(params.page_broadcast_remote));

@@ -9752,19 +9752,17 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   new_main_rfh->SetMojomFrameRemote(std::move(params->frame_remote));
-
   new_main_rfh->BindBrowserInterfaceBrokerReceiver(
       std::move(params->main_frame_interface_broker));
-
   new_main_rfh->BindAssociatedInterfaceProviderReceiver(
       std::move(params->associated_interface_provider));
-
-  auto widget_params =
-      new_main_rfh->GetLocalRenderWidgetHost()
-          ->BindAndGenerateCreateFrameWidgetParamsForNewWindow();
-
   new_main_rfh->render_view_host()->BindPageBroadcast(
       std::move(params->page_broadcast_remote));
+  auto* new_rwh = new_main_rfh->GetLocalRenderWidgetHost();
+  new_rwh->BindWidgetInterfaces(std::move(params->widget_host),
+                                std::move(params->widget));
+  new_rwh->BindFrameWidgetInterfaces(std::move(params->frame_widget_host),
+                                     std::move(params->frame_widget));
 
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
@@ -9779,9 +9777,11 @@ void RenderFrameHostImpl::CreateNewWindow(
                                    .AsMojom();
   }
 
+  blink::VisualProperties visual_properties;
+  visual_properties.screen_infos = new_rwh->GetScreenInfos();
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
-      std::move(widget_params), cloned_namespace->id(),
+      new_rwh->GetRoutingID(), visual_properties, cloned_namespace->id(),
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
       new_main_rfh->GetDocumentToken(),
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
