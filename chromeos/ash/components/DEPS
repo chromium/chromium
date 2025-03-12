@@ -2,4 +2,20 @@ include_rules = [
   # Individual components must explicitly declare their dependencies
   # on other components.
   "-chromeos/ash/components",
+  "-chromeos/ash/services",
+  "-chromeos/components",
+  "-chromeos/services",
+
+  # chromeos/ash/components should not depend on ash/ (including
+  # ash/public/cpp), or chromeos/ash/experiences, because components are
+  # expected to be a parts to construct ash systems (in ash/), and chromeos
+  # OS specific features (in chromeos/ash/experiences/).
+  "-ash",
+  "-chromeos/ash/experiences",
+
+  # There are some exceptions, which provides compile-time constants/data
+  # to share it across chromeos-chrome. Practically, this is not problematic
+  # in terms of dependencies, because they are almost the bottom of the deps.
+  "+ash/constants",
+  "+ash/strings/grit/ash_strings.h",
 ]

@@ -1,8 +1,13 @@
 include_rules = [
   "-chrome",
 
-  "+ash/capture_mode",
   "+content/public/browser",
   "+content/public/test",
   "+services/video_capture/public/mojom",
 ]
+
+specific_include_rules = {
+  "camera_presence_notifier_unittest\\.cc": [
+    "+ash/capture_mode/fake_video_source_provider.h",
+  ]
+}

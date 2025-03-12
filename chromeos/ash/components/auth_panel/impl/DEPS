@@ -1,18 +1,7 @@
 noparent = True
 
 include_rules = [
-  # No dependency on shell.h because it would bring in unnecessary deps.
-  # Use //ash/public, or pass in the needed instances directly.
-  "-ash/shell.h",
-
-  "+ash/auth",
-  "+ash/ime",
-  "+ash/login/ui",
-  "+ash/public/cpp",
-  "+ash/resources/vector_icons",
-  "+ash/shell.h",
-  "+ash/strings",
-  "+ash/style",
+  "+ash/strings/grit/ash_strings.h",
   "+base",
   "+chromeos/ash/components/auth_panel/public",
   "+chromeos/ash/components/osauth/public",
@@ -22,4 +11,14 @@ include_rules = [
   "+ui/chromeos/styles",
   "+ui/gfx",
   "+ui/views",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/auth/views/auth_textfield.h",
+  "+ash/login/ui/arrow_button_view.h",
+  "+ash/login/ui/non_accessible_view.h",
+  "+ash/public/cpp/ime_controller.h",
+  "+ash/resources/vector_icons/vector_icons.h",
+  "+ash/style/ash_color_id.h",
+  "+ash/style/system_textfield_controller.h",
 ]
