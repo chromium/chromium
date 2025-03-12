@@ -54,15 +54,12 @@ void TabStripScrollSessionWithTimer::Start(TabScrollDirection direction) {
       base::BindRepeating(&TabStripScrollSessionWithTimer::TabScrollCallback,
                           base::Unretained(this)));
   scroll_direction_ = direction;
-  scroll_context_ = tab_drag_with_scroll_manager_->GetAttachedContext();
 }
 
 void TabStripScrollSessionWithTimer::TabScrollCallback() {
   DCHECK(scroll_direction_ !=
          TabStripScrollSession::TabScrollDirection::kNoScroll);
-  if (GetTabScrollDirection() != scroll_direction_ ||
-      !tab_drag_with_scroll_manager_->IsDraggingTabState() ||
-      scroll_context_ != tab_drag_with_scroll_manager_->GetAttachedContext()) {
+  if (GetTabScrollDirection() != scroll_direction_) {
     scroll_timer_->Stop();
     return;
   }
@@ -74,12 +71,6 @@ void TabStripScrollSessionWithTimer::TabScrollCallback() {
 
   tab_drag_with_scroll_manager_->MoveAttached(
       tab_drag_with_scroll_manager_->GetLastPointInScreen(), false);
-}
-
-void TabStripScrollSessionWithTimer::Stop() {
-  scroll_timer_->Stop();
-  scroll_direction_ = TabScrollDirection::kNoScroll;
-  scroll_context_ = nullptr;
 }
 
 bool TabStripScrollSessionWithTimer::IsRunning() {
@@ -128,7 +119,8 @@ double TabStripScrollSessionWithTimer::GetRatioInScrollableRegion() {
       tab_drag_with_scroll_manager_->GetScrollView();
   const gfx::Rect visible_rect_drag_context_coord =
       gfx::ToEnclosingRect(views::View::ConvertRectToTarget(
-          scroll_view->contents(), scroll_context_,
+          scroll_view->contents(),
+          tab_drag_with_scroll_manager_->GetAttachedContext(),
           gfx::RectF(scroll_view->GetVisibleRect())));
 
   double ratio = 0;

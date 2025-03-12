@@ -10,7 +10,30 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 
-class TabDragWithScrollManager;
+class TabDragWithScrollManager {
+ public:
+  virtual ~TabDragWithScrollManager() = default;
+
+  // Handles dragging tabs while the tabs are attached. `just_attached` should
+  // be true iff this is the first call to MoveAttached after attaching. This
+  // also starts a scroll session if needed.
+  // TODO(crbug.com/40875136): Make this an observer of the scroll_session
+  // class.
+  virtual void MoveAttached(gfx::Point point_in_screen, bool just_attached) = 0;
+
+  // Returns a rect starting from the origin of the first dragged tab
+  // to the end of the last dragged tab.
+  virtual gfx::Rect GetEnclosingRectForDraggedTabs() = 0;
+
+  // Returns the point in screen when the last drag occurred.
+  virtual gfx::Point GetLastPointInScreen() = 0;
+
+  // Returns the `attached_context_`.
+  virtual views::View* GetAttachedContext() = 0;
+
+  // Get Scroll View from the `attached_context_`.
+  virtual views::ScrollView* GetScrollView() = 0;
+};
 
 // Interface that starts and stops a scrolling session. Current implementations
 // are timer based implementations
@@ -20,6 +43,11 @@ class TabStripScrollSession {
   TabStripScrollSession(const TabStripScrollSession&) = delete;
   TabStripScrollSession& operator=(const TabStripScrollSession&) = delete;
   virtual ~TabStripScrollSession();
+  enum class ScrollWithDragStrategy {
+    kConstantSpeed = 1,
+    kVariableSpeed = 2,
+    kDisabled = 3
+  };
   enum class TabScrollDirection {
     kNoScroll,
     kScrollTowardsLeadingTabs,
@@ -28,8 +56,6 @@ class TabStripScrollSession {
   // Calculates which direction should the scrolling occur and
   // starts the `Start()` method
   virtual void MaybeStart() = 0;
-  // Stop the scroll_session
-  virtual void Stop() = 0;
   // Check if the scroll session is still active
   virtual bool IsRunning() = 0;
   // Determines which direction should the scrolling happen.
@@ -46,8 +72,6 @@ class TabStripScrollSession {
   // the controller for running operations like MoveAttached and getting
   // the attached_context.
   const raw_ref<TabDragWithScrollManager> tab_drag_with_scroll_manager_;
-  // The tabdrag context on which scroll is happening
-  raw_ptr<views::View> scroll_context_ = nullptr;
 };
 
 class TabStripScrollSessionWithTimer : public TabStripScrollSession {
@@ -67,7 +91,6 @@ class TabStripScrollSessionWithTimer : public TabStripScrollSession {
   ~TabStripScrollSessionWithTimer() override;
 
   void MaybeStart() override;
-  void Stop() override;
   bool IsRunning() override;
   TabStripScrollSession::TabScrollDirection GetTabScrollDirection() override;
 
