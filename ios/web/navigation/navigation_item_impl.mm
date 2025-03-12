@@ -10,6 +10,7 @@
 #import <utility>
 
 #import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/web/common/features.h"
@@ -76,6 +77,12 @@ NavigationItemImpl::NavigationItemImpl(
   // also update the virtual URL reported by this object.
   url_ = original_request_url_ = GURL(storage.url());
 
+  if (!storage.security_scoped_file_resource().empty()) {
+    const std::string& bytes = storage.security_scoped_file_resource();
+    security_scoped_file_resource_ = [NSData dataWithBytes:bytes.data()
+                                                    length:bytes.size()];
+  }
+
   // Restore the `virtual_url`. In case the `url` is invalid, it should be set
   // to the the value saved for `virtual_url` (we never store `virtual_url` if
   // equal to `url`, so restore to `url` only in that case).
@@ -110,6 +117,11 @@ void NavigationItemImpl::SerializeToProto(
   if (http_request_headers_.count) {
     SerializeHttpRequestHeadersToProto(http_request_headers_,
                                        *storage.mutable_http_request_headers());
+  }
+  if (security_scoped_file_resource_) {
+    storage.set_security_scoped_file_resource(
+        static_cast<const char*>(security_scoped_file_resource_.bytes),
+        security_scoped_file_resource_.length);
   }
 }
 
@@ -227,6 +239,14 @@ void NavigationItemImpl::SetUserAgentType(UserAgentType type) {
   user_agent_type_ = type;
 }
 
+void NavigationItemImpl::SetSecurityScopedFileResource(NSData* data) {
+  security_scoped_file_resource_ = [data copy];
+}
+
+NSData* NavigationItemImpl::GetSecurityScopedFileResource() {
+  return security_scoped_file_resource_;
+}
+
 void NavigationItemImpl::SetUntrusted() {
   is_untrusted_ = true;
 }
@@ -340,6 +360,7 @@ void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
   }
   if (url_ == other->GetURL()) {
     SetVirtualURL(other->GetVirtualURL());
+    SetSecurityScopedFileResource(other->GetSecurityScopedFileResource());
   }
 }
 
