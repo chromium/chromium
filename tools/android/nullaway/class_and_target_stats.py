@@ -99,10 +99,12 @@ def main():
         type=pathlib.Path,
         help='Used to generate project.json in the outdir and use it for the '
         'target graph. Defaults to out/Debug.')
-    parser.add_argument('-v',
-                        '--verbose',
-                        action='store_true',
-                        help='Show more output.')
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='count',
+        default=0,
+        help='-v to print deps/dependent count, -vv to print each item.')
     parser.add_argument(
         '--include-testonly',
         action='store_true',
@@ -121,9 +123,9 @@ def main():
 
     cmd = [
         str(_SRC / 'tools/android/nullaway/java_file_stats.py'),
+        '--nomark-list-path',
+        str(_NOMARK_LIST_PATH)
     ]
-    if not args.no_cache:
-        cmd += ['--nomark-list-path', str(_NOMARK_LIST_PATH)]
     if _FILE_CACHE_PATH.exists() and not args.no_cache:
         cmd += ['--cached-file-list', str(_FILE_CACHE_PATH)]
     else:
@@ -240,12 +242,12 @@ def main():
     for t in targets_list:
         # Remove the // at the beginning for easy copy/pasting into siso.
         print(f'[{targets_num_unmarked[t]:2}] {t[2:]}', end='')
-        if args.verbose:
+        if args.verbose >= 1:
             print(f' deps={len(targets_unmarked_deps[t])} ', end='')
             print(f' dependent={len(targets_unmarked_dependents[t])} ', end='')
         print()
 
-        if args.verbose:
+        if args.verbose >= 2:
             for tt in targets_unmarked_deps[t]:
                 print(f'> {tt}')
             for c in targets_unmarked_classes[t]:
