@@ -81,6 +81,11 @@ class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
       const GroupId& group_id) const;
   bool IsDataLoaded() const;
 
+  // Called when user leaves or deletes a group. Because it may take some time
+  // for sync to invalidate the group, this method informs observers to remove
+  // the group from cache so they don't have to wait.
+  void RemoveGroupLocally(const GroupId& group_id);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

@@ -422,6 +422,7 @@ void CollaborationServiceImpl::OnCollaborationGroupRemoved(
       data_sharing::DataSharingService::PeopleGroupActionOutcome::kSuccess) {
     tab_group_sync_service_->OnCollaborationRemoved(
         syncer::CollaborationId(group_id.value()));
+    data_sharing_service_->OnCollaborationGroupRemoved(group_id);
     std::move(callback).Run(/*success=*/true);
     return;
   }

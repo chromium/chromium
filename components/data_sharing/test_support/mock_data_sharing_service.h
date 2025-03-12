@@ -101,6 +101,7 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(SetPreviewServerProxyForTesting,
                void(std::unique_ptr<PreviewServerProxy>));
   MOCK_METHOD0(GetPreviewServerProxyForTesting, PreviewServerProxy*());
+  MOCK_METHOD1(OnCollaborationGroupRemoved, void(const GroupId&));
 };
 
 }  // namespace data_sharing
