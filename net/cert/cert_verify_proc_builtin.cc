@@ -734,19 +734,34 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
 class QwacPathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
  public:
-  // TODO(crbug.com/392931068): netlogs
-  QwacPathBuilderDelegateImpl()
+  explicit QwacPathBuilderDelegateImpl(const NetLogWithSource& net_log)
       : bssl::SimplePathBuilderDelegate(
             kMinRsaModulusLengthBits,
-            bssl::SimplePathBuilderDelegate::DigestPolicy::kStrong) {}
+            bssl::SimplePathBuilderDelegate::DigestPolicy::kStrong),
+        net_log_(net_log) {}
 
   void CheckPathAfterVerification(
       const bssl::CertPathBuilder& path_builder,
       bssl::CertPathBuilderResultPath* path) override {
+    net_log_->BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT);
+
     if (!Has1QwacPolicies(path->user_constrained_policy_set)) {
       path->errors.GetErrorsForCert(0)->AddError(kPathLacksQwacPolicy);
     }
+
+    net_log_->EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                       [&] { return NetLogPathBuilderResultPath(*path); });
   }
+
+  bool IsDebugLogEnabled() override { return net_log_->IsCapturing(); }
+
+  void DebugLog(std::string_view msg) override {
+    net_log_->AddEventWithStringParams(
+        NetLogEventType::CERT_VERIFY_PROC_PATH_BUILDER_DEBUG, "debug", msg);
+  }
+
+ private:
+  raw_ref<const NetLogWithSource> net_log_;
 };
 
 std::shared_ptr<const bssl::ParsedCertificate> ParseCertificateFromBuffer(
@@ -782,7 +797,8 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void MaybeVerify1QWAC(const bssl::CertPathBuilderResultPath* verified_path,
                         const bssl::der::GeneralizedTime& der_verification_time,
-                        CertVerifyResult* verify_result);
+                        CertVerifyResult* verify_result,
+                        const NetLogWithSource& net_log);
 #endif
 
   const scoped_refptr<CertNetFetcher> net_fetcher_;
@@ -1444,7 +1460,7 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
                        cur_attempt.use_system_time
                            ? der_verification_system_time
                            : der_verification_custom_time,
-                       verify_result);
+                       verify_result, net_log);
     }
 #endif
   }
@@ -1455,10 +1471,10 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 void CertVerifyProcBuiltin::MaybeVerify1QWAC(
     const bssl::CertPathBuilderResultPath* verified_path,
     const bssl::der::GeneralizedTime& der_verification_time,
-    CertVerifyResult* verify_result) {
+    CertVerifyResult* verify_result,
+    const NetLogWithSource& net_log) {
   CHECK(verified_path);
   CHECK(verified_path->IsValid());
-  // TODO(crbug.com/392931068): netlogs
   // TODO(crbug.com/392931068): histograms
 
   const std::shared_ptr<const bssl::ParsedCertificate>& target =
@@ -1505,7 +1521,13 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
       bssl::der::Input(bssl::kAnyPolicyOid)};
   // TODO(crbug.com/392931068): does not implement deadlines (right now there is
   // no OS or network interaction, so this should be fine.)
-  QwacPathBuilderDelegateImpl path_builder_delegate;
+  QwacPathBuilderDelegateImpl path_builder_delegate(net_log);
+
+  net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
+    base::Value::Dict results;
+    results.Set("is_qwac_attempt", true);
+    return results;
+  });
 
   // Initialize the path builder.
   bssl::CertPathBuilder path_builder(
@@ -1519,6 +1541,9 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
   path_builder.AddCertIssuerSource(&intermediates);
   path_builder.SetIterationLimit(kPathBuilderIterationLimit);
   qwac_result = path_builder.Run();
+
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
+                   [&] { return NetLogPathBuilderResult(qwac_result); });
 
   if (!qwac_result.HasValidPath()) {
     return;
