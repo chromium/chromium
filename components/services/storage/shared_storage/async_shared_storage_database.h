@@ -46,6 +46,7 @@ class AsyncSharedStorageDatabase {
   using TimeResult = SharedStorageDatabase::TimeResult;
   using MetadataResult = SharedStorageDatabase::MetadataResult;
   using EntriesResult = SharedStorageDatabase::EntriesResult;
+  using DataClearSource = SharedStorageDatabase::DataClearSource;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -148,7 +149,8 @@ class AsyncSharedStorageDatabase {
   // Clears all entries for `context_origin`. The parameter of `callback`
   // reports whether the operation is successful.
   virtual void Clear(url::Origin context_origin,
-                     base::OnceCallback<void(OperationResult)> callback) = 0;
+                     base::OnceCallback<void(OperationResult)> callback,
+                     DataClearSource source = DataClearSource::kSite) = 0;
 
   // The parameter of `callback` reports the number of entries for
   // `context_origin`, 0 if there are none, or -1 on operation failure.
