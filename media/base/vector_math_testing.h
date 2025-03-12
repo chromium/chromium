@@ -69,6 +69,7 @@ MEDIA_SHMEM_EXPORT void FMUL_NEON(const float src[],
                                   float scale,
                                   int len,
                                   float dest[]);
+MEDIA_SHMEM_EXPORT void FCLAMP_NEON(const float src[], int len, float dest[]);
 MEDIA_SHMEM_EXPORT std::pair<float, float> EWMAAndMaxPower_NEON(
     float initial_value,
     const float src[],

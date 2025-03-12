@@ -223,6 +223,8 @@ TEST_F(VectorMathPerfTest, FCLAMP_optimized_aligned) {
     RunClampingBenchmark(vector_math::FCLAMP_SSE, true, "_fclamp",
                          "optimized_aligned");
   }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, true, "_fclamp", "optimized_aligned");
 #endif
 }
 
@@ -240,6 +242,8 @@ TEST_F(VectorMathPerfTest, FCLAMP_optimized_unaligned) {
     RunClampingBenchmark(vector_math::FCLAMP_SSE, false, "_fclamp",
                          "optimized_unaligned");
   }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, false, "_fclamp", "optimized_unaligned");
 #endif
 }
 
