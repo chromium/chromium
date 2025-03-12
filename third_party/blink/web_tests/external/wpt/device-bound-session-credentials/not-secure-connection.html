@@ -18,6 +18,6 @@
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
     // For HTTP, this call will time out, because the cookie is never set.
-    assert_false(await waitForCookie(expectedCookieAndValue));
+    await waitForCookie(expectedCookieAndValue, /*expectCookie=*/false);
   }, "Try to establish a session over HTTP");
 </script>

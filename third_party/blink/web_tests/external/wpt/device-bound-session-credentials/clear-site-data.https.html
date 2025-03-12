@@ -18,7 +18,7 @@
     // Prompt starting a session, and wait until registration completes.
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
-    assert_true(await waitForCookie(expectedCookieAndValue));
+    await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
     // The server ends the session.
     const end_session_response = await fetch('end_session_via_clear_site_data.py');
@@ -43,7 +43,7 @@
     // Prompt starting a session, and wait until registration completes.
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
-    assert_true(await waitForCookie(expectedCookieAndValue));
+    await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
     // The server ends the session.
     const end_session_response = await fetch('end_session_via_clear_site_data.py', {method: 'POST', body: '"storage"'});

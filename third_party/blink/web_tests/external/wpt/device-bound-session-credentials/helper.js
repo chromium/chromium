@@ -2,20 +2,21 @@ export function documentHasCookie(cookieAndValue) {
   return document.cookie.split(';').some(item => item.includes(cookieAndValue));
 }
 
-export function waitForCookie(cookieAndValue) {
+export async function waitForCookie(cookieAndValue, expectCookie) {
   const startTime = Date.now();
-  return new Promise(resolve => {
+  const hasCookie = await new Promise(resolve => {
     const interval = setInterval(() => {
       if (documentHasCookie(cookieAndValue)) {
         clearInterval(interval);
         resolve(true);
       }
-      if (Date.now() - startTime >= 1000) {
+      if (!expectCookie && Date.now() - startTime >= 1000) {
         clearInterval(interval);
         resolve(false);
       }
     }, 100);
   });
+  assert_equals(hasCookie, expectCookie);
 }
 
 export function expireCookie(cookieAndAttributes) {

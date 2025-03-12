@@ -48,7 +48,7 @@
     // Prompt starting a session, and wait until registration completes.
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
-    assert_true(await waitForCookie(expectedCookieAndValue));
+    await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
     async function expireCookieAndTriggerRequest(endpoint, expectRefresh) {
       expireCookie(expectedCookieAndAttributes);
