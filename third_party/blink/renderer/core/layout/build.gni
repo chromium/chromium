@@ -58,7 +58,6 @@ blink_core_sources_layout = [
   "column_spanner_path.h",
   "constraint_space.cc",
   "constraint_space.h",
-  "constraint_space_builder.cc",
   "constraint_space_builder.h",
   "content_change_type.h",
   "custom/css_layout_definition.cc",

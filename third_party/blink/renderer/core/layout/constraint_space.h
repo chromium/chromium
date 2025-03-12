@@ -108,17 +108,9 @@ class CORE_EXPORT ConstraintSpace final {
   DISALLOW_NEW();
 
  public:
-  // Percentages are frequently the same as the available-size, zero, or
-  // indefinite (thanks non-quirks mode)! This enum encodes this information.
-  enum PercentageStorage {
-    kSameAsAvailable,
-    kZero,
-    kIndefinite,
-    kRareDataPercentage
-  };
-
   ConstraintSpace(const ConstraintSpace& other)
       : available_size_(other.available_size_),
+        percentage_size_(other.percentage_size_),
         bfc_offset_(other.bfc_offset_),
         exclusion_space_(other.exclusion_space_),
         rare_data_(other.rare_data_
@@ -127,6 +119,7 @@ class CORE_EXPORT ConstraintSpace final {
         bitfields_(other.bitfields_) {}
   ConstraintSpace(ConstraintSpace&& other)
       : available_size_(other.available_size_),
+        percentage_size_(other.percentage_size_),
         bfc_offset_(other.bfc_offset_),
         exclusion_space_(std::move(other.exclusion_space_)),
         rare_data_(std::move(other.rare_data_)),
@@ -136,6 +129,7 @@ class CORE_EXPORT ConstraintSpace final {
 
   ConstraintSpace& operator=(const ConstraintSpace& other) {
     available_size_ = other.available_size_;
+    percentage_size_ = other.percentage_size_;
     bfc_offset_ = other.bfc_offset_;
     exclusion_space_ = other.exclusion_space_;
     rare_data_ = other.rare_data_
@@ -146,6 +140,7 @@ class CORE_EXPORT ConstraintSpace final {
   }
   ConstraintSpace& operator=(ConstraintSpace&& other) {
     available_size_ = other.available_size_;
+    percentage_size_ = other.percentage_size_;
     bfc_offset_ = other.bfc_offset_;
     exclusion_space_ = std::move(other.exclusion_space_);
     rare_data_ = std::move(other.rare_data_);
@@ -195,42 +190,12 @@ class CORE_EXPORT ConstraintSpace final {
   // The size to use for percentage resolution.
   // See: https://drafts.csswg.org/css-sizing/#percentage-sizing
   LayoutUnit PercentageResolutionInlineSize() const {
-    switch (
-        static_cast<PercentageStorage>(bitfields_.percentage_inline_storage)) {
-      default:
-        NOTREACHED();
-      case kSameAsAvailable:
-        return available_size_.inline_size;
-      case kZero:
-        return LayoutUnit();
-      case kIndefinite:
-        return kIndefiniteSize;
-      case kRareDataPercentage:
-        DCHECK(rare_data_);
-        return rare_data_->percentage_resolution_size.inline_size;
-    }
+    return percentage_size_.inline_size;
   }
-
   LayoutUnit PercentageResolutionBlockSize() const {
-    switch (
-        static_cast<PercentageStorage>(bitfields_.percentage_block_storage)) {
-      default:
-        NOTREACHED();
-      case kSameAsAvailable:
-        return available_size_.block_size;
-      case kZero:
-        return LayoutUnit();
-      case kIndefinite:
-        return kIndefiniteSize;
-      case kRareDataPercentage:
-        DCHECK(rare_data_);
-        return rare_data_->percentage_resolution_size.block_size;
-    }
+    return percentage_size_.block_size;
   }
-
-  LogicalSize PercentageResolutionSize() const {
-    return {PercentageResolutionInlineSize(), PercentageResolutionBlockSize()};
-  }
+  LogicalSize PercentageResolutionSize() const { return percentage_size_; }
 
   // Returns the percentage resolution size to use with a replaced child.
   // NOTE: This should only be used within inline layout, within a table-cell.
@@ -849,36 +814,8 @@ class CORE_EXPORT ConstraintSpace final {
   }
 
   bool AreSizesEqual(const ConstraintSpace& other) const {
-    if (available_size_ != other.available_size_)
-      return false;
-
-    if (bitfields_.percentage_inline_storage !=
-        other.bitfields_.percentage_inline_storage)
-      return false;
-
-    if (bitfields_.percentage_block_storage !=
-        other.bitfields_.percentage_block_storage)
-      return false;
-
-    // The rest of this method just checks the percentage resolution sizes. If
-    // neither space has rare data, we know that they must equal now.
-    if (!rare_data_ && !other.rare_data_) {
-      return true;
-    }
-
-    if (bitfields_.percentage_inline_storage == kRareDataPercentage &&
-        other.bitfields_.percentage_inline_storage == kRareDataPercentage &&
-        rare_data_->percentage_resolution_size.inline_size !=
-            other.rare_data_->percentage_resolution_size.inline_size)
-      return false;
-
-    if (bitfields_.percentage_block_storage == kRareDataPercentage &&
-        other.bitfields_.percentage_block_storage == kRareDataPercentage &&
-        rare_data_->percentage_resolution_size.block_size !=
-            other.rare_data_->percentage_resolution_size.block_size)
-      return false;
-
-    return true;
+    return available_size_ == other.available_size_ &&
+           percentage_size_ == other.percentage_size_;
   }
 
   void ReplaceTableRowData(const TableConstraintSpaceData& table_data,
@@ -1662,18 +1599,11 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_initial_block_size_indefinite : 1 = false;
     unsigned is_table_cell_child : 1 = false;
     unsigned is_restricted_block_size_table_cell_child : 1 = false;
-
-    unsigned percentage_inline_storage : 2 =
-        static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
-    unsigned percentage_block_storage : 2 =
-        static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
   };
 
-  // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,
-  // always initialize the bfc_offset_.
   explicit ConstraintSpace(WritingDirectionMode writing_direction)
       : available_size_(kIndefiniteSize, kIndefiniteSize),
-        bfc_offset_(),
+        percentage_size_(kIndefiniteSize, kIndefiniteSize),
         bitfields_(writing_direction) {}
 
   RareData* EnsureRareData() {
@@ -1702,6 +1632,7 @@ class CORE_EXPORT ConstraintSpace final {
   }
 
   LogicalSize available_size_;
+  LogicalSize percentage_size_;
   BfcOffset bfc_offset_;
 
   ExclusionSpace exclusion_space_;
