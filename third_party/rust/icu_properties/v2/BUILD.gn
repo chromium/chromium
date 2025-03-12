@@ -49,14 +49,12 @@ cargo_crate("lib") {
     "//third_party/rust/icu_properties_data/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/potential_utf/v0_1:lib",
-    "//third_party/rust/unicode_bidi/v0_3:lib",
     "//third_party/rust/zerotrie/v0_2:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
   features = [
     "alloc",
     "compiled_data",
-    "unicode_bidi",
   ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates

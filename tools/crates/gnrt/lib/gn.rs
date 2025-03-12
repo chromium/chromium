@@ -474,7 +474,19 @@ pub enum Condition {
 }
 
 impl Condition {
+    pub fn is_always_false(&self) -> bool {
+        *self == Condition::AlwaysFalse
+    }
+
     pub fn or(lhs: Condition, rhs: Condition) -> Self {
+        // Avoiding unnecessarily constructing `is_win || is_win`.
+        // This is mostly needed for `or`, because this is where
+        // different dependency edge kinds (e.g. `Build` vs `Normal`)
+        // result in `or`-ing of conditions as driven by `deps.rs`.
+        if lhs == rhs {
+            return lhs;
+        }
+
         match (lhs, rhs) {
             (Condition::AlwaysFalse, other) | (other, Condition::AlwaysFalse) => other.clone(),
             (Condition::AlwaysTrue, _) | (_, Condition::AlwaysTrue) => Condition::AlwaysTrue,
@@ -526,11 +538,14 @@ impl Condition {
     }
 }
 
-pub fn target_platform_to_condition(spec: &cargo_platform::Platform) -> Condition {
-    use cargo_platform::Platform::*;
+pub fn target_spec_to_condition(spec: &target_spec::TargetSpec) -> Condition {
+    use target_spec::TargetSpec::*;
     match spec {
-        Name(triple) => triple_to_condition(triple.as_str()),
-        Cfg(cfg_expr) => cfg_expr_to_condition(cfg_expr),
+        PlainString(triple) => triple_to_condition(triple.as_str()),
+        Expression(expr) => {
+            let cfg_expr = expr.expression_str().parse().unwrap();
+            cfg_expr_to_condition(&cfg_expr)
+        }
     }
 }
 
@@ -734,14 +749,17 @@ mod tests {
     use super::*;
 
     fn condition_from_test_triple(triple: &str) -> Condition {
-        let platform = cargo_platform::Platform::Name(triple.to_string());
-        target_platform_to_condition(&platform)
+        let spec = target_spec::TargetSpec::PlainString(
+            target_spec::TargetSpecPlainString::new(triple.to_string()).unwrap(),
+        );
+        target_spec_to_condition(&spec)
     }
 
     fn condition_from_test_expr(expr: &str) -> Condition {
-        let platform =
-            cargo_platform::Platform::Cfg(expr.parse::<cargo_platform::CfgExpr>().unwrap());
-        target_platform_to_condition(&platform)
+        let spec = target_spec::TargetSpec::Expression(
+            target_spec::TargetSpecExpression::new(expr).unwrap(),
+        );
+        target_spec_to_condition(&spec)
     }
 
     #[test]

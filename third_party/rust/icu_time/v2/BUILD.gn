@@ -50,7 +50,6 @@ cargo_crate("lib") {
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/icu_time_data/v2:lib",
     "//third_party/rust/ixdtf/v0_4:lib",
-    "//third_party/rust/serde/v1:lib",
     "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerotrie/v0_2:lib",

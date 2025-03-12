@@ -110,6 +110,9 @@ def Gnrt(*args) -> str:
 def GnrtUpdate(args: List[str], check_stdout: bool,
                check_exitcode: bool) -> str:
     """Runs `gnrt update` command."""
+    # See the `[dependencies.cxxbridge-cmd]` section in
+    # `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    # `-Zbindeps` flag is needed.
     args = ["update", "--"] + args + ["-Zunstable-options", "-Zbindeps"]
     return RunCommandAndCheckForErrors([RUN_GNRT] + list(args),
                                        check_stdout=check_stdout,
