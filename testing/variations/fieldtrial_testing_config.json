@@ -3886,6 +3886,21 @@
             ]
         }
     ],
+    "CacheIsMultiInstanceApi31Enabled": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheIsMultiInstanceApi31Enabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheStorageTaskPriority": [
         {
             "platforms": [
