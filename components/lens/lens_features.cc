@@ -406,6 +406,10 @@ constexpr base::FeatureParam<int>
     kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout{
         &kLensOverlaySimplifiedSelection, "translate-text-received-timeout",
         500};
+constexpr base::FeatureParam<bool>
+    kLensOverlaySimplifiedSelectionShouldCopyAsImage{
+        &kLensOverlaySimplifiedSelection, "copy-command-copies-as-image",
+        false};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -892,6 +896,10 @@ int GetCopyTextReceivedTimeout() {
 
 int GetTranslateTextReceivedTimeout() {
   return kLensOverlaySimplifiedSelectionTranslateTextReceivedTimeout.Get();
+}
+
+bool GetShouldCopyAsImage() {
+  return kLensOverlaySimplifiedSelectionShouldCopyAsImage.Get();
 }
 
 bool PageContentUploadRequestIdFixEnabled() {

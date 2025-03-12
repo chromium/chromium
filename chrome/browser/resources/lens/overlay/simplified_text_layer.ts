@@ -167,8 +167,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // been made. Also clear any timeouts that also pertained to the last region
     // response.
     this.regionTextResponse = undefined;
-    this.copyTextTimeout.timeoutElapsedOrCleared = false;
-    this.translateTimeout.timeoutElapsedOrCleared = false;
+    this.clearTextTimeouts();
   }
 
   selectAndSendWords(_selectionStartIndex: number, _selectionEndIndex: number) {
@@ -363,6 +362,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   onCopyDetectedText(
       startIndex: number, endIndex: number, callback: TextCopyCallback) {
+    if (startIndex < 0 || endIndex < 0) {
+      return;
+    }
+
     if (this.regionTextResponse) {
       callback(/*textStartIndex=*/ 0,
                this.regionTextResponse.receivedWords.length - 1,
@@ -374,18 +377,27 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // not returned yet. After that timeout is over, the text will be copied
     // from the full image.
     if (this.copyTextTimeout.timeoutElapsedOrCleared) {
-      callback(
-          startIndex, endIndex,
-          this.getRegionTextFromFullImage(startIndex, endIndex));
+      // If the full image text response was never returned, then do nothing.
+      // This is possible if the full image request fails and the user uses
+      // CMD+C to copy.
+      if (this.fullTextResponse) {
+        callback(
+            startIndex, endIndex,
+            this.getRegionTextFromFullImage(startIndex, endIndex));
+      }
       return;
     }
 
-    this.copyTextFunction = callback;
-    this.copyTextTimeout.timeoutId = setTimeout(() => {
-      this.copyTextTimeout.timeoutElapsedOrCleared = true;
-      this.copyTextTimeout.timeoutId = -1;
-      this.onCopyDetectedText(startIndex, endIndex, callback);
-    }, this.copyTextTimeout.timeout);
+    // Since the copy command can be spammed, make sure the timeout is only set
+    // once.
+    if (this.copyTextTimeout.timeoutId === -1) {
+      this.copyTextFunction = callback;
+      this.copyTextTimeout.timeoutId = setTimeout(() => {
+        this.copyTextTimeout.timeoutElapsedOrCleared = true;
+        this.copyTextTimeout.timeoutId = -1;
+        this.onCopyDetectedText(startIndex, endIndex, callback);
+      }, this.copyTextTimeout.timeout);
+    }
   }
 
   private getRegionTextFromFullImage(
@@ -447,6 +459,15 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
           return word.plainText + separator;
         })
         .join('');
+  }
+
+  private clearTextTimeouts() {
+    clearTimeout(this.copyTextTimeout.timeoutId);
+    this.copyTextTimeout.timeoutElapsedOrCleared = false;
+    this.copyTextTimeout.timeoutId = -1;
+    clearTimeout(this.translateTimeout.timeoutId);
+    this.translateTimeout.timeoutElapsedOrCleared = false;
+    this.translateTimeout.timeoutId = -1;
   }
 
   getElementForTesting(): Element {
