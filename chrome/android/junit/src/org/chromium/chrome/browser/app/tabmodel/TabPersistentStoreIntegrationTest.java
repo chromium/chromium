@@ -76,6 +76,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
@@ -356,7 +357,7 @@ public class TabPersistentStoreIntegrationTest {
         observeOnMetadataSavedAsynchronously(timesMetadataSaved);
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
-        mTabPersistentStore.setSkipSaveTabList(true);
+        mTabPersistentStore.pauseSaveTabList();
 
         // Setup the test: Create a tab and close it.
         TabModel tabModel = mTabModelSelector.getModel(false);
@@ -371,7 +372,7 @@ public class TabPersistentStoreIntegrationTest {
         // Step to test: Commit tab closure.
         tabModel.commitTabClosure(1);
         runAllAsyncTasks();
-        mTabPersistentStore.setSkipSaveTabList(false);
+        mTabPersistentStore.resumeSaveTabList();
 
         // Verify that metadata was saved.
         assertEquals(timesMetadataSavedBefore, timesMetadataSaved.intValue());
@@ -402,6 +403,30 @@ public class TabPersistentStoreIntegrationTest {
 
         // Verify that metadata was saved.
         assertEquals(timesMetadataSavedBefore + 1, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
+    public void testSkipSaveTabList_ResumeRunnable() {
+        mTabPersistentStore.pauseSaveTabList();
+
+        // Setup the test: Create a tab and close it.
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
+        tabModel.commitTabClosure(1);
+
+        // Step to test: Resume save tab list with runnable.
+        AtomicBoolean runnableCompleted = new AtomicBoolean(false);
+        mTabPersistentStore.resumeSaveTabList(() -> runnableCompleted.set(true));
+        runAllAsyncTasks();
+
+        // Verify the runnable ran.
+        assertTrue(runnableCompleted.get());
     }
 
     private void runAllAsyncTasks() {
