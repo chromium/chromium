@@ -40,17 +40,6 @@ def run(command, **kwargs):
   return subprocess.call(command, **kwargs)
 
 
-def run_shell(command, extra_options=''):
-  """Runs a shell command.
-
-  Runs a shell command with no escaping. It is recommended
-  to use `run` instead.
-  """
-  command = command + ' ' + extra_options
-  print(command)
-  return os.system(command)
-
-
 def gn(out_dir, gn_args, gn_extra=None, **kwargs):
   """ Executes `gn gen`.
 
