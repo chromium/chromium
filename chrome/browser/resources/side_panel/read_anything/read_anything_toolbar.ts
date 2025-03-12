@@ -28,7 +28,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {SettingsPrefs} from './common.js';
 import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
-import type {ColorMenu} from './menus/color_menu.js';
+import type {ColorMenuElement} from './menus/color_menu.js';
 import type {HighlightMenu} from './menus/highlight_menu.js';
 import type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenu} from './menus/line_spacing_menu.js';
@@ -42,7 +42,7 @@ import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 export interface ReadAnythingToolbarElement {
   $: {
     rateMenu: CrLazyRenderLitElement<CrActionMenuElement>,
-    colorMenu: ColorMenu,
+    colorMenu: ColorMenuElement,
     lineSpacingMenu: LineSpacingMenu,
     letterSpacingMenu: LetterSpacingMenu,
     fontMenu: CrLazyRenderLitElement<CrActionMenuElement>,
