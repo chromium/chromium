@@ -39,6 +39,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -117,14 +118,38 @@ std::u16string GetBodyTextParagraphTwo() {
 
 views::Builder<views::StyledLabel> GetTextBodyBuilder(
     const std::u16string& text) {
-  views::StyledLabel::RangeStyleInfo style;
-  style.custom_font = TypographyProvider::Get()->ResolveTypographyToken(
-      TypographyToken::kCrosBody1);
-  style.override_color_id = static_cast<ui::ColorId>(ui::kColorSysOnSurface);
-
+  // There are various issues with using `ash::TypographyToken::kCrosBody1`:
+  //
+  // - It is using Google Sans, not Google Sans Text, which is not suitable for
+  //   body text. See b/256663656 for more details.
+  // - The only way of using it with `views::StyledLabel` is to use a
+  //   `StyledLabel::RangeStyleInfo` with a `custom_font`. Setting this font for
+  //   the entire label requires re-specifying the `custom_font` for _all_
+  //   `StyledLabel::RangeStyleInfo`s.
+  // - …excluding links, which cannot have a `custom_font`:
+  //   https://crsrc.org/s?q=%22CHECK(!style_info.custom_font)%22
+  //   Links need to use the default system font of `IDS_UI_FONT_FAMILY_CROS`,
+  //   which is Roboto.
+  //
+  // Use a text style of `views::style::TextStyle::STYLE_BODY_2` (14pt with 20pt
+  // line height) instead, which matches `kCrosBody1` but uses Roboto instead of
+  // Google Sans. This also keeps the font consistent with links.
+  //
+  // TODO: b/256663656 - Use Google Sans Text here, preferably by updating
+  // `IDS_UI_FONT_FAMILY_CROS`.
+  //
+  // Using a `views::style::TextContext` of `CONTEXT_DIALOG_BODY_TEXT` with the
+  // aforementioned text style will result in a `ui::ColorId` of
+  // `kColorLabelForeground`:
+  // https://crsrc.org/s?q=s:TypographyProvider::GetColorIdImpl%20f:%5Eui.*cc$
+  // This is the same as `kColorPrimaryForeground`:
+  // https://crsrc.org/s?q=%22mixer%5BkColorLabelForeground%5D%22
+  // which is the same as `kColorSysOnSurface`:
+  // https://crsrc.org/s?q=%22mixer%5BkColorPrimaryForeground%5D%22%20f:material
   return views::Builder<views::StyledLabel>()
       .SetText(text)
-      .AddStyleRange(gfx::Range(0, text.length()), style)
+      .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_2)
+      .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false);
 }
