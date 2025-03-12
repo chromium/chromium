@@ -3157,99 +3157,16 @@
             ],
             "experiments": [
                 {
-                    "name": "NoIPHWithBackgroundSendResultAndCompression",
-                    "params": {
-                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false",
-                        "max-cache-size": "16777216",
-                        "percentage-of-ram-to-use": "0.5",
-                        "transfer-screenshot-in-background-priority": "true"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ],
-                    "disable_features": [
-                        "IPH_RtlGestureNavigation"
-                    ]
-                },
-                {
-                    "name": "NoIPHWithBackgroundCompression",
-                    "params": {
-                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false",
-                        "max-cache-size": "16777216",
-                        "percentage-of-ram-to-use": "0.5",
-                        "transfer-screenshot-in-background-priority": "true"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ],
-                    "disable_features": [
-                        "IPH_RtlGestureNavigation"
-                    ]
-                },
-                {
-                    "name": "NoIPH",
-                    "params": {
-                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false",
-                        "max-cache-size": "16777216",
-                        "percentage-of-ram-to-use": "0.5"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ],
-                    "disable_features": [
-                        "CompressBitmapAtBackgroundPriority",
-                        "IPH_RtlGestureNavigation"
-                    ]
-                },
-                {
-                    "name": "RTLOnly",
-                    "enable_features": [
-                        "MirrorBackForwardGesturesInRTL"
-                    ],
-                    "disable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "IPH_RtlGestureNavigation",
-                        "NativePageTransitionHardwareCapture"
-                    ]
-                },
-                {
-                    "name": "IPHOnUnsuccessfulBackNav",
+                    "name": "IPHWithBackgroundSendResultAndCompression",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
                         "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
+                        "max-cache-size": "16777216",
+                        "percentage-of-ram-to-use": "0.5",
                         "session_rate": "<1",
+                        "transfer-screenshot-in-background-priority": "true",
                         "x_trigger": "",
-                        "x_unhandled_gesture_threshold": "2"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "IPH_RtlGestureNavigation",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ]
-                },
-                {
-                    "name": "IPHOnFirstSuccessfulBackNav",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
-                        "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
-                        "session_rate": "<1",
-                        "x_trigger": "non-empty-stack",
                         "x_unhandled_gesture_threshold": "2"
                     },
                     "enable_features": [
