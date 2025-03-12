@@ -1,5 +1,5 @@
+import importlib
+util = importlib.import_module('device-bound-session-credentials.verify_authenticated_util')
+
 def main(request, response):
-    cookie = request.cookies.get(b'auth_cookie')
-    if cookie == None or cookie.value != b'abcdef0123':
-        return (401, response.headers, "")
-    return (200, response.headers, "")
+    return util.verify_authenticated(request, response)
