@@ -22,6 +22,34 @@
 
 namespace {
 
+// Helper function to add the Best Features, Default Browser Promo, and Address
+// Bar screens when kUpdatedFirstRunSequence is disabled.
+void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens) {
+  using enum first_run::BestFeaturesScreenVariationType;
+  first_run::BestFeaturesScreenVariationType bestFeaturesType =
+      first_run::GetBestFeaturesScreenVariationType();
+  switch (bestFeaturesType) {
+    case kGeneralScreenAfterDBPromo:
+    case kGeneralScreenWithPasswordItemAfterDBPromo:
+    case kSignedInUsersOnlyAfterDBPromo:
+      [screens addObject:@(kDefaultBrowserPromo)];
+      [screens addObject:@(kBestFeatures)];
+      break;
+    case kGeneralScreenBeforeDBPromo:
+    case kShoppingUsersWithFallbackBeforeDBPromo:
+      [screens addObject:@(kBestFeatures)];
+      [screens addObject:@(kDefaultBrowserPromo)];
+      break;
+    case kAddressBarPromoInsteadOfBestFeaturesScreen:
+      // TODO(crbug.com/402429544): Add address bar promo screen.
+      [screens addObject:@(kDefaultBrowserPromo)];
+      break;
+    case kDisabled:
+      [screens addObject:@(kDefaultBrowserPromo)];
+      break;
+  }
+}
+
 NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
   NSMutableArray* screens = [NSMutableArray array];
 
@@ -40,13 +68,9 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
               /*app_started_via_external_intent=*/false)) {
         [screens addObject:@(kChoice)];
       }
-      [screens addObject:@(kDefaultBrowserPromo)];
       // Only add best features screen if feature kUpdatedFirstRunSequence is
       // disabled for now.
-      if (base::FeatureList::IsEnabled(
-              first_run::kBestFeaturesScreenInFirstRun)) {
-        [screens addObject:@(kBestFeatures)];
-      }
+      AddDBPromoAndBestFeaturesScreens(screens);
       break;
     case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
       [screens addObject:@(kDefaultBrowserPromo)];
