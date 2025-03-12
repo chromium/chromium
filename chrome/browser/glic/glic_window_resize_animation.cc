@@ -62,9 +62,19 @@ GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
 }
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-  window_controller_->GetGlicWidget()->SetBounds(gfx::Tween::RectValueBetween(
+  gfx::Rect bounds_to_animate = gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN_3, state),
-      initial_bounds_, new_bounds_));
+      initial_bounds_, new_bounds_);
+  views::Widget* glic_widget = window_controller_->GetGlicWidget();
+
+  if (window_controller_->IsAttached()) {
+    // If the widget is attached, resize normally.
+    glic_widget->SetBounds(bounds_to_animate);
+  } else {
+    // If the widget is detached, make sure the bounds don't go out-of-screen.
+    glic_widget->SetBoundsConstrained(bounds_to_animate);
+  }
+
   duration_left_ = (1 - GetCurrentValue()) * duration();
 }
 
