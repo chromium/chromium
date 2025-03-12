@@ -10695,19 +10695,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConchSystemAudioFromMicName,
      flag_descriptions::kConchSystemAudioFromMicDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kConchSystemAudioFromMic)},
-
-    {"conch-expand-transcription-language",
-     flag_descriptions::kConchExpandTranscriptionLanguageName,
-     flag_descriptions::kConchExpandTranscriptionLanguageDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kConchExpandTranscriptionLanguage)},
-
-    {"conch-gen-ai", flag_descriptions::kConchGenAiName,
-     flag_descriptions::kConchGenAiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kConchGenAi)},
-
-    {"conch-large-model", flag_descriptions::kConchLargeModelName,
-     flag_descriptions::kConchLargeModelDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kConchLargeModel)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
