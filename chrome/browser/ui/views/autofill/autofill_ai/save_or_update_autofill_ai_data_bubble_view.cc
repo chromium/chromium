@@ -156,15 +156,27 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_CONTROL_LIST_VERTICAL);
 
-  auto* entity_attributes_wrapper = AddChildView(
+  auto* main_content_wrapper = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes * 2)
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .Build());
 
+  const bool is_save_prompt = controller_->IsSavePrompt();
+  if (is_save_prompt) {
+    main_content_wrapper->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
+            .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetMultiLine(true)
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .Build());
+  }
+
   auto* new_entity_added_or_updated_attributes_container =
-      entity_attributes_wrapper->AddChildView(
+      main_content_wrapper->AddChildView(
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes)
@@ -175,11 +187,9 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
 
   // Only present in the update case.
   views::View* new_entity_unchaged_attributes_container = nullptr;
-
-  const bool is_save_prompt = controller_->IsSavePrompt();
   if (!is_save_prompt) {
     new_entity_unchaged_attributes_container =
-        entity_attributes_wrapper->AddChildView(
+        main_content_wrapper->AddChildView(
             views::Builder<views::BoxLayoutView>()
                 .SetOrientation(views::BoxLayout::Orientation::kVertical)
                 .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes)

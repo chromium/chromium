@@ -169,4 +169,7 @@
     Update passport?
   </message>
 
+  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info." translateable="false">
+    Save your info so that autofill can fill in more fields for you next time
+  </message>
 </grit-part>
