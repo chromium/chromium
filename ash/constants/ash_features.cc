@@ -1826,7 +1826,7 @@ constexpr base::FeatureParam<MantisModel>::Option mantis_model_options[] = {
     {MantisModel::V2, "v2"}};
 
 const base::FeatureParam<MantisModel> kMediaAppImageMantisModelParams{
-    &kMediaAppImageMantisModel, "mantis_model", MantisModel::V1,
+    &kMediaAppImageMantisModel, "mantis_model", MantisModel::V2,
     &mantis_model_options};
 
 // Controls whether to enable the requirement of a minimum chrome version on the
