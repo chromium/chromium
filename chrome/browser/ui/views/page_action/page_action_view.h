@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -31,9 +32,7 @@ class PageActionView : public IconLabelBubbleView,
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
-                 const PageActionViewParams& params,
-                 base::RepeatingCallback<void(actions::ActionId, bool)>
-                     chip_state_changed_callback);
+                 const PageActionViewParams& params);
   PageActionView(const PageActionView&) = delete;
   PageActionView& operator=(const PageActionView&) = delete;
   ~PageActionView() override;
@@ -45,6 +44,15 @@ class PageActionView : public IconLabelBubbleView,
   // As an alternative to OnNewActiveController(), just set the observed model.
   // TODO(crbug.com/388524315): Merge OnNewActiveController and this method.
   void SetModel(PageActionModelInterface* model);
+
+  // Indicates whether this view is showing a suggestion chip.
+  // A chip is considered showing even if it is mid-animation (i.e. while
+  // expanding and collapsing).
+  bool IsChipVisible() const;
+
+  using ChipVisibilityChanged = base::RepeatingCallback<void(PageActionView*)>;
+  base::CallbackListSubscription AddChipVisibiltyChangedCallback(
+      ChipVisibilityChanged callback);
 
   // PageActionModelObserver:
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
@@ -76,7 +84,11 @@ class PageActionView : public IconLabelBubbleView,
 
   // The page action can be in icon mode and suggestion chip mode. This helper
   // ensures that the correct styling is applied based on the current mode.
-  void UpdateStyle(bool is_suggestion_chip);
+  void UpdateStyle();
+
+  // Changes to label visibility indicate that the chip state of this page
+  // action changed. This handler ensures the view is updated accordingly.
+  void OnLabelVisibilityChanged();
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
@@ -90,19 +102,19 @@ class PageActionView : public IconLabelBubbleView,
   const int icon_size_;
   const gfx::Insets icon_insets_;
 
-  // Helps to notify to the parent container that this child chip state has
-  // changed.
-  const base::RepeatingCallback<void(actions::ActionId, bool)>
-      chip_state_changed_callback_;
-
-  // Indicates that the current page action is showing as a suggestion chip.
-  bool showing_suggestion_chip_ = false;
-
   // Used to track whether the mouse was pressed when associated ephemeral UI
   // (eg. a bubble that closes on focus loss) was showing, to avoid
   // re-triggering the action if so. This is necessary because the bubble will
   // have closed by the time the view invokes the action on button click.
   bool skip_action_invocation_ = false;
+
+  // Subscription to changes in label visibility, used for updating properties
+  // dependent on label visibility and notifying others of chip state changes.
+  base::CallbackListSubscription label_visibility_changed_subscription_;
+
+  // Client-provided callbacks for changes to chip state.
+  base::RepeatingCallbackList<void(PageActionView*)>
+      chip_visibility_changed_callbacks_;
 };
 
 }  // namespace page_actions

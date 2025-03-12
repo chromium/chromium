@@ -19,16 +19,12 @@
 
 namespace page_actions {
 
-PageActionView::PageActionView(
-    actions::ActionItem* action_item,
-    const PageActionViewParams& params,
-    base::RepeatingCallback<void(actions::ActionId, bool)>
-        chip_state_changed_callback)
+PageActionView::PageActionView(actions::ActionItem* action_item,
+                               const PageActionViewParams& params)
     : IconLabelBubbleView(gfx::FontList(), params.icon_label_bubble_delegate),
       action_item_(action_item->GetAsWeakPtr()),
       icon_size_(params.icon_size),
-      icon_insets_(params.icon_insets),
-      chip_state_changed_callback_(chip_state_changed_callback) {
+      icon_insets_(params.icon_insets) {
   CHECK(action_item_->GetActionId().has_value());
 
   SetProperty(views::kElementIdentifierKey,
@@ -41,11 +37,25 @@ PageActionView::PageActionView(
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-  UpdateBorder();
   SetVisible(false);
+  label()->SetVisible(false);
+  UpdateBorder();
+
+  label_visibility_changed_subscription_ =
+      label()->AddVisibleChangedCallback(base::BindRepeating(
+          &PageActionView::OnLabelVisibilityChanged, base::Unretained(this)));
 }
 
 PageActionView::~PageActionView() = default;
+
+bool PageActionView::IsChipVisible() const {
+  return ShouldShowLabel();
+}
+
+base::CallbackListSubscription PageActionView::AddChipVisibiltyChangedCallback(
+    ChipVisibilityChanged callback) {
+  return chip_visibility_changed_callbacks_.Add(std::move(callback));
+}
 
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
@@ -68,25 +78,8 @@ void PageActionView::OnPageActionModelChanged(
   SetVisible(model.GetVisible());
   SetText(model.GetText());
   SetTooltipText(model.GetTooltipText());
-  label()->SetVisible(model.GetShowSuggestionChip());
-
   UpdateIconImage();
-  UpdateBorder();
-  UpdateStyle(model.GetShowSuggestionChip());
-}
-
-void PageActionView::UpdateStyle(bool is_suggestion_chip) {
-  SetUseTonalColorsWhenExpanded(is_suggestion_chip);
-  SetBackgroundVisibility(is_suggestion_chip ? BackgroundVisibility::kAlways
-                                             : BackgroundVisibility::kNever);
-
-  // Only trigger the chip state changed callback if there's an actual change
-  // in the suggestion chip's visibility. This prevents unnecessary updates and
-  // reordering logic in the container when the chip state remains unchanged.
-  if (showing_suggestion_chip_ != is_suggestion_chip) {
-    showing_suggestion_chip_ = is_suggestion_chip;
-    chip_state_changed_callback_.Run(GetActionId(), showing_suggestion_chip_);
-  }
+  label()->SetVisible(model.GetShowSuggestionChip());
 }
 
 void PageActionView::OnPageActionModelWillBeDeleted(
@@ -119,9 +112,16 @@ void PageActionView::ViewHierarchyChanged(
   }
 }
 
+void PageActionView::UpdateStyle() {
+  const bool should_show_label = IsChipVisible();
+  SetUseTonalColorsWhenExpanded(should_show_label);
+  SetBackgroundVisibility(should_show_label ? BackgroundVisibility::kAlways
+                                            : BackgroundVisibility::kNever);
+}
+
 void PageActionView::UpdateBorder() {
   gfx::Insets insets = icon_insets_;
-  if (ShouldShowLabel()) {
+  if (IsChipVisible()) {
     constexpr int kInsetsLeftPadding = 4;
     constexpr int kInsetsRightPadding = 8;
     insets +=
@@ -211,6 +211,12 @@ bool PageActionView::OnMousePressed(const ui::MouseEvent& event) {
 
 void PageActionView::OnClickCanceled(const ui::Event& event) {
   skip_action_invocation_ = false;
+}
+
+void PageActionView::OnLabelVisibilityChanged() {
+  UpdateBorder();
+  UpdateStyle();
+  chip_visibility_changed_callbacks_.Notify(this);
 }
 
 views::View* PageActionView::GetLabelForTesting() {

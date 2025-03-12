@@ -79,8 +79,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
         PageActionViewParams{
             .icon_size = kDefaultIconSize,
             .icon_label_bubble_delegate = &icon_label_view_delegate_,
-        },
-        /*chip_state_changed_callback=*/base::DoNothing());
+        });
 
     profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
@@ -140,8 +139,7 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
             action_item_.get(),
             PageActionViewParams{
                 .icon_size = view_icon_size_,
-                .icon_label_bubble_delegate = &icon_label_view_delegate_},
-            /*chip_state_changed_callback=*/base::DoNothing()));
+                .icon_label_bubble_delegate = &icon_label_view_delegate_}));
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
@@ -257,19 +255,19 @@ TEST_F(PageActionViewWithMockModelTest, LabelVisibility) {
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(page_action_view()->GetVisible());
-  EXPECT_TRUE(page_action_view()->ShouldShowLabel());
-  EXPECT_TRUE(page_action_view()->GetLabelForTesting()->GetVisible());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
 
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(page_action_view()->GetVisible());
-  EXPECT_FALSE(page_action_view()->ShouldShowLabel());
-  EXPECT_FALSE(page_action_view()->GetLabelForTesting()->GetVisible());
+  EXPECT_FALSE(page_action_view()->IsChipVisible());
 }
 
 TEST_F(PageActionViewWithMockModelTest,
        UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
 
   ASSERT_NE(page_action_view()->GetBackground(), nullptr);
@@ -321,6 +319,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
 TEST_F(PageActionViewWithMockModelTest, UpdateBorderAdjustsInsets) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
