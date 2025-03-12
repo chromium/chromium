@@ -6611,6 +6611,12 @@ static_library("browser") {
     sources += [
       "enterprise/connectors/common.cc",
       "enterprise/connectors/common.h",
+      "enterprise/connectors/reporting/realtime_reporting_client.cc",
+      "enterprise/connectors/reporting/realtime_reporting_client.h",
+      "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
+      "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
+      "enterprise/connectors/reporting/reporting_event_router.cc",
+      "enterprise/connectors/reporting/reporting_event_router.h",
     ]
     deps += [ "//components/enterprise/connectors/core" ]
   }
@@ -6648,12 +6654,6 @@ static_library("browser") {
       "enterprise/connectors/reporting/extension_telemetry_event_router.h",
       "enterprise/connectors/reporting/extension_telemetry_event_router_factory.cc",
       "enterprise/connectors/reporting/extension_telemetry_event_router_factory.h",
-      "enterprise/connectors/reporting/realtime_reporting_client.cc",
-      "enterprise/connectors/reporting/realtime_reporting_client.h",
-      "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
-      "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
-      "enterprise/connectors/reporting/reporting_event_router.cc",
-      "enterprise/connectors/reporting/reporting_event_router.h",
     ]
   }
 
