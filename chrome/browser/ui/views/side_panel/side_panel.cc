@@ -82,7 +82,9 @@ constexpr int kAnimationDurationMs = 450;
 class SidePanelBorder : public views::Border {
  public:
   explicit SidePanelBorder(BrowserView* browser_view)
-      : Border(gfx::kPlaceholderColor), browser_view_(browser_view) {}
+      : browser_view_(browser_view) {
+    SetColor(kColorSidePanelContentAreaSeparator);
+  }
 
   SidePanelBorder(const SidePanelBorder&) = delete;
   SidePanelBorder& operator=(const SidePanelBorder&) = delete;
@@ -155,8 +157,7 @@ class SidePanelBorder : public views::Border {
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(
-        view.GetColorProvider()->GetColor(kColorSidePanelContentAreaSeparator));
+    flags.setColor(color().ConvertToSkColor(view.GetColorProvider()));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 

@@ -265,6 +265,7 @@ void DrawBorderAndShadowImpl(
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow)
     : arrow_(arrow), shadow_(shadow) {
   DCHECK_LT(shadow_, SHADOW_COUNT);
+  SetColor(ui::kColorDialogBackground);
 }
 
 BubbleBorder::~BubbleBorder() = default;
@@ -284,10 +285,6 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
 
 void BubbleBorder::SetCornerRadius(int corner_radius) {
   corner_radius_ = corner_radius;
-}
-
-void BubbleBorder::SetColor(ui::ColorVariant color) {
-  color_ = color;
 }
 
 gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,

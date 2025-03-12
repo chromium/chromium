@@ -46,7 +46,6 @@ class View;
 class VIEWS_EXPORT Border {
  public:
   Border();
-  explicit Border(SkColor color);
 
   Border(const Border&) = delete;
   Border& operator=(const Border&) = delete;
@@ -71,13 +70,13 @@ class VIEWS_EXPORT Border {
   // subclasses that depend on theme colors.
   virtual void OnViewThemeChanged(View* view);
 
-  SkColor color() const { return color_; }
+  ui::ColorVariant color() const { return color_; }
 
   // Sets the border color.
-  void set_color(SkColor color) { color_ = color; }
+  virtual void SetColor(ui::ColorVariant color);
 
  private:
-  SkColor color_ = gfx::kPlaceholderColor;
+  ui::ColorVariant color_;
 };
 
 // Convenience for creating a scoped_ptr with no Border.
