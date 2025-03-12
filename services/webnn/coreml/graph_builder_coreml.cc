@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -839,6 +840,27 @@ CoreML::Specification::MILSpec::Value CreateConstantFileValue(
   return blob_value;
 }
 
+// Helper function to check if `operand_info` meets the restrictions on data
+// types and ranks in `supported_tensors`.
+bool Supports(const SupportedTensors& supported_tensors,
+              const GraphBuilderCoreml::OperandInfo& operand_info) {
+  const OperandDataType data_type =
+      MILDataTypeToOperandType(operand_info.mil_data_type);
+  const uint32_t rank = operand_info.dimensions.size();
+  return supported_tensors.data_types.Has(data_type) &&
+         supported_tensors.ranks.min <= rank &&
+         rank <= supported_tensors.ranks.max;
+}
+
+bool SupportsAll(const SupportedTensors& supported_tensors,
+                 std::initializer_list<const GraphBuilderCoreml::OperandInfo*>
+                     operand_infos) {
+  return std::ranges::all_of(
+      operand_infos, [&](const GraphBuilderCoreml::OperandInfo* operand_info) {
+        return Supports(supported_tensors, *operand_info);
+      });
+}
+
 }  // namespace
 
 GraphBuilderCoreml::ScopedWeightItem::ScopedWeightItem(
@@ -1232,18 +1254,20 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // Note that INT16, and UINT16 is also supported by CoreML for all gather
        // operators, but WebNN does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
-       /*gather_input=*/kFloat16To32Int8To32AndUint8,
-       /*gather_indices=*/kGatherIndicesSupportedDataTypes,
+       /*gather_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
+       /*gather_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
        // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
        // does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather_along_axis
-       /*gather_elements_input=*/kFloat16To32Int8To32AndUint8,
-       /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
-       /*gather_nd_input=*/kFloat16To32Int8To32AndUint8,
-       /*gather_nd_indices=*/kGatherIndicesSupportedDataTypes,
+       /*gather_elements_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
+       /*gather_elements_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
+       /*gather_nd_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
+       /*gather_nd_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
        /*gelu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*gemm_input=*/DataTypeConstraint::kFloat16To32,
+       /*gemm_a=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gemm_c=*/{DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(2)},
        /*gru_input=*/DataTypeConstraint::kFloat16To32,
        /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
        /*hard_sigmoid_input=*/
@@ -2987,11 +3011,10 @@ GraphBuilderCoreml::AddOperationForGather(
       GetOperandInfo(operation.input_operand_id);
   const OperandInfo& indices_operand_info =
       GetOperandInfo(operation.indices_operand_id);
-
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
-      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_indices.Has(
-      MILDataTypeToOperandType(indices_operand_info.mil_data_type)));
+  CHECK(Supports(context_properties_.data_type_limits.gather_input,
+                 input_operand_info));
+  CHECK(Supports(context_properties_.data_type_limits.gather_indices,
+                 indices_operand_info));
 
   // crbug.com/391672283 - Gather crashes with 5D input and 0D
   // indices, so reshape indices to 1D.
@@ -3042,12 +3065,10 @@ GraphBuilderCoreml::AddOperationForGather(
 GraphBuilderCoreml::AddOperationForGatherElements(
     const mojom::GatherElements& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(context_properties_.data_type_limits.gather_elements_input.Has(
-      MILDataTypeToOperandType(
-          GetOperandInfo(operation.input_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_elements_indices.Has(
-      MILDataTypeToOperandType(
-          GetOperandInfo(operation.indices_operand_id).mil_data_type)));
+  CHECK(Supports(context_properties_.data_type_limits.gather_elements_input,
+                 GetOperandInfo(operation.input_operand_id)));
+  CHECK(Supports(context_properties_.data_type_limits.gather_elements_indices,
+                 GetOperandInfo(operation.indices_operand_id)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpGatherElementsTypeName);
@@ -3072,12 +3093,10 @@ GraphBuilderCoreml::AddOperationForGatherElements(
 GraphBuilderCoreml::AddOperationForGatherND(
     const mojom::GatherND& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(context_properties_.data_type_limits.gather_nd_input.Has(
-      MILDataTypeToOperandType(
-          GetOperandInfo(operation.input_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_nd_indices.Has(
-      MILDataTypeToOperandType(
-          GetOperandInfo(operation.indices_operand_id).mil_data_type)));
+  CHECK(Supports(context_properties_.data_type_limits.gather_nd_input,
+                 GetOperandInfo(operation.input_operand_id)));
+  CHECK(Supports(context_properties_.data_type_limits.gather_nd_indices,
+                 GetOperandInfo(operation.indices_operand_id)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpGatherNdTypeName);
@@ -3132,10 +3151,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
   //   add(mul(alpha, matmul(A, B)), mul(beta, C))
   const OperandInfo& a_operand_info = GetOperandInfo(a_operand_id);
   const OperandInfo& b_operand_info = GetOperandInfo(b_operand_id);
-  CHECK(a_operand_info.dimensions.size() == 2 &&
-        b_operand_info.dimensions.size() == 2);
-  CHECK(context_properties_.data_type_limits.gemm_input.Has(
-      MILDataTypeToOperandType(a_operand_info.mil_data_type)));
+  CHECK(SupportsAll(context_properties_.data_type_limits.gemm_a,
+                    {&a_operand_info, &b_operand_info}));
   CHECK_EQ(a_operand_info.mil_data_type, b_operand_info.mil_data_type);
 
   uint32_t first_dimension =
@@ -3173,6 +3190,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
     return base::ok();
   }
   const OperandInfo& c_operand_info = GetOperandInfo(*c_operand_id);
+  CHECK(Supports(context_properties_.data_type_limits.gemm_c, c_operand_info));
   CHECK_EQ(a_operand_info.mil_data_type, c_operand_info.mil_data_type);
 
   if (beta != 1.0f) {
