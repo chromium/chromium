@@ -1228,6 +1228,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return R.string.website_settings_background_sync_page_description;
             } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS) {
                 return R.string.website_settings_automatic_downloads_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.FILE_EDITING) {
+                return R.string.website_settings_file_editing_page_description;
             }
         }
         return -1;
