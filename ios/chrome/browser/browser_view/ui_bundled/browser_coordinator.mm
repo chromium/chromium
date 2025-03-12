@@ -858,6 +858,17 @@ enum class ToolbarKind {
          !IsRegularXRegularSizeClass(self.viewController);
 }
 
+// Display price tracking menu, optionally showing the current page the user
+// is navigated to.
+- (void)showPriceNotifications:(BOOL)showCurrentPage {
+  self.priceNotificationsViewCoordinator =
+      [[PriceNotificationsViewCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  self.priceNotificationsViewCoordinator.showCurrentPage = showCurrentPage;
+  [self.priceNotificationsViewCoordinator start];
+}
+
 // Stops the password protection coordinator.
 - (void)stopPasswordProtectionCoordinator {
   [self.passwordProtectionCoordinator stop];
@@ -3126,12 +3137,12 @@ enum class ToolbarKind {
 
 #pragma mark - PriceNotificationsCommands
 
+- (void)showPriceNotificationsWithCurrentPage {
+  [self showPriceNotifications:YES];
+}
+
 - (void)showPriceNotifications {
-  self.priceNotificationsViewCoordinator =
-      [[PriceNotificationsViewCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-  [self.priceNotificationsViewCoordinator start];
+  [self showPriceNotifications:NO];
 }
 
 - (void)hidePriceNotifications {

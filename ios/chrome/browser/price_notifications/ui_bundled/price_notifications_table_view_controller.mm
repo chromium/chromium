@@ -422,8 +422,6 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   _hasModelBeenInitialized = YES;
   [super loadModel];
-  SectionIdentifier trackableSectionID =
-      SectionIdentifierTrackableItemsOnCurrentSite;
   SectionIdentifier trackedSectionID = SectionIdentifierTrackedItems;
   TableViewModel* model = self.tableViewModel;
 
@@ -433,10 +431,15 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
                                        isEmpty:YES]
       forSectionWithIdentifier:SectionIdentifierTableViewHeader];
 
-  [model addSectionWithIdentifier:trackableSectionID];
-  [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
-                                             isEmpty:NO]
-      forSectionWithIdentifier:trackableSectionID];
+  if (self.showCurrentPage) {
+    SectionIdentifier trackableSectionID =
+        SectionIdentifierTrackableItemsOnCurrentSite;
+
+    [model addSectionWithIdentifier:trackableSectionID];
+    [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
+                                               isEmpty:NO]
+        forSectionWithIdentifier:trackableSectionID];
+  }
 
   [model addSectionWithIdentifier:trackedSectionID];
   [model setHeader:[self createHeaderForSectionIndex:trackedSectionID

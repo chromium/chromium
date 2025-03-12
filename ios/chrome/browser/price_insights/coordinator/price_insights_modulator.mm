@@ -361,7 +361,7 @@ NSDate* getNSDateFromString(std::string date) {
       "IOS.ContextualPanel.DismissedReason",
       ContextualPanelDismissedReason::BlockInteraction);
   [weakContextualSheetHandler closeContextualSheet];
-  [weakPriceNotificationsHandler showPriceNotifications];
+  [weakPriceNotificationsHandler showPriceNotificationsWithCurrentPage];
 }
 
 @end
