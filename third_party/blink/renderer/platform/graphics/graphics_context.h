@@ -65,6 +65,7 @@ class PaintPreviewTracker;
 
 namespace blink {
 
+class ContouredRect;
 class FloatRoundedRect;
 class KURL;
 class PaintController;
@@ -372,16 +373,16 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void Clip(const gfx::Rect& rect) { ClipRect(gfx::RectToSkRect(rect)); }
   void Clip(const gfx::RectF& rect) { ClipRect(gfx::RectFToSkRect(rect)); }
-  void ClipRoundedRect(const FloatRoundedRect&,
-                       SkClipOp = SkClipOp::kIntersect,
-                       AntiAliasingMode = kAntiAliased);
+  void ClipContouredRect(const ContouredRect&,
+                         SkClipOp = SkClipOp::kIntersect,
+                         AntiAliasingMode = kAntiAliased);
   void ClipOut(const gfx::Rect& rect) {
     ClipRect(gfx::RectToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
   void ClipOut(const gfx::RectF& rect) {
     ClipRect(gfx::RectFToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
-  void ClipOutRoundedRect(const FloatRoundedRect&);
+  void ClipOutContouredRect(const ContouredRect&);
   void ClipPath(const SkPath&,
                 AntiAliasingMode = kNotAntiAliased,
                 SkClipOp = SkClipOp::kIntersect);

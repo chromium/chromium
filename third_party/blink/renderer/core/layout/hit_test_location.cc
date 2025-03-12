@@ -23,6 +23,7 @@
 
 #include <cmath>
 
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 
@@ -242,7 +243,7 @@ bool HitTestLocation::Intersects(const gfx::RectF& rect) const {
   return rect.InclusiveContains(transformed_point_);
 }
 
-bool HitTestLocation::Intersects(const FloatRoundedRect& rect) const {
+bool HitTestLocation::Intersects(const ContouredRect& rect) const {
   return rect.IntersectsQuad(transformed_rect_);
 }
 

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
@@ -147,8 +148,8 @@ class BoxBorderPainter {
   const PhysicalBoxSides sides_to_include_;
 
   // computed attributes
-  FloatRoundedRect outer_;
-  FloatRoundedRect inner_;
+  ContouredRect outer_;
+  ContouredRect inner_;
   BorderEdgeArray edges_;
 
   unsigned visible_edge_count_;
