@@ -8,7 +8,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 
 namespace autofill_ai {
 

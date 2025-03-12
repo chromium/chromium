@@ -832,7 +832,6 @@ static_library("browser") {
     "//build:branding_buildflags",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
-    "//components/autofill_ai/core/browser:features",
     "//components/device_reauth",
     "//components/feature_engagement",
     "//components/google/core/common",
