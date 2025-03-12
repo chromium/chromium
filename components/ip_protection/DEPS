@@ -16,6 +16,7 @@ include_rules = [
   "+sql",
   "+mojo/public/cpp/base",
   "+third_party/blink/public",
+  "+third_party/boringssl",
   "+third_party/private-join-and-compute/src",
   "+third_party/private-join-and-compute/base",
   "+third_party/flatbuffers",
