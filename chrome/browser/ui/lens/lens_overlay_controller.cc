@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -2441,7 +2442,8 @@ void LensOverlayController::InitializeOverlay(
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_) {
+  if (!pending_region_ &&
+      !search::IsOmniboxInputInProgress(tab_->GetContents())) {
     ShowPreselectionBubble();
   }
 
