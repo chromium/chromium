@@ -39,6 +39,9 @@ class EVENTS_EXPORT EventHandlerAndroid {
       std::optional<base::TimeDelta> deadline_override);
   virtual void OnBrowserControlsHeightChanged();
   virtual void OnControlsResizeViewChanged();
+  // OnPointerLockRelease is only called on the view requesting pointer lock,
+  // not the entire view tree
+  virtual void OnPointerLockRelease();
 
   virtual bool OnGenericMotionEvent(const MotionEventAndroid& event);
   virtual bool OnKeyUp(const KeyEventAndroid& event);

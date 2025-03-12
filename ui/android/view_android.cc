@@ -738,4 +738,10 @@ const ViewAndroid* ViewAndroid::GetTopMostChildForTesting() const {
   return children_.back();
 }
 
+void ViewAndroid::OnPointerLockRelease() {
+  if (event_handler_) {
+    event_handler_->OnPointerLockRelease();
+  }
+}
+
 }  // namespace ui
