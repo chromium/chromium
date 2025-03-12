@@ -238,6 +238,12 @@ found in the LICENSE file.
       <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open credit card settings.">
         Manage payment methods
       </message>
+      <message name="IDS_FAST_CHECKOUT_RECORD_TYPE_HOME" desc="Subtitle near the address icon on the autofill profile when home address is used.">
+        Home
+      </message>
+      <message name="IDS_FAST_CHECKOUT_RECORD_TYPE_WORK" desc="Subtitle near the address icon on the autofill profile when work address is used.">
+        Work
+      </message>
     </messages>
   </release>
 </grit>

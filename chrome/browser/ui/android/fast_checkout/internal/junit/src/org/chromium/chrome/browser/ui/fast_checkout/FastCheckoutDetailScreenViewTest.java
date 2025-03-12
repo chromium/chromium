@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItem
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.suggestion.Icon;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -88,7 +89,8 @@ public class FastCheckoutDetailScreenViewTest {
                     /* city= */ "New York",
                     /* postalCode= */ "12345",
                     /* email= */ "john.moe@gmail.com",
-                    /* phoneNumber= */ "+1-345-543-645");
+                    /* phoneNumber= */ "+1-345-543-645",
+                    /* recordType= */ RecordType.ACCOUNT);
     private static final FastCheckoutAutofillProfile sSampleProfile2 =
             FastCheckoutTestUtils.createDetailedProfile(
                     /* guid= */ "555",
@@ -97,7 +99,8 @@ public class FastCheckoutDetailScreenViewTest {
                     /* city= */ "Los Angeles",
                     /* postalCode= */ "99999",
                     /* email= */ "doe.jane@gmail.com",
-                    /* phoneNumber= */ "+1-345-333-319");
+                    /* phoneNumber= */ "+1-345-333-319",
+                    /* recordType= */ RecordType.ACCOUNT);
 
     private static final FastCheckoutCreditCard sSampleCard1 =
             FastCheckoutTestUtils.createDetailedLocalCreditCard(
@@ -219,7 +222,8 @@ public class FastCheckoutDetailScreenViewTest {
                         /* city= */ "",
                         /* postalCode= */ "",
                         /* email= */ "",
-                        /* phoneNumber= */ "");
+                        /* phoneNumber= */ "",
+                        /* recordType= */ RecordType.ACCOUNT);
 
         ModelList models = mModel.get(PROFILE_MODEL_LIST);
         models.add(

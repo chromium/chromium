@@ -103,6 +103,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillSyncEwalletAccounts,
     &autofill::features::kAutofillEnableSyncingOfPixBankAccounts,
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
+    &autofill::features::kAutofillEnableSupportForHomeAndWork,
     &blink::features::kBackForwardTransitions,
     &blink::features::kDynamicSafeAreaInsets,
     &blink::features::kForceWebContentsDarkMode,

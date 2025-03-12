@@ -217,6 +217,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableRankingFormulaAddressProfiles";
     public static final String AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS =
             "AutofillEnableRankingFormulaCreditCards";
+    public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK =
+            "AutofillEnableSupportForHomeAndWork";
     public static final String AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS =
             "AutofillEnableSyncingOfPixBankAccounts";
     public static final String AUTOFILL_ENABLE_VERVE_CARD_SUPPORT =

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.fast_checkout.data;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.RecordType;
 
 /** A profile, similar to the one used by the PersonalDataManager. */
 @NullMarked
@@ -25,6 +26,7 @@ public class FastCheckoutAutofillProfile {
     private final String mPhoneNumber;
     private final String mEmailAddress;
     private final String mLanguageCode;
+    private @RecordType int mRecordType;
 
     @CalledByNative
     public FastCheckoutAutofillProfile(
@@ -41,7 +43,8 @@ public class FastCheckoutAutofillProfile {
             String countryName,
             String phoneNumber,
             String emailAddress,
-            String languageCode) {
+            String languageCode,
+            @RecordType int recordType) {
         mGUID = guid;
         mFullName = fullName;
         mCompanyName = companyName;
@@ -56,6 +59,7 @@ public class FastCheckoutAutofillProfile {
         mPhoneNumber = phoneNumber;
         mEmailAddress = emailAddress;
         mLanguageCode = languageCode;
+        mRecordType = recordType;
     }
 
     @CalledByNative
@@ -125,5 +129,9 @@ public class FastCheckoutAutofillProfile {
     @CalledByNative
     public String getLanguageCode() {
         return mLanguageCode;
+    }
+
+    public @RecordType int getRecordType() {
+        return mRecordType;
     }
 }

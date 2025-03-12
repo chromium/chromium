@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ui.suggestion.Icon;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -68,7 +69,8 @@ public class FastCheckoutRenderTest {
                     /* city= */ "New York",
                     /* postalCode= */ "12345",
                     /* email= */ "john.moe@gmail.com",
-                    /* phoneNumber= */ "(345) 543-645");
+                    /* phoneNumber= */ "(345) 543-645",
+                    /* recordType= */ RecordType.ACCOUNT);
     private static final FastCheckoutCreditCard LOCAL_CREDIT_CARD =
             FastCheckoutTestUtils.createDetailedLocalCreditCard(
                     /* guid= */ "123",
