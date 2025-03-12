@@ -130,7 +130,7 @@ class TestWallpaperController : public ash::WallpaperController {
       DailyGooglePhotosIdCache& ids_out) const override;
   void SetCurrentUser(const AccountId& account_id);
   void SetTimeOfDayWallpaper(const AccountId& account_id,
-                             SetWallpaperCallback callback) override;
+                             SetTimeOfDayWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;

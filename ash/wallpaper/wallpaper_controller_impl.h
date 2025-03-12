@@ -273,7 +273,7 @@ class ASH_EXPORT WallpaperControllerImpl
       DailyGooglePhotosIdCache& ids_out) const override;
 
   void SetTimeOfDayWallpaper(const AccountId& account_id,
-                             SetWallpaperCallback callback) override;
+                             SetTimeOfDayWallpaperCallback callback) override;
   bool IsTimeOfDayWallpaper() const;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
@@ -699,11 +699,11 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void OnGetCustomizationIdForTimeOfDayWallpaper(
       const AccountId& account_id,
-      SetWallpaperCallback set_wallpaper_callback,
+      SetTimeOfDayWallpaperCallback set_time_of_day_wallpaper_callback,
       std::optional<std::string_view> customization_id);
 
   // Called as a callback for `SetTimeOfDayWallpaper`.
-  void OnTimeOfDayWallpaperSetAfterOobe(bool success);
+  void OnTimeOfDayWallpaperSetAfterOobe(uint64_t unit_id, bool success);
 
   // Called as a callback for `UpdateDailyRefreshWallpaper`.
   void OnDailyRefreshWallpaperUpdated(RefreshWallpaperCallback callback,

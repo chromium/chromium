@@ -9245,18 +9245,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Wallpaper.IsSetToTimeOfDayAfterOobe" enum="Boolean"
-    expires_after="2024-12-08">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Tracks whether the time of day wallpaper is set to be the default wallpaper
-    successfully on supported devices. Recorded each time the user goes through
-    OOBE flow and they did not have any synced wallpaper on any of their
-    previous devices.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Wallpaper.MigrationFailureReason"
     enum="WallpaperMigrationFailureReason" expires_after="2025-05-30">
   <owner>jasontt@chromium.org</owner>
@@ -9296,6 +9284,24 @@ chromium-metrics-reviews@google.com.
     The template of the Sea Pen image currently set as the active wallpaper.
     Emitted once for every UMA upload.
   </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.SetTimeOfDayAfterOobe.{Type}" enum="Boolean"
+    expires_after="2026-03-07">
+  <owner>cowmoo@google.com</owner>
+  <owner>cros-p13n-eng@google.com</owner>
+  <summary>
+    Tracks whether the time of day wallpaper is set to be the default wallpaper
+    successfully on supported devices. Recorded each time the user goes through
+    OOBE flow and they did not have any synced wallpaper on any of their
+    previous devices.
+  </summary>
+  <token key="Type">
+    <variant name="Alternate"
+        summary="An alternate time of day wallpaper for specific devices"/>
+    <variant name="Default"
+        summary="The default time of day wallpaper for most devices"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.Wallpaper.Source2" enum="WallpaperType"
