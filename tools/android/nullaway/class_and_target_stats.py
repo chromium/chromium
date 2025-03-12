@@ -81,11 +81,6 @@ def gen_build_target_graph(out_dir: pathlib.Path, include_testonly: bool,
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-n',
-                        '--num',
-                        type=int,
-                        default=50,
-                        help='Number of results to print, default 50.')
     parser.add_argument(
         '-a',
         '--all',
@@ -100,10 +95,10 @@ def main():
     parser.add_argument(
         '-C',
         '--out-dir',
-        required=True,
+        default='out/Debug',
         type=pathlib.Path,
         help='Used to generate project.json in the outdir and use it for the '
-        'target graph.')
+        'target graph. Defaults to out/Debug.')
     parser.add_argument('-v',
                         '--verbose',
                         action='store_true',
@@ -239,22 +234,17 @@ def main():
                            if len(targets_unmarked_deps[t]) == 0)
 
     # Only keep targets that actually need to be annotated.
-    targets_list = [t for t in java_targets if targets_num_unmarked[t] > 0]
+    targets_list = sorted(
+        [t for t in java_targets if targets_num_unmarked[t] > 0])
 
-    # Prefer targets that don't depend on any unmarked deps, then break ties by
-    # preferring targets that many unmarked targets depend on, then break ties
-    # by preferring targets with many unmarked files.
-    targets_list.sort(key=lambda t: (
-        len(targets_unmarked_deps[t]),
-        -len(targets_unmarked_dependents[t]),
-        -targets_num_unmarked[t],
-    ))
-
-    for t in targets_list[:args.num]:
+    for t in targets_list:
         # Remove the // at the beginning for easy copy/pasting into siso.
-        print(f'{t[2:]} deps={len(targets_unmarked_deps[t])} '
-              f'dependent={len(targets_unmarked_dependents[t])} '
-              f'classes={targets_num_unmarked[t]}')
+        print(f'[{targets_num_unmarked[t]:2}] {t[2:]}', end='')
+        if args.verbose:
+            print(f' deps={len(targets_unmarked_deps[t])} ', end='')
+            print(f' dependent={len(targets_unmarked_dependents[t])} ', end='')
+        print()
+
         if args.verbose:
             for tt in targets_unmarked_deps[t]:
                 print(f'> {tt}')
