@@ -3741,7 +3741,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnablePreferencesAccountStorage",
-                        "MoveThemePrefsToSpecifics",
                         "SeparateLocalAndAccountSearchEngines",
                         "SeparateLocalAndAccountThemes",
                         "ThemesBatchUpload"
@@ -14756,21 +14755,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MojoPredictiveAllocation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MoveThemePrefsToSpecifics": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MoveThemePrefsToSpecifics"
                     ]
                 }
             ]
