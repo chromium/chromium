@@ -185,7 +185,7 @@ DisclaimerView::DisclaimerView(
               views::Builder<views::BoxLayoutView>()
                   .SetOrientation(views::LayoutOrientation::kVertical)
                   .SetBetweenChildSpacing(kTextContainerBetweenChildSpacing)
-                  .SetBorder(views::CreateEmptyBorder(kTextContainerInsets))
+                  .SetInsideBorderInsets(kTextContainerInsets)
                   .AddChildren(
                       views::Builder<views::Label>()
                           .SetFontList(
@@ -205,7 +205,7 @@ DisclaimerView::DisclaimerView(
       views::Builder<views::BoxLayoutView>()
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
           .SetBetweenChildSpacing(kBetweenButtonsSpacing)
-          .SetBorder(views::CreateEmptyBorder(kButtonContainerInsets))
+          .SetInsideBorderInsets(kButtonContainerInsets)
           .AddChildren(
               views::Builder<views::MdTextButton>()
                   .SetText(GetTextDeclineButton())
