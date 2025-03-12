@@ -160,6 +160,8 @@ static constexpr auto kTypeNameToFieldType =
          {"VEHICLE_VIN", VEHICLE_VIN},
          {"VEHICLE_MAKE", VEHICLE_MAKE},
          {"VEHICLE_MODEL", VEHICLE_MODEL},
+         {"VEHICLE_YEAR", VEHICLE_YEAR},
+         {"VEHICLE_PLATE_STATE", VEHICLE_PLATE_STATE},
          {"DRIVERS_LICENSE_NAME_TAG", DRIVERS_LICENSE_NAME_TAG},
          {"DRIVERS_LICENSE_REGION", DRIVERS_LICENSE_REGION},
          {"DRIVERS_LICENSE_NUMBER", DRIVERS_LICENSE_NUMBER},
@@ -237,6 +239,8 @@ bool IsFillableFieldType(FieldType field_type) {
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
       return true;
@@ -364,6 +368,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
     case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
@@ -657,6 +663,8 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
     case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
@@ -1034,6 +1042,8 @@ bool IsDateFieldType(FieldType field_type) {
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
     case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
