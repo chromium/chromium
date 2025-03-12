@@ -48,7 +48,6 @@ external/wpt/compat/webkit-box-clamp-bottom-border.html
 external/wpt/compat/webkit-box-horizontal-rtl-variants.html
 external/wpt/compat/webkit-box-rtl-flex.html
 external/wpt/console/console-log-large-array.any.html
-external/wpt/content-security-policy/reporting-api/*
 external/wpt/content-security-policy/report-hash/*
 external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html
 external/wpt/cookies/attributes/attributes-ctl.sub.html
@@ -663,7 +662,6 @@ external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.t
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transferrable.w.html
 external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html
 external/wpt/html/cross-origin-embedder-policy/reflection-require-corp.tentative.https.any.*
-external/wpt/html/cross-origin-embedder-policy/reporting-to-document-reporting-endpoint.https.window.html
 external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html
 external/wpt/html/cross-origin-opener-policy/coop-coep-sandbox.https.html
 external/wpt/html/cross-origin-opener-policy/header-parsing-non-ascii.https.html
@@ -808,7 +806,11 @@ external/wpt/payment-request/onpaymentmethodchange-attribute.https.html
 external/wpt/payment-request/show-consume-activation.https.html
 external/wpt/performance-timeline/not-restored-reasons/abort-block-bfcache.window.html
 external/wpt/permissions-policy/bluetooth-*
-external/wpt/permissions-policy/reporting/*
+external/wpt/permissions-policy/reporting/bluetooth-*
+external/wpt/permissions-policy/reporting/report-only-and-enforce.https.sub.html
+external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html
+external/wpt/permissions-policy/reporting/report-to-multiple-endpoints.https.sub.html
+external/wpt/permissions-policy/reporting/report-to-single-endpoint.https.sub.html
 external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html*
 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html*
 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html
@@ -821,7 +823,6 @@ external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.htm
 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html
 external/wpt/preload/link-header-preload-non-html.html
 external/wpt/preload/preconnect-onerror-event.html
-external/wpt/reporting/*
 external/wpt/resize-observer/callback-cross-realm-report-exception.html
 external/wpt/resize-observer/scrollbars.html
 external/wpt/resize-observer/svg.html
