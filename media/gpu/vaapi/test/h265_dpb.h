@@ -27,6 +27,8 @@ namespace media::vaapi_test {
 // See spec at http://www.itu.int/rec/T-REC-H.265
 class H265Picture : public base::RefCountedThreadSafe<H265Picture> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   using Vector = std::vector<scoped_refptr<H265Picture>>;
 
   explicit H265Picture(scoped_refptr<SharedVASurface> target_surface);
