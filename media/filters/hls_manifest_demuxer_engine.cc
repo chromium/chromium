@@ -145,7 +145,7 @@ CheckBitstreamForContainerMagic(const uint8_t* data, size_t size) {
     }
     case kID3FirstByte:
     case kAACFirstByte: {
-      // TODO(issue/40253609): Check further bytes in the header.
+      // TODO(crbug.com/40253609): Check further bytes in the header.
       return RelaxedParserSupportedType::kAAC;
     }
     case kMPEGTSFirstByte: {
@@ -278,6 +278,16 @@ void HlsManifestDemuxerEngine::Stop() {
   rendition_manager_.reset();
   renditions_.clear();
   host_ = nullptr;
+}
+
+void HlsManifestDemuxerEngine::SelectVideoVariant(const MediaTrack::Id&) {
+  // TODO(crbug.com/361853710): Implement behavior here once `add_track_` and
+  // `remove_track_` are called.
+}
+
+void HlsManifestDemuxerEngine::SelectAudioRendition(const MediaTrack::Id&) {
+  // TODO(crbug.com/361853710): Implement behavior here once `add_track_` and
+  // `remove_track_` are called.
 }
 
 void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
@@ -779,9 +789,9 @@ void HlsManifestDemuxerEngine::OnRenditionsSelected(
   }
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::SelectRenditions", this);
 
-  // If there is a variant change, just call LoadPlaylist directly. Since we've
-  // already checked that variant and override are not both null, we need to
-  // run the variant load CB.
+  // If there is a variant change, just call LoadPlaylist directly. Since
+  // we've already checked that variant and override are not both null, we
+  // need to run the variant load CB.
   if (variant) {
     PlaylistParseInfo primary_parse_info = {variant->GetPrimaryRenditionUri(),
                                             selected_variant_codecs_, kPrimary};
@@ -811,8 +821,8 @@ void HlsManifestDemuxerEngine::OnMediaPlaylist(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // TODO(crbug.com/40057824) On stream adaptation, if the codecs are not the
-  // same, we'll have to re-create the chunk demuxer role. For now, just assume
-  // the codecs are the same.
+  // same, we'll have to re-create the chunk demuxer role. For now, just
+  // assume the codecs are the same.
   auto maybe_exists = renditions_.find(parse_info.role);
   if (maybe_exists != renditions_.end()) {
     maybe_exists->second->UpdatePlaylist(std::move(playlist), parse_info.uri);
