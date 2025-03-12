@@ -121,7 +121,8 @@ public class HttpsFirstModeSettingsFragmentTest {
         startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Toggle enabled and balanced mode selected by default.
+                    // Flip the main toggle on.
+                    mHttpsFirstModeTogglePref.onClick();
                     Assert.assertTrue(ASSERT_SWITCH_ENABLED, mHttpsFirstModeTogglePref.isChecked());
                     Assert.assertTrue(
                             "Variant pref has incorrect enabled state.",
