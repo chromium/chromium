@@ -4897,7 +4897,15 @@
       "birnie@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 137
+  },
+  {
+    "name": "glic-detached",
+    "owners": [
+      "andreaxg@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 137
   },
   {
     "name": "global-media-controls-updated-ui",

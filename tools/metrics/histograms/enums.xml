@@ -18810,6 +18810,7 @@ from previous Chrome versions.
   <int value="1833124619" label="PhoneHubNudge:enabled"/>
   <int value="1833340282" label="SmartSuggestionForLargeDownloads:enabled"/>
   <int value="1833845461" label="OverviewDeskNavigation:disabled"/>
+  <int value="1834651417" label="GlicDetached:disabled"/>
   <int value="1834968807" label="OmniboxAutocompleteTitles:enabled"/>
   <int value="1835075399" label="PostQuantumCECPQ2:disabled"/>
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>
@@ -18924,6 +18925,7 @@ from previous Chrome versions.
   <int value="1873476339" label="ScalableIph:disabled"/>
   <int value="1873688130"
       label="ExperimentalAccessibilityDictationMoreCommands:disabled"/>
+  <int value="1873985461" label="GlicDetached:enabled"/>
   <int value="1874050287" label="UploadOfficeToCloud:enabled"/>
   <int value="1874104910" label="PrivacyGuidePreloadAndroid:disabled"/>
   <int value="1874195462" label="ChromeHomeMenuItemsExpandSheet:disabled"/>

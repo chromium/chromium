@@ -11387,6 +11387,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
+    {"glic-detached", flag_descriptions::kGlicDetachedName,
+     flag_descriptions::kGlicDetachedDescription, kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicDetached)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

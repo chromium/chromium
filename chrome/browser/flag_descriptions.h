@@ -4651,6 +4651,9 @@ extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
 extern const char kGlicName[];
 extern const char kGlicDescription[];
 
+extern const char kGlicDetachedName[];
+extern const char kGlicDetachedDescription[];
+
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];
 

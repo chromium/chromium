@@ -7863,6 +7863,9 @@ const char kExplicitBrowserSigninUIOnDesktopDescription[] =
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
 
+const char kGlicDetachedName[] = "Glic Detached Mode";
+const char kGlicDetachedDescription[] = "Enables glic detached mode";
+
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =
