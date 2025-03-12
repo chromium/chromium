@@ -90,8 +90,14 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   const std::u16string GetTextForCloseButton() const;
   const std::u16string GetSaveToggleAccessibleName() const;
 
+  // Returns whether the user has the appropriate profile and the
+  // enabled features to save/share groups.
   bool CanSaveGroups() const;
   bool CanShareGroups() const;
+
+  // Returns whether the user has permissions to create shared groups.
+  bool IsAllowedToCreateSharedGroup() const;
+
   bool IsGroupSaved() const;
   bool IsGroupShared() const;
   bool ShouldShowSavedFooter() const;

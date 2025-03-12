@@ -361,7 +361,9 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
             views::kElementIdentifierKey,
             kTabGroupEditorBubbleManageSharedGroupButtonId);
       }
-      simple_menu_items_.push_back(AddChildView(BuildShareGroupButton()));
+      if (IsAllowedToCreateSharedGroup()) {
+        simple_menu_items_.push_back(AddChildView(BuildShareGroupButton()));
+      }
       simple_menu_items_.push_back(AddChildView(BuildRecentActivityButton()));
     }
 
@@ -716,6 +718,13 @@ bool TabGroupEditorBubbleView::CanSaveGroups() const {
 bool TabGroupEditorBubbleView::CanShareGroups() const {
   return tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
          CanSaveGroups();
+}
+
+bool TabGroupEditorBubbleView::IsAllowedToCreateSharedGroup() const {
+  auto* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser_->profile());
+  return collaboration_service->GetServiceStatus().IsAllowedToCreate();
 }
 
 bool TabGroupEditorBubbleView::OwnsGroup() const {
