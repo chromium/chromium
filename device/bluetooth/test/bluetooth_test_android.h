@@ -121,7 +121,8 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   //   2: Name: kTestDeviceName
   //      Address: kTestDeviceAddress2
   //      UUID: kTestUUIDSerial
-  void SimulatePairedClassicDevice(int device_ordinal);
+  // Returns the address of the simulated device.
+  std::string SimulatePairedClassicDevice(int device_ordinal);
 
   // Instruct the fake adapter to claim that location services are off for the
   // device.

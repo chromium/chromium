@@ -131,21 +131,17 @@ bool BluetoothAdapterAndroid::IsDiscovering() const {
 }
 
 BluetoothAdapter::ConstDeviceList BluetoothAdapterAndroid::GetDevices() const {
-  StartListingPairedDevices();
+  PopulatePairedDevices();
   return BluetoothAdapter::GetDevices();
 }
 
-void BluetoothAdapterAndroid::StartListingPairedDevices() const {
+void BluetoothAdapterAndroid::PopulatePairedDevices() const {
   if (!base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)) {
     return;
   }
 
-  if (started_listing_paired_devices_) {
-    return;
-  }
-  started_listing_paired_devices_ =
-      Java_ChromeBluetoothAdapter_startListingPairedDevices(
-          AttachCurrentThread(), j_adapter_);
+  Java_ChromeBluetoothAdapter_populatePairedDevices(AttachCurrentThread(),
+                                                    j_adapter_);
 }
 
 BluetoothAdapter::UUIDList BluetoothAdapterAndroid::GetUUIDs() const {
@@ -325,11 +321,12 @@ void BluetoothAdapterAndroid::PopulatePairedDevice(
 
   std::unique_ptr<BluetoothDeviceAndroid> device_owner =
       BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper);
-  BluetoothDeviceAndroid* device = device_owner.get();
   devices_[device_address] = std::move(device_owner);
-  for (auto& observer : observers_) {
-    observer.DeviceAdded(this, device);
-  }
+
+  // We don't notify observers for populated paired devices because there is no
+  // current need to monitor device bond states. We always fetch the list of
+  // paired devices when GetDevices() is called. See crbug.com/387371131 for
+  // more details.
 }
 
 BluetoothAdapterAndroid::BluetoothAdapterAndroid() {}
@@ -426,9 +423,6 @@ void BluetoothAdapterAndroid::StartScanWithFilter(
   // This function should only be called if this is the first discovery session.
   // Otherwise we should have called updateFilter.
   DCHECK_EQ(NumDiscoverySessions(), 1);
-
-  // Likely we have enough permissions to also obtain paired devices.
-  StartListingPairedDevices();
 
   bool session_added = false;
   if (IsPowered()) {
