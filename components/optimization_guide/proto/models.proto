@@ -300,6 +300,8 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_17 = 17;
   // A model using only operations that are supported by 2.18.
   MODEL_ENGINE_VERSION_TFLITE_2_18 = 18;
+  // A model using only operations that are supported by 2.20.0.
+  MODEL_ENGINE_VERSION_TFLITE_2_20_0 = 19;
 }
 
 // The set of parameters that the server can use to vary the served model for
