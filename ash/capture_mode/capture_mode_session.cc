@@ -1640,6 +1640,12 @@ void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
       ScannerFeatureUserState::kConsentDisclaimerRejected);
 
   disclaimer_.reset();
+
+  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        active_behavior_->GetCaptureModeOpenAnnouncement());
+  }
+
   focus_cycler_->OnDisclaimerWidgetClosed();
   if (callback) {
     std::move(callback).Run();
@@ -1653,6 +1659,12 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
       prefs::kSunfishConsentDisclaimerAccepted, true);
 
   disclaimer_.reset();
+
+  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        active_behavior_->GetCaptureModeOpenAnnouncement());
+  }
+
   focus_cycler_->OnDisclaimerWidgetClosed();
   if (callback) {
     std::move(callback).Run();
@@ -3827,8 +3839,10 @@ void CaptureModeSession::InitInternal() {
   // Trigger this before creating `capture_mode_bar_widget_` as we want to read
   // out this message before reading out the first view of
   // `capture_mode_bar_widget_`.
-  capture_mode_util::TriggerAccessibilityAlert(
-      active_behavior_->GetCaptureModeOpenAnnouncement());
+  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnInit()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        active_behavior_->GetCaptureModeOpenAnnouncement());
+  }
 
   // A context menu may have input capture when entering a session. Remove
   // capture from it, otherwise subsequent mouse events will cause it to close,
