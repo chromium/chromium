@@ -1538,6 +1538,7 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   bool is_warning = false;
   switch (result) {
+    case PrivateNetworkAccessCheckResult::kLNAAllowedByPolicyWarn:
     case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
       is_warning = true;
       break;

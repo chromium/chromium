@@ -297,6 +297,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
   <int value="13" label="LNABlockedByMissingPermission"/>
+  <int value="14" label="LNAAllowedByPolicyWarn"/>
 </enum>
 
 <enum name="PrivateNetworkDeviceValidity">
