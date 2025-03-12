@@ -274,9 +274,9 @@ class AXTreeSerializer {
 // In order to keep track of what nodes the client knows about, we keep a
 // representation of the client tree - just IDs and parent/child
 // relationships, and a marker indicating whether it's been dirtied.
-struct AX_EXPORT ClientTreeNode {
+struct AX_EXPORT ClientTreeNode final {
   ClientTreeNode(AXNodeID id, ClientTreeNode* parent);
-  virtual ~ClientTreeNode();
+  ~ClientTreeNode();
   bool IsDirty() { return in_dirty_subtree || is_dirty; }
   const AXNodeID id;
   const raw_ptr<ClientTreeNode, DanglingUntriaged> parent;

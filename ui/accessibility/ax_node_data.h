@@ -36,7 +36,7 @@ AX_BASE_EXPORT bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr);
 // A compact representation of the accessibility information for a
 // single accessible object, in a form that can be serialized and sent from
 // one process to another.
-struct AX_BASE_EXPORT AXNodeData {
+struct AX_BASE_EXPORT AXNodeData final {
   // Defines the type used for AXNode IDs.
   using AXID = AXNodeID;
 
@@ -49,7 +49,7 @@ struct AX_BASE_EXPORT AXNodeData {
   static constexpr int kDefaultFloatValue = 0;
 
   AXNodeData();
-  virtual ~AXNodeData();
+  ~AXNodeData();
 
   AXNodeData(const AXNodeData& other);
   AXNodeData(AXNodeData&& other);
@@ -341,7 +341,7 @@ struct AX_BASE_EXPORT AXNodeData {
   std::optional<AXTreeID> GetChildTreeID() const;
 
   // Return a string representation of this data, for debugging.
-  virtual std::string ToString(bool verbose = true) const;
+  std::string ToString(bool verbose = true) const;
 
   // Returns the approximate size in bytes.
   size_t ByteSize() const;

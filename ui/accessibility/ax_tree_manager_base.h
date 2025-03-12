@@ -43,7 +43,7 @@ class AX_EXPORT AXTreeManagerBase final {
 
   explicit AXTreeManagerBase(std::unique_ptr<AXTree> tree);
   explicit AXTreeManagerBase(const AXTreeUpdate& initial_state);
-  virtual ~AXTreeManagerBase();
+  ~AXTreeManagerBase();
   AXTreeManagerBase(const AXTreeManagerBase&) = delete;
   AXTreeManagerBase& operator=(const AXTreeManagerBase&) = delete;
   AXTreeManagerBase(AXTreeManagerBase&& manager);
