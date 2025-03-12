@@ -42,7 +42,7 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 /** Instrumentation tests for {@link CollaborationService}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.COLLABORATION_FLOW_ANDROID})
+@EnableFeatures({ChromeFeatureList.DATA_SHARING})
 @DoNotBatch(reason = "Tabs can't be closed reliably between tests.")
 // TODO(crbug.com/399444939) Re-enable on automotive devices if needed.
 // Only run on device non-auto and with valid Google services.
