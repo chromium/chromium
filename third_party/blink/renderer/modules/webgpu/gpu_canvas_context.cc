@@ -380,6 +380,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   texture_descriptor_ = {
       // Set the values from the configuration descriptor
       .usage = AsDawnFlags<wgpu::TextureUsage>(descriptor->usage()),
+      .dimension = wgpu::TextureDimension::e2D,
       .size = {static_cast<uint32_t>(host_size.width()),
                static_cast<uint32_t>(host_size.height())},
       .format = AsDawnEnum(descriptor->format()),

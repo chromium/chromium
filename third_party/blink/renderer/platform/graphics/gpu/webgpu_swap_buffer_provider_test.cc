@@ -128,6 +128,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
         client_(client) {
     texture_desc_ = {
         .usage = usage,
+        .dimension = wgpu::TextureDimension::e2D,
         .size = {0, 0, 1},
         .format = format,
     };
