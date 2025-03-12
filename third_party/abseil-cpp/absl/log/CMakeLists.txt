@@ -1005,6 +1005,7 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::check
+    absl::config
     absl::log
     absl::log_internal_test_matchers
     absl::optional

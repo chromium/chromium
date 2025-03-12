@@ -3351,7 +3351,7 @@ TEST(Btree, ReusePoisonMemory) {
   set.insert(0);
 }
 
-TEST(Btree, IteratorSubtraction) {
+TEST(Btree, IteratorDifference) {
   absl::BitGen bitgen;
   std::vector<int> vec;
   // Randomize the set's insertion order so the nodes aren't all full.
@@ -3366,6 +3366,94 @@ TEST(Btree, IteratorSubtraction) {
     size_t end = absl::Uniform(bitgen, begin, set.size());
     ASSERT_EQ(end - begin, set.find(end) - set.find(begin))
         << begin << " " << end;
+  }
+}
+
+TEST(Btree, IteratorAddition) {
+  absl::BitGen bitgen;
+  std::vector<int> vec;
+
+  // Randomize the set's insertion order so the nodes aren't all full.
+  constexpr int kSetSize = 1000000;
+  for (int i = 0; i < kSetSize; ++i) vec.push_back(i);
+  absl::c_shuffle(vec, bitgen);
+
+  absl::btree_set<int> set;
+  for (int i : vec) set.insert(i);
+
+  for (int i = 0; i < 1000; ++i) {
+    int begin = absl::Uniform(bitgen, 0, kSetSize);
+    int end = absl::Uniform(bitgen, begin, kSetSize);
+    ASSERT_LE(begin, end);
+
+    auto it = set.find(begin);
+    it += end - begin;
+    ASSERT_EQ(it, set.find(end)) << end;
+
+    it += begin - end;
+    ASSERT_EQ(it, set.find(begin)) << begin;
+  }
+}
+
+TEST(Btree, IteratorAdditionOutOfBounds) {
+  const absl::btree_set<int> set({5});
+
+  auto it = set.find(5);
+
+  auto forward = it;
+  forward += 1;
+  EXPECT_EQ(forward, set.end());
+
+  auto backward = it;
+  EXPECT_EQ(backward, set.begin());
+
+  if (IsAssertEnabled()) {
+    EXPECT_DEATH(forward += 1, "n == 0");
+    EXPECT_DEATH(backward += -1, "position >= node->start");
+  }
+}
+
+TEST(Btree, IteratorSubtraction) {
+  absl::BitGen bitgen;
+  std::vector<int> vec;
+
+  // Randomize the set's insertion order so the nodes aren't all full.
+  constexpr int kSetSize = 1000000;
+  for (int i = 0; i < kSetSize; ++i) vec.push_back(i);
+  absl::c_shuffle(vec, bitgen);
+
+  absl::btree_set<int> set;
+  for (int i : vec) set.insert(i);
+
+  for (int i = 0; i < 1000; ++i) {
+    int begin = absl::Uniform(bitgen, 0, kSetSize);
+    int end = absl::Uniform(bitgen, begin, kSetSize);
+    ASSERT_LE(begin, end);
+
+    auto it = set.find(end);
+    it -= end - begin;
+    ASSERT_EQ(it, set.find(begin)) << begin;
+
+    it -= begin - end;
+    ASSERT_EQ(it, set.find(end)) << end;
+  }
+}
+
+TEST(Btree, IteratorSubtractionOutOfBounds) {
+  const absl::btree_set<int> set({5});
+
+  auto it = set.find(5);
+
+  auto backward = it;
+  EXPECT_EQ(backward, set.begin());
+
+  auto forward = it;
+  forward -= -1;
+  EXPECT_EQ(forward, set.end());
+
+  if (IsAssertEnabled()) {
+    EXPECT_DEATH(backward -= 1, "position >= node->start");
+    EXPECT_DEATH(forward -= -1, "n == 0");
   }
 }
 

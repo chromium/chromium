@@ -466,6 +466,9 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 //
 // Checks the endianness of the platform.
 //
+// Prefer using `std::endian` in C++20, or `absl::endian` from
+// absl/numeric/bits.h prior to C++20.
+//
 // Notes: uses the built in endian macros provided by GCC (since 4.6) and
 // Clang (since 3.2); see
 // https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html.
