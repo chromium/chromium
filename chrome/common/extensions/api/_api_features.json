@@ -441,6 +441,9 @@
   "enterprise.reportingPrivate.getHotfixes": {
     "platforms": ["win"]
   },
+  "enterprise.reportingPrivate.onDataMaskingRulesTriggered": {
+    "feature_flag": "ApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered"
+  },
   "experimental.devtools.audits": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],

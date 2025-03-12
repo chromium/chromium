@@ -23,10 +23,15 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_event_router.h"
 #endif
 
 namespace enterprise_data_protection {
@@ -77,6 +82,16 @@ void RunPendingNavigationCallback(
     MaybeTriggerUrlFilteringInterstitialEvent(
         web_contents, web_contents->GetLastCommittedURL(),
         /*threat_type=*/"", *user_data->rt_lookup_response());
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  auto* router =
+      extensions::EnterpriseReportingPrivateEventRouterFactory::GetInstance()
+          ->GetForProfile(web_contents->GetBrowserContext());
+  if (user_data->rt_lookup_response() && router) {
+    router->OnUrlFilteringVerdict(web_contents->GetLastCommittedURL(),
+                                  *user_data->rt_lookup_response());
   }
 #endif
 
