@@ -10,10 +10,10 @@
   // then mixed content blocking will prevent HSTS from working.
 
   // 0) Confirm that insecure iframes can be loaded.
-  // 1) Pin hsts-example.test to the HSTS via hsts.php
+  // 1) Pin the alt hostname to the HSTS via hsts.html
   // 2) Attempt to load an iframe via http. This should fail because
-  //    http://hsts-example.test:8442 is an invalid origin *and* HSTS should not
-  //    upgrade the iframe navigation to https.
+  //    http://{{hosts[alt][]}}:{{ports[https][0]}} is an invalid origin *and*
+  //    HSTS should not upgrade the iframe navigation to https.
   // 3) Open a new window and navigate it to the same http origin. This should
   //    successfully be upgraded to https, load, and then postMessage its origin.
 
