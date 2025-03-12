@@ -498,6 +498,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     #   * Mac/Debug (due to slower binaries?)
     #   * Mac/NVIDIA (due to old/slow hardware)
     #   * Linux (unknown cause)
+    #   * ChromeOS VMs (extra load from VM slows down system)
     load_timeout = 2
     slow_load_timeout = 10
     os_name = self.browser.platform.GetOSName()
@@ -508,6 +509,10 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         load_timeout = slow_load_timeout
     elif os_name == 'linux':
       load_timeout = slow_load_timeout
+    elif os_name == 'chromeos':
+      if 'chromeos-board-amd64-generic' in self.__class__.GetPlatformTags(
+          self.browser):
+        load_timeout = slow_load_timeout
 
     processor_path = self._GetLocalPerfettoTraceProcessorPath()
     if processor_path:
