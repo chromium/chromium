@@ -3,6 +3,7 @@ specific_include_rules = {
   "^about_flags.mm": [
     "+components/collaboration/public/features.h",
     "+components/data_sharing/public/features.h",
+    "+components/data_sharing/public/switches.h",
     "+components/page_content_annotations/core",
     "+components/page_image_service/features.h",
     "+ios/chrome/browser",

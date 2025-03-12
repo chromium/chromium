@@ -156,6 +156,7 @@ source_set("webui_internal") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
+    "//ios/chrome/browser/webui/ui_bundled/data_sharing_internals",
     "//ios/chrome/browser/webui/ui_bundled/gcm",
     "//ios/chrome/browser/webui/ui_bundled/interstitials",
     "//ios/chrome/browser/webui/ui_bundled/local_state",
