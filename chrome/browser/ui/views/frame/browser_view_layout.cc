@@ -58,23 +58,10 @@ using web_modal::WebContentsModalDialogHost;
 
 namespace {
 
-// The visible height of the shadow above the tabs. Clicks in this area are
-// treated as clicks to the frame, rather than clicks to the tab.
-const int kTabShadowSize = 2;
 // The number of pixels the constrained window should overlap the bottom
 // of the omnibox.
 const int kConstrainedWindowOverlap = 3;
 
-// Combines View::ConvertPointToTarget and View::HitTest for a given |point|.
-// Converts |point| from |src| to |dst| and hit tests it against |dst|. The
-// converted |point| can then be retrieved and used for additional tests.
-bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
-  DCHECK(src);
-  DCHECK(dst);
-  DCHECK(point);
-  views::View::ConvertPointToTarget(src, dst, point);
-  return dst->HitTestPoint(*point);
-}
 }  // namespace
 
 constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
@@ -290,136 +277,6 @@ void BrowserViewLayout::SetContentBorderBounds(
 
 gfx::NativeView BrowserViewLayout::GetHostView() {
   return delegate_->GetHostView();
-}
-
-int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
-  // Since the TabStrip only renders in some parts of the top of the window,
-  // the un-obscured area is considered to be part of the non-client caption
-  // area of the window. So we need to treat hit-tests in these regions as
-  // hit-tests of the titlebar.
-
-  views::View* parent = browser_view_->parent();
-
-  gfx::Point point_in_browser_view_coords(point);
-  views::View::ConvertPointToTarget(parent, browser_view_,
-                                    &point_in_browser_view_coords);
-
-  // Check if the point is in the web_app_frame_toolbar_. Because this toolbar
-  // can entirely be within the window controls overlay area, this check needs
-  // to be done before the window controls overlay area check below.
-  if (web_app_frame_toolbar_) {
-    int web_app_component =
-        views::GetHitTestComponent(web_app_frame_toolbar_, point);
-    if (web_app_component != HTNOWHERE) {
-      return web_app_component;
-    }
-  }
-
-  // Let the frame handle any events that fall within the bounds of the window
-  // controls overlay.
-  if (browser_view_->IsWindowControlsOverlayEnabled() &&
-      browser_view_->GetActiveWebContents()) {
-    // The window controls overlays are to the left and/or right of the
-    // |titlebar_area_rect|.
-    gfx::Rect titlebar_area_rect =
-        browser_view_->GetActiveWebContents()->GetWindowsControlsOverlayRect();
-
-    // The top area rect is the same height as the |titlebar_area_rect| but
-    // fills the full width of the browser view.
-    gfx::Rect top_area_rect(0, titlebar_area_rect.y(), browser_view_->width(),
-                            titlebar_area_rect.height());
-
-    // If the point is within the top_area_rect but not the titlebar_area_rect,
-    // then it must be in the window controls overlay.
-    if (top_area_rect.Contains(point_in_browser_view_coords) &&
-        !titlebar_area_rect.Contains(point_in_browser_view_coords)) {
-      return HTNOWHERE;
-    }
-  }
-
-  // Determine if the TabStrip exists and is capable of being clicked on. We
-  // might be a popup window without a TabStrip.
-  if (delegate_->ShouldDrawTabStrip()) {
-    // See if the mouse pointer is within the bounds of the TabStripRegionView.
-    gfx::Point test_point(point);
-    if (ConvertedHitTest(parent, tab_strip_region_view_, &test_point)) {
-      if (tab_strip_region_view_->IsPositionInWindowCaption(test_point)) {
-        return HTCAPTION;
-      }
-      return HTCLIENT;
-    }
-
-    // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
-    // starved of dragable area, let's give it to window dragging (this also
-    // makes sense visually).
-    // TODO(tluk): Investigate the impact removing this has on draggable area
-    // given the tab strip no longer uses shadows.
-    views::Widget* widget = browser_view_->GetWidget();
-    if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
-        (point_in_browser_view_coords.y() <
-         (tab_strip_region_view_->y() + kTabShadowSize))) {
-      // We return HTNOWHERE as this is a signal to our containing
-      // NonClientView that it should figure out what the correct hit-test
-      // code is given the mouse position...
-      return HTNOWHERE;
-    }
-  }
-
-  // For PWAs with window-controls-overlay or borderless display override, see
-  // if we're in an app defined draggable region so we can return htcaption.
-  web_app::AppBrowserController* controller =
-      browser_view_->browser()->app_controller();
-
-  if (browser_view_->AreDraggableRegionsEnabled() && controller &&
-      controller->draggable_region().has_value()) {
-    // Draggable regions are defined relative to the web contents.
-    gfx::Point point_in_contents_web_view_coords(point_in_browser_view_coords);
-    views::View::ConvertPointToTarget(browser_view_,
-                                      browser_view_->contents_web_view(),
-                                      &point_in_contents_web_view_coords);
-
-    if (controller->draggable_region()->contains(
-            point_in_contents_web_view_coords.x(),
-            point_in_contents_web_view_coords.y())) {
-      // Draggable regions should be ignored for clicks into any browser view's
-      // owned widgets, for example alerts, permission prompts or find bar.
-      return browser_view_->WidgetOwnedByAnchorContainsPoint(
-                 point_in_browser_view_coords)
-                 ? HTCLIENT
-                 : HTCAPTION;
-    }
-  }
-
-  // If the point's y coordinate is below the top of the topmost view and
-  // otherwise within the bounds of this view, the point is considered to be
-  // within the client area.
-  gfx::Rect bounds_from_toolbar_top = browser_view_->bounds();
-  bounds_from_toolbar_top.Inset(gfx::Insets::TLBR(GetClientAreaTop(), 0, 0, 0));
-  if (bounds_from_toolbar_top.Contains(point)) {
-    return HTCLIENT;
-  }
-
-  // If the point's y coordinate is above the top of the toolbar, but not
-  // over the tabstrip (per previous checking in this function), then we
-  // consider it in the window caption (e.g. the area to the right of the
-  // tabstrip underneath the window controls). However, note that we DO NOT
-  // return HTCAPTION here, because when the window is maximized the window
-  // controls will fall into this space (since the BrowserView is sized to
-  // entire size of the window at that point), and the HTCAPTION value will
-  // cause the window controls not to work. So we return HTNOWHERE so that the
-  // caller will hit-test the window controls before finally falling back to
-  // HTCAPTION.
-  gfx::Rect tabstrip_background_bounds = browser_view_->bounds();
-  gfx::Point toolbar_origin = toolbar_->origin();
-  views::View::ConvertPointToTarget(top_container_, browser_view_,
-                                    &toolbar_origin);
-  tabstrip_background_bounds.set_height(toolbar_origin.y());
-  if (tabstrip_background_bounds.Contains(point)) {
-    return HTNOWHERE;
-  }
-
-  // If the point is somewhere else, delegate to the default implementation.
-  return browser_view_->views::ClientView::NonClientHitTest(point);
 }
 
 //////////////////////////////////////////////////////////////////////////////
