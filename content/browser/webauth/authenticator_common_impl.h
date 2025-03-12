@@ -55,6 +55,7 @@ namespace client_capabilities {
 
 // This is the subset of client capabilities computed by the browser. See also
 // //third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc.
+inline constexpr char kConditionalCreate[] = "conditionalCreate";
 inline constexpr char kConditionalGet[] = "conditionalGet";
 inline constexpr char kHybridTransport[] = "hybridTransport";
 inline constexpr char kPasskeyPlatformAuthenticator[] =
