@@ -388,10 +388,8 @@ class CacheStorageManagerTest : public testing::Test {
         MemoryOnly(), temp_dir_path,
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         quota_policy_.get());
-    mock_quota_manager_->SetQuota(storage_key1_, StorageType::kTemporary,
-                                  1024 * 1024 * 100);
-    mock_quota_manager_->SetQuota(storage_key2_, StorageType::kTemporary,
-                                  1024 * 1024 * 100);
+    mock_quota_manager_->SetQuota(storage_key1_, 1024 * 1024 * 100);
+    mock_quota_manager_->SetQuota(storage_key2_, 1024 * 1024 * 100);
 
     quota_manager_proxy_ =
         base::MakeRefCounted<MockCacheStorageQuotaManagerProxy>(

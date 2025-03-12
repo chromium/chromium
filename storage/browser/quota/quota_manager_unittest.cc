@@ -266,11 +266,10 @@ class QuotaManagerImplTest : public testing::Test {
     return future.Take();
   }
 
-  std::set<StorageKey> GetStorageKeysForType(
-      blink::mojom::StorageType storage_type) {
+  std::set<StorageKey> GetAllStorageKeys() {
     base::test::TestFuture<std::set<StorageKey>> future;
-    quota_manager_impl_->GetStorageKeysForType(
-        storage_type, future.GetCallback<const std::set<StorageKey>&>());
+    quota_manager_impl_->GetAllStorageKeys(
+        future.GetCallback<const std::set<StorageKey>&>());
     return future.Take();
   }
 
@@ -1039,10 +1038,9 @@ TEST_F(QuotaManagerImplTest, GetBucketById) {
   ASSERT_FALSE(is_db_disabled());
 }
 
-TEST_F(QuotaManagerImplTest, GetStorageKeysForType) {
+TEST_F(QuotaManagerImplTest, GetAllStorageKeys) {
   StorageKey storage_key_a = ToStorageKey("http://a.com/");
   StorageKey storage_key_b = ToStorageKey("http://b.com/");
-  StorageKey storage_key_c = ToStorageKey("http://c.com/");
 
   ASSERT_OK_AND_ASSIGN(
       BucketInfo bucket_a,
@@ -1052,18 +1050,11 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForType) {
       BucketInfo bucket_b,
       CreateBucketForTesting(storage_key_b, "bucket_b", kTemp));
 
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo bucket_c,
-      CreateBucketForTesting(storage_key_c, kDefaultBucketName, kSync));
-
-  EXPECT_THAT(GetStorageKeysForType(kTemp),
+  EXPECT_THAT(GetAllStorageKeys(),
               testing::UnorderedElementsAre(storage_key_a, storage_key_b));
-
-  EXPECT_THAT(GetStorageKeysForType(kSync),
-              testing::UnorderedElementsAre(storage_key_c));
 }
 
-TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
+TEST_F(QuotaManagerImplTest, GetAllStorageKeysWithDatabaseError) {
   disable_database_bootstrap(true);
   OpenDatabase();
 
@@ -1071,7 +1062,7 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
   DisableQuotaDatabase();
 
   // Return empty set when error is encountered.
-  EXPECT_TRUE(GetStorageKeysForType(kTemp).empty());
+  EXPECT_TRUE(GetAllStorageKeys().empty());
 }
 
 TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
