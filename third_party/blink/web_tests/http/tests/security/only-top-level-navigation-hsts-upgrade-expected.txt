@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: iframe successfully loaded via http
-CONSOLE MESSAGE: HSTS iframe successfully didn't load
-CONSOLE MESSAGE: Window's origin is: https://hsts-example.test:8443
-

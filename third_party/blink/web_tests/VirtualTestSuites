@@ -513,15 +513,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "hsts-top-level-navigations-only",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/security/only-top-level-navigation-hsts-upgrade.php"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=HstsTopLevelNavigationsOnly"],
-    "expires": "Feb 12, 2026",
-    "owners": ["bingler@chromium.org"]
-  },
-  {
     "prefix": "speech-with-unified-autoplay",
     "owners": ["media-dev@chromium.org", "evliu@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
