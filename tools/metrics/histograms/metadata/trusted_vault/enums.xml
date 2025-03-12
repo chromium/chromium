@@ -100,6 +100,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
 
+<!-- LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus) -->
+
+<enum name="TrustedVaultListSecurityDomainMembersPinStatus">
+  <int value="0" label="The PIN is present and usable for recovery"/>
+  <int value="1" label="The PIN is present but not usable for recovery"/>
+  <int value="2" label="The PIN is not present"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultListSecurityDomainMembersPinStatus) -->
+
 <!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
 
 <enum name="TrustedVaultRecoverabilityStatus">
