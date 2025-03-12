@@ -78,3 +78,6 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized
+
+# crbug.com/402773550
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
