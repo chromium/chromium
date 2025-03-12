@@ -10,14 +10,11 @@ import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
 import android.media.MediaFormat;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.Surface;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -80,46 +77,17 @@ class MediaCodecBridge {
     private static @Nullable HandlerThread sCallbackHandlerThread;
     private static @Nullable Handler sCallbackHandler;
 
-    // |errorCode| is the error reported by MediaCodec.CryptoException
-    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException)
-    // Translated values are defined in media/base/android/media_codec_bridge.h.
-    // MediaCodec.CryptoException error codes were deprecated in API 31 (Android S) and replaced by
-    // MediaDrm error codes.
-    private static int translateCryptoExceptionPreS(int errorCode) {
-        switch (errorCode) {
-            case MediaCodec.CryptoException.ERROR_NO_KEY:
-                return MediaCodecStatus.NO_KEY;
-            case MediaCodec.CryptoException.ERROR_KEY_EXPIRED:
-                return MediaCodecStatus.KEY_EXPIRED;
-            case MediaCodec.CryptoException.ERROR_RESOURCE_BUSY:
-                return MediaCodecStatus.RESOURCE_BUSY;
-            case MediaCodec.CryptoException.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
-                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
-            case MediaCodec.CryptoException.ERROR_SESSION_NOT_OPENED:
-                return MediaCodecStatus.SESSION_NOT_OPENED;
-            case MediaCodec.CryptoException.ERROR_UNSUPPORTED_OPERATION:
-                return MediaCodecStatus.UNSUPPORTED_OPERATION;
-            case 7: // ERROR_INSUFFICIENT_SECURITY, added in API 29
-                return MediaCodecStatus.INSUFFICIENT_SECURITY;
-            case 8: // ERROR_FRAME_TOO_LARGE, added in API 29
-                return MediaCodecStatus.FRAME_TOO_LARGE;
-            case 9: // ERROR_LOST_STATE, added in API 29
-                return MediaCodecStatus.LOST_STATE;
-            default:
-                Log.e(TAG, "Unknown CryptoException error code: " + errorCode);
-                return MediaCodecStatus.UNKNOWN_CRYPTO_EXCEPTION;
-        }
-    }
-
     // |errorCode| is the error reported by MediaCodec.CryptoException.
     // As of API 31 (Android S) it returns MediaDrm.ErrorCodes
     // (https://developer.android.com/reference/android/media/MediaDrm.ErrorCodes).
+    // Pre Android S exceptions are still compatible with this ordering, as MediaDrm.ErrorCodes and
+    // MediaCodec.CryptoException.ErrorCodes are kept in sync.
+    // (https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/media/java/android/media/MediaDrm.java;l=304-306)
     // Not all possible values are handled here, only the ones specified as being returned by
     // getErrorCode
     // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException#getErrorCode())
     // Translated values are defined in media/base/android/media_codec_bridge.h.
-    @RequiresApi(Build.VERSION_CODES.S)
-    private static int translateCryptoExceptionPostS(int errorCode) {
+    private static int translateCryptoException(int errorCode) {
         switch (errorCode) {
             case MediaDrm.ErrorCodes.ERROR_NO_KEY:
                 return MediaCodecStatus.NO_KEY;
@@ -156,9 +124,7 @@ class MediaCodecBridge {
     }
 
     private static int convertCryptoException(MediaCodec.CryptoException e) {
-        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
-                ? translateCryptoExceptionPreS(e.getErrorCode())
-                : translateCryptoExceptionPostS(e.getErrorCode());
+        return translateCryptoException(e.getErrorCode());
     }
 
     private static int convertCodecException(MediaCodec.CodecException e) {
