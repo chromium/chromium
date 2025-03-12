@@ -196,10 +196,13 @@ class PromiseIconBackground : public views::Background {
   PromiseIconBackground(ui::ColorId color_id,
                         const gfx::Rect& icon_bounds,
                         const gfx::Insets& insets)
-      : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
+      : icon_bounds_(icon_bounds), insets_(insets) {
+    SetColor(color_id);
+  }
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;
   PromiseIconBackground& operator=(const PromiseIconBackground&) = delete;
+
   ~PromiseIconBackground() override = default;
 
   // views::Background:
@@ -212,18 +215,16 @@ class PromiseIconBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
 
     canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
   }
 
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
  private:
-  const ui::ColorId color_id_;
   const gfx::Rect icon_bounds_;
   const gfx::Insets insets_;
 };

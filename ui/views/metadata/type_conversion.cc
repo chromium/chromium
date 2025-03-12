@@ -13,8 +13,8 @@
 
 std::u16string ui::metadata::TypeConverter<views::Background>::ToString(
     const views::Background& source_value) {
-  return ui::metadata::TypeConverter<SkColor>::ToString(
-      source_value.get_color());
+  return ui::metadata::TypeConverter<ui::ColorVariant>::ToString(
+      source_value.color());
 }
 
 std::u16string ui::metadata::TypeConverter<views::Border>::ToString(

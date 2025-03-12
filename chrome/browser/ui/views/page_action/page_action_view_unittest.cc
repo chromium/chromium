@@ -271,7 +271,7 @@ TEST_F(PageActionViewWithMockModelTest,
   page_action_view()->OnPageActionModelChanged(*model());
 
   ASSERT_NE(page_action_view()->GetBackground(), nullptr);
-  EXPECT_EQ(page_action_view()->GetBackground()->get_color(),
+  EXPECT_EQ(page_action_view()->GetBackground()->color(),
             page_action_view()->GetColorProvider()->GetColor(
                 kColorOmniboxIconBackgroundTonal));
 

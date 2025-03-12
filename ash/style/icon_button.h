@@ -204,9 +204,6 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
   void OnEnabledStateChanged();
 
-  // Gets the background color of the icon button.
-  SkColor GetBackgroundColor() const;
-
  private:
   // For unit tests.
   friend class BluetoothFeaturePodControllerTest;

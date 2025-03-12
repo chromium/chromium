@@ -188,8 +188,7 @@ void UiElementContainerView::OnCommittedQueryChanged(
 
 void UiElementContainerView::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  scroll_indicator_->background()->SetNativeControlColor(
+  scroll_indicator_->background()->SetColor(
       GetOverflowIndicatorBackgroundColor());
 
   // SetNativeControlColor doesn't trigger a repaint.

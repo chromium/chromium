@@ -428,7 +428,7 @@ void SelectedColorPatchView::SetColor(SkColor color) {
   if (!background()) {
     SetBackground(CreateSolidBackground(color));
   } else {
-    background()->SetNativeControlColor(color);
+    background()->SetColor(color);
   }
   SchedulePaint();
 }

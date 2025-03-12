@@ -48,6 +48,9 @@ namespace arc {
 
 namespace {
 
+constexpr int kButtonRadius = 12;
+constexpr int kBorderThicknessDp = 1;
+
 class RoundedCornerBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
   METADATA_HEADER(RoundedCornerBubbleDialogDelegateView,
@@ -113,12 +116,10 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *label);
 
-  constexpr int kBorderThicknessDp = 1;
-  const auto button_radius = 12;
-  SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, button_radius,
+  SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, kButtonRadius,
                                            gfx::kPlaceholderColor));
   SetBackground(views::CreateRoundedRectBackground(gfx::kPlaceholderColor,
-                                                   button_radius));
+                                                   kButtonRadius));
 
   const int focus_ring_radius = 16;
   // With Jellyroll, the ring should have a 4dp gap from the view. Setting a
@@ -157,30 +158,17 @@ gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize(
 }
 
 void ResizeToggleMenu::MenuButtonView::UpdateColors() {
-  if (!GetWidget()) {
-    return;
-  }
+  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      *icon_, is_selected_ ? cros_tokens::kCrosSysOnPrimary
+                           : cros_tokens::kCrosSysOnSurface));
 
-  const auto* color_provider = GetColorProvider();
+  title_->SetEnabledColor(is_selected_ ? cros_tokens::kCrosSysOnPrimary
+                                       : cros_tokens::kCrosSysOnSurface);
 
-  const auto icon_color =
-      is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
-                   : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(*icon_, icon_color));
+  background()->SetColor(is_selected_ ? cros_tokens::kCrosSysPrimary
+                                      : cros_tokens::kCrosSysSystemOnBase);
 
-  const auto text_color =
-      is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
-                   : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-  title_->SetEnabledColor(text_color);
-
-  const auto background_color =
-      is_selected_
-          ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
-          : color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
-  background()->SetNativeControlColor(background_color);
-
-  const auto border_color = SK_ColorTRANSPARENT;
-  GetBorder()->set_color(border_color);
+  GetBorder()->set_color(SK_ColorTRANSPARENT);
 }
 
 BEGIN_METADATA(ResizeToggleMenu, MenuButtonView)
