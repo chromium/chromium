@@ -93,10 +93,7 @@ void ResourcePool::InUsePoolResource::InstallGpuBacking(
   if (is_overlay_candidate) {
     flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
-  backing->set_shared_image(sii->CreateSharedImage(
-      {format(), size(), color_space(), flags, debug_label},
-      gpu::kNullSurfaceHandle));
-  CHECK(backing->shared_image());
+  backing->CreateSharedImage(sii, flags, debug_label);
   set_backing(std::move(backing));
 }
 
