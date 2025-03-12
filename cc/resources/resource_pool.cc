@@ -66,6 +66,15 @@ void ResourcePool::Backing::CreateSharedImage(
   CHECK(shared_image());
 }
 
+void ResourcePool::Backing::CreateSharedImageForSoftwareCompositor(
+    gpu::SharedImageInterface* sii,
+    std::string_view debug_label) {
+  set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
+      {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+       debug_label}));
+  CHECK(shared_image());
+}
+
 bool ResourcePool::Backing::CreateSharedImage(
     gpu::SharedImageInterface* sii,
     const gpu::SharedImageUsageSet& usage,
@@ -103,10 +112,7 @@ void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
   CHECK(!backing());
   auto backing =
       std::make_unique<ResourcePool::Backing>(size(), format(), color_space());
-  backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
-      {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-       debug_label}));
-  CHECK(backing->shared_image());
+  backing->CreateSharedImageForSoftwareCompositor(sii.get(), debug_label);
   set_backing(std::move(backing));
 }
 
