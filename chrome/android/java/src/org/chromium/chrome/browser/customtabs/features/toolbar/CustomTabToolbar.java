@@ -1467,8 +1467,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 setTitleUrlBarAccessibilityDelegate(mTitleBar);
                 setTitleUrlBarAccessibilityDelegate(mUrlBar);
             }
-            Tab currentTab = getCurrentTab();
-            mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(currentTab.getProfile()));
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)) {
+                Tab currentTab = getCurrentTab();
+                if (currentTab != null) {
+                    mTrackerSupplier.set(
+                            TrackerFactory.getTrackerForProfile(currentTab.getProfile()));
+                }
+            }
         }
 
         private void setTitleUrlBarAccessibilityDelegate(View view) {
