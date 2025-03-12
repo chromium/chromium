@@ -297,6 +297,18 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
         top_left_corner_radius = 0;
         bottom_left_corner_radius = 0;
       }
+
+      const int separator_width = tab_style()->GetSeparatorMargins().left() +
+                                  tab_style()->GetSeparatorSize().width() +
+                                  tab_style()->GetSeparatorMargins().right();
+
+      if (!IsLeftmostSplitTab(tab())) {
+        left -= separator_width * scale / 2;
+      }
+
+      if (!IsRightmostSplitTab(tab())) {
+        right += separator_width * scale / 2;
+      }
     }
 
     // Radii are clockwise from top left.
