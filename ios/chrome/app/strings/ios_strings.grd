@@ -1990,6 +1990,11 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_CONFIRM" desc="Title for a button that confirms the file selection in a file picker. [iOS only]">
           Confirm
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_DISPLAY_STRING_FILE_COUNT" desc="Label displayed next to the file input when a set of files has been submitted to a web page. COUNT refers to the number of files. According to its value, the string goes from singular to plural.">
+        {COUNT, plural,
+             =1 {{COUNT} file}
+             other {{COUNT} files}}
+      </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_EMPTY_FOLDER_MESSAGE" desc="The message to display when a Drive folder is empty. [iOS only]">
         This folder is empty
       </message>
