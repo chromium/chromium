@@ -9,6 +9,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace floss {
 
