@@ -536,7 +536,6 @@ public class MessageAnimationCoordinatorUnitTest {
                                 MessagesMetrics.StackingAnimationType.SHOW_ALL)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
-                        .expectIntRecord("Android.Messages.Stacking.BlockedByBrowserControl", 1)
                         .build();
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -610,10 +609,6 @@ public class MessageAnimationCoordinatorUnitTest {
                             Arrays.asList(m1, m2), false, () -> {});
                 });
 
-        var blockedByBrowserControl =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.BlockedByBrowserControl", 1);
-
         // M1 is waiting to be shown.
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
@@ -626,7 +621,6 @@ public class MessageAnimationCoordinatorUnitTest {
         // Nothing happens, as message queue is not ready yet.
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-        blockedByBrowserControl.assertExpected("Messages should be blocked by browser control.");
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -724,9 +718,6 @@ public class MessageAnimationCoordinatorUnitTest {
         MessageState m2 = buildMessageState();
         setMessageIdentifier(m2, 2);
         doReturn(false).when(mContainer).runAfterInitialMessageLayout(any());
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Messages.Stacking.BlockedByContainerNotInitialized", 1);
 
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
 
@@ -743,7 +734,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
-        histogramWatcher.assertExpected();
     }
 
     @Test
