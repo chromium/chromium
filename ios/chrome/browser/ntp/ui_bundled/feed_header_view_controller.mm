@@ -35,15 +35,8 @@ const CGFloat kCustomSearchEngineLabelFontSize = 13;
 const CGFloat kHiddenFeedLabelFontSize = 16;
 // The width of the label for when the feed is hidden.
 const CGFloat kHiddenFeedLabelWidth = 250;
-// The height of the header container without the Following feed or the
-// "Discover" label. The content is unaffected.
-const CGFloat kDiscoverFeedHeaderHeightWithoutFollowingOrLabel = 4;
-// The height of the header container without the Following feed. The content is
-// unaffected.
-const CGFloat kDiscoverFeedHeaderHeightWithoutFollowing = 40;
-// The height of the header container with the Following feed. The content is
-// unaffected.
-const CGFloat kDiscoverFeedHeaderHeightWithFollowing = 30;
+// The height of the header container.
+const CGFloat kDiscoverFeedHeaderHeight = 30;
 
 const CGFloat kCustomSearchEngineLabelHeight = 18;
 // * Values below are exclusive to Web Channels.
@@ -53,8 +46,7 @@ const CGFloat kButtonSize = 28;
 // Duration of the fade animation for elements that toggle when switching feeds.
 const CGFloat kSegmentAnimationDuration = 0.3;
 // Padding on top of the header.
-const CGFloat kTopVerticalPaddingFollowing = 15;
-const CGFloat kTopVerticalPadding = 5;
+const CGFloat kTopVerticalPadding = 15;
 
 // The size of feed symbol images.
 NSInteger kFeedSymbolPointSize = 17;
@@ -170,14 +162,12 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 #pragma mark - Public
 
 - (CGFloat)feedHeaderHeight {
-  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    return kDiscoverFeedHeaderHeightWithFollowing;
-  }
-  if (ShouldRemoveDiscoverLabel(
+  if ([self.feedControlDelegate isFollowingFeedAvailable] ||
+      !ShouldRemoveDiscoverLabel(
           [self.NTPDelegate isGoogleDefaultSearchEngine])) {
-    return kDiscoverFeedHeaderHeightWithoutFollowingOrLabel;
+    return kDiscoverFeedHeaderHeight;
   }
-  return kDiscoverFeedHeaderHeightWithoutFollowing;
+  return 0;
 }
 
 - (void)updateForDefaultSearchEngineChanged {
@@ -509,12 +499,10 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 - (void)anchorContainer {
   CGFloat totalHeaderHeight = [self feedHeaderHeight];
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    totalHeaderHeight += kTopVerticalPaddingFollowing;
+    totalHeaderHeight += kTopVerticalPadding;
     if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
       totalHeaderHeight += kCustomSearchEngineLabelHeight;
     }
-  } else {
-    totalHeaderHeight += kTopVerticalPadding;
   }
   // Anchor container.
   [self.feedHeaderConstraints addObjectsFromArray:@[
@@ -533,12 +521,19 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 // Anchor management button.
 - (void)anchorManagementButton {
   CHECK(!IsHomeCustomizationEnabled());
+  NSLayoutConstraint* verticalConstraint;
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    verticalConstraint = [self.managementButton.centerYAnchor
+        constraintEqualToAnchor:self.container.centerYAnchor];
+  } else {
+    verticalConstraint = [self.managementButton.bottomAnchor
+        constraintEqualToAnchor:self.container.bottomAnchor];
+  }
   [self.feedHeaderConstraints addObjectsFromArray:@[
+    verticalConstraint,
     [self.managementButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
                        constant:-kButtonHorizontalMargin],
-    [self.managementButton.centerYAnchor
-        constraintEqualToAnchor:self.container.centerYAnchor],
     // Set menu button size.
     [self.managementButton.heightAnchor constraintEqualToConstant:kButtonSize],
     [self.managementButton.widthAnchor constraintEqualToConstant:kButtonSize],
@@ -614,8 +609,8 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
                        constant:kTitleHorizontalMargin],
     [self.titleLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:trailingAnchor],
-    [self.titleLabel.centerYAnchor
-        constraintEqualToAnchor:self.container.centerYAnchor]
+    [self.titleLabel.bottomAnchor
+        constraintEqualToAnchor:self.container.bottomAnchor]
   ]];
 }
 
@@ -649,8 +644,8 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
       [self.customSearchEngineView.trailingAnchor
           constraintEqualToAnchor:trailingAnchor
                          constant:-trailingConstant],
-      [self.customSearchEngineView.centerYAnchor
-          constraintEqualToAnchor:self.container.centerYAnchor]
+      [self.customSearchEngineView.bottomAnchor
+          constraintEqualToAnchor:self.container.bottomAnchor]
     ]];
   }
 }
