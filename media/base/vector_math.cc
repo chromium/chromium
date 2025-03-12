@@ -106,6 +106,9 @@ void FCLAMP(base::span<const float> src, base::span<float> dest) {
   CHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fclamp_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+    base::CPU cpu;
+    if (cpu.has_avx())
+      return FCLAMP_AVX;
     return FCLAMP_SSE;
 #else
     // TODO(crbug.com/401598584): Add optimized versions of these functions.
@@ -302,6 +305,74 @@ void FCLAMP_SSE(const float src[], int len, float dest[]) {
   }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
+  for (int i = last_index; i < len; ++i) {
+    const float sample = src[i];
+    const float temp = std::isnan(sample) ? kSilence : sample;
+    // Using std::max + std::min is faster than std::clamp on official builds.
+    dest[i] = std::max(std::min(temp, kClampMax), kClampMin);
+  }
+}
+
+inline __attribute__((target("avx"))) __m256 SanitizeNan(const __m256 values) {
+  // Compare each value with itself. Since NaN != NaN, we end up with a mask
+  // with 0s instead of NaNs, and 1s for the original values.
+  const __m256 valid_mask = _mm256_cmp_ps(values, values, _CMP_EQ_OQ);
+
+  // Zero-out all NaNs by applying the mask with a logical AND.
+  return _mm256_and_ps(valid_mask, values);
+}
+
+__attribute__((target("avx"))) void FCLAMP_AVX(const float src[],
+                                               int len,
+                                               float dest[]) {
+  const int rem = len % 8;
+  const int last_index = len - rem;
+  const __m256 m_max = _mm256_set1_ps(kClampMax);
+  const __m256 m_min = _mm256_set1_ps(kClampMin);
+
+  // TODO(crbug.com/40756517): Remove below alignment conditionals when AudioBus
+  // |kChannelAlignment| updated to 32.
+  bool aligned_src = (reinterpret_cast<uintptr_t>(src) & 0x1F) == 0;
+  bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
+  if (aligned_src) {
+    if (aligned_dest) {
+      for (int i = 0; i < last_index; i += 8) {
+        _mm256_store_ps(
+            dest + i,
+            _mm256_max_ps(
+                _mm256_min_ps(SanitizeNan(_mm256_load_ps(src + i)), m_max),
+                m_min));
+      }
+    } else {
+      for (int i = 0; i < last_index; i += 8) {
+        _mm256_storeu_ps(
+            dest + i,
+            _mm256_max_ps(
+                _mm256_min_ps(SanitizeNan(_mm256_load_ps(src + i)), m_max),
+                m_min));
+      }
+    }
+  } else {
+    if (aligned_dest) {
+      for (int i = 0; i < last_index; i += 8) {
+        _mm256_store_ps(
+            dest + i,
+            _mm256_max_ps(
+                _mm256_min_ps(SanitizeNan(_mm256_loadu_ps(src + i)), m_max),
+                m_min));
+      }
+    } else {
+      for (int i = 0; i < last_index; i += 8) {
+        _mm256_storeu_ps(
+            dest + i,
+            _mm256_max_ps(
+                _mm256_min_ps(SanitizeNan(_mm256_loadu_ps(src + i)), m_max),
+                m_min));
+      }
+    }
+  }
+
+  // Handle any remaining values that wouldn't fit in an AVX2 pass.
   for (int i = last_index; i < len; ++i) {
     const float sample = src[i];
     const float temp = std::isnan(sample) ? kSilence : sample;

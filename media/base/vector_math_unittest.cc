@@ -245,6 +245,16 @@ TEST_F(VectorMathTest, FCLAMP) {
                             output_array_.data());
     VerifyClampOutput(kClampedOutputValues);
   }
+  {
+    base::CPU cpu;
+    if (cpu.has_avx()) {
+      SCOPED_TRACE("FCLAMP_AVX");
+      FillTestClampingVectors(kUnclampedInputValues, kOutputFillValue);
+      vector_math::FCLAMP_AVX(input_array_.data(), kVectorSize,
+                              output_array_.data());
+      VerifyClampOutput(kClampedOutputValues);
+    }
+  }
 #endif
 }
 
@@ -275,6 +285,13 @@ TEST_F(VectorMathTest, FCLAMP_remainder_data) {
   {
     SCOPED_TRACE("FCLAMP_SSE");
     run_per_value_clamp_test(vector_math::FCLAMP_SSE);
+  }
+  {
+    base::CPU cpu;
+    if (cpu.has_avx()) {
+      SCOPED_TRACE("FCLAMP_AVX");
+      run_per_value_clamp_test(vector_math::FCLAMP_AVX);
+    }
   }
 #endif
 }
