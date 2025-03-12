@@ -4768,9 +4768,9 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
                   .GetDisclaimerWidget());
 }
 
-// Tests that the consent disclaimer can be properly navigated using the
-// keyboard.
-TEST_F(ScannerTest, KeyboardNavigationDisclaimer) {
+// Tests that the consent disclaimer can be properly navigated from the smart
+// actions button using the keyboard.
+TEST_F(ScannerTest, KeyboardNavigationDisclaimerFromSmartActionsButton) {
   base::HistogramTester histogram_tester;
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       kSunfishConsentDisclaimerAccepted, false);
@@ -4935,6 +4935,50 @@ TEST_F(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           kSunfishConsentDisclaimerAccepted));
   EXPECT_TRUE(controller->IsActive());
+}
+
+TEST_F(ScannerTest, KeyboardNavigationDisclaimerAcceptedFromSunfishMode) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  // Press enter to accept the disclaimer.
+  SendKey(ui::VKEY_RETURN, GetEventGenerator());
+
+  EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+}
+
+TEST_F(ScannerTest, KeyboardNavigationDisclaimerDeclinedFromSunfishMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSunfishFeature);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  // Press shift tab then enter to select the decline button in the disclaimer.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  SendKey(ui::VKEY_RETURN, event_generator);
+
+  EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
 }
 
 }  // namespace

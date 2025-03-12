@@ -713,6 +713,30 @@ void CaptureModeSessionFocusCycler::OnScannerActionsFetched() {
   GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
 }
 
+void CaptureModeSessionFocusCycler::OnDisclaimerWidgetOpened(
+    views::Widget* disclaimer_widget) {
+  // Only move focus if the focus cycler previously had focus, i.e. if the user
+  // has spoken feedback enabled or opened the disclaimer using keyboard
+  // navigation.
+  if (HasFocus()) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        disclaimer_widget->GetNativeView());
+  }
+}
+
+void CaptureModeSessionFocusCycler::OnDisclaimerWidgetClosed() {
+  // Try to restore focus to the previously focused view if there was one. If
+  // there was no previously focused view (e.g. because the user opened the
+  // disclaimer using mouse clicks), then there is no need to do anything.
+  if (focus_index_ >= GetGroupSize(current_focus_group_)) {
+    return;
+  }
+
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      GetA11yOverrideWindow());
+  GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
+}
+
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
   OnWidgetDestroying(widget);
 }

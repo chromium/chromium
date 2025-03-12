@@ -1574,6 +1574,7 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(decline_callback)));
   disclaimer_->Show();
+  focus_cycler_->OnDisclaimerWidgetOpened(disclaimer_.get());
 }
 
 void CaptureModeSession::OnScannerActionsFetched(
@@ -1639,6 +1640,7 @@ void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
       ScannerFeatureUserState::kConsentDisclaimerRejected);
 
   disclaimer_.reset();
+  focus_cycler_->OnDisclaimerWidgetClosed();
   if (callback) {
     std::move(callback).Run();
   }
@@ -1651,6 +1653,7 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
       prefs::kSunfishConsentDisclaimerAccepted, true);
 
   disclaimer_.reset();
+  focus_cycler_->OnDisclaimerWidgetClosed();
   if (callback) {
     std::move(callback).Run();
   }
@@ -1735,11 +1738,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
   // If the consent disclaimer is visible, let it handle key events.
   if (disclaimer_) {
-    // The action button may still have a focus ring when we switch focus to the
-    // disclaimer, so clear it first.
-    if (focus_cycler_->HasFocus()) {
-      focus_cycler_->ClearFocus();
-    }
     return;
   }
 
