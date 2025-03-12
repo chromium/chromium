@@ -172,7 +172,10 @@ enum DataType {
   // Read-only on the client.
   AUTOFILL_LOYALTY_CARD,
 
-  LAST_USER_DATA_TYPE = AUTOFILL_LOYALTY_CARD,
+  // Account-local metadata for shared tab groups.
+  SHARED_TAB_GROUP_ACCOUNT_DATA,
+
+  LAST_USER_DATA_TYPE = SHARED_TAB_GROUP_ACCOUNT_DATA,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -271,7 +274,8 @@ enum class DataTypeForHistograms {
   kCookies = 67,
   kPlusAddressSettings = 68,
   kAutofillLoyaltyCard = 69,
-  kMaxValue = kAutofillLoyaltyCard,
+  kSharedTabGroupAccountData = 70,
+  kMaxValue = kSharedTabGroupAccountData,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -403,7 +407,7 @@ constexpr DataTypeSet SharedTypes() {
 // abort sign-out, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      54 == GetNumDataTypes(),
+      55 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
       "data. The warning offers the user to either save the data locally or "
