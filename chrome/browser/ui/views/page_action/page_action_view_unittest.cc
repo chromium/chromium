@@ -61,11 +61,10 @@ class AlwaysActiveTabInterface : public tabs::MockTabInterface {
 };
 
 // Test class that includes a real controller and model. Prefer to use simpler
-// PageActionViewWithMockModelTest where possible.
-// TODO(crbug.com/388527536): Move any tests possible to the mock model setup.
-class PageActionViewTest : public ChromeViewsTestBase {
+// PageActionViewTest where possible.
+class PageActionViewWithControllerTest : public ChromeViewsTestBase {
  public:
-  PageActionViewTest() = default;
+  PageActionViewWithControllerTest() = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -120,10 +119,10 @@ class PageActionViewTest : public ChromeViewsTestBase {
   views::LayoutProvider layout_provider_;
 };
 
-// Test class that uses a mock PageActionModel.
-class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
+// Base test class for PageActionView.  Uses a mock PageActionModel.
+class PageActionViewTest : public ChromeViewsTestBase {
  public:
-  PageActionViewWithMockModelTest() = default;
+  PageActionViewTest() = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -185,7 +184,7 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
 
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.
-TEST_F(PageActionViewTest, ViewIgnoresInactiveController) {
+TEST_F(PageActionViewWithControllerTest, ViewIgnoresInactiveController) {
   // Use an always-active tab to ensure consistent visibility updates.
   AlwaysActiveTabInterface tab;
   auto controller_a = NewPageActionController(tab);
@@ -215,7 +214,7 @@ TEST_F(PageActionViewTest, ViewIgnoresInactiveController) {
 
 // Tests that the PageActionView should never display when it doesn't have an
 // active PageActionController.
-TEST_F(PageActionViewTest, NoActiveController) {
+TEST_F(PageActionViewWithControllerTest, NoActiveController) {
   actions::ActionItem* item = action_item();
   item->SetEnabled(true);
   item->SetVisible(true);
@@ -233,7 +232,7 @@ TEST_F(PageActionViewTest, NoActiveController) {
   EXPECT_FALSE(view->GetVisible());
 }
 
-TEST_F(PageActionViewWithMockModelTest, Visibility) {
+TEST_F(PageActionViewTest, Visibility) {
   // Ensure view defaults to invisible.
   EXPECT_FALSE(page_action_view()->GetVisible());
 
@@ -246,7 +245,7 @@ TEST_F(PageActionViewWithMockModelTest, Visibility) {
   EXPECT_FALSE(page_action_view()->GetVisible());
 }
 
-TEST_F(PageActionViewWithMockModelTest, LabelVisibility) {
+TEST_F(PageActionViewTest, LabelVisibility) {
   // Ensure view defaults to invisible.
   EXPECT_FALSE(page_action_view()->GetVisible());
 
@@ -263,8 +262,7 @@ TEST_F(PageActionViewWithMockModelTest, LabelVisibility) {
   EXPECT_FALSE(page_action_view()->IsChipVisible());
 }
 
-TEST_F(PageActionViewWithMockModelTest,
-       UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
+TEST_F(PageActionViewTest, UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
@@ -281,20 +279,20 @@ TEST_F(PageActionViewWithMockModelTest,
   EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
 }
 
-TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
+TEST_F(PageActionViewTest, SuggestionText) {
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetText(), kTestText);
 }
 
-TEST_F(PageActionViewWithMockModelTest, TooltipText) {
+TEST_F(PageActionViewTest, TooltipText) {
   EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
 }
 
 // Test that OnThemeChanged updates the icon image correctly.
-TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
+TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.
   const int kOriginalIconSize = view_icon_size() + 1;
   auto icon_image = ui::ImageModel::FromVectorIcon(
@@ -318,7 +316,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
 }
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
-TEST_F(PageActionViewWithMockModelTest, UpdateBorderAdjustsInsets) {
+TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
@@ -340,13 +338,13 @@ TEST_F(PageActionViewWithMockModelTest, UpdateBorderAdjustsInsets) {
   EXPECT_NE(insets_with_chip, insets_without_chip);
 }
 
-class PageActionViewTriggerTest : public PageActionViewWithMockModelTest {
+class PageActionViewTriggerTest : public PageActionViewTest {
  public:
   PageActionViewTriggerTest() = default;
   ~PageActionViewTriggerTest() override = default;
 
   void SetUp() override {
-    PageActionViewWithMockModelTest::SetUp();
+    PageActionViewTest::SetUp();
     action_item()->SetInvokeActionCallback(base::BindRepeating(
         &PageActionViewTriggerTest::ActionInvocationCallback,
         base::Unretained(this)));
