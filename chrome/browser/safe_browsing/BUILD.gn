@@ -479,6 +479,8 @@ static_library("safe_browsing") {
       }
     } else if (safe_browsing_mode == 2) {
       sources += [
+        "android/download_protection_metrics_data.cc",
+        "android/download_protection_metrics_data.h",
         "android/services_delegate_android.cc",
         "android/services_delegate_android.h",
         "download_protection/download_protection_delegate_android.cc",

@@ -17,17 +17,17 @@
 namespace autofill {
 
 class AddressNormalizer;
+class AutofillClient;
 class AutofillField;
-class EntityDataManager;
 class EntityInstance;
 class FormStructure;
 
 // Returns all fields in a `FormStructure` that are fillable by Autofill AI,
-// taking into account the field type predictions and the available entities in
-// `EntityDataManager`.
+// taking into account whether AutofillAI filling is enabled as well as the
+// field type predictions and the available entities in `EntityDataManager`.
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
-    const EntityDataManager& edm);
+    const AutofillClient& client);
 
 // Returns the value from `entity` to fill into `field`.
 std::u16string GetFillValueForEntity(

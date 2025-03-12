@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Sluimerskerm-animasie</translation>
 <translation id="152892567002884378">Volume harder</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Kies ’n tema en kies dan die onderstreepte woorde om jou KI-prente te personaliseer.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kies “Inspireer my” om meer unieke en verskillende opsies vir KI-prente te kry.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wanneer jy met KI skep, word die porboodskap na Google KI-bedieners gestuur om prente te genereer en die produk te verbeter, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiewe KI is eksperimenteel, in vroeë ontwikkeling, en het tans beperkte beskikbaarheid.</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
 <translation id="1561927818299383735">agterligkleur</translation>
@@ -1553,6 +1562,16 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="819278132617411009">Gebruik Google AI om meer produktief te wees</translation>
+<translation id="82003371436638355">Wanneer jy “Skep jou eie” kies, moet jy ’n gepasmaakte porboodskap skryf. Of jy kan “Kies ’n tema” kies en dan die onderstreepte woorde kies om jou KI-muurpapier te personaliseer.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kies “Inspireer my” om meer unieke en verskillende opsies vir KI-prente te kry.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wanneer jy jou eie muurpapier skep, word die porboodskap na Google-bedieners toe gestuur om prente te genereer en die produk te verbeter, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se diensbepalings en privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Moenie enigiets insluit wat persoonlik, sensitief of vertroulik is nie.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiewe KI kan foute maak, insluitend oor mense, so jy moet dit dubbelkontroleer <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Meer inligting<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
@@ -1574,6 +1593,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8312330582793120272">speel media</translation>
 <translation id="8318753676953949627">Geen prente nie</translation>
 <translation id="8320910311642849813">woud</translation>
+<translation id="8322464149031882595">Klik om aan te beweeg</translation>
 <translation id="8329018942023753850">sakrekenaarapp</translation>
 <translation id="8336739000755212683">Verander toestelrekeningprent</translation>
 <translation id="8339024191194156249">Kry meer inligting oor outobegin</translation>
@@ -1720,6 +1740,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8961025972867871808">pikkewyne</translation>
 <translation id="8968751544471797276">Laaikoers</translation>
 <translation id="8970109610781093811">Laat loop weer</translation>
+<translation id="8972061581514441296">Klik om terug te gaan</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skandeer}=1{Skandeer bladsy {NUMBER_OF_PAGES}}other{Skandeer bladsy {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">dorpie</translation>

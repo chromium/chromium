@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">편안한 밤 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="2086334242442703436">그림 이모티콘 선택 도구 열기</translation>
 <translation id="2088116547584365419">게임</translation>
-<translation id="2092517835716911174">요약 도우미 및 글쓰기 도우미 기능을 사용하려면 만 18세 이상이어야 합니다.</translation>
 <translation id="209965399369889474">네트워크에 연결되어 있지 않음</translation>
 <translation id="2107581415810719320">기타 버튼 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">사용 중인 USB-C 케이블은 Thunderbolt를 지원하지 않습니다. 기기 성능이 제한될 수 있습니다.</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">개발자 채널</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">문제 신고</translation>
+<translation id="4518096944902121253">이 언어의 작업이 더 이상 없습니다.</translation>
 <translation id="4518404433291145981">Chromebook을 잠금 해제하려면 먼저 휴대전화를 잠금 해제하세요.</translation>
 <translation id="4525887279712865285">Quick Share 설정 표시</translation>
 <translation id="4527045527269911712">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다.</translation>
@@ -1885,6 +1885,7 @@
 <translation id="7189412385142492784">금성까지의 거리</translation>
 <translation id="7198435252016571249">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="7219573373513695352">연결된 기기 없음</translation>
+<translation id="7228968829656641943">화면을 검색하려면 선택하세요. 키보드 탐색을 사용하려면 Tab과 스페이스바를 차례로 누르세요.</translation>
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
 <translation id="7239814253344511868">마우스 양쪽 버튼</translation>
 <translation id="7244725679040769470">배터리가 <ph name="PERCENTAGE" />% 남았습니다. 기기를 전원에 연결하세요.</translation>

@@ -165,10 +165,8 @@ class FileSystemQuotaClientTest : public testing::Test {
       if (file.isDirectory) {
         ASSERT_OK_AND_ASSIGN(
             auto bucket,
-            GetOrCreateBucket(file.origin_url, kDefaultBucketName,
-                              FileSystemTypeToQuotaStorageType(file.type)));
-        quota_manager_->SetQuota(bucket.storage_key, bucket.type,
-                                 1024 * 1024 * 100);
+            GetOrCreateBucket(file.origin_url, kDefaultBucketName));
+        quota_manager_->SetQuota(bucket.storage_key, 1024 * 1024 * 100);
         ASSERT_TRUE(
             CreateFileSystemDirectory(path, file.origin_url, file.type));
         if (path.empty()) {
@@ -215,11 +213,10 @@ class FileSystemQuotaClientTest : public testing::Test {
 
   storage::QuotaErrorOr<BucketLocator> GetOrCreateBucket(
       const std::string& origin,
-      const std::string& name,
-      StorageType type) {
+      const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->GetOrCreateBucketDeprecated(
-        {blink::StorageKey::CreateFromStringForTesting(origin), name}, type,
+    quota_manager_->UpdateOrCreateBucket(
+        {blink::StorageKey::CreateFromStringForTesting(origin), name},
         future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
@@ -270,9 +267,8 @@ class FileSystemQuotaClientTest : public testing::Test {
 TEST_F(FileSystemQuotaClientTest, NoFileSystemTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
-  ASSERT_OK_AND_ASSIGN(
-      auto bucket,
-      GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetOrCreateBucket(kDummyURL1, kDefaultBucketName));
   EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
 }
 
@@ -282,9 +278,8 @@ TEST_F(FileSystemQuotaClientTest, NoFileTest) {
   InitializeOriginFiles(quota_client,
                         {{true, "", 0, kDummyURL1, kFileSystemTypeTemporary}});
 
-  ASSERT_OK_AND_ASSIGN(
-      auto bucket,
-      GetOrCreateBucket(kDummyURL1, kDefaultBucketName, kTemporary));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetOrCreateBucket(kDummyURL1, kDefaultBucketName));
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
   }
@@ -292,8 +287,8 @@ TEST_F(FileSystemQuotaClientTest, NoFileTest) {
 
 TEST_F(FileSystemQuotaClientTest, NonDefaultBucket) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
-  ASSERT_OK_AND_ASSIGN(
-      auto bucket, GetOrCreateBucket(kDummyURL1, "logs_bucket", kTemporary));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetOrCreateBucket(kDummyURL1, "logs_bucket"));
   ASSERT_FALSE(bucket.is_default);
   EXPECT_EQ(0, GetBucketUsage(quota_client, bucket));
   DeleteBucketData(&quota_client, bucket);
@@ -542,7 +537,7 @@ TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
 
   ASSERT_OK_AND_ASSIGN(
       auto buz_temp_bucket,
-      GetOrCreateBucket("http://buz.com/", kDefaultBucketName, kTemporary));
+      GetOrCreateBucket("http://buz.com/", kDefaultBucketName));
   DeleteBucketData(&quota_client, buz_temp_bucket);
 
   EXPECT_EQ(0, GetBucketUsage(quota_client, foo_temp_bucket));

@@ -163,10 +163,6 @@ BASE_FEATURE(kWinRejectDotSpaceSuffixFilePaths,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kNewWebstoreURL,
-             "NewWebstoreURL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
              base::FEATURE_ENABLED_BY_DEFAULT);

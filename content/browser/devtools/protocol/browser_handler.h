@@ -92,6 +92,14 @@ class BrowserHandler : public DevToolsDomainHandler,
   Response Crash() override;
   Response CrashGpuProcess() override;
 
+  void AddPrivacySandboxCoordinatorKeyConfig(
+      const std::string& in_api,
+      const std::string& in_coordinator_origin,
+      const std::string& in_key_config,
+      std::optional<std::string> browser_context_id,
+      std::unique_ptr<AddPrivacySandboxCoordinatorKeyConfigCallback> callback)
+      override;
+
   // DownloadItem::Observer overrides
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;

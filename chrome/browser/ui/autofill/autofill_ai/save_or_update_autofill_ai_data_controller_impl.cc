@@ -136,25 +136,6 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
     details.emplace_back(attribute_instance.type().GetNameForI18n(),
                          attribute_instance.GetCompleteInfo(app_locale_),
                          update_type);
-
-    // Also add the old value when an attribute is updated to display
-    // before/after to the user.
-    if (update_type == kNewEntityAttributeUpdated) {
-      CHECK(old_entity_);
-      base::optional_ref<const autofill::AttributeInstance>
-          old_entity_attribute =
-              old_entity_->attribute(attribute_instance.type());
-      CHECK(old_entity_attribute);
-      details.emplace_back(
-          old_entity_attribute->type().GetNameForI18n(),
-          // TODO(crbug.com/389629676): Passing the full value here is incorrect
-          // for updates in the structure of two equivalent full names. This
-          // would show the user the same full name twice, which seems like
-          // nothing has changed. Consider adding a detail for every supported
-          // type that actually does change.
-          old_entity_attribute->GetCompleteInfo(app_locale_),
-          kOldEntityAttributeUpdated);
-    }
   }
 
   // Move new entity values that were either added or updated to the top.

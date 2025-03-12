@@ -133,7 +133,8 @@
   _prefService = profile->GetPrefs();
 
   _viewController = [[AccountMenuViewController alloc]
-      initWithHideEllipsisMenu:IdentityDiscAccountMenuEnabledWithoutEllipsis()];
+      initWithHideEllipsisMenu:IdentityDiscAccountMenuEnabledWithoutEllipsis()
+            showSettingsButton:IdentityDiscAccountMenuEnabledWithSettings()];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -237,6 +238,7 @@
 }
 
 - (void)didTapSettingsButton {
+  CHECK(IdentityDiscAccountMenuEnabledWithSettings());
   // Close the account menu and open the Settings page.
   [self stopChildrenAndViewControllerAnimated:YES];
   [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser

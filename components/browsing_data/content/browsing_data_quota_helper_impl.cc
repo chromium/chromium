@@ -66,8 +66,7 @@ void BrowsingDataQuotaHelperImpl::FetchQuotaInfoOnIOThread(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Query for storage keys. When complete, process the collected quota info.
-  quota_manager_->GetStorageKeysForType(
-      StorageType::kTemporary,
+  quota_manager_->GetAllStorageKeys(
       base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeys,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -130,7 +129,7 @@ void BrowsingDataQuotaHelperImpl::DeleteStorageKeyDataOnIOThread(
     base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   quota_manager_->DeleteStorageKeyData(
-      storage_key, StorageType::kTemporary,
+      storage_key,
       base::BindOnce(
           &BrowsingDataQuotaHelperImpl::OnStorageKeyDeletionCompleted,
           weak_factory_.GetWeakPtr(), std::move(completed)));

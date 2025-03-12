@@ -11,9 +11,11 @@
 
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -34,8 +36,10 @@ namespace browsing_data {
 AutofillCounter::AutofillCounter(
     autofill::PersonalDataManager* personal_data_manager,
     scoped_refptr<autofill::AutofillWebDataService> web_data_service,
+    const autofill::EntityDataManager* entity_data_manager,
     syncer::SyncService* sync_service)
     : personal_data_manager_(personal_data_manager),
+      entity_data_manager_(entity_data_manager),
       web_data_service_(web_data_service),
       sync_tracker_(this, sync_service),
       suggestions_query_(0),
@@ -89,6 +93,16 @@ void AutofillCounter::Count() {
         return (address->usage_history().modification_date() >= start &&
                 address->usage_history().modification_date() < end);
       });
+
+  // AutofillAI entities.
+  if (entity_data_manager_) {
+    num_entities_ = std::ranges::count_if(
+        entity_data_manager_->GetEntityInstances(),
+        [start, end](const autofill::EntityInstance& entity) {
+          return entity.date_modified() >= start &&
+                 entity.date_modified() < end;
+        });
+  }
 
   CancelAllRequests();
 
@@ -147,7 +161,7 @@ void AutofillCounter::ReportResultIfReady() {
   if (num_suggestions_.has_value()) {
     auto reported_result = std::make_unique<AutofillResult>(
         this, *num_suggestions_, num_credit_cards_, num_addresses_,
-        sync_tracker_.IsSyncActive());
+        num_entities_, sync_tracker_.IsSyncActive());
     ReportResult(std::move(reported_result));
   }
 }
@@ -158,10 +172,12 @@ AutofillCounter::AutofillResult::AutofillResult(const AutofillCounter* source,
                                                 ResultInt num_suggestions,
                                                 ResultInt num_credit_cards,
                                                 ResultInt num_addresses,
+                                                ResultInt num_entities,
                                                 bool autofill_sync_enabled_)
     : SyncResult(source, num_suggestions, autofill_sync_enabled_),
       num_credit_cards_(num_credit_cards),
-      num_addresses_(num_addresses) {}
+      num_addresses_(num_addresses),
+      num_entities_(num_entities) {}
 
 AutofillCounter::AutofillResult::~AutofillResult() = default;
 

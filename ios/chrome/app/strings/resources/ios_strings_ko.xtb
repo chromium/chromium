@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">기존 인터넷 사용 기록이 <ph name="USER_EMAIL" />에 연결됩니다. 조직에서 이 데이터를 조회할 수도 있습니다</translation>
 <translation id="1713777106376424209">배송 업체</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> 사이트를 신뢰하는 경우 저장된 비밀번호를 사용하여 로그인할 수 있습니다.</translation>
+<translation id="1718835860248848330">지난 1시간</translation>
 <translation id="1728549374069268714">붙여넣어 바로가기</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> 알림 사용</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">주소 감지가 사용 중지되었습니다. 설정에서 다시 사용 설정하세요.</translation>
 <translation id="1904580727789512086">내가 방문한 URL이 Google 계정에 저장됩니다.</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
-<translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
 <translation id="1943478190258551035">메뉴 → 설정</translation>
 <translation id="1952728750904661634">관리 계정으로 로그인</translation>

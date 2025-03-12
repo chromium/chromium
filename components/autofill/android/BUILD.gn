@@ -165,6 +165,9 @@ android_resources("autofill_payments_java_resources") {
 
 android_resources("autofill_java_resources") {
   sources = [
+    "java/res/drawable/home_logo.xml",
+    "java/res/drawable/location_on_logo.xml",
+    "java/res/drawable/work_logo.xml",
     "java/res/layout/autofill_dropdown_item.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",

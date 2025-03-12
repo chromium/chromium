@@ -267,7 +267,8 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
                storage::SharedStorageDatabase::OperationResult result) {
               std::move(complete_callback).Run();
             },
-            helper->GetCompleteCallback()));
+            helper->GetCompleteCallback()),
+        storage::SharedStorageDatabase::DataClearSource::kUI);
   }
 
   if (types.Has(BrowsingDataModel::StorageType::kQuotaStorage)) {

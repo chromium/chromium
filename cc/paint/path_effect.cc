@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/path_effect.h"
 
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -36,7 +32,7 @@ class DashPathEffect final : public PathEffect {
  public:
   explicit DashPathEffect(const float intervals[], int count, float phase)
       : PathEffect(Type::kDash),
-        intervals_(intervals, intervals + count),
+        intervals_(intervals, UNSAFE_TODO(intervals + count)),
         phase_(phase) {}
 
   bool EqualsForTesting(const DashPathEffect& other) const {

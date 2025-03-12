@@ -10,6 +10,7 @@
 #import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "url/gurl.h"
 
 @interface WhatsNewMediator ()
@@ -68,9 +68,9 @@
       [self.applicationHandler
           showSettingsFromViewController:baseViewController];
       break;
-    case WhatsNewPrimaryAction::kIOSSettingsPasswords:
-      // Handles actions that open Passwords in iOS Settings.
-      ios::provider::PasswordsInOtherAppsOpensSettings();
+    case WhatsNewPrimaryAction::kIOSCredentialProviderSettings:
+      // Handles actions that open the iOS credential provider settings.
+      OpenIOSCredentialProviderSettings();
       break;
     case WhatsNewPrimaryAction::kLens:
       // Handles actions that open Lens.

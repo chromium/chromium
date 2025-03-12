@@ -763,13 +763,14 @@ std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
   }
 }
 
-void AdAuctionServiceImpl::GetBiddingAndAuctionServerKey(
+void AdAuctionServiceImpl::GetTrustedKeyValueServerKey(
     const url::Origin& scope_origin,
     const std::optional<url::Origin>& coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
-  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      scope_origin, coordinator, std::move(callback));
+  GetInterestGroupManager().GetTrustedServerKey(
+      TrustedServerAPIType::kTrustedKeyValue, scope_origin, coordinator,
+      std::move(callback));
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
@@ -1179,8 +1180,8 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
     if (api_allowed) {
       // GetBiddingAndAuctionServerKey can call its callback synchronously, and
       // during the last loop iteration the callback may invalidate `state`.
-      GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-          seller, coordinator,
+      GetInterestGroupManager().GetTrustedServerKey(
+          TrustedServerAPIType::kBiddingAndAuction, seller, coordinator,
           base::BindOnce(
               &AdAuctionServiceImpl::OnGotOneBiddingAndAuctionServerKey,
               weak_ptr_factory_.GetWeakPtr(), state.request_id, seller));

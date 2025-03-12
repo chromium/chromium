@@ -340,6 +340,11 @@ const char kDataSharingName[] = "Data Sharing";
 const char kDataSharingDescription[] =
     "Enabled Data Sharing related UI and features.";
 
+const char kDataSharingDebugLogsName[] = "Enable data sharing debug logs";
+const char kDataSharingDebugLogsDescription[] =
+    "Enables the data sharing infrastructure to log and save debug messages "
+    "that can be shown in the internals page.";
+
 const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";

@@ -129,11 +129,9 @@
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
 <translation id="2753623023919742414">클릭하여 검색</translation>
 <translation id="2770231113462710648">다음으로 기본 브라우저 변경:</translation>
-<translation id="277338894894732084">나중에 Chromium에서 저장된 정보를 사용하여 양식을 자동으로 작성할지 묻습니다.</translation>
 <translation id="2785438272836277133">이 확장 프로그램에는 멀웨어가 포함되어 있으며, 안전하지 않습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chromium에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2803971713792056305">내 Chromium</translation>
-<translation id="2806241689335397269">Chromium에서 생일, 나이, 여권 번호와 같은 양식 정보를 저장할지 묻는 메시지가 표시됩니다.</translation>
 <translation id="2841525013647267359">출발어</translation>
 <translation id="2846251086934905009">설치 오류: 설치 프로그램이 완료되지 않았습니다. 설치가 중단되었습니다.</translation>
 <translation id="2847479871509788944">Chromium에서 제거...</translation>
@@ -179,7 +177,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
 <translation id="3412460710772753638">기기의 비밀번호 관리자에 업데이트합니다.</translation>
-<translation id="3451656833730006755">모든 컴퓨터에서 확장 프로그램 등을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="347328004046849135">유출된 비밀번호로 로그인하면 Chromium에서 알림을 표시합니다.</translation>
 <translation id="3474745554856756813">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 바로가기를 사용하여 Chromium 프로필 간에 전환하세요</translation>
@@ -462,7 +459,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="734373864078049451">웹, 북마크 및 기타 Chromium 콘텐츠가 여기에 저장됩니다.</translation>
 <translation id="7349591376906416160">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chromium을 구성했습니다.</translation>
 <translation id="7384121030444253939">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chromium에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
-<translation id="7389750180956889333">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. <ph name="BEGIN_LINK" />Chrome 자동 완성<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
 <translation id="7451052299415159299">이 사이트에서 카메라에 액세스하려면 Chromium에 권한이 필요합니다</translation>

@@ -123,7 +123,9 @@ void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
   [commands_handler_ showPlusAddressesBottomSheet];
 }
 
-void AutofillBottomSheetTabHelper::ShowSaveCardBottomSheet() {
+void AutofillBottomSheetTabHelper::ShowSaveCardBottomSheet(
+    std::unique_ptr<autofill::SaveCardBottomSheetModel> model) {
+  save_card_bottom_sheet_model_ = std::move(model);
   [commands_handler_ showSaveCardBottomSheet];
 }
 
@@ -594,6 +596,11 @@ AutofillBottomSheetTabHelper::
 plus_addresses::PlusAddressCallback
 AutofillBottomSheetTabHelper::GetPendingPlusAddressFillCallback() {
   return std::move(pending_plus_address_callback_);
+}
+
+std::unique_ptr<autofill::SaveCardBottomSheetModel>
+AutofillBottomSheetTabHelper::GetSaveCardBottomSheetModel() {
+  return std::move(save_card_bottom_sheet_model_);
 }
 
 autofill::VirtualCardEnrollmentCallbacks

@@ -375,7 +375,6 @@
 <translation id="1244265436519979884">Linux için geri yükleme şu anda devam ediyor</translation>
 <translation id="1244303850296295656">Uzantı hatası</translation>
 <translation id="1244917379075403655">"Ayarlar"ı tıklayın</translation>
-<translation id="1245041875932187638">Yapay zeka ile otomatik doldurma tarafından kullanılan tüm verileri silin</translation>
 <translation id="1245331638296910488">Dosyalar, Microsoft 365'te açıldığında OneDrive'a taşınır</translation>
 <translation id="1245628370644070008">Yerel verileri kurtar</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> yüklenemedi: Görüntü URL'si <ph name="HTTP_ERROR" /> hata kodu döndürdü. Lütfen yöneticinizle iletişime geçin.</translation>
@@ -1407,7 +1406,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Hazırlanıyor</translation>
 <translation id="1969654639948595766">WebRTC metin günlükleri (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Tüm veriler silinecektir. Bu işlem geri alınamaz</translation>
 <translation id="1972313920920745320">Eklediğiniz siteler her zaman etkin kalır ve bu sitelerin kullandığı bellekte yer açılmaz. <ph name="BEGIN_LINK" />Belirli siteleri etkin tutma hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">İçerik, mevcut web sayfası ziyaretinize göre proaktif olarak yüklendiğinden internette daha hızlı gezinebilirsiniz</translation>
 <translation id="197288927597451399">Sakla</translation>
@@ -2288,6 +2286,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="256517381556987641">Dosya Senkronizasyonu şu ana kadar <ph name="ITEMS_FOUND" /> dosya buldu ve hâlâ depolama alanını kontrol ediyor. Dosya Senkronizasyonu'nu birkaç dakika sonra tekrar etkinleştirmeyi deneyin.</translation>
 <translation id="2565214867520763227">Ekran okuyucuyu açın</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUM_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın</translation>
+<translation id="256726287944589768">Yeni Sekme sayfasında altbilgiyi göster</translation>
 <translation id="2568694057933302218">Gizli moddayken siteler, tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="2568774940984945469">Bilgi Çubuğu Kapsayıcı</translation>
 <translation id="2569972178052279830">Perakendeci Adı</translation>
@@ -2796,6 +2795,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2921081876747860777">Yerel verilerinizi korumak için lütfen bir şifre oluşturun.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> cihazınız şimdi kilitlenecek.
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Aynı görev grubundaki diğer <ph name="OTHER_TASK_NUM" /> görev: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Bu hesabı kaldır</translation>
 <translation id="2923644930701689793">Telefonunuzun film rulosuna erişin</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
@@ -3053,7 +3053,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3108957152224931571">Vurgu rengi</translation>
 <translation id="3109206895301430738">Kayıtlı Sekme Grupları</translation>
 <translation id="3109724472072898302">Daraltılmış</translation>
-<translation id="310979712355504754">Tümünü sil</translation>
 <translation id="3112292765614504292">Uygulama boyutu: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Bu sekme eklendi</translation>
 <translation id="311394601889664316">Sitelerin cihazımdaki dosya veya klasörleri düzenlemesine izin verme</translation>
@@ -4071,7 +4070,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Bir uzantı onaylandı}other{# uzantı onaylandı}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux için en az <ph name="INSTALL_SIZE" /> alan olması önerilir.</translation>
-<translation id="3824203811509979971">İçeriği özetleyin veya soru sorun</translation>
 <translation id="3824621460022590830">Cihaz kaydı jetonu geçersiz. Lütfen cihaz sahibiyle ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Diğer cihazlardaki sekmeleri görmek için oturum açın</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Bu dosya türü için seçimimi hatırla: <ph name="FILE_TYPES" />}other{Bu dosya türleri için seçimimi hatırla: <ph name="FILE_TYPES" />}}</translation>
@@ -5886,7 +5884,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="512642543295077915">arama + geri tuşu</translation>
 <translation id="5126611267288187364">Değişiklikleri görüntüle</translation>
 <translation id="5127620150973591153">Güvenli bağlantı kimliği: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">İçeriği özetleyin veya soru sorun.</translation>
 <translation id="5127881134400491887">Ağ bağlantılarını yönetme</translation>
 <translation id="5127934926273826089">Çiçekler</translation>
 <translation id="5127986747308934633">Yöneticiniz cihazınızı kontrol ediyor</translation>
@@ -7437,7 +7434,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6254892857036829079">Mükemmel</translation>
 <translation id="6257131917452817589">Otomatik şifre değişikliği</translation>
 <translation id="6257602895346497974">Senkronizasyonu aç...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Daha önce bağlanmış veya yapılandırılmış birden fazla ağ mevcutsa bu ağ tercih edilir</translation>
 <translation id="6259776178973198997">WiFi Direct Sahip Bilgisini Yenile</translation>
 <translation id="6262371516389954471">Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir.</translation>
@@ -9868,6 +9864,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ses <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android telefonunuzdan kablosuz bağlantıyı otomatik olarak aktarın</translation>
 <translation id="7991296728590311172">Anahtar Erişimi ayarları</translation>
+<translation id="7992080146463834191">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun.</translation>
 <translation id="7992203134935383159">Konuşma sentezi</translation>
 <translation id="7997826902155442747">Süreç Önceliği</translation>
 <translation id="7997828719430450286">Başarılı.</translation>
@@ -11133,6 +11130,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" devre dışı bırakıldı</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
+<translation id="8875221558267407626">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun</translation>
 <translation id="8875520811099717934">Linux'u yeni sürüme geçir</translation>
 <translation id="8875736897340638404">Görünürlük ayarınızı seçin</translation>
 <translation id="8876307312329369159">Bu ayar demo oturumunda değiştirilemez.</translation>

@@ -17,8 +17,4 @@ BASE_FEATURE(kCollaborationMessagingDatabase,
              "CollaborationMessagingDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCollaborationFlowAndroid,
-             "CollaborationFlowAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace collaboration::features

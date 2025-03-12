@@ -745,6 +745,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     viz::RasterContextProvider& context_provider) {
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
+  update->begin_frame_args = tree.CurrentBeginFrameArgs();
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
   update->device_viewport = tree.GetDeviceViewport();

@@ -32,6 +32,7 @@
 #import "components/commerce/core/flag_descriptions.h"
 #import "components/content_settings/core/common/features.h"
 #import "components/data_sharing/public/features.h"
+#import "components/data_sharing/public/switches.h"
 #import "components/dom_distiller/core/dom_distiller_switches.h"
 #import "components/download/public/background_service/features.h"
 #import "components/enterprise/browser/enterprise_switches.h"
@@ -849,9 +850,14 @@ const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
 const FeatureEntry::FeatureParam kIdentityDiscAccountMenuNoEllipsis[] = {
     {kDisableAccountMenuEllipsisParam, "true"},
 };
+const FeatureEntry::FeatureParam kIdentityDiscAccountMenuWithSettings[] = {
+    {kShowSettingsInAccountMenuParam, "true"},
+};
 const FeatureEntry::FeatureVariation kIdentityDiscAccountMenuVariations[] = {
     {" - without account menu ellipsis", kIdentityDiscAccountMenuNoEllipsis,
      std::size(kIdentityDiscAccountMenuNoEllipsis), nullptr},
+    {" - with settings button", kIdentityDiscAccountMenuWithSettings,
+     std::size(kIdentityDiscAccountMenuWithSettings), nullptr},
 };
 
 const FeatureEntry::FeatureParam kIdentityConfirmationSnackbarTestingConfig[] =
@@ -2539,6 +2545,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enhanced-calendar", flag_descriptions::kEnhancedCalendarName,
      flag_descriptions::kEnhancedCalendarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnhancedCalendar)},
+    {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,
+     flag_descriptions::kDataSharingDebugLogsDescription, flags_ui::kOsIos,
+     SINGLE_VALUE_TYPE(data_sharing::kDataSharingDebugLoggingEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

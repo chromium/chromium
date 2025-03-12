@@ -24,6 +24,9 @@ inline constexpr base::FeatureParam<int>
 // Enables syncing of Loyalty Cards coming from Google Wallet.
 BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
 
+// Enables syncing account-local metadata for shared tab groups.
+BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether to show a batch upload card in Android unified settings
 // panel.

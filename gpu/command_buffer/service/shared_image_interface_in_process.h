@@ -127,7 +127,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   SyncToken GenVerifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
-  void Flush() override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 

@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Les dades de navegació existents s'enllaçaran a <ph name="USER_EMAIL" />. És possible que la teva organització pugui veure aquestes dades.</translation>
 <translation id="1713777106376424209">Entregat per</translation>
 <translation id="1715515772563243997">Si confies en <ph name="SITE" />, pots utilitzar una contrasenya desada per iniciar la sessió.</translation>
+<translation id="1718835860248848330">Darrera hora</translation>
 <translation id="1728549374069268714">Enganxa i ves-hi</translation>
 <translation id="1732468323901456775">Activa les notificacions per a <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">La detecció d'adreces està desactivada. Torna a activar-la a Configuració.</translation>
 <translation id="1904580727789512086">Els URL que visites es desen al teu Compte de Google</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
-<translation id="1923342640370224680">Darrera hora</translation>
 <translation id="1941314575388338491">Feu doble toc per copiar-ho.</translation>
 <translation id="1943478190258551035">Menú → Configuració</translation>
 <translation id="1952728750904661634">Inicieu la sessió amb un compte gestionat</translation>

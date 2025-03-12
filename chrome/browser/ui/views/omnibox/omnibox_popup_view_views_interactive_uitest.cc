@@ -24,12 +24,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
   // Start with the Omnibox unfocused.
   omnibox_view()->GetFocusManager()->ClearFocus();
-  const SkColor color_before_focus = location_bar()->background()->get_color();
+  const SkColor color_before_focus =
+      location_bar()->GetBackgroundColorForTesting();
   EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
 
   // Give the Omnibox focus and get its focused color.
   omnibox_view()->RequestFocus();
-  const SkColor color_after_focus = location_bar()->background()->get_color();
+  const SkColor color_after_focus =
+      location_bar()->GetBackgroundColorForTesting();
 
   // Sanity check that the colors are different, otherwise this test will not be
   // testing anything useful. It is possible that a particular theme could
@@ -41,13 +43,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   // The background is hosted in the view that contains the results area.
   CreatePopupForTestQuery();
   views::View* background_host = popup_view()->parent();
-  EXPECT_EQ(color_after_focus, background_host->background()->get_color());
+  EXPECT_EQ(color_after_focus,
+            background_host->background()->color().ConvertToSkColor(
+                background_host->GetColorProvider()));
 
   omnibox_view()->GetFocusManager()->ClearFocus();
 
   // Blurring the Omnibox w/ in-progress input (e.g. "foo") should result in
   // the on-focus colors.
-  EXPECT_EQ(color_after_focus, location_bar()->background()->get_color());
+  EXPECT_EQ(color_after_focus, location_bar()->GetBackgroundColorForTesting());
   EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
 }
 

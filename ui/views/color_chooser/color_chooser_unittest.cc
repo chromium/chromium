@@ -13,9 +13,11 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/background.h"
 #include "ui/views/color_chooser/color_chooser_listener.h"
@@ -85,9 +87,11 @@ class ColorChooserTest : public views::ViewsTestBase {
   }
 
   SkColor GetShownColor() const {
+    CHECK(widget_);
     return chooser_->selected_color_patch_for_testing()
         ->background()
-        ->get_color();
+        ->color()
+        .ConvertToSkColor(widget_->GetColorProvider());
   }
 
   SkColor GetTextualColor() const {

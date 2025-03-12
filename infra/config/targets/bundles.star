@@ -1634,6 +1634,12 @@ targets.bundle(
     name = "chromium_ios_scripts",
     targets = [
         "check_static_initializers",
+        targets.bundle(
+            targets = "base_unittests",
+            variants = [
+                "IPHONE_15_PRO_18",
+            ],
+        ),
     ],
 )
 
@@ -5185,7 +5191,7 @@ targets.bundle(
         targets.bundle(
             targets = "clang_tot_gtests",
             variants = [
-                "IPHONE_15_PRO_18_0",
+                "IPHONE_15_PRO_18",
             ],
         ),
     ],

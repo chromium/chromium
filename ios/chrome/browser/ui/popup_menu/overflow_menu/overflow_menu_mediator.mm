@@ -2378,7 +2378,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kPriceNotificationsUsed);
   [self dismissMenu];
-  [self.priceNotificationHandler showPriceNotifications];
+  [self.priceNotificationHandler showPriceNotificationsWithCurrentPage];
 }
 
 // Dismisses the menu and opens downloads.

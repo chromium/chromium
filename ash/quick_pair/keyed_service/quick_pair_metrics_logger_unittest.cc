@@ -157,10 +157,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-    session_controller->Reset();
+    ClearLogin();
 
     // Inject our own PrefServices for each user which enables us to setup the
     // desks restore data before the user signs in.

@@ -31,8 +31,16 @@ import java.util.function.Function;
 /* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
     private final NotificationManagerCompat mNotificationManager;
+    private static @Nullable BaseNotificationManagerProxy sInstance;
 
-    public AsyncNotificationManagerProxyImpl() {
+    public static BaseNotificationManagerProxy getInstance() {
+        if (sInstance == null) {
+            sInstance = new NotificationManagerProxyImpl();
+        }
+        return sInstance;
+    }
+
+    private AsyncNotificationManagerProxyImpl() {
         mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 

@@ -76,7 +76,8 @@ interface PageElementTypes {
   groupName: HTMLInputElement;
   setExperimentStatus: HTMLSpanElement;
   testClipboardSave: HTMLButtonElement;
-  busyWork: HTMLButtonElement;
+  busyWork3s: HTMLButtonElement;
+  busyWork8s: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -599,12 +600,20 @@ $.scrollToBn.addEventListener('click', async () => {
   }
 });
 
-$.busyWork.addEventListener('click', () => {
-  const workTimeMs: number = 5000;
+// Hang web client for <workTimeMs> amount of time.
+function busyWork(workTimeMs: number) {
   const end = performance.now() + workTimeMs;
   while (performance.now() < end) {
     // mock busy work to test the web client unresponsive handling.
   }
+}
+
+$.busyWork3s.addEventListener('click', () => {
+  busyWork(3000);
+});
+
+$.busyWork8s.addEventListener('click', () => {
+  busyWork(8000);
 });
 
 

@@ -88,6 +88,8 @@ extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
 
 // Parameter to remove the three-dot menu from the account menu.
 extern const char kDisableAccountMenuEllipsisParam[];
+// Parameter to show the settings button in the account menu.
+extern const char kShowSettingsInAccountMenuParam[];
 
 #pragma mark - Helpers
 
@@ -121,5 +123,8 @@ double GetDeprecateFeedHeaderParameterValueAsDouble(
 
 // YES if the account menu is enabled without the three-dot menu.
 bool IdentityDiscAccountMenuEnabledWithoutEllipsis();
+
+// YES if the account menu is enabled with the settings button.
+bool IdentityDiscAccountMenuEnabledWithSettings();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

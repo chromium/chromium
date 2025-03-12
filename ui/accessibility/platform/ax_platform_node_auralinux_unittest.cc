@@ -1817,7 +1817,7 @@ class ActivationTester {
     saw_deactivate_ = false;
   }
 
-  virtual ~ActivationTester() {
+  ~ActivationTester() {
     g_signal_handler_disconnect(target_, activate_id_);
     g_signal_handler_disconnect(target_, deactivate_id_);
   }

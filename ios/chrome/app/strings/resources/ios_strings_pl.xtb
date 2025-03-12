@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Obecne dane przeglądania zostaną powiązane z kontem <ph name="USER_EMAIL" />. Te dane mogą być widoczne dla Twojej organizacji.</translation>
 <translation id="1713777106376424209">Firma kurierska:</translation>
 <translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
+<translation id="1718835860248848330">Ostatnia godzina</translation>
 <translation id="1728549374069268714">Wklej i otwórz</translation>
 <translation id="1732468323901456775">Włącz powiadomienia z funkcji <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Wykrywanie adresu jest wyłączone. Włącz je ponownie w Ustawieniach.</translation>
 <translation id="1904580727789512086">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
-<translation id="1923342640370224680">Ostatnia godzina</translation>
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
 <translation id="1943478190258551035">Menu → Ustawienia</translation>
 <translation id="1952728750904661634">Zaloguj się na konto zarządzane</translation>

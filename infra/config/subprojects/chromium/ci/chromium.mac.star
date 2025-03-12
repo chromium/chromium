@@ -1126,13 +1126,12 @@ ios_builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "compile_only",
+            "minimal_symbols",
             "ios_device",
             "arm64",
-            "ios_google_cert",
-            "ios_disable_code_signing",
             "release_builder",
             "remoteexec",
+            "xctest",
         ],
     ),
     targets = targets.bundle(
@@ -1141,6 +1140,17 @@ ios_builder(
         ],
         additional_compile_targets = [
             "all",
+        ],
+        mixins = [
+            "ci_only",
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "ios_restart_device",
+            "limited_capacity_bot",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
         ],
     ),
     cpu = cpu.ARM64,

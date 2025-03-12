@@ -38,8 +38,8 @@ class TabStyleViews {
   TabStyleViews();
   virtual ~TabStyleViews();
 
-  // Gets the specific |path_type| associated with the specific |tab|.
-  // If |force_active| is true, applies an active appearance on the tab (usually
+  // Gets the specific `path_type` associated with the specific `tab`.
+  // If `force_active` is true, applies an active appearance on the tab (usually
   // involving painting an optional stroke) even if the tab is not the active
   //  tab.
   virtual SkPath GetPath(TabStyle::PathType path_type,

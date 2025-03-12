@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_cache.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -21,7 +17,7 @@ namespace {
 template <typename T>
 void EraseFromMap(T* map, size_t n, const volatile PaintCacheId* ids) {
   for (size_t i = 0; i < n; ++i) {
-    auto id = ids[i];
+    auto id = UNSAFE_TODO(ids[i]);
     map->erase(id);
   }
 }
@@ -80,7 +76,7 @@ void ClientPaintCache::Purge(PurgedData* purged_data) {
     PaintCacheId id = it->first.second;
 
     EraseFromMap(it);
-    (*purged_data)[static_cast<uint32_t>(type)].push_back(id);
+    UNSAFE_TODO((*purged_data)[static_cast<uint32_t>(type)]).push_back(id);
   }
 }
 

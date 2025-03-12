@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
@@ -90,7 +86,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
         size_(base::bits::AlignDown(size, kDefaultAlignment)),
         options_(options),
         enable_security_constraints_(enable_security_constraints) {
-    memory_end_ = memory_ + size_;
+    memory_end_ = UNSAFE_TODO(memory_ + size_);
     AssertAlignment(memory_, BufferAlignment());
   }
 
@@ -379,7 +375,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
         [&] {
           static_assert(std::is_trivially_copyable_v<decltype(vals)>);
           reinterpret_cast<decltype(vals)*>(ptr)[0] = vals;
-          ptr += base::bits::AlignUp(sizeof(vals), kDefaultAlignment);
+          UNSAFE_TODO(ptr +=
+                      base::bits::AlignUp(sizeof(vals), kDefaultAlignment));
         }(),
         ...);
 
@@ -410,7 +407,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
     reinterpret_cast<T*>(memory_)[0] = val;
 
-    memory_ += size;
+    UNSAFE_TODO(memory_ += size);
     AssertFieldAlignment();
   }
 
@@ -468,7 +465,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
     size_t aligned_bytes =
         base::bits::AlignUp(bytes_written, kDefaultAlignment);
     DCHECK_LE(aligned_bytes, remaining_bytes());
-    memory_ += aligned_bytes;
+    UNSAFE_TODO(memory_ += aligned_bytes);
   }
   void EnsureBytes(size_t required_bytes) {
     if (remaining_bytes() < required_bytes) {

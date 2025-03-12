@@ -2861,7 +2861,11 @@ source_set("browser") {
       sources += [ "child_process_launcher_helper_ios.mm" ]
       frameworks += [ "BrowserEngineKit.framework" ]
     } else {
-      sources += [ "child_process_launcher_helper_tvos.mm" ]
+      sources += [
+        "child_process_launcher_helper_tvos.mm",
+        "renderer_host/render_widget_host_view_tvos.h",
+        "renderer_host/render_widget_host_view_tvos.mm",
+      ]
     }
 
     frameworks += [ "IOSurface.framework" ]

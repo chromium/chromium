@@ -375,7 +375,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1244265436519979884">Hay una restauración de Linux en curso</translation>
 <translation id="1244303850296295656">Error de extensión</translation>
 <translation id="1244917379075403655">Haz clic en Configuración</translation>
-<translation id="1245041875932187638">Eliminar todos los datos usados por Autocompletar con IA</translation>
 <translation id="1245331638296910488">Los archivos se moverán a OneDrive al abrirlos en Microsoft 365</translation>
 <translation id="1245628370644070008">Recuperación de datos locales</translation>
 <translation id="1246863218384630739">No se ha podido instalar <ph name="VM_NAME" />: la URL de la imagen ha devuelto un código de error <ph name="HTTP_ERROR" />. Ponte en contacto con tu administrador.</translation>
@@ -1407,7 +1406,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Preparando</translation>
 <translation id="1969654639948595766">Registros de texto de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Se eliminarán todos los datos. Esta acción no se puede deshacer.</translation>
 <translation id="1972313920920745320">Los sitios que añadas siempre permanecerán activos y no se liberará memoria de ellos. <ph name="BEGIN_LINK" />Más información sobre cómo mantener activos determinados sitios<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se carga de forma proactiva en función de la página web en la que estás</translation>
 <translation id="197288927597451399">Descargar</translation>
@@ -2291,6 +2289,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="256517381556987641">Sincronización de archivos ha encontrado <ph name="ITEMS_FOUND" /> archivos hasta ahora y todavía está comprobando el espacio de almacenamiento. Prueba a activar Sincronización de archivos de nuevo dentro de unos minutos.</translation>
 <translation id="2565214867520763227">Activar el lector de pantalla</translation>
 <translation id="2566146433999774844">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
+<translation id="256726287944589768">Mostrar pie de página en la página Nueva pestaña</translation>
 <translation id="2568694057933302218">En modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en los diferentes sitios. La actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que las funciones de algunos sitios no estén operativas.</translation>
 <translation id="2568774940984945469">Contenedor de barra de información</translation>
 <translation id="2569972178052279830">Nombre del comercio</translation>
@@ -2799,6 +2798,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2921081876747860777">Crea una contraseña para proteger tus datos locales</translation>
 <translation id="2923006468155067296">Tu <ph name="DEVICE_TYPE" /> se va a bloquear ahora.
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tareas más del mismo grupo de tareas: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Quitar esta cuenta</translation>
 <translation id="2923644930701689793">Accede al carrete de tu teléfono</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
@@ -3056,7 +3056,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3108957152224931571">Color de resaltado</translation>
 <translation id="3109206895301430738">Grupos de pestañas guardados</translation>
 <translation id="3109724472072898302">Contraído</translation>
-<translation id="310979712355504754">Eliminar todos</translation>
 <translation id="3112292765614504292">Tamaño de la aplicación: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Ha añadido esta pestaña</translation>
 <translation id="311394601889664316">No permitir que los sitios editen archivos ni carpetas de tu dispositivo</translation>
@@ -4076,7 +4075,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se ha aprobado 1 extensión}other{Se han aprobado # extensiones}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Se recomienda un mínimo de <ph name="INSTALL_SIZE" /> de espacio para Linux.</translation>
-<translation id="3824203811509979971">Resume contenido o haz preguntas</translation>
 <translation id="3824621460022590830">El token de registro de dispositivos no es válido. Ponte en contacto con el propietario o el administrador del dispositivo Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicia sesión para ver pestañas de otros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recordar mi elección para este tipo de archivo: <ph name="FILE_TYPES" />}other{Recordar mi elección para estos tipos de archivos: <ph name="FILE_TYPES" />}}</translation>
@@ -5889,7 +5887,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="512642543295077915">Tecla de búsqueda + Retroceso</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">Identificador de conexión segura: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Resume contenido o haz preguntas.</translation>
 <translation id="5127881134400491887">Gestionar conexiones de red</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5127986747308934633">El administrador está controlando tu dispositivo</translation>
@@ -7439,7 +7436,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6254892857036829079">Perfecta</translation>
 <translation id="6257131917452817589">el cambio de contraseña automatizado</translation>
 <translation id="6257602895346497974">Activar sincronización...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Esta red tendrá preferencia si hay disponible más de una red ya configurada o a la que te hayas conectado anteriormente</translation>
 <translation id="6259776178973198997">Actualizar información de propietarios de Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
@@ -9871,6 +9867,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voz <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir Wi-Fi automáticamente desde tu teléfono Android</translation>
 <translation id="7991296728590311172">Ajustes de Accesibilidad con interruptores</translation>
+<translation id="7992080146463834191">Resume contenido, simplifica lenguaje complejo o haz preguntas.</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
 <translation id="7997826902155442747">Prioridad del proceso</translation>
 <translation id="7997828719430450286">Correcto.</translation>
@@ -11136,6 +11133,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> se ha desactivado</translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
+<translation id="8875221558267407626">Resume contenido, simplifica lenguaje complejo o haz preguntas</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Elige tu visibilidad</translation>
 <translation id="8876307312329369159">Este ajuste no se puede cambiar en una sesión de demostración.</translation>

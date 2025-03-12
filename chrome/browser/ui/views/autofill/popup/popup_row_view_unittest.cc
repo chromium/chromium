@@ -176,24 +176,18 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 TEST_F(PopupRowViewTest, BackgroundColorOnContentSelect) {
   ShowView(/*line_number=*/0, {Suggestion(u"Some entry")});
   ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
-  EXPECT_EQ(
-      row_view().GetBackground()->get_color(),
-      row_view().GetColorProvider()->GetColor(ui::kColorDropdownBackground));
+  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
   EXPECT_FALSE(row_view().GetContentView().GetBackground());
 
   row_view().SetSelectedCell(CellType::kContent);
   // If only the content view is selected, then the background color of the row
   // view remains the same ...
-  EXPECT_EQ(
-      row_view().GetBackground()->get_color(),
-      row_view().GetColorProvider()->GetColor(ui::kColorDropdownBackground));
+  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
   // ... but the background of the content view is set.
   views::Background* content_background =
       row_view().GetContentView().GetBackground();
   ASSERT_TRUE(content_background);
-  EXPECT_EQ(content_background->get_color(),
-            row_view().GetColorProvider()->GetColor(
-                ui::kColorDropdownBackgroundSelected));
+  EXPECT_EQ(content_background->color(), ui::kColorDropdownBackgroundSelected);
 }
 
 // Tests that the background colors of both the `PopupRowView` and the
@@ -205,17 +199,13 @@ TEST_F(PopupRowViewTest,
   suggestion.highlight_on_select = false;
   ShowView(/*line_number=*/0, {suggestion});
   ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
-  EXPECT_EQ(
-      row_view().GetBackground()->get_color(),
-      row_view().GetColorProvider()->GetColor(ui::kColorDropdownBackground));
+  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
   EXPECT_FALSE(row_view().GetContentView().GetBackground());
 
   // When `highlight_on_select` is false, then selecting a cell does not change
   // the background color.
   row_view().SetSelectedCell(CellType::kContent);
-  EXPECT_EQ(
-      row_view().GetBackground()->get_color(),
-      row_view().GetColorProvider()->GetColor(ui::kColorDropdownBackground));
+  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
   EXPECT_FALSE(row_view().GetContentView().GetBackground());
 }
 

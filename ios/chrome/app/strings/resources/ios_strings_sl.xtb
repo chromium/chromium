@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Obstoječi podatki brskanja bodo povezani z računom <ph name="USER_EMAIL" />. Ti podatki so morda vidni vaši organizaciji.</translation>
 <translation id="1713777106376424209">Dostavljeno do</translation>
 <translation id="1715515772563243997">Če zaupate spletnemu mestu <ph name="SITE" />, lahko za prijavo uporabite shranjeno geslo.</translation>
+<translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1728549374069268714">Prilepi in nadaljuj</translation>
 <translation id="1732468323901456775">Vklop obvestil za: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Zaznavanje naslova je izklopljeno. Znova ga lahko vklopite v nastavitvah.</translation>
 <translation id="1904580727789512086">URL-ji, ki jih obiščete, se shranijo v račun Google.</translation>
 <translation id="1911619930368729126">Prenos v Google Drive</translation>
-<translation id="1923342640370224680">Zadnja ura</translation>
 <translation id="1941314575388338491">Dvakrat se dotaknite, če želite kopirati.</translation>
 <translation id="1943478190258551035">Meni → Nastavitve</translation>
 <translation id="1952728750904661634">Prijava z upravljanim računom</translation>

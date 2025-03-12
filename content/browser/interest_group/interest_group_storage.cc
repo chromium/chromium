@@ -4716,10 +4716,19 @@ std::optional<DebugReportLockout> DoGetDebugReportLockout(
     return std::nullopt;
   }
   lockout.BindTime(0, ignore_before.value_or(base::Time::Min()));
+
   if (lockout.Step()) {
     return DebugReportLockout(lockout.ColumnTime(0),
                               lockout.ColumnTimeDelta(1));
   }
+
+  if (!lockout.Succeeded()) {
+    // When reading the table fails, treat it as there is an unexpired lockout,
+    // to cautiously avoid sending more fDO reports than allowed in case there
+    // is a lockout in the table.
+    return DebugReportLockout(base::Time::Now(), base::Days(365));
+  }
+  // Reading the table succeeded but there was no row.
   return std::nullopt;
 }
 
@@ -4740,13 +4749,23 @@ std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
   cooldown_debugging_only_report.BindString(0, Serialize(origin));
   cooldown_debugging_only_report.BindTime(
       1, ignore_before.value_or(base::Time::Min()));
-  if (!cooldown_debugging_only_report.Step()) {
-    return std::nullopt;
+
+  if (cooldown_debugging_only_report.Step()) {
+    return DebugReportCooldown(
+        cooldown_debugging_only_report.ColumnTime(0),
+        static_cast<DebugReportCooldownType>(
+            cooldown_debugging_only_report.ColumnInt(1)));
   }
 
-  return DebugReportCooldown(cooldown_debugging_only_report.ColumnTime(0),
-                             static_cast<DebugReportCooldownType>(
-                                 cooldown_debugging_only_report.ColumnInt(1)));
+  if (!cooldown_debugging_only_report.Succeeded()) {
+    // When reading the table fails, treat it as there is an unexpired cooldown,
+    // to cautiously avoid sending more fDO reports than allowed in case there
+    // is a cooldown in the table.
+    return DebugReportCooldown(base::Time::Now(),
+                               DebugReportCooldownType::kRestrictedCooldown);
+  }
+  // Reading the table succeeded but there was no row.
+  return std::nullopt;
 }
 
 void DoGetDebugReportCooldowns(

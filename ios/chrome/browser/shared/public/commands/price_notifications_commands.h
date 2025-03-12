@@ -11,7 +11,12 @@
 // Hides the price notifications UI.
 - (void)hidePriceNotifications;
 
-// Shows the price notifications UI.
+// Shows the price tracking UI, including the current page
+// the user is navigated to in the active Tab.
+- (void)showPriceNotificationsWithCurrentPage;
+
+// Shows the price tracking UI, showing the price tracked items
+// only (no current page).
 - (void)showPriceNotifications;
 
 // Shows the price notifications IPH.

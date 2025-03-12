@@ -111,6 +111,17 @@ enum class TrustedVaultFileReadStatusForUMA {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileReadStatus)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus)
+enum class TrustedVaultListSecurityDomainMembersPinStatus {
+  kPinPresentAndUsableForRecovery = 0,
+  kPinPresentButUnusableForRecovery = 1,
+  kNoPinPresent = 2,
+  kMaxValue = kNoPinPresent
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultListSecurityDomainMembersPinStatus)
+
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason);
@@ -174,6 +185,10 @@ void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
 // client.
 void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
     std::optional<SecurityDomainId> security_domain);
+
+void RecordTrustedVaultListSecurityDomainMembersPinStatus(
+    SecurityDomainId security_domain_id,
+    TrustedVaultListSecurityDomainMembersPinStatus status);
 
 // Returns a security domain name suitable for using in histograms. When
 // including this in a histogram, its name in the XML should have

@@ -22,13 +22,13 @@ namespace ui {
 
 // The data associated with an accessibility tree that's global to the
 // tree and not associated with any particular node in the tree.
-struct AX_BASE_EXPORT AXTreeData {
+struct AX_BASE_EXPORT AXTreeData final {
   AXTreeData();
   AXTreeData(const AXTreeData& other);
-  virtual ~AXTreeData();
+  ~AXTreeData();
 
   // Return a string representation of this data, for debugging.
-  virtual std::string ToString() const;
+  std::string ToString() const;
 
   // This is a simple serializable struct. All member variables should be
   // public and copyable.

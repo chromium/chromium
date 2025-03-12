@@ -60,7 +60,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void MoveTab(int from_model_index, int to_model_index) = 0;
   virtual void RemoveTab(int index, bool was_active) = 0;
   virtual void SetTabPinned(int model_index, TabPinned pinned) = 0;
-  // Changes the active tab from |prev_active_index| to |new_active_index|.
+  // Changes the active tab from `prev_active_index` to `new_active_index`.
   virtual void SetActiveTab(std::optional<size_t> prev_active_index,
                             std::optional<size_t> new_active_index) = 0;
 
@@ -88,8 +88,8 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   // Handle tab group model changes.
   virtual void OnGroupCreated(const tab_groups::TabGroupId& group) = 0;
-  // Opens the editor bubble for the tab |group| as a result of an explicit user
-  // action to create the |group|.
+  // Opens the editor bubble for the tab `group` as a result of an explicit user
+  // action to create the `group`.
   virtual void OnGroupEditorOpened(const tab_groups::TabGroupId& group) = 0;
   virtual void OnGroupMoved(const tab_groups::TabGroupId& group) = 0;
   virtual void OnGroupContentsChanged(const tab_groups::TabGroupId& group) = 0;
@@ -159,7 +159,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // Returns the total width available for the TabContainer's use.
   virtual int GetAvailableWidthForTabContainer() const = 0;
 
-  // See |in_tab_close_| for details on tab closing mode. |source| is the input
+  // See `in_tab_close_` for details on tab closing mode. `source` is the input
   // method used to enter tab closing mode, which determines how it is exited
   // due to user inactivity.
   virtual void EnterTabClosingMode(std::optional<int> override_width,

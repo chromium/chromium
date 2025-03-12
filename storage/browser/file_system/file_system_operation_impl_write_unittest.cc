@@ -266,8 +266,7 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteFailureByQuota) {
   ScopedTextBlob blob(blob_storage_context(), "blob:success",
                       "Hello, world!\n");
   quota_manager_->SetQuota(
-      blink::StorageKey::CreateFromStringForTesting(kOrigin),
-      FileSystemTypeToQuotaStorageType(kFileSystemType), 10);
+      blink::StorageKey::CreateFromStringForTesting(kOrigin), 10);
   file_system_context_->operation_runner()->Write(URLForPath(virtual_path_),
                                                   blob.GetBlobDataHandle(), 0,
                                                   RecordWriteCallback());

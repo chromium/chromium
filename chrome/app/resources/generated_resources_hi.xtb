@@ -376,7 +376,6 @@
 <translation id="1244265436519979884">फ़िलहाल, Linux की बहाल करने की प्रक्रिया जारी है</translation>
 <translation id="1244303850296295656">एक्‍सटेंशन गड़बड़ी</translation>
 <translation id="1244917379075403655">“सेटिंग” पर क्लिक करें</translation>
-<translation id="1245041875932187638">एआई की मदद से ऑटोमैटिक भरने की सुविधा का इस्तेमाल करने से जुड़ा पूरा डेटा मिटाएं</translation>
 <translation id="1245331638296910488">Microsoft 365 में खोलने पर, फ़ाइलें OneDrive में चली जाएंगी</translation>
 <translation id="1245628370644070008">स्थानीय डेटा वापस पाने की सुविधा</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल नहीं की जा सकी: इमेज यूआरएल पर <ph name="HTTP_ERROR" /> गड़बड़ी कोड आया. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -1418,7 +1417,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">तैयार किया जा रहा है</translation>
 <translation id="1969654639948595766">WebRTC लेख लॉग (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">ऐसा करने पर, डिवाइस का पूरा डेटा मिट जाएगा. मिटाने के बाद डेटा वापस नहीं पाया जा सकता</translation>
 <translation id="1972313920920745320">आपने जो साइटें जोड़ी हैं वे हमेशा ऐक्टिव रहेंगी. साथ ही, उनकी मेमोरी को खाली नहीं किया जाएगा. <ph name="BEGIN_LINK" />चुनिंदा साइटों को ऐक्टिव रखने के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए वेब पेज के हिसाब से लोड होता है</translation>
 <translation id="197288927597451399">रखें</translation>
@@ -3071,7 +3069,6 @@
 <translation id="3108957152224931571">हाइलाइट करने के लिए रंग</translation>
 <translation id="3109206895301430738">सेव किए हुए टैब ग्रुप</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
-<translation id="310979712355504754">सभी मिटाएं</translation>
 <translation id="3112292765614504292">ऐप्लिकेशन का साइज़: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">यह टैब जोड़ा गया</translation>
 <translation id="311394601889664316">साइटों को अपने डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति न दें</translation>
@@ -4091,7 +4088,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन को मंज़ूरी दी गई}one{# एक्सटेंशन को मंज़ूरी दी गई}other{# एक्सटेंशन को मंज़ूरी दी गई}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux के लिए कम से कम <ph name="INSTALL_SIZE" /> खाली जगह होनी चाहिए.</translation>
-<translation id="3824203811509979971">कॉन्टेंट के बारे में खास जानकारी पाएं या इससे जुड़े सवाल पूछें</translation>
 <translation id="3824621460022590830">डिवाइस का नाम दर्ज करने वाला टोकन अमान्य है. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">अन्य डिवाइसों में खुले हुए टैब देखने के लिए साइन इन करें</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}one{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}other{इन फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}}</translation>
@@ -4277,7 +4273,7 @@
 <translation id="3948985214866944547">ज़्यादातर लोग इस साइट के लिए, जगह की सटीक जानकारी शेयर करने की अनुमति नहीं देते हैं</translation>
 <translation id="394984172568887996">IE से आयात किया गया</translation>
 <translation id="3949999964543783947">सुरक्षित तरीके से फ़ाइलें डाउनलोड करने के लिए, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
-<translation id="3950479158728806902">तेज़ी से साइन इन करने के लिए, अपने-आप पासकी बनने की सुविधा चालू करें</translation>
+<translation id="3950479158728806902">तेज़ी से साइन इन करने के लिए, अपने-आप पासकी बनाने की सुविधा चालू करें</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3950841222883198950">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3953834000574892725">मेरे खाते</translation>
@@ -5904,7 +5900,6 @@
 <translation id="512642543295077915">खोज बटन + backspace</translation>
 <translation id="5126611267288187364">बदलाव देखें</translation>
 <translation id="5127620150973591153">सुरक्षित कनेक्शन आईडी: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">कॉन्टेंट के बारे में खास जानकारी पाएं या इससे जुड़े सवाल पूछें.</translation>
 <translation id="5127881134400491887">नेटवर्क कनेक्शन प्रबंधित करें</translation>
 <translation id="5127934926273826089">फूलों से जुड़ी सेवाएं</translation>
 <translation id="5127986747308934633">आपका एडमिन आपके डिवाइस को कंट्रोल कर रहा है</translation>
@@ -7454,7 +7449,6 @@
 <translation id="6254892857036829079">बढ़िया</translation>
 <translation id="6257131917452817589">ऑटोमैटिक तरीके से पासवर्ड बदलने की सुविधा</translation>
 <translation id="6257602895346497974">सिंक करना चालू करें...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">अगर पहले से कनेक्ट या कॉन्फ़िगर किए गए एक से ज़्यादा नेटवर्क उपलब्ध हैं, तो इस नेटवर्क को प्राथमिकता दी जाएगी</translation>
 <translation id="6259776178973198997">वाई-फ़ाई डायरेक्ट मालिकों की जानकारी रीफ़्रेश करें</translation>
 <translation id="6262371516389954471">आपके डिवाइस के डेटा का बैक अप Google पर अपलोड हो गया है. साथ ही, उसे Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) कर दिया गया है.</translation>
@@ -9886,6 +9880,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> आवाज़ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android फ़ोन के वाई-फ़ाई से अपने-आप कनेक्ट करें</translation>
 <translation id="7991296728590311172">ऐक्सेस का तरीका बदलने की सेटिंग</translation>
+<translation id="7992080146463834191">कॉन्टेंट की खास जानकारी पाएं, मुश्किल विषयों को आसानी से समझें या सवाल पूछें.</translation>
 <translation id="7992203134935383159">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="7997826902155442747">प्राथमिकता संसाधित करें</translation>
 <translation id="7997828719430450286">हो गया.</translation>
@@ -11152,6 +11147,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" को बंद किया गया है</translation>
 <translation id="8874647982044395866">ऑर्गैनिक</translation>
 <translation id="8874790741333031443">कुछ समय के लिए तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट को मिलने वाली ब्राउज़िंग से जुड़ी सुरक्षा कम हो जाएगी. हालांकि, साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी.</translation>
+<translation id="8875221558267407626">कॉन्टेंट की खास जानकारी पाएं, मुश्किल विषयों को आसानी से समझें या सवाल पूछें</translation>
 <translation id="8875520811099717934">Linux को अपग्रेड करना</translation>
 <translation id="8875736897340638404">'डिवाइस किसको दिखाई दे' सेटिंग में कोई विकल्प चुनें</translation>
 <translation id="8876307312329369159">यह सेटिंग किसी डेमो सत्र में बदली नहीं जा सकती है.</translation>

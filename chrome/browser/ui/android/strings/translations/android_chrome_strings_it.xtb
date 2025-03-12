@@ -996,6 +996,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
 <translation id="5698878456427040674">Verifica se l'account selezionato è supportato.</translation>
 <translation id="570347048394355941">Passa alla scheda</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> vuole collegarsi a una porta seriale</translation>
 <translation id="5715150588940290235">Eliminare i codici di sicurezza salvati?</translation>
 <translation id="571930967925877633">I preferiti, la cronologia e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google</translation>
 <translation id="572328651809341494">Schede recenti</translation>
@@ -1469,7 +1470,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
 <translation id="7690596512217303514">Impossibile aprire Chrome sul dispositivo. Per risolvere il problema, scarica l'ultimo aggiornamento di Chrome dallo store.</translation>
 <translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
-<translation id="7692761875510935111">Apri rapidamente nel browser. Per modificare questa scorciatoia, toccala e tienila premuta.</translation>
+<translation id="7692761875510935111">Apri rapidamente nel browser. Per modificare questa scorciatoia, tocca e tieni premuto.</translation>
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Riquadro inferiore Attività recente aperto a schermo intero</translation>

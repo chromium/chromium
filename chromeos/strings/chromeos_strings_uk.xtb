@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Анімація для заставки</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="1539864135338521185">лазурит</translation>
+<translation id="1548555207631326346">Щоб персоналізувати зображення, створені за допомогою ШІ, виберіть тему й натисніть підкреслені слова.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Якщо хочете переглянути більше унікальних і різноманітних зображень, створених ШІ, натисніть "Надихни мене".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Коли ви створюєте контент за допомогою ШІ, запит надсилається на сервери ШІ від Google, щоб генерувати зображення й покращувати продукт відповідно до <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Політики конфіденційності Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративний ШІ є експериментальною функцією, яка перебуває на ранніх стадіях розробки й зараз доступна не для всіх.</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
 <translation id="1561927818299383735">колір підсвітки</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Використовуйте ШІ від Google, щоб бути продуктивнішими</translation>
+<translation id="82003371436638355">Якщо ви вибрали "Створіть власну", введіть свій запит. Ви також можете натиснути "Виберіть тему", щоб персоналізувати шпалери від ШІ, натискаючи підкреслені слова.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Якщо хочете переглянути більше унікальних і різноманітних зображень, створених ШІ, натисніть "Надихни мене".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Коли ви створюєте власні шпалери, запит надсилається на сервери Google, щоб генерувати зображення й покращувати продукт відповідно до <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Загальних положень і умов та Політики конфіденційності Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративний ШІ може припускатися помилок (зокрема щодо людей), тому радимо ретельно перевіряти його відповіді. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Докладніше<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8208861521865154048">Бонуси</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">відтворити медіаконтент</translation>
 <translation id="8318753676953949627">Немає зображень</translation>
 <translation id="8320910311642849813">ліс</translation>
+<translation id="8322464149031882595">Натисніть, щоб перейти вперед</translation>
 <translation id="8329018942023753850">додаток Калькулятор</translation>
 <translation id="8336739000755212683">Змінити зображення облікового запису на пристрої</translation>
 <translation id="8339024191194156249">Докладніше про автоматичний запуск</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пінгвіни</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
+<translation id="8972061581514441296">Натисніть, щоб повернутися назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
 <translation id="89945434909472341">село</translation>

@@ -21,12 +21,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -58,26 +54,17 @@ public class DefaultBrowserPromoImpressionCounterTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
-    public void testGetMaxPromoCount_ExperimentDisabled() {
-        Assert.assertEquals(1, mCounter.getMaxPromoCount());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
-    public void testGetMaxPromoCount_ExperimentEnabled() {
+    public void testGetMaxPromoCount() {
         Assert.assertEquals(3, mCounter.getMaxPromoCount());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testMinPromoInterval_FirstPromo() {
         when(mCounter.getPromoCount()).thenReturn(0);
         Assert.assertEquals(0, mCounter.getMinPromoInterval());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testMinPromoInterval_SecondPromo() {
         when(mCounter.getPromoCount()).thenReturn(1);
         // 3 days in minutes = 4320.
@@ -85,7 +72,6 @@ public class DefaultBrowserPromoImpressionCounterTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testMinPromoInterval_ThirdPromo() {
         when(mCounter.getPromoCount()).thenReturn(2);
         // 6 days (2 prior promos * 3 day interval) in minutes is 8640.
@@ -93,14 +79,12 @@ public class DefaultBrowserPromoImpressionCounterTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testSessionInterval_FirstPromo() {
         when(mCounter.getPromoCount()).thenReturn(0);
         Assert.assertEquals(3, mCounter.getMinSessionCount());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testSessionInterval_SecondPromo() {
         when(mCounter.getPromoCount()).thenReturn(1);
         // Code assumes 3 session for 1st promo shown + 2 session interval = 5.
@@ -108,7 +92,6 @@ public class DefaultBrowserPromoImpressionCounterTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testSessionInterval_ThirdPromo() {
         when(mCounter.getPromoCount()).thenReturn(2);
         when(mCounter.getLastPromoSessionCount()).thenReturn(10);
@@ -117,29 +100,6 @@ public class DefaultBrowserPromoImpressionCounterTest {
     }
 
     @Test
-    public void testFeatureParams() {
-        FeatureOverrides.newBuilder()
-                .enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
-                .param(DefaultBrowserPromoImpressionCounter.MAX_PROMO_COUNT_PARAM, 5)
-                .param(DefaultBrowserPromoImpressionCounter.PROMO_TIME_INTERVAL_DAYS_PARAM, 6)
-                .param(DefaultBrowserPromoImpressionCounter.PROMO_SESSION_INTERVAL_PARAM, 5)
-                .apply();
-
-        when(mCounter.getPromoCount()).thenReturn(4);
-        when(mCounter.getLastPromoSessionCount()).thenReturn(20);
-
-        Assert.assertEquals("Incorrect max promo count.", 5, mCounter.getMaxPromoCount());
-
-        // Min interval is 24 days in minutes: promo count (4) times interval of 6 days in minutes
-        // (8640 minutes).
-        Assert.assertEquals("Incorrect min promo interval.", 34560, mCounter.getMinPromoInterval());
-
-        // Min session count is session count at least promo (20) plus min interval of 5.
-        Assert.assertEquals("Incorrect min session count.", 25, mCounter.getMinSessionCount());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testOnPromoShown() {
         int testSessionCount = 3;
         mSharedPreferenceManager.writeInt(
@@ -166,7 +126,6 @@ public class DefaultBrowserPromoImpressionCounterTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
     public void testShouldShowPromo() {
         // Initial state, should not show promo immediately.
         Assert.assertEquals(0, mCounter.getSessionCount());

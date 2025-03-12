@@ -144,6 +144,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="TrustedVault.ListSecurityDomainMembersPinStatus{SecurityDomainId}"
+    enum="TrustedVaultListSecurityDomainMembersPinStatus"
+    expires_after="2025-10-11">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the status of a Google Password Manager PIN as reported by
+    listSecurityDomainMembers calls. This is called whenever Chrome needs to
+    consult the state of the user's security domain, like when refreshing a GPM
+    PIN or running a GPM enclave passkey transaction.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
 <histogram name="TrustedVault.RecoverabilityStatusOnRequestCompletion"
     enum="TrustedVaultRecoverabilityStatus" expires_after="2025-09-11">
   <owner>mmrashad@google.com</owner>

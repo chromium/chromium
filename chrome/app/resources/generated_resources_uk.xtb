@@ -378,7 +378,6 @@
 <translation id="1244265436519979884">Триває відновлення Linux</translation>
 <translation id="1244303850296295656">Помилка розширення</translation>
 <translation id="1244917379075403655">Виберіть "Налаштування"</translation>
-<translation id="1245041875932187638">Видалити всі дані, які використовуються для автозаповнення за допомогою ШІ</translation>
 <translation id="1245331638296910488">Файли буде переміщено у OneDrive, якщо відкрити їх у Microsoft 365</translation>
 <translation id="1245628370644070008">Відновлення локальних даних</translation>
 <translation id="1246863218384630739">Не вдалося встановити <ph name="VM_NAME" />: URL-адреса зображення повернула код помилки <ph name="HTTP_ERROR" />. Зв’яжіться з адміністратором.</translation>
@@ -1420,7 +1419,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Підготовка</translation>
 <translation id="1969654639948595766">Текстові журнали WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Усі дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="1972313920920745320">Додані вами сайти завжди залишатимуться активними й пам’ять для них не звільнятиметься. Дізнайтесь, як <ph name="BEGIN_LINK" />вимкнути деактивацію певних сайтів<ph name="END_LINK" />.</translation>
 <translation id="1972325230031091483">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
 <translation id="197288927597451399">Зберегти</translation>
@@ -2306,6 +2304,7 @@
 <translation id="256517381556987641">Під час синхронізації знайдено стільки файлів: <ph name="ITEMS_FOUND" />. Триває перевірка обсягу пам’яті. Спробуйте знову ввімкнути синхронізацію файлів за кілька хвилин.</translation>
 <translation id="2565214867520763227">Увімкніть програму зчитування з екрана</translation>
 <translation id="2566146433999774844">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще стільки користувачів: <ph name="NUM_OTHER_MEMBERS" /></translation>
+<translation id="256726287944589768">Показувати нижній колонтитул на сторінці нової вкладки</translation>
 <translation id="2568694057933302218">У режимі анонімного перегляду сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі. Дані про такі дії не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
 <translation id="2569972178052279830">Ім’я або назва продавця</translation>
@@ -2814,6 +2813,7 @@
 <translation id="2921081876747860777">Створіть пароль, щоб захистити дані на пристрої.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> зараз буде заблоковано.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдань у тій самій групі: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Видалити цей обліковий запис</translation>
 <translation id="2923644930701689793">Отримайте доступ до фотоплівки на телефоні</translation>
 <translation id="292371311537977079">Налаштування Chrome</translation>
@@ -3071,7 +3071,6 @@
 <translation id="3108957152224931571">Колір виділення</translation>
 <translation id="3109206895301430738">Збережені групи вкладок</translation>
 <translation id="3109724472072898302">Згорнуто</translation>
-<translation id="310979712355504754">Видалити всі</translation>
 <translation id="3112292765614504292">Розмір додатка: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Додає цю вкладку</translation>
 <translation id="311394601889664316">Заборонити сайтам змінювати файли чи папки на пристрої</translation>
@@ -4091,7 +4090,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Розширення схвалено}one{# розширення схвалено}few{# розширення схвалено}many{# розширень схвалено}other{# розширення схвалено}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Для Linux потрібно принаймні <ph name="INSTALL_SIZE" /> вільного місця.</translation>
-<translation id="3824203811509979971">Підсумовуйте контент або ставте запитання</translation>
 <translation id="3824621460022590830">Маркер реєстрації пристрою недійсний. Зв'яжіться з адміністратором або власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Увійдіть в обліковий запис, щоб переглядати вкладки з інших пристроїв</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запам’ятати мій вибір для цього типу файлу: <ph name="FILE_TYPES" />}one{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}few{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}many{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}other{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}}</translation>
@@ -5905,7 +5903,6 @@
 <translation id="512642543295077915">клавіша пошуку + backspace</translation>
 <translation id="5126611267288187364">Переглянути зміни</translation>
 <translation id="5127620150973591153">Ідентифікатор безпечного з'єднання: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Підсумовуйте контент або ставте запитання.</translation>
 <translation id="5127881134400491887">Керувати мережевими з’єднаннями</translation>
 <translation id="5127934926273826089">Квіти</translation>
 <translation id="5127986747308934633">Вашим пристроєм керує адміністратор</translation>
@@ -7452,7 +7449,6 @@
 <translation id="6254892857036829079">Чудова</translation>
 <translation id="6257131917452817589">автоматичне змінення пароля</translation>
 <translation id="6257602895346497974">Увімкнути синхронізацію…</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Якщо доступно кілька мереж, до яких ви раніше підключалися або які налаштовували, використовуватиметься ця мережа</translation>
 <translation id="6259776178973198997">Оновити інформацію про власників Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
@@ -9889,6 +9885,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, голос <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Автоматично переносьте дані Wi-Fi із вашого телефона Android</translation>
 <translation id="7991296728590311172">Налаштування кнопкового доступу</translation>
+<translation id="7992080146463834191">Резюмуйте контент, створюйте перекази текстів простими словами й ставте запитання.</translation>
 <translation id="7992203134935383159">Синтез мовлення</translation>
 <translation id="7997826902155442747">Пріоритет обробки</translation>
 <translation id="7997828719430450286">Готово.</translation>
@@ -11157,6 +11154,7 @@
 <translation id="8874448314264883207">Розширення <ph name="EXTENSION_NAME" /> вимкнено</translation>
 <translation id="8874647982044395866">Органічний</translation>
 <translation id="8874790741333031443">Спробуйте тимчасово дозволити сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином.</translation>
+<translation id="8875221558267407626">Резюмуйте контент, створюйте перекази текстів простими словами й ставте запитання</translation>
 <translation id="8875520811099717934">Оновлення Linux</translation>
 <translation id="8875736897340638404">Виберіть налаштування видимості</translation>
 <translation id="8876307312329369159">Це налаштування не можна змінити в демонстраційному сеансі.</translation>

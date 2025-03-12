@@ -248,6 +248,8 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     // POINTER_LOCK has been deprecated.
     {ContentSettingsType::POINTER_LOCK, nullptr},
     {ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, nullptr},
+    // TODO(crbug.com/400455013): Implement UI for LNA permission.
+    {ContentSettingsType::LOCAL_NETWORK_ACCESS, nullptr},
 });
 
 static_assert(

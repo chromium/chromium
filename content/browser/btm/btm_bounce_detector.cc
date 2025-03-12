@@ -1080,7 +1080,7 @@ void BtmBounceDetector::DidFinishNavigation(
   std::vector<BtmRedirectInfoPtr> redirects;
   std::vector<BtmDataAccessType> access_types;
   server_state->filter.Filter(navigation_handle->GetRedirectChain(),
-                              &access_types);
+                              access_types);
 
   // The length of the redirect chain should be equal to the number of server
   // redirects observed by the `DidRedirectNavigation` handler (plus one

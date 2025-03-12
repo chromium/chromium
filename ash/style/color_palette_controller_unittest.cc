@@ -107,7 +107,7 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
     SimulateUserLogin(kAccountId);
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     color_palette_controller_ = Shell::Get()->color_palette_controller();
@@ -631,7 +631,7 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
  public:
   void SetUp() override {
     ColorPaletteControllerTest::SetUp();
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
   }
 
   //  Sets the local ColorScheme to kVibrant. The synced color scheme remains

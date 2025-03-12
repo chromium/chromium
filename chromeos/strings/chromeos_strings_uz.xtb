@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Ekran lavhasi animatsiyasi</translation>
 <translation id="152892567002884378">Ovozni kuchaytirish</translation>
 <translation id="1539864135338521185">lazurit</translation>
+<translation id="1548555207631326346">Mavzu tanlang va AI yaratgan rasmlarni tagiga chizilgan soʻzlarni tanlash orqali moslashtiring.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Yanada unikal va xilma-xil rasmlar olish uchun "Menga ilhom ber" ustiga bosing.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI bilan kontent yaratish vaqtida rasm yaratish va mahsulotni yaxshilash uchun soʻrovlar Google AI serverlariga yuboriladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI tajribaviy funksiya hisoblanib, hali erta ishlab chiqish jarayonida va hozirda sanoqli foydalanuvchilar uchun mavjud.</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="155865706765934889">Sensorli panel</translation>
 <translation id="1561927818299383735">orqa chiroq rangi</translation>
@@ -1553,6 +1562,16 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">sohil</translation>
 <translation id="819278132617411009">Google AI yordamida unundorlikni oshiring</translation>
+<translation id="82003371436638355">“Mustaqil yarating” bandini tanlaganda maxsus soʻrov kiriting. Yoki “Mavzu tanlang” bandini bosib, tagiga chizilgan soʻzlar yordamida AI fon rasmlarini oʻzingizga moslang.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Yanada unikal va xilma-xil rasmlar olish uchun "Menga ilhom ber" ustiga bosing.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Mustaqil fon rasmini yaratish vaqtida rasm yaratish va mahsulotni yaxshilash uchun soʻrovlar Google serverlariga yuboriladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google xizmat shartlari va maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi. Shaxsiy va maxfiy axborotlarni yubormang.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI odamlar haqida ham xato maʼlumotlarni berishi mumkin, shuning uchun javoblarini qayta tekshiring. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Batafsil<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
@@ -1574,6 +1593,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8312330582793120272">media ijrosi</translation>
 <translation id="8318753676953949627">Rasmlarsiz</translation>
 <translation id="8320910311642849813">oʻrmon</translation>
+<translation id="8322464149031882595">Oldinga oʻtish uchun bosing</translation>
 <translation id="8329018942023753850">kalkulyator ilovasi</translation>
 <translation id="8336739000755212683">Qurilmadagi hisob rasmini almashtirish</translation>
 <translation id="8339024191194156249">Avtomatik ishga tushirish haqida batafsil</translation>
@@ -1720,6 +1740,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8961025972867871808">pingvinlar</translation>
 <translation id="8968751544471797276">Quvvatlash tezligi</translation>
 <translation id="8970109610781093811">Qayta tekshirish</translation>
+<translation id="8972061581514441296">Qaytish uchun bosing</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanerlash}=1{{NUMBER_OF_PAGES} sahifani skanerlash}other{{NUMBER_OF_PAGES} sahifani skanerlash}}</translation>
 <translation id="89945434909472341">qishloq</translation>

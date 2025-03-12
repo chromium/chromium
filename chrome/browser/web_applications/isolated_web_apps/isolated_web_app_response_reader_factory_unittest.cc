@@ -244,6 +244,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest,
        TestInvalidIntegrityBlockContents) {
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   base::HistogramTester histogram_tester;
 
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
@@ -255,6 +257,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
                                  /*flags=*/{}, reader_future.GetCallback());
 
   FulfillIntegrityBlock();
+  FulfillMetadata();
 
   ASSERT_THAT(
       reader_future.Take(),

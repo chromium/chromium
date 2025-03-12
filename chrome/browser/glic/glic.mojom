@@ -305,7 +305,10 @@ interface WebClientHandler {
   // Requests that audio ducking be enabled or disabled.
   // If enabled, audio from other sources will be attenuated.
   // If disabled, normal audio playout resumes.
-  // Returns `true` if the ducking state was actually changed.
+  // Returns `true` if the ducking state was actually changed. On some
+  // platforms this will also duck other applications besides Chrome. On these
+  // platforms, we will return `true` if other Chrome tabs were successfully
+  // ducked, even if ducking other applications has failed.
   SetAudioDucking(bool enable) => (bool result);
 
   // Set the areas of the Glic panel from which it should be draggable. If

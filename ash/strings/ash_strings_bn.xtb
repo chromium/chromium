@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ইমোজি পিকার খুলুন</translation>
 <translation id="2088116547584365419">গেমস</translation>
-<translation id="2092517835716911174">'আমাকে লিখতে সাহায্য করো' ও 'আমাকে পড়তে সাহায্য করো' ব্যবহার করতে হলে আপনার বয়স কমপক্ষে ১৮ বছর হতে হবে।</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2107581415810719320">অন্য বোতাম <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">আপনার USB-C কেবল Thunderbolt-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">ডেভ চ্যানেল</translation>
 <translation id="4513044611477939680">কুইক শেয়ার</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
+<translation id="4518096944902121253">এই ভাষার জন্য আর কোনও অ্যাকশন প্রয়োজন নেই</translation>
 <translation id="4518404433291145981">Chromebook আনলক করতে, প্রথমে আপনার ফোন আনলক করুন</translation>
 <translation id="4525887279712865285">দ্রুত শেয়ার সেটিংস দেখুন</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
@@ -1885,6 +1885,7 @@
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="7219573373513695352">কোনও ডিভাইস কানেক্ট করা নেই</translation>
+<translation id="7228968829656641943">আমার স্ক্রিনে সার্চ করার জন্য একটি অংশ বেছে নিন। কীবোর্ড নেভিগেশনের জন্য ট্যাব, তারপর স্পেস বারে প্রেস করুন</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> মেমরি | মোট <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">মাউসের দুদিকের বোতাম</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ব্যাটারির চার্জ রয়েছে।

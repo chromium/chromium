@@ -77,7 +77,7 @@ void OverrideZoomFactor(content::WebContents* web_contents,
 
 DialogContentLoadWithTimeoutObserver::DialogContentLoadWithTimeoutObserver(
     content::WebContents* web_contents,
-    const GURL& pacp_url,
+    const GURL pacp_url,
     base::OnceClosure show_view_and_destroy_timer_callback,
     base::OnceClosure cancel_flow_on_timeout_callback)
     : content::WebContentsObserver(web_contents),
@@ -85,6 +85,7 @@ DialogContentLoadWithTimeoutObserver::DialogContentLoadWithTimeoutObserver(
       show_view_and_destroy_timer_callback_(
           std::move(show_view_and_destroy_timer_callback)) {
   CHECK(show_view_and_destroy_timer_callback_);
+  CHECK(pacp_url_.is_valid());
   if (!web_contents) {
     // The web contains of the dialog were not created, abort the dialog
     // displaying.
@@ -106,7 +107,7 @@ void DialogContentLoadWithTimeoutObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!render_frame_host->IsInPrimaryMainFrame() || !validated_url.is_valid() ||
-      !validated_url.spec().starts_with(pacp_url_->spec())) {
+      !validated_url.spec().starts_with(pacp_url_.spec())) {
     return;
   }
 

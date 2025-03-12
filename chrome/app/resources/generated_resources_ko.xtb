@@ -375,7 +375,6 @@
 <translation id="1244265436519979884">현재 Linux 복원이 진행 중입니다.</translation>
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
 <translation id="1244917379075403655">'설정'을 클릭합니다</translation>
-<translation id="1245041875932187638">AI 자동 완성에서 사용한 모든 데이터 삭제</translation>
 <translation id="1245331638296910488">Microsoft 365에서 파일을 열면 해당 파일이 OneDrive로 이동됩니다.</translation>
 <translation id="1245628370644070008">로컬 데이터 복구</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
@@ -1418,7 +1417,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1969550816138571473">준비 중</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">모든 데이터가 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
 <translation id="1972313920920745320">추가한 사이트는 항상 활성 상태로 유지되며 이러한 사이트에서 메모리가 확보되지 않습니다. <ph name="BEGIN_LINK" />특정 사이트를 활성 상태로 유지하는 방법 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="197288927597451399">계속</translation>
@@ -2305,6 +2303,7 @@
 <translation id="256517381556987641">지금까지 파일 동기화에서 파일 <ph name="ITEMS_FOUND" />개를 찾았으며 아직 저장공간을 확인하는 중입니다. 잠시 후에 파일 동기화를 다시 사용 설정해 보세요.</translation>
 <translation id="2565214867520763227">스크린 리더 사용 설정</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUM_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여</translation>
+<translation id="256726287944589768">새 탭 페이지에 바닥글 표시</translation>
 <translation id="2568694057933302218">시크릿 모드에 있는 동안에는 사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해 쿠키를 사용할 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
 <translation id="2569972178052279830">소매업체 이름</translation>
@@ -2813,6 +2812,7 @@
 <translation id="2921081876747860777">비밀번호를 만들어 로컬 데이터 보호</translation>
 <translation id="2923006468155067296">지금 <ph name="DEVICE_TYPE" /> 기기가 잠깁니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. 동일한 태스크 그룹의 다른 <ph name="OTHER_TASK_NUM" />개 태스크: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">계정 삭제</translation>
 <translation id="2923644930701689793">휴대전화 카메라 롤에 액세스합니다.</translation>
 <translation id="292371311537977079">Chrome 설정</translation>
@@ -3070,7 +3070,6 @@
 <translation id="3108957152224931571">강조 색상</translation>
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
-<translation id="310979712355504754">모두 삭제</translation>
 <translation id="3112292765614504292">앱 크기: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">이 탭이 추가되었습니다.</translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
@@ -4090,7 +4089,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 승인됨}other{확장 프로그램 #개 승인됨}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다.</translation>
-<translation id="3824203811509979971">콘텐츠를 요약하거나 질문하세요</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">다른 기기의 탭을 보려면 로그인하세요.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}other{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}}</translation>
@@ -5904,7 +5902,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="512642543295077915">검색 + 백스페이스</translation>
 <translation id="5126611267288187364">변경사항 보기</translation>
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">콘텐츠를 요약하거나 질문하세요.</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
 <translation id="5127934926273826089">꽃</translation>
 <translation id="5127986747308934633">관리자가 내 기기를 제어하는 중임</translation>
@@ -7455,7 +7452,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6254892857036829079">완벽함</translation>
 <translation id="6257131917452817589">비밀번호 자동 변경</translation>
 <translation id="6257602895346497974">동기화 사용...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">이전에 연결되었거나 구성된 네트워크를 2개 이상 사용할 수 있는 경우 이 네트워크가 우선 사용됩니다</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 소유자 정보 새로고침</translation>
 <translation id="6262371516389954471">백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
@@ -9887,6 +9883,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 음성 <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android 휴대전화의 Wi-Fi 자동 전송</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
+<translation id="7992080146463834191">콘텐츠를 요약하거나, 복잡한 언어를 단순화하거나, 질문하세요.</translation>
 <translation id="7992203134935383159">음성 합성</translation>
 <translation id="7997826902155442747">프로세스 우선순위</translation>
 <translation id="7997828719430450286">성공.</translation>
@@ -11152,6 +11149,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8874448314264883207">'<ph name="EXTENSION_NAME" />'이(가) 사용 중지되었습니다</translation>
 <translation id="8874647982044395866">유기적</translation>
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
+<translation id="8875221558267407626">콘텐츠를 요약하거나, 복잡한 언어를 단순화하거나, 질문하세요</translation>
 <translation id="8875520811099717934">Linux 업그레이드</translation>
 <translation id="8875736897340638404">공개 범위 선택</translation>
 <translation id="8876307312329369159">데모 세션에서는 이 설정을 변경할 수 없습니다.</translation>

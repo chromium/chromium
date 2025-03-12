@@ -324,7 +324,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2083190527011054446">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Mở Bộ chọn biểu tượng cảm xúc</translation>
 <translation id="2088116547584365419">trò chơi</translation>
-<translation id="2092517835716911174">Bạn phải từ 18 tuổi trở lên thì mới được dùng tính năng Giúp tôi đọc và Giúp tôi viết.</translation>
 <translation id="209965399369889474">Chưa kết nối với mạng</translation>
 <translation id="2107581415810719320">Nút khác: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cáp USB-C của bạn không hỗ trợ Thunderbolt. Hiệu suất của thiết bị có thể bị hạn chế.</translation>
@@ -1055,6 +1054,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="450584155212756404">Kênh nhà phát triển</translation>
 <translation id="4513044611477939680">Chia sẻ nhanh</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
+<translation id="4518096944902121253">Không còn thao tác nào cho ngôn ngữ này</translation>
 <translation id="4518404433291145981">Để mở khóa Chromebook, hãy mở khóa điện thoại của bạn trước tiên</translation>
 <translation id="4525887279712865285">Hiện chế độ cài đặt của tính năng Chia sẻ nhanh</translation>
 <translation id="4527045527269911712">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />"muốn được phép ghép nối.</translation>
@@ -1885,6 +1885,7 @@ Mới cài đặt</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>
 <translation id="7219573373513695352">Chưa kết nối thiết bị nào</translation>
+<translation id="7228968829656641943">Chọn để tìm kiếm trên màn hình. Nhấn phím Tab rồi nhấn phím cách để di chuyển bằng bàn phím.</translation>
 <translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Cả hai nút trên chuột</translation>
 <translation id="7244725679040769470">Còn <ph name="PERCENTAGE" />% pin. Hãy sạc thiết bị.</translation>

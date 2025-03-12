@@ -28,7 +28,7 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #endif
 
@@ -80,7 +80,7 @@ enum class AnimationOrInteractionType {
 
 void RecordFrameTypes(bool is_handling_interaction,
                       bool is_handling_animation,
-                      int num_pending_frames) {
+                      bool has_prev_pending_frame) {
   AnimationOrInteractionType type;
   if (is_handling_interaction && is_handling_animation) {
     type = AnimationOrInteractionType::kAnimationAndInteraction;
@@ -103,7 +103,7 @@ void RecordFrameTypes(bool is_handling_interaction,
   if (type == AnimationOrInteractionType::kNone) {
     UMA_HISTOGRAM_BOOLEAN(
         "GPU.Presentation.NonAnimatedOrInteractiveFrameWithPendingFrame",
-        !!num_pending_frames);
+        has_prev_pending_frame);
   }
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -124,7 +124,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
       !av_disabled_at_command_line, std::move(buffer_presented_callback));
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   // The BELayerHierarchy needs to be created on a thread that supports
   // libdispatch, so we proxy over to the main dispatch queue to do that.
   CALayer* root_ca_layer = ca_layer_tree_coordinator_->root_ca_layer();
@@ -147,7 +147,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ca_layer_tree_coordinator_.reset();
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   BELayerHierarchy* layer_hierarchy = std::move(layer_hierarchy_);
   dispatch_async(dispatch_get_main_queue(), ^{
     [layer_hierarchy invalidate];
@@ -234,8 +234,14 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
 
   if (features::IsVSyncAlignedPresentEnabled() &&
       base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames)) {
+    // This is recorded after calling ca_layer_tree_coordinator_->Present(). The
+    // current frame has been added to
+    // ca_layer_tree_coordinator_->NumPendingSwaps(). Check NumPendingSwaps() >
+    // 1 to see whether there is any previous pending frame.
+    bool has_prev_pending_frame =
+        ca_layer_tree_coordinator_->NumPendingSwaps() > 1;
     RecordFrameTypes(data.is_handling_interaction, data.is_handling_animation,
-                     ca_layer_tree_coordinator_->NumPendingSwaps());
+                     has_prev_pending_frame);
   }
 
   if (vsync_callback_mac_) {

@@ -22,6 +22,7 @@ import android.util.SparseArray;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -360,7 +361,7 @@ class Fakes {
         }
 
         @CalledByNative("FakeBluetoothAdapter")
-        public void simulatePairedClassicDevice(int deviceOrdinal) {
+        public @JniType("std::string") String simulatePairedClassicDevice(int deviceOrdinal) {
             final FakeBluetoothDevice device;
             switch (deviceOrdinal) {
                 case 0:
@@ -395,10 +396,7 @@ class Fakes {
             }
 
             mFakePairedDevices.add(device);
-            if (mDeviceBondStateCallback != null) {
-                mDeviceBondStateCallback.onDeviceBondStateChanged(
-                        device, BluetoothDevice.BOND_BONDED);
-            }
+            return device.getAddress();
         }
 
         @CalledByNative("FakeBluetoothAdapter")
@@ -504,13 +502,6 @@ class Fakes {
             }
 
             return mFakePairedDevices;
-        }
-
-        @Override
-        public DeviceBondStateReceiverWrapper createDeviceBondStateReceiver(
-                DeviceBondStateReceiverWrapper.Callback callback) {
-            mDeviceBondStateCallback = callback;
-            return super.createDeviceBondStateReceiver(callback);
         }
     }
 

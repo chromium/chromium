@@ -1429,14 +1429,22 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-05">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
-  <summary>Page on which the iOS web edit menu is dismissed.</summary>
+  <summary>
+    Page on which the iOS web edit menu is dismissed. This histogram is only
+    collected on a subset of users and possibly not on every iOS version. Use
+    with care.
+  </summary>
 </histogram>
 
 <histogram name="IOS.EditMenu.Error" enum="IOSEditMenuError"
     expires_after="2026-03-05">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
-  <summary>Report errors when reporting metrics for web edit menu.</summary>
+  <summary>
+    Report errors when reporting metrics for web edit menu. This histogram is
+    only collected on a subset of users and possibly not on every iOS version.
+    Use with care.
+  </summary>
 </histogram>
 
 <histogram name="IOS.EditMenu.SelectedAction" enum="IOSEditMenuActions"
@@ -1444,7 +1452,9 @@ chromium-metrics-reviews@google.com.
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
-    The action that was triggered by the user on the iOS web edit menu.
+    The action that was triggered by the user on the iOS web edit menu. This
+    histogram is only collected on a subset of users and possibly not on every
+    iOS version. Use with care.
   </summary>
 </histogram>
 
@@ -1452,7 +1462,11 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-05">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
-  <summary>Page on which an iOS web edit menu action is triggered.</summary>
+  <summary>
+    Page on which an iOS web edit menu action is triggered. This histogram is
+    only collected on a subset of users and possibly not on every iOS version.
+    Use with care.
+  </summary>
 </histogram>
 
 <histogram name="IOS.EditMenu.UpdatingSelectionOnPage" enum="IOSEditMenuPage"
@@ -1461,6 +1475,8 @@ chromium-metrics-reviews@google.com.
   <owner>bling-team@google.com</owner>
   <summary>
     Page on which the iOS web edit menu is dismissed by updating the selection.
+    This histogram is only collected on a subset of users and possibly not on
+    every iOS version. Use with care.
   </summary>
 </histogram>
 
@@ -3488,19 +3504,6 @@ chromium-metrics-reviews@google.com.
     not yet interacted with the opt-in prompt, new users on M127 will log
     StatusNotSet, while users before M127 will log AskToTrack.
   </summary>
-</histogram>
-
-<histogram name="IOS.ParcelTracking.Untracked.{Source}" units="count"
-    expires_after="2025-04-13">
-  <owner>hiramahmood@google.com</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>Logs number of packages untracked from {Source}.</summary>
-  <token key="Source">
-    <variant name="Infobar"
-        summary="Recorded when package(s) are untracked from an infobar."/>
-    <variant name="MagicStack"
-        summary="Recorded when package is untracked from the Magic Stack."/>
-  </token>
 </histogram>
 
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
@@ -5554,7 +5557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
-    expires_after="2025-05-25">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5564,14 +5567,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
-    expires_after="2025-07-13">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.LearnMoreTapped" enum="WhatsNewType"
-    expires_after="2026-01-05">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5581,7 +5584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.PrimaryActionTapped" enum="WhatsNewType"
-    expires_after="2025-03-30">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5591,7 +5594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
-    expires_after="2025-07-27">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5601,7 +5604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.TableViewDidScroll" enum="Boolean"
-    expires_after="2025-07-13">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5609,14 +5612,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.WhatsNew.TimeSpent" units="ms" expires_after="2025-07-13">
+<histogram name="IOS.WhatsNew.TimeSpent" units="ms" expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on What's New.</summary>
 </histogram>
 
 <histogram name="IOS.WhatsNew.{Type}.TimeSpent" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2026-01-30">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on each feature of What's New.</summary>

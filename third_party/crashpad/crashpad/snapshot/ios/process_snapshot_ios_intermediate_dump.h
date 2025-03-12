@@ -121,6 +121,8 @@ class ProcessSnapshotIOSIntermediateDump final : public ProcessSnapshot {
   UUID client_id_;
   std::map<std::string, std::string> annotations_simple_map_;
   timeval snapshot_time_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
+      extra_memory_;
   InitializationStateDcheck initialized_;
 };
 

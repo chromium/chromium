@@ -2,20 +2,21 @@ export function documentHasCookie(cookieAndValue) {
   return document.cookie.split(';').some(item => item.includes(cookieAndValue));
 }
 
-export function waitForCookie(cookieAndValue) {
+export async function waitForCookie(cookieAndValue, expectCookie) {
   const startTime = Date.now();
-  return new Promise(resolve => {
+  const hasCookie = await new Promise(resolve => {
     const interval = setInterval(() => {
       if (documentHasCookie(cookieAndValue)) {
         clearInterval(interval);
         resolve(true);
       }
-      if (Date.now() - startTime >= 1000) {
+      if (!expectCookie && Date.now() - startTime >= 1000) {
         clearInterval(interval);
         resolve(false);
       }
     }, 100);
   });
+  assert_equals(hasCookie, expectCookie);
 }
 
 export function expireCookie(cookieAndAttributes) {
@@ -23,12 +24,11 @@ export function expireCookie(cookieAndAttributes) {
       cookieAndAttributes + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
 }
 
-export function addCookieAndSessionCleanup(test, cookieAndAttributes) {
+export function addCookieAndSessionCleanup(test) {
   // Clean up any set cookies once the test completes.
   test.add_cleanup(async () => {
     const response = await fetch('end_session_via_clear_site_data.py');
     assert_equals(response.status, 200);
-    expireCookie(cookieAndAttributes);
   });
 }
 

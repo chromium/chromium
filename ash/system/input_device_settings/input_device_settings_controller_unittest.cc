@@ -675,14 +675,11 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     sample_keyboards_ = {kSampleKeyboardUsb, kSampleKeyboardInternal,
                          kSampleKeyboardBluetooth};
 
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-    session_controller->Reset();
-
+    ClearLogin();
     if (should_sign_in_) {
       SimulateUserLogin({kUserEmail1});
       SimulateUserLogin({kUserEmail2});
-      session_controller->SwitchActiveUser(kAccountId1);
+      SwitchActiveUser(kAccountId1);
     }
 
     // Reset the `num_keyboard_settings_initialized_` to account for the
@@ -702,13 +699,6 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::TearDown();
     image_downloader_.reset();
     task_runner_.reset();
-  }
-
-  void SetActiveUser(const AccountId& account_id) {
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-    session_controller->SwitchActiveUser(account_id);
-    session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
   std::unique_ptr<device::MockBluetoothDevice> SetupMockBluetoothDevice(

@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +16,7 @@ import java.util.Map;
  * Per-tab storage that holds a map of attributes. Allows other classes to access
  * the attribute without having it directly hang on to a tab.
  */
+@NullMarked
 public class TabAttributes implements UserData {
     private static final Class<TabAttributes> USER_DATA_KEY = TabAttributes.class;
 
@@ -37,9 +38,8 @@ public class TabAttributes implements UserData {
      * Gets the attribute of the Tab.
      * @param key Name of the attribute.
      */
-    @Nullable
     @SuppressWarnings("unchecked")
-    public <T> T get(@TabAttributeKeys String key) {
+    public <T> @Nullable T get(@TabAttributeKeys String key) {
         Object value = mAttributes.get(key);
         return value != NULL_VALUE ? (T) value : null;
     }
@@ -51,8 +51,7 @@ public class TabAttributes implements UserData {
      *     Note that the attribute that has been set to {@code null} is also regarded
      *     as <b>set</b>, therefore returns {@code null} not the default value.
      */
-    @Nullable
-    public <T> T get(@TabAttributeKeys String key, T defaultValue) {
+    public <T> @Nullable T get(@TabAttributeKeys String key, T defaultValue) {
         return mAttributes.containsKey(key) ? get(key) : defaultValue;
     }
 

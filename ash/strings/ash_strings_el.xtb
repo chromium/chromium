@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">Καληνύχτα <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Άνοιγμα εργαλείου επιλογής emoji</translation>
 <translation id="2088116547584365419">παιχνίδια</translation>
-<translation id="2092517835716911174">Πρέπει να είστε τουλάχιστον 18 ετών, για να χρησιμοποιήσετε τις λειτουργίες Βοήθησέ με να διαβάσω και Βοήθησέ με να γράψω.</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
 <translation id="2107581415810719320">Άλλο κουμπί <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Το καλώδιο USB-C που έχετε δεν υποστηρίζει συσκευές Thunderbolt. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">Κανάλι προγραμματιστών</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Σχόλια</translation>
+<translation id="4518096944902121253">Δεν υπάρχουν άλλες ενέργειες για αυτή τη γλώσσα</translation>
 <translation id="4518404433291145981">Για να ξεκλειδώσετε το Chromebook, ξεκλειδώστε πρώτα το τηλέφωνό σας</translation>
 <translation id="4525887279712865285">Εμφάνιση ρυθμίσεων του Quick Share</translation>
 <translation id="4527045527269911712">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης.</translation>
@@ -1885,6 +1885,7 @@
 <translation id="7189412385142492784">Πόσο απέχει η Αφροδίτη</translation>
 <translation id="7198435252016571249">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
 <translation id="7219573373513695352">Δεν υπάρχουν συνδεδεμένες συσκευές</translation>
+<translation id="7228968829656641943">Επιλέξτε να κάνετε αναζήτηση στην οθόνη μου. Πατήστε το πλήκτρο Τab και έπειτα το πλήκτρο διαστήματος για πλοήγηση με το πληκτρολόγιο.</translation>
 <translation id="7229029500464092426">Διαθέσιμη μνήμη <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> συνολική μνήμη</translation>
 <translation id="7239814253344511868">Και τα δύο κουμπιά του ποντικιού</translation>
 <translation id="7244725679040769470">Απομένει περίπου <ph name="PERCENTAGE" />% μπαταρία. Συνδέστε τη συσκευή σας στο ρεύμα.</translation>

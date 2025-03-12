@@ -302,7 +302,7 @@ int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {
     return slot_index;
   }
 
-  // If |slot_index| is a group header we must return the next slot that
+  // If `slot_index` is a group header we must return the next slot that
   // is not animating closed.
   if (slots_[slot_index].type == ViewType::kGroupHeader) {
     // Skip all slots animating closed.
@@ -330,7 +330,7 @@ int TabStripLayoutHelper::GetSlotInsertionIndexForNewTab(
     return slot_index;
   }
 
-  // If |slot_index| points to a group header and the new tab's |group|
+  // If `slot_index` points to a group header and the new tab's `group`
   // matches, the tab goes to the right of the header to keep it
   // contiguous.
   if (slots_[slot_index].type == ViewType::kGroupHeader &&
@@ -386,10 +386,10 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
     }
   }
 
-  // If there's no slot in |slots_| corresponding to |model_index|, then
-  // |model_index| may represent the first tab past the end of the
+  // If there's no slot in `slots_` corresponding to `model_index`, then
+  // `model_index` may represent the first tab past the end of the
   // tabstrip. In this case we should return the first-past-the-end
-  // index in |slots_|.
+  // index in `slots_`.
   CHECK_EQ(current_model_index, model_index) << "model_index is too large";
   return slots_.size();
 }

@@ -66,6 +66,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="3078350928901129212">Farbe des Symbols für Tabgruppe (<ph name="COLOR_NAME" />)</translation>
 <translation id="311432875115153175">Liste der Tabgruppen geschlossen</translation>
 <translation id="3194464645767632461">Bewertung</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzufügen}other{<ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3547352561153509682">Dadurch wird die Gruppe von allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> neuer Tab}other{<ph name="MANY_ADDED" /> neue Tabs}}</translation>
@@ -98,6 +99,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="4783638485675352219">Titel und URLs von offenen Tabs von diesem Gerät mit dem Betriebssystem teilen</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab zu Gruppe hinzufügen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4861611890274104875">Karte schließen.</translation>
 <translation id="4861953997778766866">Jeder kann Änderungen an deinen freigegebenen Tabgruppen vornehmen</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
@@ -134,6 +136,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6271513594716432922">Alle inaktiven Tabs schließen</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="6333260925957816943">Informationen zu diesem Händler</translation>
 <translation id="6381032505162537930">Hier werden deine Tabgruppen angezeigt</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Gruppierung des <ph name="TABS_COUNT_ONE" /> ausgewählten Tabs aufheben}other{Gruppierung der <ph name="TABS_COUNT_MANY" /> ausgewählten Tabs aufheben}}</translation>
@@ -186,6 +189,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="799469866974412355">Neue Gruppe von deinem anderen Gerät</translation>
 <translation id="8029301326595421733">Informationen zu diesem Händler sind vollständig geöffnet</translation>
 <translation id="8053770993984522566">Halb geöffnete Liste der Tabgruppen</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>

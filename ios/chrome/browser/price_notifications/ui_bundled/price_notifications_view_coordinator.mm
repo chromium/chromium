@@ -76,6 +76,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  self.tableViewController.showCurrentPage = self.showCurrentPage;
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   self.tableViewController.hasPreviouslyViewed =
       prefService->GetBoolean(prefs::kPriceNotificationsHasBeenShown);

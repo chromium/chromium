@@ -2175,8 +2175,9 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
   EXPECT_TRUE(engine->ink_modeled_shape_map_for_testing().empty());
 
+  constexpr int kPageIndex = 0;
   std::map<InkModeledShapeId, ink::PartitionedMesh> ink_shapes =
-      engine->LoadV2InkPathsForPage(/*page_index=*/0);
+      engine->LoadV2InkPathsForPage(kPageIndex);
   ASSERT_EQ(1u, ink_shapes.size());
   const auto ink_shapes_it = ink_shapes.begin();
 
@@ -2188,6 +2189,9 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   EXPECT_EQ(ink_shapes_it->first, pdf_shapes_it->first);
   EXPECT_EQ(1u, ink_shapes_it->second.Meshes().size());
   EXPECT_TRUE(pdf_shapes_it->second);
+
+  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
@@ -2418,6 +2422,12 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
                                          kInkAnnotationIdentifierKeyV2),
             1);
 
+  // Attempt to unload the page before erasing. This would have caught
+  // https://crbug.com/402364794.
+  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
+  page.Unload();
+
   // Erase the shape and check the rendering. Also check the save version.
   const auto ink_shapes_it = ink_shapes.begin();
   const InkModeledShapeId& shape_id = ink_shapes_it->first;
@@ -2431,6 +2441,12 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             0);
+
+  // Attempt to unload the page before undoing. This would have caught
+  // https://crbug.com/402454523.
+  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
+  page.Unload();
 
   // Undo the erasure and check the rendering.
   engine->UpdateShapeActive(kPageIndex, shape_id, /*active=*/true);

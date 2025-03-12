@@ -188,6 +188,13 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
                      const PaintInfo& paint_info,
                      const PhysicalRect& paint_rect,
                      const GapFragmentData::GapBoundaries& gaps);
+  // TODO(samomekarajr): Naming this `PaintNewGridGaps` since it paints gaps
+  // decorations using the new `GapIntersectionPoints`. This should be renamed
+  // to `PaintGridGaps` once the old method is removed.
+  void PaintNewGridGaps(GridTrackSizingDirection track_direction,
+                        const PaintInfo& paint_info,
+                        const PhysicalRect& paint_rect,
+                        const GapFragmentData::GapGeometry* gap_geometry);
 
   InlinePaintContext& EnsureInlineContext();
 

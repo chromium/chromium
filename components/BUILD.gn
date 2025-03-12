@@ -212,6 +212,7 @@ test("components_unittests") {
     "//components/cross_device/logging:unit_tests",
     "//components/crx_file:unit_tests",
     "//components/data_sharing:unit_tests",
+    "//components/data_sharing/data_sharing_internals/webui:unit_tests",
     "//components/device_event_log:unit_tests",
     "//components/device_reauth:unit_tests",
     "//components/device_signals/core:unit_tests",

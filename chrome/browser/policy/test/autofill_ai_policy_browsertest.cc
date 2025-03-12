@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -125,9 +124,6 @@ IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsDisabledByPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL(base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage}))));
-  EXPECT_EQ(autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
-                browser()->profile()->GetPrefs()),
-            !disabled_by_policy());
   EXPECT_EQ(
       GetWebContents()->GetURL().path(),
       base::StrCat({"/", disabled_by_policy() ? chrome::kAutofillSubPage

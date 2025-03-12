@@ -24,6 +24,7 @@
 #include "ui/views/painter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -157,18 +158,21 @@ class BorderTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    view_ = std::make_unique<views::View>();
-    view_->SetSize(gfx::Size(100, 50));
     recorder_ = std::make_unique<cc::PaintRecorder>();
     canvas_ = std::make_unique<gfx::Canvas>(recorder_->beginRecording(), 1.0f);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    view_ = widget_->SetContentsView(std::make_unique<views::View>());
+    view_->SetSize(gfx::Size(100, 50));
   }
 
   void TearDown() override {
+    widget_->Close();
     ViewsTestBase::TearDown();
 
     canvas_.reset();
     recorder_.reset();
-    view_.reset();
+    view_ = nullptr;
+    widget_.reset();
   }
 
   std::unique_ptr<MockCanvas> DrawIntoMockCanvas() {
@@ -181,8 +185,9 @@ class BorderTest : public ViewsTestBase {
 
  protected:
   std::unique_ptr<cc::PaintRecorder> recorder_;
-  std::unique_ptr<views::View> view_;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<gfx::Canvas> canvas_;
+  raw_ptr<View> view_ = nullptr;
 };
 
 TEST_F(BorderTest, NullBorder) {

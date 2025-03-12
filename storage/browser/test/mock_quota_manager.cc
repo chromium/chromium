@@ -160,9 +160,9 @@ void MockQuotaManager::GetBucketsForStorageKey(
 }
 
 void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
-                                        StorageType type,
+                                        blink::mojom::StorageType type,
                                         UsageAndQuotaCallback callback) {
-  int64_t quota = quota_map_[std::make_pair(storage_key, type)].quota;
+  int64_t quota = quota_map_[storage_key].quota;
   int64_t usage = 0;
 
   if (usage_map_.empty()) {
@@ -178,8 +178,7 @@ void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
   for (const auto& entry : usage_map_) {
     std::ignore = FindBucket(entry.first).transform([&](BucketInfo result) {
       storage::BucketLocator bucket_locator = result.ToBucketLocator();
-      if (bucket_locator.storage_key == storage_key &&
-          bucket_locator.type == type) {
+      if (bucket_locator.storage_key == storage_key) {
         usage += usage_map_[bucket_locator].usage;
       }
     });
@@ -191,18 +190,16 @@ int64_t MockQuotaManager::GetQuotaForStorageKey(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
     const QuotaSettings& settings) const {
-  auto quota = quota_map_.find(std::make_pair(storage_key, type));
+  auto quota = quota_map_.find(storage_key);
   if (quota != quota_map_.end()) {
     return quota->second.quota;
   }
-
   return QuotaManager::GetQuotaForStorageKey(storage_key, type, settings);
 }
 
 void MockQuotaManager::SetQuota(const StorageKey& storage_key,
-                                StorageType type,
                                 int64_t quota) {
-  quota_map_[std::make_pair(storage_key, type)].quota = quota;
+  quota_map_[storage_key].quota = quota;
 }
 
 bool MockQuotaManager::AddBucket(const BucketInfo& bucket,

@@ -188,6 +188,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::GetCopyTextReceivedTimeout());
   html_source->AddInteger("translateTextTimeout",
                           lens::features::GetTranslateTextReceivedTimeout());
+  html_source->AddBoolean("shouldCopyAsImage",
+                          lens::features::GetShouldCopyAsImage());
   html_source->AddBoolean(
       "darkMode",
       lens::LensOverlayShouldUseDarkMode(

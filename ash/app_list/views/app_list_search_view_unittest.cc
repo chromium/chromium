@@ -867,7 +867,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
   check_tooltip(AppListSearchControlCategory::kHelp,
                 u"Key shortcuts, tips for using device, and more");
   check_tooltip(AppListSearchControlCategory::kImages,
-                u"Search for text within images and see image previews");
+                u"Image search by content and image previews");
   check_tooltip(AppListSearchControlCategory::kPlayStore,
                 u"Available apps from the Play Store");
   check_tooltip(AppListSearchControlCategory::kWeb,

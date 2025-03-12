@@ -13,7 +13,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.prefs.PrefService;
@@ -77,18 +76,15 @@ public class VoiceRecognitionUtil {
      * @return true if the Enterprise policies permit execution of a voice search.
      */
     public static boolean isVoiceSearchPermittedByPolicy(boolean strictPolicyCheck) {
-        if (ChromeFeatureList.sVoiceSearchAudioCapturePolicy.isEnabled()) {
-            // If the PrefService isn't initialized yet we won't know here whether or not voice
-            // search is allowed by policy. In that case, treat voice search as enabled but check
-            // again when a Profile is set and PrefService becomes available.
-            PrefService prefService = getPrefService();
+        // If the PrefService isn't initialized yet we won't know here whether or not voice
+        // search is allowed by policy. In that case, treat voice search as enabled but check
+        // again when a Profile is set and PrefService becomes available.
+        PrefService prefService = getPrefService();
 
-            // Fail if strict policy checking is requested but we do not have the way to verify.
-            if (strictPolicyCheck && prefService == null) return false;
+        // Fail if strict policy checking is requested but we do not have the way to verify.
+        if (strictPolicyCheck && prefService == null) return false;
 
-            return prefService == null || prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        }
-        return true;
+        return prefService == null || prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
     }
 
     /**

@@ -194,6 +194,7 @@ class PageHandler : public DevToolsDomainHandler,
 
  private:
   struct PendingScreenshotRequest;
+  struct PendingNavigation;
 
   using BitmapEncoder =
       base::RepeatingCallback<std::optional<std::vector<uint8_t>>(
@@ -231,6 +232,9 @@ class PageHandler : public DevToolsDomainHandler,
   // returns Response with an error.
   using ResponseOrWebContents = absl::variant<Response, WebContentsImpl*>;
   ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
+
+  void EmitFrameStartedNavigatingEvent(
+      const PendingNavigation& pending_navigation);
 
   const bool allow_unsafe_operations_;
   const bool is_trusted_;
@@ -276,6 +280,9 @@ class PageHandler : public DevToolsDomainHandler,
   base::RepeatingCallback<void(std::string)> prepare_for_reload_callback_;
   bool have_pending_reload_ = false;
   std::string pending_script_to_evaluate_on_load_;
+  // Used to cache `FrameStartedNavigating` event data until the page is
+  // enabled.
+  std::unique_ptr<const PendingNavigation> pending_navigation_;
 
   base::WeakPtrFactory<PageHandler> weak_factory_{this};
 };

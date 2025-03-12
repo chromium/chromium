@@ -338,7 +338,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
   const bool prefers_contrast =
       view->GetNativeTheme() &&
       view->GetNativeTheme()->UserHasContrastPreference();
-  // TODO(tapted): Consider using background()->SetNativeControlColor() and
+  // TODO(tapted): Consider using background()->SetColor() and
   // always have a background.
   if (part_state == OmniboxPartState::NORMAL && !prefers_contrast) {
     return nullptr;

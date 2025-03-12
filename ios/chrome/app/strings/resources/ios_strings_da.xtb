@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Eksisterende browserdata knyttes til <ph name="USER_EMAIL" />. Disse data kan muligvis ses af din organisation.</translation>
 <translation id="1713777106376424209">Leveret af</translation>
 <translation id="1715515772563243997">Hvis du har tillid til <ph name="SITE" />, kan du bruge en gemt adgangskode til at logge ind.</translation>
+<translation id="1718835860248848330">Den seneste time</translation>
 <translation id="1728549374069268714">Indsæt og fortsæt</translation>
 <translation id="1732468323901456775">Aktivér notifikationer for <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Tryk to gange for at installere.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adresseregistrering er deaktiveret. Aktivér det igen under Indstillinger.</translation>
 <translation id="1904580727789512086">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="1911619930368729126">Upload til Google Drev</translation>
-<translation id="1923342640370224680">Den seneste time</translation>
 <translation id="1941314575388338491">Tryk to gange for at kopiere.</translation>
 <translation id="1943478190258551035">Menu → Indstillinger</translation>
 <translation id="1952728750904661634">Log ind med en managerstyret konto</translation>
@@ -1206,6 +1206,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6187302354554850004">Sidst synkroniseret: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Oprettet <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulæst</translation>
+<translation id="6192388920090306326">Rejse til Tokyo</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6196207969502475924">Talesøgning</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
@@ -1370,6 +1371,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6779455296366983087">Dine browserdata slettes</translation>
 <translation id="6790502149545262384">Du får snart vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
 <translation id="6794476726485507147">Vælg en dato og et tidspunkt for at få en notifikation med en påmindelse om at vende tilbage til denne side</translation>
+<translation id="6807287147325542056">Adgangskoder i andre apps</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -1934,6 +1936,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9106655997975673326">Fra "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Tjekker, om der er kompromitterede adgangskoder</translation>
 <translation id="9124387962554796433">Google kan bruge din historik til at personligt tilpasse Søgning og andre Google-tjenester.</translation>
+<translation id="9124978074365039456">Køb, oversæt og identificer det, du ser, med dit kamera og billedgalleri</translation>
 <translation id="9130317582644834675">Skjul Zoom ind/ud på tekst</translation>
 <translation id="913036870884277353">Åbn nemt links i andre apps.</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>

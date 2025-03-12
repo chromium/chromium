@@ -953,7 +953,7 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
   std::optional<std::string> GetCookieDeprecationLabel() override {
     return std::nullopt;
   }
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedKeyValueServerKey(
       const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
@@ -3254,7 +3254,7 @@ class AuctionWorkletManagerKVv2Test : public AuctionWorkletManagerTest {
 
   ~AuctionWorkletManagerKVv2Test() override { DCHECK(!fetch_key_callback_); }
 
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedKeyValueServerKey(
       const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,

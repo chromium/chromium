@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Screen saver animation</translation>
 <translation id="152892567002884378">Volume up</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Choose a theme and then select the underlined words to personalise your AI images.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Select 'Inspire me' to get more unique and varied AI images options.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          When you create with AI, the prompt is sent to Google AI servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI is experimental, in early development and currently has limited availability.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">backlit colour</translation>
@@ -1553,6 +1562,16 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">beach</translation>
 <translation id="819278132617411009">Use Google AI to be more productive</translation>
+<translation id="82003371436638355">When you select 'Create your own', write a custom prompt. Or, you can select 'Choose a theme' and then select the underlined words to personalise your AI wallpaper.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Select 'Inspire me' to get more unique and varied AI images options.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          When you create your own wallpaper, the prompt is sent to Google servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Terms of Service and Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Don't include anything personal, sensitive or confidential.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI can make mistakes, including about people, so double-check it. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Learn more<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
@@ -1574,6 +1593,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8312330582793120272">play media</translation>
 <translation id="8318753676953949627">No images</translation>
 <translation id="8320910311642849813">forest</translation>
+<translation id="8322464149031882595">Click to go forward</translation>
 <translation id="8329018942023753850">calculator app</translation>
 <translation id="8336739000755212683">Change device account image</translation>
 <translation id="8339024191194156249">Learn more about auto-launch</translation>
@@ -1720,6 +1740,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8961025972867871808">penguins</translation>
 <translation id="8968751544471797276">Charging rate</translation>
 <translation id="8970109610781093811">Run again</translation>
+<translation id="8972061581514441296">Click to go back</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{Scan page {NUMBER_OF_PAGES}}other{Scan page {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">village</translation>

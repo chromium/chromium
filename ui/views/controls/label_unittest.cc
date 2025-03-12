@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1314,8 +1315,9 @@ TEST_F(LabelTest, GetSubstringBounds) {
 #endif
 // Ensures DCHECK for subpixel rendering on transparent layer is working.
 TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
-  View view;
-  Label* label = view.AddChildView(std::make_unique<TestLabel>());
+  View* view =
+      widget()->GetContentsView()->AddChildView(std::make_unique<View>());
+  Label* label = view->AddChildView(std::make_unique<TestLabel>());
   EXPECT_TRUE(label->GetSubpixelRenderingEnabled());
 
   gfx::Canvas canvas;
@@ -1324,11 +1326,11 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
   label->OnPaint(&canvas);
 
   // Painting to an opaque layer should also be fine.
-  view.SetPaintToLayer();
+  view->SetPaintToLayer();
   label->OnPaint(&canvas);
 
   // Set up a transparent layer for the parent view.
-  view.layer()->SetFillsBoundsOpaquely(false);
+  view->layer()->SetFillsBoundsOpaquely(false);
 
   // Painting on a transparent layer should DCHECK.
   EXPECT_DCHECK_DEATH(label->OnPaint(&canvas));
@@ -1340,7 +1342,7 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
 
   // Painting onto a transparent layer should not DCHECK if there's an opaque
   // background in a parent of the Label.
-  view.SetBackground(CreateSolidBackground(SK_ColorWHITE));
+  view->SetBackground(CreateSolidBackground(SK_ColorWHITE));
   label->OnPaint(&canvas);
 }
 

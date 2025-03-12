@@ -297,7 +297,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   base::TimeTicks NowTicks() const override { return task_runner_->NowTicks(); }
 
   void CreateTestUserSessions() {
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
     SimulateUserLoginWithCustomPrefs(kUser1Email);
     SimulateUserLoginWithCustomPrefs(kUser2Email);
   }

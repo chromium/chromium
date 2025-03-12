@@ -70,8 +70,11 @@ enum class PrivateNetworkAccessCheckResult {
   // Local network access request: blocked by absence of user permission.
   kLNABlockedByMissingPermission = 13,
 
+  // Local network access request: allowed with warning in devtools.
+  kLNAAllowedByPolicyWarn = 14,
+
   // Required for UMA histogram logging.
-  kMaxValue = kLNABlockedByMissingPermission,
+  kMaxValue = kLNAAllowedByPolicyWarn,
 };
 
 // Returns a human-readable string representing `result`, suitable for logging.

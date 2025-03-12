@@ -54,10 +54,6 @@ class VIEWS_EXPORT Background {
   // Render the background for the provided view
   virtual void Paint(gfx::Canvas* canvas, View* view) const = 0;
 
-  // Set a solid, opaque color to be used when drawing backgrounds of native
-  // controls.  Unfortunately alpha=0 is not an option.
-  void SetNativeControlColor(SkColor color);
-
   // This is called by the View on which it is attached. This is overridden for
   // subclasses that depend on theme colors.
   virtual void OnViewThemeChanged(View* view);
@@ -66,14 +62,17 @@ class VIEWS_EXPORT Background {
   // by default.
   virtual std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const;
 
-  // Returns the "background color".  This is equivalent to the color set in
-  // SetNativeControlColor().  For solid backgrounds, this is the color; for
-  // gradient backgrounds, it's the midpoint of the gradient; for painter
-  // backgrounds, this is not useful (returns a default color).
-  SkColor get_color() const { return color_; }
+  // Returns the "background color".  After resolution, this color is the color
+  // for solid backgrounds; for gradient backgrounds, it's the midpoint of the
+  // gradient; for painter backgrounds, this is not useful (returns a default
+  // color).
+  ui::ColorVariant color() const { return color_; }
+
+  // Set a solid color to be used when drawing backgrounds.
+  virtual void SetColor(ui::ColorVariant color);
 
  private:
-  SkColor color_ = gfx::kPlaceholderColor;
+  ui::ColorVariant color_;
 };
 
 // Creates a background that fills the canvas in the specified color.

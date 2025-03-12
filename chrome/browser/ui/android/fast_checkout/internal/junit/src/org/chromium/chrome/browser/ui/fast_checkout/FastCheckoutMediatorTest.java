@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfil
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -71,7 +72,8 @@ public class FastCheckoutMediatorTest {
                             /* city= */ "New York",
                             /* postalCode= */ "12345",
                             /* email= */ "john.moe@gmail.com",
-                            /* phoneNumber= */ "+1-345-543-645"),
+                            /* phoneNumber= */ "+1-345-543-645",
+                            /* recordType= */ RecordType.ACCOUNT),
                     FastCheckoutTestUtils.createDetailedProfile(
                             /* guid= */ "234",
                             /* name= */ "Jane Doe",
@@ -79,7 +81,8 @@ public class FastCheckoutMediatorTest {
                             /* city= */ "Los Angeles",
                             /* postalCode= */ "99999",
                             /* email= */ "doe.jane@gmail.com",
-                            /* phoneNumber= */ "+1-345-333-319"),
+                            /* phoneNumber= */ "+1-345-333-319",
+                            /* recordType= */ RecordType.ACCOUNT),
                     FastCheckoutTestUtils.createDetailedProfile(
                             /* guid= */ "345",
                             /* name= */ "Foo Boo",
@@ -87,7 +90,9 @@ public class FastCheckoutMediatorTest {
                             /* city= */ "San Francisco",
                             /* postalCode= */ "23441",
                             /* email= */ "foo@gmail.com",
-                            /* phoneNumber= */ "+1-205-333-009"));
+                            /* phoneNumber= */ "+1-205-333-009",
+                            /* recordType= */ RecordType.ACCOUNT));
+
     private static final List<FastCheckoutCreditCard> SAMPLE_CARDS =
             List.of(
                     FastCheckoutTestUtils.createSampleCreditCard(
@@ -268,7 +273,8 @@ public class FastCheckoutMediatorTest {
                         /* city= */ "Des Moines",
                         /* postalCode= */ "93439",
                         /* email= */ "frank@tank.com",
-                        /* phoneNumber= */ "+1-111-333-222");
+                        /* phoneNumber= */ "+1-111-333-222",
+                        /* recordType= */ RecordType.ACCOUNT);
         mMediator.setAutofillProfileItems(
                 List.of(SAMPLE_PROFILES.get(0), SAMPLE_PROFILES.get(1), sameGUIDProfile));
         assertThat(mModel.get(PROFILE_MODEL_LIST).size(), is(4));

@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">Доброї ночі, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Відкрити панель смайлів</translation>
 <translation id="2088116547584365419">ігри</translation>
-<translation id="2092517835716911174">Користуватися функціями "Допомога із читанням" і "Допомога з текстом" можуть лише особи, яким виповнилося 18 років.</translation>
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
 <translation id="2107581415810719320">Інша кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не підтримує Thunderbolt. Продуктивність пристрою може бути обмежено.</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">Версія для розробників</translation>
 <translation id="4513044611477939680">Швидкий обмін</translation>
 <translation id="4513946894732546136">Відгуки</translation>
+<translation id="4518096944902121253">Інші дії недоступні для цієї мови</translation>
 <translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон.</translation>
 <translation id="4525887279712865285">Показати налаштування швидкого обміну</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
@@ -1885,6 +1885,7 @@
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
 <translation id="7219573373513695352">Немає підключених пристроїв</translation>
+<translation id="7228968829656641943">Виберіть ділянку на екрані, за якою хочете виконати пошук. Для навігації за допомогою клавіатури натисніть клавішу Tab, а потім – пробіл.</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Обидві кнопки миші</translation>
 <translation id="7244725679040769470">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора. Підключіть пристрій до джерела живлення.</translation>

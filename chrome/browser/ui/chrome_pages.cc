@@ -61,7 +61,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -584,12 +583,7 @@ void ShowSearchEngineSettings(Browser* browser) {
 }
 
 void ShowWebStore(Browser* browser, std::string_view utm_source_value) {
-  GURL webstore_url = extension_urls::GetWebstoreLaunchURL();
-  // TODO(crbug.com/40073814): Refactor this check into
-  // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
-  if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
-    webstore_url = extension_urls::GetNewWebstoreLaunchURL();
-  }
+  GURL webstore_url = extension_urls::GetNewWebstoreLaunchURL();
   ShowSingletonTabIgnorePathOverwriteNTP(
       browser, extension_urls::AppendUtmSource(webstore_url, utm_source_value));
 }

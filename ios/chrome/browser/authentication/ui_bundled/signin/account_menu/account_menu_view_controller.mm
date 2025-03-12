@@ -67,6 +67,8 @@ typedef NS_ENUM(NSUInteger, SectionIdentifier) {
   SyncErrorsSectionIdentifier = kSectionIdentifierEnumZero,
   // List of accounts.
   AccountsSectionIdentifier,
+  // Sign-out.
+  SignOutSectionIdentifier,
   // Settings.
   SettingsSectionIdentifier,
 };
@@ -114,12 +116,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   BOOL _resizeReady;
   // Whether or not to hide the ellipsis menu.
   BOOL _hideEllipsisMenu;
+  // Whether or not to show the settings button.
+  BOOL _showSettingsButton;
 }
 
-- (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu {
+- (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu
+                      showSettingsButton:(BOOL)showSettingsButton {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _hideEllipsisMenu = hideEllipsisMenu;
+    _showSettingsButton = showSettingsButton;
   }
   return self;
 }
@@ -366,7 +372,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* label = nil;
   NSString* accessibilityIdentifier = nil;
   NSString* accessibilityLabel = nil;
-  UIColor* textColor = [UIColor colorNamed:kBlueColor];
   switch (rowIdentifier) {
     case RowIdentifierErrorExplanation: {
       SettingsImageDetailTextCell* cell =
@@ -406,7 +411,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     case RowIdentifierSettings:
       label = l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_OPEN_SETTINGS);
       accessibilityIdentifier = kAccountMenuOpenSettingsButtonId;
-      textColor = [UIColor colorNamed:kSolidBlackColor];
       break;
     default:
       NOTREACHED();
@@ -419,7 +423,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.textLabel.text = label;
   cell.accessibilityLabel = accessibilityLabel ? accessibilityLabel : label;
   cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  cell.textLabel.textColor = textColor;
+  cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
 
@@ -495,12 +499,20 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     [snapshot appendItemsWithIdentifiers:accountsIdentifiers
                intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
   }
-  [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
-             intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
 
-  [snapshot appendSectionsWithIdentifiers:@[ @(SettingsSectionIdentifier) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSettings) ]
-             intoSectionWithIdentifier:@(SettingsSectionIdentifier)];
+  if (_showSettingsButton) {
+    // The sign-out button is grouped with the accounts section.
+    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
+               intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
+    [snapshot appendSectionsWithIdentifiers:@[ @(SettingsSectionIdentifier) ]];
+    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSettings) ]
+               intoSectionWithIdentifier:@(SettingsSectionIdentifier)];
+  } else {
+    // The sign-out button has its own section.
+    [snapshot appendSectionsWithIdentifiers:@[ @(SignOutSectionIdentifier) ]];
+    [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
+               intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
+  }
 
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 }

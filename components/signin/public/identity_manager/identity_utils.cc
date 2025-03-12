@@ -73,14 +73,14 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
 bool IsImplicitBrowserSigninOrExplicitDisabled(
     const IdentityManager* identity_manager,
     const PrefService* prefs) {
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    return true;
-  }
-
-  // The feature is enabled, check if the user is implicitly signed in.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Check if the user is implicitly signed in.
   // Signed out users or signed in explicitly should return false.
   return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
          !prefs->GetBoolean(prefs::kExplicitBrowserSignin);
+#else
+  return true;
+#endif
 }
 
 bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(

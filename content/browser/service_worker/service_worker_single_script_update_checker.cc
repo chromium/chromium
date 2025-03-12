@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 
 #include <optional>
@@ -101,8 +96,8 @@ constexpr net::NetworkTrafficAnnotationTag kUpdateCheckTrafficAnnotation =
 class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
-  WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(base::span(data, size)) {}
+  explicit WrappedIOBuffer(base::span<const char> data)
+      : net::WrappedIOBuffer(data) {}
 
  private:
   ~WrappedIOBuffer() override = default;
@@ -566,9 +561,9 @@ void ServiceWorkerSingleScriptUpdateChecker::CompareData(
       this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   DCHECK(pending_buffer || bytes_to_compare == 0);
-  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
-      pending_buffer ? pending_buffer->buffer() : nullptr,
-      pending_buffer ? pending_buffer->size() : 0);
+  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_BUFFERS(
+      base::span(pending_buffer ? pending_buffer->buffer() : nullptr,
+                 pending_buffer ? pending_buffer->size() : 0)));
 
   // Compare the network data and the stored data.
   net::Error error = cache_writer_->MaybeWriteData(

@@ -156,11 +156,8 @@ void AssistantOnboardingSuggestionView::RemoveLayerFromRegions(
 void AssistantOnboardingSuggestionView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  GetBackground()->SetNativeControlColor(GetBackgroundColor(index_));
-
-  // SetNativeControlColor does not trigger a repaint.
+  GetBackground()->SetColor(GetBackgroundColor(index_));
   SchedulePaint();
-
   label_->SetEnabledColor(GetForegroundColor(index_));
 
   if (assistant::util::IsResourceLinkType(url_, ResourceLinkType::kIcon)) {

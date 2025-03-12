@@ -1768,7 +1768,7 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
   EXPECT_TRUE(TabDragController::IsActive());
 
   // Test that after the tabs are detached from the source tabstrip (in this
-  // case |not_attached_tab_strip|), the tab dragging info should be properly
+  // case `not_attached_tab_strip`), the tab dragging info should be properly
   // cleared on the source tabstrip.
   EXPECT_TRUE(test->IsTabDraggingInfoCleared(not_attached_tab_strip));
   // At this moment there should be a new browser window for the dragged tabs.
@@ -2607,7 +2607,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragInSameWindow) {
 
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
-  // Test that the dragging info is correctly set on |tab_strip|.
+  // Test that the dragging info is correctly set on `tab_strip`.
   EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip));
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
@@ -3743,12 +3743,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Pin the tab in the target tabstrip.
   target_browser->tab_strip_model()->SetTabPinned(0, true);
 
-  // Drag the selected tabs to |target_tab_strip|.
+  // Drag the selected tabs to `target_tab_strip`.
   DragTabAndNotify(
       tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2, this, tab_strip,
                                 target_tab_strip));
 
-  // Should now be attached to |target_tab_strip|.
+  // Should now be attached to `target_tab_strip`.
   ASSERT_TRUE(target_tab_strip->GetDragContext()->IsDragSessionActive());
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(1u, browser_list()->size());
@@ -4224,7 +4224,7 @@ class DraggedWindowObserver : public aura::WindowObserver {
   raw_ptr<DetachToBrowserTabDragControllerTest> test_;
   // The dragged window.
   raw_ptr<aura::Window> window_ = nullptr;
-  // The bounds that |window_| will change to when the drag ends.
+  // The bounds that `window_` will change to when the drag ends.
   gfx::Rect end_bounds_;
   // The position that the mouse/touch event will move to when the drag ends.
   gfx::Point end_point_;
@@ -4268,8 +4268,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                    base::BindOnce(&DoNotObserveDraggedWidgetAfterDragEndsStep2,
                                   this, observer.get(), tab_strip));
 
-  // There should be still two browsers at this moment. |tab_strip| should not
-  // be merged into |tab_strip2|.
+  // There should be still two browsers at this moment. `tab_strip` should not
+  // be merged into `tab_strip2`.
   EXPECT_EQ(2u, browser_list()->size());
 
   ASSERT_FALSE(TabDragController::IsActive());
@@ -4277,7 +4277,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 namespace {
 
-// Returns true if the web contents that's associated with |browser| is using
+// Returns true if the web contents that's associated with `browser` is using
 // fast resize.
 bool WebContentsIsFastResized(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
@@ -4493,7 +4493,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ASSERT_TRUE(second_display.bounds().Contains(target));
 
   // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse input
-  // without having to call |CursorManager::SetDisplay|.
+  // without having to call `CursorManager::SetDisplay`.
   ash::Shell::Get()->cursor_manager()->SetDisplay(second_display);
   DragTabAndNotify(
       tab_strip,
@@ -4930,7 +4930,7 @@ static_assert(
     "kDragPoints and kDeviceScaleFactorExpectations must have the same "
     "number of elements");
 
-// Drags tab to |kDragPoints[index]|, then calls the next step function.
+// Drags tab to `kDragPoints[index]`, then calls the next step function.
 void CursorDeviceScaleFactorStep(
     DifferentDeviceScaleFactorDisplayTabDragControllerTest* test,
     TabStrip* not_attached_tab_strip,

@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
 /** Contains the state for a WebContents. */
+@NullMarked
 public class WebContentsState {
     /**
      * Version number of the format used to save the WebContents navigation history, as returned by
@@ -27,8 +29,8 @@ public class WebContentsState {
     private final ByteBuffer mBuffer;
 
     private int mVersion;
-    private String mFallbackUrlForRestorationFailure;
-    private static WebContentsState sEmptyWebContentsState;
+    private @Nullable String mFallbackUrlForRestorationFailure;
+    private static @Nullable WebContentsState sEmptyWebContentsState;
 
     public WebContentsState(ByteBuffer buffer) {
         assert buffer.isDirect();
@@ -49,18 +51,17 @@ public class WebContentsState {
     }
 
     /** @return Title currently being displayed in the saved state's current entry. */
-    public String getDisplayTitleFromState() {
+    public @Nullable String getDisplayTitleFromState() {
         return WebContentsStateBridge.getDisplayTitleFromState(this);
     }
 
     /** @return URL currently being displayed in the saved state's current entry. */
-    public String getVirtualUrlFromState() {
+    public @Nullable String getVirtualUrlFromState() {
         return WebContentsStateBridge.getVirtualUrlFromState(this);
     }
 
     /** Get the URL to be loaded if restoring the serialized web content state fails. */
-    @Nullable
-    public String getFallbackUrlForRestorationFailure() {
+    public @Nullable String getFallbackUrlForRestorationFailure() {
         return mFallbackUrlForRestorationFailure;
     }
 

@@ -189,6 +189,10 @@ void GlicWindowAnimator::AnimateBounds(const gfx::Rect& target_bounds,
     duration = base::Milliseconds(0);
   }
 
+  if (duration > base::Seconds(60)) {
+    duration = base::Seconds(60);
+  }
+
   if (window_resize_animation_) {
     // Update the ongoing animation with the new bounds and new duration.
     window_resize_animation_->UpdateTargetBounds(target_bounds,

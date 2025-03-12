@@ -1750,6 +1750,20 @@ chromium-metrics-reviews@google.com.
   <summary>Resolving time for successful interestGroups() calls.</summary>
 </histogram>
 
+<histogram
+    name="Storage.SharedStorage.OnDataClearedForOrigin.DataDurationInDays"
+    units="days" expires_after="2025-09-10">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the duration (in days, capped at 60) that Shared Storage data
+    persists for an origin, from initial storage to clearance (user or
+    expiration), excluding site-initiated deletions. Recorded at the point of
+    data clearance.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
     expires_after="2025-08-10">
   <owner>cammie@chromium.org</owner>

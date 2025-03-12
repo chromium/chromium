@@ -12,7 +12,7 @@
     await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
     const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${location.hostname};Path=/device-bound-session-credentials`;
-    addCookieAndSessionCleanup(t, expectedCookieAndAttributes);
+    addCookieAndSessionCleanup(t);
 
     // Configure server to set scope specification.
     configureServer({ scopeSpecificationItems: [{
@@ -48,7 +48,7 @@
     // Prompt starting a session, and wait until registration completes.
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
-    assert_true(await waitForCookie(expectedCookieAndValue));
+    await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
 
     async function expireCookieAndTriggerRequest(endpoint, expectRefresh) {
       expireCookie(expectedCookieAndAttributes);

@@ -130,11 +130,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2753623023919742414">Click to search</translation>
 <translation id="2770231113462710648">Change default browser to:</translation>
-<translation id="277338894894732084">Later, Chromium will ask if you want to use saved info to automatically fill forms</translation>
 <translation id="2785438272836277133">This extension contains malware and is unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2803971713792056305">Your Chromium</translation>
-<translation id="2806241689335397269">Chromium will ask if you want to save form information, such as your birthday, age and passport number</translation>
 <translation id="2841525013647267359">Translate from</translation>
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
 <translation id="2847479871509788944">Remove from Chromium...</translation>
@@ -180,7 +178,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
 <translation id="3412460710772753638">In Password Manager on this device</translation>
-<translation id="3451656833730006755">To get your extensions and more on all your computers, sign in to Chromium</translation>
 <translation id="347328004046849135">Chromium will notify you when you sign in with a compromised password</translation>
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> can switch between Chromium profiles</translation>
@@ -463,7 +460,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="734373864078049451">Your web, bookmarks and other Chromium stuff live here.</translation>
 <translation id="7349591376906416160">Your system administrator has configured Chromium to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">This extension is no longer supported. Chromium recommends that you remove it instead.</translation>
-<translation id="7389750180956889333">Chromium understands forms better and can autofill them faster for you. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text copied</translation>
 <translation id="7451052299415159299">Chromium needs permission to access your camera for this site</translation>

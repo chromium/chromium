@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
     TabHidingType.TAB_SWITCHER_SHOWN
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface TabHidingType {
     /** A tab was hidden due to other tab getting foreground. */
     int CHANGED_TABS = 0;

@@ -19,7 +19,6 @@
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageHeaderCommands;
 @class NewTabPageMetricsRecorder;
-@protocol OmniboxCommands;
 @protocol LensCommands;
 @class LayoutGuideCenter;
 @class PrimaryToolbarViewController;
@@ -42,12 +41,13 @@
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<ApplicationCommands,
-                              BrowserCoordinatorCommands,
-                              OmniboxCommands,
-                              FakeboxFocuser,
-                              LensCommands>
-    dispatcher;
+// Handlers for dispatched commands.
+@property(nonatomic, weak) id<FakeboxFocuser> fakeboxFocuserHandler;
+@property(nonatomic, weak) id<LensCommands> lensHandler;
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorHandler;
+
 @property(nonatomic, weak) id<NewTabPageHeaderViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<NewTabPageHeaderCommands> commandHandler;
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;

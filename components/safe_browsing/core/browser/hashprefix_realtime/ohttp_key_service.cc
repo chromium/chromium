@@ -213,10 +213,6 @@ void OhttpKeyService::SetEnabled(bool enable) {
 }
 
 void OhttpKeyService::GetOhttpKey(Callback callback) {
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      enabled_ == IsEnabled(pref_service_, country_getter_.Run(),
-                            are_background_lookups_allowed_));
   if (!enabled_) {
     std::move(callback).Run(std::nullopt);
     return;

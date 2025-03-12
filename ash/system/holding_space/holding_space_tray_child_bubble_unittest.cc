@@ -92,9 +92,7 @@ TEST_F(HoldingSpaceTrayChildBubbleTest, HasExpectedBubbleTreatment) {
   // Background.
   auto* background = child_bubble()->GetBackground();
   ASSERT_TRUE(background);
-  EXPECT_EQ(background->get_color(),
-            child_bubble()->GetColorProvider()->GetColor(
-                cros_tokens::kCrosSysSystemBaseElevated));
+  EXPECT_EQ(background->color(), cros_tokens::kCrosSysSystemBaseElevated);
   EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
 
   // Border.

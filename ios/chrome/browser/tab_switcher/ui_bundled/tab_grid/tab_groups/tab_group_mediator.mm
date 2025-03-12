@@ -96,10 +96,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   base::WeakPtr<const TabGroup> _tabGroup;
   // A service to get activity messages for a shared tab group.
   raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
-  // A map of a tab ID and a message to indicate that a tab should display a
-  // chip on its cell. This is also used for the activity summary.
-  std::map<tab_groups::LocalTabID, collaboration::messaging::PersistentMessage>
-      _dirtyTabs;
   // The bridge between the C++ MessagingBackendService observer and this
   // Objective-C class.
   std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
@@ -364,14 +360,23 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 // Overrides the parent to return the data if there is a new message for a tab
 // in a group.
 - (ActivityLabelData*)activityLabelDataForTab:(web::WebStateID)webStateID {
-  if (!_dirtyTabs.contains(webStateID.identifier())) {
+  if (!_tabGroup || !_messagingService || !_messagingService->IsInitialized()) {
+    return nil;
+  }
+
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessagesForTab(
+          webStateID.identifier(),
+          collaboration::messaging::PersistentNotificationType::DIRTY_TAB);
+  if (messages.empty()) {
     return nil;
   }
 
   ActivityLabelData* data = [[ActivityLabelData alloc] init];
 
-  collaboration::messaging::PersistentMessage message =
-      _dirtyTabs[webStateID.identifier()];
+  // The backend stores only one message per tab.
+  CHECK_EQ(1u, messages.size());
+  collaboration::messaging::PersistentMessage message = messages[0];
   switch (message.collaboration_event) {
     case collaboration::messaging::CollaborationEvent::TAB_ADDED:
       data.labelString = l10n_util::GetNSString(
@@ -742,23 +747,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
 
-  std::vector<collaboration::messaging::PersistentMessage> messages =
-      _messagingService->GetMessagesForGroup(
-          _tabGroup->tab_group_id(),
-          collaboration::messaging::PersistentNotificationType::DIRTY_TAB);
-
-  for (auto& message : messages) {
-    if (!message.attribution.tab_metadata.has_value()) {
-      continue;
-    }
-    collaboration::messaging::TabMessageMetadata tab_data =
-        message.attribution.tab_metadata.value();
-    if (!tab_data.local_tab_id.has_value()) {
-      continue;
-    }
-    _dirtyTabs[tab_data.local_tab_id.value()] = message;
-  }
-
   [self updateActivitySummaryCell];
 }
 
@@ -780,21 +768,30 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   CHECK(_messagingService);
   CHECK(_messagingService->IsInitialized());
 
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessagesForGroup(
+          _tabGroup->tab_group_id(),
+          collaboration::messaging::PersistentNotificationType::DIRTY_TAB);
+  std::vector<collaboration::messaging::PersistentMessage> tombstoned_messages =
+      _messagingService->GetMessagesForGroup(
+          _tabGroup->tab_group_id(),
+          collaboration::messaging::PersistentNotificationType::TOMBSTONED);
+  messages.insert(messages.end(), tombstoned_messages.begin(),
+                  tombstoned_messages.end());
+
   int numOfTabsAdded = 0;
   int numOfTabsRemoved = 0;
-  for (auto const& [localTabID, message] : _dirtyTabs) {
+  for (auto const& message : messages) {
+    if (!message.attribution.tab_metadata.has_value()) {
+      continue;
+    }
+
     switch (message.collaboration_event) {
       case collaboration::messaging::CollaborationEvent::TAB_ADDED: {
-        // Make sure that the dirty tab exists in the group.
-        if ([self isTabInGroup:localTabID]) {
-          numOfTabsAdded++;
-        }
+        numOfTabsAdded++;
         break;
       }
       case collaboration::messaging::CollaborationEvent::TAB_REMOVED:
-        // TODO(crbug.com/385133876): Now, only -hidePersistentMessage: is
-        // called when a tab is removed. So `numOfTabsRemoved` is never
-        // incremented. Probably we need to fix it on the server side.
         numOfTabsRemoved++;
         break;
       default:
@@ -934,7 +931,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
   tab_groups::LocalTabID localTabID = tab_data.local_tab_id.value();
-  _dirtyTabs[localTabID] = message;
 
   [self reconfigureTab:localTabID];
   [self updateActivitySummaryCell];
@@ -958,7 +954,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
   tab_groups::LocalTabID localTabID = tab_data.local_tab_id.value();
-  _dirtyTabs.erase(localTabID);
 
   [self reconfigureTab:localTabID];
   [self updateActivitySummaryCell];

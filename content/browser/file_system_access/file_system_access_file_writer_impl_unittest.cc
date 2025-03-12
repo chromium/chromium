@@ -554,9 +554,7 @@ TEST_F(FileSystemAccessSandboxedFileWriterImplTest, SkipQuarantine) {
 
 TEST_F(FileSystemAccessSandboxedFileWriterImplTest, QuotaError) {
   ASSERT_TRUE(quota_manager_);
-  quota_manager_->SetQuota(kTestStorageKey,
-                           blink::mojom::StorageType::kTemporary,
-                           /*quota=*/1);
+  quota_manager_->SetQuota(kTestStorageKey, /*quota=*/1);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);

@@ -9992,6 +9992,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_RELOAD" desc="The accessible name for the reload/stop button.">
         Reload
       </message>
+      <message name="IDS_ACCNAME_SIDE_BY_SIDE" is_accessibility_with_no_ui="true" desc="The accessible name for the toolbar button for the side by side tabs feature.">
+        Side-by-side
+      </message>
       <message name="IDS_ACCNAME_FIND" desc="The accessible name for the find button.">
         Find
       </message>

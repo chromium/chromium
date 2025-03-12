@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Tokiko sarea, ez ibiltaritza</translation>
 <translation id="1327977588028644528">Atebidea</translation>
 <translation id="1328223165223065150">Horma-paperaren kolorea</translation>
+<translation id="1329478709358066995">Transkripzioa:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Egokitu eskanea daitekeen eremura</translation>
 <translation id="1343442362630695901">laku gazia</translation>
@@ -127,6 +128,15 @@
 <translation id="1526389707933164996">Pantaila-babeslearen animazioa</translation>
 <translation id="152892567002884378">Igo bolumena</translation>
 <translation id="1539864135338521185">lapis lazulia</translation>
+<translation id="1548555207631326346">Aukeratu gai bat eta hautatu azpimarratutako hitzak AAk sortutako irudiak pertsonalizatzeko.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Hautatu "Inspira nazazu" AAk sortutako askotariko irudi esklusiboak eskuratzeko.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AA erabilita irudiak sortzean, eskaera-mezua Google-ren AAren zerbitzarietara bidaltzen da irudiak sortzeko eta zerbitzua hobetzeko, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ren Pribatutasun-gidalerroak<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> gordeta.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AA generatiboa esperimentala da, garapen-zikloaren fase goiztiar batean dago eta, oraingoz, erabilgarritasun mugatua du.</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
 <translation id="1561927818299383735">atzeko argiaren kolorea</translation>
@@ -1267,6 +1277,7 @@
 <translation id="6930597342185648547">Atzeko planoari buruz</translation>
 <translation id="6939667434404433010">Bilatu grabaketaren izena</translation>
 <translation id="6939766318048400022">Kafetegia</translation>
+<translation id="6942253772720771875">Partekatu iritzia edo azaldu zer arazo duzun</translation>
 <translation id="6943893908656559156">Kendu identitatea (aukerakoa)</translation>
 <translation id="6953137545147683679">urre-koloreko</translation>
 <translation id="6957231940976260713">Zerbitzuaren izena</translation>
@@ -1551,6 +1562,16 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8183975772394450380">Hondartza</translation>
 <translation id="819278132617411009">Erabili Google-ren AA produktibitatea handitzeko</translation>
+<translation id="82003371436638355">"Sortu zeurea" hautatzen duzunean, idatzi eskaera-mezu pertsonalizatu bat. Bestela, hautatu "Aukeratu gai bat" eta hautatu azpimarratutako hitzak AA bidezko horma-papera pertsonalizatzeko.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Hautatu "Inspira nazazu" AAk sortutako askotariko irudi esklusiboak eskuratzeko.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Zeure horma-paperak sortzean, eskaera-mezua Google-ren zerbitzarietara bidaltzen da irudiak sortzeko eta zerbitzua hobetzeko, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ren Zerbitzu-baldintzak eta Pribatutasun-gidalerroak<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> gordeta. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Baliteke AA generatiboak akatsak egitea (jendeari buruzkoak barne); beraz, egiaztatu informazioa. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lortu informazio gehiago<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8208861521865154048">Abantailak</translation>
@@ -1572,6 +1593,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8312330582793120272">erreproduzitu multimedia-edukia</translation>
 <translation id="8318753676953949627">Ez dago irudirik</translation>
 <translation id="8320910311642849813">Baso</translation>
+<translation id="8322464149031882595">Aurrera egiteko, sakatu hau</translation>
 <translation id="8329018942023753850">kalkulagailua aplikazioa</translation>
 <translation id="8336739000755212683">Aldatu gailuko kontuaren irudia</translation>
 <translation id="8339024191194156249">Lortu informazio gehiago exekutatze automatikoari buruz</translation>
@@ -1592,6 +1614,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8395584934117017006">Enpresa batek kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="8398927464629426868">Gailua zer abiaduratan kargatzen edo deskargatzen ari den</translation>
 <translation id="8403988360557588704"><ph name="ART_FEATURE" /> baten margolan bat, estilo honetan: <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Sortutako laburpena:</translation>
 <translation id="8410244574650205435">Automatikoki hauteman da</translation>
 <translation id="8420955526972171689">Egin probak eta konpondu hardwarearekin erlazionatutako arazoak</translation>
 <translation id="8422748173858722634">IMEIa</translation>
@@ -1636,6 +1659,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8626489604350149811"><ph name="APN_NAME" /> APNarekin erlazionatutako ekintza gehiago</translation>
 <translation id="86356131183441916">More argia</translation>
 <translation id="8647595191512746911">Audio-transkripzioa</translation>
+<translation id="8648578954147795914">Sortutako izenak:</translation>
 <translation id="8650852232143958317">Eraman Gmail-eko eta Google Drive-ko fitxategiak zurekin</translation>
 <translation id="8651481478098336970">desaktibatu bolumena</translation>
 <translation id="8655295600908251630">Kanala</translation>
@@ -1716,6 +1740,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8961025972867871808">pinguinoak</translation>
 <translation id="8968751544471797276">Kargatze-abiadura</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
+<translation id="8972061581514441296">Sakatu itzultzeko</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Eskaneatu}=1{Eskaneatu {NUMBER_OF_PAGES} orria}other{Eskaneatu {NUMBER_OF_PAGES} orri}}</translation>
 <translation id="89945434909472341">Herrixka</translation>
@@ -1777,6 +1802,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9218016617214286986">Erakutsi APN ezagunak</translation>
 <translation id="932327136139879170">Hasiera</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Ziurtatu mikrofonoa konektatuta dagoela edo berrabiarazi Chromebook-a</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> funtziorako tekla falta da. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Grabaketako ahotsak konparatu, gauza bakoitza nork eta noiz esan duen adieraz dezan transkripzioak.</translation>

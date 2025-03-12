@@ -835,7 +835,7 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
       if (EqualIgnoringASCIICase(
               element->FastGetAttribute(html_names::kHiddenAttr),
-              "until-found")) {
+              keywords::kUntilFound)) {
         elements_to_reveal.push_back(element);
       }
     }

@@ -68,6 +68,10 @@ features = ["calendar", "compiled_data", "experimental"]
 version = "1.6.0"
 features = ["rustc_1_55"]
 
+# Without the `artifact` field Cargo will only build the `[lib]` target from a
+# dependency.  Specifying `artifact = "bin"` below allows Cargo (and `gnrt`) to
+# also cover `cxxbridge-cmd` when analyzing the dependency tree.  See also
+# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#artifact-dependencies
 [dependencies.cxxbridge-cmd]
 version = "1"
 artifact = "bin"

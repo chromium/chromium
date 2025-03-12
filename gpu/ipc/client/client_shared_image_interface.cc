@@ -88,13 +88,6 @@ void ClientSharedImageInterface::WaitSyncToken(
   proxy_->WaitSyncToken(sync_token);
 }
 
-void ClientSharedImageInterface::Flush() {
-  // |proxy_| might not be needed and is not setup in the tests.
-  if (proxy_) {
-    proxy_->Flush();
-  }
-}
-
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,

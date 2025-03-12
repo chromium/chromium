@@ -1300,37 +1300,43 @@ void SerializeAriaNotificationAttributes(const AriaNotifications& notifications,
   }
 
   std::vector<std::string> announcements;
+  std::vector<int32_t> priority_properties;
   std::vector<std::string> notification_ids;
   std::vector<int32_t> interrupt_properties;
-  std::vector<int32_t> priority_properties;
 
   announcements.reserve(size);
+  priority_properties.reserve(size);
   notification_ids.reserve(size);
   interrupt_properties.reserve(size);
-  priority_properties.reserve(size);
 
   for (const auto& notification : notifications) {
     announcements.emplace_back(TruncateString(notification.Announcement()));
-    notification_ids.emplace_back(
-        TruncateString(notification.NotificationId()));
-    interrupt_properties.emplace_back(
-        static_cast<int32_t>(notification.Interrupt()));
     priority_properties.emplace_back(
         static_cast<int32_t>(notification.Priority()));
+    if (RuntimeEnabledFeatures::AriaNotifyV2Enabled()) {
+      notification_ids.emplace_back(
+          TruncateString(notification.NotificationId()));
+      interrupt_properties.emplace_back(
+          static_cast<int32_t>(notification.Interrupt()));
+    } else {
+      notification_ids.emplace_back();
+      interrupt_properties.emplace_back(static_cast<int32_t>(
+          ax::mojom::blink::AriaNotificationInterrupt::kNone));
+    }
   }
 
   node_data->AddStringListAttribute(
       ax::mojom::blink::StringListAttribute::kAriaNotificationAnnouncements,
       announcements);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kAriaNotificationPriorityProperties,
+      priority_properties);
   node_data->AddStringListAttribute(
       ax::mojom::blink::StringListAttribute::kAriaNotificationIds,
       notification_ids);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kAriaNotificationInterruptProperties,
       interrupt_properties);
-  node_data->AddIntListAttribute(
-      ax::mojom::blink::IntListAttribute::kAriaNotificationPriorityProperties,
-      priority_properties);
 }
 
 }  // namespace

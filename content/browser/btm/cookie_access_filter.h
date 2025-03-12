@@ -32,7 +32,7 @@ class CONTENT_EXPORT CookieAccessFilter {
   // kUnknown. (Note: this depends on the order of previous calls to
   // AddAccess()).
   bool Filter(const std::vector<GURL>& urls,
-              std::vector<BtmDataAccessType>* result) const;
+              std::vector<BtmDataAccessType>& result) const;
 
   // Returns true iff AddAccess() has never been called.
   bool is_empty() const { return accesses_.empty(); }

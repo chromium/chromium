@@ -1010,7 +1010,7 @@ class CacheStorageCacheTest : public testing::Test {
   void SetQuota(uint64_t quota) {
     mock_quota_manager_->SetQuota(
         blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl)),
-        blink::mojom::StorageType::kTemporary, quota);
+        quota);
   }
 
   void SetMaxQuerySizeBytes(size_t max_bytes) {

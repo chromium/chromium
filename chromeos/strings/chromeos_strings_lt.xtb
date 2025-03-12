@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Ekrano užsklandos animacija</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
 <translation id="1539864135338521185">lazuritas</translation>
+<translation id="1548555207631326346">Pasirinkite temą, tada – pabrauktus žodžius, kad suasmenintumėte DI vaizdus.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pasirinkite „Įkvėpk mane“, kad gautumėte unikalesnių ir įvairesnių DI vaizdų.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kai kuriate naudodami DI, užklausa siunčiama į „Google“ DI serverius, kad būtų galima generuoti vaizdus ir tobulinti produktą, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatyvinis DI yra eksperimentinis, dar tik kuriamas ir šiuo metu jo pasiekiamumas ribotas.</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
 <translation id="1561927818299383735">fono spalva</translation>
@@ -1553,6 +1562,16 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8183975772394450380">paplūdimys</translation>
 <translation id="819278132617411009">Naudokite „Google“ DI, kad būtumėte produktyvesni</translation>
+<translation id="82003371436638355">Jei pasirinkote „Kurti savo“, parašykite tinkintą užklausą. Arba pasirinkite „Pasirinkti temą“, tada pasirinkite temą ir pabrauktus žodžius, kad suasmenintumėte DI ekrano foną.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pasirinkite „Įkvėpk mane“, kad gautumėte unikalesnių ir įvairesnių DI vaizdų.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kai kuriate savo ekrano foną, užklausa siunčiama į „Google“ serverius, kad būtų galima generuoti vaizdus ir tobulinti produktą, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ paslaugų teikimo sąlygomis ir privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatyvinis DI gali klysti, įskaitant su žmonėmis susijusias klaidas, todėl patikrinkite dar kartą <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Sužinokite daugiau<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
@@ -1574,6 +1593,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8312330582793120272">leisti mediją</translation>
 <translation id="8318753676953949627">Vaizdų nėra</translation>
 <translation id="8320910311642849813">miškas</translation>
+<translation id="8322464149031882595">Spustelėkite, jei norite tęsti</translation>
 <translation id="8329018942023753850">skaičiuotuvo programa</translation>
 <translation id="8336739000755212683">Keisti įrenginio paskyros vaizdą</translation>
 <translation id="8339024191194156249">Sužinokite daugiau apie automatinį paleidimą</translation>
@@ -1720,6 +1740,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8961025972867871808">pingvinai</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
 <translation id="8970109610781093811">Paleisti dar kartą</translation>
+<translation id="8972061581514441296">Spustelėkite, jei norite grįžti</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Nuskaityti}=1{Nuskaityti {NUMBER_OF_PAGES} puslapį}one{Nuskaityti {NUMBER_OF_PAGES} puslapį}few{Nuskaityti {NUMBER_OF_PAGES} puslapį}many{Nuskaityti {NUMBER_OF_PAGES} puslapį}other{Nuskaityti {NUMBER_OF_PAGES} puslapį}}</translation>
 <translation id="89945434909472341">gyvenvietė</translation>

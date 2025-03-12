@@ -38,7 +38,7 @@ class IndicatorDividerBackground : public views::Background {
   // Background will have right rounded side with |arc_radius|.
   IndicatorDividerBackground(SkColor color, SkScalar arc_radius)
       : arc_radius_(arc_radius) {
-    SetNativeControlColor(color);
+    SetColor(color);
   }
 
   IndicatorDividerBackground(const IndicatorDividerBackground&) = delete;
@@ -77,7 +77,7 @@ class IndicatorDividerBackground : public views::Background {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
     canvas->DrawPath(path, flags);
   }
 

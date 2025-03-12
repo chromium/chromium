@@ -66,6 +66,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="3078350928901129212">Farveikon for fanegruppen <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Listen over fanegrupper er lukket</translation>
 <translation id="3194464645767632461">bedømmelse</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Føj <ph name="TABS_COUNT_ONE" /> fane til gruppen}one{Føj <ph name="TABS_COUNT_MANY" /> fane til gruppen}other{Føj <ph name="TABS_COUNT_MANY" /> faner til gruppen}}</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="3547352561153509682">Dette sletter gruppen fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ny fane}one{<ph name="MANY_ADDED" /> ny fane}other{<ph name="MANY_ADDED" /> nye faner}}</translation>
@@ -98,6 +99,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="4783638485675352219">Del titler og webadresser på åbne faner fra denne enhed med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}one{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Vis</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Føj <ph name="TABS_COUNT_ONE" /> valgt fane til gruppen}one{Føj <ph name="TABS_COUNT_MANY" /> valgt fane til gruppen}other{Føj <ph name="TABS_COUNT_MANY" /> valgte faner til gruppen}}</translation>
 <translation id="4861611890274104875">Luk kortet.</translation>
 <translation id="4861953997778766866">Alle kan ændre dine delte fanegrupper</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
@@ -134,6 +136,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6228793724645064692">(butiksanmeldelse)</translation>
 <translation id="6271513594716432922">Luk alle inaktive faner</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="6333260925957816943">Oplysninger om denne butik</translation>
 <translation id="6381032505162537930">Her kan du se dine fanegrupper</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ophæv grupperingen af <ph name="TABS_COUNT_ONE" /> valgt fane}one{Ophæv grupperingen af <ph name="TABS_COUNT_MANY" /> valgt fane}other{Ophæv grupperingen af <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
@@ -186,6 +189,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="799469866974412355">Ny gruppe fra din anden enhed</translation>
 <translation id="8029301326595421733">Oplysningerne om denne butik er åbnet i fuld højde</translation>
 <translation id="8053770993984522566">Listen over fanegrupper er åbnet i halv højde</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="8205266828577616993">Flyt fane op</translation>

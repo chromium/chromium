@@ -135,9 +135,9 @@ void BrowserAccessibilityManagerWin::UserIsReloading() {
 void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     BrowserAccessibility* node,
     const std::string& announcement,
+    ax::mojom::AriaNotificationPriority priority_property,
     const std::string& notification_id,
-    ax::mojom::AriaNotificationInterrupt interrupt_property,
-    ax::mojom::AriaNotificationPriority priority_property) {
+    ax::mojom::AriaNotificationInterrupt interrupt_property) {
   DCHECK(node);
 
   // This API is only supported from Windows10 (version 1709) onwards.

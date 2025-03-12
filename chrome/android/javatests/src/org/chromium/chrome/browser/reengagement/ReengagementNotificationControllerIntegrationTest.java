@@ -67,7 +67,6 @@ import org.chromium.content_public.common.ContentUrlConstants;
 @EnableFeatures(ChromeFeatureList.REENGAGEMENT_NOTIFICATION)
 // TODO(crbug.com/40142646): Remove these overrides when FeatureList#isInitialized() works
 // as expected with test values
-@DisableFeatures(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)
 public class ReengagementNotificationControllerIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =

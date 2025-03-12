@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />分頁群組顏色圖示</translation>
 <translation id="311432875115153175">分頁群組清單閂咗</translation>
 <translation id="3194464645767632461">評分</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個分頁加去群組}other{將 <ph name="TABS_COUNT_MANY" /> 個分頁加去群組}}</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關嘅分頁。要唔要將佢哋分組？</translation>
 <translation id="3547352561153509682">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">與作業系統分享此裝置已開啟分頁的標題和網址</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁加去群組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁加去群組}}</translation>
 <translation id="4861611890274104875">閂資訊卡。</translation>
 <translation id="4861953997778766866">所有人都可以修改你的共用分頁群組</translation>
 <translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="6333260925957816943">此商店的資料</translation>
 <translation id="6381032505162537930">你可在這裡找到分頁群組</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁移出群組}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">其他裝置建立的新群組</translation>
 <translation id="8029301326595421733">關於呢間商店嘅資料宜家顯示喺成個畫面</translation>
 <translation id="8053770993984522566">分頁群組清單，目前顯示於畫面下半部</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">將分頁上移</translation>

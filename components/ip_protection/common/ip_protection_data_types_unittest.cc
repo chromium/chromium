@@ -8,9 +8,52 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace ip_protection {
+
+namespace {
+
+// Size of a PRT when TLS serialized, before base64 encoding.
+constexpr size_t kPRTSize = 63;
+constexpr size_t kPRTPointSize = 29;
+
+// Deserialize a given prt serialized using
+// `ProbabilisticRevealToken::SerializeAndEncode()`.
+bool Deserialize(const std::string& serialized_encoded_prt,
+                 ProbabilisticRevealToken& out) {
+  std::string serialized_prt;
+  if (!base::Base64Decode(serialized_encoded_prt, &serialized_prt)) {
+    return false;
+  }
+  CBS cbs;
+  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(serialized_prt.data()),
+           serialized_prt.size());
+  if (CBS_len(&cbs) != kPRTSize) {
+    return false;
+  }
+  uint8_t version;
+  uint16_t u_size;
+  uint16_t e_size;
+  std::string u(kPRTPointSize, '0');
+  std::string e(kPRTPointSize, '0');
+  if (!CBS_get_u8(&cbs, &version) || !CBS_get_u16(&cbs, &u_size) ||
+      u_size != kPRTPointSize ||
+      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(u.data()), u_size) ||
+      !CBS_get_u16(&cbs, &e_size) || e_size != kPRTPointSize ||
+      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(e.data()), e_size)) {
+    return false;
+  }
+  out.version = version;
+  out.u = std::move(u);
+  out.e = std::move(e);
+  return true;
+}
+
+}  // namespace
 
 class IpProtectionGeoUtilsTest : public testing::Test {};
 
@@ -71,6 +114,42 @@ TEST_F(IpProtectionGeoUtilsTest, GetGeoHintFromGeoIdForTesting_EmptyGeoId) {
   std::optional<GeoHint> geo_hint = GetGeoHintFromGeoIdForTesting("");
 
   EXPECT_TRUE(!geo_hint.has_value());
+}
+
+class IpProtectionPRTSerializeTest : public testing::Test {};
+
+TEST_F(IpProtectionPRTSerializeTest, SerializeEmptyPRT) {
+  ProbabilisticRevealToken token{};
+  std::optional<std::string> res = token.SerializeAndEncode();
+  EXPECT_FALSE(res.has_value());
+}
+
+TEST_F(IpProtectionPRTSerializeTest, WrongVersion) {
+  ProbabilisticRevealToken token{2, std::string(29, 'u'), std::string(29, 'e')};
+  std::optional<std::string> res = token.SerializeAndEncode();
+  EXPECT_FALSE(res.has_value());
+}
+
+TEST_F(IpProtectionPRTSerializeTest, WrongUSize) {
+  ProbabilisticRevealToken token{1, std::string(30, 'u'), std::string(29, 'e')};
+  std::optional<std::string> res = token.SerializeAndEncode();
+  EXPECT_FALSE(res.has_value());
+}
+
+TEST_F(IpProtectionPRTSerializeTest, WrongESize) {
+  ProbabilisticRevealToken token{1, std::string(29, 'u'), std::string(28, 'e')};
+  std::optional<std::string> res = token.SerializeAndEncode();
+  EXPECT_FALSE(res.has_value());
+}
+
+TEST_F(IpProtectionPRTSerializeTest, Success) {
+  ProbabilisticRevealToken expected_token{1, std::string(29, 'u'),
+                                          std::string(29, 'e')};
+  std::optional<std::string> res = expected_token.SerializeAndEncode();
+  ASSERT_TRUE(res.has_value());
+  ProbabilisticRevealToken token;
+  ASSERT_TRUE(Deserialize(res.value(), token));
+  EXPECT_EQ(token, expected_token);
 }
 
 }  // namespace ip_protection

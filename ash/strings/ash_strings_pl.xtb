@@ -324,7 +324,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otwórz selektor emotikonów</translation>
 <translation id="2088116547584365419">gry</translation>
-<translation id="2092517835716911174">Aby korzystać z funkcji Pomóż mi czytać i Pomóż mi pisać, musisz mieć ukończone 18 lat.</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2107581415810719320">Inny przycisk <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Twój kabel USB-C nie obsługuje standardu Thunderbolt. Wydajność urządzenia może być ograniczona.</translation>
@@ -1055,6 +1054,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="450584155212756404">Wersja deweloperska</translation>
 <translation id="4513044611477939680">Szybkie udostępnianie</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
+<translation id="4518096944902121253">Nie ma już żadnych działań dla tego języka</translation>
 <translation id="4518404433291145981">Aby odblokować Chromebooka, najpierw odblokuj swój telefon</translation>
 <translation id="4525887279712865285">Pokaż ustawienia szybkiego udostępniania</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
@@ -1884,6 +1884,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
+<translation id="7228968829656641943">Wybierz, aby wyszukać treści na ekranie. Aby poruszać się za pomocą klawiatury, naciśnij Tab, a potem spację.</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Oba przyciski myszy</translation>
 <translation id="7244725679040769470">Bateria: pozostało <ph name="PERCENTAGE" />%. Podłącz urządzenie do zasilania.</translation>

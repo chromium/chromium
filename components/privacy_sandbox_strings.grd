@@ -840,6 +840,9 @@
       <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE_ANDROID" desc="" translateable="false" formatter_data="android_java">
         This site belongs to a group of sites, defined by <ph name="SET_OWNER">%1$s<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
       </message>
+      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_TOOLTIP" desc="" translateable="false">
+        Manage related sites data in a new tab
+      </message>
 
       <!-- RWS - All Sites -->
       <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
@@ -864,8 +867,17 @@
       <message name="IDS_SITE_SETTINGS_RWS_DESCRIPTION_ANDROID" desc="" translateable="false" formatter_data="android_java">
         Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_SITE_SETTINGS_RWS_DELETE_BUTTON_LABEL" desc="" translateable="false">
+      <message name="IDS_SITE_SETTINGS_RWS_DELETE_BUTTON_LABEL" desc="" translateable="false" formatter_data="android_java">
         Delete all data
+      </message>
+      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION_ANDROID" desc="Text for the dialog that warns about deleting storage used by a site and its related sites." translateable="false" formatter_data="android_java">
+        This action will delete all data and cookies stored by <ph name="SITE_NAME">%1$s<ex>www.example.com</ex></ph> and related sites
+      </message>
+      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_SIGN_OUT" desc="" translateable="false" formatter_data="android_java">
+        You'll be signed out of these sites
+      </message>
+      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_DIALOG_TITLE" desc="" translateable="false" formatter_data="android_java">
+        Delete all data?
       </message>
     </messages>
   </release>

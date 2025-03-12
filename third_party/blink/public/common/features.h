@@ -629,6 +629,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeEnforcePermissionPolicyContributeOnEvent);
 
+// Feature flag to disable locally hosted ad auction.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDisableLocalAdsAuctions);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkInversionMethod,
                                                kForceDarkInversionMethodParam);
@@ -668,6 +671,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // This allows providing more information to the IME, but was disabled because
 // of https://crbug.com/1441243.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHiddenSelectionBounds);
+
+// Adds support for the experimental `interesttarget`
+// attributes, as specified in the open-ui "Interest Invokers" explainer.
+// https://open-ui.org/components/interest-invokers.explainer/
+// This corresponds to the RuntimeEnabledFeature of the same name.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHTMLInterestTargetAttribute);
 
 // When enabled all input arriving will be ignored, and the dispatcher will be
 // notified that the event was not consumed. With the exception of when there

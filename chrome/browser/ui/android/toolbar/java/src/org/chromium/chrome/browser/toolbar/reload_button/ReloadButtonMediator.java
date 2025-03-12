@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -20,17 +23,26 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
-    // TODO(vkorotkevich): suppression will be removed in the follow up CLs
-    @SuppressWarnings("unused")
     private final PropertyModel mModel;
+    private boolean mIsShiftDownForReload;
 
     /**
      * Create an instance of {@link ReloadButtonMediator}.
      *
      * @param model a properties model that encapsulates reload button state.
+     * @param delegate a callback to stop or reload current tab
      */
-    ReloadButtonMediator(PropertyModel model) {
+    ReloadButtonMediator(PropertyModel model, ReloadButtonCoordinator.Delegate delegate) {
         mModel = model;
+
+        Callback<MotionEvent> onTouchListener =
+                (event) ->
+                        mIsShiftDownForReload =
+                                (event.getMetaState() & KeyEvent.META_SHIFT_ON) != 0;
+        mModel.set(ReloadButtonProperties.TOUCH_LISTENER, onTouchListener);
+        mModel.set(
+                ReloadButtonProperties.CLICK_LISTENER,
+                () -> delegate.stopOrReloadCurrentTab(mIsShiftDownForReload));
     }
 
     @Override
@@ -69,5 +81,8 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      */
     public void setKeyboardNavigationListener(KeyboardNavigationListener listener) {}
 
-    public void destroy() {}
+    public void destroy() {
+        mModel.set(ReloadButtonProperties.TOUCH_LISTENER, null);
+        mModel.set(ReloadButtonProperties.CLICK_LISTENER, null);
+    }
 }

@@ -179,7 +179,7 @@ TabListRowView::TabListRowView(
 
   favicon->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysNeutralContainer, kFaviconCornerRadius));
-  favicon->SetBorder(views::CreateThemedRoundedRectBorder(
+  favicon->SetBorder(views::CreateRoundedRectBorder(
       kFaviconBorderThickness, kFaviconCornerRadius,
       ui::kColorSysNeutralContainer));
 

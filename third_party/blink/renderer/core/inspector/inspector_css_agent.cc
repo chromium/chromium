@@ -1292,6 +1292,17 @@ protocol::Response InspectorCSSAgent::getAnimatedStylesForNode(
     return response;
   }
 
+  auto* owner_document = element->ownerDocument();
+  if (!owner_document) {
+    return protocol::Response::ServerError(
+        "Element does not have an owner document");
+  }
+
+  if (!owner_document->GetFrame()) {
+    return protocol::Response::ServerError(
+        "Owner document does not have a frame attached");
+  }
+
   Element* animating_element = element;
   PseudoId element_pseudo_id = kPseudoIdNone;
   AtomicString view_transition_name = g_null_atom;

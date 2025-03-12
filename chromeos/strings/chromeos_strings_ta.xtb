@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">ஸ்கிரீன் சேவர் அனிமேஷன்</translation>
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
 <translation id="1539864135338521185">கருநீலக் கல்</translation>
+<translation id="1548555207631326346">உங்கள் AI படங்களைப் பிரத்தியேகமாக்க, தீமினைத் தேர்வுசெய்தபின் அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுக்கவும்.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          நீங்கள் AI மூலம் உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google AI சேவையகங்களுக்கு அனுப்பப்படும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ஜெனரேட்டிவ் AI ஆரம்பக்கட்டப் பரிசோதனை நிலையில் உள்ளது, அது இன்னும் பரவலாகக் கிடைப்பதில்லை.</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="155865706765934889">டச்பேட்</translation>
 <translation id="1561927818299383735">பேக்லிட் வண்ணம்</translation>
@@ -405,6 +414,7 @@
 <translation id="2787237339470862294">தற்போது இந்த மொழி ஆதரிக்கப்படவில்லை</translation>
 <translation id="2787435249130282949">கீபோர்டு ஒளிர்வை அதிகரித்தல்</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
+<translation id="2822702442014805146">சுருக்க விவரம், பெயர் உருவாக்கம் ஆகியவற்றின் மாடல் பதிவிறக்கப்படுகிறது</translation>
 <translation id="28232023175184696">இணையத்துடன் இணைக்க முடியவில்லை. மீண்டும் முயல கிளிக் செய்யுங்கள்.</translation>
 <translation id="2855718259207180827">கம்பளி</translation>
 <translation id="2859243502336719778">முக்கியப் புதுப்பிப்பு</translation>
@@ -826,6 +836,7 @@
 <translation id="4891842000192098784">ஸ்டிரெஸ்</translation>
 <translation id="4897058166682006107">இடதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க அம்சத்தை இயக்கவும்</translation>
+<translation id="4910853326379896417">சுருக்க விவரம், பெயர் உருவாக்கம் ஆகியவற்றின் மாடல் பதிவிறக்கப்பட்டது</translation>
 <translation id="4910858703033903787">APN வகைகள்</translation>
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
@@ -863,6 +874,7 @@
 <translation id="5056587122125565772">படத்தை உருவாக்கு</translation>
 <translation id="5078711626843651677">பேச்சுக்குரல்களுக்கு லேபிளிடும் வரை குரல் பதிவுகள் தற்காலிகமாகச் சாதனத்தில் சேமிக்கப்படும். அமைப்புகளில் இதை எப்போது வேண்டுமானாலும் முடக்கலாம்.</translation>
 <translation id="5078983345702708852">அதிநவீன</translation>
+<translation id="5085224064082122501">சுருக்க விவரம், பெயர் உருவாக்கம் ஆகியவற்றின் மாடலைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="5087864757604726239">முந்தைய</translation>
 <translation id="5088172560898466307">சேவையக ஹோஸ்ட்பெயர்</translation>
 <translation id="5089810972385038852">மாநிலம்</translation>
@@ -1419,6 +1431,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB டச்ஸ்கிரீன்</translation>
 <translation id="757747079855995705">கல்</translation>
+<translation id="7584853321964440104">பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
 <translation id="7600430297804876776"><ph name="DEVICE_TYPE" /> ஐ எப்போது பயன்படுத்தலாம் என்பதை <ph name="MANAGER" /> நிர்வாகி அமைத்துள்ளார்.</translation>
@@ -1549,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">கடற்கரை</translation>
 <translation id="819278132617411009">பணிச் செயல்திறனை அதிகரிக்க Google AIயைப் பயன்படுத்துங்கள்</translation>
+<translation id="82003371436638355">“சொந்தமாக உருவாக்குங்கள்” என்பதைத் தேர்ந்தெடுத்து பிரத்தியேகமான ப்ராம்ப்ட் எழுதவும். இல்லையென்றால் உங்கள் AI வால்பேப்பரைப் பிரத்தியேகமாக்க, “தீமினைத் தேர்வுசெய்யுங்கள்” என்பதைத் தேர்ந்தெடுத்தபின் அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுக்கவும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          நீங்கள் சொந்தமாக வால்பேப்பரை உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் சேவை விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google AI சேவையகங்களுக்கு அனுப்பப்படும். தனிப்பட்ட, பாதுகாக்கவேண்டிய அல்லது ரகசியத் தகவல்களைச் சேர்க்க வேண்டாம்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ஜெனரேட்டிவ் AI தவறான பதில்களை (நபர்கள் பற்றிய தகவல் உட்பட) வழங்கக்கூடும், எனவே அவற்றைச் சரிபார்த்துக்கொள்ளுங்கள். <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />மேலும் அறிக<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
@@ -1570,6 +1593,7 @@
 <translation id="8312330582793120272">மீடியாவைப் பிளே செய்வதற்கான ஐகான்</translation>
 <translation id="8318753676953949627">படங்கள் இல்லை</translation>
 <translation id="8320910311642849813">காடு</translation>
+<translation id="8322464149031882595">முன்செல்ல கிளிக் செய்யவும்</translation>
 <translation id="8329018942023753850">கால்குலேட்டர் ஆப்ஸ் ஐகான்</translation>
 <translation id="8336739000755212683">சாதனக் கணக்கின் படத்தை மாற்றவும்</translation>
 <translation id="8339024191194156249">தானாகத் தொடங்குதல் குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
@@ -1716,6 +1740,7 @@
 <translation id="8961025972867871808">பென்குயின்கள்</translation>
 <translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>
 <translation id="8970109610781093811">மீண்டும் இயக்கு</translation>
+<translation id="8972061581514441296">பின்செல்ல கிளிக் செய்யவும்</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ஸ்கேன் செய்}=1{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}other{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}}</translation>
 <translation id="89945434909472341">கிராமம்</translation>

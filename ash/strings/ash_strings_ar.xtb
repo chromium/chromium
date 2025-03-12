@@ -325,7 +325,6 @@
 <translation id="2083190527011054446">ليلة سعيدة <ph name="GIVEN_NAME" />،</translation>
 <translation id="2086334242442703436">فتح "أداة اختيار رموز الإيموجي"</translation>
 <translation id="2088116547584365419">الألعاب</translation>
-<translation id="2092517835716911174">يجب ألّا يقل عمرك عن 18 عامًا لاستخدام ميزتَي "ما الخلاصة؟" و"ساعدني في الكتابة".</translation>
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
 <translation id="2107581415810719320">الزر الآخر "<ph name="BUTTON_NUMBER" />"</translation>
 <translation id="2107914222138020205">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز Thunderbolt. وقد يصبح أداء الجهاز محدودًا.</translation>
@@ -1053,6 +1052,7 @@
 <translation id="450584155212756404">قناة مطوّري البرامج</translation>
 <translation id="4513044611477939680">‏ميزة Quick Share</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
+<translation id="4518096944902121253">ما مِن إجراءات أخرى لهذه اللغة</translation>
 <translation id="4518404433291145981">‏لفتح قفل جهاز Chromebook، افتح قفل هاتفك أولاً.</translation>
 <translation id="4525887279712865285">‏عرض إعدادات ميزة Quick Share</translation>
 <translation id="4527045527269911712">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران.</translation>
@@ -1883,6 +1883,7 @@
 <translation id="7189412385142492784">كم يبعد كوكب الزهرة؟</translation>
 <translation id="7198435252016571249">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="7219573373513695352">ما مِن أجهزة متصلة.</translation>
+<translation id="7228968829656641943">‏للبحث في الشاشة، يُرجى اختيار منطقة. ويمكنك الضغط على مفتاح Tab ثم مفتاح المسافة للتنقّل باستخدام لوحة المفاتيح.</translation>
 <translation id="7229029500464092426">الذاكرة المستخدمة: <ph name="AVAILABLE_MEMORY" /> | إجمالي الذاكرة: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">كلا زرَّي الماوس</translation>
 <translation id="7244725679040769470">‏يتبقّى ‎<ph name="PERCENTAGE" />%.

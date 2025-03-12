@@ -238,9 +238,11 @@ void CollaborationMessagingObserver::DispatchMessageForTests(
 }
 
 void CollaborationMessagingObserver::DisplayInstantaneousMessage(
-    InstantMessage message,
+    const std::vector<InstantMessage>& messages,
     InstantMessageSuccessCallback success_callback) {
-  instant_message_queue_processor_.Enqueue(message,
+  // TODO(b/400794347): Handle message batch.
+  CHECK_EQ(1u, messages.size());
+  instant_message_queue_processor_.Enqueue(messages[0],
                                            std::move(success_callback));
 }
 

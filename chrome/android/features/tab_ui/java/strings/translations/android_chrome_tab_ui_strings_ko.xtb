@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> 탭 그룹 색상 아이콘</translation>
 <translation id="311432875115153175">탭 그룹 목록 닫힘</translation>
 <translation id="3194464645767632461">평점</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{그룹에 탭 <ph name="TABS_COUNT_ONE" />개 추가}other{그룹에 탭 <ph name="TABS_COUNT_MANY" />개 추가}}</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" />에 로그인된 모든 기기에서 그룹이 삭제됩니다.</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{새 탭 <ph name="ONE_ADDED" />개}other{새 탭 <ph name="MANY_ADDED" />개}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">이 기기에서 열려 있는 탭의 제목과 URL을 운영체제와 공유</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(리뷰 <ph name="REVIEWS_COUNT_ONE" />개)}other{(리뷰 <ph name="REVIEWS_COUNT_MANY" />개)}}</translation>
 <translation id="4850886885716139402">보기</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{그룹에 선택한 탭 <ph name="TABS_COUNT_ONE" />개 추가}other{그룹에 선택한 탭 <ph name="TABS_COUNT_MANY" />개 추가}}</translation>
 <translation id="4861611890274104875">카드를 닫습니다.</translation>
 <translation id="4861953997778766866">모든 사용자가 공유 탭 그룹을 변경할 수 있습니다</translation>
 <translation id="4870911314065352661">모든 탭을 닫을까요?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6271513594716432922">비활성 탭 모두 닫기</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
 <translation id="6333260925957816943">매장에 관한 정보</translation>
 <translation id="6381032505162537930">여기에서 탭 그룹을 확인할 수 있습니다</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹 해제}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹 해제}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">다른 기기에서 새 그룹 만들기</translation>
 <translation id="8029301326595421733">매장에 관한 정보가 전체 높이로 열림</translation>
 <translation id="8053770993984522566">탭 그룹 목록이 절반 높이로 열림</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 펼칩니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 펼칩니다.}}</translation>
 <translation id="8205266828577616993">탭을 위로 이동</translation>

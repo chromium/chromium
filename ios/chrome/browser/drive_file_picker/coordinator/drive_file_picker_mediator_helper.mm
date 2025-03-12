@@ -579,3 +579,14 @@ NSString* GetImageLinkForDriveItem(const DriveItem& item) {
   }
   return imageLink;
 }
+
+NSString* GetDisplayStringForFileUrls(NSArray<NSURL*>* file_urls) {
+  if (file_urls.count == 0) {
+    return nil;
+  } else if (file_urls.count == 1) {
+    return file_urls.firstObject.lastPathComponent;
+  } else {
+    return l10n_util::GetPluralNSStringF(
+        IDS_IOS_DRIVE_FILE_PICKER_DISPLAY_STRING_FILE_COUNT, file_urls.count);
+  }
+}

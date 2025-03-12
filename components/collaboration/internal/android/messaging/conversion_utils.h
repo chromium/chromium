@@ -30,6 +30,12 @@ base::android::ScopedJavaLocalRef<jobject> InstantMessageToJava(
     JNIEnv* env,
     const InstantMessage& message);
 
+// Helper method to convert a InstantMessage C++ list to a
+// List<InstantMessage> Java object.
+base::android::ScopedJavaLocalRef<jobject> InstantMessagesToJava(
+    JNIEnv* env,
+    const std::vector<InstantMessage>& messages);
+
 // Helper method to convert a ActivityLogItem C++ list to a
 // List<ActivityLogItem> Java object.
 base::android::ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(

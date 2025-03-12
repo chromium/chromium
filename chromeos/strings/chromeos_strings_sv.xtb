@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animation för skärmsläckaren</translation>
 <translation id="152892567002884378">Höj volymen</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Välj ett tema och välj sedan de understrukna orden för att anpassa AI-bilderna.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Välj Inspirera mig för att få mer unika och varierade AI-bildalternativ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          När du skapar med AI skickas uppmaningen till Googles AI-servrar för att generera bilder och förbättra produkten i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI är experimentell, under utveckling och har för närvarande begränsad tillgänglighet.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styrplatta</translation>
 <translation id="1561927818299383735">bakgrundsbelysningsfärg</translation>
@@ -1553,6 +1562,16 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
 <translation id="819278132617411009">Använd Google AI för att bli mer produktiv</translation>
+<translation id="82003371436638355">När du väljer Skapa din egen skriver du en anpassad prompt. Du kan även välja Välj ett tema och sedan välja de understrukna orden för att anpassa AI-bakgrunden.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Välj Inspirera mig för att få mer unika och varierade AI-bildalternativ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          När du skapar en egen bakgrund skickas prompten till Googles servrar för att generera bilder och förbättra produkten i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles användarvillkor och integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ange inget som är personligt, känsligt eller konfidentiellt.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI kan göra misstag, inklusive om personer, så dubbelkolla svaren. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Läs mer<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Förmåner</translation>
@@ -1574,6 +1593,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8312330582793120272">spela upp media</translation>
 <translation id="8318753676953949627">Inga bilder</translation>
 <translation id="8320910311642849813">en skog</translation>
+<translation id="8322464149031882595">Klicka för att gå vidare</translation>
 <translation id="8329018942023753850">appen kalkylator</translation>
 <translation id="8336739000755212683">Ändra kontobilden på enheten</translation>
 <translation id="8339024191194156249">Läs mer om automatisk start</translation>
@@ -1720,6 +1740,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8961025972867871808">pingviner</translation>
 <translation id="8968751544471797276">Laddningshastighet</translation>
 <translation id="8970109610781093811">Kör igen</translation>
+<translation id="8972061581514441296">Klicka för att gå tillbaka</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Genomsök}=1{Genomsök sida {NUMBER_OF_PAGES}}other{Genomsök sida {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">en by</translation>

@@ -1129,6 +1129,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6296366034485697675">Exportar e excluir</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6303969859164067831">Sair e desativar a sincronização</translation>
+<translation id="6307241780749477694">Confirme sua identidade para acessar todas as suas senhas neste dispositivo</translation>
 <translation id="6312687380483398334">Apps da Web (silenciosos)</translation>
 <translation id="6315386555979018699">Excluir e continuar</translation>
 <translation id="6316139424528454185">Versão Android não compatível</translation>
@@ -1390,6 +1391,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7359002509206457351">Acessar formas de pagamento</translation>
 <translation id="7363349185727752629">Um guia das suas escolhas de privacidade</translation>
 <translation id="7364103838544876661">Mais opções para excluir dados de navegação</translation>
+<translation id="7365073365123878797">Para salvar e usar senhas com o Gerenciador de senhas do Google, atualize o Google Play Services</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Ao incluir mais texto de uma página, você poderá ver resultados melhores ao usar a Pesquisa por toque. Você pode mudar essa opção nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" /> quando quiser.</translation>
 <translation id="7379900596734708416">O tema escuro para sites está disponível</translation>
@@ -1468,10 +1470,12 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7686086654630106285">Mais informações sobre anúncios sugeridos por sites</translation>
 <translation id="7690596512217303514">Não foi possível abrir o Chrome no dispositivo. Para corrigir o problema, faça o download da atualização mais recente desse navegador na app store.</translation>
 <translation id="7691043218961417207">Encontre conteúdo para seguir</translation>
+<translation id="7692761875510935111">Abra rapidamente no navegador. Para editar este atalho, toque e pressione.</translation>
 <translation id="7697383401610880082">Alça de arrastar</translation>
 <translation id="7698359219371678927">Criar e-mail no <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">A página inferior de atividade recente está aberta no tamanho máximo</translation>
 <translation id="7707922173985738739">Usar dados móveis</translation>
+<translation id="7708994397325774423">Acesse todas as suas senhas</translation>
 <translation id="7733878270780732638">Não há espaço suficiente no dispositivo.</translation>
 <translation id="7746817319925672889">O Gerenciador de senhas do Google deixará de funcionar em breve neste dispositivo</translation>
 <translation id="774876555279732384">Os preenchimentos automáticos também são gerenciados nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
@@ -1613,6 +1617,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8310451567823644042">As senhas vão deixar de funcionar em breve</translation>
 <translation id="831192587911042850">Adiciona o site atual à lista de sites que você está seguindo.</translation>
 <translation id="8320212361750431956">Atividade recente</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">O Chrome vai avisar se houver sites que podem estar enviando muitas notificações</translation>
 <translation id="834313815369870491">Nunca traduzir estes sites</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo</translation>
@@ -1744,6 +1749,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8937772741022875483">Remover sua atividade do Chrome do Bem-estar digital?</translation>
 <translation id="8942627711005830162">Abrir em outra janela</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: não foi possível fazer o download desse idioma. Tente novamente mais tarde.</translation>
+<translation id="8946759102391960088">Mantenha o acesso às suas senhas</translation>
 <translation id="8957528460562961174">Para manter o acesso às suas senhas, exporte e depois importe para o gerenciador de senhas que preferir. O Gerenciador de senhas do Google parou de funcionar porque o Google Play Services não está disponível.</translation>
 <translation id="8963117664422609631">Acessar configurações do site</translation>
 <translation id="8965591936373831584">pendente</translation>

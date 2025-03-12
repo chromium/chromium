@@ -1745,14 +1745,12 @@ String CreateTextContentForStickyImagesQuirk(
   StringBuffer<CharType> buffer(length);
   CharType* characters = buffer.Characters();
   memcpy(characters, text, length * sizeof(CharType));
+  base::span<CharType> span = buffer.Span();
   for (const Member<InlineItem>& item_ptr : items) {
     const InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      DCHECK_EQ(UNSAFE_TODO(characters[item.StartOffset()]),
-                kObjectReplacementCharacter);
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      UNSAFE_TODO(characters[item.StartOffset()]) = kNoBreakSpaceCharacter;
+      DCHECK_EQ(span[item.StartOffset()], kObjectReplacementCharacter);
+      span[item.StartOffset()] = kNoBreakSpaceCharacter;
     }
   }
   return buffer.Release();

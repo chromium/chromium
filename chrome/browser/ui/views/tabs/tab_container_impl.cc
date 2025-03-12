@@ -124,7 +124,7 @@ TabContainerImpl::~TabContainerImpl() {
   CancelAnimation();
 
   // Since TabGroupViews expects be able to remove the views it creates, clear
-  // |group_views_| before removing the remaining children below.
+  // `group_views_` before removing the remaining children below.
   group_views_.clear();
 
   // Make sure we unhook ourselves as a message loop observer so that we don't
@@ -340,16 +340,16 @@ void TabContainerImpl::ScrollTabToVisible(int model_index) {
 
   bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect->x();
   if (scroll_left) {
-    // Scroll the left edge of |visible_content_rect| to show the left edge of
-    // the tab at |model_index|. We can leave the width entirely up to the
+    // Scroll the left edge of `visible_content_rect` to show the left edge of
+    // the tab at `model_index`. We can leave the width entirely up to the
     // ScrollView.
     int start_left_edge(visible_content_rect->x());
     int target_left_edge(active_tab_ideal_bounds.x());
 
     AnimateScrollToShowXCoordinate(start_left_edge, target_left_edge);
   } else {
-    // Scroll the right edge of |visible_content_rect| to show the right edge
-    // of the tab at |model_index|. We can leave the width entirely up to the
+    // Scroll the right edge of `visible_content_rect` to show the right edge
+    // of the tab at `model_index`. We can leave the width entirely up to the
     // ScrollView.
     int start_right_edge(visible_content_rect->right());
     int target_right_edge(active_tab_ideal_bounds.right());
@@ -578,7 +578,7 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
     }
   }
 
-  // |v| is some other view (e.g. a close button in a tab) and therefore |rect|
+  // `v` is some other view (e.g. a close button in a tab) and therefore `rect`
   // is in client area.
   return true;
 }
@@ -681,7 +681,7 @@ void TabContainerImpl::CompleteAnimationAndLayout() {
 
 int TabContainerImpl::GetAvailableWidthForTabContainer() const {
   // Falls back to views::View::GetAvailableSize() when
-  // |available_width_callback_| is not defined, e.g. when tab scrolling is
+  // `available_width_callback_` is not defined, e.g. when tab scrolling is
   // disabled.
   return available_width_callback_
              ? available_width_callback_.Run()
@@ -913,7 +913,7 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
   using BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
   using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
 
-  // Loop until we find a tab or group header that intersects |event|'s
+  // Loop until we find a tab or group header that intersects `event`'s
   // location.
   for (TabSlotView* view : views) {
     const int max_x = view->x() + view->width();
@@ -1393,8 +1393,8 @@ void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
 
 void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
                                                      bool was_active) {
-  // The tab at |model_index| has already been removed from the model, but is
-  // still in |tabs_view_model_|.  Index math with care!
+  // The tab at `model_index` has already been removed from the model, but is
+  // still in `tabs_view_model_`.  Index math with care!
   const int model_count = GetTabCount() - 1;
 
   // If we're closing the last tab, tab closing mode is no longer meaningful.
@@ -1530,11 +1530,11 @@ void TabContainerImpl::OrderTabSlotView(TabSlotView* slot_view) {
     return;
   }
 
-  // |slot_view| is in the wrong place in children(). Fix it.
+  // `slot_view` is in the wrong place in children(). Fix it.
   std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
   size_t target_slot_index =
       std::ranges::find(slots, slot_view) - slots.begin();
-  // Find the index in children() that corresponds to |target_slot_index|.
+  // Find the index in children() that corresponds to `target_slot_index`.
   size_t view_index = 0;
   for (size_t slot_index = 0; slot_index < target_slot_index; ++slot_index) {
     // If we don't own this view, skip it *without* advancing in children().
@@ -1575,14 +1575,14 @@ Tab* TabContainerImpl::FindTabHitByPoint(const gfx::Point& point) {
   for (size_t i = 0; i < all_tabs.size(); ++i) {
     // If we don't first exclude points outside the current tab, the code below
     // will return the wrong tab if the next tab is selected, the following tab
-    // is active, and |point| is in the overlap region between the two.
+    // is active, and `point` is in the overlap region between the two.
     Tab* tab = all_tabs[i];
     if (!IsPointInTab(tab, point)) {
       continue;
     }
 
     // Selected tabs render atop unselected ones, and active tabs render atop
-    // everything.  Check whether the next tab renders atop this one and |point|
+    // everything.  Check whether the next tab renders atop this one and `point`
     // is in the overlap region.
     Tab* next_tab = i < (all_tabs.size() - 1) ? all_tabs[i + 1] : nullptr;
     if (next_tab &&

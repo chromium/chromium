@@ -375,7 +375,6 @@
 <translation id="1244265436519979884">ప్రస్తుతం Linux పునరుద్ధరణ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="1244303850296295656">ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
 <translation id="1244917379075403655">"సెట్టింగ్‌లు"ను క్లిక్ చేయండి</translation>
-<translation id="1245041875932187638">AI సహాయంతో ఆటోఫిల్ ఫీచర్ ఉపయోగించిన డేటా మొత్తాన్ని తొలగించండి</translation>
 <translation id="1245331638296910488">Microsoft 365లో తెరిచినప్పుడు ఫైల్స్ OneDriveకి తరలించబడతాయి</translation>
 <translation id="1245628370644070008">స్థానిక డేటా రికవరీ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: ఇమేజ్ URL <ph name="HTTP_ERROR" /> ఎర్రర్ కోడ్‌ను అందించింది. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
@@ -1415,7 +1414,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">సిద్ధం చేస్తోంది</translation>
 <translation id="1969654639948595766">WebRTC వచన లాగ్ లు( <ph name="WEBRTC_TEXT_LOG_COUNT" /> )</translation>
-<translation id="1971694696800660479">మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయడం సాధ్యం కాదు</translation>
 <translation id="1972313920920745320">మీరు జోడించే సైట్‌లు ఎల్లప్పుడూ యాక్టివ్‌గా ఉంటాయి, వాటి నుండి మెమరీ ఖాళీ అవ్వదు. <ph name="BEGIN_LINK" />నిర్దిష్ట సైట్‌లను యాక్టివ్‌గా ఉంచడం గురించి మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">మీరు ప్రస్తుతం సందర్శించిన వెబ్‌పేజీ ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడింది, కాబట్టి మీరు వేగంగా బ్రౌజ్ చేయగలరు</translation>
 <translation id="197288927597451399">ఉంచండి</translation>
@@ -2301,6 +2299,7 @@
 <translation id="256517381556987641">ఫైల్ సింక్ ఇప్పటివరకు <ph name="ITEMS_FOUND" /> ఫైల్స్‌ను కనుగొంది మరియు ఇప్పటికీ స్టోరేజ్ స్పేస్‌ను చెక్ చేస్తోంది. కొన్ని నిమిషాల్లో ఫైల్ సింక్ మళ్లీ ఆన్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="2565214867520763227">స్క్రీన్ రీడర్‌ని ఆన్ చేయండి</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUM_OTHER_MEMBERS" /> వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
+<translation id="256726287944589768">కొత్త ట్యాబ్ పేజీలో ఫుటర్‌ను చూపండి</translation>
 <translation id="2568694057933302218">అజ్ఞాత మోడ్‌లో ఉన్నప్పుడు, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు. యాడ్‌లను వ్యక్తిగతీకరించడం వంటి వాటికి మీ బ్రౌజింగ్ యాక్టివిటీ ఉపయోగించబడదు. కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు.</translation>
 <translation id="2568774940984945469">సమాచారబార్ కంటైనర్</translation>
 <translation id="2569972178052279830">రిటైలర్ పేరు</translation>
@@ -2809,6 +2808,7 @@
 <translation id="2921081876747860777">దయచేసి మీ స్థానిక డేటాను రక్షించడానికి పాస్‌వర్డ్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="2923006468155067296">మీ <ph name="DEVICE_TYPE" /> ఇప్పుడు లాక్ చేయబడింది.
 మీ స్మార్ట్ కార్డ్‌ను ఇన్‌సర్ట్ చేసి ఉంచమని <ph name="DOMAIN" /> మిమ్మల్ని కోరుతుంది.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. అదే టాస్క్ గ్రూప్‌లో <ph name="OTHER_TASK_NUM" /> ఇతర టాస్క్‌లు: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">ఈ ఖాతాను తీసివేయండి</translation>
 <translation id="2923644930701689793">మీ ఫోన్ కెమెరా రోల్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="292371311537977079">Chrome సెట్టింగ్‌లు</translation>
@@ -3066,7 +3066,6 @@
 <translation id="3108957152224931571">హైలైట్ రంగు</translation>
 <translation id="3109206895301430738">సేవ్ చేయబడిన ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="3109724472072898302">కుదించబడింది</translation>
-<translation id="310979712355504754">అందరినీ తొలగించండి</translation>
 <translation id="3112292765614504292">యాప్ సైజ్: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">ఈ ట్యాబ్ జోడించబడింది</translation>
 <translation id="311394601889664316">మీ పరికరంలోని ఫైళ్లు లేదా ఫోల్డర్‌లను ఎడిట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
@@ -4086,7 +4085,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ఒక ఎక్స్‌టెన్షన్ ఆమోదించబడింది}other{# ఎక్స్‌టెన్షన్‌లు ఆమోదించబడ్డాయి}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux కోసం కనీసం <ph name="INSTALL_SIZE" />  స్పేస్ కావాలి.</translation>
-<translation id="3824203811509979971">కంటెంట్‌ను సారాంశీకరించండి లేదా ప్రశ్నలు అడగండి</translation>
 <translation id="3824621460022590830">పరికర ఎన్‌రోల్‌మెంట్ టోకెన్ చెల్లదు. మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను దయచేసి సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">ఇతర పరికరాల నుండి ట్యాబ్‌లను చూడటానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_TYPES" />}other{ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_TYPES" />}}</translation>
@@ -5901,7 +5899,6 @@
 <translation id="512642543295077915">సెర్చ్ + బ్యాక్‌స్పేస్</translation>
 <translation id="5126611267288187364">మార్పులను చూడండి</translation>
 <translation id="5127620150973591153">సురక్షిత కనెక్షన్ ID: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">కంటెంట్‌ను సారాంశీకరించండి లేదా ప్రశ్నలు అడగండి.</translation>
 <translation id="5127881134400491887">నెట్‌వర్క్ కనెక్షన్‌లను నిర్వహించండి</translation>
 <translation id="5127934926273826089">పుష్పాలు</translation>
 <translation id="5127986747308934633">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని కంట్రోల్ చేస్తున్నారు</translation>
@@ -7451,7 +7448,6 @@
 <translation id="6254892857036829079">అద్భుతంగా ఉంది</translation>
 <translation id="6257131917452817589">ఆటోమేటిక్‌గా పాస్‌వర్డ్‌ను మార్చడం</translation>
 <translation id="6257602895346497974">సింక్‌ను ఆన్ చేయండి...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ఒకటి కంటే ఎక్కువ మునుపటి నెట్‌వర్క్‌లు లేదా కాన్ఫిగ‌ర్ చేసిన నెట్‌వర్క్ అందుబాటులో ఉంటే, ఈ ప్రాధాన్య నెట్‌వర్క్ ఉపయోగించబడుతుంది</translation>
 <translation id="6259776178973198997">Wi-Fi డైరెక్ట్ ఓనర్స్ సమాచారాన్ని రిఫ్రెష్ చేయండి</translation>
 <translation id="6262371516389954471">మీ బ్యాకప్‌లు Googleకు అప్‌లోడ్ చేయబడతాయి, మీ Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి.</translation>
@@ -9882,6 +9878,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> వాయిస్ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">మీ Android ఫోన్ నుండి WiFiని ఆటోమేటిక్‌గా బదిలీ చేయండి</translation>
 <translation id="7991296728590311172">Switch Access సెట్టింగ్‌లు</translation>
+<translation id="7992080146463834191">కంటెంట్‌ను సారాంశీకరించండి, క్లిష్టమైన భాషను సులభతరం చేయండి, లేదా ప్రశ్నలను అడగండి.</translation>
 <translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
 <translation id="7997828719430450286">విజయవంతమైంది.</translation>
@@ -11144,6 +11141,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ఆఫ్ చేయబడింది</translation>
 <translation id="8874647982044395866">ఆర్గానిక్</translation>
 <translation id="8874790741333031443">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు ఆశించిన విధంగా పని చేసే అవకాశం ఉంటుంది.</translation>
+<translation id="8875221558267407626">కంటెంట్‌ను సారాంశీకరించండి, క్లిష్టమైన భాషను సులభతరం చేయండి, లేదా ప్రశ్నలను అడగండి</translation>
 <translation id="8875520811099717934">Linux అప్‌గ్రేడ్</translation>
 <translation id="8875736897340638404">మీ విజిబిలిటీని ఎంచుకోండి</translation>
 <translation id="8876307312329369159">ఈ సెట్టింగ్‌ను డెమో సెషన్‌లో మార్చడం సాధ్యపడదు.</translation>

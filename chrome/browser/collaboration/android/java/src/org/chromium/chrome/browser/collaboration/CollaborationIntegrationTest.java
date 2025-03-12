@@ -9,22 +9,27 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -33,14 +38,12 @@ import org.chromium.components.data_sharing.DataSharingServiceImpl;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.url.GURL;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 
 /** Instrumentation tests for {@link CollaborationService}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.COLLABORATION_FLOW_ANDROID})
-@Batch(Batch.PER_CLASS)
+@EnableFeatures({ChromeFeatureList.DATA_SHARING})
+@DoNotBatch(reason = "Tabs can't be closed reliably between tests.")
 // TODO(crbug.com/399444939) Re-enable on automotive devices if needed.
 // Only run on device non-auto and with valid Google services.
 @Restriction({
@@ -54,25 +57,46 @@ public class CollaborationIntegrationTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private Profile mProfile;
+    private String mUrl;
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityCompletelyLoaded();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
                     FirstRunStatus.setFirstRunFlowComplete(true);
                 });
+        mUrl =
+                DataSharingServiceImpl.getDataSharingUrlForTesting(
+                                new GroupToken("collaboration_id", "access_token"))
+                        .getSpec();
     }
 
     @Test
     @MediumTest
-    public void testDataSharing() {
-        GURL url =
-                DataSharingServiceImpl.getDataSharingUrlForTesting(
-                        new GroupToken("collaboration_id", "access_token"));
-        mActivityTestRule.loadUrlInNewTab(url.getSpec());
-        onView(withText(R.string.collaboration_signin_description)).check(matches(isDisplayed()));
+    public void testDataSharingUrlInterception() {
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
+        mActivityTestRule.loadUrlInNewTab(mUrl);
+        onViewWaiting(withText(R.string.collaboration_signin_description))
+                .check(matches(isDisplayed()));
         onView(withText(R.string.collaboration_cancel)).perform(ViewActions.click());
+
+        // The new data sharing url was intercepted and the tab closed.
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingUrlInterceptionExternalApp() {
+        mActivityTestRule.loadUrlInNewTab(
+                mUrl, /* incognito= */ false, TabLaunchType.FROM_EXTERNAL_APP);
+        onViewWaiting(withText(R.string.collaboration_signin_description))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.collaboration_cancel)).perform(ViewActions.click());
+
+        // The new data sharing url was intercepted and the tab closed.
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
     }
 }

@@ -35,7 +35,7 @@ class DialogContentLoadWithTimeoutObserver
  public:
   DialogContentLoadWithTimeoutObserver(
       content::WebContents* web_contents,
-      const GURL& pacp_url,
+      const GURL pacp_url,
       base::OnceClosure show_view_and_destroy_timer_callback,
       base::OnceClosure cancel_flow_on_timeout_callback);
   DialogContentLoadWithTimeoutObserver() = delete;
@@ -50,7 +50,7 @@ class DialogContentLoadWithTimeoutObserver
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 
-  raw_ref<const GURL> pacp_url_;
+  const GURL pacp_url_;
   base::OneShotTimer initial_load_timer_;
   base::OnceClosure show_view_and_destroy_timer_callback_;
 };

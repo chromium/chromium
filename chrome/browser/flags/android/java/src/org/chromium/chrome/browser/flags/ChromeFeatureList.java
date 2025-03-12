@@ -217,6 +217,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableRankingFormulaAddressProfiles";
     public static final String AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS =
             "AutofillEnableRankingFormulaCreditCards";
+    public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK =
+            "AutofillEnableSupportForHomeAndWork";
     public static final String AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS =
             "AutofillEnableSyncingOfPixBankAccounts";
     public static final String AUTOFILL_ENABLE_VERVE_CARD_SUPPORT =
@@ -320,11 +322,9 @@ public abstract class ChromeFeatureList {
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
     public static final String DATA_SHARING = "DataSharing";
-    public static final String COLLABORATION_FLOW_ANDROID = "CollaborationFlowAndroid";
     public static final String DATA_SHARING_JOIN_ONLY_FOR_TESTING = "DataSharingJoinOnly";
     public static final String DATA_SHARING_NON_PRODUCTION_ENVIRONMENT =
             "DataSharingNonProductionEnvironment";
-    public static final String DEFAULT_BROWSER_PROMO_ANDROID = "DefaultBrowserPromoAndroid";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
     public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
@@ -391,7 +391,6 @@ public abstract class ChromeFeatureList {
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOGIN_DB_DEPRECATION_ANDROID = "LoginDbDeprecationAndroid";
     public static final String LOGO_POLISH = "LogoPolish";
-    public static final String LOGO_POLISH_ANIMATION_KILL_SWITCH = "LogoPolishAnimationKillSwitch";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
@@ -599,7 +598,6 @@ public abstract class ChromeFeatureList {
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String VISITED_URL_RANKING_SERVICE = "VisitedURLRankingService";
-    public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String WEB_APK_BACKUP_AND_RESTORE_BACKEND = "WebApkBackupAndRestoreBackend";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
             "WebApkInstallFailureNotification";
@@ -648,7 +646,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBookmarkPaneAndroid =
             newCachedFlag(BOOKMARK_PANE_ANDROID, false);
     public static final CachedFlag sCacheIsMultiInstanceApi31Enabled =
-            newCachedFlag(CACHE_IS_MULTI_INSTANCE_API_31_ENABLED, false);
+            newCachedFlag(
+                    CACHE_IS_MULTI_INSTANCE_API_31_ENABLED,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctAdaptiveButton = newCachedFlag(CCT_ADAPTIVE_BUTTON, false);
     public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, true);
     public static final CachedFlag sCctAuthTabDisableAllExternalIntents =
@@ -765,8 +766,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
-    public static final CachedFlag sLogoPolishAnimationKillSwitch =
-            newCachedFlag(LOGO_POLISH_ANIMATION_KILL_SWITCH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(MOST_VISITED_TILES_CUSTOMIZATION, false);
@@ -934,7 +933,6 @@ public abstract class ChromeFeatureList {
                     sHistoryPaneAndroid,
                     sLockBackPressHandlerAtStart,
                     sLogoPolish,
-                    sLogoPolishAnimationKillSwitch,
                     sNotificationTrampoline,
                     sMagicStackAndroid,
                     sMostVisitedTilesCustomization,
@@ -1067,8 +1065,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
-    public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
-            newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
@@ -1305,10 +1301,6 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
             newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
 
-    public static final BooleanCachedFeatureParam sLogoPolishMediumSize =
-            newBooleanCachedFeatureParam(LOGO_POLISH, "polish_logo_size_medium", true);
-    public static final BooleanCachedFeatureParam sLogoPolishLargeSize =
-            newBooleanCachedFeatureParam(LOGO_POLISH, "polish_logo_size_large", false);
     public static final BooleanCachedFeatureParam sMagicStackAndroidShowAllModules =
             newBooleanCachedFeatureParam(MAGIC_STACK_ANDROID, "show_all_modules", false);
     public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxSchemeHost =
@@ -1446,8 +1438,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeEverywhereIsDebugging,
                     sEdgeToEdgeEverywhereOemMinVersions,
                     sEdgeToEdgeEverywhereOemList,
-                    sLogoPolishMediumSize,
-                    sLogoPolishLargeSize,
                     sMagicStackAndroidShowAllModules,
                     mMostVisitedTilesReselectLaxSchemeHost,
                     mMostVisitedTilesReselectLaxRef,

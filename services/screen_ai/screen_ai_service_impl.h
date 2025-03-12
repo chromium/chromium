@@ -97,6 +97,11 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // mojom::ScreenAIServiceFactory:
   void ShutDownIfNoClients() override;
 
+  // mojom::ScreenAIServiceFactory:
+  void BindShutdownHandler(
+      mojo::PendingRemote<mojom::ScreenAIServiceShutdownHandler>
+          shutdown_handler) override;
+
   // mojom::OCRService:
   void BindAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) override;
@@ -141,6 +146,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Client type for each OCR receiver.
   std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;
+
+  // Browser side shutdown handler.
+  mojo::Remote<mojom::ScreenAIServiceShutdownHandler>
+      screen_ai_shutdown_handler_;
 
   // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;

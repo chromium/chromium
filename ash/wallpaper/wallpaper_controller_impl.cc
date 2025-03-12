@@ -899,7 +899,7 @@ bool WallpaperControllerImpl::GetDailyGooglePhotosWallpaperIdCache(
 
 void WallpaperControllerImpl::SetTimeOfDayWallpaper(
     const AccountId& account_id,
-    SetWallpaperCallback callback) {
+    SetTimeOfDayWallpaperCallback callback) {
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   GetCustomizationId(base::BindOnce(
       &WallpaperControllerImpl::OnGetCustomizationIdForTimeOfDayWallpaper,
@@ -2785,7 +2785,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
 
 void WallpaperControllerImpl::OnGetCustomizationIdForTimeOfDayWallpaper(
     const AccountId& account_id,
-    SetWallpaperCallback set_wallpaper_callback,
+    SetTimeOfDayWallpaperCallback set_time_of_day_wallpaper_callback,
     std::optional<std::string_view> customization_id) {
   const auto unit_id =
       customization_id ==
@@ -2798,16 +2798,21 @@ void WallpaperControllerImpl::OnGetCustomizationIdForTimeOfDayWallpaper(
            << " unit_id: " << unit_id;
 
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback on_fetch =
-      base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
-                     set_wallpaper_weak_factory_.GetWeakPtr(),
-                     WallpaperType::kOnline, std::move(set_wallpaper_callback));
+      base::BindOnce(
+          &WallpaperControllerImpl::OnWallpaperVariantsFetched,
+          set_wallpaper_weak_factory_.GetWeakPtr(), WallpaperType::kOnline,
+          base::BindOnce(std::move(set_time_of_day_wallpaper_callback),
+                         unit_id));
 
   variant_info_fetcher_.FetchTimeOfDayWallpaper(account_id, unit_id,
                                                 std::move(on_fetch));
 }
 
-void WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe(bool success) {
-  wallpaper_metrics_manager_->LogSettingTimeOfDayWallpaperAfterOobe(success);
+void WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe(
+    const uint64_t unit_id,
+    const bool success) {
+  wallpaper_metrics_manager_->LogSettingTimeOfDayWallpaperAfterOobe(unit_id,
+                                                                    success);
 }
 
 void WallpaperControllerImpl::OnDailyRefreshWallpaperUpdated(

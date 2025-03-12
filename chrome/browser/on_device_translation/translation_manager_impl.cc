@@ -217,9 +217,8 @@ TranslationManagerImpl::~TranslationManagerImpl() = default;
 // static
 base::AutoReset<TranslationManagerImpl*> TranslationManagerImpl::SetForTesting(
     TranslationManagerImpl* manager) {
-  base::AutoReset translation_manager_for_test(  // IN-TEST
+  return base::AutoReset<TranslationManagerImpl*>(
       &translation_manager_for_test_, manager);
-  return translation_manager_for_test;
 }
 
 // static

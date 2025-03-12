@@ -334,9 +334,6 @@ class GPU_EXPORT SharedImageInterface
   // previous commands which will be sent to server on the next flush().
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token) = 0;
 
-  // Flush the SharedImageInterface, issuing any deferred IPCs.
-  virtual void Flush() = 0;
-
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(

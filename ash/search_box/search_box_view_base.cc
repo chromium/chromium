@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -111,8 +112,10 @@ void SetupLabelView(views::Label* label,
 // border.
 class SearchBoxBackground : public views::Background {
  public:
-  explicit SearchBoxBackground(int corner_radius)
-      : corner_radius_(corner_radius) {}
+  SearchBoxBackground(SkColor color, int corner_radius)
+      : corner_radius_(corner_radius) {
+    SetColor(color);
+  }
 
   SearchBoxBackground(const SearchBoxBackground&) = delete;
   SearchBoxBackground& operator=(const SearchBoxBackground&) = delete;
@@ -128,7 +131,7 @@ class SearchBoxBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(get_color());
+    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
     canvas->DrawRoundRect(bounds, corner_radius_, flags);
   }
 
@@ -465,8 +468,8 @@ void SearchBoxViewBase::Init(const InitParams& params) {
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
   if (params.create_background) {
-    SetBackground(
-        std::make_unique<SearchBoxBackground>(kSearchBoxBorderCornerRadius));
+    SetBackground(std::make_unique<SearchBoxBackground>(
+        gfx::kPlaceholderColor, kSearchBoxBorderCornerRadius));
   }
 
   if (params.increase_child_view_padding) {
@@ -935,7 +938,7 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
 void SearchBoxViewBase::UpdateBackgroundColor(SkColor color) {
   auto* search_box_background = background();
   if (search_box_background)
-    search_box_background->SetNativeControlColor(color);
+    search_box_background->SetColor(color);
   if (close_button_)
     close_button_->UpdateInkDropColorAndOpacity(color);
   if (assistant_button_)

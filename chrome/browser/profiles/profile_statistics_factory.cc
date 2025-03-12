@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -47,6 +48,7 @@ ProfileStatisticsFactory::ProfileStatisticsFactory()
               .Build()) {
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
+  DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
@@ -72,11 +74,11 @@ ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext(
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
       BookmarkModelFactory::GetForBrowserContext(profile),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       ProfilePasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
-      profile->GetPrefs(),
-      std::move(credential_store));
+      profile->GetPrefs(), std::move(credential_store));
 }

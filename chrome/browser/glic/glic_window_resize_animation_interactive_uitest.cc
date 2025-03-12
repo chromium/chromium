@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
   gfx::Rect test_initial_bounds = GetWidgetBounds();
   gfx::Rect test_new_bounds;
   test_new_bounds.set_origin(test_initial_bounds.origin());
-  test_new_bounds.set_size(gfx::Size(400, 800));
+  test_new_bounds.set_size(gfx::Size(400, 600));
 
   auto [animation, test_api] =
       MakeAnimation(test_new_bounds, kTestAnimationDuration, base::DoNothing());
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
   ExpectRectBetween(GetWidgetBounds(), test_initial_bounds, test_new_bounds);
 
   test_api->Step(animation_creation_time() + kTestAnimationDuration);
-  EXPECT_EQ(test_new_bounds, GetWidgetBounds());
+  EXPECT_EQ(test_new_bounds.size(), GetWidgetBounds().size());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {

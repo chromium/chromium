@@ -428,4 +428,14 @@ TEST_F(AddressFieldParserTest, ParseHouseNumberAndAptNum_NL) {
                     LanguageCode("nl"));
 }
 
+TEST_F(AddressFieldParserTest, ParseStreetLocationIN) {
+  AddTextFormFieldData("flat", "flat",
+                       ADDRESS_HOME_STREET_LOCATION);
+  AddTextFormFieldData("area", "area",
+                       ADDRESS_HOME_DEPENDENT_LOCALITY);
+  AddTextFormFieldData("landmark", "landmark", ADDRESS_HOME_LANDMARK);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("IN"),
+                    LanguageCode("IN"));
+}
+
 }  // namespace autofill

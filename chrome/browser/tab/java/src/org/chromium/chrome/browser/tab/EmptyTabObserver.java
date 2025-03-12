@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -26,6 +26,7 @@ import org.chromium.url.GURL;
  * Note: Do not replace this with TabObserver with default interface methods as it inadvertently
  * bloats the number of methods. See https://crbug.com/781359.
  */
+@NullMarked
 public class EmptyTabObserver implements TabObserver {
     @Override
     public void onInitialized(Tab tab, String appId) {}

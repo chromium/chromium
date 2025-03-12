@@ -235,7 +235,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
 
   // Simulate user logout and check label for pSIM networks that are
   // connected but not activated.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -282,7 +282,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
             network_list_network_item_view()->sub_text_label()->GetText());
 
   // label for locked cellular network when user is not logged in.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -446,7 +446,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
 
   // Simulate user logout and check label for pSIM networks that are
   // connected but not activated.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
   EXPECT_EQ(
@@ -585,7 +585,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE));
 
   // Cellular is not activate and user is not logged in.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   base::RunLoop().RunUntilIdle();
   AssertA11yDescription(
       cellular_network,
@@ -613,7 +613,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK));
 
   // User is not signed in.
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
   AssertA11yDescription(
       cellular_network,
       l10n_util::GetStringUTF16(

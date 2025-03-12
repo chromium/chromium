@@ -28,6 +28,10 @@ public interface Playback {
         long estimatedDurationSeconds();
 
         String canonicalUrl();
+
+        default PlaybackArgs.PlaybackMode playbackMode() {
+            return PlaybackArgs.PlaybackMode.UNSPECIFIED;
+        }
     }
 
     /**

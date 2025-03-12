@@ -3166,6 +3166,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Service.CrashCountBeforeResume"
+    units="count" expires_after="2026-03-06">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of ScreenAI service crashes before one successful
+    shutdown. It is recorded when the service shuts down due to being idle, and
+    had crashed before and restarted.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.Service.Initialization"
     enum="BooleanSuccess" expires_after="2025-08-24">
   <owner>rhalavati@chromium.org</owner>
@@ -3186,6 +3197,16 @@ even if they fit the naming pattern. -->
     <variant name="Failure" summary="fail initialization"/>
     <variant name="Success" summary="initialize successfully"/>
   </token>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.Service.IsSuspended" enum="Boolean"
+    expires_after="2026-03-06">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if ScreenAI service was suspended due to crash. Recorded when a
+    client asks for service availablity or for connection to the service.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"

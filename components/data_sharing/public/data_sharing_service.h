@@ -306,6 +306,10 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual void SetPreviewServerProxyForTesting(
       std::unique_ptr<PreviewServerProxy> preview_server_proxy) = 0;
   virtual PreviewServerProxy* GetPreviewServerProxyForTesting() = 0;
+
+  // Called when a collaboration group is removed by the user locally. This
+  // happens when user leaves or deletes a group.
+  virtual void OnCollaborationGroupRemoved(const GroupId& group_id) = 0;
 };
 
 }  // namespace data_sharing

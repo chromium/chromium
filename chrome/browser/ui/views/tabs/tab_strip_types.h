@@ -31,7 +31,7 @@ enum class CloseTabSource {
 
 // Source of the call to ToggleTabGroup(). The source of the call can trigger
 // different behaviors such as logging and different animations. Tests will
-// generally use |kMenuAction| unless testing a particular code path.
+// generally use `kMenuAction` unless testing a particular code path.
 enum class ToggleTabGroupCollapsedStateOrigin {
   // Use when triggering a submenu action or other automated process such as
   // "Add tab to group".

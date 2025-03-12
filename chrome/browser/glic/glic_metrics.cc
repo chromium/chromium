@@ -80,13 +80,19 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   no_url_source_id_ = ukm::NoURLSourceId();
   source_id_ = no_url_source_id_;
 
+  subscriptions_.push_back(
+      enabling_->RegisterAllowedChanged(base::BindRepeating(
+          &GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged,
+          base::Unretained(this))));
+
   is_enabled_ = enabling_->IsEnabledAndConsentForProfile(profile_);
   is_pinned_ = profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(
       prefs::kGlicCompletedFre,
-      base::BindRepeating(&GlicMetrics::OnGlicCompletedFrePrefChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged,
+          base::Unretained(this)));
   pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
                       base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
                                           base::Unretained(this)));
@@ -273,7 +279,7 @@ void GlicMetrics::OnImpressionTimerFired() {
                             saved_hotkey != ui::Accelerator());
 }
 
-void GlicMetrics::OnGlicCompletedFrePrefChanged() {
+void GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged() {
   bool is_enabled = enabling_->IsEnabledAndConsentForProfile(profile_);
   if (is_enabled == is_enabled_) {
     // No change, early exit.

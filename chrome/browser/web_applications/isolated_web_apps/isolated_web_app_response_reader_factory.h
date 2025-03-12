@@ -77,22 +77,12 @@ class IsolatedWebAppResponseReaderFactory {
       Flags flags,
       Callback callback);
 
-  void OnIntegrityBlockRead(
-      std::unique_ptr<SignedWebBundleReader> reader,
-      const base::FilePath& web_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      Flags flags,
-      Callback callback,
-      base::expected<web_package::SignedWebBundleIntegrityBlock,
-                     UnusableSwbnFileError> result);
-
-  void OnIntegrityBlockAndMetadataRead(
-      std::unique_ptr<SignedWebBundleReader> reader,
-      const base::FilePath& web_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      Flags flags,
-      Callback callback,
-      base::expected<void, UnusableSwbnFileError> status);
+  void OnReaderCreated(const base::FilePath& web_bundle_path,
+                       const web_package::SignedWebBundleId& web_bundle_id,
+                       Flags flags,
+                       Callback callback,
+                       base::expected<std::unique_ptr<SignedWebBundleReader>,
+                                      UnusableSwbnFileError> status);
 
   const raw_ref<Profile> profile_;
   IsolatedWebAppTrustChecker trust_checker_;

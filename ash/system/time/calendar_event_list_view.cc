@@ -80,9 +80,9 @@ class CalendarEmptyEventListView : public PillButton {
         controller_(controller) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
-    SetBorder(views::CreateThemedRoundedRectBorder(
-        kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,
-        kColorAshHairlineBorderColor));
+    SetBorder(views::CreateRoundedRectBorder(kOpenGoogleCalendarBorderThickness,
+                                             GetPreferredSize().height() / 2,
+                                             kColorAshHairlineBorderColor));
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP));
   }

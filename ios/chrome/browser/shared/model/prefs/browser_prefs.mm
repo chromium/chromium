@@ -535,12 +535,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
                                 false);
 
-  // Registers a preference to store the count of displayed Safety Check issues.
-  // This count determines if the Safety Check module remains in the Magic
-  // Stack.
-  registry->RegisterIntegerPref(
-      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
-
   registry->RegisterTimePref(prefs::kLensLastOpened, base::Time());
 
   // Register pref used to determine if OS Lockdown Mode is enabled.
@@ -646,6 +640,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 03/2025 (migrated to profile pref).
   registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
+
+  // Deprecated 03/2025, migrated to profile pref.
+  registry->RegisterIntegerPref(
+      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -931,6 +929,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness, -1);
 
+  // Registers a preference to store the count of displayed Safety Check issues.
+  // This count determines if the Safety Check module remains in the Magic
+  // Stack.
+  registry->RegisterIntegerPref(
+      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
+
   registry->RegisterIntegerPref(
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
@@ -1214,6 +1218,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 03/2025.
   MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kInactiveTabsTimeThreshold, prefs);
+
+  // Added 03/2025.
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

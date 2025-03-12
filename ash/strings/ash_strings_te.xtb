@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ఎమోజి పికర్‌ను తెరవండి</translation>
 <translation id="2088116547584365419">గేమ్‌లు</translation>
-<translation id="2092517835716911174">'చదవడంలో సహాయం', 'రాయడంలో సహాయం పొందండి', ఫీచర్‌ను ఉపయోగించడానికి మీకు కనీసం 18 సంవత్సరాలు నిండి ఉండాలి.</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2107581415810719320">వేరే బటన్ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">మీ USB-C కేబుల్ Thunderboltను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
@@ -1056,6 +1055,7 @@
 <translation id="450584155212756404">డెవలపర్ ఛానెల్</translation>
 <translation id="4513044611477939680">క్విక్ షేర్</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
+<translation id="4518096944902121253">ఈ భాషకు సంబంధించి చర్యలు ఏవీ లేవు</translation>
 <translation id="4518404433291145981">మీ Chromebookను అన్‌లాక్ చేయడానికి, ముందుగా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="4525887279712865285">క్విక్ షేర్ సెట్టింగ్‌లను చూపండి</translation>
 <translation id="4527045527269911712">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది.</translation>
@@ -1886,6 +1886,7 @@
 <translation id="7189412385142492784">శుక్రుడు ఎంత దూరంలో ఉన్నాడు</translation>
 <translation id="7198435252016571249">కెమెరా దిగువ కుడి మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
 <translation id="7219573373513695352">పరికరాలు ఏవీ కనెక్ట్ కాలేదు</translation>
+<translation id="7228968829656641943">నా స్క్రీన్‌ను సెర్చ్ చేయడానికి ఎంచుకోండి. కీబోర్డ్ నావిగేషన్ కోసం tab నొక్కి, ఆపై space నొక్కండి.</translation>
 <translation id="7229029500464092426">మెమరీ <ph name="AVAILABLE_MEMORY" /> | మొత్తం <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">రెండు మౌస్ బటన్లు</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది. మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>

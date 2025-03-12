@@ -23,6 +23,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -56,12 +57,12 @@ constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
 constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Pref to record if the one-off MaybeMigrateAutofillToPerAccountPref()
 // migration ran.
 constexpr char kAutofillPerAccountPrefMigrationDone[] =
     "sync.passwords_per_account_pref_migration_done";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  //  BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 constexpr int kNotMigrated = 0;
 constexpr int kMigratedPart1ButNot2 = 1;
@@ -197,9 +198,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kSyncPassphrasePromptMutedProductVersion, 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterBooleanPref(kAutofillPerAccountPrefMigrationDone, false);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterTimePref(
       prefs::internal::kFirstTimeTriedToMigrateSyncFeaturePausedToSignin,
       base::Time());
@@ -1105,18 +1106,10 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
                            kMigratedPart2AndFullyDone);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 void SyncPrefs::MaybeMigrateAutofillToPerAccountPref(
     PrefService* pref_service) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kExplicitBrowserSigninUIOnDesktop)) {
-    // Ensures the migration happens again if the experiment gets rolled back
-    // then rolled out a second time.
-    pref_service->ClearPref(kAutofillPerAccountPrefMigrationDone);
-    return;
-  }
-
   if (pref_service->GetBoolean(kAutofillPerAccountPrefMigrationDone)) {
     return;
   }
@@ -1146,7 +1139,7 @@ void SyncPrefs::MaybeMigrateAutofillToPerAccountPref(
         pref_name_for_type, base::Value(false));
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
   // If the first part of the migration has run, but the second part has not,

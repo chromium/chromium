@@ -8,6 +8,7 @@ Contains general-purpose methods that can be used to execute shell,
 GN and Ninja commands.
 """
 
+import shlex
 import subprocess
 import os
 import re
@@ -35,19 +36,8 @@ def run(command, **kwargs):
   Returns:
     int: the return value of subprocess.call
   """
-  print(command, kwargs)
+  print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
   return subprocess.call(command, **kwargs)
-
-
-def run_shell(command, extra_options=''):
-  """Runs a shell command.
-
-  Runs a shell command with no escaping. It is recommended
-  to use `run` instead.
-  """
-  command = command + ' ' + extra_options
-  print(command)
-  return os.system(command)
 
 
 def gn(out_dir, gn_args, gn_extra=None, **kwargs):

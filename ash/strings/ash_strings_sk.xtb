@@ -324,7 +324,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2083190527011054446">Dobrú noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otvoriť výber emodži</translation>
 <translation id="2088116547584365419">hry</translation>
-<translation id="2092517835716911174">Ak chcete používať asistenta pri čítaní a asistenta pri písaní, musíte mať aspoň 18 rokov.</translation>
 <translation id="209965399369889474">Nemáte pripojenie k sieti</translation>
 <translation id="2107581415810719320">Iné tlačidlo <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kábel USB-C nepodporuje Thunderbolt. Výkonnosť zariadenia môže byť obmedzená.</translation>
@@ -1055,6 +1054,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="450584155212756404">Verzia pre vývojárov</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
+<translation id="4518096944902121253">Žiadne ďalšie akcie pre tento jazyk</translation>
 <translation id="4518404433291145981">Ak chcete Chromebook odomknúť, najprv odomknite telefón</translation>
 <translation id="4525887279712865285">Zobraziť nastavenia funkcie Quick Share</translation>
 <translation id="4527045527269911712">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania.</translation>
@@ -1885,6 +1885,7 @@ Nová inštalácia</translation>
 <translation id="7189412385142492784">Ako ďaleko je Venuša</translation>
 <translation id="7198435252016571249">Kamera bola prichytená do pravého dolného rohu. Konflikt s platformou systému.</translation>
 <translation id="7219573373513695352">Nie sú pripojené žiadne zariadenia</translation>
+<translation id="7228968829656641943">Výberom aktivujete vyhľadávanie na obrazovke. Ak chcete používať navigáciu klávesnicou, stlačte Tab a potom medzerník.</translation>
 <translation id="7229029500464092426">Pamäť: <ph name="AVAILABLE_MEMORY" /> | celková: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Obe tlačidlá myši</translation>
 <translation id="7244725679040769470">Zostávajúca batéria: <ph name="PERCENTAGE" /> %. Pripojte svoje zariadenie k napájaniu.</translation>

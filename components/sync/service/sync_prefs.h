@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 
@@ -285,9 +286,8 @@ class SyncPrefs {
       PrefService* pref_service,
       const signin::GaiaIdHash& gaia_id_hash);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // If switches::kExplicitBrowserSigninUIOnDesktop is enabled, performs a
-  // one-off migration which ensures that, for a user who...
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Performs a one-off migration which ensures that, for a user who...
   // ...enabled sync-the-feature, then...
   // ...disabled an autofill data type, then...
   // ...disabled sync-the-feature, then...
@@ -296,7 +296,7 @@ class SyncPrefs {
   // Internally this works by reading the global passwords setting and writing
   // it to the account setting for kGoogleServicesLastSyncingGaiaId.
   static void MaybeMigrateAutofillToPerAccountPref(PrefService* pref_service);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,

@@ -47,7 +47,7 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
   const bool is_making_selection =
       source->GetFocusedFrame() && source->GetFocusedFrame()->HasSelection();
   if (IsCopyEvent(event) && !is_making_selection) {
-    lens_overlay_controller_->TriggerCopyText();
+    lens_overlay_controller_->TriggerCopy();
     return true;
   }
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,

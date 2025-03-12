@@ -313,7 +313,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
     // pass to the worklet process.
     if (!base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache)) {
       waiting_on_trusted_signals_kvv2_public_key_ = true;
-      worklet_manager->delegate()->GetBiddingAndAuctionServerKey(
+      worklet_manager->delegate()->GetTrustedKeyValueServerKey(
           url::Origin::Create(worklet_info_.signals_url.value_or(GURL())),
           std::move(worklet_info_.trusted_signals_coordinator),
           base::BindOnce(&AuctionWorkletManager::WorkletOwner::

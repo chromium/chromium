@@ -29,6 +29,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // TODO(https://crbug.com/40902503): Split less frequently updated fields out
 // into an optional substructure to reduce serialization load.
 struct LayerTreeUpdate {
+  BeginFrameArgs begin_frame_args;
+
   // The main frame commit whose tree is driving this update. Incremented over
   // time with each client-side commit.
   int32 source_frame_number;

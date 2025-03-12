@@ -23,20 +23,6 @@ if (is_chromeos) {
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
-
-  source_set("unit_tests") {
-    testonly = true
-    sources = [ "screen_ai_dlc_installer_unittest.cc" ]
-    deps = [
-      ":screen_ai_dlc_installer",
-      "//base/test:test_support",
-      "//chrome/browser/screen_ai:screen_ai_install_state",
-      "//chromeos/ash/components/dbus/dlcservice",
-      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
 }
 
 source_set("screen_ai_install_state") {
@@ -88,4 +74,25 @@ source_set("prefs") {
   deps = [ "//components/prefs" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "screen_ai_service_router_unittest.cc" ]
+  deps = [
+    ":screen_ai_service_router_factory",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "screen_ai_dlc_installer_unittest.cc" ]
+    deps += [
+      ":screen_ai_dlc_installer",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+      "//testing/gmock",
+    ]
+  }
 }

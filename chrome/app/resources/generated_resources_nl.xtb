@@ -375,7 +375,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1244265436519979884">Linux-herstel wordt momenteel uitgevoerd</translation>
 <translation id="1244303850296295656">Fout met extensie</translation>
 <translation id="1244917379075403655">Klik op Instellingen</translation>
-<translation id="1245041875932187638">Alle gegevens verwijderen die door Automatisch invullen met AI worden gebruikt</translation>
 <translation id="1245331638296910488">Bestanden worden verplaatst naar OneDrive als ze worden geopend in Microsoft 365</translation>
 <translation id="1245628370644070008">Herstel van lokale gegevens</translation>
 <translation id="1246863218384630739">Kan <ph name="VM_NAME" /> niet installeren: image-URL heeft een <ph name="HTTP_ERROR" />-foutcode geretourneerd. Neem contact op met je beheerder.</translation>
@@ -1407,7 +1406,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Voorbereiden...</translation>
 <translation id="1969654639948595766">WebRTC-tekstlogboeken (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Alle gegevens worden dan verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="1972313920920745320">Sites die je toevoegt, blijven altijd actief en er wordt geen geheugen vrijgemaakt op basis van deze sites. <ph name="BEGIN_LINK" />Meer informatie over hoe je specifieke sites actief houdt<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="197288927597451399">Behouden</translation>
@@ -2290,6 +2288,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="256517381556987641">Bestandssynchronisatie heeft tot nu toe <ph name="ITEMS_FOUND" /> bestanden gevonden. De opslagruimte wordt nog gecheckt. Probeer Bestandssynchronisatie over een paar minuten opnieuw aan te zetten.</translation>
 <translation id="2565214867520763227">Schermlezer aanzetten</translation>
 <translation id="2566146433999774844">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en <ph name="NUM_OTHER_MEMBERS" /> anderen</translation>
+<translation id="256726287944589768">Voettekst tonen op de pagina Nieuw tabblad</translation>
 <translation id="2568694057933302218">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken. Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="2568774940984945469">Container voor infobalk</translation>
 <translation id="2569972178052279830">Naam verkoper</translation>
@@ -2743,7 +2742,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2877467134191447552">Je kunt extra accounts toevoegen om toegang tot websites en apps te krijgen.</translation>
 <translation id="2878782256107578644">Bezig met scannen, nu openen?</translation>
 <translation id="2878889940310164513">Simkaart toevoegen...</translation>
-<translation id="288042212351694283">Toegang tot je Universal 2nd Factor-apparaten</translation>
+<translation id="288042212351694283">Toegang tot je U2F-apparaten (universele 2e factor)</translation>
 <translation id="2881076733170862447">Wanneer je op de extensie klikt</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wordt zo meteen opnieuw gestart en opnieuw ingesteld.</translation>
 <translation id="2884070497102362193">Test onder meer je batterij, CPU, geheugen en connectiviteit</translation>
@@ -2798,6 +2797,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2921081876747860777">Stel een wachtwoord in om je lokale gegevens te beschermen.</translation>
 <translation id="2923006468155067296">Je <ph name="DEVICE_TYPE" /> wordt nu vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> andere taken in dezelfde takengroep: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Dit account verwijderen</translation>
 <translation id="2923644930701689793">De filmrol van je telefoon openen</translation>
 <translation id="292371311537977079">Chrome-instellingen</translation>
@@ -3055,7 +3055,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3108957152224931571">Markeringskleur</translation>
 <translation id="3109206895301430738">Opgeslagen tabbladgroepen</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
-<translation id="310979712355504754">Alles verwijderen</translation>
 <translation id="3112292765614504292">App-grootte: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">heeft dit tabblad toegevoegd</translation>
 <translation id="311394601889664316">Niet toestaan dat sites bestanden of mappen op je apparaat bewerken</translation>
@@ -4073,7 +4072,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Een extensie is goedgekeurd}other{# extensies zijn goedgekeurd}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Er wordt ten minste <ph name="INSTALL_SIZE" /> vrije opslagruimte aanbevolen voor Linux.</translation>
-<translation id="3824203811509979971">Content samenvatten of vragen stellen</translation>
 <translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log in om tabbladen van andere apparaten te bekijken</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mijn keuze onthouden voor dit bestandstype: <ph name="FILE_TYPES" />}other{Mijn keuze onthouden voor deze bestandstypen: <ph name="FILE_TYPES" />}}</translation>
@@ -5886,7 +5884,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="512642543295077915">zoeken + backspace</translation>
 <translation id="5126611267288187364">Wijzigingen bekijken</translation>
 <translation id="5127620150973591153">Beveiligde verbindings-ID: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Vat content samen of stel vragen.</translation>
 <translation id="5127881134400491887">Netwerkverbindingen beheren</translation>
 <translation id="5127934926273826089">Bloemen</translation>
 <translation id="5127986747308934633">Je beheerder beheert je apparaat</translation>
@@ -7433,7 +7430,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6254892857036829079">Perfect</translation>
 <translation id="6257131917452817589">wachtwoord automatisch wijzigen</translation>
 <translation id="6257602895346497974">Synchronisatie aanzetten...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Dit netwerk krijgt de voorkeur als er meer dan één eerder verbonden of ingesteld netwerk beschikbaar is</translation>
 <translation id="6259776178973198997">Informatie over Wifi Direct-eigenaren vernieuwen</translation>
 <translation id="6262371516389954471">Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
@@ -9863,6 +9859,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, stem <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Zet wifi automatisch over vanaf je Android-telefoon</translation>
 <translation id="7991296728590311172">Instellingen voor Toegang via schakelaar</translation>
+<translation id="7992080146463834191">Vat content samen, vereenvoudig complexe taal of stel vragen.</translation>
 <translation id="7992203134935383159">Spraaksynthese</translation>
 <translation id="7997826902155442747">Procesprioriteit</translation>
 <translation id="7997828719430450286">Geslaagd.</translation>
@@ -11129,6 +11126,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> is uitgezet</translation>
 <translation id="8874647982044395866">Biologisch</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
+<translation id="8875221558267407626">Content samenvatten, complexe taal vereenvoudigen of vragen stellen</translation>
 <translation id="8875520811099717934">Linux upgraden</translation>
 <translation id="8875736897340638404">Je zichtbaarheid kiezen</translation>
 <translation id="8876307312329369159">Deze instelling kan niet worden gewijzigd tijdens een demosessie.</translation>

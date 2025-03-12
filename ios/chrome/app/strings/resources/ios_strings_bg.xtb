@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Съществуващите данни за сърфирането ще бъдат свързани с(ъс) <ph name="USER_EMAIL" />. Те може да са видими за организацията ви.</translation>
 <translation id="1713777106376424209">Доставено от</translation>
 <translation id="1715515772563243997">Ако имате доверие на <ph name="SITE" />, можете да използвате запазена парола за влизане в профила.</translation>
+<translation id="1718835860248848330">Последния час</translation>
 <translation id="1728549374069268714">Поставяне и старт</translation>
 <translation id="1732468323901456775">Включване на известията за <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Докоснете двукратно, за да инсталирате.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Разпознаването на адреси е изключено. Можете да го включите отново в настройките.</translation>
 <translation id="1904580727789512086">URL адресите, които посещавате, се запазват в профила ви в Google</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
-<translation id="1923342640370224680">Последният час</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1943478190258551035">„Меню → Настройки“</translation>
 <translation id="1952728750904661634">Влизане с управляван профил</translation>
@@ -1206,6 +1206,7 @@
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Създадено на <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочетени</translation>
+<translation id="6192388920090306326">Пътуване до Токио</translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
 <translation id="6196207969502475924">Гласово търсене</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
@@ -1370,6 +1371,7 @@
 <translation id="6779455296366983087">Данните за сърфирането ви ще бъдат изтрити</translation>
 <translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
 <translation id="6794476726485507147">Изберете дата и час, когато да получите известие с напомняне да посетите отново тази страница</translation>
+<translation id="6807287147325542056">Пароли в други приложения</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="6825078212112407882">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
 <translation id="6830728435402077660">Няма защита</translation>
@@ -1934,6 +1936,7 @@
 <translation id="9106655997975673326">От <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Проверка за компрометирани пароли</translation>
 <translation id="9124387962554796433">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google.</translation>
+<translation id="9124978074365039456">Пазарувайте, превеждайте и идентифицирайте това, което виждате във визьора на камерата и фотогалерията си</translation>
 <translation id="9130317582644834675">Скриване на „Промяна на мащаба на текста“</translation>
 <translation id="913036870884277353">Лесно отваряйте връзки в други приложения.</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>

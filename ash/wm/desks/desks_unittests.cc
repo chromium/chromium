@@ -510,10 +510,6 @@ class DesksTest : public AshTestBase,
                     : state != DeskIconButton::State::kExpanded);
   }
 
-  SkColor GetNewDeskButtonBackgroundColor(const DeskBarViewBase* bar_view) {
-    return bar_view->new_desk_button()->background()->get_color();
-  }
-
   void TryScrollOverviewDeskBar(DeskBarScrollDirection scroll_direction,
                                 bool do_left_click = true) {
     ScrollArrowButton* scroll_button = nullptr;
@@ -2437,14 +2433,21 @@ TEST_P(DesksTest, NewDeskButtonStateAndColor) {
   SkColor background_color =
       color_provider->GetColor(cros_tokens::kCrosSysPrimary);
 
+  auto get_background_color([](const views::View* view) {
+    return view->GetBackground()->color().ConvertToSkColor(
+        view->GetColorProvider());
+  });
+
   const SkColor disabled_background_color =
       ColorUtil::GetDisabledColor(background_color);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, GetNewDeskButtonBackgroundColor(desks_bar_view));
+  EXPECT_EQ(background_color,
+            get_background_color(desks_bar_view->new_desk_button()));
 
   LeftClickOn(new_desk_button);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, GetNewDeskButtonBackgroundColor(desks_bar_view));
+  EXPECT_EQ(background_color,
+            get_background_color(desks_bar_view->new_desk_button()));
 
   // Tests that adding desks until we reach the desks limit should change the
   // state and color of the new desk button.
@@ -2459,7 +2462,7 @@ TEST_P(DesksTest, NewDeskButtonStateAndColor) {
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
   EXPECT_EQ(disabled_background_color,
-            GetNewDeskButtonBackgroundColor(desks_bar_view));
+            get_background_color(desks_bar_view->new_desk_button()));
 }
 
 // Tests that the fullscreen state in shell is updated when switching between
@@ -11176,30 +11179,25 @@ TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
   // Verify desk names and color changes.
   ASSERT_EQ(bottom_at_start ? u"school" : u"s",
             desk_button->desk_name_label()->GetText());
-  auto* color_provider = desk_button->GetColorProvider();
-  ASSERT_EQ(color_provider->GetColor(bottom_at_start
-                                         ? cros_tokens::kCrosSysSystemOnBase1
-                                         : cros_tokens::kCrosSysSystemOnBase),
-            desk_button->GetBackground()->get_color());
+  ASSERT_EQ(bottom_at_start ? cros_tokens::kCrosSysSystemOnBase1
+                            : cros_tokens::kCrosSysSystemOnBase,
+            desk_button->GetBackground()->color());
 
   // Activate/Deactivate the desk button and verify color changes.
   ClickDeskButton();
-  ASSERT_EQ(
-      color_provider->GetColor(cros_tokens::kCrosSysSystemPrimaryContainer),
-      desk_button->GetBackground()->get_color());
+  ASSERT_EQ(cros_tokens::kCrosSysSystemPrimaryContainer,
+            desk_button->GetBackground()->color());
   ClickDeskButton();
-  ASSERT_EQ(color_provider->GetColor(bottom_at_start
-                                         ? cros_tokens::kCrosSysSystemOnBase1
-                                         : cros_tokens::kCrosSysSystemOnBase),
-            desk_button->GetBackground()->get_color());
+  ASSERT_EQ(bottom_at_start ? cros_tokens::kCrosSysSystemOnBase1
+                            : cros_tokens::kCrosSysSystemOnBase,
+            desk_button->GetBackground()->color());
 
   // Update shelf alignment and verify desk names and color changes.
   GetPrimaryShelf()->SetAlignment(bottom_at_start ? ShelfAlignment::kLeft
                                                   : ShelfAlignment::kBottom);
-  ASSERT_EQ(color_provider->GetColor(bottom_at_start
-                                         ? cros_tokens::kCrosSysSystemOnBase
-                                         : cros_tokens::kCrosSysSystemOnBase1),
-            desk_button->GetBackground()->get_color());
+  ASSERT_EQ(bottom_at_start ? cros_tokens::kCrosSysSystemOnBase
+                            : cros_tokens::kCrosSysSystemOnBase1,
+            desk_button->GetBackground()->color());
   EXPECT_EQ(bottom_at_start ? u"s" : u"school",
             desk_button->desk_name_label()->GetText());
 }

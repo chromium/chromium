@@ -25,6 +25,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ButtonPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -45,6 +46,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITE_TITLE = "site_title";
     public static final String PREF_CLEAR_DATA = "clear_data";
     public static final String PREF_RELATED_SITES = "related_sites";
+    public static final String PREF_RELATED_SITES_CLEAR_DATA = "related_sites_delete_data_button";
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
@@ -252,6 +254,43 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         preference.setOnPreferenceClickListener(this);
     }
 
+    public void resetRwsData() {
+        if (getActivity() == null) return;
+        RwsCookieInfo rwsInfo = mSiteGroup.getRwsInfo();
+        assumeNonNull(rwsInfo);
+        WebsiteGroup group = new WebsiteGroup(rwsInfo.getOwner(), rwsInfo.getMembers());
+        SiteDataCleaner.clearData(getSiteSettingsDelegate(), group, mDataClearedCallback);
+    }
+
+    public boolean onDeleteRwsDataPreferenceClick(Preference preference) {
+        View dialogView =
+                getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
+        TextView mainMessage = dialogView.findViewById(R.id.main_message);
+        RwsCookieInfo rwsInfo = mSiteGroup.getRwsInfo();
+        assumeNonNull(rwsInfo);
+        mainMessage.setText(
+                getString(
+                        R.string.site_settings_delete_rws_storage_confirmation_android,
+                        rwsInfo.getOwner()));
+        TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
+        signedOutText.setText(R.string.site_settings_delete_rws_storage_sign_out);
+        TextView offlineText = dialogView.findViewById(R.id.offline_text);
+        offlineText.setText(R.string.webstorage_delete_data_dialog_offline_message);
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setView(dialogView)
+                        .setTitle(R.string.site_settings_delete_rws_storage_dialog_title)
+                        .setPositiveButton(
+                                R.string.storage_delete_dialog_clear_storage_option,
+                                (dialog, which) -> {
+                                    resetRwsData();
+                                })
+                        .setNegativeButton(
+                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .show();
+        return true;
+    }
+
     private void setUpRelatedSitesPreferences() {
         PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES);
         assumeNonNull(relatedSitesHeader);
@@ -263,6 +302,12 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                         && rwsInfo != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
+        ButtonPreference relatedSitesClearDataButton =
+                findPreference(PREF_RELATED_SITES_CLEAR_DATA);
+        assumeNonNull(relatedSitesClearDataButton)
+                .setVisible(
+                        shouldRelatedSitesPrefBeVisible
+                                && getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi());
 
         if (shouldRelatedSitesPrefBeVisible) {
             assumeNonNull(rwsInfo);
@@ -300,15 +345,22 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                                                             .RWS_LEARN_MORE_URL);
                                                 }))));
                 relatedSitesHeader.addPreference(relatedSitesText);
-                for (Website site : rwsInfo.getMembers()) {
+                for (WebsiteEntry entry : rwsInfo.getMembersGroupedByDomain()) {
                     WebsiteRowPreference preference =
                             new RwsRowPreference(
                                     relatedSitesHeader.getContext(),
                                     getSiteSettingsDelegate(),
-                                    site,
+                                    entry,
                                     getActivity().getLayoutInflater());
                     relatedSitesHeader.addPreference(preference);
                 }
+                relatedSitesClearDataButton.setOnPreferenceClickListener(
+                        new Preference.OnPreferenceClickListener() {
+                            @Override
+                            public boolean onPreferenceClick(Preference preference) {
+                                return onDeleteRwsDataPreferenceClick(preference);
+                            }
+                        });
             } else {
                 relatedSitesText.setTitle(
                         getContext()

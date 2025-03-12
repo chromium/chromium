@@ -46,8 +46,6 @@ public class LogoUtilsUnitTest {
         int logoHeight = mResources.getDimensionPixelSize(R.dimen.ntp_logo_height);
         int logoTopMargin = mResources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
 
-        int logoHeightLargeForLogoPolish =
-                mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
         int logoHeightMediumForLogoPolish =
                 mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_medium);
         int logoHeightSmallForLogoPolish =
@@ -59,18 +57,10 @@ public class LogoUtilsUnitTest {
                 mLogoView,
                 mResources,
                 /* isLogoPolishEnabled= */ false,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
+                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.MEDIUM);
         testSetLogoViewLayoutParamsImpl(logoHeight, logoTopMargin, layoutParams);
 
         // Verifies the layout params for Logo Polish.
-        LogoUtils.setLogoViewLayoutParams(
-                mLogoView,
-                mResources,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightLargeForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
-
         LogoUtils.setLogoViewLayoutParams(
                 mLogoView,
                 mResources,

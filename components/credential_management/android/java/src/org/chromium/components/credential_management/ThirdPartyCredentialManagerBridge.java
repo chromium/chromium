@@ -6,7 +6,6 @@ package org.chromium.components.credential_management;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.credentials.Credential;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.CredentialManagerCallback;
@@ -22,12 +21,15 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A bridge for interacting with Credential Manager. */
 @JNINamespace("credential_management")
+@NullMarked
 class ThirdPartyCredentialManagerBridge {
     private final long mReceiverBridge;
-    private static CredentialManager sCredentialManagerForTesting;
+    private static @Nullable CredentialManager sCredentialManagerForTesting;
 
     @CalledByNative
     ThirdPartyCredentialManagerBridge(long receiverBridge) {
@@ -57,12 +59,12 @@ class ThirdPartyCredentialManagerBridge {
                 credentialCallback =
                         new CredentialManagerCallback<>() {
                             @Override
-                            public void onError(@NonNull GetCredentialException e) {
+                            public void onError(GetCredentialException e) {
                                 onGetCredentialError();
                             }
 
                             @Override
-                            public void onResult(@NonNull GetCredentialResponse result) {
+                            public void onResult(GetCredentialResponse result) {
                                 onGetCredentialResponse(result, origin);
                             }
                         };

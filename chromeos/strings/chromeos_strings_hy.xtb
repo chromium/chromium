@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
 <translation id="1539864135338521185">կապույտ լաջվարդ</translation>
+<translation id="1548555207631326346">Ընտրեք թեմա, այնուհետև ընտրեք ընդգծված բառերը՝ ձեր ԱԲ պատկերներն անհատականացնելու համար։<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ընտրեք «Ոգեշնչիր ինձ»՝ ԱԲ պատկերների ավելի յուրօրինակ և բազմազան տարբերակներ ստանալու համար։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Երբ դուք որևէ բան եք ստեղծում ԱԲ-ի միջոցով, հարցումն ուղարկվում է Google AI-ի սերվերներ՝ պատկերներ գեներացնելու և պրոդուկտը բարելավելու համար՝ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի գաղտնիության քաղաքականության<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> համաձայն։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Գեներատիվ արհեստական բանականությունը փորձարկման ու մշակման վաղ փուլում է և ներկայումս ունի սահմանափակ հասանելիություն։</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
 <translation id="1561927818299383735">ֆոնային լուսավորության գույնը</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">լողափ</translation>
 <translation id="819278132617411009">Օգտագործեք Google AI-ը՝ ավելի արդյունավետ լինելու համար</translation>
+<translation id="82003371436638355">Երբ ընտրեք «Ստեղծել ձեր սեփականը», գրեք անհատական հարցում։ Կամ կարող եք սեղմել «Ընտրել թեմա» և այնուհետև ընտրել ընդգծված բառերը՝ ձեր ԱԲ պաստառն անհատականացնելու համար։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ընտրեք «Ոգեշնչիր ինձ»՝ ԱԲ պատկերների ավելի յուրօրինակ և բազմազան տարբերակներ ստանալու համար։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Երբ դուք ստեղծում եք ձեր սեփական պաստառը, հարցումն ուղարկվում է Google-ի սերվերներին՝ պատկերներ գեներացնելու և պրոդուկտը բարելավելու համար, ինչը ենթակա է<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի Օգտագործման պայմաններին և գաղտնիության քաղաքականությանը<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />։ Մի ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Գեներատիվ արհեստական բանականությունը կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին, ուստի ստուգեք դրա տրամադրած պատասխանները։ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Իմանալ ավելին<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">նվագարկել մեդիաֆայլը</translation>
 <translation id="8318753676953949627">Պատկերներ չկան</translation>
 <translation id="8320910311642849813">անտառ</translation>
+<translation id="8322464149031882595">Սեղմեք՝ առաջ անցնելու համար</translation>
 <translation id="8329018942023753850">հաշվիչ հավելված</translation>
 <translation id="8336739000755212683">Փոխել հաշվի պատկերը սարքում</translation>
 <translation id="8339024191194156249">Իմանալ ավելին ինքնագործարկման մասին</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">պինգվիններ</translation>
 <translation id="8968751544471797276">Լիցքավորման արագությունը</translation>
 <translation id="8970109610781093811">Կրկնել</translation>
+<translation id="8972061581514441296">Սեղմեք՝ վերադառնալու համար</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Սկանավորել}=1{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}one{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}other{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}}</translation>
 <translation id="89945434909472341">գյուղ</translation>

@@ -427,5 +427,46 @@ TEST(CollaborationGroupSyncBridgeNoFixtureTest, ShouldReportIsDataLoaded) {
   EXPECT_TRUE(bridge.IsDataLoaded());
 }
 
+TEST_F(CollaborationGroupSyncBridgeTest, RemoveGroupLocally) {
+  EXPECT_CALL(observer(), OnCollaborationGroupSyncDataLoaded);
+  CreateBridgeAndWaitForReadyToSync();
+  testing::Mock::VerifyAndClearExpectations(&observer());
+
+  const GroupId id1("id1");
+  const GroupId id2("id2");
+
+  const sync_pb::CollaborationGroupSpecifics specifics1 =
+      MakeSpecifics(id1, base::Time::FromMillisecondsSinceUnixEpoch(1000));
+  sync_pb::CollaborationGroupSpecifics specifics2 =
+      MakeSpecifics(id2, base::Time::FromMillisecondsSinceUnixEpoch(2000));
+
+  syncer::EntityChangeList intitial_entity_changes;
+  intitial_entity_changes.push_back(EntityChangeAddFromSpecifics(specifics1));
+  intitial_entity_changes.push_back(EntityChangeAddFromSpecifics(specifics2));
+
+  // Mimics initial sync with two entities described above.
+  EXPECT_CALL(observer(),
+              OnGroupsUpdated(
+                  /*added_group_ids*/ UnorderedElementsAre(id1, id2), _, _));
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(intitial_entity_changes));
+  testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // Verify that bridge stores these two entities and nothing else.
+  EXPECT_THAT(
+      GetBridgeSpecifics(),
+      UnorderedElementsAre(EqualsProto(specifics1), EqualsProto(specifics2)));
+
+  EXPECT_CALL(observer(),
+              OnGroupsUpdated(/*added_group_ids*/ IsEmpty(),
+                              /*updated_group_ids*/ IsEmpty(),
+                              /*deleted_group_ids*/ ElementsAre(id2)));
+  bridge().RemoveGroupLocally(id2);
+
+  // Verify that bridge stores`specifics3` and updated `specifics2`.
+  EXPECT_THAT(GetBridgeSpecifics(), ElementsAre(EqualsProto(specifics1)));
+  EXPECT_THAT(bridge().GetCollaborationGroupIds(), ElementsAre(id1));
+}
+
 }  // namespace
 }  // namespace data_sharing

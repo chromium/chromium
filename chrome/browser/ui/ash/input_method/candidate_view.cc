@@ -204,8 +204,7 @@ void CandidateView::SetHighlighted(bool highlighted) {
   if (highlighted) {
     SetBackground(
         views::CreateSolidBackground(ui::kColorTextfieldSelectionBackground));
-    SetBorder(
-        views::CreateThemedSolidBorder(1, ui::kColorFocusableBorderFocused));
+    SetBorder(views::CreateSolidBorder(1, ui::kColorFocusableBorderFocused));
 
     // Cancel currently focused one.
     for (View* view : parent()->children()) {

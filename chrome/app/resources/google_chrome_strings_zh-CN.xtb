@@ -178,7 +178,6 @@
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
-<translation id="3289358082435924389">之后，Chrome 会询问您是否要使用已保存的信息自动填写表单</translation>
 <translation id="3292333338048274092">然后，您需要重启 Chrome。</translation>
 <translation id="3360895254066713204">Chrome 浏览器帮助应用</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 将立即重新启动}=1{Chrome 将在 1 秒后重新启动}other{Chrome 将在 # 秒后重新启动}}</translation>
@@ -334,7 +333,6 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5602351063754773347">Chrome 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">通过使用多份 Chrome 资料，您可将所有 Chrome 信息分门别类。您可为朋友和家人创建专属资料，或者将工作和娱乐用资料分开。</translation>
-<translation id="5649680279845190972">若要在所有计算机上使用您的扩展程序等，请登录 Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="566568153320186256">Chrome 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />详细了解节能模式<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">清除账号中的 Chrome 数据</translation>
@@ -513,7 +511,6 @@
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
-<translation id="7917470403848199310">Chrome 会询问您是否要保存表单信息，例如生日、年龄和护照号码</translation>
 <translation id="7917876797003313048">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chrome 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
@@ -595,7 +592,6 @@
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8948460679427074738">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chrome 建议您移除它。</translation>
-<translation id="8983860655274963234">Chrome 可以更好地理解表单，并更快地为您自动填充表单。详细了解 <ph name="BEGIN_LINK" />Chrome 自动填充功能<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8992769679401294069">系统将使用您的口令加密您的数据。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>

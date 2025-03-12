@@ -144,6 +144,7 @@ action("mini_installer_archive") {
 
   inputs = [
     "$root_out_dir/chrome.dll",
+    "$root_out_dir/chrome_elf.dll",
     "$root_out_dir/chrome.exe",
     "$root_out_dir/locales/en-US.pak",
     "$root_out_dir/setup.exe",
@@ -192,6 +193,7 @@ action("mini_installer_archive") {
     "//chrome",
     "//chrome:chrome_dll",
     "//chrome/browser/extensions/default_extensions",
+    "//chrome/chrome_elf",
     "//chrome/common/win:eventlog_provider",
     "//chrome/installer/setup",
     "//third_party/icu:icudata",

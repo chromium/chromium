@@ -53,7 +53,7 @@ class AXRangeRectDelegate {
 // In order to avoid any confusion regarding whether a deep or a shallow copy is
 // being performed, this class can be moved, but not copied.
 template <class AXPositionType>
-class AXRange {
+class AXRange final {
  public:
   using AXPositionInstance = std::unique_ptr<AXPositionType>;
 
@@ -82,7 +82,7 @@ class AXRange {
     focus_.swap(other.focus_);
   }
 
-  virtual ~AXRange() = default;
+  ~AXRange() = default;
 
   AXPositionType* anchor() const {
     DCHECK(anchor_);

@@ -131,7 +131,7 @@ TEST_F(UserChooserDetailedViewControllerTest,
        MultiProfileLoginDisabledForFamilyLinkUsers) {
   EXPECT_TRUE(UserChooserDetailedViewController::IsUserChooserEnabled());
 
-  GetSessionControllerClient()->Reset();
+  ClearLogin();
 
   // Log in as a child user.
   SimulateUserLogin({"child@gmail.com", user_manager::UserType::kChild});

@@ -714,6 +714,13 @@ PreviewServerProxy* DataSharingServiceImpl::GetPreviewServerProxyForTesting() {
   return preview_server_proxy_.get();
 }
 
+void DataSharingServiceImpl::OnCollaborationGroupRemoved(
+    const data_sharing::GroupId& group_id) {
+  if (collaboration_group_sync_bridge_) {
+    collaboration_group_sync_bridge_->RemoveGroupLocally(group_id);
+  }
+}
+
 void DataSharingServiceImpl::OnAccessTokenAdded(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&

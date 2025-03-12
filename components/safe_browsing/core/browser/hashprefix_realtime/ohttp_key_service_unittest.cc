@@ -329,34 +329,6 @@ TEST_F(OhttpKeyServiceFeatureOffTest, GetOhttpKey_FeatureDisabled) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OhttpKeyServiceLocationDisabledTest, GetOhttpKey_FreshnessHistogram) {
-  SetupSuccessResponse();
-  base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
-
-  ohttp_key_service_->GetOhttpKey(response_callback.Get());
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      /*sample=*/true,
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch", 1);
-
-  country_ = std::nullopt;
-  base::MockCallback<OhttpKeyService::Callback> response_callback2;
-  EXPECT_CALL(response_callback2, Run(Eq(std::nullopt))).Times(1);
-
-  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      /*sample=*/false,
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch", 2);
-}
-
 TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
   pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
                           kEncodedTestOhttpKey);

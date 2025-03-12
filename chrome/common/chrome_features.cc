@@ -308,6 +308,9 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the actor component of Glic is enabled.
+BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Glic feature is always detached.
 BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -404,6 +407,11 @@ BASE_FEATURE(kGlicDebugWebview,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the Glic UI container can be resized by the user
+BASE_FEATURE(kGlicUserResize,
+             "GlicUserResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Skjermspareranimasjon</translation>
 <translation id="152892567002884378">Volum opp</translation>
 <translation id="1539864135338521185">lasurstein</translation>
+<translation id="1548555207631326346">Velg et tema og deretter de understrekede ordene for å gi AI-bildene personlig preg.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Velg «Inspirer meg» for å få mer unike og varierte alternativer for AI-bilder.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Når du lager innhold med AI, blir forespørselen sendt til Googles AI-tjenere for å generere bildene og forbedre produktet, i henhold til <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles personvernregler<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI er på forsøksstadiet og i en tidlig fase av utviklingen, og tilgjengeligheten er foreløpig begrenset.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styreflate</translation>
 <translation id="1561927818299383735">bakgrunnsbelyst farge</translation>
@@ -1553,6 +1562,16 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="819278132617411009">Bruk AI-løsninger fra Google for å bli mer produktiv</translation>
+<translation id="82003371436638355">Når du velger «Opprett ditt eget», skriver du en egendefinert forespørsel. Du kan også velge «Velg et tema» og deretter velge de understrekede ordene for å tilpasse AI-bakgrunnen.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Velg «Inspirer meg» for å få mer unike og varierte alternativer for AI-bilder.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Når du lager din egen bakgrunn, blir forespørselen sendt til Googles tjenere for å generere bilder og forbedre produktet, i henhold til <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles vilkår for bruk og personvernregler<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI kan ta feil, blant annet om personer, så dobbeltsjekk innholdet den genererer. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Finn ut mer<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
@@ -1574,6 +1593,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8312330582793120272">spill av medieinnhold</translation>
 <translation id="8318753676953949627">Ingen bilder</translation>
 <translation id="8320910311642849813">skog</translation>
+<translation id="8322464149031882595">Klikk for å fortsette</translation>
 <translation id="8329018942023753850">kalkulator-appen</translation>
 <translation id="8336739000755212683">Endre bildet for enhetskontoen</translation>
 <translation id="8339024191194156249">Finn ut mer om automatisk oppstart</translation>
@@ -1720,6 +1740,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8961025972867871808">pingviner</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
+<translation id="8972061581514441296">Klikk for å gå tilbake</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skann}=1{Skann side {NUMBER_OF_PAGES}}other{Skann side {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">landsby</translation>

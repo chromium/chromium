@@ -17,16 +17,6 @@
 #include "components/sync/service/sync_service.h"
 
 namespace browser_sync {
-namespace {
-
-bool IsSignedInExplicitly(PrefService* pref_service) {
-  CHECK(pref_service);
-
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         pref_service->GetBoolean(prefs::kExplicitBrowserSignin);
-}
-
-}  // namespace
 
 AutofillWalletDataTypeController::AutofillWalletDataTypeController(
     syncer::DataType type,
@@ -65,7 +55,8 @@ void AutofillWalletDataTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   if (configure_context.sync_mode == syncer::SyncMode::kTransportOnly) {
     on_load_models_with_transport_only_cb_.Run(
-        IsSignedInExplicitly(pref_service_), sync_service_->HasSyncConsent());
+        pref_service_->GetBoolean(prefs::kExplicitBrowserSignin),
+        sync_service_->HasSyncConsent());
   }
   DataTypeController::LoadModels(configure_context, model_load_callback);
 }

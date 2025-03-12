@@ -138,6 +138,10 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
 
+  // TODO(crbug.com/397767033): In CL #3, delete (SHARED_TAB_GROUP_ACCOUNT_DATA
+  // is now mapped to a selectable type.
+  expected_types.Remove(SHARED_TAB_GROUP_ACCOUNT_DATA);
+
 #if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -169,7 +173,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
                             kReplaceSyncPromosWithSignInPromos,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
                             kReadingListEnableSyncTransportModeUponSignIn,
-                            switches::kExplicitBrowserSigninUIOnDesktop,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
                             syncer::kMoveThemePrefsToSpecifics,
@@ -280,6 +283,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
 
   DataTypeSet expected_types = GetUserTypes();
   expected_types.RemoveAll({WEB_APKS});
+  // TODO(crbug.com/397767033): In CL #3, delete (SHARED_TAB_GROUP_ACCOUNT_DATA
+  // is now mapped to a selectable type.
+  expected_types.Remove(SHARED_TAB_GROUP_ACCOUNT_DATA);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animation de l'économiseur d'écran</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Choisissez un thème, puis sélectionnez les mots soulignés pour personnaliser vos images IA.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Sélectionnez "Trouver l'inspiration" pour obtenir des options d'images IA plus uniques et variées.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Lorsque vous créez avec l'IA, la requête est envoyée aux serveurs d'IA de Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Encore au début de son développement, l'IA générative est expérimentale, et sa disponibilité est actuellement limitée.</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1561927818299383735">couleur rétroéclairage</translation>
@@ -1553,6 +1562,16 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="819278132617411009">Gagner en productivité avec l'IA de Google</translation>
+<translation id="82003371436638355">Lorsque vous sélectionnez "Créer le vôtre", rédigez une requête personnalisée. Vous pouvez aussi sélectionner "Choisir un thème", puis sélectionner les mots soulignés pour personnaliser votre fond d'écran IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Sélectionnez "Trouver l'inspiration" pour obtenir des options d'images IA plus uniques et variées.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Lorsque vous créez votre propre fond d'écran, la requête est envoyée aux serveurs Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Conditions d'utilisation et aux Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. N'incluez aucun élément personnel, sensible ou confidentiel.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Vérifiez les réponses de l'IA générative, car elle peut faire des erreurs, y compris sur des personnes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />En savoir plus<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Avantages</translation>
@@ -1574,6 +1593,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8312330582793120272">lire du contenu multimédia</translation>
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8320910311642849813">forêt</translation>
+<translation id="8322464149031882595">Cliquer pour continuer</translation>
 <translation id="8329018942023753850">appli calculatrice</translation>
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8339024191194156249">En savoir plus sur le lancement automatique</translation>
@@ -1720,6 +1740,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8961025972867871808">manchots</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
+<translation id="8972061581514441296">Cliquer pour revenir en arrière</translation>
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanner}=1{Scanner la page {NUMBER_OF_PAGES}}one{Scanner la page {NUMBER_OF_PAGES}}other{Scanner les pages {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">village</translation>

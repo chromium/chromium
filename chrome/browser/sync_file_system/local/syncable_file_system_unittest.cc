@@ -97,11 +97,10 @@ class SyncableFileSystemTest : public testing::Test {
   }
 
   storage::QuotaErrorOr<storage::BucketLocator> GetOrCreateBucket(
-      const std::string& name,
-      StorageType type) {
+      const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    file_system_.quota_manager()->GetOrCreateBucketDeprecated(
-        {storage_key(), name}, type, future.GetCallback());
+    file_system_.quota_manager()->UpdateOrCreateBucket({storage_key(), name},
+                                                       future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
 
@@ -171,47 +170,43 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   FileSystemURL temp_url = URL(storage::kFileSystemTypeTemporary, "dir/foo");
   storage::AsyncFileTestHelper::CreateFile(file_system_context(), temp_url);
 
-  file_system_.quota_manager()->SetQuota(
-      storage_key(), file_system_.storage_type(), /*quota=*/12345 * 1024);
+  file_system_.quota_manager()->SetQuota(storage_key(), /*quota=*/12345 * 1024);
 
-  ASSERT_OK_AND_ASSIGN(
-      auto temp_bucket,
-      GetOrCreateBucket(storage::kDefaultBucketName, StorageType::kTemporary));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetOrCreateBucket(storage::kDefaultBucketName));
 
   // Changes in the syncable files should be reflected in the temporary bucket.
-  int64_t temp_usage = GetBucketUsage(temp_bucket);
-  EXPECT_GT(temp_usage, 0);
+  int64_t usage = GetBucketUsage(bucket);
+  EXPECT_GT(usage, 0);
 
   // Truncating existing syncable file should update usage for the temporary
   // bucket.
   const int64_t kFileSizeToExtend = 333;
   storage::AsyncFileTestHelper::TruncateFile(file_system_context(), sync_url,
                                              kFileSizeToExtend);
-  int64_t new_temp_usage = GetBucketUsage(temp_bucket);
-  EXPECT_EQ(kFileSizeToExtend, new_temp_usage - temp_usage);
+  int64_t new_usage = GetBucketUsage(bucket);
+  EXPECT_EQ(kFileSizeToExtend, new_usage - usage);
 
-  // Shrinking the quota to the current usage for temporary quota storage,
-  // should make extending the file further fail.
-  file_system_.quota_manager()->SetQuota(storage_key(), StorageType::kTemporary,
-                                         new_temp_usage);
+  // Shrinking the quota to the current usage, should make extending the file
+  // further fail.
+  file_system_.quota_manager()->SetQuota(storage_key(), new_usage);
 
   EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
             storage::AsyncFileTestHelper::TruncateFile(
                 file_system_context(), sync_url, kFileSizeToExtend + 1));
-  temp_usage = new_temp_usage;
-  new_temp_usage = GetBucketUsage(temp_bucket);
-  EXPECT_EQ(new_temp_usage, temp_usage);
+  usage = new_usage;
+  new_usage = GetBucketUsage(bucket);
+  EXPECT_EQ(new_usage, usage);
 
   // Must delete both file types to delete all temporary bucket storage.
   DeleteFileSystem(storage::kFileSystemTypeTemporary);
-  EXPECT_GT(GetBucketUsage(temp_bucket), 0);
+  EXPECT_GT(GetBucketUsage(bucket), 0);
   DeleteFileSystem(storage::kFileSystemTypeSyncable);
-  EXPECT_EQ(GetBucketUsage(temp_bucket), 0);
+  EXPECT_EQ(GetBucketUsage(bucket), 0);
 
   // Restore the system default quota.
   file_system_.quota_manager()->SetQuota(
-      storage_key(), file_system_.storage_type(),
-      QuotaManager::kSyncableStorageDefaultStorageKeyQuota);
+      storage_key(), QuotaManager::kSyncableStorageDefaultStorageKeyQuota);
 }
 
 TEST_F(SyncableFileSystemTest, BucketDeletion) {
@@ -229,15 +224,14 @@ TEST_F(SyncableFileSystemTest, BucketDeletion) {
   FileSystemURL temp_url = URL(storage::kFileSystemTypeTemporary, "dir/foo");
   storage::AsyncFileTestHelper::CreateFile(file_system_context(), temp_url);
 
-  ASSERT_OK_AND_ASSIGN(
-      auto temp_bucket,
-      GetOrCreateBucket(storage::kDefaultBucketName, StorageType::kTemporary));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       GetOrCreateBucket(storage::kDefaultBucketName));
 
-  EXPECT_GT(GetBucketUsage(temp_bucket), 0);
+  EXPECT_GT(GetBucketUsage(bucket), 0);
 
   // Deleting the temporary bucket is enough to delete files for both
   // kFileSystemTypeTemporary and kFileSystemTypeSyncable.
-  DeleteBucketData(temp_bucket);
+  DeleteBucketData(bucket);
   EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
       file_system_context(), temp_url,
       storage::AsyncFileTestHelper::kDontCheckSize));

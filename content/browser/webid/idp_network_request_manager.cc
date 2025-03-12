@@ -282,8 +282,10 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     RecordApprovedClientsSize(approved_clients->size());
   }
 
+  // TODO(crbug.com/382086282): Support usernames and phone number for
+  // display_name and display_identifier.
   return base::MakeRefCounted<IdentityRequestAccount>(
-      *id, *email, *name, given_name ? *given_name : "",
+      *id, *email, *name, *email, *name, given_name ? *given_name : "",
       picture ? GURL(*picture) : GURL(), std::move(account_hints),
       std::move(domain_hints), std::move(labels), approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);

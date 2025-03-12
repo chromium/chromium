@@ -875,10 +875,8 @@ LayerContextImpl::~LayerContextImpl() {
 }
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
-  // TODO(rockot): Manage these flags properly.
-  last_begin_frame_args_ = args;
-
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    // TODO(vmiura): Manage these flags properly.
     const bool has_damage = true;
     compositor_sink_->SetLayerContextWantsBeginFrames(false);
     if (!host_impl_->CanDraw()) {
@@ -1226,16 +1224,17 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     compositor_sink_->SetLayerContextWantsBeginFrames(true);
   } else {
     if (host_impl_->CanDraw()) {
-      host_impl_->WillBeginImplFrame(last_begin_frame_args_);
+      host_impl_->WillBeginImplFrame(update->begin_frame_args);
 
       cc::LayerTreeHostImpl::FrameData frame;
       const bool has_damage = true;
-      frame.begin_frame_ack = BeginFrameAck(last_begin_frame_args_, has_damage);
-      frame.origin_begin_main_frame_args = last_begin_frame_args_;
+      frame.begin_frame_ack =
+          BeginFrameAck(update->begin_frame_args, has_damage);
+      frame.origin_begin_main_frame_args = update->begin_frame_args;
       host_impl_->PrepareToDraw(&frame);
       host_impl_->DrawLayers(&frame);
       host_impl_->DidDrawAllLayers(frame);
-      host_impl_->DidFinishImplFrame(last_begin_frame_args_);
+      host_impl_->DidFinishImplFrame(update->begin_frame_args);
     }
   }
   return base::ok();

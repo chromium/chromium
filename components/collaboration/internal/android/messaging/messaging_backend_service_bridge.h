@@ -87,7 +87,7 @@ class MessagingBackendServiceBridge
 
   // MessagingBackendService::InstantMessageDelegate implementation.
   void DisplayInstantaneousMessage(
-      InstantMessage message,
+      const std::vector<InstantMessage>& messages,
       InstantMessageDelegate::SuccessCallback success_callback) override;
 
   raw_ptr<MessagingBackendService> service_;

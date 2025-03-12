@@ -207,7 +207,7 @@ class CompoundTabContainer : public TabContainer,
   const raw_ptr<TabHoverCardController, DanglingUntriaged>
       hover_card_controller_;
 
-  // The View that is to be scrolled by |tab_scrolling_animation_|. May be
+  // The View that is to be scrolled by `tab_scrolling_animation_`. May be
   // nullptr in tests.
   const raw_ptr<views::View> scroll_contents_view_;
 

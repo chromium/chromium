@@ -45,7 +45,7 @@ class AutofillSaveCardDelegate {
   // finished.
   virtual void OnUiAccepted(
       base::OnceClosure on_save_card_completed = base::NullCallback());
-  void OnUiUpdatedAndAccepted(
+  virtual void OnUiUpdatedAndAccepted(
       payments::PaymentsAutofillClient::UserProvidedCardDetails
           user_provided_details);
   virtual void OnUiCanceled();

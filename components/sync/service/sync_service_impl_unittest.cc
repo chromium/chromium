@@ -829,7 +829,6 @@ TEST_F(
   EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
       UserSelectableType::kAutofill));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(
     SyncServiceImplTest,
@@ -838,9 +837,6 @@ TEST_F(
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {syncer::kReplaceSyncPromosWithSignInPromos,
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-       switches::kExplicitBrowserSigninUIOnDesktop,
-#endif
        syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
       /*disabled_features=*/{});
 
@@ -886,6 +882,7 @@ TEST_F(
   EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
       UserSelectableType::kAutofill));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncServiceImplTest, GetSyncTokenStatus) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();

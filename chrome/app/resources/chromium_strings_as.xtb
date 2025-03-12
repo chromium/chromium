@@ -130,11 +130,9 @@
 <translation id="2738871930057338499">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। HTTP 403 নিষিদ্ধ। অনুগ্ৰহ কৰি আপোনাৰ প্ৰ’ক্সি কনফিগাৰেশ্বন পৰীক্ষা কৰক।</translation>
 <translation id="2753623023919742414">সন্ধান কৰিবলৈ ক্লিক কৰক</translation>
 <translation id="2770231113462710648">ইয়ালৈ ডিফ’ল্ট ব্ৰাউজাৰ সলনি কৰক:</translation>
-<translation id="277338894894732084">পাছত, Chromiumএ আপোনাক স্বয়ংক্ৰিয়ভাৱে ফৰ্ম পূৰ কৰিবলৈ আপুনি ছেভ কৰি থোৱা তথ্য ব্যৱহাৰ কৰিব বিচাৰে নেকি সুধিব</translation>
 <translation id="2785438272836277133">এই এক্সটেনশ্বনটোত মালৱেৰ আছে আৰু ই অসুৰক্ষিত। এইটো Chromiumৰ পৰা আঁতৰাই পেলাওক যাতে ই আপুনি চোৱা ছাইটসমূহত আপোনাৰ ব্যক্তিগত তথ্যকে ধৰি আপোনাৰ ডেটা আৰু চাব আৰু সলনি কৰিব নোৱাৰে।</translation>
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
 <translation id="2803971713792056305">আপোনাৰ Chromium</translation>
-<translation id="2806241689335397269">Chromiumএ আপোনাক নিজৰ জন্মদিন, বয়স আৰু পাছপ’ৰ্ট নম্বৰৰ দৰে ফৰ্মৰ তথ্য ছেভ কৰিব বিচাৰে নেকি সুধিব</translation>
 <translation id="2841525013647267359">এই ভাষাটোৰ পৰা অনুবাদ কৰক</translation>
 <translation id="2846251086934905009">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে: ইনষ্টলাৰটোৱে সম্পূৰ্ণ কৰিব নোৱাৰিলে। ইনষ্টলেশ্বনটো বন্ধ কৰি দিয়া হৈছে।</translation>
 <translation id="2847479871509788944">Chromiumৰপৰা আঁতৰাওক...</translation>
@@ -180,7 +178,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">পূৰ্বে থকা Chromium প্ৰ'ফাইলটোলৈ যাব নেকি?</translation>
 <translation id="3412460710772753638">এই ডিভাইচটোত Password Managerত</translation>
-<translation id="3451656833730006755">আপোনাৰ আটাইবোৰ কম্পিউটাৰত আপোনাৰ এক্সটেনশ্বন আৰু অধিক পাওক, Chromiumত ছাইন ইন কৰক</translation>
 <translation id="347328004046849135">আপুনি কোনো হেক কৰা পাছৱৰ্ডৰ জৰিয়তে ছাইন ইন কৰিলে Chromiumএ আপোনাক জাননী দিব</translation>
 <translation id="3474745554856756813">ইয়ে এই ডিভাইচটোৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচিব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> টিপি Chromiumৰ প্ৰ’ফাইলসমূহৰ মাজত সালসলনি কৰিব পাৰি</translation>
@@ -463,7 +460,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="734373864078049451">আপোনাৰ ৱেব, বুকমার্ক আৰু আন Chromium বস্তুবোৰ ইয়াত থাকে।</translation>
 <translation id="7349591376906416160">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে Chromiumক <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ <ph name="ALTERNATIVE_BROWSER_NAME" /> খুলিবলৈ কনফিগাৰ কৰিছে।</translation>
 <translation id="7384121030444253939">এই এক্সটেনশ্বনটো আৰু সমৰ্থিত নহয়। Chromiumএ তাৰ পৰিৱৰ্তে আপুনি এইটো আঁতৰোৱাটো চুপাৰিছ কৰে।</translation>
-<translation id="7389750180956889333">Chromiumএ ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে। <ph name="BEGIN_LINK" />Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা<ph name="END_LINK" />ৰ বিষয়ে অধিক জানক</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">পাঠৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="7451052299415159299">এই ছাইটটোৰ বাবে আপোনাৰ কেমেৰালৈ এক্সেছ পাবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>

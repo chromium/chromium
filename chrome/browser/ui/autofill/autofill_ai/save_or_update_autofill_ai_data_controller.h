@@ -42,7 +42,6 @@ class SaveOrUpdateAutofillAiDataController {
     kNewEntityAttributeAdded,
     kNewEntityAttributeUpdated,
     kNewEntityAttributeUnchanged,
-    kOldEntityAttributeUpdated
   };
 
   // Specifies for each attribute of a new instance whether the attribute is

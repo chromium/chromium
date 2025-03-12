@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Data penjelajahan yang ada akan ditautkan ke <ph name="USER_EMAIL" />. Data ini mungkin dapat dilihat oleh organisasi Anda.</translation>
 <translation id="1713777106376424209">Dikirim oleh</translation>
 <translation id="1715515772563243997">Jika Anda memercayai <ph name="SITE" />, Anda dapat menggunakan sandi tersimpan untuk login.</translation>
+<translation id="1718835860248848330">Sejam terakhir</translation>
 <translation id="1728549374069268714">Tempel lalu buka</translation>
 <translation id="1732468323901456775">Aktifkan notifikasi untuk <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Ketuk dua kali untuk memasang.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Deteksi alamat dinonaktifkan. Aktifkan kembali di Setelan.</translation>
 <translation id="1904580727789512086">URL yang Anda buka disimpan ke Akun Google Anda</translation>
 <translation id="1911619930368729126">Upload ke Google Drive</translation>
-<translation id="1923342640370224680">Sejam Terakhir</translation>
 <translation id="1941314575388338491">Ketuk dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Setelan</translation>
 <translation id="1952728750904661634">Login dengan akun terkelola</translation>
@@ -1206,6 +1206,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6187302354554850004">Sinkron terakhir: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Belum dibaca</translation>
+<translation id="6192388920090306326">Perjalanan ke Tokyo</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196207969502475924">Penelusuran Suara</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
@@ -1370,6 +1371,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
 <translation id="6790502149545262384">Sebentar lagi, Anda akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="6794476726485507147">Pilih tanggal dan waktu untuk menerima notifikasi pengingat guna membuka kembali halaman ini</translation>
+<translation id="6807287147325542056">Sandi di aplikasi lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{{count} bookmark disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="6830728435402077660">Tidak aman</translation>
@@ -1934,6 +1936,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
+<translation id="9124978074365039456">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat menggunakan kamera dan galeri foto</translation>
 <translation id="9130317582644834675">Sembunyikan Zoom Teks</translation>
 <translation id="913036870884277353">Buka link dengan mudah di aplikasi lain.</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>

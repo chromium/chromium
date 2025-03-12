@@ -130,11 +130,9 @@
 <translation id="2738871930057338499">Не може да се поврзе на интернет. HTTP-грешка 403: забранет пристап. Проверете ја вашата конфигурација на прокси.</translation>
 <translation id="2753623023919742414">Кликнете за да пребарате</translation>
 <translation id="2770231113462710648">Променете го стандардниот прелистувач во:</translation>
-<translation id="277338894894732084">Подоцна, Chromium ќе прашува дали сакате да ги користите зачуваните податоци за да пополнувате формулари автоматски</translation>
 <translation id="2785438272836277133">Екстензијава содржи злонамерен софтвер, па не е безбедна. Отстранете ја од Chromium за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
 <translation id="2799223571221894425">Рестартирај</translation>
 <translation id="2803971713792056305">Вашиот Chromium</translation>
-<translation id="2806241689335397269">Chromium ќе прашува дали сакате да ги зачувате податоците од формуларот како датумот на раѓање, возраста и бројот на пасошот</translation>
 <translation id="2841525013647267359">Преведи од</translation>
 <translation id="2846251086934905009">Грешка при инсталирање: инсталаторот не заврши. Инсталацијата е прекината.</translation>
 <translation id="2847479871509788944">Отстрани од Chromium</translation>
@@ -180,7 +178,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Сакате да се префрлите на постојниот профил на Chromium?</translation>
 <translation id="3412460710772753638">Во Password Manager на уредов</translation>
-<translation id="3451656833730006755">За да ги добиете екстензиите и друго на сите ваши компјутери, најавете се на Chromium</translation>
 <translation id="347328004046849135">Chromium ќе ве извести ако се најавите со компромитирана лозинка</translation>
 <translation id="3474745554856756813">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Со <ph name="SHORTCUT" /> се менуваат профили на Chromium</translation>
@@ -463,7 +460,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="734373864078049451">Вашите веб, обележувачи и други работи на Chromium живеат тука.</translation>
 <translation id="7349591376906416160">Системскиот администратор го конфигурирал Chromium да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Екстензијава веќе не е поддржана. Затоа, Chromium препорачува да ја отстраните.</translation>
-<translation id="7389750180956889333">Chromium подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас. Дознајте повеќе за <ph name="BEGIN_LINK" />Автоматското пополнување на Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
 <translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>

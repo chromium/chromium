@@ -44,6 +44,11 @@ enum PrivateNetworkRequestPolicy {
   // the preflight request fails.
   kPreflightBlock,
 
+
+  // Display a warning in devtools when a request will require user permission
+  // in the future when LNA launches.
+  kPermissionWarn,
+
   // Block requests unless the user explicitly grants permission for the
   // request to proceed.
   kPermissionBlock,

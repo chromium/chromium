@@ -128,11 +128,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
-<translation id="277338894894732084">Plus tard, Chromium vous demandera si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
 <translation id="2785438272836277133">Cette extension contient un logiciel malveillant et n'est pas sécurisée. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="2799223571221894425">Relancer</translation>
 <translation id="2803971713792056305">Votre Chromium</translation>
-<translation id="2806241689335397269">Chromium vous demandera si vous souhaitez enregistrer les informations du formulaire, comme votre date de naissance, votre âge et votre numéro de passeport</translation>
 <translation id="2841525013647267359">Traduire depuis</translation>
 <translation id="2846251086934905009">Erreur d'installation : le processus du programme d'installation ne s'est pas terminé. L'installation a été annulée.</translation>
 <translation id="2847479871509788944">Supprimer de Chromium</translation>
@@ -178,7 +176,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Passer au profil Chromium existant ?</translation>
 <translation id="3412460710772753638">Dans le Gestionnaire de mots de passe sur cet appareil</translation>
-<translation id="3451656833730006755">Pour accéder à vos extensions et plus encore sur tous vos ordinateurs, connectez-vous à Chromium</translation>
 <translation id="347328004046849135">Chromium vous avertira si vous vous connectez avec un mot de passe compromis</translation>
 <translation id="3474745554856756813">Cette action aura pour effet de supprimer <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permet de passer d'un profil Chromium à un autre</translation>
@@ -461,7 +458,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="734373864078049451">Votre contenu Web, vos favoris et toutes vos données Chromium sont conservés ici.</translation>
 <translation id="7349591376906416160">Votre administrateur système a configuré Chromium de sorte que <ph name="ALTERNATIVE_BROWSER_NAME" /> s'ouvre pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Cette extension n'est plus prise en charge. Chromium vous recommande de la supprimer.</translation>
-<translation id="7389750180956889333">Chromium comprend mieux les formulaires et peut les compléter automatiquement plus rapidement pour vous. En savoir plus sur la <ph name="BEGIN_LINK" />saisie automatique de Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>

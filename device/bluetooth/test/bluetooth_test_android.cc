@@ -137,14 +137,18 @@ BluetoothDevice* BluetoothTestAndroid::SimulateLowEnergyDevice(
 }
 
 BluetoothDevice* BluetoothTestAndroid::SimulateClassicDevice() {
-  TestBluetoothAdapterObserver observer(adapter_);
-  SimulatePairedClassicDevice(0);
-  return observer.last_device();
+  std::string address = SimulatePairedClassicDevice(0);
+  return adapter_->GetDevice(address);
 }
 
-void BluetoothTestAndroid::SimulatePairedClassicDevice(int device_ordinal) {
-  Java_FakeBluetoothAdapter_simulatePairedClassicDevice(
+std::string BluetoothTestAndroid::SimulatePairedClassicDevice(
+    int device_ordinal) {
+  std::string address = Java_FakeBluetoothAdapter_simulatePairedClassicDevice(
       AttachCurrentThread(), j_fake_bluetooth_adapter_, device_ordinal);
+  // BluetoothAdapterAndroid only pulls bonded devices from the system when
+  // GetDevices() is called.
+  adapter_->GetDevices();
+  return address;
 }
 
 void BluetoothTestAndroid::RememberDeviceForSubsequentAction(

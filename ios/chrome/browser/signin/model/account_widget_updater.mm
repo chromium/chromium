@@ -12,6 +12,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+#import "base/check_is_test.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -123,6 +124,13 @@ void AccountWidgetUpdater::UpdateLoadedAccounts() {
 void AccountWidgetUpdater::HandleMigrationIfNeeded() {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
+
+  if (!local_state) {
+    // Skip if there is no local_state. This can happen only in tests.
+    CHECK_IS_TEST();
+    return;
+  }
+
   bool migration_performed =
       local_state->GetBoolean(prefs::kMigrateWidgetsPrefs);
   // Don't migrate prefs again if migration was already performed.

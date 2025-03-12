@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Eksisterende nettlesingsdata blir knyttet til <ph name="USER_EMAIL" />. Disse dataene kan være synlige for organisasjonen din.</translation>
 <translation id="1713777106376424209">Levert av</translation>
 <translation id="1715515772563243997">Hvis du stoler på <ph name="SITE" />, kan du logge på med et lagret passord.</translation>
+<translation id="1718835860248848330">Siste time</translation>
 <translation id="1728549374069268714">Lim inn og gå til</translation>
 <translation id="1732468323901456775">Slå på varsler for <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adressegjenkjenning er av. Slå det på igjen i innstillingene.</translation>
 <translation id="1904580727789512086">Nettadressene du besøker, lagres i Google-kontoen din</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
-<translation id="1923342640370224680">Den siste timen</translation>
 <translation id="1941314575388338491">Dobbelttrykk for å kopiere.</translation>
 <translation id="1943478190258551035">Meny → Innstillinger</translation>
 <translation id="1952728750904661634">Logg på med administrert konto</translation>
@@ -1206,6 +1206,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Laget <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulest</translation>
+<translation id="6192388920090306326">Tur til Tokyo</translation>
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6196207969502475924">Google Talesøk</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
@@ -1370,6 +1371,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6794476726485507147">Velg dato og klokkeslett for å motta et påminnelsesvarsel om å gå tilbake til denne siden</translation>
+<translation id="6807287147325542056">Passord i andre apper</translation>
 <translation id="681368974849482173">Elementet er opprettet</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmerket er lagret i Google-kontoen din ({email})}other{{count} bokmerker er lagret i Google-kontoen din ({email})}}</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -1934,6 +1936,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9106655997975673326">Fra «<ph name="SOURCE_DEVICE" />»</translation>
 <translation id="9107664647686727385">Sjekk om du har passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="9124387962554796433">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>
+<translation id="9124978074365039456">Kjøp, oversett og identifiser det du ser, ved bruk av kameraet og bildegalleriet</translation>
 <translation id="9130317582644834675">Skjul Zoom inn på tekst</translation>
 <translation id="913036870884277353">Åpne linker i andre apper enkelt.</translation>
 <translation id="9137013805542155359">Vis original</translation>

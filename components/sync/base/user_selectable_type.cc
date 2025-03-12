@@ -40,7 +40,10 @@ constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(54 == syncer::GetNumDataTypes(),
+  // TODO(crbug.com/397767033): In CL #3, map SHARED_TAB_GROUP_ACCOUNT_DATA to
+  // an existing selectable type or to a new one. The first option should be
+  // trivial, the second requires touching UI code across platforms.
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "

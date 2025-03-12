@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -69,16 +71,18 @@ public final class UserDataHost {
      * Associates the specified object with the specified key.
      * @param key Type token with which the specified object is to be associated.
      * @param object Object to be associated with the specified key.
-     * @return the object just stored, or {@code null} if storing the object failed.
+     * @return the object just stored.
      */
-    public <T extends UserData> @Nullable T setUserData(Class<T> key, T object) {
+    public <T extends UserData> T setUserData(Class<T> key, T object) {
         checkThreadAndState();
         if (key == null || object == null) {
             throw new IllegalArgumentException();
         }
 
         mUserDataMap.put(key, object);
-        return getUserData(key);
+
+        // Since we just .put the object in the HashMap, a subsequent .get will always succeed.
+        return assumeNonNull(getUserData(key));
     }
 
     /**

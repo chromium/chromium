@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -206,7 +205,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
     // it's possible (and difficult) to unfocus the omnibox and initiate a
     // -shiftTilesDownForOmniboxDefocus before the animation here completes.
     if (IsSplitToolbarMode(self)) {
-      [self.dispatcher onFakeboxAnimationComplete];
+      [self.fakeboxFocuserHandler onFakeboxAnimationComplete];
     } else {
       [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
     }
@@ -547,7 +546,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
   [self.customizationDelegate dismissCustomizationMenu];
-  [self.dispatcher openLensInputSelection:command];
+  [self.lensHandler openLensInputSelection:command];
 }
 
 - (void)loadVoiceSearch:(id)sender {
@@ -558,7 +557,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
   [self.customizationDelegate dismissCustomizationMenu];
-  [self.dispatcher startVoiceSearch];
+  [self.applicationHandler startVoiceSearch];
 }
 
 - (void)preloadVoiceSearch:(id)sender {
@@ -566,7 +565,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [sender removeTarget:self
                 action:@selector(preloadVoiceSearch:)
       forControlEvents:UIControlEventTouchDown];
-  [self.dispatcher preloadVoiceSearch];
+  [self.browserCoordinatorHandler preloadVoiceSearch];
 }
 
 - (void)fakeTapViewTapped {

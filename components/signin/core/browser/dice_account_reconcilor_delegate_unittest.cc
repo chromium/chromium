@@ -37,14 +37,10 @@ gaia::ListedAccount GetListedAccountFromAccountInfo(
   return gaia_account;
 }
 
-class DiceAccountReconcilorDelegateTest
-    : public base::test::WithFeatureOverride,
-      public testing::Test {
+class DiceAccountReconcilorDelegateTest : public testing::Test {
  public:
   DiceAccountReconcilorDelegateTest()
-      : base::test::WithFeatureOverride(
-            switches::kExplicitBrowserSigninUIOnDesktop),
-        identity_test_environment_(nullptr, &pref_service_, nullptr),
+      : identity_test_environment_(nullptr, &pref_service_, nullptr),
         delegate_(identity_manager(),
                   identity_test_environment_.signin_client()) {}
 
@@ -52,10 +48,6 @@ class DiceAccountReconcilorDelegateTest
 
   IdentityTestEnvironment& identity_test_environment() {
     return identity_test_environment_;
-  }
-
-  bool IsExplicitBrowserSigninEnabled() const {
-    return IsParamFeatureEnabled();
   }
 
   IdentityManager* identity_manager() {
@@ -72,33 +64,24 @@ class DiceAccountReconcilorDelegateTest
   DiceAccountReconcilorDelegate delegate_;
 };
 
-TEST_P(DiceAccountReconcilorDelegateTest, GetConsentLevelForPrimaryAccount) {
-  ConsentLevel consent_level = IsExplicitBrowserSigninEnabled()
-                                   ? ConsentLevel::kSignin
-                                   : ConsentLevel::kSync;
-  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(), consent_level);
+TEST_F(DiceAccountReconcilorDelegateTest, GetConsentLevelForPrimaryAccount) {
+  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(),
+            ConsentLevel::kSignin);
 
-  if (IsExplicitBrowserSigninEnabled()) {
-    // Sign in.
-    identity_test_environment().MakePrimaryAccountAvailable(
-        "test@gmail.com", ConsentLevel::kSignin);
-    // Simulate Dice User migrating.
-    pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, false);
-
-    // The behavior for Dice users migrating should be the same as if the
-    // feature is disabled.
-    EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(),
-              ConsentLevel::kSync);
-  }
+  // Sign in.
+  identity_test_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", ConsentLevel::kSignin);
+  // Simulate Dice User migrating.
+  pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, false);
+  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(), ConsentLevel::kSync);
 }
 
-TEST_P(DiceAccountReconcilorDelegateTest,
+TEST_F(DiceAccountReconcilorDelegateTest,
        IsCookieBasedConsistencyModePreChromeSignIn) {
-  EXPECT_EQ(delegate().IsCookieBasedConsistencyMode(),
-            IsExplicitBrowserSigninEnabled());
+  EXPECT_TRUE(delegate().IsCookieBasedConsistencyMode());
 }
 
-TEST_P(DiceAccountReconcilorDelegateTest,
+TEST_F(DiceAccountReconcilorDelegateTest,
        IsCookieBasedConsistencyModePostChromeSignIn) {
   identity_test_environment().MakePrimaryAccountAvailable(
       kPrimaryAccountEmail, ConsentLevel::kSignin);
@@ -106,11 +89,8 @@ TEST_P(DiceAccountReconcilorDelegateTest,
   EXPECT_FALSE(delegate().IsCookieBasedConsistencyMode());
 }
 
-TEST_P(DiceAccountReconcilorDelegateTest,
+TEST_F(DiceAccountReconcilorDelegateTest,
        RevokeSecondaryTokensForReconcileIfNeededPreChromeSignIn) {
-  if (!IsExplicitBrowserSigninEnabled()) {
-    GTEST_SKIP();
-  }
   AccountInfo valid_account =
       identity_test_environment().MakeAccountAvailable("account@gmail.com");
 
@@ -154,14 +134,13 @@ TEST_P(DiceAccountReconcilorDelegateTest,
   EXPECT_THAT(chrome_accounts[0], ::testing::Eq(valid_account));
 }
 
-TEST_P(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
+TEST_F(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
   AccountInfo valid_account =
       identity_test_environment().MakeAccountAvailable("account@gmail.com");
 
-  if (IsExplicitBrowserSigninEnabled()) {
-    identity_test_environment().SetPrimaryAccount(valid_account.email,
-                                                  ConsentLevel::kSignin);
-  }
+  identity_test_environment().SetPrimaryAccount(valid_account.email,
+                                                ConsentLevel::kSignin);
+
   EXPECT_FALSE(delegate().IsCookieBasedConsistencyMode());
   // Accounts with invalid refresh token should be revoked.
   AccountInfo account_with_invalid_refresh_token =
@@ -183,8 +162,6 @@ TEST_P(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
       identity_manager()->GetAccountsWithRefreshTokens(),
       ::testing::UnorderedElementsAre(valid_account, no_cookie_account));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DiceAccountReconcilorDelegateTest);
 
 }  // namespace
 }  // namespace signin

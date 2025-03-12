@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Існуючыя даныя пра работу ў браўзеры будуць прывязаны да <ph name="USER_EMAIL" />. Гэтыя даныя можа праглядаць ваша арганізацыя.</translation>
 <translation id="1713777106376424209">Служба дастаўкі</translation>
 <translation id="1715515772563243997">Калі вы давяраеце сайту <ph name="SITE" />, можаце выкарыстаць для ўваходу захаваны пароль.</translation>
+<translation id="1718835860248848330">За апошнюю гадзіну</translation>
 <translation id="1728549374069268714">Уставіць і перайсці</translation>
 <translation id="1732468323901456775">Уключыць апавяшчэнні: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Каб усталяваць, націсніце двойчы.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Вызначэнне адрасоў выключана. Уключыць гэту функцыю зноў можна ў наладах.</translation>
 <translation id="1904580727789512086">URL-адрасы, якія вы наведвалі, захоўваюцца ва Уліковы запіс Google</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
-<translation id="1923342640370224680">За апошнюю гадзіну</translation>
 <translation id="1941314575388338491">Каб скапіраваць, націсніце двойчы.</translation>
 <translation id="1943478190258551035">Меню → Налады</translation>
 <translation id="1952728750904661634">Увайсці праз уліковы запіс пад кіраваннем</translation>
@@ -1206,6 +1206,7 @@
 <translation id="6187302354554850004">Апошняя сінхранізацыя: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Дата стварэння: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрачытанае</translation>
+<translation id="6192388920090306326">Паездка ў Токіа</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6196207969502475924">Галасавы пошук</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
@@ -1370,6 +1371,7 @@
 <translation id="6779455296366983087">Даныя пра работу ў браўзеры будуць выдалены</translation>
 <translation id="6790502149545262384">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6794476726485507147">Выберыце дату і час для атрымання апавяшчэння з напамінам паўторна наведаць гэту старонку</translation>
+<translation id="6807287147325542056">Паролі ў іншых праграмах</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="6830728435402077660">Не абаронена</translation>
@@ -1934,6 +1936,7 @@
 <translation id="9106655997975673326">З прылады "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Праверка наяўнасці раскрытых пароляў</translation>
 <translation id="9124387962554796433">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google.</translation>
+<translation id="9124978074365039456">Знаходзьце тавары, перакладайце тэксты і распазнавайце навакольныя аб’екты з дапамогай камеры і фотагалерэі</translation>
 <translation id="9130317582644834675">Схаваць пункт "Змяніць памер тэксту"</translation>
 <translation id="913036870884277353">З лёгкасцю адкрывайце спасылкі ў іншых праграмах.</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>

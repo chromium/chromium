@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ઇમોજી પિકર ખોલો</translation>
 <translation id="2088116547584365419">ગેમ</translation>
-<translation id="2092517835716911174">તમે વાંચવામાં મારી સહાય કરો અને લખવામાં મારી સહાય કરો સુવિધાઓનો ઉપયોગ કરી શકો એ માટે તમારી ઉંમર ઓછામાં ઓછી 18 વર્ષની હોવી આવશ્યક છે.</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
 <translation id="2107581415810719320">અન્ય બટન <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">તમારો USB-C કેબલ Thunderboltને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">Dev ચૅનલ</translation>
 <translation id="4513044611477939680">ક્વિક શેર</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
+<translation id="4518096944902121253">આ ભાષા માટે વધુ કોઈ ક્રિયા ઉપલબ્ધ નથી</translation>
 <translation id="4518404433291145981">તમારી Chromebook અનલૉક કરવા માટે, પહેલાં તમારો ફોન અનલૉક કરો</translation>
 <translation id="4525887279712865285">ક્વિક શેરના સેટિંગ બતાવો</translation>
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
@@ -1885,6 +1885,7 @@
 <translation id="7189412385142492784">શુક્રનો ગ્રહ પૃથ્વીથી કેટલી દૂરીએ?</translation>
 <translation id="7198435252016571249">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="7219573373513695352">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
+<translation id="7228968829656641943">મારી સ્ક્રીન પર શોધવા માટે વિસ્તાર પસંદ કરો. કીબોર્ડ નૅવિગેશન માટે tab પછી space દબાવો.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> મેમરી | કુલ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">માઉસના બન્ને બટન</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% બૅટરી બાકી છે. તમારા ડિવાઇસને પાવર સૉર્સ સાથે કનેક્ટ કરો.</translation>

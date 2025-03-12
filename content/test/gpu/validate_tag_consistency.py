@@ -77,6 +77,7 @@ TAG_SPECIALIZATIONS = {
             'amd-0x67ef',
             'amd-0x6821',
             'amd-0x7340',
+            'amd-0x7480',
         ],
         'apple': [
             'apple-apple-m1',

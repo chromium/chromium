@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Olemasolevad sirvimisandmed lingitakse e-posti aadressiga <ph name="USER_EMAIL" />. Teie organisatsioon võib neid andmeid vaadata.</translation>
 <translation id="1713777106376424209">Tarnija:</translation>
 <translation id="1715515772563243997">Kui usaldate saiti <ph name="SITE" />, saate sisselogimiseks kasutada salvestatud parooli.</translation>
+<translation id="1718835860248848330">Viimase tunni jooksul</translation>
 <translation id="1728549374069268714">Kleebi ja mine</translation>
 <translation id="1732468323901456775">Lülita funktsiooni <ph name="MODULE_NAME" /> märguanded sisse</translation>
 <translation id="1740468249224277719">Installimiseks topeltpuudutage.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Aadressi tuvastamine on välja lülitatud. Lülitage see uuesti sisse seadetes.</translation>
 <translation id="1904580727789512086">Teie külastatavad URL-id salvestatakse teie Google'i kontole</translation>
 <translation id="1911619930368729126">Laadi üles Google Drive'i</translation>
-<translation id="1923342640370224680">Viimane tund</translation>
 <translation id="1941314575388338491">Kopeerimiseks topeltpuudutage.</translation>
 <translation id="1943478190258551035">Menüü → Seaded</translation>
 <translation id="1952728750904661634">Sisselogimine hallatud kontoga</translation>

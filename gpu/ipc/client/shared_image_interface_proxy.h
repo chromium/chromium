@@ -108,7 +108,6 @@ class SharedImageInterfaceProxy {
   SyncToken GenUnverifiedSyncToken();
   void VerifySyncToken(SyncToken& sync_token);
   void WaitSyncToken(const SyncToken& sync_token);
-  void Flush();
 
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,

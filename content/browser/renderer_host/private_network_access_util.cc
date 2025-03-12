@@ -84,7 +84,9 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
     //
     // TODO(crbug.com/395895368): figure out how this interacts with https
     // upgrades.
-    return Policy::kBlock;
+    return network::features::kLocalNetworkAccessChecksWarn.Get()
+               ? Policy::kPermissionWarn
+               : Policy::kBlock;
   }
 
   switch (ip_address_space) {
@@ -126,7 +128,9 @@ Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
           network::features::kLocalNetworkAccessChecks)) {
     // See:
     // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#permission-prompts
-    return Policy::kPermissionBlock;
+    return network::features::kLocalNetworkAccessChecksWarn.Get()
+               ? Policy::kPermissionWarn
+               : Policy::kPermissionBlock;
   }
 
   // The goal is to eliminate occurrences of this case as much as possible,

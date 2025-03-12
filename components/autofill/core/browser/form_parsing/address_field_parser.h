@@ -138,6 +138,13 @@ class AddressFieldParser : public FormFieldParser {
   ParseNameLabelResult ParseNameAndLabelForLandmark(ParsingContext& context,
                                                     AutofillScanner* scanner);
 
+  // Used in `ParseAddressField()` to parse `ADDRESS_HOME_STREET_LOCATION`
+  // field. Currently only supported in India. Uses India specific regex
+  // patterns.
+  ParseNameLabelResult ParseNameAndLabelForStreetLocation(
+      ParsingContext& context,
+      AutofillScanner* scanner);
+
   ParseNameLabelResult ParseNameAndLabelForBetweenStreets(
       ParsingContext& context,
       AutofillScanner* scanner);

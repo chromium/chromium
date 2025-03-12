@@ -217,6 +217,8 @@ class FederatedAuthRequestImplMultipleFramesTest
     // in every test.
     kAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
         kAccountId,                  // id
+        "ken@idp.example",           // display_identifier
+        "Ken R. Example",            // display_name
         "ken@idp.example",           // email
         "Ken R. Example",            // name
         "Ken",                       // given_name

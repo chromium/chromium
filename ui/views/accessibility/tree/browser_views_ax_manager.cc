@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -36,14 +35,43 @@
 
 namespace views {
 
-BrowserViewsAXManager* BrowserViewsAXManager::GetInstance() {
+BrowserViewsAXManager* g_instance = nullptr;
+
+BrowserViewsAXManager::LifetimeHandle::LifetimeHandle(
+    BrowserViewsAXManagerPassKey) {
+  instance_ = std::make_unique<BrowserViewsAXManager>(LifetimeHandlePassKey());
+}
+
+BrowserViewsAXManager::LifetimeHandle::~LifetimeHandle() = default;
+
+BrowserViewsAXManager::BrowserViewsAXManager(LifetimeHandlePassKey) {
   CHECK(::features::IsAccessibilityTreeForViewsEnabled());
-#if BUILDFLAG(IS_CHROMEOS)
-  return nullptr;
-#else
-  static base::NoDestructor<BrowserViewsAXManager> instance;
-  return instance.get();
-#endif
+  CHECK(!g_instance);
+  g_instance = this;
+  ui::AXPlatform::GetInstance().AddModeObserver(this);
+
+  if (ui::AXPlatform::GetInstance().GetMode() == ui::AXMode::kNativeAPIs) {
+    Enable();
+  }
+}
+
+BrowserViewsAXManager::~BrowserViewsAXManager() {
+  DCHECK_EQ(g_instance, this);
+  ui::AXPlatform::GetInstance().RemoveModeObserver(this);
+  g_instance = nullptr;
+}
+
+std::unique_ptr<BrowserViewsAXManager::LifetimeHandle>
+BrowserViewsAXManager::Create() {
+  CHECK(::features::IsAccessibilityTreeForViewsEnabled());
+  CHECK(!g_instance);
+  return std::make_unique<LifetimeHandle>(
+      LifetimeHandle::BrowserViewsAXManagerPassKey());
+}
+
+BrowserViewsAXManager* BrowserViewsAXManager::GetInstance() {
+  CHECK(g_instance);
+  return g_instance;
 }
 
 ui::AXPlatformNodeId BrowserViewsAXManager::GetOrCreateAXNodeUniqueId(
@@ -162,17 +190,6 @@ void BrowserViewsAXManager::OnAXModeAdded(ui::AXMode mode) {
     Enable();
   }
 }
-
-void BrowserViewsAXManager::ShutdownForTesting() {
-  ui::AXPlatform::GetInstance().RemoveModeObserver(this);
-}
-
-BrowserViewsAXManager::BrowserViewsAXManager() {
-  CHECK(::features::IsAccessibilityTreeForViewsEnabled());
-  ui::AXPlatform::GetInstance().AddModeObserver(this);
-}
-
-BrowserViewsAXManager::~BrowserViewsAXManager() = default;
 
 void BrowserViewsAXManager::Reset(bool reset_serializer) {
   ViewsAXManager::Reset(reset_serializer);

@@ -53,9 +53,8 @@ TEST_F(QuickInsertMainContainerViewTest, BackgroundColor) {
   auto* container =
       widget->SetContentsView(std::make_unique<QuickInsertMainContainerView>());
 
-  EXPECT_EQ(container->background()->get_color(),
-            container->GetColorProvider()->GetColor(
-                cros_tokens::kCrosSysSystemBaseElevatedOpaque));
+  EXPECT_EQ(container->background()->color(),
+            cros_tokens::kCrosSysSystemBaseElevatedOpaque);
 }
 
 TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsBelowSearchField) {

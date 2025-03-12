@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "snapshot/crashpad_info_client_options.h"
+#include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 #include "snapshot/module_snapshot.h"
 #include "util/ios/ios_intermediate_dump_map.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -75,6 +76,9 @@ class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
   std::set<CheckedRange<uint64_t>> ExtraMemoryRanges() const override;
   std::vector<const UserMinidumpStream*> CustomMinidumpStreams() const override;
 
+  // Used by ProcessSnapshot
+  std::vector<const MemorySnapshot*> ExtraMemory() const;
+
  private:
   std::string name_;
   uint64_t address_;
@@ -87,7 +91,8 @@ class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
   std::vector<std::string> annotations_vector_;
   std::map<std::string, std::string> annotations_simple_map_;
   std::vector<AnnotationSnapshot> annotation_objects_;
-
+  std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
+      extra_memory_;
   InitializationStateDcheck initialized_;
 };
 

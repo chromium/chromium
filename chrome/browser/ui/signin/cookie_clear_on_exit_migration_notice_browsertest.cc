@@ -73,10 +73,6 @@ class CookieClearOnExitMigrationNoticePixelTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     ShowCookieClearOnExitMigrationNotice(*browser(), base::DoNothing());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticePixelTest,
@@ -97,11 +93,6 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticePixelTest,
 class CookieClearOnExitMigrationNoticeBrowserTest
     : public SigninBrowserTestBase {
  public:
-  CookieClearOnExitMigrationNoticeBrowserTest() {
-    feature_list_.InitWithFeatureState(
-        switches::kExplicitBrowserSigninUIOnDesktop,
-        /*enabled=*/!content::IsPreTest());
-  }
 
   AccountInfo SetPrimaryAccount(signin::ConsentLevel consent_level,
                                 bool is_explicit_signin) {
@@ -182,6 +173,9 @@ class CookieClearOnExitMigrationNoticeBrowserTest
 IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
                        PRE_ShowNoticeCloseWindow) {
   SetGaiaCookieClearedOnExit(/*cleared=*/true);
+  // Before UNO is enabled kCookieClearOnExitMigrationNoticeComplete is not set.
+  GetProfile()->GetPrefs()->ClearPref(
+      prefs::kCookieClearOnExitMigrationNoticeComplete);
 }
 
 // The notice is shown when the user is signed in and the user can close
@@ -223,6 +217,8 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   SetGaiaCookieClearedOnExit(/*cleared=*/true);
   SetPrimaryAccount(signin::ConsentLevel::kSync,
                     /*is_explicit_signin=*/false);
+  GetProfile()->GetPrefs()->ClearPref(
+      prefs::kCookieClearOnExitMigrationNoticeComplete);
 }
 
 // The notice is shown when the user is syncing when the feature is enabled, and
@@ -262,6 +258,8 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
                        PRE_ShowNoticeMultipleWindows) {
   SetGaiaCookieClearedOnExit(/*cleared=*/true);
+  GetProfile()->GetPrefs()->ClearPref(
+      prefs::kCookieClearOnExitMigrationNoticeComplete);
 }
 
 // The notice is shown when the user is signed in and the user can close

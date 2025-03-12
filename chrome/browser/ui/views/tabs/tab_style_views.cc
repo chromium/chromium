@@ -91,7 +91,7 @@ class TabStyleViewsImpl : public TabStyleViews {
 
   // Returns the thickness of the stroke drawn around the top and sides of the
   // tab. Only active tabs may have a stroke, and not in all cases. If there
-  // is no stroke, returns 0. If |should_paint_as_active| is true, the tab is
+  // is no stroke, returns 0. If `should_paint_as_active` is true, the tab is
   // treated as an active tab regardless of its true current state.
   virtual int GetStrokeThickness(bool should_paint_as_active) const;
 
@@ -102,13 +102,13 @@ class TabStyleViewsImpl : public TabStyleViews {
   // Returns the progress (0 to 1) of the hover animation.
   double GetHoverAnimationValue() const override;
 
-  // Scales |bounds| by scale and aligns so that adjacent tabs meet up exactly
+  // Scales `bounds` by scale and aligns so that adjacent tabs meet up exactly
   // during painting.
   gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
                                  float scale,
                                  int stroke_thickness) const;
 
-  // Given a tab of width |width|, returns the radius to use for the corners.
+  // Given a tab of width `width`, returns the radius to use for the corners.
   float GetTopCornerRadiusForWidth(int width) const;
 
   // Returns a single separator's opacity based on whether it is the
@@ -129,7 +129,7 @@ class TabStyleViewsImpl : public TabStyleViews {
   // Gets the bounds for the leading and trailing separators for a tab.
   TabStyle::SeparatorBounds GetSeparatorBounds(float scale) const;
 
-  // Returns the opacities of the separators. If |for_layout| is true, returns
+  // Returns the opacities of the separators. If `for_layout` is true, returns
   // the "layout" opacities, which ignore the effects of surrounding tabs' hover
   // effects and consider only the current tab's state.
   TabStyle::SeparatorOpacities GetSeparatorOpacities(bool for_layout) const;
@@ -205,7 +205,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   const TabStyle::TabSelectionState state = GetSelectionState();
 
   // We'll do the entire path calculation in aligned pixels.
-  // TODO(dfried): determine if we actually want to use |stroke_thickness| as
+  // TODO(dfried): determine if we actually want to use `stroke_thickness` as
   // the inset in this case.
   gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(tab()->bounds(), scale, stroke_thickness);
@@ -297,6 +297,18 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
         top_left_corner_radius = 0;
         bottom_left_corner_radius = 0;
       }
+
+      const int separator_width = tab_style()->GetSeparatorMargins().left() +
+                                  tab_style()->GetSeparatorSize().width() +
+                                  tab_style()->GetSeparatorMargins().right();
+
+      if (!IsLeftmostSplitTab(tab())) {
+        left -= separator_width * scale / 2;
+      }
+
+      if (!IsRightmostSplitTab(tab())) {
+        right += separator_width * scale / 2;
+      }
     }
 
     // Radii are clockwise from top left.
@@ -324,7 +336,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     return path;
   }
 
-  // Compute |extension| as the width outside the separators.  This is a fixed
+  // Compute `extension` as the width outside the separators.  This is a fixed
   // value equal to the normal corner radius.
   const float extension = extension_corner_radius;
 
@@ -928,7 +940,7 @@ void TabStyleViewsImpl::PaintTabBackground(
     bool hovered,
     std::optional<int> fill_id,
     int y_inset) const {
-  // |y_inset| is only set when |fill_id| is being used.
+  // `y_inset` is only set when `fill_id` is being used.
   DCHECK(!y_inset || fill_id.has_value());
 
   std::optional<SkColor> group_color = tab_->GetGroupColor();

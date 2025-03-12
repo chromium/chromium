@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animación del salvapantallas</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
 <translation id="1539864135338521185">lapislázuli</translation>
+<translation id="1548555207631326346">Elige un tema y selecciona las palabras subrayadas para personalizar tus imágenes generadas con IA.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecciona Inspírame para ver opciones de imágenes generadas con IA más singulares y variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cuando creas contenido con IA, la petición se envía a los servidores de IA de Google para generar imágenes y mejorar el producto de acuerdo con la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidad de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          La IA generativa es experimental, se encuentra en sus primeras fases de desarrollo y, por el momento, tiene una disponibilidad limitada.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1561927818299383735">color retroiluminado</translation>
@@ -1553,6 +1562,16 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">playa</translation>
 <translation id="819278132617411009">Usa la IA de Google para mejorar tu productividad</translation>
+<translation id="82003371436638355">Cuando selecciones Crea el tuyo, escribe una petición personalizada. También puedes seleccionar Elige un tema y, a continuación, seleccionar las palabras subrayadas para personalizar tu fondo de pantalla creado con IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecciona Inspírame para ver opciones de imágenes generadas con IA más singulares y variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cuando creas tu propio fondo de pantalla, la petición se envía a los servidores de Google para generar imágenes y mejorar el producto de acuerdo con los <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Términos del Servicio y la Política de Privacidad de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. No incluyas información personal, sensible ni confidencial.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          La IA generativa puede cometer errores, incluso sobre personas, así que verifica sus respuestas. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Más información<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
@@ -1574,6 +1593,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8312330582793120272">reproducir contenido multimedia</translation>
 <translation id="8318753676953949627">Sin imágenes</translation>
 <translation id="8320910311642849813">bosque</translation>
+<translation id="8322464149031882595">Haz clic para continuar</translation>
 <translation id="8329018942023753850">aplicación Calculadora</translation>
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8339024191194156249">Más información sobre el inicio automático</translation>
@@ -1720,6 +1740,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8961025972867871808">pingüinos</translation>
 <translation id="8968751544471797276">Velocidad de carga</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
+<translation id="8972061581514441296">Haz clic para volver</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear página {NUMBER_OF_PAGES}}other{Escanear página {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">pueblo</translation>

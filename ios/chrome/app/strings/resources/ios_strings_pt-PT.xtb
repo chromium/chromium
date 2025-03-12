@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Os dados de navegação existentes vão ser associados a <ph name="USER_EMAIL" />. Estes dados podem ser visualizados pela sua organização.</translation>
 <translation id="1713777106376424209">Entregue até</translation>
 <translation id="1715515772563243997">Se confiar em <ph name="SITE" />, pode usar uma palavra-passe guardada para iniciar sessão.</translation>
+<translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
 <translation id="1732468323901456775">Ative as notificações de <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Deteção de morada desativada. Ative-a nas Definições.</translation>
 <translation id="1904580727789512086">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
-<translation id="1923342640370224680">Última Hora</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1943478190258551035">Menu → Definições</translation>
 <translation id="1952728750904661634">Iniciar sessão com uma conta gerida</translation>
@@ -522,7 +522,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Também pode utilizar palavras-passe guardadas nos outros dispositivos.</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
-<translation id="3190736958609431397">Desativar monitorização</translation>
+<translation id="3190736958609431397">Desativar acompanhamento</translation>
 <translation id="3208260410153224535">A sua organização desativou o início de sessão. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
 <translation id="3213807041830307252">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos.</translation>
 <translation id="3214379938835224220">Como parte da reposição do iPad, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
@@ -669,7 +669,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3922395466317605522">Personalize o menu</translation>
 <translation id="3929457972718048006">Moradas</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nova palavra-passe para este site}other{Novas palavras-passe para este site}}</translation>
-<translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>
+<translation id="3940195383040445971">Acompanhe os preços nos separadores</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fechar {COUNT} separador}other{Fechar {COUNT} separadores}}</translation>
 <translation id="3948600256434252210">Pode deslizar rapidamente para a direita para navegar na Navegação anónima.</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para iniciar sessão mais rápido</translation>

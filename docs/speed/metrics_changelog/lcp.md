@@ -2,6 +2,8 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 133
+  * Implementation optimizations: [Expose coarsened cross-origin renderTime in element timing/LCP (regardless of TAO)](2025_02_lcp.md)
 * Chrome 130
   * Launch feature: [Exclude transparent text from being LCP eligible](2024_10_lcp.md)
 * Chrome 126

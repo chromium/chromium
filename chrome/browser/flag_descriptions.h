@@ -1252,12 +1252,6 @@ extern const char kContextualPageActionsReaderModeDescription[];
 extern const char kContextualPageActionsShareModelName[];
 extern const char kContextualPageActionsShareModelDescription[];
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-extern const char kEnableSearchAggregatorPolicyName[];
-extern const char kEnableSearchAggregatorPolicyDescription[];
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kFlexFirmwareUpdateName[];
 extern const char kFlexFirmwareUpdateDescription[];
@@ -1578,6 +1572,9 @@ extern const char kOmniboxStarterPackExpansionDescription[];
 
 extern const char kOmniboxStarterPackIPHName[];
 extern const char kOmniboxStarterPackIPHDescription[];
+
+extern const char kOmniboxSearchAggregatorName[];
+extern const char kOmniboxSearchAggregatorDescription[];
 
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
@@ -2700,9 +2697,6 @@ extern const char kLegacyTabStateDeprecationDescription[];
 extern const char kLogoPolishName[];
 extern const char kLogoPolishDescription[];
 
-extern const char kLogoPolishAnimationKillSwitchName[];
-extern const char kLogoPolishAnimationKillSwitchDescription[];
-
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 
@@ -3015,6 +3009,9 @@ extern const char kNtpChromeCartModuleDescription[];
 
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
+
+extern const char kNtpDriveModuleNoSyncRequirementName[];
+extern const char kNtpDriveModuleNoSyncRequirementDescription[];
 
 extern const char kNtpDriveModuleSegmentationName[];
 extern const char kNtpDriveModuleSegmentationDescription[];
@@ -4656,6 +4653,9 @@ extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
 
 extern const char kGlicName[];
 extern const char kGlicDescription[];
+
+extern const char kGlicDetachedName[];
+extern const char kGlicDetachedDescription[];
 
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];

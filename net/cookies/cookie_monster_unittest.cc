@@ -4702,8 +4702,8 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
   // since the histogram should have been initialized by the CM construction
   // above.
   base::HistogramBase* expired_histogram = base::Histogram::FactoryGet(
-      "Cookie.ExpirationDurationMinutesSecure", 1, 10 * 365 * 24 * 60, 50,
-      base::Histogram::kUmaTargetedHistogramFlag);
+      "Cookie.ExpirationDurationMinutesSecure.Subsampled", 1,
+      10 * 365 * 24 * 60, 50, base::Histogram::kUmaTargetedHistogramFlag);
 
   std::unique_ptr<base::HistogramSamples> samples1(
       expired_histogram->SnapshotSamples());
@@ -7166,7 +7166,7 @@ TEST_F(CookieMonsterTest, IsCookieSentToSamePortThatSetIt) {
 TEST_F(CookieMonsterTest, CookieDomainSetHistogram) {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
-  const char kHistogramName[] = "Cookie.DomainSet";
+  const char kHistogramName[] = "Cookie.DomainSet.Subsampled";
 
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -7192,13 +7192,11 @@ TEST_F(CookieMonsterTest, CookieDomainSetHistogram) {
 }
 
 TEST_F(CookieMonsterTest, CookiePortReadHistogram) {
-  // The per-resource cookie histograms are subsampled, simulate for this test
-  // that the dice roll makes them record.
-  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
 
   base::HistogramTester histograms;
-  const char kHistogramName[] = "Cookie.Port.Read.RemoteHost";
-  const char kHistogramNameLocal[] = "Cookie.Port.Read.Localhost";
+  const char kHistogramName[] = "Cookie.Port.Read.RemoteHost.Subsampled";
+  const char kHistogramNameLocal[] = "Cookie.Port.Read.Localhost.Subsampled";
 
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -7251,8 +7249,8 @@ TEST_F(CookieMonsterTest, CookiePortReadHistogram) {
 TEST_F(CookieMonsterTest, CookiePortSetHistogram) {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
-  const char kHistogramName[] = "Cookie.Port.Set.RemoteHost";
-  const char kHistogramNameLocal[] = "Cookie.Port.Set.Localhost";
+  const char kHistogramName[] = "Cookie.Port.Set.RemoteHost.Subsampled";
+  const char kHistogramNameLocal[] = "Cookie.Port.Set.Localhost.Subsampled";
 
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -7302,15 +7300,15 @@ TEST_F(CookieMonsterTest, CookiePortSetHistogram) {
 }
 
 TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
-  // The per-resource cookie histograms are subsampled, simulate for this test
-  // that the dice roll makes them record.
-  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
 
   base::HistogramTester histograms;
-  const char kHistogramName[] = "Cookie.Port.ReadDiffersFromSet.RemoteHost";
-  const char kHistogramNameLocal[] = "Cookie.Port.ReadDiffersFromSet.Localhost";
+  const char kHistogramName[] =
+      "Cookie.Port.ReadDiffersFromSet.RemoteHost.Subsampled";
+  const char kHistogramNameLocal[] =
+      "Cookie.Port.ReadDiffersFromSet.Localhost.Subsampled";
   const char kHistogramNameDomainSet[] =
-      "Cookie.Port.ReadDiffersFromSet.DomainSet";
+      "Cookie.Port.ReadDiffersFromSet.DomainSet.Subsampled";
 
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -7408,7 +7406,7 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
 TEST_F(CookieMonsterTest, CookieSourceSchemeNameHistogram) {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
-  const char kHistogramName[] = "Cookie.CookieSourceSchemeName";
+  const char kHistogramName[] = "Cookie.CookieSourceSchemeName.Subsampled";
 
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
