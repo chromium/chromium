@@ -400,6 +400,11 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
   base::UmaHistogramExactLinear("Storage.SharedStorage.SelectURL.UrlsLength",
                                 urls.size(), kExclusiveMaxBucket);
 
+  if (urls.size() == 1) {
+    execution_context->CountUse(
+        WebFeature::kSharedStorageAPI_SelectURL_Method_CalledWithOneURL);
+  }
+
   v8::Local<v8::Context> v8_context =
       script_state->GetIsolate()->GetCurrentContext();
 
