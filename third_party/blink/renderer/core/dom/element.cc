@@ -3078,8 +3078,16 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
   } else if (name == html_names::kSlotAttr) {
     if (params.old_value != params.new_value) {
-      if (ShadowRoot* root = ShadowRootOfParent()) {
-        root->DidChangeHostChildSlotName(params.old_value, params.new_value);
+      if (Element* parent = parentElement()) {
+        if (ShadowRoot* root = parent->GetShadowRoot()) {
+          root->DidChangeHostChildSlotName(params.old_value, params.new_value);
+          if (parent->ChildrenAffectedByBackwardPositionalRules()) {
+            // sibling-index()/sibling-count() may change for children,
+            // as slot assignments may change.
+            GetDocument().GetStyleEngine().ScheduleNthPseudoInvalidations(
+                *parent);
+          }
+        }
       }
     }
   } else if (name == html_names::kFocusgroupAttr) {

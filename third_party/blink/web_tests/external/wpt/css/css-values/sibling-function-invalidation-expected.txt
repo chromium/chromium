@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 5th sibling after slot change
-  assert_equals: expected 50 but got 60
-[FAIL] 5 siblings after slot change
-  assert_equals: expected 50 but got 60
-Harness: the test ran to completion.
-
