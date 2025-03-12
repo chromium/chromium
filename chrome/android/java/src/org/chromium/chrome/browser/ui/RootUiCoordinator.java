@@ -1958,8 +1958,14 @@ public class RootUiCoordinator
         return null;
     }
 
+    /** Saves the relevant UI state when the activity is recreated on a device fold transition. */
+    public void prepareUiState() {
+        mFoldTransitionController.prepareUiState();
+    }
+
     /**
-     * Saves relevant information that will be used to restore the UI state after the activity is
+     * Saves relevant information preserved by {@code RootUiCoordinator#prepareUiState()} to the
+     * saved instance state bundle that will be used to restore the UI state after the activity is
      * recreated. This is expected to be invoked in {@code Activity#onSaveInstanceState(Bundle)}.
      *
      * @param outState The {@link Bundle} that is used to save state information.
