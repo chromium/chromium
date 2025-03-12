@@ -362,8 +362,13 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
   // the stats reporting setting from enabled to disabled to trigger the
   // unexpected switch causing the reset. Later enable the stats reporting
   // controller again to get the histograms to be recorded.
-  StatsReportingController::Get()->SetEnabled(
-      ProfileManager::GetActiveUserProfile(), true);
+  if (!ash::features::IsOobePreConsentMetricsEnabled()) {
+    // If OOBE preconsent metrics feature is enabled, metrics reporting status
+    // is by default enabled so there is no need to manually set it to true for
+    // testing.
+    StatsReportingController::Get()->SetEnabled(
+        ProfileManager::GetActiveUserProfile(), true);
+  }
   WaitForPrefValue(g_browser_process->local_state(),
                    prefs::kOobeMetricsReportedAsEnabled, base::Value(true));
 

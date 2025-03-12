@@ -2930,8 +2930,6 @@ void WizardController::OnOobeFlowFinished() {
   GetLocalState()->ClearPref(prefs::kOobeStartTime);
 
   GetLocalState()->ClearPref(prefs::kOobeMetricsClientIdAtOobeStart);
-  GetLocalState()->ClearPref(prefs::kOobeMetricsReportedAsEnabled);
-  GetLocalState()->ClearPref(prefs::kOobeStatsReportingControllerReportedReset);
 
   // Check if pre-consent metrics is still enabled.
   if (metrics::CrOSPreConsentMetricsManager::Get()) {

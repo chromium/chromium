@@ -258,6 +258,14 @@ void OobeMetricsHelper::RecordPreLoginOobeFirstStart() {
   // client ID at the end of OOBE.
   g_browser_process->local_state()->SetString(
       prefs::kOobeMetricsClientIdAtOobeStart, GetMetricsClientID());
+
+  // With pre-consent metrics feature, the consent status before first user sign
+  // in is set to true. OobeMetricsHelper needs to record the consent status
+  // when OOBE first starts.
+  if (StatsReportingController::Get()->IsEnabled()) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOobeMetricsReportedAsEnabled, true);
+  }
 }
 
 void OobeMetricsHelper::RecordPreLoginOobeComplete(
@@ -356,6 +364,11 @@ void OobeMetricsHelper::RecordOnboadingComplete(
         kUmaOobeStatsReportingControllerReportedReset,
         g_browser_process->local_state()->GetBoolean(
             prefs::kOobeStatsReportingControllerReportedReset));
+
+    g_browser_process->local_state()->ClearPref(
+        prefs::kOobeMetricsReportedAsEnabled);
+    g_browser_process->local_state()->ClearPref(
+        prefs::kOobeStatsReportingControllerReportedReset);
   }
 
   if (!onboarding_start_time.is_null()) {
