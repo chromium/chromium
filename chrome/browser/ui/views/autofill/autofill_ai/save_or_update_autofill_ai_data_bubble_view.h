@@ -22,8 +22,7 @@ class SaveOrUpdateAutofillAiDataBubbleView
 
  public:
   static constexpr int kNewEntityAddedOrUpdatedAttributesContainer = 437;
-  static constexpr int kNewEntityUnchagedOrOldEntityUpdatedAttributesContainer =
-      438;
+  static constexpr int kNewEntityUnchagedAttributesContainer = 438;
 
   SaveOrUpdateAutofillAiDataBubbleView(
       views::View* anchor_view,
