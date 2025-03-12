@@ -27,7 +27,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -38,7 +37,6 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
@@ -503,22 +501,6 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
   return net::NetLogCaptureMode::kDefault;
 }
 
-std::optional<base::TimeDelta> GetNetLogDurationFromCommandLine(
-    const base::CommandLine& command_line) {
-  std::string_view switch_name = network::switches::kLogNetLogDuration;
-
-  if (!command_line.HasSwitch(switch_name)) {
-    return std::nullopt;
-  }
-
-  std::string duration_str = command_line.GetSwitchValueASCII(switch_name);
-  int duration_sec = 0;
-  if (base::StringToInt(duration_str, &duration_sec) && duration_sec > 0) {
-    return base::Seconds(duration_sec);
-  }
-
-  return std::nullopt;
-}
 // Parse the maximum file size for the NetLog, if one was specified.
 // kNoLimit indicates no, valid, maximum size was specified.
 base::StrictNumeric<uint64_t> GetNetLogMaximumFileSizeFromCommandLine(
@@ -659,8 +641,7 @@ network::mojom::NetworkService* GetNetworkService() {
                   std::move(file),
                   GetNetLogMaximumFileSizeFromCommandLine(*command_line),
                   GetNetCaptureModeFromCommandLine(*command_line),
-                  GetContentClient()->browser()->GetNetLogConstants(),
-                  GetNetLogDurationFromCommandLine(*command_line));
+                  GetContentClient()->browser()->GetNetLogConstants());
         }
       }
 
