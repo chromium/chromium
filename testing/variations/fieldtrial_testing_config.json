@@ -10085,6 +10085,25 @@
             ]
         }
     ],
+    "FledgeBiddingAndAuctionNonceSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeBiddingAndAuctionNonceSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "Floss": [
         {
             "platforms": [

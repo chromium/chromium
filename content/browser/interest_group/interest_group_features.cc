@@ -45,7 +45,7 @@ BASE_FEATURE(kEnableBandATriggeredUpdates,
 // Enable response authorization using the Ad-Auction-Result-Nonce header.
 BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
              "FledgeBiddingAndAuctionNonceSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the user agent header in auction requests to be overridden.
 BASE_FEATURE(kFledgeEnableUserAgentOverrides,
