@@ -420,8 +420,8 @@ class SelectedColorPatchView : public views::View {
 
 SelectedColorPatchView::SelectedColorPatchView() {
   SetVisible(true);
-  SetBorder(CreateThemedSolidBorder(kBorderWidth,
-                                    ui::kColorFocusableBorderUnfocused));
+  SetBorder(
+      CreateSolidBorder(kBorderWidth, ui::kColorFocusableBorderUnfocused));
 }
 
 void SelectedColorPatchView::SetColor(SkColor color) {

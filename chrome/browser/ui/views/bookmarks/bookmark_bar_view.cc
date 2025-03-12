@@ -373,7 +373,7 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
         border_insets.left() + separator_thickness_ + border_insets.right(),
         gfx::kFaviconSize));
 
-    SetBorder(views::CreateThemedRoundedRectBorder(
+    SetBorder(views::CreateRoundedRectBorder(
         separator_thickness_ / 2, separator_thickness_ / 2, border_insets,
         kColorBookmarkBarSeparatorChromeRefresh));
   }

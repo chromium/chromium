@@ -33,7 +33,7 @@ CastDeviceFooterView::CastDeviceFooterView(
     base::RepeatingClosure stop_casting_callback,
     media_message_center::MediaColorTheme media_color_theme)
     : stop_casting_callback_(std::move(stop_casting_callback)) {
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme.device_selector_border_color_id));
   SetBackground(views::CreateRoundedRectBackground(

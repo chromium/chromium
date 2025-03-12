@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -294,14 +295,15 @@ std::unique_ptr<Border> NullBorder() {
   return nullptr;
 }
 
-std::unique_ptr<Border> CreateSolidBorder(int thickness, SkColor color) {
-  return std::make_unique<SolidSidedBorder>(gfx::Insets(thickness), color);
-}
+std::unique_ptr<Border> CreateSolidBorder(int thickness,
+                                          ui::ColorVariant color) {
+  if (auto color_id = color.GetColorId()) {
+    return std::make_unique<ThemedSolidSidedBorder>(gfx::Insets(thickness),
+                                                    *color_id);
+  }
 
-std::unique_ptr<Border> CreateThemedSolidBorder(int thickness,
-                                                ui::ColorId color) {
-  return std::make_unique<ThemedSolidSidedBorder>(gfx::Insets(thickness),
-                                                  color);
+  return std::make_unique<SolidSidedBorder>(gfx::Insets(thickness),
+                                            *color.GetSkColor());
 }
 
 std::unique_ptr<Border> CreateEmptyBorder(const gfx::Insets& insets) {
@@ -314,7 +316,7 @@ std::unique_ptr<Border> CreateEmptyBorder(int thickness) {
 
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                                 float corner_radius,
-                                                SkColor color) {
+                                                ui::ColorVariant color) {
   return CreateRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
                                  color);
 }
@@ -322,35 +324,23 @@ std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                                 float corner_radius,
                                                 const gfx::Insets& paint_insets,
-                                                SkColor color) {
+                                                ui::ColorVariant color) {
+  if (auto color_id = color.GetColorId()) {
+    return std::make_unique<ThemedRoundedRectBorder>(thickness, corner_radius,
+                                                     paint_insets, *color_id);
+  }
+
   return std::make_unique<RoundedRectBorder>(thickness, corner_radius,
-                                             paint_insets, color);
-}
-
-std::unique_ptr<Border> CreateThemedRoundedRectBorder(int thickness,
-                                                      float corner_radius,
-                                                      ui::ColorId color_id) {
-  return CreateThemedRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
-                                       color_id);
-}
-
-std::unique_ptr<Border> CreateThemedRoundedRectBorder(
-    int thickness,
-    float corner_radius,
-    const gfx::Insets& paint_insets,
-    ui::ColorId color_id) {
-  return std::make_unique<ThemedRoundedRectBorder>(thickness, corner_radius,
-                                                   paint_insets, color_id);
+                                             paint_insets, *color.GetSkColor());
 }
 
 std::unique_ptr<Border> CreateSolidSidedBorder(const gfx::Insets& insets,
-                                               SkColor color) {
-  return std::make_unique<SolidSidedBorder>(insets, color);
-}
+                                               ui::ColorVariant color) {
+  if (auto color_id = color.GetColorId()) {
+    return std::make_unique<ThemedSolidSidedBorder>(insets, *color_id);
+  }
 
-std::unique_ptr<Border> CreateThemedSolidSidedBorder(const gfx::Insets& insets,
-                                                     ui::ColorId color_id) {
-  return std::make_unique<ThemedSolidSidedBorder>(insets, color_id);
+  return std::make_unique<SolidSidedBorder>(insets, *color.GetSkColor());
 }
 
 std::unique_ptr<Border> CreatePaddedBorder(std::unique_ptr<Border> border,
@@ -360,7 +350,7 @@ std::unique_ptr<Border> CreatePaddedBorder(std::unique_ptr<Border> border,
 
 std::unique_ptr<Border> CreateBorderPainter(std::unique_ptr<Painter> painter,
                                             const gfx::Insets& insets) {
-  return base::WrapUnique(new BorderPainter(std::move(painter), insets));
+  return std::make_unique<BorderPainter>(std::move(painter), insets);
 }
 
 }  // namespace views

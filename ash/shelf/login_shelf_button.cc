@@ -77,9 +77,9 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
   SetFocusPainter(nullptr);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-  SetBorder(views::CreateThemedRoundedRectBorder(
-      kButtonHighlightWidthDp, kButtonHighlightRadiusDp,
-      ui::kColorCrosSystemHighlight));
+  SetBorder(views::CreateRoundedRectBorder(kButtonHighlightWidthDp,
+                                           kButtonHighlightRadiusDp,
+                                           ui::kColorCrosSystemHighlight));
   // PillButton has some custom tooltip logic that runs, but we don't want here.
   SetUseLabelAsDefaultTooltip(false);
   UpdateTooltipText(label());

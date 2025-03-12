@@ -107,8 +107,8 @@ std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
           .SetBetweenChildSpacing(kContainerChildSpace)
           .SetBackground(
               views::CreateSolidBackground(kColorPaymentsFeedbackTipBackground))
-          .SetBorder(views::CreateThemedSolidBorder(
-              kTipValuePromptBorderThickness, kColorPaymentsFeedbackTipBorder))
+          .SetBorder(views::CreateSolidBorder(kTipValuePromptBorderThickness,
+                                              kColorPaymentsFeedbackTipBorder))
           .Build();
 
   container->AddChildView(

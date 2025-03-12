@@ -34,8 +34,8 @@ TooltipViewAura::TooltipViewAura()
 
   SetBackground(views::CreateSolidBackground(ui::kColorTooltipBackground));
   SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedSolidBorder(kTooltipBorderThickness,
-                                     ui::kColorTooltipForeground),
+      views::CreateSolidBorder(kTooltipBorderThickness,
+                               ui::kColorTooltipForeground),
       kBorderInset - gfx::Insets(kTooltipBorderThickness)));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
