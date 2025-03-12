@@ -557,10 +557,6 @@ void AXPlatformNodeWinTest::TestGetColumnHeadersForRole(ax::mojom::Role role) {
   EXPECT_EQ(nullptr, safearray.Get());
 }
 
-TestFragmentRootDelegate::TestFragmentRootDelegate() = default;
-
-TestFragmentRootDelegate::~TestFragmentRootDelegate() = default;
-
 gfx::NativeViewAccessible TestFragmentRootDelegate::GetChildOfAXFragmentRoot() {
   return child_;
 }

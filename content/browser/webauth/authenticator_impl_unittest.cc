@@ -1106,6 +1106,7 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
       client_capabilities::kPasskeyPlatformAuthenticator,
       client_capabilities::kUserVerifyingPlatformAuthenticator,
       client_capabilities::kRelatedOrigins,
+      client_capabilities::kConditionalCreate,
   };
 
   // Ensure no extra capabilities
@@ -1147,6 +1148,17 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_RelatedOrigins) {
   NavigateAndCommit(GURL(kTestOrigin1));
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditonalCreate) {
+  for (const bool enabled : {false, true}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(device::kWebAuthnPasskeyUpgrade, enabled);
+    NavigateAndCommit(GURL(kTestOrigin1));
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+    ExpectCapability(capabilities, client_capabilities::kConditionalCreate,
+                     enabled);
+  }
 }
 
 // Parses its arguments as JSON and expects that all the keys in the first are

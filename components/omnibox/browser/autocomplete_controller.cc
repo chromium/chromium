@@ -1149,6 +1149,7 @@ bool AutocompleteController::ShouldRunProvider(
   // Some providers should only run in starter pack mode or in the CrOS
   // launcher. If we reach here, we're not in starter pack mode.
   bool should_run_search_aggregator_provider =
+      omnibox_feature_configs::SearchAggregatorProvider::Get().enabled &&
       template_url_service_ &&
       template_url_service_->GetEnterpriseSearchAggregatorEngine() &&
       !template_url_service_->IsShortcutRequiredForSearchAggregatorEngine();

@@ -190,7 +190,7 @@ std::unique_ptr<views::ImageView> CreateSecondaryImageView(
       .SetSize(gfx::Size(kSecondaryIconViewSize, kSecondaryIconViewSize))
       .SetBackground(views::CreateRoundedRectBackground(
           kSecondaryIconBackgroundColorId, kSecondaryIconViewSize / 2))
-      .SetBorder(views::CreateThemedRoundedRectBorder(
+      .SetBorder(views::CreateRoundedRectBorder(
           1, kSecondaryIconViewSize / 2,
           cros_tokens::kCrosSysSystemOnBaseOpaque))
       .Build();

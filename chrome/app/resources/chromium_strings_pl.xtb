@@ -127,11 +127,9 @@
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2753623023919742414">Kliknij, aby wyszukać</translation>
 <translation id="2770231113462710648">Zmień przeglądarkę domyślną na:</translation>
-<translation id="277338894894732084">Później Chromium zapyta, czy chcesz używać zapisanych informacji do automatycznego wypełniania formularzy</translation>
 <translation id="2785438272836277133">To rozszerzenie zawiera złośliwe oprogramowanie i jest niebezpieczne. Usuń je z Chromium, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też Twoich danych osobowych.</translation>
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2803971713792056305">Twoja przeglądarka Chromium</translation>
-<translation id="2806241689335397269">Chromium zapyta, czy chcesz zapisać informacje z formularza, takie jak data urodzenia, wiek i numer paszportu</translation>
 <translation id="2841525013647267359">Tłumacz z</translation>
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
@@ -175,7 +173,6 @@
 <translation id="3387527074123400161">System operacyjny Chromium</translation>
 <translation id="3406848076815591792">Przełączyć na istniejący profil Chromium?</translation>
 <translation id="3412460710772753638">W Menedżerze haseł na tym urządzeniu</translation>
-<translation id="3451656833730006755">Aby korzystać z rozszerzeń oraz innych ustawień i danych na wszystkich swoich komputerach, zaloguj się w Chromium</translation>
 <translation id="347328004046849135">Chromium powiadomi Cię w razie logowania za pomocą przejętego hasła</translation>
 <translation id="3474745554856756813">Spowoduje to usunięcie <ph name="ITEMS_COUNT" /> elementów z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Profile Chromium przełącza skrót <ph name="SHORTCUT" /></translation>
@@ -458,7 +455,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="734373864078049451">Tu są Twoje strony, zakładki i inne dane z Chromium.</translation>
 <translation id="7349591376906416160">Administrator systemu skonfigurował Chromium tak, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7384121030444253939">To rozszerzenie nie jest już obsługiwane. Chromium zaleca jego usunięcie.</translation>
-<translation id="7389750180956889333">Chromium lepiej rozumie formularze i szybciej je uzupełnia. Więcej informacji o <ph name="BEGIN_LINK" />autouzupełnianiu w Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Tekst został skopiowany</translation>
 <translation id="7451052299415159299">Chromium potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>

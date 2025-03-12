@@ -14,6 +14,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -31,6 +33,8 @@ import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.Objects;
 
 @NullMarked
 public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
@@ -71,12 +75,37 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
 
     @Override
     public void startFolderPickerActivity(
-            Context context, Profile profile, BookmarkId... bookmarkIds) {
+            Context context,
+            Profile profile,
+            Runnable activityFinishedCallback,
+            BookmarkId... bookmarkIds) {
         Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
         intent.putStringArrayListExtra(
                 BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
                 BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
         ProfileIntentUtils.addProfileToIntent(profile, intent);
+        ApplicationStatus.registerStateListenerForAllActivities(
+                new ApplicationStatus.ActivityStateListener() {
+                    @Nullable BookmarkFolderPickerActivity mActivityInstance;
+
+                    @Override
+                    public void onActivityStateChange(
+                            Activity activity, @ActivityState int newState) {
+                        if (!(activity instanceof BookmarkFolderPickerActivity)) {
+                            return;
+                        }
+
+                        BookmarkFolderPickerActivity activityInstance =
+                                (BookmarkFolderPickerActivity) activity;
+                        if (newState == ActivityState.CREATED && mActivityInstance == null) {
+                            mActivityInstance = activityInstance;
+                        } else if (newState == ActivityState.DESTROYED
+                                && Objects.equals(mActivityInstance, activityInstance)) {
+                            ApplicationStatus.unregisterActivityStateListener(this);
+                            activityFinishedCallback.run();
+                        }
+                    }
+                });
         context.startActivity(intent);
     }
 

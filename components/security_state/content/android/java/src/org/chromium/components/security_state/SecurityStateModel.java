@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** Provides a way of accessing helpers for page security state. */
@@ -22,7 +23,7 @@ public class SecurityStateModel {
      *
      * @see ConnectionSecurityLevel
      */
-    public static int getSecurityLevelForWebContents(WebContents webContents) {
+    public static int getSecurityLevelForWebContents(@Nullable WebContents webContents) {
         if (webContents == null) return ConnectionSecurityLevel.NONE;
         return SecurityStateModelJni.get().getSecurityLevelForWebContents(webContents);
     }
@@ -36,6 +37,6 @@ public class SecurityStateModel {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        int getSecurityLevelForWebContents(WebContents webContents);
+        int getSecurityLevelForWebContents(@Nullable WebContents webContents);
     }
 }

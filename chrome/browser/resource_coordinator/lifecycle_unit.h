@@ -74,9 +74,6 @@ class LifecycleUnit {
   // base::Time::Max() if the LifecycleUnit is currently focused.
   virtual base::Time GetLastFocusedTime() const = 0;
 
-  // Returns the current visibility of this LifecycleUnit.
-  virtual content::Visibility GetVisibility() const = 0;
-
   // Returns the loading state associated with a LifecycleUnit.
   virtual LifecycleUnitLoadingState GetLoadingState() const = 0;
 

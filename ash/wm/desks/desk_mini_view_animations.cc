@@ -281,7 +281,7 @@ void AnimateDeskIconButtonScale(DeskIconButton* button,
   auto* layer = button->layer();
   layer->SetRoundedCornerRadius(initial_radius);
   button->SetBackground(
-      views::CreateSolidBackground(button->background()->get_color()));
+      views::CreateSolidBackground(button->background()->color()));
 
   layer->SetTransform(scale_transform);
 
@@ -297,7 +297,7 @@ void AnimateDeskIconButtonScale(DeskIconButton* button,
         if (overview_controller->InOverviewSession()) {
           button->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF());
           button->SetBackground(views::CreateRoundedRectBackground(
-              button->background()->get_color(),
+              button->background()->color(),
               DeskIconButton::GetCornerRadiusOnState(button->state())));
         }
       },

@@ -151,6 +151,7 @@ struct ProbabilisticRevealToken {
   std::string u;
   std::string e;
   bool operator==(const ProbabilisticRevealToken& token) const = default;
+  std::optional<std::string> SerializeAndEncode() const;
 };
 
 // Declares possible return status for TryGetProbabilisticRevealTokens().

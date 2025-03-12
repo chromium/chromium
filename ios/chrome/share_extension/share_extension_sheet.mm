@@ -30,6 +30,7 @@ CGFloat const kURLStackSpacing = 2;
 CGFloat const kInnerViewSpacing = 16;
 
 CGFloat const kDismissButtonSize = 28;
+CGFloat const kSharedImageHeight = 181;
 
 // Custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
@@ -187,7 +188,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 - (UIView*)configureMainView {
   UIView* mainView = [[UIView alloc] init];
-  UIView* innerView = [[UIView alloc] init];
+  UIView* innerView;
   if (_sharedURL) {
     innerView = [self configureSharedURLView];
   } else if (_sharedImage) {
@@ -195,6 +196,8 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
   } else if (_sharedText) {
     innerView = [self configureSharedTextView];
   }
+
+  CHECK(innerView);
   [mainView addSubview:innerView];
 
   mainView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
@@ -253,13 +256,25 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 }
 
 - (UIView*)configureSharedImageView {
-  // TODO(crbug.com/396326079): Add image sharing ui configuration.
-  return nil;
+  UIImageView* sharedImageView =
+      [[UIImageView alloc] initWithImage:_sharedImage];
+  sharedImageView.backgroundColor = [UIColor clearColor];
+
+  sharedImageView.layer.cornerRadius = kMainViewCornerRadius;
+  sharedImageView.contentMode = UIViewContentModeScaleAspectFill;
+  sharedImageView.layer.masksToBounds = YES;
+  sharedImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  [sharedImageView.heightAnchor constraintEqualToConstant:kSharedImageHeight]
+      .active = YES;
+  return sharedImageView;
 }
 
 - (UIView*)configureSharedTextView {
-  // TODO(crbug.com/396326361): Add text sharing ui configuration.
-  return nil;
+  UILabel* sharedTextLabel = [[UILabel alloc] init];
+  sharedTextLabel.text = self.sharedText;
+  sharedTextLabel.numberOfLines = 0;
+
+  return sharedTextLabel;
 }
 
 - (UIImageView*)configureSnapshotView {

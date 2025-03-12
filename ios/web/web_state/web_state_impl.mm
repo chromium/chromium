@@ -269,11 +269,6 @@ void WebStateImpl::OnStateChangedForPermission(Permission permission) {
   RealizedState()->OnStateChangedForPermission(permission);
 }
 
-void WebStateImpl::OnUnderPageBackgroundColorChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RealizedState()->OnUnderPageBackgroundColorChanged();
-}
-
 NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->GetNavigationManager();

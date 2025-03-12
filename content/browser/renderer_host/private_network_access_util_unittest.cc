@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -449,13 +450,27 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
 }
 
 TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kLocalNetworkAccessChecks);
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["LocalNetworkAccessChecksWarn"] = "false";
+  feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kLocalNetworkAccessChecks, params);
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   for (auto& entry : expected) {
     entry.second = entry.first.is_web_secure_context ? Policy::kPermissionBlock
                                                      : Policy::kBlock;
+  }
+  TestPolicyMap(expected);
+}
+
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessWarn) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+
+  std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
+  for (auto& entry : expected) {
+    entry.second = Policy::kPermissionWarn;
   }
   TestPolicyMap(expected);
 }

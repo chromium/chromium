@@ -71,6 +71,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".SECURITY_EVENT" summary="SECURITY_EVENT"/>
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
   <variant name=".SESSION" summary="SESSION"/>
+  <variant name=".SHARED_TAB_GROUP_ACCOUNT_DATA"
+      summary="SHARED_TAB_GROUP_ACCOUNT_DATA"/>
   <variant name=".SHARED_TAB_GROUP_DATA" summary="SHARED_TAB_GROUP_DATA"/>
   <variant name=".SHARING_MESSAGE" summary="SHARING_MESSAGE"/>
   <variant name=".THEME" summary="THEME"/>
@@ -2323,9 +2325,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.URLFetchTimedOut" enum="BooleanTimedOut"
-    expires_after="2025-04-13">
+    expires_after="2025-07-27">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
   <summary>
     Whether a URL fetch timed out or not. Timing out implies the fetch was
     stalled for an unknown reason. Note that this records true on timeout and

@@ -33,6 +33,10 @@ webview:not([hidden]) {
   padding-bottom: 24px;
 }
 
+#loadingPanel {
+  width: 100%;
+}
+
 #loadingPanel .container {
   padding-bottom: 0px;
 }
@@ -128,21 +132,23 @@ cr-progress {
 }
 
 .placeholder {
-  width: 200px;
+  flex: 1;
   height: 24px;
-  background-color: #d3dbc5;
+  background-color: #35383b;
   background-image:
-    linear-gradient(135deg, #16161733 0%,
-                            #16161733 10%,
-                            #1e1f20ff 30%,
-                            #35383bff 50%,
-                            #1e1f20ff 70%,
-                            #16161733 90%,
-                            #16161733 100%);
-  background-size: 200% 200%;
+    linear-gradient(135deg, #161617 0%,
+                            #161617 10%,
+                            #1e1f20 30%,
+                            #35383b 50%,
+                            #1e1f20 70%,
+                            #161617 90%,
+                            #161617 100%);
+  background-size: calc(400cqw);
+  background-position: center;
   border-radius: 8px;
   animation: 1.5s infinite linear gradient-move,
-    1.5s infinite ease-in-out pulse;
+    1.5s infinite linear pulse;
+  margin-right: 60px;
 }
 
 @keyframes pulse {
@@ -165,9 +171,9 @@ cr-progress {
 
 @keyframes gradient-move {
   0% {
-    background-position: 100% 0;
+    background-position: 75% 0;
   }
   100% {
-    background-position: 0 0;
+    background-position: 12.5% 0;
   }
 }

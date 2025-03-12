@@ -781,7 +781,6 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
 TEST_P(WelcomeTourControllerChromeVoxTest,
        MaybePreventTourFromStartingIfChromeVoxEnabled) {
   base::HistogramTester histogram_tester;
-  TestSessionControllerClient* const session = GetSessionControllerClient();
   auto primary_account_id = SimulateUserLogin({.display_email = "primary@test",
                                                .is_new_profile = true,
                                                .activate_session = false});
@@ -810,6 +809,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(expect_prevent ? 1 : 0);
 
+  TestSessionControllerClient* const session = GetSessionControllerClient();
   session->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
 

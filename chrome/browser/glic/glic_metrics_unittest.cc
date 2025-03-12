@@ -354,12 +354,26 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
 TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
+
   profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
+
   profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
+
+  profile_.GetPrefs()->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
+
+  profile_.GetPrefs()->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 2);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {

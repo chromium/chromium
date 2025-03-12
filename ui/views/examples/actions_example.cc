@@ -267,7 +267,7 @@ void ActionsExample::CreateExampleView(View* container) {
                   Builder<View>()
                       .CopyAddressTo(&action_panel_)
                       .SetLayoutManager(std::make_unique<FlowLayout>())
-                      .SetBorder(CreateThemedSolidBorder(
+                      .SetBorder(CreateSolidBorder(
                           1, ui::kColorFocusableBorderUnfocused)),
                   Builder<BoxLayoutView>()
                       .CopyAddressTo(&control_panel_)

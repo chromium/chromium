@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Postojeći podaci o pregledanju će se povezati sa <ph name="USER_EMAIL" />. Ovi podaci mogu biti vidljivi vašoj organizaciji.</translation>
 <translation id="1713777106376424209">Isporučuje</translation>
 <translation id="1715515772563243997">Ako web lokaciju <ph name="SITE" /> smatrate pouzdanom, možete koristiti sačuvanu lozinku za prijavu.</translation>
+<translation id="1718835860248848330">Posljednji sat</translation>
 <translation id="1728549374069268714">Zalijepi i idi</translation>
 <translation id="1732468323901456775">Uključi obavještenja za funkciju <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da instalirate.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Otkrivanje adrese je isključeno. Možete ga ponovo uključiti u Postavkama.</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="1911619930368729126">Otpremi na Google disk</translation>
-<translation id="1923342640370224680">Posljednji sat</translation>
 <translation id="1941314575388338491">Dodirnite dvaput da kopirate</translation>
 <translation id="1943478190258551035">Meni → Postavke</translation>
 <translation id="1952728750904661634">Prijavite se pomoću upravljanog računa</translation>
@@ -1371,7 +1371,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6779455296366983087">Podaci o pregledanju će se izbrisati</translation>
 <translation id="6790502149545262384">Uskoro ćete vidjeti priče s kanala <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="6794476726485507147">Odaberite datum i vrijeme da primite obavještenje s podsjetnikom da ponovo posjetite ovu stranicu</translation>
-<translation id="6807287147325542056">Zaporke u drugim aplikacijama</translation>
+<translation id="6807287147325542056">Lozinke u drugim aplikacijama</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
 <translation id="6825078212112407882">{count,plural, =1{Oznaka je sačuvana na Google račun {email}}one{{count} oznaka je sačuvana na Google račun {email}}few{{count} oznake su sačuvane na Google račun {email}}other{{count} oznaka je sačuvano na Google račun {email}}}</translation>
 <translation id="6830728435402077660">Nije sigurno</translation>
@@ -1936,7 +1936,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="9106655997975673326">S uređaja "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Provjera ugroženih lozinki</translation>
 <translation id="9124387962554796433">Google može koristiti vašu historiju da personalizira Pretraživanje i druge Googleove usluge.</translation>
-<translation id="9124978074365039456">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere i galerije fotografija</translation>
+<translation id="9124978074365039456">Kupujte, prevodite sadržaj i prepoznajte šta vidite pomoću kamere i galerije fotografija</translation>
 <translation id="9130317582644834675">Sakrij zumiranje teksta</translation>
 <translation id="913036870884277353">Jednostavno otvarajte linkove u drugim aplikacijama.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>

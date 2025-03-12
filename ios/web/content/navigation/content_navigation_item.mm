@@ -187,6 +187,14 @@ UserAgentType ContentNavigationItem::GetUserAgentType() const {
   return user_agent_type_;
 }
 
+void ContentNavigationItem::SetSecurityScopedFileResource(NSData* data) {
+  security_scoped_file_resource_ = [data copy];
+}
+
+NSData* ContentNavigationItem::GetSecurityScopedFileResource() {
+  return security_scoped_file_resource_;
+}
+
 bool ContentNavigationItem::HasPostData() const {
   return entry_->GetHasPostData();
 }

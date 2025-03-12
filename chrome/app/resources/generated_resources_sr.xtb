@@ -377,7 +377,6 @@
 <translation id="1244265436519979884">У току је враћање Linux података</translation>
 <translation id="1244303850296295656">Грешка додатка</translation>
 <translation id="1244917379075403655">Кликните на Подешавања.</translation>
-<translation id="1245041875932187638">Избришите све податке које користи аутоматско попуњавање помоћу вештачке интелигенције</translation>
 <translation id="1245331638296910488">Фајлови ће се преместити на OneDrive када се отварају у апликацији Microsoft 365</translation>
 <translation id="1245628370644070008">Враћање локалних података</translation>
 <translation id="1246863218384630739">Инсталирање <ph name="VM_NAME" />-а није успело: URL слике је приказао кôд грешке <ph name="HTTP_ERROR" />. Обратите се администратору.</translation>
@@ -1406,7 +1405,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Припрема се</translation>
 <translation id="1969654639948595766">Евиденције WebRTC текста (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Сви подаци ће се избрисати. Ова радња не може да се опозове</translation>
 <translation id="1972313920920745320">Сајтови које додате ће увек остати активни, а меморија се неће ослободити. <ph name="BEGIN_LINK" />Сазнајте више о томе како да одређени сајтови остану активни<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Прегледаћете брже јер се садржај проактивно учитава на основу актуелне посете веб-страници</translation>
 <translation id="197288927597451399">Задржи</translation>
@@ -3055,7 +3053,6 @@
 <translation id="3108957152224931571">Боја за истицање</translation>
 <translation id="3109206895301430738">Сачуване групе картица</translation>
 <translation id="3109724472072898302">Скупљено</translation>
-<translation id="310979712355504754">Избриши све</translation>
 <translation id="3112292765614504292">Величина апликације: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Додао/ла је ову картицу</translation>
 <translation id="311394601889664316">Не дозвољавај сајтовима да мењају фајлове или фолдере на уређају</translation>
@@ -4075,7 +4072,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Додатак је одобрен}one{# додатак је одобрен}few{# додатка су одобрена}other{# додатака је одобрено}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux се препоручује најмање <ph name="INSTALL_SIZE" /> простора.</translation>
-<translation id="3824203811509979971">Резимирајте садржај или постављајте питања</translation>
 <translation id="3824621460022590830">Токен за регистрацију уређаја је неважећи. Обратите се власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Пријавите се да бисте видели картице са других уређаја</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запамти мој избор за овај тип фајла: <ph name="FILE_TYPES" />}one{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}few{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}other{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}}</translation>
@@ -5890,7 +5886,6 @@
 <translation id="512642543295077915">тастер за претрагу + backspace</translation>
 <translation id="5126611267288187364">Прегледајте промене</translation>
 <translation id="5127620150973591153">ИД безбедне везе: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Резимирајте садржај или постављајте питања.</translation>
 <translation id="5127881134400491887">Управљање мрежним везама</translation>
 <translation id="5127934926273826089">Цвеће</translation>
 <translation id="5127986747308934633">Администратор контролише уређај</translation>
@@ -7440,7 +7435,6 @@
 <translation id="6254892857036829079">Савршен</translation>
 <translation id="6257131917452817589">аутоматској промени лозинке</translation>
 <translation id="6257602895346497974">Укључи синхронизацију...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ова мрежа ће имати приоритет ако је доступно више претходно повезаних или конфигурисаних мрежа</translation>
 <translation id="6259776178973198997">Освежи информације о WiFi Direct власницима</translation>
 <translation id="6262371516389954471">Резервне копије се отпремају на Google и шифрују помоћу лозинке за Google налог.</translation>
@@ -9876,6 +9870,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Аутоматски пренесите WiFi са Android телефона</translation>
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
+<translation id="7992080146463834191">Резимирајте садржај, поједноставите сложен језик или постављајте питања.</translation>
 <translation id="7992203134935383159">Синтеза говора</translation>
 <translation id="7997826902155442747">Приоритет процеса</translation>
 <translation id="7997828719430450286">Успели сте.</translation>
@@ -11143,6 +11138,7 @@
 <translation id="8874448314264883207">Додатак <ph name="EXTENSION_NAME" /> је искључен</translation>
 <translation id="8874647982044395866">Органско</translation>
 <translation id="8874790741333031443">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту прегледања, али већу вероватноћу да ће функције сајта радити на очекивани начин.</translation>
+<translation id="8875221558267407626">Резимирајте садржај, поједноставите сложен језик или постављајте питања</translation>
 <translation id="8875520811099717934">Надоградња Linux-а</translation>
 <translation id="8875736897340638404">Изаберите видљивост</translation>
 <translation id="8876307312329369159">Ово подешавање не можете да промените у сесији демонстрације.</translation>

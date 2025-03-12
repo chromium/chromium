@@ -375,7 +375,6 @@
 <translation id="1244265436519979884">В момента се извършва възстановяване на Linux</translation>
 <translation id="1244303850296295656">Грешка в разширението</translation>
 <translation id="1244917379075403655">Кликнете върху „Настройки“</translation>
-<translation id="1245041875932187638">Изтриване на всички данни, използвани от автоматичното попълване с AI</translation>
 <translation id="1245331638296910488">Файловете, които отворите в Microsoft 365, ще бъдат преместени в OneDrive</translation>
 <translation id="1245628370644070008">Възстановяване на локални данни</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> не се инсталира: URL адресът на изображението изведе код на грешка <ph name="HTTP_ERROR" />. Моля, обърнете се към администратора си.</translation>
@@ -1413,7 +1412,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Подготвя се</translation>
 <translation id="1969654639948595766">Регистрационни файлове за предаване на текст с WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Всички данни ще бъдат изтрити. Това действие не може да бъде отменено</translation>
 <translation id="1972313920920745320">Добавените от вас сайтове винаги ще остават активни и паметта, която използват, няма да се освобождава. <ph name="BEGIN_LINK" />Научете повече за поддържането на конкретни сайтове активни<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, на която се намирате в момента</translation>
 <translation id="197288927597451399">Запазване</translation>
@@ -2299,6 +2297,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="256517381556987641">Досега функцията за синхронизиране на файловете откри <ph name="ITEMS_FOUND" /> файла и все още проверява мястото в хранилището. Опитайте да я включите отново след няколко минути.</translation>
 <translation id="2565214867520763227">Включете екранния четец</translation>
 <translation id="2566146433999774844">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /> и още <ph name="NUM_OTHER_MEMBERS" /></translation>
+<translation id="256726287944589768">Показване на долния колонтитул в новия раздел в браузъра</translation>
 <translation id="2568694057933302218">Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитките“ ви, за да виждат активността ви при сърфиране в други сайтове. Активността ви при сърфиране не се използва за неща като персонализиране на рекламите. Функциите в някои сайтове може да не работят.</translation>
 <translation id="2568774940984945469">Контейнер на инфолента</translation>
 <translation id="2569972178052279830">Име на търговеца</translation>
@@ -2807,6 +2806,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2921081876747860777">Моля, създайте парола, за да защитите локалните си данни.</translation>
 <translation id="2923006468155067296">Вашият <ph name="DEVICE_TYPE" /> ще бъде заключен сега.
 <ph name="DOMAIN" /> изисква да не изваждате смарткартата си.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Още <ph name="OTHER_TASK_NUM" /> задачи в същата група задачи: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Премахване на този профил</translation>
 <translation id="2923644930701689793">Достъп до филмовата ролка на телефона ви</translation>
 <translation id="292371311537977079">Настройки на Chrome</translation>
@@ -3064,7 +3064,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3108957152224931571">Цвят за открояване</translation>
 <translation id="3109206895301430738">Запазени групи раздели</translation>
 <translation id="3109724472072898302">Свито</translation>
-<translation id="310979712355504754">Изтриване на всички</translation>
 <translation id="3112292765614504292">Размер на приложението: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Добавихте този раздел</translation>
 <translation id="311394601889664316">Да не се разрешава на сайтовете да редактират файлове и папки на устройството ви</translation>
@@ -4084,7 +4083,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Разширение бе одобрено}other{# разширения бяха одобрени}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място.</translation>
-<translation id="3824203811509979971">Обобщавайте съдържание или задавайте въпроси</translation>
 <translation id="3824621460022590830">Означението за регистриране на устройството е невалидно. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Влезте в профила си, за да видите разделите от други устройства</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомняне на избора ми за този файлов тип: <ph name="FILE_TYPES" />}other{Запомняне на избора ми за следните файлови типове: <ph name="FILE_TYPES" />}}</translation>
@@ -5900,7 +5898,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="512642543295077915">Клавиш „търсене“ + Backspace</translation>
 <translation id="5126611267288187364">Преглед на промените</translation>
 <translation id="5127620150973591153">Идентификатор на защитената връзка: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Обобщавайте съдържание или задавайте въпроси.</translation>
 <translation id="5127881134400491887">Управление на мрежовите връзки</translation>
 <translation id="5127934926273826089">Цветя</translation>
 <translation id="5127986747308934633">Администраторът ви управлява устройството ви</translation>
@@ -7452,7 +7449,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6254892857036829079">Перфектно</translation>
 <translation id="6257131917452817589">автоматичната промяна на паролата</translation>
 <translation id="6257602895346497974">Включване на синхронизирането...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Тази мрежа ще бъде с приоритет, ако е налице повече от една мрежа, която е използвана или конфигурирана по-рано</translation>
 <translation id="6259776178973198997">Опресняване на информацията за собствениците в Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
@@ -9884,6 +9880,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Автоматично прехвърляне на Wi-Fi от телефона ви с Android</translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
+<translation id="7992080146463834191">Обобщавайте съдържание, опростявайте сложен изказ или задавайте въпроси.</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
 <translation id="7997826902155442747">Приоритет на процесите</translation>
 <translation id="7997828719430450286">Успех.</translation>
@@ -11149,6 +11146,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8874448314264883207">Разширението <ph name="EXTENSION_NAME" /> бе изключено</translation>
 <translation id="8874647982044395866">Органичен</translation>
 <translation id="8874790741333031443">Опитайте временно да разрешите „бисквитките“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин.</translation>
+<translation id="8875221558267407626">Обобщавайте съдържание, опростявайте сложен изказ или задавайте въпроси</translation>
 <translation id="8875520811099717934">Надстройване на Linux</translation>
 <translation id="8875736897340638404">Избиране на настройка за видимостта</translation>
 <translation id="8876307312329369159">Тази настройка не може да бъде променена по време на демонстрационна сесия.</translation>

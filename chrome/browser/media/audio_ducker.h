@@ -5,16 +5,19 @@
 #ifndef CHROME_BROWSER_MEDIA_AUDIO_DUCKER_H_
 #define CHROME_BROWSER_MEDIA_AUDIO_DUCKER_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 
+#if BUILDFLAG(IS_WIN)
+class AudioDuckerWin;
+#endif  // BUILDFLAG(IS_WIN)
+
 // The AudioDucker ducks other audio in Chrome besides what is playing through
-// its associated Page's WebContents.
-//
-// TODO(https://crbug.com/382316461): This should also duck audio from
-// applications other than Chrome.
+// its associated Page's WebContents. Additionally, on Windows only, the
+// AudioDucker ducks audio from other applications.
 class AudioDucker : public content::PageUserData<AudioDucker>,
                     public content::WebContentsObserver {
  public:
@@ -31,7 +34,8 @@ class AudioDucker : public content::PageUserData<AudioDucker>,
   ~AudioDucker() override;
 
   // Ducks all audio in Chrome except audio playback in our associated Page's
-  // WebContents. Returns true if ducking was started successfully or if we're
+  // WebContents. On Windows only, this also ducks audio from other
+  // applications. Returns true if ducking was started successfully or if we're
   // already ducking.
   bool StartDuckingOtherAudio();
 
@@ -58,6 +62,13 @@ class AudioDucker : public content::PageUserData<AudioDucker>,
   // Binds |audio_focus_remote_| if it's not already bound. Returns true if
   // |audio_focus_remote_| is already bound or has become bound.
   bool BindToAudioFocusManagerIfNecessary();
+
+#if BUILDFLAG(IS_WIN)
+  bool ShouldDuckProcess(base::ProcessId process_id) const;
+
+  // Responsible for ducking other applications on Windows.
+  std::unique_ptr<AudioDuckerWin> windows_ducker_;
+#endif  // BUILDFLAG(IS_WIN)
 
   AudioDuckingState ducking_state_ = AudioDuckingState::kNoDucking;
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote_;

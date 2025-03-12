@@ -346,6 +346,14 @@ export class SearchboxElement extends SearchboxElementBase {
     return !this.$.input.value.trim();
   }
 
+  queryAutocomplete() {
+    // Query autocomplete if dropdown is not visible
+    if (this.dropdownIsVisible) {
+      return;
+    }
+    this.queryAutocomplete_(this.$.input.value);
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================

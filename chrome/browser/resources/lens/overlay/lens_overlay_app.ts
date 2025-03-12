@@ -558,6 +558,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     if (this.autoFocusSearchbox &&
         this.isLensOverlayContextualSearchboxVisible) {
       this.focusSearchbox();
+      this.$.searchbox.queryAutocomplete();
     }
   }
 

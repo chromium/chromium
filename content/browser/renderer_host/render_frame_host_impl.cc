@@ -9751,36 +9751,20 @@ void RenderFrameHostImpl::CreateNewWindow(
             isolation_info_.network_anonymization_key()));
   }
 
-  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
-  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver =
-      pending_frame_remote.InitWithNewEndpointAndPassReceiver();
-  new_main_rfh->SetMojomFrameRemote(std::move(pending_frame_remote));
+  new_main_rfh->SetMojomFrameRemote(std::move(params->frame_remote));
 
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker;
   new_main_rfh->BindBrowserInterfaceBrokerReceiver(
-      browser_interface_broker.InitWithNewPipeAndPassReceiver());
+      std::move(params->main_frame_interface_broker));
 
-  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
-      pending_associated_interface_provider;
   new_main_rfh->BindAssociatedInterfaceProviderReceiver(
-      pending_associated_interface_provider
-          .InitWithNewEndpointAndPassReceiver());
-
-  // With this path, RenderViewHostImpl::CreateRenderView is never called
-  // because `blink::WebView` is already created on the renderer side. Thus we
-  // need to establish the connection here.
-  mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
-  mojo::PendingAssociatedReceiver<blink::mojom::PageBroadcast>
-      page_broadcast_receiver =
-          page_broadcast.InitWithNewEndpointAndPassReceiver();
+      std::move(params->associated_interface_provider));
 
   auto widget_params =
       new_main_rfh->GetLocalRenderWidgetHost()
           ->BindAndGenerateCreateFrameWidgetParamsForNewWindow();
 
   new_main_rfh->render_view_host()->BindPageBroadcast(
-      std::move(page_broadcast));
+      std::move(params->page_broadcast_remote));
 
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
@@ -9797,9 +9781,7 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
-      std::move(pending_frame_receiver), std::move(widget_params),
-      std::move(page_broadcast_receiver), std::move(browser_interface_broker),
-      std::move(pending_associated_interface_provider), cloned_namespace->id(),
+      std::move(widget_params), cloned_namespace->id(),
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
       new_main_rfh->GetDocumentToken(),
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),

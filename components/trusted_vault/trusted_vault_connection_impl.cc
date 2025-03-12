@@ -442,13 +442,20 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       }
 
       if (member.member_type() == trusted_vault_pb::SecurityDomainMember::
-                                      MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN &&
-          member.member_metadata().has_google_password_manager_pin_metadata()) {
-        const auto& pin_metadata =
-            member.member_metadata().google_password_manager_pin_metadata();
-        result_.gpm_pin_metadata.emplace(
-            member.public_key(), pin_metadata.encrypted_pin_hash(),
-            ToTime(pin_metadata.expiration_time()));
+                                      MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN) {
+        if (member.member_metadata()
+                .has_google_password_manager_pin_metadata()) {
+          pin_status_ = TrustedVaultListSecurityDomainMembersPinStatus::
+              kPinPresentAndUsableForRecovery;
+          const auto& pin_metadata =
+              member.member_metadata().google_password_manager_pin_metadata();
+          result_.gpm_pin_metadata.emplace(
+              member.public_key(), pin_metadata.encrypted_pin_hash(),
+              ToTime(pin_metadata.expiration_time()));
+        } else {
+          pin_status_ = TrustedVaultListSecurityDomainMembersPinStatus::
+              kPinPresentButUnusableForRecovery;
+        }
       } else if (member.member_type() ==
                  trusted_vault_pb::SecurityDomainMember::
                      MEMBER_TYPE_ICLOUD_KEYCHAIN) {
@@ -502,6 +509,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         "TrustedVault.DownloadAuthenticationFactorsRegistrationState." +
             GetSecurityDomainNameForUma(security_domain_),
         result_.state);
+    RecordTrustedVaultListSecurityDomainMembersPinStatus(security_domain_,
+                                                         pin_status_);
     std::move(callback_).Run(std::move(result_));
   }
 
@@ -515,6 +524,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
   base::RepeatingClosure keep_alive_callback_;
   std::unique_ptr<TrustedVaultRequest> request_;
   DownloadAuthenticationFactorsRegistrationStateResult result_;
+  TrustedVaultListSecurityDomainMembersPinStatus pin_status_ =
+      TrustedVaultListSecurityDomainMembersPinStatus::kNoPinPresent;
 };
 
 TrustedVaultURLFetchReasonForUMA

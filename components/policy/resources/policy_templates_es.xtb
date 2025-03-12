@@ -3757,7 +3757,6 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.</translation>
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
-<translation id="3772558247108478825">Configuración de la función de agrupación inteligente basada en IA generativa</translation>
 <translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
 <translation id="3785423718413114598">No permitir funciones de IA generativa</translation>
@@ -4644,17 +4643,6 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
 <translation id="4472740647327683596">Ancho de la página en micrómetros</translation>
 <translation id="4474167089968829729">Habilitar el almacenamiento de contraseñas en el gestor de contraseñas</translation>
-<translation id="4474320817847428197">Esta política controla la configuración de la función de agrupación inteligente basada en IA generativa de <ph name="PRODUCT_OS_NAME" />.
-
-Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2, no se permite la función.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="447692108909279121">Gestión de IPs de WebRTC</translation>
 <translation id="4478248026668918517">Bloquea la detección del nivel de las políticas.</translation>
 <translation id="4479671363221255277">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
@@ -4666,6 +4654,27 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4480694116501920047">Forzar Búsqueda Segura</translation>
 <translation id="4481202456143946404">La versión válida de los Términos del Servicio derivados de Google3 CL, donde se introdujo la nueva versión de los Términos.</translation>
+<translation id="4481804933320714808">Esta función está en fase beta. Dado que esta función se encuentra en fase de desarrollo y solo está disponible para testers de confianza, ten en cuenta que puede sufrir cambios y actualizaciones.
+
+Esta política permite a los administradores definir un agregador empresarial de búsqueda determinado que proporcionará recomendaciones y resultados de búsqueda en la barra de direcciones cuando se active mediante una palabra clave específica. Los usuarios pueden iniciar la búsqueda en la barra de direcciones escribiendo la palabra clave indicada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (por ejemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, después, pulsando la barra espaciadora o Tabulador.
+
+Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del buscador que se muestra al usuario en la barra de direcciones.
+
+El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que introduce el usuario para activar la búsqueda. El acceso directo puede incluir palabras y caracteres sin formato, pero no puede incluir espacios ni empezar por el símbolo @. Los accesos directos deben ser únicos.
+
+El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se va a buscar. Introduce la dirección web de la página de resultados del buscador y utiliza <ph name="SEARCH_TERM_MARKER" /> en lugar de la consulta.
+
+El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome obtendrá sugerencias de búsqueda mediante una solicitud GET a la URL sustituyendo <ph name="SEARCH_TERM_MARKER" /> por la consulta de búsqueda del usuario. Si no, se hará una solicitud POST y la consulta del usuario se pasará en los parámetros POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se define este campo, se usará un icono predeterminado. Se recomienda usar un icono de página (por ejemplo: <ph name="ICON_URL_EXAMPLE" />).
+
+El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere el <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barra de direcciones para ver recomendaciones de búsqueda. Si no se define este campo, no se requiere el <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barra de direcciones.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4481952213163895432">Inhabilitar la palabra de activación del Asistente de Google</translation>
 <translation id="4482784169143060077">Habilitar los cambios automáticos a HTTPS</translation>
 <translation id="4483120730995943109">Si la función de JavaScript setTimeout() tiene un tiempo de espera de 0 ms, no se redondeará a 1 ms.</translation>
@@ -5713,6 +5722,11 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si no se asigna ningún valor, se usa el periodo predeterminado de 604.800.000 milisegundos (una semana).</translation>
 <translation id="5212810195096589189">Especificar el permiso de la interfaz de línea de comandos para máquinas virtuales</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben activar un cambio de navegador.</translation>
+<translation id="5216520638921067085">Especifica la antigüedad mínima de lanzamiento más allá de la cual las notificaciones de reinicio son más agresivas. La antigüedad se calcula desde la última vez que se sirvió la versión actualmente en ejecución a los clientes.
+
+Si hay una nueva versión pendiente, se necesita reiniciar el navegador o el dispositivo, y si la versión actual ha sido sustituida durante más tiempo que el número de días especificado en este ajuste, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se establece a 2 horas. Si se asigna el valor 1 ("Requerido") a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, los usuarios tendrán que reiniciar al final del periodo.
+
+Si no se establece o si no se puede determinar la antigüedad de lanzamiento, se usará la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> para todas las actualizaciones.</translation>
 <translation id="5216815237712190041">Permite configurar en cada dispositivo la imagen de fondo de pantalla que se muestra en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. La política se define especificando la URL desde la que el dispositivo ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico que se utiliza para verificar la integridad de la descarga. La imagen debe tener formato JPEG y un tamaño que no supere los 16 MB. Se debe poder acceder a la URL sin autenticación. La imagen de fondo de pantalla se descargará y almacenará en caché. Se volverá a descargar si se cambia la URL o el hash.
 
       Si se establece la política de fondo de pantalla del dispositivo, el dispositivo ChromeOS descargará y utilizará la imagen de fondo en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. Una vez que el usuario inicie sesión, se aplicará la política de fondo de pantalla del usuario.
@@ -6803,6 +6817,7 @@ Si se le asigna el valor <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> 
 
       De lo contrario, si se debe mantener la compatibilidad con un servidor con errores, se podrá asignar el valor "tls1.1" a esta política. Se trata de una solución provisional y se debería corregir el servidor rápidamente.</translation>
 <translation id="5932767795525445337">Esta política también se puede utilizar para fijar aplicaciones de Android.</translation>
+<translation id="5936192285609409992">Calculadora (compatible desde la versión 136)</translation>
 <translation id="5936193585187054065">Encrypted ClientHello (ECH) es una extensión de TLS para cifrar campos sensibles de ClientHello y mejorar la privacidad.
 
       Si esta política se habilita o no se configura, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado de ECH. Si se inhabilita, <ph name="PRODUCT_NAME" /> no habilitará ECH.
@@ -7286,6 +7301,7 @@ Si quieres obtener información detallada sobre los patrones de <ph name="URL_LA
 <translation id="6287128640500683781">Permitir que cualquier usuario inicie sesión</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio <ph name="PRODUCT_NAME" /> e iniciar el escritorio remoto al iniciar sesión</translation>
+<translation id="6288152932495466841">Notificar a los usuarios sobre versiones de navegador sustituidas</translation>
 <translation id="6299147100249359151">Permite la detección del nivel de las políticas.</translation>
 <translation id="6299554629216555326">Configuración de la gestión de ventanas</translation>
 <translation id="6302021021024941085">Inhabilitar las herramientas de solución de problemas de kiosco.</translation>
@@ -8353,12 +8369,6 @@ Esta política se eliminará en el futuro, cuando se haya lanzado por completo l
       Si no se define esta política, HTTP/0.9 se inhabilitará en los puertos no predeterminados.</translation>
 <translation id="6969332115615661188">Inhabilitar entrada de vídeo</translation>
 <translation id="6969949359984470271">La aplicación web de kiosco no funciona sin conexión</translation>
-<translation id="6971579036359007697">Controla la migración de archivos locales a la nube.
-Solo se aplica a los usuarios de SkyVault, es decir, cuando se le asigna el valor false a LocalUserFilesAllowed. De lo contrario, se omite.
-
-Si se le asigna el valor google_drive, los archivos locales se moverán a Google Drive y las carpetas locales se ocultarán.
-Si se le asigna el valor microsoft_onedrive, los archivos locales se moverán a OneDrive y las carpetas locales se ocultarán.
-Si se le asigna el valor read-only o no se define, los archivos locales permanecerán en el modo de solo lectura.</translation>
 <translation id="6972540544240464302">Selecciona la configuración del programador de tareas</translation>
 <translation id="6975533677426693807">Abrir siempre archivos PDF usando el lector de PDF interno</translation>
 <translation id="6986172482189158664">Ajustes del periodo de vida de los datos de navegación</translation>
@@ -11204,6 +11214,7 @@ Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de lo
 <translation id="9107635531763682565">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar notificaciones de escritorio. Si se le asigna el valor 2, no se permitirán las notificaciones de escritorio.
 
 Si no se establece, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="9107664925383184344">Periodo (días)</translation>
 <translation id="910929592571075861">No particionar las URLs blob durante la obtención y la navegación.</translation>
 <translation id="9110194749335632373">Impedir conexiones de acceso remoto de administradores de empresa en este equipo</translation>
 <translation id="9110198768621013941">Habilita la configuración de predicción de Autocompletar.

@@ -375,7 +375,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1244265436519979884">Återställning av Linux pågår</translation>
 <translation id="1244303850296295656">Fel i tillägg</translation>
 <translation id="1244917379075403655">Klicka på Inställningar</translation>
-<translation id="1245041875932187638">Radera all data som används av autofyll med AI</translation>
 <translation id="1245331638296910488">Filerna flyttas till OneDrive när de öppnas i Microsoft 365</translation>
 <translation id="1245628370644070008">Återställning av lokal data</translation>
 <translation id="1246863218384630739">Det gick inte att installera <ph name="VM_NAME" />: Avbildningens webbadress returnerade felkoden <ph name="HTTP_ERROR" />. Kontakta administratören.</translation>
@@ -1417,7 +1416,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Förbereder</translation>
 <translation id="1969654639948595766">WebRTC-textloggar (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">All data raderas. Det går inte att ångra åtgärden.</translation>
 <translation id="1972313920920745320">Webbplatser du lägger till är alltid aktiva och minne frigörs inte från dem. <ph name="BEGIN_LINK" />Läs mer om hur du håller specifika webbplatser aktiva<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
 <translation id="197288927597451399">Behåll</translation>
@@ -2303,6 +2301,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="256517381556987641">Filsynkronisering har hittills hittat <ph name="ITEMS_FOUND" /> filer och söker fortfarande igenom lagringsutrymmet. Testa att aktivera filsynkronisering igen om några minuter.</translation>
 <translation id="2565214867520763227">Aktivera skärmläsaren</translation>
 <translation id="2566146433999774844">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och <ph name="NUM_OTHER_MEMBERS" /> till</translation>
+<translation id="256726287944589768">Visa sidfot på sidan Ny flik</translation>
 <translation id="2568694057933302218">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="2568774940984945469">Infobar-behållare</translation>
 <translation id="2569972178052279830">Återförsäljarens namn</translation>
@@ -2811,6 +2810,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2921081876747860777">Skapa ett lösenord för att skydda lokal data</translation>
 <translation id="2923006468155067296">Din <ph name="DEVICE_TYPE" /> kommer nu att låsas.
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> andra uppgifter i samma uppgiftsgrupp: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Ta bort det här kontot</translation>
 <translation id="2923644930701689793">Kom åt telefonens kamerabilder</translation>
 <translation id="292371311537977079">Inställningar för Chrome</translation>
@@ -3068,7 +3068,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3108957152224931571">Markeringsfärg</translation>
 <translation id="3109206895301430738">Sparade flikgrupper</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
-<translation id="310979712355504754">Ta bort alla</translation>
 <translation id="3112292765614504292">Appstorlek: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Lade till den här fliken</translation>
 <translation id="311394601889664316">Tillåt inte att webbplatser redigerar filer eller mappar på enheten</translation>
@@ -4088,7 +4087,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ett tillägg har godkänts}other{# tillägg har godkänts}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Minst <ph name="INSTALL_SIZE" /> utrymme rekommenderas för Linux.</translation>
-<translation id="3824203811509979971">Sammanfatta innehållet eller ställ frågor</translation>
 <translation id="3824621460022590830">Token för enhetsregistrering är ogiltig. Kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Logga in om du vill visa flikar från andra enheter</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Kom ihåg mitt val för denna filtyp: <ph name="FILE_TYPES" />}other{Kom ihåg mitt val för dessa filtyper: <ph name="FILE_TYPES" />}}</translation>
@@ -5903,7 +5901,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="512642543295077915">sök + backsteg</translation>
 <translation id="5126611267288187364">Visa ändringar</translation>
 <translation id="5127620150973591153">Id för säker anslutning: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Sammanfatta innehållet eller ställ frågor.</translation>
 <translation id="5127881134400491887">Hantera nätverksanslutningar</translation>
 <translation id="5127934926273826089">Blommor</translation>
 <translation id="5127986747308934633">Administratören styr enheten</translation>
@@ -7454,7 +7451,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257131917452817589">automatisk lösenordsändring</translation>
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Det här nätverket visas om det finns fler än ett tidigare anslutet eller konfigurerat nätverk.</translation>
 <translation id="6259776178973198997">Uppdatera information om WiFi Direct-ägare</translation>
 <translation id="6262371516389954471">Säkerhetskopiorna krypteras med hjälp av Google-kontots lösenord och laddas upp på Google.</translation>
@@ -9886,6 +9882,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Röst <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Överför automatiskt wifi-användaruppgifter från Android-telefonen</translation>
 <translation id="7991296728590311172">Inställningar för brytarstyrning</translation>
+<translation id="7992080146463834191">Sammanfatta innehåll, förenkla komplicerat språk eller ställ frågor.</translation>
 <translation id="7992203134935383159">Talsyntes</translation>
 <translation id="7997826902155442747">Prioriteringsprocess</translation>
 <translation id="7997828719430450286">Klart!</translation>
@@ -11151,6 +11148,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> har stängts av</translation>
 <translation id="8874647982044395866">Organisk</translation>
 <translation id="8874790741333031443">Testa att tillfälligt tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men större sannolikhet att webbplatsfunktionerna fungerar som förväntat.</translation>
+<translation id="8875221558267407626">Sammanfatta innehåll, förenkla komplicerat språk eller ställ frågor</translation>
 <translation id="8875520811099717934">Uppgradering av Linux</translation>
 <translation id="8875736897340638404">Välj synlighetsinställning</translation>
 <translation id="8876307312329369159">Inställningen kan inte ändras i demoläget.</translation>

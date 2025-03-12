@@ -4,24 +4,31 @@
 
 //! Utilities to process `cargo metadata` dependency graph.
 
-use crate::config::BuildConfig;
-use crate::crates;
-use crate::gn::{target_platform_to_condition, Condition};
-use crate::group::Group;
-use crate::inherit::find_inherited_privilege_group;
+use crate::{
+    config::BuildConfig,
+    crates,
+    gn::{target_spec_to_condition, Condition},
+    group::Group,
+};
 
-use std::collections::{hash_map::Entry, HashMap, HashSet};
-use std::path::PathBuf;
-
-use anyhow::{anyhow, Result};
+use anyhow::{bail, Context, Result};
 pub use cargo_metadata::DependencyKind;
+use guppy::{
+    graph::cargo::{CargoOptions, CargoSet},
+    graph::feature::{FeatureSet, StandardFeatures},
+    graph::{
+        BuildTargetId, BuildTargetKind, DependencyDirection, PackageGraph, PackageLink,
+        PackageMetadata, PackageQuery, PackageSet,
+    },
+    platform::PlatformStatus,
+    PackageId,
+};
 use itertools::Itertools;
 pub use semver::Version;
-
-/// Uniquely identifies a `Package` in a particular set of dependencies. The
-/// representation is an implementation detail and may not be unique between
-/// different sets of metadata.
-pub use cargo_metadata::PackageId;
+use std::{
+    collections::{HashMap, HashSet},
+    path::PathBuf,
+};
 
 /// A single transitive dependency of a root crate. Includes information needed
 /// for generating build files later.
@@ -135,6 +142,52 @@ pub enum LibType {
     ProcMacro,
 }
 
+impl LibType {
+    fn from_crate_types(crate_types: &[String]) -> Result<Self> {
+        // TODO(lukasza): Consider deleting `cdylib` support in
+        // `//build/rust/cargo_crate.gni` and instead returning `Rlib` *here*
+        // (i.e. deleting `CDYLIB_CRATE_TYPE`, adding `"cdylib"` to
+        // `RLIB_CRATE_TYPES`, copying the comment from `cargo_crate.gni` and
+        // referencing https://crbug.com/40273653).
+        const CDYLIB_CRATE_TYPE: &str = "cdylib";
+        if crate_types.iter().any(|x| *x == CDYLIB_CRATE_TYPE) {
+            return Ok(LibType::Cdylib);
+        }
+
+        const RLIB_CRATE_TYPES: [&str; 2] = [
+            // Naturally "rlib" maps to `LibType::Rlib`.
+            "rlib",
+            // https://doc.rust-lang.org/nightly/reference/linkage.html#r-link.lib
+            // says:
+            //
+            //     > The purpose of this generic lib option is to generate
+            //     > the “compiler recommended” style of library.
+            //
+            // For Chromium this means `Rlib`.
+            "lib",
+        ];
+        for rlib_crate_type in RLIB_CRATE_TYPES.iter() {
+            if crate_types.iter().any(|x| *x == *rlib_crate_type) {
+                return Ok(LibType::Rlib);
+            }
+        }
+
+        // All the other
+        // [crate types](https://doc.rust-lang.org/nightly/cargo/reference/cargo-targets.html#the-crate-type-field)
+        // should be either handled earlier by `get_build_targets` or unsupported:
+        // - `bin` - handled via `BuildTargetKind::Binary` and
+        //   `BuildTargetId::Binary(_)`
+        // - `dylib` - currently not supported by `cargo_crate.gni`
+        // - `staticlib` - currently not supported by `cargo_crate.gni`.
+        // - `proc-macro` - handled via `BuildTargetKind::ProcMacro`
+        //
+        // TODO(lukasza): Should we proactively return `Rlib` for `staticlib`?
+        // Or do we want to wait until this is actually needed (to double-check
+        // that this will do the right thing)?
+        bail!("Unknown or unexpected crate types: {}", crate_types.join(", "));
+    }
+}
+
 impl std::fmt::Display for LibType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
@@ -152,367 +205,315 @@ impl std::fmt::Display for LibType {
 /// rustc invocation: e.g. a package may have a lib crate as well as multiple
 /// binary crates.
 ///
-/// `roots` optionally specifies from which packages to traverse the dependency
-/// graph (likely the root packages to generate build files for). This overrides
-/// the usual behavior, which traverses from all workspace members and the root
-/// workspace package. The package names in `roots` should still only contain
-/// workspace members.
+/// `root_package_name` specifies from which package to start traversing the
+/// dependency graph (likely the root package to generate build files for).
 pub fn collect_dependencies(
-    metadata: &cargo_metadata::Metadata,
+    graph: &PackageGraph,
     root_package_name: &str,
     extra_config: &BuildConfig,
 ) -> Result<Vec<Package>> {
-    // The metadata is split into two parts:
-    // 1. A list of packages and associated info: targets (e.g. lib, bin, tests),
-    //    source path, etc. This includes all workspace members and all transitive
-    //    dependencies. Deps are not filtered based on platform or features: it is
-    //    the maximal set of dependencies.
-    // 2. Resolved dependency graph. There is a node for each package pointing to
-    //    its dependencies in each configuration (normal, build, dev), and the
-    //    resolved feature set. This includes platform-specific info so one can
-    //    filter based on target platform. Nodes include an ID that uniquely refers
-    //    to a package in both (1) and (2).
-    //
-    // We need info from both parts. Traversing the graph tells us exactly which
-    // crates are needed for a given configuration and platform. In the process,
-    // we must collect package IDs then look up other data in (1).
-    //
-    // Note the difference between "packages" and "crates" as described in
-    // https://doc.rust-lang.org/book/ch07-01-packages-and-crates.html
-
-    // `metadata`'s structures are flattened into lists. Make it easy to index
-    // by package ID.
-    let dep_graph: MetadataGraph = build_graph(metadata);
-
-    // `cargo metadata`'s resolved dependency graph.
-    let resolved_graph: &cargo_metadata::Resolve = metadata.resolve.as_ref().unwrap();
-
-    // The ID of the fake root package. Do not include it in the dependency list
-    // since it is not actually built.
-    let fake_root: &cargo_metadata::PackageId = resolved_graph.root.as_ref().unwrap();
-
-    // `explore_node`, our recursive depth-first traversal function, needs to
-    // share state between stack frames. Construct the shared state.
-    let mut traversal_state = TraversalState {
-        dep_graph: &dep_graph,
-        root: fake_root,
-        visited: HashSet::new(),
-        dependencies: HashMap::new(),
+    // Ask `guppy` to run Cargo feature/dependency resolution.
+    let cargo_set = {
+        let cargo_options = CargoOptions::new();
+        let initials = resolve_root_package_set(graph, root_package_name)?
+            .to_feature_set(StandardFeatures::Default);
+        let no_extra_features = graph.resolve_none().to_feature_set(StandardFeatures::Default);
+        let resolver = PackageResolver { extra_config };
+        CargoSet::with_resolver(initials, no_extra_features, resolver, &cargo_options)?
     };
+    let cargo_set_links = cargo_set
+        .build_dep_links()
+        .chain(cargo_set.proc_macro_links())
+        .chain(cargo_set.target_links())
+        .chain(cargo_set.host_links())
+        .map(|link| get_link_key(&link))
+        .collect::<HashSet<_>>();
+    let feature_set = cargo_set.target_features().union(cargo_set.host_features());
+    let package_set = feature_set.to_package_set();
 
-    // Do a depth-first traversal of the graph to find all relevant
-    // dependencies. Start from the root package given as a parameter.
-    let traversal_root_id = metadata
-        .packages
-        .iter()
-        .filter(|pkg| pkg.name == root_package_name)
-        .map(|pkg| pkg.id.clone())
-        .exactly_one()
-        .map_err(|exactly_one_error| {
-            let found_ids = exactly_one_error.collect_vec();
-            if found_ids.is_empty() {
-                anyhow!(
-                    "Couldn't find the root package: {root_package_name}. \
-                     No package with this name."
-                )
-            } else {
-                anyhow!(
-                    "Couldn't find the root package: {root_package_name}. \
-                     More than one package with this name: {}",
-                    found_ids.into_iter().join(", ")
-                )
-            }
-        })?;
-    let node = dep_graph.nodes.get(&traversal_root_id).unwrap();
-    explore_node(&mut traversal_state, node);
-
-    // TODO(danakj): Throw an error if any `safe` crate depends on a `sandbox`
-    // crate.
-
-    // `traversal_state.dependencies` is the output of `explore_node`. Pull it
-    // out for processing.
-    let mut dependencies = traversal_state.dependencies;
-
-    // Fill in the per-package data for each dependency.
-    for (id, dep) in dependencies.iter_mut() {
-        let node: &cargo_metadata::Node = traversal_state.dep_graph.nodes.get(id).unwrap();
-        let package: &cargo_metadata::Package = traversal_state.dep_graph.packages.get(id).unwrap();
-
-        dep.package_name = package.name.clone();
-        dep.description = package.description.clone();
-        dep.authors = package.authors.clone();
-        dep.edition = package.edition.to_string();
-        // TODO(danakj): It would be nice to store the `manifest_dir` here and
-        // change all gnrt_config.toml relative paths to be relative to the
-        // manifest instead of relative to the crate root, to eliminate the
-        // chance for there being a different relative path from a lib root vs a
-        // bin root. It can be grabbed like:
-        //
-        // dep.manifest_dir = package
-        //     .manifest_path
-        //     .parent()
-        //     .expect("manifest_path has no directory?")
-        //     .to_path_buf()
-        //     .into_std_path_buf();
-
-        // TODO(crbug.com/40212956): Resolve features independently per kind
-        // and platform. This may require using the unstable unit-graph feature:
-        // https://doc.rust-lang.org/cargo/reference/unstable.html#unit-graph
-        for (_, kind_info) in dep.dependency_kinds.iter_mut() {
-            kind_info.features = node.features.clone();
-            // Remove "default" feature to match behavior of crates.py. Note
-            // that this is technically not correct since a crate's code may
-            // choose to check "default" directly, but virtually none actually
-            // do this.
-            //
-            // TODO(crbug.com/40212956): Revisit this behavior and maybe keep
-            // "default" features.
-            if let Some(pos) = kind_info.features.iter().position(|x| x == "default") {
-                kind_info.features.remove(pos);
-            }
+    // Translate the packages into an internal `gnrt` representation.
+    let is_toplevel_dep = |package: &PackageMetadata| -> bool {
+        package.reverse_direct_links().any(|link| link.from().name() == root_package_name)
+    };
+    let get_dependency_condition = |link: &PackageLink, dep_kind: DependencyKind| -> Condition {
+        let key = get_link_key(link);
+        if !cargo_set_links.contains(&key) {
+            return Condition::AlwaysFalse;
         }
-
-        let allowed_bin_targets: HashSet<&str> =
-            extra_config.get_combined_set(&package.name, |crate_cfg| &crate_cfg.bin_targets);
-        for target in package.targets.iter() {
-            let src_root = target.src_path.clone().into_std_path_buf();
-            let target_type = match target.kind.iter().find_map(|s| TargetType::from_name(s)) {
-                Some(target_type) => target_type,
-                // Skip other targets, such as test, example, etc.
-                None => continue,
-            };
-
-            match target_type {
-                TargetType::Lib(lib_type) => {
-                    // There can only be one lib target.
-                    assert!(
-                        dep.lib_target.is_none(),
-                        "found duplicate lib target:\n{:?}\n{:?}",
-                        dep.lib_target,
-                        target
-                    );
-                    dep.lib_target = Some(LibTarget { root: src_root, lib_type });
-                }
-                TargetType::Bin => {
-                    if allowed_bin_targets.contains(target.name.as_str()) {
-                        dep.bin_targets
-                            .push(BinTarget { root: src_root, name: target.name.clone() });
-                    }
-                }
-                TargetType::BuildScript => {
-                    assert_eq!(
-                        dep.build_script, None,
-                        "found duplicate build script target {target:?}"
-                    );
-                    dep.build_script = Some(src_root);
-                }
-            }
-        }
-
-        dep.version = package.version.clone();
-
-        // Collect this package's list of resolved dependencies which will be
-        // needed for build file generation later.
-        for node_dep in iter_node_deps(node) {
-            let dep_pkg = dep_graph.packages.get(node_dep.pkg).unwrap();
-            let dep_of_dep = DepOfDep {
-                package_name: dep_pkg.name.clone(),
-                use_name: node_dep.lib_name.to_string(),
-                version: dep_pkg.version.clone(),
-                condition: node_dep.condition.clone(),
-            };
-
-            match node_dep.kind {
-                DependencyKind::Normal => dep.dependencies.push(dep_of_dep),
-                DependencyKind::Build => dep.build_dependencies.push(dep_of_dep),
-                DependencyKind::Development | DependencyKind::Unknown => unreachable!(),
-            }
-        }
-
-        dep.group = find_inherited_privilege_group(
-            id,
-            &dep_graph.nodes.get(fake_root).unwrap().id,
-            &dep_graph.packages,
-            &dep_graph.nodes,
-            extra_config,
-        );
-
-        // Make sure the package comes from our vendored source. If not, report
-        // the error for later.
-        dep.is_local = package.source.is_none();
-
-        // Determine whether it's a direct or transitive dependency.
-        dep.is_toplevel_dep = {
-            let fake_root_node = dep_graph.nodes.get(fake_root).unwrap();
-            fake_root_node.dependencies.contains(id)
+        let dep_kind = match dep_kind {
+            cargo_metadata::DependencyKind::Normal => guppy::DependencyKind::Normal,
+            cargo_metadata::DependencyKind::Build => guppy::DependencyKind::Build,
+            _ => unreachable!(), // `gnrt` ignores other dependency kinds.
         };
-    }
-
-    // Filter out dependencies removed by config file.
-    let mut dependencies = dependencies.into_values().collect::<Vec<_>>();
-    for dep in dependencies.iter_mut() {
-        let combined: HashSet<&str> =
-            extra_config.get_combined_set(&dep.package_name, |crate_cfg| &crate_cfg.remove_deps);
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.contains(dep_of_dep.package_name.as_str()));
-        }
-    }
-    dependencies
-        .retain(|dep| !extra_config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
-
-    // Return a flat list of dependencies.
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
-    Ok(dependencies)
-}
-
-/// Graph traversal state shared by recursive calls of `explore_node`.
-struct TraversalState<'a> {
-    /// The graph from "cargo metadata", processed for indexing by package id.
-    dep_graph: &'a MetadataGraph<'a>,
-    /// The fake root package that we exclude from `dependencies`.
-    root: &'a cargo_metadata::PackageId,
-    /// Set of packages already visited by `explore_node`.
-    visited: HashSet<&'a cargo_metadata::PackageId>,
-    /// The final set of dependencies.
-    dependencies: HashMap<&'a cargo_metadata::PackageId, Package>,
-}
-
-/// Recursively explore a particular node in the dependency graph. Fills data in
-/// `state`. The final output is in `state.dependencies`.
-fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::Node) {
-    // Mark the node as visited, or continue if it's already visited.
-    if !state.visited.insert(&node.id) {
-        return;
-    }
-
-    // Helper to insert a placeholder `Dependency` into a map. We fill in the
-    // fields later.
-    let init_dep = || Package {
-        package_name: String::new(),
-        version: Version::new(0, 0, 0),
-        description: None,
-        authors: Vec::new(),
-        edition: String::new(),
-        dependencies: Vec::new(),
-        build_dependencies: Vec::new(),
-        dependency_kinds: HashMap::new(),
-        lib_target: None,
-        bin_targets: Vec::new(),
-        build_script: None,
-        group: Group::Safe,
-        is_local: false,
-        is_toplevel_dep: false,
+        get_link_condition(link, dep_kind)
     };
+    let mut packages = package_set
+        .packages(DependencyDirection::Forward)
+        .filter(|package| package.name() != root_package_name)
+        .map(|package| {
+            let err_context = || format!("Error processing `{}`", package.name());
+            let dependencies = get_package_dependencies(&package, |link| {
+                get_dependency_condition(link, DependencyKind::Normal)
+            });
+            let build_dependencies = get_package_dependencies(&package, |link| {
+                get_dependency_condition(link, DependencyKind::Build)
+            });
+            let dependency_kinds =
+                get_reverse_dependency_kinds(&package, &cargo_set, get_dependency_condition);
 
-    // Each node contains a list of enabled features plus a list of
-    // dependencies. Each dependency has a platform filter if applicable.
-    for dep_edge in iter_node_deps(node) {
-        // Explore the target of this edge next. Note that we may visit the same
-        // node multiple times, but this is OK since we'll skip it in the
-        // recursive call.
-        let target_node: &cargo_metadata::Node = state.dep_graph.nodes.get(&dep_edge.pkg).unwrap();
+            let BuildTargets { lib_target, bin_targets, build_script } =
+                get_build_targets(&package, extra_config).with_context(err_context)?;
+            let group = get_privilege_group(&package, extra_config, is_toplevel_dep)
+                .with_context(err_context)?;
 
-        explore_node(state, target_node);
-
-        // Merge this with the existing entry for the dep.
-        let dep: &mut Package = state.dependencies.entry(dep_edge.pkg).or_insert_with(&init_dep);
-        let info: &mut PerKindInfo = dep
-            .dependency_kinds
-            .entry(dep_edge.kind)
-            .or_insert(PerKindInfo { condition: Condition::AlwaysFalse, features: Vec::new() });
-        info.condition = Condition::or(info.condition.clone(), dep_edge.condition);
-    }
-
-    // Initialize the dependency entry for this node's package if it's not our
-    // fake root.
-    if &node.id != state.root {
-        state.dependencies.entry(&node.id).or_insert_with(&init_dep);
-    }
-}
-
-struct DependencyEdge<'a> {
-    pkg: &'a cargo_metadata::PackageId,
-    lib_name: &'a str,
-    kind: DependencyKind,
-    condition: Condition,
-}
-
-/// Iterates over the dependencies of `node`, filtering out platforms we don't
-/// support.
-fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = DependencyEdge<'_>> + '_ {
-    node.deps.iter().flat_map(|node_dep| {
-        // Each NodeDep has information about the package depended on, as
-        // well as the kinds of dependence: as a normal, build script, or
-        // test dependency. For each kind there is an optional platform
-        // filter.
-        //
-        // Filter out kinds for unsupported platforms while mapping the
-        // dependency edges to our own type.
-        //
-        // Cargo may also have duplicates in the dep_kinds list, which may
-        // or may not be a Cargo bug, but we want to filter them out too.
-        // See crbug.com/1393600.
-        let mut seen = HashSet::new();
-        node_dep.dep_kinds.iter().filter_map(move |dep_kind_info| {
-            let condition = match dep_kind_info.target.as_ref() {
-                None => Condition::AlwaysTrue,
-                Some(platform) => target_platform_to_condition(platform),
-            };
-
-            // Filter if it's for a platform we don't support.
-            if condition == Condition::AlwaysFalse {
-                return None;
-            };
-
-            // At this point we don't support building dev dependencies
-            // (e.g. native Rust unit tests) for packages from crates.io.
-            if dep_kind_info.kind == DependencyKind::Development {
-                return None;
-            }
-
-            if seen.contains(&(&dep_kind_info.kind, &dep_kind_info.target)) {
-                return None;
-            }
-            seen.insert((&dep_kind_info.kind, &dep_kind_info.target));
-
-            Some(DependencyEdge {
-                pkg: &node_dep.pkg,
-                lib_name: &node_dep.name,
-                kind: dep_kind_info.kind,
-                condition,
+            Ok(Package {
+                package_name: package.name().to_string(),
+                version: package.version().clone(),
+                description: package.description().map(|s| s.to_string()),
+                authors: package.authors().to_vec(),
+                edition: package.edition().to_string(),
+                dependencies,
+                build_dependencies,
+                dependency_kinds,
+                lib_target,
+                bin_targets,
+                build_script,
+                group,
+                is_local: !package.source().is_external(),
+                is_toplevel_dep: is_toplevel_dep(&package),
             })
         })
-    })
+        .collect::<Result<Vec<_>>>()?;
+
+    // Return a flat list of dependencies.
+    packages.sort_unstable_by(|a, b| {
+        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
+    });
+    Ok(packages)
 }
 
-/// Indexable representation of the `cargo_metadata::Metadata` fields we need.
-struct MetadataGraph<'a> {
-    nodes: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
-    packages: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Package>,
+fn resolve_root_package_set<'g>(
+    graph: &'g PackageGraph,
+    root_package_name: &str,
+) -> Result<PackageSet<'g>> {
+    let package_set = graph.resolve_package_name(root_package_name);
+    match package_set.len() {
+        0 => bail!(
+            "Couldn't find the root package: `{root_package_name}`. \
+             No package with this name."
+        ),
+        2.. => bail!(
+            "Couldn't find the root package: `{root_package_name}`. \
+             More than one package with this name: {}",
+            package_set.package_ids(DependencyDirection::Forward).join(", ")
+        ),
+        1 => Ok(package_set),
+    }
 }
 
-/// Convert the flat lists in `metadata` to maps indexable by PackageId.
-fn build_graph(metadata: &cargo_metadata::Metadata) -> MetadataGraph<'_> {
-    // `metadata` always has `resolve` unless cargo was explicitly asked not to
-    // output the dependency graph.
-    let resolve = metadata.resolve.as_ref().unwrap();
-    let mut graph = HashMap::new();
-    for node in resolve.nodes.iter() {
-        match graph.entry(&node.id) {
-            Entry::Vacant(e) => e.insert(node),
-            Entry::Occupied(_) => panic!("duplicate entries in dependency graph"),
-        };
+/// Graph traversal resolver that rejects dependency links that would have been
+/// `AlwaysFalse` on Chromium platforms.
+struct PackageResolver<'a> {
+    extra_config: &'a BuildConfig,
+}
+
+/// Gets the key to use in `cargo_set_links` `HashSet`.
+fn get_link_key(link: &PackageLink) -> (PackageId, PackageId) {
+    (link.from().id().clone(), link.to().id().clone())
+}
+
+fn get_link_condition(link: &PackageLink, dep_kind: guppy::DependencyKind) -> Condition {
+    let req = link.req_for_kind(dep_kind);
+    if !req.is_present() {
+        Condition::AlwaysFalse
+    } else {
+        Condition::or(
+            get_condition(req.status().required_status()),
+            get_condition(req.status().optional_status()),
+        )
+    }
+}
+
+impl<'g> guppy::graph::PackageResolver<'g> for PackageResolver<'_> {
+    fn accept(&mut self, _query: &PackageQuery<'g>, link: PackageLink<'g>) -> bool {
+        // Remove dependency links rejected by `gnrt_config.toml`.
+        if self.extra_config.resolve.remove_crates.contains(link.to().name()) {
+            return false;
+        }
+        let remove_deps =
+            self.extra_config.get_combined_set(link.from().name(), |cfg| &cfg.remove_deps);
+        if remove_deps.contains(link.to().name()) {
+            return false;
+        }
+
+        // Check if the dependency is conditional, and reject the dependency if
+        // the condition is never met on Chromium platforms.
+        let normal_condition = get_link_condition(&link, guppy::DependencyKind::Normal);
+        let build_condition = get_link_condition(&link, guppy::DependencyKind::Build);
+        if normal_condition.is_always_false() && build_condition.is_always_false() {
+            return false;
+        }
+
+        // Otherwise accept the dependency.
+        true
+    }
+}
+
+fn get_reverse_dependency_kinds(
+    package: &PackageMetadata,
+    cargo_set: &CargoSet,
+    condition_getter: impl for<'a> Fn(&PackageLink<'a>, DependencyKind) -> Condition,
+) -> HashMap<DependencyKind, PerKindInfo> {
+    let get_features = |feature_set: &FeatureSet| -> Vec<String> {
+        feature_set
+            .features_for(package.id())
+            .unwrap()
+            .map(|feature_list| {
+                feature_list
+                    .named_features()
+                    // TODO(lukasza): Stop filtering out the "default" feature.
+                    // (The current behavior doesn't match `cargo`.)
+                    .filter(|&f| f != "default")
+                    .map(|s| s.to_string())
+                    .collect_vec()
+            })
+            .unwrap_or_default()
+    };
+    let mut result = HashMap::new();
+    let mut insert_if_present = |link: PackageLink, kind: DependencyKind| {
+        let condition = condition_getter(&link, kind);
+        if condition != Condition::AlwaysFalse {
+            let features = match kind {
+                // ... => `build.rs` deps only care about host-side features.
+                DependencyKind::Build => get_features(cargo_set.host_features()),
+                // Other deps care about host-side and target-side features
+                // (e.g. `quote` or `syn` can be "normal" dependencies of
+                // `foo_derive` crates, or "normal" dependencies of regular,
+                // non-proc-macro crates).
+                DependencyKind::Normal => get_features(cargo_set.host_features())
+                    .into_iter()
+                    .chain(get_features(cargo_set.target_features()))
+                    .sorted()
+                    .dedup()
+                    .collect_vec(),
+                _ => unreachable!(),
+            };
+            let info: &mut PerKindInfo = result
+                .entry(kind)
+                .or_insert_with(|| PerKindInfo { condition: condition.clone(), features });
+            info.condition = Condition::or(info.condition.clone(), condition);
+        }
+    };
+
+    for link in package.reverse_direct_links() {
+        insert_if_present(link, DependencyKind::Build);
+        insert_if_present(link, DependencyKind::Normal);
     }
 
-    let packages = metadata.packages.iter().map(|p| (&p.id, p)).collect();
+    result
+}
 
-    MetadataGraph { nodes: graph, packages }
+fn get_condition(platform_status: PlatformStatus) -> Condition {
+    use PlatformStatus::*;
+    match platform_status {
+        Never => Condition::AlwaysFalse,
+        Always => Condition::AlwaysTrue,
+        PlatformDependent { eval } => eval
+            .target_specs()
+            .iter()
+            .map(target_spec_to_condition)
+            .fold(Condition::AlwaysFalse, Condition::or),
+    }
+}
+
+fn get_package_dependencies(
+    package: &PackageMetadata,
+    condition_getter: impl for<'a> Fn(&PackageLink<'a>) -> Condition,
+) -> Vec<DepOfDep> {
+    package
+        .direct_links()
+        .filter_map(|link| match condition_getter(&link) {
+            Condition::AlwaysFalse => None,
+            other_condition => Some((link, other_condition)),
+        })
+        .map(|(link, condition)| DepOfDep {
+            package_name: link.to().name().to_string(),
+            use_name: link.resolved_name().to_string(),
+            version: link.to().version().clone(),
+            condition,
+        })
+        .sorted_by(|lhs, rhs| Ord::cmp(&lhs.package_name, &rhs.package_name))
+        .collect()
+}
+
+struct BuildTargets {
+    lib_target: Option<LibTarget>,
+    bin_targets: Vec<BinTarget>,
+    build_script: Option<PathBuf>,
+}
+fn get_build_targets(
+    package: &PackageMetadata,
+    extra_config: &BuildConfig,
+) -> Result<BuildTargets> {
+    let mut lib_target = None;
+    let mut bin_targets = vec![];
+    let mut build_script = None;
+
+    let allowed_bin_targets =
+        extra_config.get_combined_set(package.name(), |crate_cfg| &crate_cfg.bin_targets);
+    for target in package.build_targets() {
+        let root = target.path().as_std_path().into();
+        let target_type = match target.id() {
+            BuildTargetId::Library => {
+                let lib_type = match target.kind() {
+                    BuildTargetKind::ProcMacro => LibType::ProcMacro,
+                    BuildTargetKind::LibraryOrExample(crate_types) => {
+                        LibType::from_crate_types(crate_types)?
+                    }
+                    // Matching `BuildTargetId::Library` means that `BuildTargetKind::Binary`
+                    // should be impossible.
+                    BuildTargetKind::Binary => unreachable!(),
+                    // `BuildTargetKind` is non-exhaustive.
+                    other => unimplemented!("Unrecognized `BuildTargetKind`: {other:?}"),
+                };
+                Some(TargetType::Lib(lib_type))
+            }
+            BuildTargetId::BuildScript => Some(TargetType::BuildScript),
+            BuildTargetId::Binary(_) => Some(TargetType::Bin),
+            BuildTargetId::Example(_)
+            | BuildTargetId::Test(_)
+            | BuildTargetId::Benchmark(_)
+            | _ => None,
+        };
+        match target_type {
+            None => (),
+            Some(TargetType::Bin) => {
+                if allowed_bin_targets.contains(target.name()) {
+                    bin_targets.push(BinTarget { root, name: target.name().to_string() });
+                }
+            }
+            Some(TargetType::BuildScript) => {
+                assert_eq!(
+                    build_script,
+                    None,
+                    "found duplicate build script `{}` in package `{}`",
+                    target.name(),
+                    package.name(),
+                );
+                build_script = Some(root);
+            }
+            Some(TargetType::Lib(lib_type)) => {
+                assert!(
+                    lib_target.is_none(),
+                    "found duplicate lib target `{}` in package `{}`",
+                    target.name(),
+                    package.name(),
+                );
+                lib_target = Some(LibTarget { root, lib_type });
+            }
+        }
+    }
+    Ok(BuildTargets { lib_target, bin_targets, build_script })
 }
 
 /// A crate target type we support.
@@ -523,26 +524,116 @@ enum TargetType {
     BuildScript,
 }
 
-impl TargetType {
-    fn from_name(name: &str) -> Option<Self> {
-        match name {
-            "lib" | "rlib" => Some(Self::Lib(LibType::Rlib)),
-            "dylib" => Some(Self::Lib(LibType::Dylib)),
-            "cdylib" => Some(Self::Lib(LibType::Cdylib)),
-            "bin" => Some(Self::Bin),
-            "custom-build" => Some(Self::BuildScript),
-            "proc-macro" => Some(Self::Lib(LibType::ProcMacro)),
-            _ => None,
-        }
-    }
-}
-
 impl std::fmt::Display for TargetType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
             Self::Lib(typ) => typ.fmt(f),
             Self::Bin => f.write_str("bin"),
             Self::BuildScript => f.write_str("custom-build"),
+        }
+    }
+}
+
+fn get_privilege_group(
+    package: &PackageMetadata,
+    extra_config: &BuildConfig,
+    is_toplevel_dep: impl Fn(&PackageMetadata) -> bool,
+) -> Result<Group> {
+    // If the dependency is a top-level dep of Chromium, then it defaults to this
+    // privilege level.
+    // TODO: Default should be sandbox??
+    const DEFAULT_FOR_TOPLEVEL: Group = Group::Safe;
+
+    let package_name = package.name();
+    let get_group_from_config = |package: &PackageMetadata| -> Option<Group> {
+        extra_config.per_crate_config.get(package.name())?.group
+    };
+
+    // If `package` transitively depends on `Test` `descendant1` and `Safe`
+    // `descendant2`, then it is okay if `package` is just `Test` (but it can't
+    // be higher).  So `**max**_from_descendants = ...descendant-groups...
+    // **min**_by_key`.
+    //
+    // TODO(lukasza): Performance improvement opportunity.  Recomputing
+    // descendants / ancestors information for every `package` is simple and
+    // works, but is also inefficient.  If needed we should try caching this
+    // information somehow.
+    let max_from_descendants = package
+        .graph()
+        .query_forward([package.id()])?
+        .resolve()
+        .packages(DependencyDirection::Forward)
+        .filter_map(|p| get_group_from_config(&p).map(|group| (p.name(), group)))
+        .min_by_key(|(_package_name, group)| *group);
+
+    // If `Test` `ancestor1` and `Safe` `ancestor2` transitively depend on
+    // `package`, then package needs to be `Safe` or better (max of `Test` and
+    // `Safe`).  So `**min**_from_ancestors = ...ancestor-groups...
+    // **max**_by_key`.
+    let min_from_ancestors =
+        package
+            .graph()
+            .query_reverse([package.id()])?
+            .resolve()
+            .packages(DependencyDirection::Reverse)
+            .filter_map(|package| {
+                get_group_from_config(&package)
+                    .or_else(|| {
+                        if is_toplevel_dep(&package) {
+                            Some(DEFAULT_FOR_TOPLEVEL)
+                        } else {
+                            None
+                        }
+                    })
+                    .map(|group| (package.name(), group))
+            })
+            .max_by_key(|(_package_name, group)| *group);
+
+    let configured_group = get_group_from_config(package);
+    match configured_group {
+        None => match (min_from_ancestors, max_from_descendants) {
+            (None, None) => {
+                assert!(is_toplevel_dep(package));
+                Ok(DEFAULT_FOR_TOPLEVEL)
+            }
+            (Some((_, min_from_ancestors)), None) => Ok(min_from_ancestors),
+            (None, Some((_, max_from_descendants))) => Ok(max_from_descendants),
+            (
+                Some((ancestor_example, min_from_ancestors)),
+                Some((descendant_example, max_from_descendants)),
+            ) => {
+                if min_from_ancestors > max_from_descendants {
+                    bail!(
+                        "`{descendant_example}` is configured as `{max_from_descendants}`; \
+                         `{ancestor_example}` is configured as `{min_from_ancestors}`; \
+                         `{min_from_ancestors}` cannot transitively \
+                         depend on `max_from_descendants`."
+                    );
+                }
+                Ok(min_from_ancestors)
+            }
+        },
+        Some(configured_group) => {
+            if let Some((ancestor_example, min_from_ancestors)) = min_from_ancestors {
+                if min_from_ancestors > configured_group {
+                    bail!(
+                        "`{package_name}` is configured as `{configured_group}`; \
+                         `{ancestor_example}` is configured as `{min_from_ancestors}`; \
+                         `{min_from_ancestors}` cannot transitively depend on `configured`."
+                    );
+                }
+            }
+            if let Some((descendant_example, max_from_descendants)) = max_from_descendants {
+                if max_from_descendants < configured_group {
+                    bail!(
+                        "`{package_name}` is configured as `{configured_group}`; \
+                         `{descendant_example}` is configured as `{max_from_descendants}`; \
+                         `{configured_group}` cannot transitively \
+                         depend on `max_from_descendants`."
+                    );
+                }
+            }
+            Ok(configured_group)
         }
     }
 }
@@ -562,8 +653,7 @@ mod tests {
             ..BuildConfig::default()
         };
 
-        let metadata: cargo_metadata::Metadata =
-            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA).unwrap();
         let dependencies =
             collect_dependencies(&metadata, "sample_package", &build_config).unwrap();
 
@@ -597,15 +687,6 @@ mod tests {
         }));
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
-            empty_str_slice
-        );
-
-        i += 1;
-
-        assert_eq!(dependencies[i].package_name, "cc");
-        assert_eq!(dependencies[i].version, Version::new(1, 0, 73));
-        assert_eq!(
-            dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
             empty_str_slice
         );
 
@@ -926,8 +1007,7 @@ mod tests {
     #[test]
     fn dependencies_for_workspace_member() {
         let config = BuildConfig::default();
-        let metadata: cargo_metadata::Metadata =
-            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA).unwrap();
 
         // Start from "foo" workspace member.
         let dependencies = collect_dependencies(&metadata, "foo", &config).unwrap();
@@ -935,11 +1015,6 @@ mod tests {
         let mut i = 0;
 
         assert_eq!(dependencies[i].package_name, "bar");
-        assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
-
-        i += 1;
-
-        assert_eq!(dependencies[i].package_name, "foo");
         assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
 
         i += 1;
@@ -973,15 +1048,14 @@ mod tests {
     fn dependencies_removed_by_config_file() {
         // Use a config with `remove_crates` and `remove_deps` entries.
         let mut config = BuildConfig::default();
-        config.resolve.remove_crates.push("num_threads".to_string());
+        config.resolve.remove_crates.insert("num_threads".to_string());
         config.per_crate_config.insert(
             "time".to_string(),
             CrateConfig { remove_deps: vec!["num_threads".to_string()], ..CrateConfig::default() },
         );
 
         // Collect dependencies.
-        let metadata: cargo_metadata::Metadata =
-            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA).unwrap();
         let dependencies = collect_dependencies(&metadata, "sample_package", &config).unwrap();
 
         // Verify that `num_threads` got removed.
@@ -1000,4 +1074,79 @@ mod tests {
     // sample_package. The dependency graph is relatively simple but includes
     // transitive deps and a workspace member.
     static SAMPLE_CARGO_METADATA: &str = include_str!("test_metadata.json");
+
+    /// This test spot-checks that the trimming down of the dependency graph
+    /// from https://crrev.com/c/6259145 didn't regress.
+    #[test]
+    fn collect_dependencies_on_sample_output2() {
+        let config = BuildConfig::default();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA2).unwrap();
+        let dependencies = collect_dependencies(&metadata, "sample_package2", &config).unwrap();
+        let dependencies = dependencies
+            .into_iter()
+            .map(|package| (package.package_name.to_string(), package))
+            .collect::<HashMap<_, _>>();
+
+        let icu_capi = &dependencies["icu_capi"];
+        assert_eq!(
+            icu_capi.dependency_kinds[&DependencyKind::Normal].features,
+            &["calendar", "compiled_data", "experimental"],
+        );
+        assert_eq!(
+            icu_capi.dependencies.iter().map(|d| d.package_name.clone()).sorted().collect_vec(),
+            &[
+                "diplomat",
+                "diplomat-runtime",
+                "icu_calendar",
+                "icu_experimental",
+                "icu_locale_core",
+                "icu_provider",
+                "icu_provider_adapters",
+                "icu_time",
+                "potential_utf",
+                "tinystr",
+                "writeable",
+                "zerovec",
+            ],
+        );
+        assert!(icu_capi.build_dependencies.is_empty());
+
+        let icu_properties = &dependencies["icu_properties"];
+        assert_eq!(
+            icu_properties.dependency_kinds[&DependencyKind::Normal].features,
+            &["alloc", "compiled_data"],
+        );
+        assert_eq!(
+            icu_properties
+                .dependencies
+                .iter()
+                .map(|d| d.package_name.clone())
+                .sorted()
+                .collect_vec(),
+            &[
+                "displaydoc",
+                "icu_collections",
+                "icu_locale_core",
+                "icu_properties_data",
+                "icu_provider",
+                "potential_utf",
+                "zerotrie",
+                "zerovec",
+            ],
+        );
+        assert!(icu_properties.build_dependencies.is_empty());
+
+        let smallvec = &dependencies["smallvec"];
+        assert_eq!(
+            smallvec.dependency_kinds[&DependencyKind::Normal].features,
+            &["const_generics"],
+        );
+        assert!(smallvec.dependencies.is_empty());
+        assert!(smallvec.build_dependencies.is_empty());
+    }
+
+    // `test_metadata2.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package2` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA2: &str = include_str!("test_metadata2.json");
 }

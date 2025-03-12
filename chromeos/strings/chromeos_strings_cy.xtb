@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animeiddiad arbedwr sgrîn</translation>
 <translation id="152892567002884378">Codi'r sain</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Dewiswch thema ac yna dewiswch y geiriau sydd wedi'u tanlinellu i bersonoleiddio'ch lluniau AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Dewiswch "Ysbrydolwch fi" i gael opsiynau lluniau AI mwy unigryw ac amrywiol.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pan fyddwch yn creu gydag AI, anfonir y neges annog at weinyddion AI Google i gynhyrchu lluniau a gwella'r cynnyrch, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Bolisi Preifatrwydd Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Mae AI cynhyrchiol yn arbrofol, yn ei ddatblygiad cynnar, ac mae ganddo argaeledd cyfyngedig ar hyn o bryd.</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="155865706765934889">Pad cyffwrdd</translation>
 <translation id="1561927818299383735">lliw ôl-oleuedig</translation>
@@ -1553,6 +1562,16 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">traeth</translation>
 <translation id="819278132617411009">Defnyddio Google AI i fod yn fwy cynhyrchiol</translation>
+<translation id="82003371436638355">Pan ddewiswch “Creu eich un eich hun,” ysgrifennwch anogwr personol. Neu gallwch ddewis “Dewis thema” ac yna dewis y geiriau sydd wedi'u tanlinellu i bersonoli'ch papur wal AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Dewiswch "Ysbrydolwch fi" i gael opsiynau lluniau AI mwy unigryw ac amrywiol.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pan fyddwch yn creu eich papur wal eich hun, anfonir yr anogwr at weinyddion Google i gynhyrchu lluniau a gwella'r cynnyrch, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Delerau Gwasanaeth a Pholisi Preifatrwydd Google.<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gall AI cynhyrchiol wneud camgymeriadau, gan gynnwys am bobl, felly gwiriwch ef ddwywaith. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Dysgu rhagor<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8206859287963243715">Symudol</translation>
 <translation id="8208861521865154048">Manteision</translation>
@@ -1574,6 +1593,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8312330582793120272">chwarae cyfryngau</translation>
 <translation id="8318753676953949627">Dim Delweddau</translation>
 <translation id="8320910311642849813">coedwig</translation>
+<translation id="8322464149031882595">Cliciwch i fynd ymlaen</translation>
 <translation id="8329018942023753850">ap cyfrifiannell</translation>
 <translation id="8336739000755212683">Newid llun cyfrif y ddyfais</translation>
 <translation id="8339024191194156249">Dysgu rhagor am lansio'n awtomatig</translation>
@@ -1720,6 +1740,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8961025972867871808">pengwiniaid</translation>
 <translation id="8968751544471797276">Cyfradd gwefru</translation>
 <translation id="8970109610781093811">Rhedeg eto</translation>
+<translation id="8972061581514441296">Cliciwch i fynd yn ôl</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Sganio}=1{Sganio tudalen {NUMBER_OF_PAGES}}two{Sganio tudalen {NUMBER_OF_PAGES}}few{Sganio tudalen {NUMBER_OF_PAGES}}many{Sganio tudalen {NUMBER_OF_PAGES}}other{Sganio tudalen {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">pentref</translation>

@@ -249,6 +249,8 @@ void InsertNodeForTask(TaskGraph* graph,
                        uint16_t priority,
                        size_t dependencies,
                        bool has_external_dependency = false) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__, "category", category, "deps",
+              dependencies);
   DCHECK(!base::Contains(graph->nodes, task, &TaskGraph::Node::task));
   graph->nodes.emplace_back(task, category, priority, dependencies,
                             has_external_dependency);
@@ -603,11 +605,19 @@ void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
   signals_check_notifier_.Schedule();
 }
 
-void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
+void TileManager::DidFinishRunningAllTileTasks(base::TimeTicks start_time,
+                                               bool has_pending_queries) {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningAllTileTasks");
   TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "ScheduledTasks", TRACE_ID_LOCAL(this));
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
+
+  if (!start_time.is_null()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.TileManager.RasterTasksDuration",
+        base::TimeTicks::Now() - start_time, base::Microseconds(10),
+        base::Milliseconds(200), 50);
+  }
 
   has_scheduled_tile_tasks_ = false;
   has_pending_queries_ = has_pending_queries;
@@ -1068,7 +1078,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
 
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
   // Since this is recorded once per frame, subsample these metrics.
-  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+  if (metrics_sub_sampler_.ShouldSample(metrics_sampling_rate_)) {
     if (running_on_renderer_process_) {
       UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory.Renderer",
                             had_enough_memory_to_schedule_tiles_needed_now);
@@ -1192,6 +1202,10 @@ void TileManager::AddCheckeredImagesToDecodeQueue(
 }
 
 void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
+  auto start_time = metrics_sub_sampler_.ShouldSample(metrics_sampling_rate_)
+                        ? base::TimeTicks::Now()
+                        : base::TimeTicks();
+
   const std::vector<PrioritizedTile>& tiles_that_need_to_be_rasterized =
       work_to_schedule.tiles_to_raster;
   TRACE_EVENT1("cc", "TileManager::ScheduleTasks", "count",
@@ -1228,9 +1242,9 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
       CreateTaskSetFinishedTask(
           &TileManager::DidFinishRunningTileTasksRequiredForDraw);
 
-  auto all_done_cb =
-      base::BindOnce(&TileManager::DidFinishRunningAllTileTasks,
-                     task_set_finished_weak_ptr_factory_.GetWeakPtr());
+  auto all_done_cb = base::BindOnce(
+      &TileManager::DidFinishRunningAllTileTasks,
+      task_set_finished_weak_ptr_factory_.GetWeakPtr(), start_time);
   scoped_refptr<TileTask> all_done_task =
       base::MakeRefCounted<DidFinishRunningAllTilesTask>(
           task_runner_, pending_raster_queries_, std::move(all_done_cb));
@@ -1338,6 +1352,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   resource_pool_->ReduceResourceUsage();
   image_controller_.ReduceMemoryUsage();
 
+  bool only_completion_tasks = graph_.nodes.empty();
   // Insert nodes for our task completion tasks. We enqueue these using
   // NONCONCURRENT_FOREGROUND category this is the highest priority category and
   // we'd like to run these tasks as soon as possible.
@@ -1351,6 +1366,33 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   InsertNodeForTask(&graph_, all_done_task.get(),
                     TASK_CATEGORY_NONCONCURRENT_FOREGROUND,
                     kAllDoneTaskPriority, all_count);
+
+  // Don't go through the graph machinery if we have nothing to do.  This is a
+  // common case when e.g. scrolling, where we get a compositor frame, but do
+  // not need to raster anything (if the page is not running any rAF for
+  // instance).
+  if (only_completion_tasks &&
+      base::FeatureList::IsEnabled(features::kFastPathNoRaster)) {
+    DCHECK_EQ(required_for_activate_count, 0u);
+    DCHECK_EQ(required_for_draw_count, 0u);
+    DCHECK_EQ(all_count, 0u);
+    for (const auto& task : graph_.nodes) {
+      DCHECK_EQ(0u, task.dependencies);
+      DCHECK(!task.has_external_dependency);
+      DCHECK(task.task == required_for_activation_done_task.get() ||
+             task.task == required_for_draw_done_task.get() ||
+             task.task == all_done_task.get());
+      // Downcast is safe since this is one of the tasks from above.
+      auto* tile_task = static_cast<TileTask*>(task.task.get());
+      tile_task->state().DidSchedule();
+      tile_task->state().DidStart();
+      tile_task->RunOnWorkerThread();
+      tile_task->state().DidFinish();
+      tile_task->OnTaskCompleted();
+      tile_task->DidComplete();
+    }
+    graph_.Reset();
+  }
 
   // Schedule running of |raster_queue_|. This replaces any previously
   // scheduled tasks and effectively cancels all tasks not present

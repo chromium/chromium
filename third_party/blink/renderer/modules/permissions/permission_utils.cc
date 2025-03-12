@@ -133,6 +133,8 @@ String PermissionNameToString(PermissionName name) {
       return "fullscreen";
     case PermissionName::WEB_APP_INSTALLATION:
       return "web-app-installation";
+    case PermissionName::LOCAL_NETWORK_ACCESS:
+      return "local-network-access";
   }
 }
 

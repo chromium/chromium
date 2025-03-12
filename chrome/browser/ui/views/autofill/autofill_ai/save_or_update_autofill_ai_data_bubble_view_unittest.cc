@@ -127,14 +127,9 @@ void SaveOrUpdateAutofillAiDataBubbleViewTest::CreateViewAndShow() {
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Country", /*attribute_value=*/u"Brazil",
           EntityAttributeUpdateType::kNewEntityAttributeAdded),
-      // The next three values are saying:
-      // 1. That the user had a name stored as "Jonas doe" and that it was
-      // changed.
-      // 2. That their passport expiry date information has not changed.
-      // 3. That their passport issue date information has not changed.
-      EntityAttributeUpdateDetails(
-          /*attribute_name=*/u"Name", /*attribute_value=*/u"Jonas doe",
-          EntityAttributeUpdateType::kOldEntityAttributeUpdated),
+      // The next two values are saying:
+      // 1. That the user's passport expiry date information has not changed.
+      // 2. That the user's passport issue date information has not changed.
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Expiry date",
           /*attribute_value=*/u"12/12/2027",
@@ -178,16 +173,11 @@ TEST_F(SaveOrUpdateAutofillAiDataBubbleViewTest, ViewHasExpectedSections) {
   EXPECT_EQ(new_entity_added_or_updated_attributes_container->children().size(),
             2u);
 
-  // Test that there 3 row in the container that stores unchanged values or old
-  // values from the old entity.
-  views::View* new_entity_unchanged_or_old_entity_updated_attributes_container =
-      view().GetViewByID(
-          SaveOrUpdateAutofillAiDataBubbleView::
-              kNewEntityUnchagedOrOldEntityUpdatedAttributesContainer);
-  EXPECT_EQ(new_entity_unchanged_or_old_entity_updated_attributes_container
-                ->children()
-                .size(),
-            3u);
+  // Test that there 2 row in the container that stores unchanged values.
+  views::View* new_entity_unchanged_attributes_container =
+      view().GetViewByID(SaveOrUpdateAutofillAiDataBubbleView::
+                             kNewEntityUnchagedAttributesContainer);
+  EXPECT_EQ(new_entity_unchanged_attributes_container->children().size(), 2u);
 }
 
 }  // namespace

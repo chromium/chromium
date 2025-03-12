@@ -242,6 +242,13 @@ BASE_FEATURE(kLocalNetworkAccessChecks,
              "LocalNetworkAccessChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, local network access checks will only be warnings.
+BASE_FEATURE_PARAM(bool,
+                   kLocalNetworkAccessChecksWarn,
+                   &kLocalNetworkAccessChecks,
+                   /*name=*/"LocalNetworkAccessChecksWarn",
+                   /*default_value=*/true);
+
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

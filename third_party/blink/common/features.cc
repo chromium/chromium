@@ -997,6 +997,10 @@ BASE_FEATURE(kFledgeEnforcePermissionPolicyContributeOnEvent,
              "FledgeEnforcePermissionPolicyContributeOnEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFledgeDisableLocalAdsAuctions,
+             "FledgeDisableLocalAdsAuctions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1102,6 +1106,14 @@ BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
 BASE_FEATURE(kHiddenSelectionBounds,
              "HiddenSelectionBounds",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Adds support for the experimental `interesttarget`
+// attributes, as specified in the open-ui "Interest Invokers" explainer.
+// https://open-ui.org/components/interest-invokers.explainer/
+// This corresponds to the RuntimeEnabledFeature of the same name.
+BASE_FEATURE(kHTMLInterestTargetAttribute,
+             "HTMLInterestTargetAttribute",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIgnoreInputWhileHidden,
              "IgnoreInputWhileHidden",

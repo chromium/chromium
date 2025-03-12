@@ -173,10 +173,12 @@ class WebStateImpl;
        navigationInitiationType:(web::NavigationInitiationType)type
                  hasUserGesture:(BOOL)hasUserGesture;
 
-// Takes snapshot of web view with `rect`. `rect` should be in self.view's
-// coordinate system.  `completion` is always called, but `snapshot` may be nil.
-// Prior to iOS 11, `completion` is called with a nil
-// snapshot. `completion` may be called more than once.
+// Takes snapshot of web view with `rect`. `rect` is converted to the
+// self.view's coordinate system. If the height of the content in WKWebView is
+// smaller than `rect`, `rect` will be adjusted because the snapshot outside the
+// content will be black (see crbug.com/399702753). `completion` is always
+// called, but `snapshot` may be nil. Prior to iOS 11, `completion` is called
+// with a nil snapshot. `completion` may be called more than once.
 - (void)takeSnapshotWithRect:(CGRect)rect
                   completion:(void (^)(UIImage* snapshot))completion;
 

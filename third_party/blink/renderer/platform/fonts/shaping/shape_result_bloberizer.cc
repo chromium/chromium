@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -24,6 +25,21 @@
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
+
+namespace {
+
+// A helper for FillGlyphsSlow().
+inline const ShapeResult* GetShapeResult(
+    const Member<const ShapeResult>& item) {
+  return item.Get();
+}
+
+// A helper for FillGlyphsSlow().
+inline const ShapeResult* GetShapeResult(const PlainTextItem& item) {
+  return item.GetShapeResult();
+}
+
+}  // namespace
 
 ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
@@ -441,14 +457,51 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
   DVLOG(4) << "FillGlyphs slow path";
 
   auto results = result_buffer.results_;
+  FillGlyphsSlow(run_info.run.ToStringView(), run_info.run.Direction(), results,
+                 run_info.from, run_info.to);
+}
 
-  StringView text = run_info.run.ToStringView();
-  const unsigned from = run_info.from;
-  const unsigned to = run_info.to;
+ShapeResultBloberizer::FillGlyphs::FillGlyphs(
+    const FontDescription& font_description,
+    const PlainTextNode& node,
+    unsigned from,
+    unsigned to,
+    const Type type)
+    : ShapeResultBloberizer(font_description, type) {
+  if (CanUseFastPath(from, to, node.TextContent().length(),
+                     /* has_vertical_offsets */ false)) {
+    DVLOG(4) << "FillGlyphs fast path";
+    DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
+    DCHECK_NE(type_, ShapeResultBloberizer::Type::kEmitText);
+    float advance = 0;
+    if (IsLtr(node.BaseDirection())) {
+      for (const auto& item : node.ItemList()) {
+        advance = FillFastHorizontalGlyphs(item.GetShapeResult(), advance);
+      }
+    } else {
+      for (const auto& item : base::Reversed(node.ItemList())) {
+        advance = FillFastHorizontalGlyphs(item.GetShapeResult(), advance);
+      }
+    }
+    advance_ = advance;
+    return;
+  }
+
+  FillGlyphsSlow(node.TextContent(), node.BaseDirection(), node.ItemList(),
+                 from, to);
+}
+
+template <typename ShapeList>
+void ShapeResultBloberizer::FillGlyphs::FillGlyphsSlow(StringView text,
+                                                       TextDirection direction,
+                                                       const ShapeList& list,
+                                                       unsigned from,
+                                                       unsigned to) {
   if (type_ == Type::kEmitText) [[unlikely]] {
     unsigned word_offset = 0;
     ClusterStarts cluster_starts;
-    for (const auto& word_result : results) {
+    for (const auto& item : list) {
+      const ShapeResult* word_result = GetShapeResult(item);
       word_result->ForEachGlyph(0, from, to, word_offset,
                                 ClusterStarts::Accumulate,
                                 static_cast<void*>(&cluster_starts));
@@ -459,23 +512,25 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
   }
 
   float advance = 0;
-  if (run_info.run.Rtl()) {
-    unsigned word_offset = run_info.run.length();
-    for (const auto& word_result : base::Reversed(results)) {
+  if (IsRtl(direction)) {
+    unsigned word_offset = text.length();
+    for (const auto& item : base::Reversed(list)) {
+      const ShapeResult* word_result = GetShapeResult(item);
       unsigned word_characters = word_result->NumCharacters();
       word_offset -= word_characters;
       DVLOG(4) << " FillGlyphs RTL run from: " << from << " to: " << to
                << " offset: " << word_offset << " length: " << word_characters;
-      advance = FillGlyphsForResult(word_result.Get(), text, from, to, advance,
+      advance = FillGlyphsForResult(word_result, text, from, to, advance,
                                     word_offset);
     }
   } else {
     unsigned word_offset = 0;
-    for (const auto& word_result : results) {
+    for (const auto& item : list) {
+      const ShapeResult* word_result = GetShapeResult(item);
       unsigned word_characters = word_result->NumCharacters();
       DVLOG(4) << " FillGlyphs LTR run from: " << from << " to: " << to
                << " offset: " << word_offset << " length: " << word_characters;
-      advance = FillGlyphsForResult(word_result.Get(), text, from, to, advance,
+      advance = FillGlyphsForResult(word_result, text, from, to, advance,
                                     word_offset);
       word_offset += word_characters;
     }

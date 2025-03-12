@@ -3814,6 +3814,8 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
     case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           PermissionBlock;
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::PermissionWarn;
   }
 }
 

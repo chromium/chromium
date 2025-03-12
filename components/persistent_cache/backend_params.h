@@ -13,17 +13,31 @@ namespace persistent_cache {
 
 enum class BackendType {
   kMock = 0,
-  kMaxValue = kMock,
+  kSqlite = 1,
+  kMaxValue = kSqlite,
 };
 
 // This struct contains fields necessary to configure a persistent
 // cache backend.
 struct COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParams {
   BackendParams();
+  BackendParams(BackendParams& other) = delete;
+  BackendParams& operator=(const BackendParams& other) = delete;
+  BackendParams(BackendParams&& other);
+  BackendParams& operator=(BackendParams&& other);
   ~BackendParams();
 
+  BackendParams Copy() const;
+
+  // TODO(crbug.com/377475540): Currently this class is deeply tied to the
+  // sqlite implementation. Once the conversion to and from mojo types is
+  // implemented this class should become an abstract class specialized for each
+  // backend type.
   BackendType type;
-  base::flat_map<std::string, base::File> files;
+  base::File db_file;
+  bool db_file_is_writable = false;
+  base::File journal_file;
+  bool journal_file_is_writable = false;
 };
 
 }  // namespace persistent_cache

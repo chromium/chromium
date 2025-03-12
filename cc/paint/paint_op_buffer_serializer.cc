@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_op_buffer_serializer.h"
 
 #include <limits>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/clear_for_opaque_raster.h"
@@ -481,9 +477,9 @@ size_t SimpleBufferSerializer::SerializeToMemoryImpl(
   if (written_ == total_)
     return 0u;
 
-  size_t bytes =
-      op.Serialize(static_cast<char*>(memory_) + written_, total_ - written_,
-                   options, flags_to_serialize, current_ctm, original_ctm);
+  size_t bytes = op.Serialize(
+      UNSAFE_TODO(static_cast<char*>(memory_) + written_), total_ - written_,
+      options, flags_to_serialize, current_ctm, original_ctm);
   if (!bytes)
     return 0u;
 

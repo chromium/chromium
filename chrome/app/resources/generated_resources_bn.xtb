@@ -376,7 +376,6 @@
 <translation id="1244265436519979884">বর্তমানে Linux ফিরিয়ে আনার কাজ চলছে</translation>
 <translation id="1244303850296295656">এক্সটেনশন সমস্যা</translation>
 <translation id="1244917379075403655">"সেটিংস" বিকল্পে ক্লিক করুন</translation>
-<translation id="1245041875932187638">AI-এর মাধ্যমে অটোফিলের ব্যবহার করা সব ডেটা মুছুন</translation>
 <translation id="1245331638296910488">Microsoft 365-এ ফাইল খোলার সময় ফাইল OneDrive-এ সরানো হবে</translation>
 <translation id="1245628370644070008">স্থানীয় ডেটা ফিরিয়ে আনা</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ইনস্টল করা যায়নি: <ph name="HTTP_ERROR" /> সমস্যার কোড সহ একটি ছবির URL দেখাচ্ছে। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
@@ -1418,7 +1417,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">রেডি হচ্ছে</translation>
 <translation id="1969654639948595766">WebRTC টেক্সট লগ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">সব ডেটা মুছে যাবে। একবার মুছে দিলে এই তথ্য আর ফিরে পাবেন না</translation>
 <translation id="1972313920920745320">আপনার যোগ করা সাইট সব সময় অ্যাক্টিভ থাকবে এবং সেগুলি থেকে মেমরি খালি হয়ে যাবে না। <ph name="BEGIN_LINK" />নির্দিষ্ট সাইট অ্যাক্টিভ রাখার বিষয়ে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">আপনি আরও দ্রুত ব্রাউজ করবেন কারণ, আপনার বর্তমান ওয়েবপেজ দেখার উপরে ভিত্তি করে কন্টেন্ট নিজে থেকে লোড হয়</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -2304,6 +2302,7 @@
 <translation id="256517381556987641">'ফাইল সিঙ্ক' এখনও পর্যন্ত <ph name="ITEMS_FOUND" />টি ফাইল খুঁজে পেয়েছে এবং এখনও স্টোরেজের জায়গা চেক করছে। কয়েক মিনিটের মধ্যে 'ফাইল সিঙ্ক' চালু করে দেখুন।</translation>
 <translation id="2565214867520763227">স্ক্রিন রিডার চালু করুন</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> এবং অন্য <ph name="NUM_OTHER_MEMBERS" /> জনের সাথে ট্যাব গ্রুপে যোগ দিন</translation>
+<translation id="256726287944589768">নতুন ট্যাব পৃষ্ঠাতে ফুটার দেখুন</translation>
 <translation id="2568694057933302218">ছদ্মবেশী মোড চালু থাকলে, বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য আপনার কুকি ব্যবহার করতে পারবে না। আপনার ব্রাউজিং অ্যাক্টিভিটি পছন্দমতো বিজ্ঞাপনের মতো জিনিসগুলির জন্য ব্যবহার করা হয় না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="2568774940984945469">তথ্যবার ধারক</translation>
 <translation id="2569972178052279830">রিটেলারের নাম</translation>
@@ -2812,6 +2811,7 @@
 <translation id="2921081876747860777">আপনার স্থানীয় ডেটা রক্ষা করার জন্য দয়া করে একটি পাসওয়ার্ড তৈরি করুন।</translation>
 <translation id="2923006468155067296">আপনার <ph name="DEVICE_TYPE" /> এখনই লক হয়ে যাবে।
 <ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />। অন্য <ph name="OTHER_TASK_NUM" />টি টাস্ক একই টাস্ক গ্রুপে আছে: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />। অন্য <ph name="OTHER_TASK_NUM" />টি টাস্ক একই টাস্ক গ্রুপে আছে: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">এই অ্যাকাউন্ট সরিয়ে দিন</translation>
 <translation id="2923644930701689793">আপনার ফোনের ক্যামেরা রোল অ্যাক্সেস করুন</translation>
 <translation id="292371311537977079">Chrome সেটিংস</translation>
@@ -3069,7 +3069,6 @@
 <translation id="3108957152224931571">হাইলাইট করার রঙ</translation>
 <translation id="3109206895301430738">সেভ করা ট্যাব গ্রুপ</translation>
 <translation id="3109724472072898302">সঙ্কুচিত</translation>
-<translation id="310979712355504754">সব মুছুন</translation>
 <translation id="3112292765614504292">অ্যাপ সাইজ: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">এই ট্যাবে যোগ করা হয়েছে</translation>
 <translation id="311394601889664316">সাইটগুলিকে আপনার ডিভাইসে থাকা ফাইল ও ফোল্ডার এডিট করার অনুমতি দেয় না</translation>
@@ -4089,7 +4088,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{একটি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}one{#টি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}other{#টি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux-এর জন্য কমপক্ষে <ph name="INSTALL_SIZE" />  জায়গা খালি রাখার জন্য সাজেস্ট করা হচ্ছে।</translation>
-<translation id="3824203811509979971">কন্টেন্টের সারসংক্ষেপ করুন অথবা প্রশ্ন জিজ্ঞাসা করুন</translation>
 <translation id="3824621460022590830">ডিভাইস এনরোলমেন্ট টোকেনটি সঠিক নয়। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">অন্যান্য ডিভাইস থেকে 'ট্যাব' দেখতে সাইন-ইন করুন</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{এই ধরনের ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}one{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}other{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}}</translation>
@@ -5904,7 +5902,6 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">পরিবর্তনগুলি দেখুন</translation>
 <translation id="5127620150973591153">নিরাপদ কানেকশন আইডি: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">কন্টেন্টের সারসংক্ষেপ করুন অথবা প্রশ্ন জিজ্ঞাসা করুন।</translation>
 <translation id="5127881134400491887">নেটওয়ার্ক সংযোগগুলি পরিচালনা করুন</translation>
 <translation id="5127934926273826089">ফুল</translation>
 <translation id="5127986747308934633">আপনার অ্যাডমিনিস্ট্রেটর আপনার ডিভাইস নিয়ন্ত্রণ করছেন</translation>
@@ -7456,7 +7453,6 @@
 <translation id="6254892857036829079">নিখুঁত</translation>
 <translation id="6257131917452817589">অটোমেটিক পাসওয়ার্ড পরিবর্তন করার সুবিধা</translation>
 <translation id="6257602895346497974">সিঙ্ক চালু করুন...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">আগে কানেক্ট করা বা কনফিগার করা একাধিক নেটওয়ার্ক উপলভ্য থাকলে এই নেটওয়ার্ক বেছে নেওয়া হবে</translation>
 <translation id="6259776178973198997">ওয়াই ফাই ডাইরেক্ট মালিক সংক্রান্ত তথ্য রিফ্রেশ করুন</translation>
 <translation id="6262371516389954471">আপনার ব্যাক-আপ ডেটা Google-এ আপলোড করা হয় এবং আপনার Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করে সেগুলিকে এনক্রিপ্ট করা হয়।</translation>
@@ -9889,6 +9885,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ভয়েস <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">আপনার Android ফোন থেকে অটোমেটিক ওয়াই-ফাই ট্রান্সফার করুন</translation>
 <translation id="7991296728590311172">সুইচ অ্যাক্সেস সেটিংস</translation>
+<translation id="7992080146463834191">কন্টেন্টের সারাংশ তৈরি করুন, জটিল ভাষা সহজ অথবা প্রশ্ন জিজ্ঞাসা করুন।</translation>
 <translation id="7992203134935383159">টেক্সট-টু-স্পিচ</translation>
 <translation id="7997826902155442747">প্রক্রিয়ার অগ্রাধিকার</translation>
 <translation id="7997828719430450286">সফল হয়েছে।</translation>
@@ -11155,6 +11152,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" বন্ধ আছে</translation>
 <translation id="8874647982044395866">অর্গানিক</translation>
 <translation id="8874790741333031443">সাময়িকভাবে থার্ড-পার্টি কুকিকে অনুমতি দিন। এর মানে হল সাইটের ফিচার প্রত্যাশা অনুযায়ী কাজ করবে কিন্তু আপনার ব্রাউজিং সুরক্ষা কম হয়ে যাবে।</translation>
+<translation id="8875221558267407626">কন্টেন্টের সারাংশ তৈরি করুন, জটিল ভাষা সহজ অথবা প্রশ্ন জিজ্ঞাসা করুন</translation>
 <translation id="8875520811099717934">Linux আপগ্রেড করা</translation>
 <translation id="8875736897340638404">আপনার 'ডিভাইসের দৃশ্যমানতা' সেটিংয়ে নিজের পছন্দমতো বিকল্প বেছে নিন</translation>
 <translation id="8876307312329369159">ডেমো সেশনে এই সেটিংটি পরিবর্তন করা যাবে না।</translation>

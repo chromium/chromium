@@ -2842,24 +2842,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.Messages.Stacking.{Blocker}" enum="MessageIdentifier"
-    expires_after="2025-02-10">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the message identifier of the front message when it is waiting to
-    trigger the animation because {Blocker}.
-  </summary>
-  <token key="Blocker">
-    <variant name="BlockedByBrowserControl"
-        summary="browser controls aren't ready"/>
-    <variant name="BlockedByContainerInitializing"
-        summary="container is initializing"/>
-    <variant name="BlockedByContainerNotInitialized"
-        summary="container initialization hasn't started"/>
-  </token>
-</histogram>
-
 <histogram name="Android.Messages.TimeToAction.Dismiss{MessageIdentifier}"
     units="ms" expires_after="2025-01-05">
   <owner>lazzzis@chromium.org</owner>

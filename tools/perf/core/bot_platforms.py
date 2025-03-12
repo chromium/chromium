@@ -482,14 +482,14 @@ def _crossbench_jetstream_main(estimated_runtime=180):
 # LoadLine:
 def _crossbench_loadline_phone(estimated_runtime=7000, arguments=None):
   return CrossbenchConfig('loadline_phone.crossbench',
-                          'loadline-phone',
+                          'loadline-phone-fast',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
 
 def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
   return CrossbenchConfig('loadline_tablet.crossbench',
-                          'loadline-tablet',
+                          'loadline-tablet-fast',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
@@ -526,7 +526,6 @@ _CROSSBENCH_ANDROID = frozenset([
 
 _CROSSBENCH_TANGOR = frozenset([
     _crossbench_loadline_tablet(arguments=[
-        '--repeat=20',
         '--cool-down-threshold=moderate',
         '--no-splash',
     ]),

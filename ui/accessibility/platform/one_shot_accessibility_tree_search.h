@@ -77,7 +77,7 @@ DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityVisitedLinkPredicate);
 //
 // This class stores raw pointers to the matches in the tree! Don't keep this
 // object around if the tree is mutating.
-class COMPONENT_EXPORT(AX_PLATFORM) OneShotAccessibilityTreeSearch {
+class COMPONENT_EXPORT(AX_PLATFORM) OneShotAccessibilityTreeSearch final {
  public:
   enum Direction { FORWARDS, BACKWARDS };
 
@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) OneShotAccessibilityTreeSearch {
   OneShotAccessibilityTreeSearch& operator=(
       const OneShotAccessibilityTreeSearch&) = delete;
 
-  virtual ~OneShotAccessibilityTreeSearch();
+  ~OneShotAccessibilityTreeSearch();
 
   //
   // Search parameters.  All of these are optional.

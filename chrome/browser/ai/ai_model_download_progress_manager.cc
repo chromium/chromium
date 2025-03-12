@@ -100,6 +100,14 @@ void AIModelDownloadProgressManager::Reporter::OnRemoteDisconnect() {
   manager_->RemoveReporter(this);
 }
 
+int64_t AIModelDownloadProgressManager::Reporter::GetDownloadedBytes() {
+  int64_t bytes_so_far = 0;
+  for (const auto& [id, downloaded_bytes] : observed_downloaded_bytes_) {
+    bytes_so_far += downloaded_bytes;
+  }
+  return bytes_so_far;
+}
+
 void AIModelDownloadProgressManager::Reporter::ProcessEvent(
     const component_updater::CrxUpdateItem& item) {
   CHECK_GE(item.downloaded_bytes, 0);
@@ -132,6 +140,12 @@ void AIModelDownloadProgressManager::Reporter::ProcessEvent(
     last_reported_progress_ = 0;
     last_progress_time_ = base::TimeTicks::Now();
 
+    // We don't want to include already downloaded bytes in our progress
+    // calculation, so determine it for later calculations and remove it now
+    // from components_total_bytes_.
+    already_downloaded_bytes_ = GetDownloadedBytes();
+    components_total_bytes_ -= already_downloaded_bytes_;
+
     // Must always fire the zero progress event first.
     observer_remote_->OnDownloadProgressUpdate(
         0, AIUtils::kNormalizedDownloadProgressMax);
@@ -151,11 +165,9 @@ void AIModelDownloadProgressManager::Reporter::OnEvent(
     return;
   }
 
-  // Calculate the total number of bytes downloaded so far.
-  int64_t bytes_so_far = 0;
-  for (const auto& [id, downloaded_bytes] : observed_downloaded_bytes_) {
-    bytes_so_far += downloaded_bytes;
-  }
+  // Calculate the total number of bytes downloaded so far. Don't include bytes
+  // that were already downloaded before we determined the total bytes.
+  int64_t bytes_so_far = GetDownloadedBytes() - already_downloaded_bytes_;
 
   CHECK_GE(bytes_so_far, 0);
   CHECK_LE(bytes_so_far, components_total_bytes_);
@@ -169,8 +181,16 @@ void AIModelDownloadProgressManager::Reporter::OnEvent(
     }
   }
 
-  int normalized_progress = AIUtils::NormalizeModelDownloadProgress(
-      bytes_so_far, components_total_bytes_);
+  // Determine the normalized progress.
+  //
+  // If `components_total_bytes_` is zero, we should have downloaded zero bytes
+  // out of zero meaning we're at 100%. So set it to
+  // `kNormalizedDownloadProgressMax` to avoid dividing by zero in
+  // `NormalizeModelDownloadProgress`.
+  int normalized_progress = components_total_bytes_ == 0
+                                ? AIUtils::kNormalizedDownloadProgressMax
+                                : AIUtils::NormalizeModelDownloadProgress(
+                                      bytes_so_far, components_total_bytes_);
 
   // Don't report progress events we've already sent.
   if (normalized_progress <= last_reported_progress_) {

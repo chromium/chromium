@@ -66,6 +66,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="3078350928901129212">Ícono de color <ph name="COLOR_NAME" /> del grupo de pestañas</translation>
 <translation id="311432875115153175">Se cerró la lista de grupos de pestañas</translation>
 <translation id="3194464645767632461">calificación</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Agregar <ph name="TABS_COUNT_ONE" /> pestaña al grupo}other{Agregar <ph name="TABS_COUNT_MANY" /> pestañas al grupo}}</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3547352561153509682">Esta acción borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva}other{<ph name="MANY_ADDED" /> pestañas nuevas}}</translation>
@@ -98,6 +99,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="4783638485675352219">Compartir los títulos y las URLs de las pestañas abiertas de este dispositivo con el sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinión)}other{(<ph name="REVIEWS_COUNT_MANY" /> opiniones)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Agregar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada al grupo}other{Agregar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas al grupo}}</translation>
 <translation id="4861611890274104875">Ignorar la tarjeta.</translation>
 <translation id="4861953997778766866">Todos los usuarios pueden hacer cambios en tus grupos de pestañas compartidos</translation>
 <translation id="4870911314065352661">¿Deseas cerrar todas las pestañas?</translation>
@@ -134,6 +136,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="6333260925957816943">Hoja de información sobre esta tienda</translation>
 <translation id="6381032505162537930">Encontrarás tus grupos de pestañas aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
@@ -186,6 +189,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="799469866974412355">Nuevo grupo de tu otro dispositivo</translation>
 <translation id="8029301326595421733">La hoja de información sobre esta tienda está totalmente abierta</translation>
 <translation id="8053770993984522566">Lista de grupos de pestañas, abierta a media altura</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Expandir el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Mover la pestaña hacia arriba</translation>

@@ -242,4 +242,8 @@ BASE_FEATURE(kRenderThrottleFrameRate,
 const base::FeatureParam<int> kRenderThrottledFrameIntervalHz{
     &kRenderThrottleFrameRate, "render-throttled-frame-interval-hz", 30};
 
+BASE_FEATURE(kFastPathNoRaster,
+             "FastPathNoRaster",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

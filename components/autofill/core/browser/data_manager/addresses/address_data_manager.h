@@ -142,8 +142,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // Updates |profile| which already exists in the web database.
   virtual void UpdateProfile(const AutofillProfile& profile);
 
-  // Removes the profile by `guid`.
-  virtual void RemoveProfile(const std::string& guid);
+  // Tivial wrapper that simply calls `RemoveProfileImpl()`.
+  void RemoveProfile(const std::string& guid,
+                     bool is_deduplication_initiated = false);
 
   // Removes all local profiles modified on or after `delete_begin` and strictly
   // before `delete_end`. Used for browsing data deletion purposes.
@@ -381,6 +382,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
 
   // Called when `prefs::kAutofillProfileEnabled` changed.
   void OnAutofillProfilePrefChanged();
+
+  // Removes the profile by `guid`. If `is_deduplication_initiated` is true and
+  // the profile is coming from the account, it will be removed from the local
+  // database and marked `invisible_in_autofill` on the server.
+  virtual void RemoveProfileImpl(const std::string& guid,
+                                 bool is_deduplication_initiated);
 
   base::ObserverList<Observer> observers_;
 

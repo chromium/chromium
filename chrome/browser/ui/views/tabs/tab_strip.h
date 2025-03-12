@@ -94,7 +94,7 @@ class TabStrip : public views::View,
   // Sets the observer to be notified of changes within this TabStrip.
   void SetTabStripObserver(TabStripObserver* observer);
 
-  // Sets |background_offset_| and schedules a paint.
+  // Sets `background_offset_` and schedules a paint.
   void SetBackgroundOffset(int background_offset);
 
   // Scroll the tabstrip towards the trailing tabs by an offset
@@ -124,7 +124,7 @@ class TabStrip : public views::View,
   std::optional<TabAlertState> GetTabAlertState(int tab_index) const;
 
   // Updates the loading animations displayed by tabs in the tabstrip to the
-  // next frame. The |elapsed_time| parameter is shared between tabs and used to
+  // next frame. The `elapsed_time` parameter is shared between tabs and used to
   // keep the throbbers in sync.
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
 
@@ -134,7 +134,7 @@ class TabStrip : public views::View,
   // Moves a tab.
   void MoveTab(int from_model_index, int to_model_index, TabRendererData data);
 
-  // Removes a tab at the specified index. If the tab with |contents| is being
+  // Removes a tab at the specified index. If the tab with `contents` is being
   // dragged then the drag is completed.
   void RemoveTabAt(content::WebContents* contents,
                    int model_index,
@@ -152,8 +152,8 @@ class TabStrip : public views::View,
   // Creates the views associated with a newly-created tab group.
   void OnGroupCreated(const tab_groups::TabGroupId& group);
 
-  // Opens the editor bubble for the tab |group| as a result of an explicit user
-  // action to create the |group|.
+  // Opens the editor bubble for the tab `group` as a result of an explicit user
+  // action to create the `group`.
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group);
 
   // Updates the group's contents and metadata when its tab membership changes.
@@ -162,8 +162,8 @@ class TabStrip : public views::View,
 
   // Updates the group's tabs and header when its associated TabGroupVisualData
   // changes. This should be called when the result of
-  // |TabStripController::GetGroupTitle(group)| or
-  // |TabStripController::GetGroupColorId(group)| changes.
+  // `TabStripController::GetGroupTitle(group)` or
+  // `TabStripController::GetGroupColorId(group)` changes.
   void OnGroupVisualsChanged(const tab_groups::TabGroupId& group,
                              const tab_groups::TabGroupVisualData* old_visuals,
                              const tab_groups::TabGroupVisualData* new_visuals);
@@ -196,12 +196,12 @@ class TabStrip : public views::View,
   void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
                                  bool attention);
 
-  // Returns the TabGroupHeader with ID |id|.
+  // Returns the TabGroupHeader with ID `id`.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
     return tab_container_->GetGroupViews(id)->header();
   }
 
-  // Returns the TabGroup with ID |id|.
+  // Returns the TabGroup with ID `id`.
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const override;
 
   // Returns the index of the specified view in the model coordinate system, or
@@ -226,14 +226,14 @@ class TabStrip : public views::View,
   // position.
   bool IsAnimating() const;
 
-  // Stops any ongoing animations. If |layout| is true and an animation is
+  // Stops any ongoing animations. If `layout` is true and an animation is
   // ongoing this does a layout.
   void StopAnimating(bool layout);
 
   // Returns the index of the focused tab, if any.
   std::optional<int> GetFocusedTabIndex() const;
 
-  // Returns a view for anchoring an in-product help promo. |index_hint|
+  // Returns a view for anchoring an in-product help promo. `index_hint`
   // indicates at which tab the promo should be displayed, but is not
   // binding.
   views::View* GetTabViewForPromoAnchor(int index_hint);
@@ -399,18 +399,18 @@ class TabStrip : public views::View,
   // the actual last tab unless the strip is in the overflow node_data.
   const Tab* GetLastVisibleTab() const;
 
-  // Closes the tab at |model_index|.
+  // Closes the tab at `model_index`.
   void CloseTabInternal(int model_index, CloseTabSource source);
 
   // Computes and stores values derived from contrast ratios.
   void UpdateContrastRatioValues();
 
-  // Determines whether a tab can be shifted by one in the direction of |offset|
+  // Determines whether a tab can be shifted by one in the direction of `offset`
   // and moves it if possible.
   void ShiftTabRelative(Tab* tab, int offset);
 
   // Determines whether a group can be shifted by one in the direction of
-  // |offset| and moves it if possible.
+  // `offset` and moves it if possible.
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
 
   // views::View:
@@ -487,18 +487,18 @@ class TabStrip : public views::View,
   // Number of mouse moves.
   int mouse_move_count_ = 0;
 
-  // This represents the Tabs in |tabs_| that have been selected.
+  // This represents the Tabs in `tabs_` that have been selected.
   //
   // Each time tab selection should change, this class will receive a
   // SetSelection() callback with the new tab selection. That callback only
   // includes the new selection model. This keeps track of the previous
-  // selection model, and is always consistent with |tabs_|. This must be
+  // selection model, and is always consistent with `tabs_`. This must be
   // updated to account for tab insertions/removals/moves.
   ui::ListSelectionModel selected_tabs_;
 
   // When tabs are hovered, a radial highlight is shown and the tab opacity is
-  // adjusted using some value between |hover_opacity_min_| and
-  // |hover_opacity_max_| (depending on tab width). All these opacities depend
+  // adjusted using some value between `hover_opacity_min_` and
+  // `hover_opacity_max_` (depending on tab width). All these opacities depend
   // on contrast ratios and are updated when colors or active state changes,
   // so for efficiency's sake they are computed and stored once here instead
   // of with each tab. Note: these defaults will be overwritten at construction

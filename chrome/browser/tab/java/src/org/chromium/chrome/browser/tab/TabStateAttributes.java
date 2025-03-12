@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -15,6 +13,8 @@ import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -28,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.Predicate;
 
 /** Attributes related to {@link TabState} */
+@NullMarked
 public class TabStateAttributes extends TabWebContentsUserData {
     private static final Class<TabStateAttributes> USER_DATA_KEY = TabStateAttributes.class;
     @VisibleForTesting static final long DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS = 30 * 1000L;
@@ -55,7 +56,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     /** Whether or not the TabState has changed. */
     private @DirtinessState int mDirtinessState = DirtinessState.CLEAN;
 
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContentsObserver mWebContentsObserver;
     private boolean mPendingLowPrioritySave;
 
     /**
@@ -91,7 +92,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     /**
      * @return {@link TabStateAttributes} for a {@link Tab}
      */
-    public static TabStateAttributes from(Tab tab) {
+    public static @Nullable TabStateAttributes from(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
         return host.getUserData(USER_DATA_KEY);
     }
@@ -185,7 +186,8 @@ public class TabStateAttributes extends TabWebContentsUserData {
                     }
 
                     @Override
-                    public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
                         if (window == null) return;
                         updateIsDirty(DirtinessState.UNTIDY);
                     }
@@ -234,7 +236,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     }
 
     @Override
-    public void cleanupWebContents(WebContents webContents) {
+    public void cleanupWebContents(@Nullable WebContents webContents) {
         if (mWebContentsObserver != null) {
             mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
@@ -275,7 +277,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
      * @param shouldSetToClean A predicate determining whether to set the dirtiness to clean.
      */
     private void updateIsDirtyInternal(
-            @DirtinessState int dirtiness, @NonNull Predicate<Tab> shouldSetToClean) {
+            @DirtinessState int dirtiness, Predicate<Tab> shouldSetToClean) {
         if (mTab.isDestroyed()) return;
         if (dirtiness == mDirtinessState) return;
         if (mTab.isBeingRestored()) return;
@@ -302,12 +304,12 @@ public class TabStateAttributes extends TabWebContentsUserData {
         }
     }
 
-    private static boolean isTabUrlContentScheme(@NonNull Tab tab) {
+    private static boolean isTabUrlContentScheme(Tab tab) {
         GURL url = tab.getUrl();
         return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
     }
 
-    private static boolean isNtpWithoutNavigationState(@NonNull Tab tab) {
+    private static boolean isNtpWithoutNavigationState(Tab tab) {
         return UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.canGoBack() && !tab.canGoForward();
     }
 

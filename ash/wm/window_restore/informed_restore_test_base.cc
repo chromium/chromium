@@ -30,9 +30,7 @@ PrefService* InformedRestoreTestBase::GetTestPrefService() {
 void InformedRestoreTestBase::SetUp() {
   AshTestBase::SetUp();
 
-  TestSessionControllerClient* session_controller =
-      GetSessionControllerClient();
-  session_controller->Reset();
+  ClearLogin();
 
   // Inject our own PrefService as the restore preference is normally
   // registered in chrome/browser/ash/ and is not registered in ash unit

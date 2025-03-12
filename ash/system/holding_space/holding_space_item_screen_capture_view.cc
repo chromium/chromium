@@ -124,7 +124,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                           kColorAshShieldAndBase80))))
       .AddChild(views::Builder<views::View>()
                     .SetCanProcessEventsWithinSubtree(false)
-                    .SetBorder(views::CreateThemedRoundedRectBorder(
+                    .SetBorder(views::CreateRoundedRectBorder(
                         kBorderThickness, kHoldingSpaceCornerRadius,
                         kColorAshSeparatorColor)))
       .BuildChildren();

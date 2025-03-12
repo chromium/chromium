@@ -3017,6 +3017,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6337133576188860026">Consente di liberare meno di <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="6337534724793800597">Filtra le policy per nome</translation>
 <translation id="633770708279464947">Il valore <ph name="SECURE_DNS_SALT" /> non è valido e non verrà utilizzato.</translation>
+<translation id="6338645927051849741">Password • Gestore delle password di Google</translation>
 <translation id="6340739886198108203">La policy dell'amministratore sconsiglia l'acquisizione di screenshot o registrazioni quando sono visibili contenuti riservati:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La policy dell'amministratore sconsiglia di caricare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di caricare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">In questo momento</translation>

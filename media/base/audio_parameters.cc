@@ -69,82 +69,6 @@ const char* FormatToString(AudioParameters::Format format) {
   }
 }
 
-// Returns a string which contains the full bitmask for the given `mask`.
-// Example: mask=3 => returns "ECHO_CANCELLER | DUCKING".
-std::string EffectsMaskToString(int mask) {
-  if (mask == AudioParameters::NO_EFFECTS) {
-    return "NONE";
-  }
-
-  std::vector<std::string> effects;
-  if (mask & AudioParameters::ECHO_CANCELLER) {
-    effects.push_back("ECHO_CANCELLER");
-  }
-  if (mask & AudioParameters::DUCKING) {
-    effects.push_back("DUCKING");
-  }
-  if (mask & AudioParameters::HOTWORD) {
-    effects.push_back("HOTWORD");
-  }
-  if (mask & AudioParameters::NOISE_SUPPRESSION) {
-    effects.push_back("NOISE_SUPPRESSION");
-  }
-  if (mask & AudioParameters::AUTOMATIC_GAIN_CONTROL) {
-    effects.push_back("AUTOMATIC_GAIN_CONTROL");
-  }
-  if (mask & AudioParameters::MULTIZONE) {
-    effects.push_back("MULTIZONE");
-  }
-  if (mask & AudioParameters::AUDIO_PREFETCH) {
-    effects.push_back("AUDIO_PREFETCH");
-  }
-  if (mask & AudioParameters::ALLOW_DSP_ECHO_CANCELLER) {
-    effects.push_back("ALLOW_DSP_ECHO_CANCELLER");
-  }
-  if (mask & AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION) {
-    effects.push_back("ALLOW_DSP_NOISE_SUPPRESSION");
-  }
-  if (mask & AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL) {
-    effects.push_back("ALLOW_DSP_AUTOMATIC_GAIN_CONTROL");
-  }
-  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND) {
-    effects.push_back("FUCHSIA_RENDER_USAGE_BACKGROUND");
-  }
-  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_MEDIA) {
-    effects.push_back("FUCHSIA_RENDER_USAGE_MEDIA");
-  }
-  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION) {
-    effects.push_back("FUCHSIA_RENDER_USAGE_INTERRUPTION");
-  }
-  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_SYSTEM_AGENT) {
-    effects.push_back("FUCHSIA_RENDER_USAGE_SYSTEM_AGENT");
-  }
-  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION) {
-    effects.push_back("FUCHSIA_RENDER_USAGE_COMMUNICATION");
-  }
-  if (mask & AudioParameters::IGNORE_UI_GAINS) {
-    effects.push_back("IGNORE_UI_GAINS");
-  }
-  if (mask & AudioParameters::VOICE_ISOLATION_SUPPORTED) {
-    effects.push_back("VOICE_ISOLATION_SUPPORTED");
-  }
-  if (mask & AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) {
-    effects.push_back("CLIENT_CONTROLLED_VOICE_ISOLATION");
-  }
-  if (mask & AudioParameters::VOICE_ISOLATION) {
-    effects.push_back("VOICE_ISOLATION");
-  }
-
-  std::string result;
-  for (size_t i = 0; i < effects.size(); ++i) {
-    if (i > 0) {
-      result += " | ";
-    }
-    result += effects[i];
-  }
-  return result;
-}
-
 base::CheckedNumeric<uint32_t> ComputeAudioInputBufferSizeChecked(
     const AudioParameters& parameters,
     uint32_t shared_memory_count) {
@@ -218,6 +142,81 @@ ChannelLayoutConfig ChannelLayoutConfig::Guess(int channels) {
   return ChannelLayoutConfig(GuessChannelLayout(channels), channels);
 }
 
+// static
+std::string AudioParameters::EffectsMaskToString(int mask) {
+  if (mask == AudioParameters::NO_EFFECTS) {
+    return "NONE";
+  }
+
+  std::vector<std::string> effects;
+  if (mask & AudioParameters::ECHO_CANCELLER) {
+    effects.push_back("ECHO_CANCELLER");
+  }
+  if (mask & AudioParameters::DUCKING) {
+    effects.push_back("DUCKING");
+  }
+  if (mask & AudioParameters::HOTWORD) {
+    effects.push_back("HOTWORD");
+  }
+  if (mask & AudioParameters::NOISE_SUPPRESSION) {
+    effects.push_back("NOISE_SUPPRESSION");
+  }
+  if (mask & AudioParameters::AUTOMATIC_GAIN_CONTROL) {
+    effects.push_back("AUTOMATIC_GAIN_CONTROL");
+  }
+  if (mask & AudioParameters::MULTIZONE) {
+    effects.push_back("MULTIZONE");
+  }
+  if (mask & AudioParameters::AUDIO_PREFETCH) {
+    effects.push_back("AUDIO_PREFETCH");
+  }
+  if (mask & AudioParameters::ALLOW_DSP_ECHO_CANCELLER) {
+    effects.push_back("ALLOW_DSP_ECHO_CANCELLER");
+  }
+  if (mask & AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION) {
+    effects.push_back("ALLOW_DSP_NOISE_SUPPRESSION");
+  }
+  if (mask & AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL) {
+    effects.push_back("ALLOW_DSP_AUTOMATIC_GAIN_CONTROL");
+  }
+  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND) {
+    effects.push_back("FUCHSIA_RENDER_USAGE_BACKGROUND");
+  }
+  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_MEDIA) {
+    effects.push_back("FUCHSIA_RENDER_USAGE_MEDIA");
+  }
+  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION) {
+    effects.push_back("FUCHSIA_RENDER_USAGE_INTERRUPTION");
+  }
+  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_SYSTEM_AGENT) {
+    effects.push_back("FUCHSIA_RENDER_USAGE_SYSTEM_AGENT");
+  }
+  if (mask & AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION) {
+    effects.push_back("FUCHSIA_RENDER_USAGE_COMMUNICATION");
+  }
+  if (mask & AudioParameters::IGNORE_UI_GAINS) {
+    effects.push_back("IGNORE_UI_GAINS");
+  }
+  if (mask & AudioParameters::VOICE_ISOLATION_SUPPORTED) {
+    effects.push_back("VOICE_ISOLATION_SUPPORTED");
+  }
+  if (mask & AudioParameters::CLIENT_CONTROLLED_VOICE_ISOLATION) {
+    effects.push_back("CLIENT_CONTROLLED_VOICE_ISOLATION");
+  }
+  if (mask & AudioParameters::VOICE_ISOLATION) {
+    effects.push_back("VOICE_ISOLATION");
+  }
+
+  std::string result;
+  for (size_t i = 0; i < effects.size(); ++i) {
+    if (i > 0) {
+      result += " | ";
+    }
+    result += effects[i];
+  }
+  return result;
+}
+
 AudioParameters::AudioParameters()
     : AudioParameters(AUDIO_PCM_LINEAR,
                       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>(),
@@ -287,7 +286,7 @@ std::string AudioParameters::AsHumanReadableString() const {
     << ", channel_layout: " << channel_layout() << ", channels: " << channels()
     << ", sample_rate: " << sample_rate()
     << ", frames_per_buffer: " << frames_per_buffer()
-    << ", effects: " << EffectsMaskToString(effects())
+    << ", effects: " << AudioParameters::EffectsMaskToString(effects())
     << ", mic_positions: " << PointsToString(mic_positions_);
   if (hardware_capabilities_.has_value()) {
     s << ", hw_capabilities: min_frames_per_buffer: "

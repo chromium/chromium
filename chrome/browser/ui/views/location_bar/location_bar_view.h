@@ -30,10 +30,12 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -300,6 +302,8 @@ class LocationBarView
     confirmation_chip_collapsed_time_ = time;
   }
 
+  SkColor GetBackgroundColorForTesting() const { return background_color_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
@@ -528,7 +532,9 @@ class LocationBarView
   bool is_initialized_ = false;
 
   // Used for metrics collection.
-  base::TimeTicks confirmation_chip_collapsed_time_ = base::TimeTicks();
+  base::TimeTicks confirmation_chip_collapsed_time_;
+
+  SkColor background_color_ = gfx::kPlaceholderColor;
 
   // The focus manager associated with this view. The focus manager is expected
   // to outlive this view.

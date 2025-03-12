@@ -605,7 +605,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
         SendAccountsRequestAndWaitForResponse(accounts_json.c_str());
 
     EXPECT_EQ(1UL, accounts.size());
-    EXPECT_EQ(test_value, accounts[0]->name);
+    EXPECT_EQ(test_value, accounts[0]->display_name);
   }
 }
 

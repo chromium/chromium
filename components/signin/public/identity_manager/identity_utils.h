@@ -24,11 +24,12 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username);
 
 // Returns true:
-// - if `switches::kExplicitBrowserSigninUIOnDesktop` feature is disabled.
+// - if BUILDFLAG(ENABLE_DICE_SUPPORT) is enabled.
 // - The user is signed in to the browser implicitly by signing in on the
 //   web.
 // It will return false if the feature is enabled and the user is either signed
 // out or signed in explicitly.
+
 bool IsImplicitBrowserSigninOrExplicitDisabled(
     const IdentityManager* identity_manager,
     const PrefService* prefs);

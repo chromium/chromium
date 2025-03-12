@@ -21,8 +21,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,8 +46,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
@@ -110,6 +106,7 @@ public class VoiceRecognitionHandlerUnitTest {
         AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
         RecognitionTestHelper.ShadowUserPrefs.setPrefService(mPrefs);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         ProfileManager.onProfileAdded(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
@@ -228,8 +225,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Feature("VoiceSearchAudioCapturePolicy")
-    @Features.EnableFeatures(VOICE_SEARCH_AUDIO_CAPTURE_POLICY)
     public void testIsVoiceSearchEnabled_AllowedByPolicy() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
@@ -239,8 +234,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Feature("VoiceSearchAudioCapturePolicy")
-    @Features.EnableFeatures(VOICE_SEARCH_AUDIO_CAPTURE_POLICY)
     public void testIsVoiceSearchEnabled_DisabledByPolicy() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
@@ -250,8 +243,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Feature("VoiceSearchAudioCapturePolicy")
-    @Features.EnableFeatures(VOICE_SEARCH_AUDIO_CAPTURE_POLICY)
     public void testIsVoiceSearchEnabled_AudioCapturePolicyAllowsByDefault() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
@@ -261,19 +252,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Feature("VoiceSearchAudioCapturePolicy")
-    @Features.DisableFeatures(VOICE_SEARCH_AUDIO_CAPTURE_POLICY)
-    public void testIsVoiceSearchEnabled_SkipPolicyCheckWhenDisabled() {
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
-        assertTrue(mHandler.isVoiceSearchEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @Feature("VoiceSearchAudioCapturePolicy")
-    @Features.EnableFeatures(VOICE_SEARCH_AUDIO_CAPTURE_POLICY)
     public void testIsVoiceSearchEnabled_UpdateAfterProfileSet() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());

@@ -14,19 +14,24 @@
 
 namespace quick_answers {
 namespace {
+
 constexpr gfx::Insets kHighlightInsets = gfx::Insets::VH(4, 0);
 
 class HighlightBackground : public views::Background {
  public:
+  HighlightBackground() { SetColor(ui::kColorMenuItemBackgroundHighlighted); }
+
+  HighlightBackground(const HighlightBackground&) = delete;
+  HighlightBackground& operator=(const HighlightBackground&) = delete;
+
+  ~HighlightBackground() override = default;
+
   // `OnViewThemeChanged` is called when a background is added to a view.
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(
-        ui::kColorMenuItemBackgroundHighlighted));
-
     // Use `SolidRoundRectPainter` to get a rectangle painter with insets.
-    painter_ = views::Painter::CreateSolidRoundRectPainter(get_color(),
-                                                           /*radius=*/0,
-                                                           kHighlightInsets);
+    painter_ = views::Painter::CreateSolidRoundRectPainter(
+        color().ConvertToSkColor(view->GetColorProvider()),
+        /*radius=*/0, kHighlightInsets);
 
     view->SchedulePaint();
   }

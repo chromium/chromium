@@ -540,10 +540,6 @@ void GpuChannelSharedImageInterface::WaitSyncToken(
                   MakeSyncToken(next_fence_sync_release_++));
 }
 
-void GpuChannelSharedImageInterface::Flush() {
-  // No need to flush in this implementation.
-}
-
 void GpuChannelSharedImageInterface::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences,

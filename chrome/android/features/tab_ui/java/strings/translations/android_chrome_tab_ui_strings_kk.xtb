@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">Қойындылар тобының <ph name="COLOR_NAME" /> түсті белгішесі</translation>
 <translation id="311432875115153175">Қойындылар тобының тізімі жабылды.</translation>
 <translation id="3194464645767632461">бағасы</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындыны топқа қосу}other{<ph name="TABS_COUNT_MANY" /> қойындыны топқа қосу}}</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3547352561153509682">Бұл жағдайда топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңа қойынды}other{<ph name="MANY_ADDED" /> жаңа қойынды}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">Бұл құрылғыдағы ашық қойындылардың атаулары мен URL мекенжайларын операциялық жүйемен бөлісу</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
 <translation id="4850886885716139402">Көрініс</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топқа қосу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топқа қосу}}</translation>
 <translation id="4861611890274104875">Картаны жабады.</translation>
 <translation id="4861953997778766866">Ортақ қойындылар топтарына барлығы өзгеріс енгізе алады.</translation>
 <translation id="4870911314065352661">Барлық қойынды жабылсын ба?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6271513594716432922">Барлық әрекетсіз қойындыны жабу</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Жаңа топқа қойынды қосу}other{Жаңа топқа қойындылар қосу}}</translation>
 <translation id="6333260925957816943">Бұл дүкен туралы ақпарат</translation>
 <translation id="6381032505162537930">Қойындылар топтарын осы жерден табуға болады</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан шығару}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан шығару}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">Басқа құрылғыдағы жаңа топ</translation>
 <translation id="8029301326595421733">Бұл дүкеннің толық ашылғандығы туралы ақпарат</translation>
 <translation id="8053770993984522566">Жартылай ашылған қойындылар тобының тізімі</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Топқа қойынды қосу}other{Топқа қойындылар қосу}}</translation>
 <translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті <ph name="TITLE_OF_GROUP" /> қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті <ph name="TITLE_OF_GROUP" /> қойындылар тобын жаю.}}</translation>
 <translation id="8205266828577616993">Қойындыны жоғары жылжыту</translation>

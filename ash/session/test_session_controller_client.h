@@ -158,9 +158,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // is at least one user session created, and session state is ACTIVE.
   void MaybeNotifyFirstSessionReady();
 
-  // Notify user prefs initialized if user session has started.
-  void NotifyUserPrefServiceInitialized(const AccountId& account_id);
-
   const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
   const raw_ptr<TestPrefServiceProvider> prefs_provider_;
 

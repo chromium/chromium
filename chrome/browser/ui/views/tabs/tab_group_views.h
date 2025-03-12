@@ -26,8 +26,8 @@ class TabGroupStyle;
 class TabGroupViews {
  public:
   // Creates the various views representing a tab group and adds them to
-  // |container_view| and |drag_container_view| as children.  Assumes these
-  // views are not destroyed before |this|.
+  // `container_view` and `drag_container_view` as children.  Assumes these
+  // views are not destroyed before `this`.
   TabGroupViews(views::View* container_view,
                 views::View* drag_container_view,
                 TabSlotController& tab_slot_controller,
@@ -72,13 +72,13 @@ class TabGroupViews {
 
   bool InTearDown() const;
 
-  // Finds the first and last tab or group header belonging to |group_|, only
+  // Finds the first and last tab or group header belonging to `group_`, only
   // including views that are being dragged.
   std::tuple<views::View*, views::View*> GetLeadingTrailingDraggedGroupViews()
       const;
 
-  // Finds the first and last tab or group header belonging to |group_| within
-  // |children|.
+  // Finds the first and last tab or group header belonging to `group_` within
+  // `children`.
   std::tuple<views::View*, views::View*> GetLeadingTrailingGroupViews(
       std::vector<raw_ptr<views::View, VectorExperimental>> children) const;
 };

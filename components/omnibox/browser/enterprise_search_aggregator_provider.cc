@@ -5,18 +5,23 @@
 #include "enterprise_search_aggregator_provider.h"
 
 #include <algorithm>
+#include <ctime>
 #include <functional>
+#include <iomanip>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <ranges>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -138,6 +143,110 @@ int kLowQualityThreshold() {
 // Helper for reading possibly null paths from `base::Value::Dict`.
 std::string ptr_to_string(const std::string* ptr) {
   return ptr ? *ptr : "";
+}
+
+struct MimeInfo {
+  const std::string_view mime_type;
+  const std::string_view mime_description;
+};
+
+// A mapping from `mime_type` to the human readable `mime_description`.
+// Mappings documentation:
+// https://developers.google.com/drive/api/guides/mime-types
+// https://developers.google.com/drive/api/guides/ref-export-formats
+// TODO(crbug.com/402436108): Localize the following strings.
+const auto kMimeTypeMapping = base::MakeFixedFlatMap<std::string_view,
+                                                     std::string_view>({
+    {"application/vnd.google-apps.audio", "Audio"},
+    {"application/vnd.google-apps.document", "Google Docs"},
+    {"application/vnd.google-apps.drive-sdk", "Third-party shortcut"},
+    {"application/vnd.google-apps.drawing", "Google Drawings"},
+    {"application/vnd.google-apps.file", "Google Drive file"},
+    {"application/vnd.google-apps.folder", "Google Drive folder"},
+    {"application/vnd.google-apps.form", "Google Forms"},
+    {"application/vnd.google-apps.fusiontable", "Google Fusion Tables"},
+    {"application/vnd.google-apps.jam", "Google Jamboard"},
+    {"application/vnd.google-apps.mail-layout", "Email layout"},
+    {"application/vnd.google-apps.map", "Google My Maps"},
+    {"application/vnd.google-apps.photo", "Google Photos"},
+    {"application/vnd.google-apps.presentation", "Google Slides"},
+    {"application/vnd.google-apps.script", "Google Apps Script"},
+    {"application/vnd.google-apps.shortcut", "Shortcut"},
+    {"application/vnd.google-apps.site", "Google Sites"},
+    {"application/vnd.google-apps.spreadsheet", "Google Sheets"},
+    {"application/vnd.google-apps.unknown", ""},
+    {"application/vnd.google-apps.vid", "MP4"},
+    {"application/vnd.google-apps.video", "Video"},
+    {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     "Microsoft Word"},
+    {"application/vnd.oasis.opendocument.text", "OpenDocument"},
+    {"application/rtf", "Rich Text"},
+    {"application/pdf", "PDF"},
+    {"text/plain", "Plain Text"},
+    {"application/zip", "ZIP"},
+    {"application/epub+zip", "EPUB ZIP"},
+    {"text/markdown", "Markdown"},
+    {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "Microsoft Excel"},
+    {"application/x-vnd.oasis.opendocument.spreadsheet",
+     "OpenDocument Spreadsheet"},
+    {"text/csv", "Comma Separated Values"},
+    {"text/tab-separated-values", "Tab Separated Values"},
+    {"application/"
+     "vnd.openxmlformats-officedocument.presentationml.presentation",
+     "Microsoft PowerPoint"},
+    {"application/vnd.oasis.opendocument.presentation", "ODP"},
+    {"image/jpeg", "JPEG"},
+    {"image/png", "PNG"},
+    {"image/svg+xml", "Scalable Vector Graphics"},
+    {"application/vnd.google-apps.script+json", "JSON"},
+    {"video/quicktime", "Quicktime Video"},
+});
+
+// Helper for converting a `mime_type` into an abbreviated string.
+std::string_view MimeToDescription(const std::string_view& mime_type) {
+  const auto it = kMimeTypeMapping.find(mime_type);
+  return it != kMimeTypeMapping.end() ? it->second : mime_type;
+}
+
+// Helper for converting unix timestamp `time` into an abbreviated date.
+// For time within the current day, return the time of day. (Ex. '12:45 PM')
+// For time within the current year, return the abbreviated date. (Ex. 'Jan 02')
+// Otherwise, return the full date. (Ex. '10/7/24')
+// TODO(crbug.com/402549325): Use `GenerateLastModifiedString()` from
+//   `DocumentProvider` instead.
+std::string UpdateTimeToString(std::optional<int> time) {
+  if (!time) {
+    return "";
+  }
+
+  std::time_t unix_time = static_cast<std::time_t>(time.value());
+  std::tm* local_time = std::localtime(&unix_time);
+  if (!local_time) {
+    return "";
+  }
+
+  // Get current time to check if `unix_time` is in the current day or year.
+  base::Time check_time = base::Time::FromTimeT(unix_time);
+  base::Time now = base::Time::Now();
+  base::Time::Exploded check_time_exploded;
+  base::Time::Exploded now_exploded;
+  check_time.UTCExplode(&check_time_exploded);
+  now.UTCExplode(&now_exploded);
+
+  bool is_current_year = check_time_exploded.year == now_exploded.year;
+  bool is_current_day =
+      is_current_year && check_time_exploded.month == now_exploded.month &&
+      check_time_exploded.day_of_month == now_exploded.day_of_month;
+
+  const std::string& format_string = is_current_day    ? "%I:%M%p"
+                                     : is_current_year ? "%b %d"
+                                                       : "%m/%d/%Y";
+
+  std::stringstream ss;
+  ss << std::put_time(local_time, format_string.c_str());
+
+  return ss.fail() ? "" : ss.str();
 }
 
 // Helper for getting the correct `TemplateURL` based on the input.
@@ -439,9 +548,9 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
     }
   } else {
     // TODO(crbug.com/380642693): Add backoff if needed. This could be done by
-    // tracking the number of consecutive errors and only clearing matches if
-    // the number of errors exceeds a certain threshold. Or verifying backoff
-    // conditions from the server-side team.
+    //   tracking the number of consecutive errors and only clearing matches if
+    //   the number of errors exceeds a certain threshold. Or verifying backoff
+    //   conditions from the server-side team.
     UpdateResults(std::nullopt, response_code);
   }
 }
@@ -647,7 +756,25 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
   } else if (suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindStringByDottedPath(
         "document.derivedStructData.name.userName"));
+  } else if (suggestion_type == SuggestionType::CONTENT) {
+    std::optional<int> response_time =
+        result.FindIntByDottedPath("document.derivedStructData.updated_time");
+    // TODO (crbug.com/402436108): Localize the `last_updated` time below
+    //   similar to how it is done in `DocumentProvider::GetMatchDescription()`.
+    const std::string last_updated = UpdateTimeToString(response_time);
+    const std::string owner = ptr_to_string(
+        result.FindStringByDottedPath("document.derivedStructData.owner"));
+    const std::string mime_description = std::string(
+        MimeToDescription(ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.mime_type"))));
+    // Only place a dash after metadata text if it exists.
+    auto metadata_dash = [](const std::string& previous_text) {
+      return previous_text.empty() ? "" : " - ";
+    };
+    return last_updated + metadata_dash(last_updated) + owner +
+           metadata_dash(owner) + mime_description;
   }
+
   return "";
 }
 

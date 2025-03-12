@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">વર્તમાન બ્રાઉઝિંગ ડેટાને <ph name="USER_EMAIL" /> સાથે લિંક કરવામાં આવશે. તમારી સંસ્થા આ ડેટાને જોઈ શકે છે.</translation>
 <translation id="1713777106376424209">આમના દ્વારા ડિલિવર કરવામાં આવ્યું</translation>
 <translation id="1715515772563243997">જો <ph name="SITE" /> તમારા માટે વિશ્વસનીય હોય, તો તમે સાઇન ઇન કરવા માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
+<translation id="1718835860248848330">છેલ્લા એક કલાક</translation>
 <translation id="1728549374069268714">પેસ્ટ કરો અને જાઓ</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> માટે નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">સરનામાની ભાળ મેળવવાની સુવિધા બંધ છે. તેને સેટિંગમાં ફરીથી ચાલુ કરો.</translation>
 <translation id="1904580727789512086">તમે મુલાકાત લો છો તે URLsને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
-<translation id="1923342640370224680">છેલ્લી કલાક</translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1943478190258551035">મેનૂ → સેટિંગ</translation>
 <translation id="1952728750904661634">મેનેજ એકાઉન્ટ સાથે સાઇન ઇન કરો</translation>
@@ -1206,6 +1206,7 @@
 <translation id="6187302354554850004">છેલ્લે સમન્વયિત કરેલું: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="6189413832092199491">વાંચ્યા વગરની</translation>
+<translation id="6192388920090306326">ટોક્યોની ટ્રિપ</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
@@ -1370,6 +1371,7 @@
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
 <translation id="6794476726485507147">આ પેજની ફરી મુલાકાત લેવા માટે, રિમાઇન્ડર નોટિફિકેશન મેળવવા માટે તારીખ અને સમય પસંદ કરો</translation>
+<translation id="6807287147325542056">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6825078212112407882">{count,plural, =1{તમારા Google એકાઉન્ટ, {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="6830728435402077660">સુરક્ષિત નથી</translation>
@@ -1934,6 +1936,7 @@
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"માંથી</translation>
 <translation id="9107664647686727385">ચેડાં કરાયેલા પાસવર્ડ ચેક કરો</translation>
 <translation id="9124387962554796433">Search અને Googleની અન્ય સેવાઓને મનપસંદ બનાવવા માટે, Google તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે.</translation>
+<translation id="9124978074365039456">તમારા કૅમેરા અને ફોટો ગૅલરીનો ઉપયોગ કરીને તમે જે જુઓ છો તે ખરીદો, તેનો અનુવાદ કરો અને તેને ઓળખો</translation>
 <translation id="9130317582644834675">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
 <translation id="913036870884277353">અન્ય ઍપમાં સરળતાથી લિંક ખોલો.</translation>
 <translation id="9137013805542155359">મૂળ બતાવો</translation>

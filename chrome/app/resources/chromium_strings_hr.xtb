@@ -128,11 +128,9 @@
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2770231113462710648">Promijeni zadani preglednik na:</translation>
-<translation id="277338894894732084">Chromium će vas poslije pitati želite li upotrijebiti spremljene podatke za automatsko popunjavanje obrazaca</translation>
 <translation id="2785438272836277133">Ovo proširenje sadrži zlonamjerni softver i nije sigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
-<translation id="2806241689335397269">Chromium će vas pitati želite li spremiti podatke iz obrasca, kao što su datum rođenja, dob i broj putovnice</translation>
 <translation id="2841525013647267359">Jezik izvornika</translation>
 <translation id="2846251086934905009">Pogreška pri instalaciji: program za instalaciju nije dovršio radnju. Instalacija je prekinuta.</translation>
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
@@ -178,7 +176,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Želite li prijeći na postojeći profil u Chromiumu?</translation>
 <translation id="3412460710772753638">U Upravitelju zaporki na ovom uređaju</translation>
-<translation id="3451656833730006755">Da biste imali svoja proširenja i druge podatke na svim svojim računalima, prijavite se u Chromium</translation>
 <translation id="347328004046849135">Chrome će vas obavijestiti kada se prijavite ugroženom zaporkom</translation>
 <translation id="3474745554856756813">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. TDa biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Pomoću prečaca <ph name="SHORTCUT" /> možete se prebacivati između profila u Chromiumu</translation>
@@ -461,7 +458,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="734373864078049451">Ovdje se nalaze vaš web, oznake i ostali sadržaji u Chromiumu.</translation>
 <translation id="7349591376906416160">Vaš administrator sustava konfigurirao je Chromium da otvara <ph name="ALTERNATIVE_BROWSER_NAME" /> za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Ovo proširenje više nije podržano. Chromium preporučuje da ga uklonite.</translation>
-<translation id="7389750180956889333">Chromium bolje razumije obrasce i može ih brže automatski popuniti. Saznajte više o <ph name="BEGIN_LINK" />automatskom popunjavanju u Chromeu<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Tekst kopiran</translation>
 <translation id="7451052299415159299">Chromium treba dopuštenje za pristup kameri za ovu web-lokaciju</translation>

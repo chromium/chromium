@@ -16,8 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
@@ -112,8 +110,6 @@ public class ToolbarTablet extends ToolbarLayout
     private ObservableSupplier<Integer> mTabCountSupplier;
     private TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
-    private OnTouchListener mReloadButtonTouchListener;
-    private boolean mIsShiftDownForReload;
 
     /**
      * Constructs a ToolbarTablet object.
@@ -247,7 +243,6 @@ public class ToolbarTablet extends ToolbarLayout
                     }
                 });
 
-        mReloadButton.setOnClickListener(this);
         mReloadButton.setOnLongClickListener(this);
         mReloadButton.setOnKeyListener(
                 new KeyboardNavigationListener() {
@@ -269,7 +264,6 @@ public class ToolbarTablet extends ToolbarLayout
                         }
                     }
                 });
-        initReloadButtonTouchListener();
 
         mBookmarkButton.setOnClickListener(this);
         mBookmarkButton.setOnLongClickListener(this);
@@ -295,28 +289,6 @@ public class ToolbarTablet extends ToolbarLayout
 
         mSaveOfflineButton.setOnClickListener(this);
         mSaveOfflineButton.setOnLongClickListener(this);
-    }
-
-    /**
-     * Initializes the reload button's touch listener, which exists to detect shift clicks for
-     * reload ignoring cache. Suppress lint ClickableViewAccessibility for the call to
-     * setOnTouchListener.
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    private void initReloadButtonTouchListener() {
-        mReloadButtonTouchListener =
-                new OnTouchListener() {
-                    @Override
-                    @SuppressLint("ClickableViewAccessibility")
-                    public boolean onTouch(View view, MotionEvent event) {
-                        // For mouse clicks the framework calls onTouch() before onClick(). Capture
-                        // the shift key state to determine reload vs. reload ignoring cache.
-                        mIsShiftDownForReload =
-                                (event.getMetaState() & KeyEvent.META_SHIFT_ON) != 0;
-                        return false;
-                    }
-                };
-        mReloadButton.setOnTouchListener(mReloadButtonTouchListener);
     }
 
     @Override
@@ -373,8 +345,6 @@ public class ToolbarTablet extends ToolbarLayout
         } else if (mForwardButton == v) {
             forward();
             RecordUserAction.record("MobileToolbarForward");
-        } else if (mReloadButton == v) {
-            stopOrReloadCurrentTab(/* ignoreCache= */ mIsShiftDownForReload);
         } else if (mBookmarkButton == v) {
             if (mBookmarkListener != null) {
                 mBookmarkListener.onClick(mBookmarkButton);
@@ -971,9 +941,5 @@ public class ToolbarTablet extends ToolbarLayout
 
     public ImageButton getBookmarkButtonForTesting() {
         return mBookmarkButton;
-    }
-
-    OnTouchListener getReloadButtonTouchListenerForTest() {
-        return mReloadButtonTouchListener;
     }
 }

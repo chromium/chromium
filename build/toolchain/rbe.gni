@@ -146,17 +146,3 @@ if (use_reclient_cfgs && current_toolchain == default_toolchain) {
                 [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
   }
 }
-
-# TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++
-# targets. This file is added to `inputs` for all C targets in
-# //build/config/BUILDCONFIG.gn. We work around the bug in Reclient by
-# specifying the file here.
-#
-# This is a comma-delimited list of paths relative to the source tree root. The
-# leading space is important, if the string is non-empty. :)
-rbe_bug_326584510_missing_inputs = ""
-if (defined(clang_unsafe_buffers_paths) &&
-    "$clang_unsafe_buffers_paths" != "") {
-  from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
-  rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
-}

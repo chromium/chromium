@@ -40,6 +40,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
@@ -107,6 +108,10 @@ void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
   device_proto->set_os_version(policy::GetOSVersion());
   device_proto->set_os_platform(policy::GetOSPlatform());
   device_proto->set_name(policy::GetDeviceName());
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    device_proto->set_device_fqdn(policy::GetDeviceFqdn());
+    device_proto->set_network_name(policy::GetNetworkName());
+  }
 }
 
 bool IsURLExemptFromAnalysis(const GURL& url) {

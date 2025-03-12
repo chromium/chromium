@@ -27,9 +27,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -231,13 +230,11 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             if (serviceStatus.isAllowedToJoin()) {
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(profile);
+                SharedImageTilesConfig config =
+                        new SharedImageTilesConfig.Builder(activity).build();
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
-                                activity,
-                                SharedImageTilesType.DEFAULT,
-                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                dataSharingService,
-                                collaborationService);
+                                activity, config, dataSharingService, collaborationService);
                 FrameLayout container =
                         mToolbarView.findViewById(R.id.toolbar_image_tiles_container);
                 TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(

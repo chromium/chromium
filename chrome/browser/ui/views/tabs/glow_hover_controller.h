@@ -47,7 +47,7 @@ class GlowHoverController : public views::AnimationDelegateViews {
   SkAlpha GetAlpha() const;
 
   // Returns true if there is something to be drawn. Use this instead of
-  // invoking Draw() if creating |mask_image| is expensive.
+  // invoking Draw() if creating `mask_image` is expensive.
   bool ShouldDraw() const;
 
   // views::AnimationDelegateViews overrides:

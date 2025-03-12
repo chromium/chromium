@@ -6929,6 +6929,25 @@ WebView* RenderFrameImpl::CreateNewWindow(
   bool is_background_tab =
       params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver;
+  params->frame_remote =
+      pending_frame_receiver.InitWithNewEndpointAndPassRemote();
+
+  mojo::PendingAssociatedReceiver<blink::mojom::PageBroadcast>
+      page_broadcast_receiver;
+  params->page_broadcast_remote =
+      page_broadcast_receiver.InitWithNewEndpointAndPassRemote();
+
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker;
+  params->main_frame_interface_broker =
+      browser_interface_broker.InitWithNewPipeAndPassReceiver();
+
+  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+      associated_interface_provider;
+  params->associated_interface_provider =
+      associated_interface_provider.InitWithNewEndpointAndPassReceiver();
+
   mojom::CreateNewWindowStatus status;
   mojom::CreateNewWindowReplyPtr reply;
   auto* frame_host = GetFrameHost();
@@ -7005,13 +7024,12 @@ WebView* RenderFrameImpl::CreateNewWindow(
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
   main_frame_params->frame_token = reply->main_frame_token;
   main_frame_params->routing_id = reply->main_frame_route_id;
-  main_frame_params->frame = std::move(reply->frame);
-  main_frame_params->interface_broker =
-      std::move(reply->main_frame_interface_broker);
+  main_frame_params->frame = std::move(pending_frame_receiver);
+  main_frame_params->interface_broker = std::move(browser_interface_broker);
   main_frame_params->document_token = reply->document_token;
   main_frame_params->policy_container = std::move(reply->policy_container);
   main_frame_params->associated_interface_provider_remote =
-      std::move(reply->associated_interface_provider);
+      std::move(associated_interface_provider);
   main_frame_params->widget_params = std::move(reply->widget_params);
   main_frame_params->subresource_loader_factories =
       base::WrapUnique(static_cast<blink::PendingURLLoaderFactoryBundle*>(
@@ -7019,7 +7037,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
 
   view_params->main_frame =
       mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));
-  view_params->blink_page_broadcast = std::move(reply->page_broadcast);
+  view_params->blink_page_broadcast = std::move(page_broadcast_receiver);
   view_params->session_storage_namespace_id =
       reply->cloned_session_storage_namespace_id;
   DCHECK(!view_params->session_storage_namespace_id.empty())

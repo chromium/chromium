@@ -40,11 +40,11 @@
           });
     });
 
-    await initDelegate(dp);
+    void initDelegate(dp);
 
-    await dp.Page.enable();
-    await dp.Runtime.runIfWaitingForDebugger();
-  };
+    void dp.Page.enable();
+    void dp.Runtime.runIfWaitingForDebugger();
+    };
 
   function onceFrameNavigated(urlSuffix) {
     return new Promise(resolve => {

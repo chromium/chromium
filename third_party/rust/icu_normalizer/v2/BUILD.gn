@@ -39,7 +39,6 @@ cargo_crate("lib") {
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/icu_collections/v2:lib",
     "//third_party/rust/icu_normalizer_data/v2:lib",
-    "//third_party/rust/icu_properties/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/smallvec/v1:lib",
     "//third_party/rust/zerovec/v0_11:lib",

@@ -51,7 +51,6 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable/round_image_filled.xml",
-      "android/java/res/layout/data_sharing_bottom_sheet.xml",
       "android/java/res/layout/data_sharing_invitation_dialog_footer.xml",
       "android/java/res/layout/recent_activity_bottom_sheet.xml",
       "android/java/res/layout/recent_activity_log_item.xml",
@@ -234,11 +233,10 @@ if (is_android) {
     resources_package =
         "org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles"
     sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesColor.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesConfig.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesMediator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesProperties.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesType.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesView.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesViewBinder.java",
     ]

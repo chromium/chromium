@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/schemeful_site.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -359,6 +360,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   // Timer for starting and ending the keep-alive phase.
   base::OneShotTimer keep_alive_timer_;
+
+  // Source ID of the page that spawned the worklet.
+  ukm::SourceId source_id_;
 
   // Time when worklet host is constructed.
   base::TimeTicks creation_time_;

@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Postojeći podaci o pregledavanju povezat će se s računom <ph name="USER_EMAIL" />. Vaša organizacija može vidjeti te podatke.</translation>
 <translation id="1713777106376424209">Dostava do</translation>
 <translation id="1715515772563243997">Ako web-lokaciju <ph name="SITE" /> smatrate pouzdanom, možete upotrijebiti spremljenu zaporku za prijavu.</translation>
+<translation id="1718835860248848330">Prethodni sat</translation>
 <translation id="1728549374069268714">Zalijepi i idi</translation>
 <translation id="1732468323901456775">Uključi obavijesti za značajku <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Otkrivanje adrese je isključeno. Ponovo ga uključite u postavkama.</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="1911619930368729126">Prenesi na Google disk</translation>
-<translation id="1923342640370224680">Prethodni sat</translation>
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Izbornik → Postavke</translation>
 <translation id="1952728750904661634">Prijavite se upravljanim računom</translation>
@@ -522,7 +522,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Spremljene zaporke možete upotrebljavati i na vašim ostalim uređajima.</translation>
 <translation id="3181954750937456830">Sigurno pregledavanje (štiti vas i vaš uređaj od opasnih web-lokacija)</translation>
-<translation id="3190736958609431397">Poništavanje praćenja</translation>
+<translation id="3190736958609431397">Poništi praćenje</translation>
 <translation id="3208260410153224535">Vaša organizacija isključila je prijavljivanje. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
 <translation id="3213807041830307252">Kupujte, prevodite i identificirajte ono što vidite pomoću kamere i galerije fotografija.</translation>
 <translation id="3214379938835224220">Odjavljeni ste pri vraćanju iPada na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
@@ -841,7 +841,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4634124774493850572">Upotrijebi zaporku</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4641425577292284174">Saznajte imate li najsigurnije postavke ili trebate nešto pregledati</translation>
-<translation id="4642472735733036929">Praćenje cijene zaustavljeno</translation>
+<translation id="4642472735733036929">Praćenje cijene je zaustavljeno</translation>
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4647758699119474035">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Pogreška Google računa. Otvorite izbornik računa.</translation>
 <translation id="4650125387981512669">Nastavi kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>

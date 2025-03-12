@@ -927,14 +927,21 @@ void BrowserProcessImpl::CreateDevToolsProtocolHandler() {
     return;
   }
 
+  // For errors, follow content/browser/devtools/devtools_http_handler.cc that
+  // reports its remote debugging port on stderr for symmetry.
   switch (maybe_remote_debugging_server.error()) {
     case RemoteDebuggingServer::NotStartedReason::kNotRequested:
       break;
     case RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy:
-      // Follow content/browser/devtools/devtools_http_handler.cc that reports
-      // its remote debugging port on stderr for symmetry.
       fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
             stderr);
+      fflush(stderr);
+      break;
+    case RemoteDebuggingServer::NotStartedReason::kDisabledByDefaultUserDataDir:
+      fputs(
+          "\nDevTools remote debugging requires a non-default data directory. "
+          "Specify this using --user-data-dir.\n",
+          stderr);
       fflush(stderr);
       break;
   }

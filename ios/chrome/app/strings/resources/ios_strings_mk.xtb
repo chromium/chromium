@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Постојните податоци од прелистување ќе бидат поврзани со <ph name="USER_EMAIL" />. Податоциве може да бидат видливи за вашата организација.</translation>
 <translation id="1713777106376424209">Испорачувач:</translation>
 <translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
+<translation id="1718835860248848330">Изминатиот час</translation>
 <translation id="1728549374069268714">Залепи и продолжи</translation>
 <translation id="1732468323901456775">Вклучете ги известувањата за <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Откривањето адреса е исклучено. Вклучете го повторно во Settings.</translation>
 <translation id="1904580727789512086">URL-адресите што ги посетувате се зачувуваат во вашата сметка на Google</translation>
 <translation id="1911619930368729126">Постави во Диск на Google</translation>
-<translation id="1923342640370224680">Минатиот час</translation>
 <translation id="1941314575388338491">Допрете двапати за да копирате.</translation>
 <translation id="1943478190258551035">Мени → Поставки</translation>
 <translation id="1952728750904661634">Најави се со управувана сметка</translation>
@@ -1206,6 +1206,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Создадено на <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитани</translation>
+<translation id="6192388920090306326">Патување во Токио</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6196207969502475924">Гласовно пребарување</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
@@ -1370,6 +1371,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6779455296366983087">Податоци од прелистување ќе се избришат</translation>
 <translation id="6790502149545262384">Наскоро ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="6794476726485507147">Изберете датум и време за да добиете известување со потсетник да ја отворите страницава повторно</translation>
+<translation id="6807287147325542056">Лозинки во други апликации</translation>
 <translation id="681368974849482173">Ставката е создадена</translation>
 <translation id="6825078212112407882">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google {email}}one{{count} обележувач се зачувани во вашата сметка на Google {email}}other{{count} обележувачи се зачувани во вашата сметка на Google {email}}}</translation>
 <translation id="6830728435402077660">Небезбедно</translation>
@@ -1934,6 +1936,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9106655997975673326">Од „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Проверува дали има компромитирани лозинки</translation>
 <translation id="9124387962554796433">Google може да ја користи вашата историја за да ги персонализира „Пребарувањето“ и другите услуги на Google.</translation>
+<translation id="9124978074365039456">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата и фотогалеријата</translation>
 <translation id="9130317582644834675">Скриј „Зумирај текст“</translation>
 <translation id="913036870884277353">Лесно отворајте линкови во други апликации.</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>

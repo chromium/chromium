@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_op_reader.h"
 
 #include <stddef.h>
@@ -181,7 +176,7 @@ void PaintOpReader::ReadSimple(T* val) {
   // use assignment.
   *val = *reinterpret_cast<const T*>(const_cast<const uint8_t*>(memory_));
 
-  memory_ += size;
+  UNSAFE_TODO(memory_ += size);
   remaining_bytes_ -= size;
   AssertFieldAlignment();
 }
@@ -568,7 +563,7 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
 
   // This is safe to cast away the volatile as it is just a memcpy internally.
   *data = gfx::MakeSkDataFromSpanWithCopy(
-      base::span(const_cast<const uint8_t*>(memory_), bytes));
+      UNSAFE_TODO(base::span(const_cast<const uint8_t*>(memory_), bytes)));
   DidRead(bytes);
 }
 
@@ -998,7 +993,7 @@ void PaintOpReader::AlignMemory(size_t alignment) {
   if (padding > remaining_bytes_)
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_AlignMemory);
 
-  memory_ += padding;
+  UNSAFE_TODO(memory_ += padding);
   remaining_bytes_ -= padding;
 }
 
@@ -1713,7 +1708,7 @@ inline void PaintOpReader::DidRead(size_t bytes_read) {
       base::bits::AlignUp(bytes_read, PaintOpWriter::kDefaultAlignment);
   DCHECK_LE(aligned_bytes, remaining_bytes_);
   bytes_read = std::min(aligned_bytes, remaining_bytes_);
-  memory_ += bytes_read;
+  UNSAFE_TODO(memory_ += bytes_read);
   remaining_bytes_ -= bytes_read;
 }
 

@@ -140,9 +140,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   virtual void FireAriaNotificationEvent(
       BrowserAccessibility* node,
       const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority_property,
       const std::string& notification_id,
-      ax::mojom::AriaNotificationInterrupt interrupt_property,
-      ax::mojom::AriaNotificationPriority priority_property) {}
+      ax::mojom::AriaNotificationInterrupt interrupt_property) {}
 
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
                               BrowserAccessibility* node,

@@ -33,24 +33,35 @@ COMPONENT_EXPORT(UI_MENUS)
 @interface MenuControllerCocoa
     : NSObject <NSMenuDelegate, NSUserInterfaceValidations>
 
-- (instancetype)init NS_UNAVAILABLE;
+// Note that changing this will have no effect if you use
+// |-initWithModel:useWithPopUpButtonCell:| or after the first call to |-menu|.
+@property(nonatomic, assign) BOOL useWithPopUpButtonCell;
+
+// NIB-based initializer. This does not create a menu. Clients can set the
+// properties of the object and the menu will be created upon the first call to
+// |-maybeBuildWithColorProvider:| or |-menu|.
+- (instancetype)init;
 
 // Builds a NSMenu from the pre-built model (must not be nil). Changes made
-// to the contents of the model after calling this will not be noticed.
+// to the contents of the model after calling this will not be noticed. If
+// the menu will be displayed by a NSPopUpButtonCell, it needs to be of a
+// slightly different form (0th item is empty).
 - (instancetype)initWithModel:(ui::MenuModel*)model
-                     delegate:(id<MenuControllerCocoaDelegate>)delegate;
+                     delegate:(id<MenuControllerCocoaDelegate>)delegate
+       useWithPopUpButtonCell:(BOOL)useWithCell;
 
 // Programmatically close the constructed menu.
 - (void)cancel;
 
-@property(readwrite) ui::MenuModel* model;
+- (ui::MenuModel*)model;
+- (void)setModel:(ui::MenuModel*)model;
 
-// Access to the constructed menu. If the menu has not been built yet it will be
-// built on the first call.
-@property(readonly) NSMenu* menu;
+// Access to the constructed menu if the complex initializer was used. If the
+// menu has not bee built yet it will be built on the first call.
+- (NSMenu*)menu;
 
 // Whether the menu is currently open.
-@property(readonly, getter=isMenuOpen) BOOL menuOpen;
+- (BOOL)isMenuOpen;
 
 @end
 

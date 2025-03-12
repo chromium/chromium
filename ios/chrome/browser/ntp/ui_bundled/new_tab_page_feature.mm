@@ -80,9 +80,11 @@ const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[] =
 const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
 
-// Feature parameter for `kIdentityDiscAccountMenu`.
+// Feature parameters for `kIdentityDiscAccountMenu`.
 const char kDisableAccountMenuEllipsisParam[] =
     "identity-disc-account-menu-without-ellipsis";
+const char kShowSettingsInAccountMenuParam[] =
+    "identity-disc-account-menu-with-settings-button";
 
 #pragma mark - Helpers
 
@@ -152,6 +154,14 @@ bool IdentityDiscAccountMenuEnabledWithoutEllipsis() {
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     return base::GetFieldTrialParamByFeatureAsBool(
         kIdentityDiscAccountMenu, kDisableAccountMenuEllipsisParam, false);
+  }
+  return false;
+}
+
+bool IdentityDiscAccountMenuEnabledWithSettings() {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kIdentityDiscAccountMenu, kShowSettingsInAccountMenuParam, false);
   }
   return false;
 }

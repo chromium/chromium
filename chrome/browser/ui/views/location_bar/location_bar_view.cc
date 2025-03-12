@@ -511,7 +511,6 @@ std::unique_ptr<views::Background> LocationBarView::CreateRoundRectBackground(
                 should_border_scale);
   std::unique_ptr<views::Background> background =
       CreateBackgroundFromPainter(std::move(painter));
-  background->SetNativeControlColor(background_color);
   return background;
 }
 
@@ -1260,19 +1259,19 @@ void LocationBarView::RefreshBackground() {
   SkColor hovered =
       color_provider->GetColor(kColorLocationBarBackgroundHovered);
 
-  SkColor background_color =
-      gfx::Tween::ColorValueBetween(opacity, normal, hovered);
+  background_color_ = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
   if (is_caret_visible) {
     // Match the background color to the popup if the Omnibox is visibly
     // focused.
-    background_color = color_provider->GetColor(kColorOmniboxResultsBackground);
+    background_color_ =
+        color_provider->GetColor(kColorOmniboxResultsBackground);
   } else if (input_in_progress && !high_contrast) {
     // Under CR23 guidelines, if the Omnibox is unfocused, but still contains
     // in-progress user input, the background color matches the popup (unless
     // high-contrast mode is enabled).
     normal = color_provider->GetColor(kColorOmniboxResultsBackground);
     hovered = color_provider->GetColor(kColorOmniboxResultsBackgroundHovered);
-    background_color = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
+    background_color_ = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
   }
 
   SkColor border_color = SK_ColorTRANSPARENT;
@@ -1290,22 +1289,22 @@ void LocationBarView::RefreshBackground() {
   }
 
   if (is_popup_mode_) {
-    SetBackground(views::CreateSolidBackground(background_color));
+    SetBackground(views::CreateSolidBackground(background_color_));
   } else {
     SetBackground(CreateRoundRectBackground(
-        background_color, border_color, /*blend_mode=*/SkBlendMode::kSrcOver,
+        background_color_, border_color, /*blend_mode=*/SkBlendMode::kSrcOver,
         /*antialias=*/true, /*should_border_scale=*/true));
   }
 
   // Keep the views::Textfield in sync. It needs an opaque background to
   // correctly enable subpixel AA.
-  omnibox_view_->SetBackgroundColor(background_color);
+  omnibox_view_->SetBackgroundColor(background_color_);
 
   // The divider between indicators and request chips should have the same color
   // as the omnibox.
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {
-    permission_dashboard_view_->SetDividerBackgroundColor(background_color);
+    permission_dashboard_view_->SetDividerBackgroundColor(background_color_);
   }
 
   SchedulePaint();
@@ -1763,9 +1762,13 @@ void LocationBarView::RecordPageInfoMetrics() {
 ui::ImageModel LocationBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
   bool dark_mode = false;
-  if (location_icon_view_ && location_icon_view_->GetBackground()) {
-    dark_mode =
-        color_utils::IsDark(location_icon_view_->GetBackground()->get_color());
+  if (location_icon_view_) {
+    auto* background = location_icon_view_->GetBackground();
+    auto* color_provider = location_icon_view_->GetColorProvider();
+    if (background && color_provider) {
+      dark_mode = color_utils::IsDark(
+          background->color().ConvertToSkColor(color_provider));
+    }
   }
 
   return omnibox_view_

@@ -23,6 +23,10 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace {
+inline constexpr uint64_t kTestTimeOfDayUnitId = 17;
+}  // namespace
+
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {
   ClearCounts();
 }
@@ -154,9 +158,10 @@ bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
 
 void TestWallpaperController::SetTimeOfDayWallpaper(
     const AccountId& account_id,
-    SetWallpaperCallback callback) {
+    SetTimeOfDayWallpaperCallback callback) {
   ++set_default_time_of_day_wallpaper_count_;
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(kTestTimeOfDayUnitId,
+                          /*success=*/true);
 }
 
 void TestWallpaperController::SetDefaultWallpaper(

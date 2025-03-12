@@ -30,7 +30,7 @@ declare_args() {
   # Enable generation of compiled JS bytecode for opted-in WebUI scripts for
   # compatible build configurations (see comment for the
   # `enable_webui_generate_code_cache` update below).
-  enable_webui_generate_code_cache = false
+  enable_webui_generate_code_cache = true
 }
 
 # Build-time WebUI code caching is only used in optimize_webui builds. When the

@@ -123,15 +123,15 @@ bool g_show_hover_card_on_mouse_hover = true;
 
 // Helper functions ------------------------------------------------------------
 
-// Returns the coordinate for an object of size |item_size| centered in a region
-// of size |size|, biasing towards placing any extra space ahead of the object.
+// Returns the coordinate for an object of size `item_size` centered in a region
+// of size `size`, biasing towards placing any extra space ahead of the object.
 int Center(int size, int item_size) {
   int extra_space = size - item_size;
   // Integer division below truncates, thus effectively "rounding toward zero";
   // to always place extra space ahead of the object, we want to round towards
   // positive infinity, which means we need to bias the division only when the
   // size difference is positive.  (Adding one unconditionally will stack with
-  // the truncation if |extra_space| is negative, resulting in off-by-one
+  // the truncation if `extra_space` is negative, resulting in off-by-one
   // errors.)
   if (extra_space > 0) {
     ++extra_space;
@@ -230,7 +230,7 @@ Tab::Tab(TabSlotController* controller)
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetText(CoreTabHelper::GetDefaultTitle());
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  // |title_| paints on top of an opaque region (the tab background) of a
+  // `title_` paints on top of an opaque region (the tab background) of a
   // non-opaque layer (the tabstrip's layer), which cannot currently be detected
   // by the subpixel-rendering opacity check.
   // TODO(crbug.com/40725997): Improve the check so that this case doen't
@@ -731,7 +731,7 @@ void Tab::UpdateAccessibleName() {
   if (!name.empty()) {
     GetViewAccessibility().SetName(name);
   } else {
-    // Under some conditions, |GetAccessibleTabName| returns an empty string.
+    // Under some conditions, `GetAccessibleTabName` returns an empty string.
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
@@ -979,7 +979,7 @@ void Tab::SetData(TabRendererData data) {
   if (!data_.pinned && old.pinned) {
     is_animating_from_pinned_ = true;
     // We must set this to true early, because we don't want to set
-    // |is_animating_from_pinned_| to false if we lay out before the animation
+    // `is_animating_from_pinned_` to false if we lay out before the animation
     // begins.
     set_animating(true);
   }

@@ -197,6 +197,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
           ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER:
       case ContentSettingsType::CONTROLLED_FRAME:
       case ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS:
+      case ContentSettingsType::LOCAL_NETWORK_ACCESS:
         break;
 
       default:
@@ -254,6 +255,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case blink::PermissionType::AUTOMATIC_FULLSCREEN:
       case blink::PermissionType::HAND_TRACKING:
       case blink::PermissionType::WEB_APP_INSTALLATION:
+      case blink::PermissionType::LOCAL_NETWORK_ACCESS:
         break;
 
       default:

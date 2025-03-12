@@ -1,7 +1,5 @@
 include_rules = [
   "+components/autofill/core",
-  "+components/optimization_guide/core",
-  "+components/optimization_guide/proto",
   "+components/prefs",
   "+components/strings/grit",
   "+ui/base",

@@ -197,7 +197,8 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
     Run(std::move(callback));
   }
   void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback) override {
+             base::OnceCallback<void(OperationResult)> callback,
+             DataClearSource source) override {
     Run(std::move(callback));
   }
   void Length(url::Origin context_origin,

@@ -3157,99 +3157,16 @@
             ],
             "experiments": [
                 {
-                    "name": "NoIPHWithBackgroundSendResultAndCompression",
-                    "params": {
-                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false",
-                        "max-cache-size": "16777216",
-                        "percentage-of-ram-to-use": "0.5",
-                        "transfer-screenshot-in-background-priority": "true"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ],
-                    "disable_features": [
-                        "IPH_RtlGestureNavigation"
-                    ]
-                },
-                {
-                    "name": "NoIPHWithBackgroundCompression",
-                    "params": {
-                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false",
-                        "max-cache-size": "16777216",
-                        "percentage-of-ram-to-use": "0.5",
-                        "transfer-screenshot-in-background-priority": "true"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ],
-                    "disable_features": [
-                        "IPH_RtlGestureNavigation"
-                    ]
-                },
-                {
-                    "name": "NoIPH",
-                    "params": {
-                        "dump-without-crash-navigation-entry-screenshot-cache": "false",
-                        "dump-without-crash-tab-on-back-gesture-handler": "false",
-                        "max-cache-size": "16777216",
-                        "percentage-of-ram-to-use": "0.5"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ],
-                    "disable_features": [
-                        "CompressBitmapAtBackgroundPriority",
-                        "IPH_RtlGestureNavigation"
-                    ]
-                },
-                {
-                    "name": "RTLOnly",
-                    "enable_features": [
-                        "MirrorBackForwardGesturesInRTL"
-                    ],
-                    "disable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "IPH_RtlGestureNavigation",
-                        "NativePageTransitionHardwareCapture"
-                    ]
-                },
-                {
-                    "name": "IPHOnUnsuccessfulBackNav",
+                    "name": "IPHWithBackgroundSendResultAndCompression",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
                         "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
+                        "max-cache-size": "16777216",
+                        "percentage-of-ram-to-use": "0.5",
                         "session_rate": "<1",
+                        "transfer-screenshot-in-background-priority": "true",
                         "x_trigger": "",
-                        "x_unhandled_gesture_threshold": "2"
-                    },
-                    "enable_features": [
-                        "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
-                        "IPH_RtlGestureNavigation",
-                        "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
-                    ]
-                },
-                {
-                    "name": "IPHOnFirstSuccessfulBackNav",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
-                        "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
-                        "session_rate": "<1",
-                        "x_trigger": "non-empty-stack",
                         "x_unhandled_gesture_threshold": "2"
                     },
                     "enable_features": [
@@ -3824,7 +3741,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnablePreferencesAccountStorage",
-                        "MoveThemePrefsToSpecifics",
                         "SeparateLocalAndAccountSearchEngines",
                         "SeparateLocalAndAccountThemes",
                         "ThemesBatchUpload"
@@ -3964,6 +3880,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CSSReadingFlow"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CacheIsMultiInstanceApi31Enabled": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheIsMultiInstanceApi31Enabled"
                     ]
                 }
             ]
@@ -12522,24 +12453,6 @@
             ]
         }
     ],
-    "IOSSetUpListInFirstRun": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SetUpListInFirstRunParam": "1"
-                    },
-                    "enable_features": [
-                        "SetUpListInFirstRun"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSetUpListShortenedDuration": [
         {
             "platforms": [
@@ -14842,21 +14755,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MojoPredictiveAllocation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MoveThemePrefsToSpecifics": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MoveThemePrefsToSpecifics"
                     ]
                 }
             ]
@@ -24786,22 +24684,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseItemSnippetsAPI"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "//0": "TODO(crbug.com/325314721): Enable the experiment",
-                    "//1": "for chromeos once test migration for the new API",
-                    "//2": "has been completed.",
-                    "name": "Disabled",
-                    "disable_features": [
                         "UseItemSnippetsAPI"
                     ]
                 }

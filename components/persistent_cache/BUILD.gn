@@ -10,8 +10,6 @@ component("persistent_cache") {
     "backend_params.h",
     "entry.cc",
     "entry.h",
-    "persistent_cache.cc",
-    "persistent_cache.h",
     "sqlite/sqlite_entry_impl.cc",
     "sqlite/sqlite_entry_impl.h",
   ]
@@ -19,6 +17,10 @@ component("persistent_cache") {
   # Cross-process file locks are not available on Fuchsia.
   if (!is_fuchsia) {
     sources += [
+      "persistent_cache.cc",
+      "persistent_cache.h",
+      "sqlite/sqlite_backend_impl.cc",
+      "sqlite/sqlite_backend_impl.h",
       "sqlite/vfs/sandboxed_file.cc",
       "sqlite/vfs/sandboxed_file.h",
       "sqlite/vfs/sqlite_database_vfs_file_set.cc",
@@ -47,13 +49,17 @@ source_set("unit_tests") {
     "mock/mock_backend_impl.h",
     "mock/mock_entry_impl.cc",
     "mock/mock_entry_impl.h",
-    "persistent_cache_unittest.cc",
     "sqlite/sqlite_entry_unittest.cc",
   ]
 
   # Cross-process file locks are not available on Fuchsia.
   if (!is_fuchsia) {
-    sources += [ "sqlite/vfs/sqlite_sandboxed_vfs_unittest.cc" ]
+    sources += [
+      "persistent_cache_unittest.cc",
+      "sqlite/test_utils.cc",
+      "sqlite/test_utils.h",
+      "sqlite/vfs/sqlite_sandboxed_vfs_unittest.cc",
+    ]
   }
 
   deps = [

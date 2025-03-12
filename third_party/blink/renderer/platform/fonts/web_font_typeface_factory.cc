@@ -49,8 +49,7 @@ bool IsFreeTypeSystemRasterizer() {
 sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
 #if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE))
   if (RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
-    std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(data));
-    return SkTypeface_Make_Fontations(std::move(stream), SkFontArguments());
+    return SkTypeface_Make_Fontations(data, SkFontArguments());
   }
 #endif
 

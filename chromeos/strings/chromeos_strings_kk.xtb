@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Скринсейвер анимациясы</translation>
 <translation id="152892567002884378">Дыбысты арттыру</translation>
 <translation id="1539864135338521185">лазурит</translation>
+<translation id="1548555207631326346">Жасанды интеллект суреттерін жекелендіру үшін тақырып таңдап, асты сызылған сөздерді таңдаңыз.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасанды интеллект суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасанды интеллект көмегімен контент жасаған кезде, суреттер жасау және өнімді жақсарту үшін нұсқау <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-дың Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес Google AI серверлеріне жіберіледі.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасампаз AI — әзірлеу циклінің бастапқы сатысындағы, әзірше тек кейбір пайдаланушыларға ұсынылатын эксперименттік функция.</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="155865706765934889">Сенсорлық тақта</translation>
 <translation id="1561927818299383735">жарық түсі</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жағажай</translation>
 <translation id="819278132617411009">Өнімділікті арттыру үшін Google AI пайдаланыңыз</translation>
+<translation id="82003371436638355">"Өзіңіздікін жасау" опциясын таңдаған соң, арнаулы нұсқауды жазыңыз. Сондай-ақ AI тұсқағазын жекелендіру үшін "Тақырыпты таңдау" опциясын, содан кейін асты сызылған сөздерді таңдаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасанды интеллект суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасанды интеллект көмегімен жеке тұсқағазды жасаған кезде, суреттер жасау және өнімді жақсарту үшін нұсқау <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-дың Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес Google серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасампаз жасанды интеллект қателесуі (соның ішінде адамдар туралы) мүмкін, сол себепті жақсылап тексеріңіз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Толық ақпарат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">мультимeдианы ойнату</translation>
 <translation id="8318753676953949627">Кескіндер жоқ.</translation>
 <translation id="8320910311642849813">орман</translation>
+<translation id="8322464149031882595">Ілгері жүру үшін басыңыз.</translation>
 <translation id="8329018942023753850">calculator қолданбасы</translation>
 <translation id="8336739000755212683">Құрылғыда аккаунт суретін өзгерту</translation>
 <translation id="8339024191194156249">Автоматты түрде іске қосу туралы толық ақпарат</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пингвиндер</translation>
 <translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
 <translation id="8970109610781093811">Қайта тексеру</translation>
+<translation id="8972061581514441296">Артқа қайта үшін басыңыз.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканерлеу}=1{{NUMBER_OF_PAGES} бетті сканерлеу}other{{NUMBER_OF_PAGES} бетті сканерлеу}}</translation>
 <translation id="89945434909472341">ауыл</translation>

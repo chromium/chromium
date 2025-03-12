@@ -17,9 +17,8 @@ import androidx.core.util.Supplier;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -179,13 +178,11 @@ class TabGroupRowMediator {
         } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
             if (mSharedImageTilesCoordinator == null) {
+                SharedImageTilesConfig config =
+                        new SharedImageTilesConfig.Builder(mContext).build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
-                                mContext,
-                                SharedImageTilesType.DEFAULT,
-                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                mDataSharingService,
-                                mCollaborationService);
+                                mContext, config, mDataSharingService, mCollaborationService);
             }
             mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                     mSavedTabGroup.collaborationId);

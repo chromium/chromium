@@ -388,9 +388,9 @@ FormFiller::GetFieldFillingSkipReasons(
   type_count.reserve(form_structure.field_count());
 
   base::flat_set<FieldGlobalId> blocked_fields;
-  if (EntityDataManager* edm = manager_->client().GetEntityDataManager();
-      edm && filling_product == FillingProduct::kAddress) {
-    blocked_fields = GetFieldsFillableByAutofillAi(form_structure, *edm);
+  if (filling_product == FillingProduct::kAddress) {
+    blocked_fields =
+        GetFieldsFillableByAutofillAi(form_structure, manager_->client());
   }
 
   CHECK_EQ(fields.size(), form_structure.field_count());

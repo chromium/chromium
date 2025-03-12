@@ -657,10 +657,6 @@ void SharedImageInterfaceInProcess::WaitSyncToken(const SyncToken& sync_token) {
                   MakeSyncToken(next_fence_sync_release_++));
 }
 
-void SharedImageInterfaceInProcess::Flush() {
-  // No need to flush in this implementation.
-}
-
 void SharedImageInterfaceInProcess::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences,

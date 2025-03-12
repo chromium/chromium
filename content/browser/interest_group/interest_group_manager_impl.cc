@@ -292,10 +292,10 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
               blink::features::kFledgeTrustedSignalsKVv2Support) &&
                   base::FeatureList::IsEnabled(
                       features::kFledgeUseKVv2SignalsCache)
-              ? std::make_unique<TrustedSignalsCacheImpl>(
-                    base::BindRepeating(&InterestGroupManagerImpl::
-                                            GetBiddingAndAuctionServerKey,
-                                        base::Unretained(this)))
+              ? std::make_unique<TrustedSignalsCacheImpl>(base::BindRepeating(
+                    &InterestGroupManagerImpl::GetTrustedServerKey,
+                    base::Unretained(this),
+                    TrustedServerAPIType::kTrustedKeyValue))
               : nullptr),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated
@@ -735,6 +735,16 @@ void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
   caching_storage_.SetBiddingAndAuctionServerKeys(
       coordinator, std::move(serialized_keys), expiration);
 }
+
+void InterestGroupManagerImpl::AddTrustedServerKeysDebugOverride(
+    TrustedServerAPIType api,
+    const url::Origin& coordinator,
+    std::string serialized_keys,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  ba_key_fetcher_.AddKeysDebugOverride(
+      api, coordinator, std::move(serialized_keys), std::move(callback));
+}
+
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
     base::OnceCallback<void(std::pair<base::Time, std::string>)> callback) {
@@ -892,12 +902,13 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
   std::move(state.callback).Run(std::move(data));
 }
 
-void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
+void InterestGroupManagerImpl::GetTrustedServerKey(
+    TrustedServerAPIType api,
     const url::Origin& seller,
     const std::optional<url::Origin>& coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
-  ba_key_fetcher_.GetOrFetchKey(seller, coordinator, std::move(callback));
+  ba_key_fetcher_.GetOrFetchKey(api, seller, coordinator, std::move(callback));
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(

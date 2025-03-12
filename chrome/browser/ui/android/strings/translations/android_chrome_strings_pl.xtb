@@ -500,7 +500,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="331080746368555063">Witryny prywatne mogą obejmować np. intranet Twojej firmy</translation>
 <translation id="3311330810461485557">Szukaj według aplikacji, daty i innych kryteriów.</translation>
 <translation id="3334729583274622784">Zmienić rozszerzenie pliku?</translation>
-<translation id="333863344734218290">Ostrzega przed niebezpiecznymi witrynami publicznymi i prywatnymi</translation>
+<translation id="333863344734218290">Ostrzegaj przed niebezpiecznymi witrynami publicznymi i prywatnymi</translation>
 <translation id="3341262203274374114">Nie udało się przestać obserwować. Coś poszło nie tak.</translation>
 <translation id="3351165113450806415">Nowy sposób przesuwania</translation>
 <translation id="3359667936385849800">Użyj obecnego dostawcy usług</translation>
@@ -996,6 +996,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5696597120588531049">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami</translation>
 <translation id="5698878456427040674">Sprawdź, czy wybrane konto jest obsługiwane.</translation>
 <translation id="570347048394355941">Przełącz na kartę</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> chce się połączyć z portem szeregowym</translation>
 <translation id="5715150588940290235">Usunąć zapisane kody zabezpieczające?</translation>
 <translation id="571930967925877633">Twoje zakładki, historia i inne dane z Chrome nie będą już synchronizowane z kontem Google</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>

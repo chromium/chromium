@@ -15,11 +15,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(54 == syncer::GetNumDataTypes(),
+static_assert(55 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(54 == syncer::GetNumDataTypes(),
+static_assert(55 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -108,6 +108,8 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
          PLUS_ADDRESS_SETTING},
         {sync_pb::EntitySpecifics::kAutofillLoyaltyCardFieldNumber,
          AUTOFILL_LOYALTY_CARD},
+        {sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber,
+         SHARED_TAB_GROUP_ACCOUNT_DATA},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -278,6 +280,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case AUTOFILL_LOYALTY_CARD:
       specifics->mutable_autofill_loyalty_card();
       break;
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+      specifics->mutable_shared_tab_group_account_data();
+      break;
   }
 }
 
@@ -400,6 +405,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber;
     case AUTOFILL_LOYALTY_CARD:
       return sync_pb::EntitySpecifics::kAutofillLoyaltyCardFieldNumber;
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+      return sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber;
     case NIGORI:
       return sync_pb::EntitySpecifics::kNigoriFieldNumber;
   }
@@ -418,7 +425,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(54 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -580,6 +587,9 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_autofill_loyalty_card()) {
     return AUTOFILL_LOYALTY_CARD;
   }
+  if (specifics.has_shared_tab_group_account_data()) {
+    return SHARED_TAB_GROUP_ACCOUNT_DATA;
+  }
 
   // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -587,7 +597,7 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(54 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -733,6 +743,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Plus Address Setting";
     case AUTOFILL_LOYALTY_CARD:
       return "Autofill Loyalty Card";
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+      return "Shared Tab Group Account Data";
     case NIGORI:
       return "Encryption Keys";
   }
@@ -848,6 +860,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "PLUS_ADDRESS_SETTING";
     case AUTOFILL_LOYALTY_CARD:
       return "AUTOFILL_LOYALTY_CARD";
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+      return "SHARED_TAB_GROUP_ACCOUNT_DATA";
     case NIGORI:
       return "NIGORI";
   }
@@ -963,6 +977,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kPlusAddressSettings;
     case AUTOFILL_LOYALTY_CARD:
       return DataTypeForHistograms::kAutofillLoyaltyCard;
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+      return DataTypeForHistograms::kSharedTabGroupAccountData;
     case NIGORI:
       return DataTypeForHistograms::kNigori;
   }
@@ -1095,6 +1111,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "plus_address_setting";
     case AUTOFILL_LOYALTY_CARD:
       return "autofill_loyalty_card";
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+      return "shared_tab_group_account_data";
     case NIGORI:
       return "nigori";
   }

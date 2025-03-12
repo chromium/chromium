@@ -439,15 +439,6 @@ bool ArcNotificationView::HandleAccessibleAction(
   return false;
 }
 
-void ArcNotificationView::OnThemeChanged() {
-  message_center::MessageView::OnThemeChanged();
-
-  if (content_view_->background()) {
-    background()->SetNativeControlColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
-  }
-}
-
 void ArcNotificationView::OnItemDestroying() {
   DCHECK(item_);
   item_->RemoveObserver(this);

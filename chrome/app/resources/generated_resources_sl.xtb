@@ -378,7 +378,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1244265436519979884">Trenutno poteka obnavljanje vsebnika za Linux</translation>
 <translation id="1244303850296295656">Napaka razširitve</translation>
 <translation id="1244917379075403655">Kliknite »Nastavitve«</translation>
-<translation id="1245041875932187638">Izbris vseh podatkov, ki jih uporablja samodejno izpolnjevanje z umetno inteligenco</translation>
 <translation id="1245331638296910488">Pri odpiranju v storitvi Microsoft 365 bodo datoteke premaknjene v OneDrive</translation>
 <translation id="1245628370644070008">Obnovitev lokalnih podatkov</translation>
 <translation id="1246863218384630739">Navideznega računalnika <ph name="VM_NAME" /> ni bilo mogoče namestiti: URL slike je vrnil kodo napake <ph name="HTTP_ERROR" />. Obrnite se na skrbnika.</translation>
@@ -1420,7 +1419,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Priprava</translation>
 <translation id="1969654639948595766">Besedilni dnevniki WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Vsi podatki bodo izbrisani. Tega dejanja ni mogoče razveljaviti</translation>
 <translation id="1972313920920745320">Spletna mesta, ki jih dodate, bodo ves čas aktivna in pomnilnik zanje se ne bo sprostil. <ph name="BEGIN_LINK" />Preberite več o tem, kako ohranite določena spletna mesta aktivna<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
 <translation id="197288927597451399">Obdrži</translation>
@@ -2306,6 +2304,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="256517381556987641">Sinhronizacija datotek je do zdaj našla toliko datotek: <ph name="ITEMS_FOUND" />. Še vedno preverja prostor za shranjevanje. Sinhronizacijo datotek poskusite znova vklopiti čez nekaj minut.</translation>
 <translation id="2565214867520763227">Vklop bralnika zaslona</translation>
 <translation id="2566146433999774844">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /> in še <ph name="NUM_OTHER_MEMBERS" /></translation>
+<translation id="256726287944589768">Prikaži nogo na strani »Nov zavihek«</translation>
 <translation id="2568694057933302218">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na spletnih mestih. Dejavnost brskanja se ne uporablja za stvari, kot je osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="2568774940984945469">Vsebnik informacijske vrstice</translation>
 <translation id="2569972178052279830">Ime prodajalca</translation>
@@ -2814,6 +2813,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2921081876747860777">Ustvarite geslo za zaščito lokalnih podatkov.</translation>
 <translation id="2923006468155067296">Naprava <ph name="DEVICE_TYPE" /> se bo zdaj zaklenila.
 Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Drugo <ph name="OTHER_TASK_NUM" /> opravilo v isti skupini opravil: <ph name="OTHER_TASKS" />}two{<ph name="TASK_ROW" />. Drugi <ph name="OTHER_TASK_NUM" /> opravili v isti skupini opravil: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Druga <ph name="OTHER_TASK_NUM" /> opravila v isti skupini opravil: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Drugih <ph name="OTHER_TASK_NUM" /> opravil v isti skupini opravil: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Odstrani ta račun</translation>
 <translation id="2923644930701689793">Dostopajte do fotografij iz naprave v telefonu.</translation>
 <translation id="292371311537977079">Chromove nastavitve</translation>
@@ -3071,7 +3071,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3108957152224931571">Barva za označevanje</translation>
 <translation id="3109206895301430738">Shranjene skupine zavihkov</translation>
 <translation id="3109724472072898302">Strnjeno</translation>
-<translation id="310979712355504754">Izbriši vse</translation>
 <translation id="3112292765614504292">Velikost aplikacije: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Dodal(-a) ta zavihek</translation>
 <translation id="311394601889664316">Spletnim mestom ni dovoljeno urejanje datotek ali map v napravi.</translation>
@@ -4091,7 +4090,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Razširitev je odobrena}one{# razširitev je odobrena}two{# razširitvi sta odobreni}few{# razširitve so odobrene}other{# razširitev je odobrenih}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Za Linux priporočamo najmanj <ph name="INSTALL_SIZE" /> prostora.</translation>
-<translation id="3824203811509979971">Povzemanje vsebine ali zastavljanje vprašanj</translation>
 <translation id="3824621460022590830">Žeton za včlanitev naprave je neveljaven. Obrnite se na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se, če si želite ogledati zavihke iz drugih naprav</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapomni si mojo izbiro za to vrsto podatkov: <ph name="FILE_TYPES" />}one{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}two{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}few{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}other{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}}</translation>
@@ -5906,7 +5904,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="512642543295077915">tipka za iskanje + vračalka</translation>
 <translation id="5126611267288187364">Ogled sprememb</translation>
 <translation id="5127620150973591153">ID varne povezave: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Povzemite vsebino ali zastavite vprašanja.</translation>
 <translation id="5127881134400491887">Upravljanje omrežnih povezav</translation>
 <translation id="5127934926273826089">Rože</translation>
 <translation id="5127986747308934633">Napravo nadzira skrbnik</translation>
@@ -7459,7 +7456,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6254892857036829079">Odlično</translation>
 <translation id="6257131917452817589">samodejni spremembi gesla</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">To omrežje bo prednostno, če je na voljo več kot eno predhodno povezano ali konfigurirano omrežje.</translation>
 <translation id="6259776178973198997">Osveži podatke o lastnikih Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google.</translation>
@@ -9897,6 +9893,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7990863024647916394">Glas v jeziku <ph name="DISPLAY_NAME" /> št. <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Samodejni prenos poverilnic za Wi-Fi iz telefona Android</translation>
 <translation id="7991296728590311172">Nastavitve stikalnega dostopa</translation>
+<translation id="7992080146463834191">Povzemite vsebino, poenostavite zapleteno besedilo ali zastavite vprašanja.</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
 <translation id="7997826902155442747">Prednost postopkov</translation>
 <translation id="7997828719430450286">Uspešno.</translation>
@@ -11165,6 +11162,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8874448314264883207">Razširitev »<ph name="EXTENSION_NAME" />« je bila izklopljena</translation>
 <translation id="8874647982044395866">Organsko</translation>
 <translation id="8874790741333031443">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite brskanja, vendar je bolj verjetno, da bodo funkcije spletnega mesta delovale po pričakovanjih.</translation>
+<translation id="8875221558267407626">Povzemanje vsebine, poenostavljanje zapletenega besedila ali zastavljanje vprašanj</translation>
 <translation id="8875520811099717934">Nadgradnja Linuxa</translation>
 <translation id="8875736897340638404">Izberite vidnost</translation>
 <translation id="8876307312329369159">Te možnosti ni mogoče spremeniti v predstavitveni seji.</translation>

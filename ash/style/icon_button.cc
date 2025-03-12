@@ -683,11 +683,6 @@ void IconButton::OnEnabledStateChanged() {
   UpdateBackground();
 }
 
-SkColor IconButton::GetBackgroundColor() const {
-  DCHECK(background());
-  return background()->get_color();
-}
-
 bool IconButton::IsToggledOn() const {
   return toggled_ &&
          (GetEnabled() ||

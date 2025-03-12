@@ -48,8 +48,7 @@ BASE_FEATURE(kMigrateSyncToExplicitSignin,
 // Registers that the sign in occurred with an explicit user action.
 // Affected by all signin sources except when signing in to Chrome caused by a
 // web sign in or by an unknown source.
-// Note: This value is potentially set before the
-// `switches::kExplicitBrowserSigninUIOnDesktop` is enabled. It is currently not
+// Note: This value is currently not
 // expected to be used and is logged for potential usages in the future.
 const char kExplicitBrowserSigninWithoutFeatureEnabled[] =
     "signin.explicit_browser_signin";
@@ -213,20 +212,16 @@ PrimaryAccountManager::PrimaryAccountManager(
       account_tracker_service_(account_tracker_service) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
-
-  // Clear the pref it is was set and the feature is now off.
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                        /*commit_on_destroy=*/false);
-    scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-    scoped_pref_commit.ClearPref(
-        prefs::kCookieClearOnExitMigrationNoticeComplete);
-  } else {
-    signin_allowed_.Init(
-        prefs::kSigninAllowed, client_->GetPrefs(),
-        base::BindRepeating(&PrimaryAccountManager::OnSigninAllowedPrefChanged,
-                            base::Unretained(this)));
-  }
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy=*/false);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin_allowed_.Init(
+      prefs::kSigninAllowed, client_->GetPrefs(),
+      base::BindRepeating(&PrimaryAccountManager::OnSigninAllowedPrefChanged,
+                          base::Unretained(this)));
+#else
+  scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+#endif
 
   // Prepare prefs before loading them.
   PrepareToLoadPrefs();
@@ -238,8 +233,6 @@ PrimaryAccountManager::PrimaryAccountManager(
       prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync);
   LogPrimaryAccountPrefsOnInitialize(pref_account_id, pref_consented_to_sync);
 
-  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                      /*commit_on_destroy=*/false);
   if (pref_account_id.empty()) {
     SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
                               scoped_pref_commit);
@@ -753,9 +746,9 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       return;
     case PrimaryAccountChangeEvent::Type::kCleared:
       scoped_pref_commit.ClearPref(kExplicitBrowserSigninWithoutFeatureEnabled);
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-      }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+#endif
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
       CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
@@ -766,17 +759,17 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
           access_point == signin_metrics::AccessPoint::kWebSignin) {
         scoped_pref_commit.ClearPref(
             kExplicitBrowserSigninWithoutFeatureEnabled);
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-          scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-        }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+#endif
       } else {
         // All others access points are explicit sign ins except the Web
         // Signin event.
         scoped_pref_commit.SetBoolean(
             kExplicitBrowserSigninWithoutFeatureEnabled, true);
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-          scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
-        }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+        scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+#endif
         if (base::FeatureList::IsEnabled(
                 switches::kEnablePreferencesAccountStorage)) {
           scoped_pref_commit.SetBoolean(
@@ -882,12 +875,15 @@ void PrimaryAccountManager::OnSigninAllowedPrefChanged() {
 
 bool PrimaryAccountManager::ShouldSigninAllowedPrefAffectPrimaryAccount(
     bool is_sync_consent) {
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         !signin_allowed_.GetValue() &&
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  return !signin_allowed_.GetValue() &&
          // If sync is enabled, we do not directly clear the primary account.
          // This is handled by `PrimaryAccountPolicyManager`. That flow is
          // extremely hard to follow especially for the case when the user is
          // syncing with a managed account as in that case the whole profile
          // needs to be deleted.
          !is_sync_consent;
+#else
+  return false;
+#endif
 }

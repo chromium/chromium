@@ -117,6 +117,7 @@ public class HttpsFirstModeSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"HttpsFirstMode"})
+    @EnableFeatures("HttpsFirstBalancedModeAutoEnable")
     public void testPreferenceControls() {
         startSettings();
         ThreadUtils.runOnUiThreadBlocking(

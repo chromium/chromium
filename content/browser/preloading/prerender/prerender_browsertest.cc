@@ -522,13 +522,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   void NavigatePrimaryPageFromAddressBar(const GURL& url) {
-    web_contents()->OpenURL(
-        OpenURLParams(
-            url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
+    prerender_helper_->NavigatePrimaryPageAsync(
+        url, ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   }
 
   FrameTreeNodeId GetHostForUrl(const GURL& url) {
@@ -7565,13 +7561,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // Activate the embedder triggered prerender.
   test::PrerenderHostObserver embedder_observer(
       *web_contents(), GetHostForUrl(kEmbedderPrerender));
-  shell()->web_contents()->OpenURL(
-      OpenURLParams(
-          kEmbedderPrerender, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  prerender_helper()->NavigatePrimaryPageAsync(
+      kEmbedderPrerender,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
   embedder_observer.WaitForActivation();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kEmbedderPrerender);
@@ -11863,14 +11856,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       *shell()->web_contents(), redirected_url_node_2);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
                                                  prerender_initial_url);
-  shell()->web_contents()->OpenURL(
-      OpenURLParams(
-          prerender_initial_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
-
+  prerender_helper()->NavigatePrimaryPageAsync(
+      prerender_initial_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   prerender_observer.WaitForActivation();
   ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
   EXPECT_EQ(redirected_url_node_2,
@@ -13623,13 +13612,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           *web_contents_impl(), prerendering_url, redirected_url);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
                                                  prerendering_url);
-  shell()->web_contents()->OpenURL(
-      OpenURLParams(
-          prerendering_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  prerender_helper()->NavigatePrimaryPageAsync(
+      prerendering_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   prerender_observer.WaitForActivation();
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -13654,13 +13640,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           *web_contents_impl(), prerendering_url, redirected_url);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
                                                  prerendering_url);
-  shell()->web_contents()->OpenURL(
-      OpenURLParams(
-          prerendering_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  prerender_helper()->NavigatePrimaryPageAsync(
+      prerendering_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   prerender_observer.WaitForActivation();
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"

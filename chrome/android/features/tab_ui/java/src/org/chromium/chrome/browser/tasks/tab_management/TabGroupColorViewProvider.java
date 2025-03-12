@@ -21,9 +21,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
@@ -51,6 +50,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     private @TabGroupColorId int mColorId;
     private @Nullable FrameLayout mFrameLayout;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    private @Nullable SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
 
     /**
      * @param context The context to use to use for creating the view.
@@ -194,11 +194,11 @@ public class TabGroupColorViewProvider implements Destroyable {
         mFrameLayout.invalidate();
 
         if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.updateColorStyle(
-                    new SharedImageTilesColor(
-                            SharedImageTilesColor.Style.TAB_GROUP,
-                            ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                    mContext, mColorId, mIsIncognito)));
+            int tabGroupColor =
+                    ColorPickerUtils.getTabGroupColorPickerItemColor(
+                            mContext, mColorId, mIsIncognito);
+            mSharedImageTilesCoordinator.updateConfig(
+                    mSharedImageTilesConfigBuilder.setTabGroupColor(tabGroupColor).build());
         }
     }
 
@@ -222,14 +222,16 @@ public class TabGroupColorViewProvider implements Destroyable {
                 mTransitiveSharedGroupObserver.getGroupSharedStateSupplier().get();
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
+        @ColorInt
+        int tabGroupColor =
+                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
+        mSharedImageTilesConfigBuilder =
+                SharedImageTilesConfig.Builder.createThumbnail(mContext, tabGroupColor);
+
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(
                         mContext,
-                        SharedImageTilesType.SMALL,
-                        new SharedImageTilesColor(
-                                SharedImageTilesColor.Style.TAB_GROUP,
-                                ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                        mContext, mColorId, mIsIncognito)),
+                        mSharedImageTilesConfigBuilder.build(),
                         mDataSharingService,
                         mCollaborationService);
         mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);

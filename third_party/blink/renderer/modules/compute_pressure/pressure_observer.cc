@@ -152,7 +152,7 @@ void PressureObserver::OnUpdate(ExecutionContext* execution_context,
     return;
   }
 
-  if (!HasChangeInData(source, state)) {
+  if (!ShouldDispatch(source, state)) {
     return;
   }
 
@@ -208,16 +208,16 @@ void PressureObserver::QueuePressureRecord(ExecutionContext* execution_context,
                                            PressureRecord* record) {
   // This should happen infrequently since `records_` is supposed
   // to be emptied at every callback invoking or takeRecords().
-  if (records_.size() >= kMaxQueuedRecords)
+  if (records_.size() >= kMaxQueuedRecords) {
     records_.erase(records_.begin());
-
+  }
   records_.push_back(record);
   CHECK_LE(records_.size(), kMaxQueuedRecords);
 
   last_record_map_[ToSourceIndex(source)] = record;
-  if (pending_report_to_callback_.IsActive())
+  if (pending_report_to_callback_.IsActive()) {
     return;
-
+  }
   pending_report_to_callback_ = PostCancellableTask(
       *execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
       WTF::BindOnce(&PressureObserver::ReportToCallback,
@@ -272,20 +272,25 @@ bool PressureObserver::PassesRateTest(
     const DOMHighResTimeStamp& timestamp) const {
   const auto& last_record = last_record_map_[ToSourceIndex(source)];
 
-  if (!last_record)
+  if (!last_record) {
     return true;
-
+  }
   const double time_delta_milliseconds = timestamp - last_record->time();
   return time_delta_milliseconds >= static_cast<double>(sample_interval_);
 }
 
-// https://w3c.github.io/compute-pressure/#dfn-has-change-in-data
-bool PressureObserver::HasChangeInData(V8PressureSource::Enum source,
-                                       V8PressureState::Enum state) const {
+// https://w3c.github.io/compute-pressure/#dfn-should-dispach
+bool PressureObserver::ShouldDispatch(V8PressureSource::Enum source,
+                                      V8PressureState::Enum state) const {
   const auto& last_record = last_record_map_[ToSourceIndex(source)];
 
-  if (!last_record)
+  if (sample_interval_ != 0) {
     return true;
+  }
+
+  if (!last_record) {
+    return true;
+  }
 
   return last_record->state() != state;
 }

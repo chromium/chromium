@@ -189,8 +189,8 @@ class BrowserTabStripController::TabContextMenuContents
                                                                accelerator);
   }
   void ExecuteCommand(int command_id, int event_flags) override {
-    // Executing the command destroys |this|, and can also end up destroying
-    // |controller_|. So stop the highlights before executing the command.
+    // Executing the command destroys `this`, and can also end up destroying
+    // `controller_`. So stop the highlights before executing the command.
     controller_->ExecuteCommandForTab(
         static_cast<TabStripModel::ContextMenuCommand>(command_id), tab_);
   }
@@ -345,7 +345,7 @@ void BrowserTabStripController::SelectTab(int model_index,
           [](std::unique_ptr<viz::PeakGpuMemoryTracker> tracker,
              const viz::FrameTimingDetails& frame_timing_details) {
             // This callback will be ran once the ui::Compositor presents the
-            // next frame for the |tabstrip_|. The destruction of |tracker| will
+            // next frame for the `tabstrip_`. The destruction of `tracker` will
             // get the peak GPU memory and record a histogram.
           },
           std::move(tracker)));
@@ -799,7 +799,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
   }
 
   if (selection.active_tab_changed()) {
-    // It's possible for |new_contents| to be null when the final tab in a tab
+    // It's possible for `new_contents` to be null when the final tab in a tab
     // strip is closed.
     content::WebContents* new_contents = selection.new_contents;
     std::optional<size_t> index = selection.new_model.active();

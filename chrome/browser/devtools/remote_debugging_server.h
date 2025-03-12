@@ -21,6 +21,8 @@ class RemoteDebuggingServer {
     kNotRequested,
     // Disabled by enterprise policy.
     kDisabledByPolicy,
+    // Disabled as a default user data dir is being used.
+    kDisabledByDefaultUserDataDir,
   };
   // Obtains an instance of the RemoteDebuggingServer if one was started by
   // either --remote-debugging-port or --remote-debugging-pipe being supplied on

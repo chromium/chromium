@@ -375,7 +375,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1244265436519979884">Estase restaurando Linux</translation>
 <translation id="1244303850296295656">Erro de extensión</translation>
 <translation id="1244917379075403655">Fai clic en Configuración</translation>
-<translation id="1245041875932187638">Eliminar todos os datos que usa a función de autocompletar coa IA</translation>
 <translation id="1245331638296910488">Os ficheiros moveranse a OneDrive cando se abran en Microsoft 365</translation>
 <translation id="1245628370644070008">Recuperación dos datos locais</translation>
 <translation id="1246863218384630739">Non se puido instalar <ph name="VM_NAME" />: o URL da imaxe devolveu o código de erro <ph name="HTTP_ERROR" />. Ponte en contacto co teu administrador.</translation>
@@ -1406,7 +1405,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Preparando</translation>
 <translation id="1969654639948595766">Rexistros de texto WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Eliminaranse todos os datos. Esta acción non se pode desfacer</translation>
 <translation id="1972313920920745320">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen. <ph name="BEGIN_LINK" />Máis información sobre como manter activos sitios específicos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
 <translation id="197288927597451399">Continuar</translation>
@@ -2289,6 +2287,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="256517381556987641">A sincronización de ficheiros atopou <ph name="ITEMS_FOUND" /> ficheiros polo momento e aínda está comprobando o espazo de almacenamento. Proba a activar a función de novo dentro duns minutos.</translation>
 <translation id="2565214867520763227">Activa o lector de pantalla</translation>
 <translation id="2566146433999774844">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> persoas máis</translation>
+<translation id="256726287944589768">Mostrar pé de páxina en Nova pestana</translation>
 <translation id="2568694057933302218">Co modo de incógnito activado, os sitios non poden usar cookies para ver a túa actividade de navegación noutros sitios. A túa actividade de navegación non se utiliza para fins como personalizar anuncios. É posible que non se poidan usar certas funcións dalgúns sitios.</translation>
 <translation id="2568774940984945469">Contedor da barra de información</translation>
 <translation id="2569972178052279830">Nome do punto de venda</translation>
@@ -2797,6 +2796,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2921081876747860777">Crea un contrasinal para protexer os teus datos locais.</translation>
 <translation id="2923006468155067296">O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase agora.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tarefas máis no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Quitar esta conta</translation>
 <translation id="2923644930701689793">Accede ao carrete do teu teléfono</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
@@ -3054,7 +3054,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3108957152224931571">Cor de realzado</translation>
 <translation id="3109206895301430738">Grupos de pestanas gardados</translation>
 <translation id="3109724472072898302">Contraído</translation>
-<translation id="310979712355504754">Eliminar todo</translation>
 <translation id="3112292765614504292">Tamaño da aplicación: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Pestana engadida</translation>
 <translation id="311394601889664316">Non permitir que os sitios editen ficheiros nin cartafoles do teu dispositivo</translation>
@@ -4077,7 +4076,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Aprobouse 1 extensión}other{Aprobáronse # extensións}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">É recomendable dispoñer polo menos de <ph name="INSTALL_SIZE" /> de espazo para Linux.</translation>
-<translation id="3824203811509979971">Resume contido ou fai preguntas</translation>
 <translation id="3824621460022590830">O token de inscrición do dispositivo non é válido. Ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicia sesión para ver as pestanas doutros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Lembrar selección para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Lembrar selección para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
@@ -5892,7 +5890,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="512642543295077915">busca + retroceso</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">Código de conexión segura: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Resume contido ou fai preguntas.</translation>
 <translation id="5127881134400491887">Xestionar conexións de rede</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5127986747308934633">O teu administrador está controlando o dispositivo</translation>
@@ -7440,7 +7437,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6254892857036829079">Perfecto</translation>
 <translation id="6257131917452817589">cambio de contrasinal automatizado</translation>
 <translation id="6257602895346497974">Activar sincronización…</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Esta rede terá preferencia se hai dispoñible máis dunha rede xa configurada ou á que te conectases anteriormente</translation>
 <translation id="6259776178973198997">Actualizar información das persoas propietarias de Wi-Fi Direct</translation>
 <translation id="6262371516389954471">As copias de seguranza cárganse en Google e encríptanse co contrasinal da túa Conta de Google.</translation>
@@ -9871,6 +9867,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, voz <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir automaticamente a wifi desde o teléfono Android</translation>
 <translation id="7991296728590311172">Acceso con interruptores</translation>
+<translation id="7992080146463834191">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
 <translation id="7997826902155442747">Prioridade do proceso</translation>
 <translation id="7997828719430450286">Operación realizada correctamente.</translation>
@@ -11135,6 +11132,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8874448314264883207">Desactivouse a extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian segundo o previsto.</translation>
+<translation id="8875221558267407626">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Escolle a túa visibilidade</translation>
 <translation id="8876307312329369159">Esta opción de configuración non se pode cambiar nunha sesión de demostración.</translation>

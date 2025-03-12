@@ -32,6 +32,10 @@ namespace features {
 BASE_DECLARE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner);
 }  // namespace features
 
+namespace enterprise_management {
+class GetUserEligiblePromotionsResponse;
+}  // namespace enterprise_management
+
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
                         public policy::PolicyValueAndStatusAggregator::Observer,
@@ -100,6 +104,12 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #if !BUILDFLAG(IS_CHROMEOS)
   // Called when report has been uploaded, successfully or not.
   void OnReportUploaded(const std::string& callback_id);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  void OnPromotionEligibilityFetched(
+      const std::string& callback_id,
+      enterprise_management::GetUserEligiblePromotionsResponse response);
 #endif
 
   // Build a JSON string of all the policies.

@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -69,6 +70,11 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
                                              expiration);
   }
 
+  void ExpectNoDBStoredKeys(const url::Origin& coordinator) {
+    auto [time, val] = GetDBStoredKeysWithExpiration(coordinator);
+    EXPECT_EQ(val, "") << coordinator;
+  }
+
   content::BiddingAndAuctionServerKeyFetcher CreateFetcher() {
     return BiddingAndAuctionServerKeyFetcher(manager_.get(),
                                              shared_url_loader_factory_);
@@ -97,10 +103,25 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, url::Origin(),
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin, url::Origin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(BiddingAndAuctionServerKeyFetcherTest, WrongAPIType) {
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+
+  base::RunLoop run_loop;
+  fetcher.GetOrFetchKey(
+      TrustedServerAPIType::kInvalid, kTestScopeOrigin, kCoordinatorOrigin,
+      base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
+                                                    std::string> maybe_key) {
+        ASSERT_FALSE(maybe_key.has_value());
+        EXPECT_EQ("API not supported by coordinator", maybe_key.error());
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -117,7 +138,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -157,7 +179,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
     // AddResponse overwrites the previous response.
     url_loader_factory_.AddResponse(kBiddingAndAuctionGCPCoordinatorKeyURL,
                                     response);
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -277,7 +300,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponsesV2) {
     base::RunLoop run_loop;
     // AddResponse overwrites the previous response.
     url_loader_factory_.AddResponse(kOtherDefaultGCPKeyURL, response);
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -295,14 +319,16 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
       }));
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -322,12 +348,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
-        fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+        fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                              kTestScopeOrigin, kCoordinatorOrigin,
                               base::BindLambdaForTesting(
                                   [&](base::expected<BiddingAndAuctionServerKey,
                                                      std::string> maybe_key) {
@@ -355,7 +383,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         ASSERT_TRUE(maybe_key.has_value());
@@ -399,7 +428,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponseV2) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -416,7 +446,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponseV2) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin2, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin2, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -469,7 +500,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponseV1V2Coexist) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kGCPCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kGCPCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -487,7 +519,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponseV1V2Coexist) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kAWSCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kAWSCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -505,7 +538,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponseV1V2Coexist) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin2, kGCPCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin2, kGCPCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -531,12 +565,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         ASSERT_TRUE(maybe_key.has_value());
         completed++;
-        fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+        fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                              kTestScopeOrigin, kCoordinatorOrigin,
                               base::BindLambdaForTesting(
                                   [&](base::expected<BiddingAndAuctionServerKey,
                                                      std::string> maybe_key) {
@@ -561,7 +597,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -578,7 +615,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -617,7 +655,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
   {
     content::BiddingAndAuctionServerKey returned_key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -641,7 +680,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
     // This should make a new request to the network now.
     content::BiddingAndAuctionServerKey returned_key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -672,7 +712,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, WritesValuesToDBIfEnabled) {
   content::BiddingAndAuctionServerKey key;
   {
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -731,7 +772,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, PersistsKeysV2) {
 
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -753,7 +795,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, PersistsKeysV2) {
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin2, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin2, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -783,7 +826,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, HandlesV1ToV2Migration) {
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -827,7 +871,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, HandlesV1ToV2Migration) {
 )");
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -852,7 +897,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, HandlesV1ToV2Migration) {
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -905,14 +951,15 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
                                     net::HTTP_NOT_FOUND);
     bool completed = false;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, coordinator,
-                          base::BindLambdaForTesting(
-                              [&](base::expected<BiddingAndAuctionServerKey,
-                                                 std::string> maybe_key) {
-                                EXPECT_FALSE(maybe_key.has_value());
-                                completed = true;
-                                run_loop.Quit();
-                              }));
+    fetcher.GetOrFetchKey(
+        TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin, coordinator,
+        base::BindLambdaForTesting(
+            [&](base::expected<BiddingAndAuctionServerKey, std::string>
+                    maybe_key) {
+              EXPECT_FALSE(maybe_key.has_value());
+              completed = true;
+              run_loop.Quit();
+            }));
     run_loop.Run();
     EXPECT_TRUE(completed);
   }
@@ -927,14 +974,15 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
         }]})");
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, coordinator,
-                          base::BindLambdaForTesting(
-                              [&](base::expected<BiddingAndAuctionServerKey,
-                                                 std::string> maybe_key) {
-                                ASSERT_TRUE(maybe_key.has_value());
-                                key = *maybe_key;
-                                run_loop.Quit();
-                              }));
+    fetcher.GetOrFetchKey(
+        TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin, coordinator,
+        base::BindLambdaForTesting(
+            [&](base::expected<BiddingAndAuctionServerKey, std::string>
+                    maybe_key) {
+              ASSERT_TRUE(maybe_key.has_value());
+              key = *maybe_key;
+              run_loop.Quit();
+            }));
     run_loop.Run();
     EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
     EXPECT_EQ(std::string(32, '\0'), key.key);
@@ -968,14 +1016,15 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, coordinator,
-                          base::BindLambdaForTesting(
-                              [&](base::expected<BiddingAndAuctionServerKey,
-                                                 std::string> maybe_key) {
-                                ASSERT_TRUE(maybe_key.has_value());
-                                key = *maybe_key;
-                                run_loop.Quit();
-                              }));
+    fetcher.GetOrFetchKey(
+        TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin, coordinator,
+        base::BindLambdaForTesting(
+            [&](base::expected<BiddingAndAuctionServerKey, std::string>
+                    maybe_key) {
+              ASSERT_TRUE(maybe_key.has_value());
+              key = *maybe_key;
+              run_loop.Quit();
+            }));
     // Shouldn't use this response (it should still be cached).
     EXPECT_FALSE(url_loader_factory_.SimulateResponseForPendingRequest(
         kBiddingAndAuctionAWSCoordinatorKeyURL,
@@ -1019,14 +1068,15 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, coordinator,
-                          base::BindLambdaForTesting(
-                              [&](base::expected<BiddingAndAuctionServerKey,
-                                                 std::string> maybe_key) {
-                                ASSERT_TRUE(maybe_key.has_value());
-                                key = *maybe_key;
-                                run_loop.Quit();
-                              }));
+    fetcher.GetOrFetchKey(
+        TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin, coordinator,
+        base::BindLambdaForTesting(
+            [&](base::expected<BiddingAndAuctionServerKey, std::string>
+                    maybe_key) {
+              ASSERT_TRUE(maybe_key.has_value());
+              key = *maybe_key;
+              run_loop.Quit();
+            }));
 
     run_loop.Run();
     EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
@@ -1067,14 +1117,16 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
   {
     content::BiddingAndAuctionServerKey key1, key2;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
                                 ASSERT_TRUE(maybe_key.has_value());
                                 key1 = *maybe_key;
                               }));
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -1107,7 +1159,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -1122,7 +1175,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   while (ids.size() < 2) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(kTestScopeOrigin, kCoordinatorOrigin,
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, kCoordinatorOrigin,
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -1156,7 +1210,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, OverridesConfig) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         ASSERT_TRUE(maybe_key.has_value());
@@ -1187,7 +1242,8 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, kCoordinatorOrigin,
+      TrustedServerAPIType::kBiddingAndAuction, kTestScopeOrigin,
+      kCoordinatorOrigin,
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         ASSERT_TRUE(maybe_key.has_value());
@@ -1200,12 +1256,139 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
   EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
+TEST_F(BiddingAndAuctionServerKeyFetcherTest, DebugOverride) {
+  std::string key_config = R"({
+    "originScopedKeys": {
+      "https://scope.origin.test/": {
+        "keys": [{
+          "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+          "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]
+      }
+    }
+  })";
+
+  std::string key_config2 = R"({
+    "originScopedKeys": {
+      "https://scope.origin.test/": {
+        "keys": [{
+          "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+          "id": "22345678-9abc-def0-1234-56789abcdef0"
+        }]
+      }
+    }
+  })";
+
+  url::Origin origin_a = url::Origin::Create(GURL("https://a.test"));
+  url::Origin origin_b = url::Origin::Create(GURL("https://b.test"));
+  url::Origin origin_c = url::Origin::Create(GURL("https://c.test"));
+
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+  {
+    base::test::TestFuture<std::optional<std::string>> future_1;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kBiddingAndAuction,
+                                 origin_a, key_config, future_1.GetCallback());
+    EXPECT_EQ(std::nullopt, future_1.Get());
+    ExpectNoDBStoredKeys(origin_a);
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_a, future_get.GetCallback());
+    ASSERT_TRUE(future_get.Get().has_value());
+    auto& key = *future_get.Get();
+    EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+
+    // Not available as a different API.
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get2;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kTrustedKeyValue,
+                          kTestScopeOrigin, origin_a,
+                          future_get2.GetCallback());
+    ASSERT_FALSE(future_get2.Get().has_value());
+    EXPECT_EQ("API not supported by coordinator", future_get2.Get().error());
+  }
+
+  // Re-configuring the same should fail, but old config is still around.
+  {
+    base::test::TestFuture<std::optional<std::string>> future_2;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kBiddingAndAuction,
+                                 origin_a, key_config, future_2.GetCallback());
+    EXPECT_EQ(
+        "Can't add debug override because coordinator with origin "
+        "already exists",
+        future_2.Get());
+    ExpectNoDBStoredKeys(origin_a);
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_a, future_get.GetCallback());
+    ASSERT_TRUE(future_get.Get().has_value());
+    auto& key = *future_get.Get();
+    EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+  }
+
+  // Errors in config are reported.
+  {
+    std::string broken_config = key_config;
+    broken_config[0] = '!';
+    base::test::TestFuture<std::optional<std::string>> future_3;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kBiddingAndAuction,
+                                 origin_b, broken_config,
+                                 future_3.GetCallback());
+    EXPECT_EQ("Key config decoding failed", future_3.Get());
+    ExpectNoDBStoredKeys(origin_b);
+
+    // Get afterwards should fail.
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_b, future_get.GetCallback());
+    ASSERT_FALSE(future_get.Get().has_value());
+    EXPECT_EQ("Invalid Coordinator", future_get.Get().error());
+  }
+
+  // Different domain & API can be configured.
+  {
+    base::test::TestFuture<std::optional<std::string>> future_4;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kTrustedKeyValue,
+                                 origin_c, key_config2, future_4.GetCallback());
+    EXPECT_EQ(std::nullopt, future_4.Get());
+    ExpectNoDBStoredKeys(origin_c);
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kTrustedKeyValue,
+                          kTestScopeOrigin, origin_c, future_get.GetCallback());
+    ASSERT_TRUE(future_get.Get().has_value());
+    auto& key = *future_get.Get();
+    EXPECT_EQ("22345678-9abc-def0-1234-56789abcdef0", key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+
+    // Not available as a different API.
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get2;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_c,
+                          future_get2.GetCallback());
+    ASSERT_FALSE(future_get2.Get().has_value());
+    EXPECT_EQ("API not supported by coordinator", future_get2.Get().error());
+  }
+}
+
 class BiddingAndAuctionServerKeyFetcherCoordinatorTest
     : public BiddingAndAuctionServerKeyFetcherTest,
-      public ::testing::WithParamInterface<int> {
+      public ::testing::WithParamInterface<
+          std::tuple<int, TrustedServerAPIType>> {
  public:
   url::Origin GetCoordinator() {
-    switch (GetParam()) {
+    switch (std::get<0>(GetParam())) {
       case 0:
         return url::Origin::Create(
             GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
@@ -1220,7 +1403,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
   }
 
   std::string GetURL() {
-    switch (GetParam()) {
+    switch (std::get<0>(GetParam())) {
       case 0:
         return kBiddingAndAuctionGCPCoordinatorKeyURL;
       case 1:
@@ -1230,6 +1413,8 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
     }
     NOTREACHED();
   }
+
+  TrustedServerAPIType GetAPI() { return std::get<1>(GetParam()); }
 };
 
 TEST_P(BiddingAndAuctionServerKeyFetcherCoordinatorTest, GoodResponse) {
@@ -1241,10 +1426,10 @@ TEST_P(BiddingAndAuctionServerKeyFetcherCoordinatorTest, GoodResponse) {
         "id": "12345678-9abc-def0-1234-56789abcdef0"
         }]})");
 
-  content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
+  content::BiddingAndAuctionServerKey key;
   fetcher.GetOrFetchKey(
-      kTestScopeOrigin, GetCoordinator(),
+      GetAPI(), kTestScopeOrigin, GetCoordinator(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         ASSERT_TRUE(maybe_key.has_value());
@@ -1260,7 +1445,10 @@ TEST_P(BiddingAndAuctionServerKeyFetcherCoordinatorTest, GoodResponse) {
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     BiddingAndAuctionServerKeyFetcherCoordinatorTest,
-    ::testing::Range(0, 3));
+    ::testing::Combine(
+        ::testing::Range(0, 3),
+        ::testing::Values(TrustedServerAPIType::kBiddingAndAuction,
+                          TrustedServerAPIType::kTrustedKeyValue)));
 
 }  // namespace
 }  // namespace content

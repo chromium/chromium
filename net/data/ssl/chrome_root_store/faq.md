@@ -63,12 +63,9 @@ the rollout population.
 Certificate Verifier from being used on Chrome for iOS.
 
 ### How do these features impact "enterprise", "private", or "only-locally trusted" certificates?
-The Chrome Certificate Verifier
-[considers](#does-the-chrome-certificate-verifier-consider-local-trust-decisions)
-locally-managed certificates during the certificate verification process.
-Consequently, if an enterprise distributes a root CA certificate as
-trusted to its users (for example, by a Windows Group Policy Object), it
-will be considered trusted in Chrome.
+Depending on the underlying [connection protocol](#how-does-the-chrome-certificate-verifier-consider-local-trust-decisions)
+used, the Chrome Certificate Verifier considers locally-managed certificates
+during the certificate verification process.
 
 ### How can I apply for my CA's inclusion in the Chrome Root Store?
 CA Owners who meet the Chrome Root Program
@@ -141,10 +138,17 @@ Existing versions of Chrome *not* relying on the Chrome Root Store and/or that
 have disabled component updates will *not* become aware of the change(s) until
 installing a binary update following the publication of the updated root store.
 
+### How does the Chrome Certificate Verifier consider local trust decisions?
 
-### Does the Chrome Certificate Verifier consider local trust decisions?
+For TLS connections relying on the Transmission Control Protocol (TCP), the
+ Chrome Certificate Verifier considers local trust decisions for both adding and
+removing trust. Learn more [here](#how-does-the-chrome-certificate-verifier-integrate-with-platform-trust-stores-for-local-trust-decisions).
 
-Yes.
+For TLS connections relying on the Quick UDP Internet Connections (QUIC)
+protocol, the Chrome Certificate Verifier *only* considers local trust decisions
+for removing trust.
+
+### How does the Chrome Certificate Verifier integrate with platform trust stores for local trust decisions?
 
 On **Windows**, the Chrome Certificate Verifier automatically consumes
 certificates **added** to the following certificate stores:

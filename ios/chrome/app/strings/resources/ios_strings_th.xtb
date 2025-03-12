@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">ระบบจะลิงก์ข้อมูลการท่องเว็บที่มีอยู่กับ <ph name="USER_EMAIL" /> องค์กรของคุณอาจดูข้อมูลนี้ได้</translation>
 <translation id="1713777106376424209">จัดส่งโดย</translation>
 <translation id="1715515772563243997">หากคุณเชื่อถือ <ph name="SITE" /> ก็ใช้รหัสผ่านที่บันทึกไว้ในการลงชื่อเข้าใช้ได้</translation>
+<translation id="1718835860248848330">ชั่วโมงที่แล้ว</translation>
 <translation id="1728549374069268714">วางแล้วไป</translation>
 <translation id="1732468323901456775">เปิดการแจ้งเตือนสำหรับ<ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">การตรวจหาที่อยู่ปิดอยู่ โปรดเปิดอีกครั้งในการตั้งค่า</translation>
 <translation id="1904580727789512086">ระบบจะบันทึก URL ที่เข้าชมไว้ในบัญชี Google ของคุณ</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
-<translation id="1923342640370224680">ชั่วโมงล่าสุด</translation>
 <translation id="1941314575388338491">แตะสองครั้งเพื่อคัดลอก</translation>
 <translation id="1943478190258551035">เมนู → การตั้งค่า</translation>
 <translation id="1952728750904661634">ลงชื่อเข้าใช้ด้วยบัญชีที่มีการจัดการ</translation>

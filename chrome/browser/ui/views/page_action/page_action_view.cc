@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
@@ -19,17 +22,14 @@
 
 namespace page_actions {
 
-PageActionView::PageActionView(
-    actions::ActionItem* action_item,
-    const PageActionViewParams& params,
-    base::RepeatingCallback<void(actions::ActionId, bool)>
-        chip_state_changed_callback)
+PageActionView::PageActionView(actions::ActionItem* action_item,
+                               const PageActionViewParams& params)
     : IconLabelBubbleView(gfx::FontList(), params.icon_label_bubble_delegate),
       action_item_(action_item->GetAsWeakPtr()),
       icon_size_(params.icon_size),
-      icon_insets_(params.icon_insets),
-      chip_state_changed_callback_(chip_state_changed_callback) {
+      icon_insets_(params.icon_insets) {
   CHECK(action_item_->GetActionId().has_value());
+  SetUpForAnimation(base::Milliseconds(600));
 
   SetProperty(views::kElementIdentifierKey,
               action_item_->GetProperty(views::kElementIdentifierKey));
@@ -41,11 +41,27 @@ PageActionView::PageActionView(
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-  UpdateBorder();
   SetVisible(false);
+  label()->SetVisible(false);
+  SetUseTonalColorsWhenExpanded(true);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
+  UpdateBorder();
+
+  label_visibility_changed_subscription_ =
+      label()->AddVisibleChangedCallback(base::BindRepeating(
+          &PageActionView::OnLabelVisibilityChanged, base::Unretained(this)));
 }
 
 PageActionView::~PageActionView() = default;
+
+bool PageActionView::IsChipVisible() const {
+  return ShouldShowLabel();
+}
+
+base::CallbackListSubscription PageActionView::AddChipVisibiltyChangedCallback(
+    ChipVisibilityChanged callback) {
+  return chip_visibility_changed_callbacks_.Add(std::move(callback));
+}
 
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
@@ -68,24 +84,14 @@ void PageActionView::OnPageActionModelChanged(
   SetVisible(model.GetVisible());
   SetText(model.GetText());
   SetTooltipText(model.GetTooltipText());
-  label()->SetVisible(model.GetShowSuggestionChip());
-
   UpdateIconImage();
-  UpdateBorder();
-  UpdateStyle(model.GetShowSuggestionChip());
-}
 
-void PageActionView::UpdateStyle(bool is_suggestion_chip) {
-  SetUseTonalColorsWhenExpanded(is_suggestion_chip);
-  SetBackgroundVisibility(is_suggestion_chip ? BackgroundVisibility::kAlways
-                                             : BackgroundVisibility::kNever);
-
-  // Only trigger the chip state changed callback if there's an actual change
-  // in the suggestion chip's visibility. This prevents unnecessary updates and
-  // reordering logic in the container when the chip state remains unchanged.
-  if (showing_suggestion_chip_ != is_suggestion_chip) {
-    showing_suggestion_chip_ = is_suggestion_chip;
-    chip_state_changed_callback_.Run(GetActionId(), showing_suggestion_chip_);
+  if (!model.GetVisible()) {
+    ResetSlideAnimation(/*show=*/false);
+  } else if (model.GetShowSuggestionChip()) {
+    AnimateIn(/*string_id=*/std::nullopt);
+  } else {
+    AnimateOut();
   }
 }
 
@@ -121,11 +127,15 @@ void PageActionView::ViewHierarchyChanged(
 
 void PageActionView::UpdateBorder() {
   gfx::Insets insets = icon_insets_;
-  if (ShouldShowLabel()) {
-    constexpr int kInsetsLeftPadding = 4;
-    constexpr int kInsetsRightPadding = 8;
-    insets +=
-        gfx::Insets().set_left_right(kInsetsLeftPadding, kInsetsRightPadding);
+  if (IsChipVisible()) {
+    constexpr int kInsetsLeftPaddingMax = 4;
+    constexpr int kInsetsRightPaddingMax = 8;
+
+    // Set the padding according to the progress of the expand/collapse
+    // animation.
+    const int left_padding = GetWidthBetween(0, kInsetsLeftPaddingMax);
+    const int right_padding = GetWidthBetween(0, kInsetsRightPaddingMax);
+    insets += gfx::Insets().set_left_right(left_padding, right_padding);
   }
 
   if (GetInsets() != insets) {
@@ -135,6 +145,10 @@ void PageActionView::UpdateBorder() {
 
 bool PageActionView::ShouldShowSeparator() const {
   return false;
+}
+
+bool PageActionView::ShouldShowLabelAfterAnimation() const {
+  return ShouldShowLabel();
 }
 
 bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
@@ -213,8 +227,17 @@ void PageActionView::OnClickCanceled(const ui::Event& event) {
   skip_action_invocation_ = false;
 }
 
+void PageActionView::OnLabelVisibilityChanged() {
+  UpdateBorder();
+  chip_visibility_changed_callbacks_.Notify(this);
+}
+
 views::View* PageActionView::GetLabelForTesting() {
   return label();
+}
+
+gfx::SlideAnimation& PageActionView::GetSlideAnimationForTesting() {
+  return slide_animation_;
 }
 
 BEGIN_METADATA(PageActionView)

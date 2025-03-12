@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_op_writer.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "cc/paint/color_filter.h"
@@ -251,9 +247,10 @@ size_t PaintOpWriter::FinishOp(uint8_t type) {
   }
 
   // Write type and skip into the header bytes.
-  WriteHeader(memory_ - written, type, aligned_written);
-
-  memory_ += padding;
+  UNSAFE_TODO({
+    WriteHeader(memory_ - written, type, aligned_written);
+    memory_ += padding;
+  });
   return aligned_written;
 }
 
@@ -285,7 +282,8 @@ void PaintOpWriter::WriteSizeAt(void* memory, size_t size) {
   // and https://crbug.com/1440013).
   uint32_t* memory_32 = static_cast<uint32_t*>(memory);
   memory_32[0] = static_cast<uint32_t>(size);
-  memory_32[1] = static_cast<uint32_t>(static_cast<uint64_t>(size) >> 32);
+  UNSAFE_TODO(memory_32[1]) =
+      static_cast<uint32_t>(static_cast<uint64_t>(size) >> 32);
 }
 
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
@@ -407,8 +405,8 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
     Write(pixmap.height());
     size_t pixmap_size = pixmap.computeByteSize();
     WriteSize(pixmap_size);
-    WriteData(base::span<const uint8_t>(
-        static_cast<const uint8_t*>(pixmap.addr()), pixmap_size));
+    WriteData(UNSAFE_TODO(base::span<const uint8_t>(
+        static_cast<const uint8_t*>(pixmap.addr()), pixmap_size)));
     return;
   }
 
@@ -556,8 +554,8 @@ void PaintOpWriter::Write(const gfx::HDRMetadata& hdr_metadata) {
 void PaintOpWriter::Write(const SkString& sk_string) {
   size_t num_bytes = sk_string.size();
   WriteSize(num_bytes);
-  WriteData(base::span<const uint8_t>(
-      reinterpret_cast<const uint8_t*>(sk_string.data()), num_bytes));
+  WriteData(UNSAFE_TODO(base::span<const uint8_t>(
+      reinterpret_cast<const uint8_t*>(sk_string.data()), num_bytes)));
 }
 
 void PaintOpWriter::Write(
@@ -839,7 +837,7 @@ void PaintOpWriter::AlignMemory(size_t alignment) {
     return;
   }
 
-  memory_ += padding;
+  UNSAFE_TODO(memory_ += padding);
 }
 
 void PaintOpWriter::Write(const ColorFilter* filter) {

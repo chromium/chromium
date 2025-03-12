@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> икона за боја на група картички</translation>
 <translation id="311432875115153175">Списокот со групи картички е затворен</translation>
 <translation id="3194464645767632461">оценување</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> картичка во групата}one{Додајте <ph name="TABS_COUNT_MANY" /> картичка во групата}other{Додајте <ph name="TABS_COUNT_MANY" /> картички во групата}}</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3547352561153509682">Ова ќе ја избрише групата од сите уреди најавени на <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Нови картички: <ph name="ONE_ADDED" />}one{Нови картички: <ph name="MANY_ADDED" />}other{Нови картички: <ph name="MANY_ADDED" />}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">Споделете ги насловите и URL-адресите на отворените картички од уредов со оперативниот систем</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензии)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> избрана картичка во групата}one{Додајте <ph name="TABS_COUNT_MANY" /> избрана картичка во групата}other{Додајте <ph name="TABS_COUNT_MANY" /> избрани картички во групата}}</translation>
 <translation id="4861611890274104875">Отфрли ја картичката.</translation>
 <translation id="4861953997778766866">Секој може да врши промени во споделените групи картички</translation>
 <translation id="4870911314065352661">Да се затворат сите картички?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6228793724645064692">(оцена за продавницата)</translation>
 <translation id="6271513594716432922">Затвори ги сите неактивни картички</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додајте картичка во нова група}one{Додајте картички во нова група}other{Додајте картички во нова група}}</translation>
 <translation id="6333260925957816943">Информации за продавницава</translation>
 <translation id="6381032505162537930">Вашите групи картички ќе ги најдете овде</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Одгрупирајте <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">Нова група од другиот ваш уред</translation>
 <translation id="8029301326595421733">Информациите за продавницава се отворени на цел екран</translation>
 <translation id="8053770993984522566">Список со групи картички, отворен на половина екран</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Додајте картичка во групата}one{Додајте картички во групата}other{Додајте картички во групата}}</translation>
 <translation id="8076492880354921740">Картички</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Прошири ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Прошири ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
 <translation id="8205266828577616993">Помести картичка нагоре</translation>

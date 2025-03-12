@@ -160,7 +160,7 @@ TabGroupViews::GetLeadingTrailingDraggedGroupViews() const {
 std::tuple<views::View*, views::View*>
 TabGroupViews::GetLeadingTrailingGroupViews(
     std::vector<raw_ptr<views::View, VectorExperimental>> children) const {
-  // Elements of |children| may be in different coordinate spaces. Canonicalize
+  // Elements of `children` may be in different coordinate spaces. Canonicalize
   // to widget space for comparison, since they will be in the same widget.
   views::View* leading_child = nullptr;
   gfx::Rect leading_child_widget_bounds;

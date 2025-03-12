@@ -49,6 +49,7 @@ class SharedStorageManager {
   using TimeResult = SharedStorageDatabase::TimeResult;
   using MetadataResult = SharedStorageDatabase::MetadataResult;
   using EntriesResult = SharedStorageDatabase::EntriesResult;
+  using DataClearSource = SharedStorageDatabase::DataClearSource;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -195,7 +196,8 @@ class SharedStorageManager {
   // `browsing_data::SharedStorageHelper::DeleteOrigin()` in order to clear
   // browsing data via the Settings UI.
   void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback);
+             base::OnceCallback<void(OperationResult)> callback,
+             DataClearSource source = DataClearSource::kSite);
 
   // The parameter of `callback` reports the number of bytes used by
   // `context_origin` in unexpired entries, 0 if the origin has no unexpired

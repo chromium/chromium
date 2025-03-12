@@ -49,6 +49,8 @@ class CONTENT_EXPORT IdentityRequestAccount
 
   IdentityRequestAccount(
       const std::string& id,
+      const std::string& display_identifier,
+      const std::string& display_name,
       const std::string& email,
       const std::string& name,
       const std::string& given_name,
@@ -65,6 +67,10 @@ class CONTENT_EXPORT IdentityRequestAccount
   scoped_refptr<IdentityProviderData> identity_provider = nullptr;
 
   std::string id;
+  // E.g. email or phone number
+  std::string display_identifier;
+  // E.g. the user's full name or username
+  std::string display_name;
   std::string email;
   std::string name;
   std::string given_name;

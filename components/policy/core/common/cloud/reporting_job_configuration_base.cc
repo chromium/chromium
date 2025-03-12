@@ -343,6 +343,7 @@ ReportingJobConfigurationBase::ReportingJobConfigurationBase(
     : JobConfigurationBase(type,
                            std::move(auth_data),
                            /*oauth_token=*/std::nullopt,
+                           /*use_cookies=*/false,
                            factory),
       callback_(std::move(callback)),
       server_url_(server_url) {}

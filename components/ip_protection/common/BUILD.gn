@@ -141,6 +141,7 @@ source_set("ip_protection_data_types") {
   public_deps = [
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//third_party/boringssl",
   ]
 }
 

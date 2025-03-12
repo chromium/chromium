@@ -1448,8 +1448,6 @@ TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
   SimulateUserLogin({kUser1});
   SetAmbientModeEnabled(true);
 
-  TestSessionControllerClient* session = GetSessionControllerClient();
-
   // Observers are bound for primary user with Ambient mode enabled.
   EXPECT_TRUE(AreSessionSpecificObserversBound());
   EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
@@ -1460,12 +1458,12 @@ TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
   EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
 
   // Observers are not re-bound for primary user when session is active.
-  session->SwitchActiveUser(AccountId::FromUserEmail(kUser1));
+  SwitchActiveUser(AccountId::FromUserEmail(kUser1));
   EXPECT_TRUE(AreSessionSpecificObserversBound());
   EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
 
   //  Switch back to secondary user.
-  session->SwitchActiveUser(AccountId::FromUserEmail(kUser2));
+  SwitchActiveUser(AccountId::FromUserEmail(kUser2));
 }
 
 TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {

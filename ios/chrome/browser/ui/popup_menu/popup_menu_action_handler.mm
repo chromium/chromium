@@ -171,7 +171,7 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionPriceNotifications:
       RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
-      [self.dispatcher showPriceNotifications];
+      [self.dispatcher showPriceNotificationsWithCurrentPage];
       break;
     default:
       NOTREACHED() << "Unexpected identifier";

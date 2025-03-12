@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_PAINT_PAINT_OP_BUFFER_ITERATOR_H_
 #define CC_PAINT_PAINT_OP_BUFFER_ITERATOR_H_
 
@@ -15,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -44,7 +40,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator
   const PaintOp& operator*() const { return *get(); }
   Iterator begin() const { return Iterator(*buffer_); }
   Iterator end() const {
-    return Iterator(*buffer_, buffer_->data_.get() + buffer_->used_,
+    return Iterator(*buffer_,
+                    UNSAFE_TODO(buffer_->data_.get() + buffer_->used_),
                     buffer_->used_);
   }
   bool operator==(const Iterator& other) const {
@@ -56,7 +53,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator
   Iterator& operator++() {
     DCHECK(*this);
     const PaintOp& op = **this;
-    ptr_ += op.AlignedSize();
+    UNSAFE_TODO(ptr_ += op.AlignedSize());
     op_offset_ += op.AlignedSize();
 
     CHECK_LE(op_offset_, buffer_->used_);
@@ -93,7 +90,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
       return;
     }
     op_offset_ = offsets[0];
-    ptr_ += op_offset_;
+    UNSAFE_TODO(ptr_ += op_offset_);
   }
 
   const PaintOp* get() const { return reinterpret_cast<const PaintOp*>(ptr_); }
@@ -101,7 +98,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
   const PaintOp& operator*() const { return *get(); }
   OffsetIterator begin() const { return OffsetIterator(*buffer_, *offsets_); }
   OffsetIterator end() const {
-    return OffsetIterator(*buffer_, buffer_->data_.get() + buffer_->used_,
+    return OffsetIterator(*buffer_,
+                          UNSAFE_TODO(buffer_->data_.get() + buffer_->used_),
                           buffer_->used_, *offsets_);
   }
   bool operator==(const OffsetIterator& other) const {
@@ -126,7 +124,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
     CHECK_LT(target_offset, buffer_->used_);
 
     // Advance the iterator to the target offset.
-    ptr_ += (target_offset - op_offset_);
+    UNSAFE_TODO(ptr_ += (target_offset - op_offset_));
     op_offset_ = target_offset;
 
     DCHECK(!*this || (*this)->type <=

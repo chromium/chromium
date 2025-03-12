@@ -150,8 +150,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   base::android::ScopedJavaGlobalRef<jobject> j_adapter_;
 
  private:
-  void StartListingPairedDevices() const;
-  mutable bool started_listing_paired_devices_{false};
+  void PopulatePairedDevices() const;
 
   FRIEND_TEST_ALL_PREFIXES(BluetoothAdapterAndroidTest, ScanFilterTest);
   // Note: This should remain the last member so it'll be destroyed and

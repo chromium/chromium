@@ -368,7 +368,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
     }
   } else if (name == html_names::kHiddenAttr) {
-    if (EqualIgnoringASCIICase(value, "until-found")) {
+    if (EqualIgnoringASCIICase(value, keywords::kUntilFound)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
       UseCounter::Count(GetDocument(), WebFeature::kHiddenUntilFoundAttribute);
@@ -1150,9 +1150,9 @@ V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
     return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
         false);
   }
-  if (attribute == "until-found") {
+  if (EqualIgnoringASCIICase(attribute, keywords::kUntilFound)) {
     return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
-        String("until-found"));
+        String(keywords::kUntilFound));
   }
   return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(true);
 }
@@ -1172,8 +1172,9 @@ void HTMLElement::setHidden(
       }
       break;
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kString:
-      if (EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
-        setAttribute(html_names::kHiddenAttr, AtomicString("until-found"));
+      if (EqualIgnoringASCIICase(value->GetAsString(), keywords::kUntilFound)) {
+        setAttribute(html_names::kHiddenAttr,
+                     AtomicString(keywords::kUntilFound));
       } else if (value->GetAsString() == "") {
         removeAttribute(html_names::kHiddenAttr);
       } else {

@@ -193,8 +193,8 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     CreateDialogWidget(this, params.context, nullptr)->Show();
   }
 
-  source_view_->SetBorder(views::CreateThemedRoundedRectBorder(
-      1, 4, ui::kColorSysPrimaryContainer));
+  source_view_->SetBorder(
+      views::CreateRoundedRectBorder(1, 4, ui::kColorSysPrimaryContainer));
 
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));

@@ -355,8 +355,7 @@ TEST_F(QuickSettingsHeaderTest, ChildVisible) {
 
   // Simulate supervised user logging in.
   SessionControllerImpl* session = Shell::Get()->session_controller();
-  TestSessionControllerClient* client = GetSessionControllerClient();
-  client->Reset();
+  ClearLogin();
   SimulateUserLogin({"child@test.com", user_manager::UserType::kChild});
   UserSession user_session = *session->GetUserSession(0);
   user_session.custodian_email = "parent@test.com";
@@ -383,9 +382,9 @@ TEST_F(QuickSettingsHeaderTest, ShowManagementDisclosure) {
       AuthEventsRecorder::CreateForTesting();
 
   // Setup to lock screen.
+  ClearLogin();
   TestSessionControllerClient* client = GetSessionControllerClient();
-  client->Reset();
-  GetSessionControllerClient()->set_show_lock_screen_views(true);
+  client->set_show_lock_screen_views(true);
   client->LockScreen();
   client->SetSessionState(session_manager::SessionState::LOCKED);
 
@@ -407,9 +406,9 @@ TEST_F(QuickSettingsHeaderTest, DoNotShowManagementDisclosure) {
       AuthEventsRecorder::CreateForTesting();
 
   // Setup to lock screen.
+  ClearLogin();
   TestSessionControllerClient* client = GetSessionControllerClient();
-  client->Reset();
-  GetSessionControllerClient()->set_show_lock_screen_views(true);
+  client->set_show_lock_screen_views(true);
   client->LockScreen();
   client->SetSessionState(session_manager::SessionState::LOCKED);
 

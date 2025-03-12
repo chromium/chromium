@@ -3794,7 +3794,6 @@ Hãy truy cập https://wicg.github.io/private-network-access/ để biết các
 
       Lưu ý: Đối với các thiết bị được quản lý <ph name="MS_AD_NAME" />, chính sách này hỗ trợ việc mở rộng <ph name="MACHINE_NAME_VARIABLE" /> sang tên máy <ph name="MS_AD_NAME" /> hoặc một chuỗi con của biến đó. Ví dụ: nếu tên máy là <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> sẽ được thay bằng 4 ký tự bắt đầu sau vị trí thứ 6, nói cách khác là sẽ được thay bằng <ph name="MACHINE_NAME_PART_EXAMPLE" />. Vị trí này dựa trên mốc 0.</translation>
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
-<translation id="3772558247108478825">Chế độ cài đặt của tính năng Tạo nhóm thông minh bằng AI tạo sinh</translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
 <translation id="3785423718413114598">Không cho phép các tính năng AI tạo sinh</translation>
@@ -4705,17 +4704,6 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 <translation id="4467952432486360968">Chặn cookie của bên thứ ba</translation>
 <translation id="4472740647327683596">Chiều rộng của trang (tính bằng micromet)</translation>
 <translation id="4474167089968829729">Bật lưu mật khẩu cho trình quản lý mật khẩu</translation>
-<translation id="4474320817847428197">Chính sách này kiểm soát chế độ cài đặt của tính năng Tạo nhóm thông minh bằng AI tạo sinh trên <ph name="PRODUCT_OS_NAME" />.
-
-0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
-
-2 = Không cho phép sử dụng tính năng này.
-
-Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
-
-Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="447692108909279121">Hoạt động xử lý IP của WebRTC</translation>
 <translation id="4478248026668918517">Chặn tính năng Phát hiện phạm vi chính sách.</translation>
 <translation id="4479671363221255277">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép yêu cầu người dùng cấp quyền đọc các tệp hoặc thư mục trong hệ thống tệp của hệ điều hành máy chủ qua API Hệ thống tệp.
@@ -8506,12 +8494,6 @@ Chính sách này sẽ bị xoá trong tương lai, sau khi chúng tôi triển 
       Nếu bạn không đặt chính sách này, thì HTTP/0.9 sẽ bị tắt trên các cổng không phải cổng mặc định.</translation>
 <translation id="6969332115615661188">Tắt đầu vào video</translation>
 <translation id="6969949359984470271">Ứng dụng web kiosk không có khả năng hoạt động khi không có mạng</translation>
-<translation id="6971579036359007697">Kiểm soát việc di chuyển tệp trên máy lên đám mây.
-Chỉ áp dụng cho người dùng SkyVault, tức là khi chính sách LocalUserFilesAllowed được đặt thành False, nếu không, chính sách này sẽ bị bỏ qua.
-
-Nếu bạn đặt chính sách này thành "google_drive" thì tệp trên máy sẽ được chuyển sang Google Drive còn thư mục trên máy sẽ bị ẩn.
-Nếu bạn đặt chính sách này thành "microsoft_onedrive" thì tệp trên máy sẽ được chuyển sang OneDrive còn thư mục trên máy sẽ bị ẩn.
-Nếu bạn không đặt hoặc đặt chính sách này thành "chỉ đọc": tệp trên máy vẫn ở chế độ chỉ có thể đọc.</translation>
 <translation id="6972540544240464302">Chọn cấu hình trình lập lịch biểu việc cần làm</translation>
 <translation id="6975533677426693807">Luôn mở tệp PDF bằng trình xem PDF nội bộ</translation>
 <translation id="6986172482189158664">Chế độ cài đặt thời gian lưu giữ dữ liệu duyệt web</translation>

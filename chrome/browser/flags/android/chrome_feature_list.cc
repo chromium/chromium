@@ -103,6 +103,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillSyncEwalletAccounts,
     &autofill::features::kAutofillEnableSyncingOfPixBankAccounts,
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
+    &autofill::features::kAutofillEnableSupportForHomeAndWork,
     &blink::features::kBackForwardTransitions,
     &blink::features::kDynamicSafeAreaInsets,
     &blink::features::kForceWebContentsDarkMode,
@@ -118,7 +119,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
     &data_sharing::features::kDataSharingFeature,
-    &collaboration::features::kCollaborationFlowAndroid,
     &data_sharing::features::kDataSharingJoinOnly,
     &data_sharing::features::kDataSharingNonProductionEnvironment,
     &download::features::kSmartSuggestionForLargeDownloads,
@@ -240,7 +240,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
     &kChangeUnfocusedPriority,
-    &kDefaultBrowserPromoAndroid,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
@@ -282,7 +281,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoScreenshot,
     &kLensOnQuickActionSearchWidget,
     &kLogoPolish,
-    &kLogoPolishAnimationKillSwitch,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
     &kMostVisitedTilesCustomization,
@@ -357,7 +355,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUmaBackgroundSessions,
     &kUpdateCompositorForSurfaceControl,
     &kUseLibunwindstackNativeUnwinderAndroid,
-    &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkMinShellVersion,
     &notifications::features::kUseChimeAndroidSdk,
@@ -810,10 +807,6 @@ BASE_FEATURE(kCrossDeviceTabPaneAndroid,
              "CrossDeviceTabPaneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserPromoAndroid,
-             "DefaultBrowserPromoAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserPromoAndroid2,
              "DefaultBrowserPromoAndroid2",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -901,10 +894,6 @@ BASE_FEATURE(kIncognitoScreenshot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogoPolish, "LogoPolish", base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLogoPolishAnimationKillSwitch,
-             "LogoPolishAnimationKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMagicStackAndroid,
              "MagicStackAndroid",
@@ -1209,10 +1198,6 @@ BASE_FEATURE(kUpdateCompositorForSurfaceControl,
 // only on Android.
 BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
              "UseLibunwindstackNativeUnwinderAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kVoiceSearchAudioCapturePolicy,
-             "VoiceSearchAudioCapturePolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Shows only the remote device name on the Android notification instead of

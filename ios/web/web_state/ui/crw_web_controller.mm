@@ -399,8 +399,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
         @"title" : @"webViewTitleDidChange",
         @"cameraCaptureState" : @"webViewCameraCaptureStateDidChange",
         @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
-        @"underPageBackgroundColor" :
-            @"webViewUnderPageBackgroundColorDidChange",
       }];
 
   if (web::GetWebClient()->EnableFullscreenAPI()) {
@@ -737,6 +735,13 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
   WKSnapshotConfiguration* configuration =
       [[WKSnapshotConfiguration alloc] init];
   CGRect convertedRect = [self.webView convertRect:rect fromView:self.view];
+  if (self.webView.scrollView.contentSize.height < convertedRect.size.height) {
+    // Adjust the area of the web view to capture, otherwise the snapshot image
+    // outside the content will be black. See crbug.com/399702753 as an example
+    // case.
+    convertedRect.size.height =
+        floorf(self.webView.scrollView.contentSize.height);
+  }
   configuration.rect = convertedRect;
   __weak CRWWebController* weakSelf = self;
   [self.webView
@@ -1584,11 +1589,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 // Called when WKWebView microphoneCaptureState property has changed.
 - (void)webViewMicrophoneCaptureStateDidChange {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionMicrophone);
-}
-
-// Called when WKWebView underPageBackgroundColor property has changed.
-- (void)webViewUnderPageBackgroundColorDidChange {
-  self.webStateImpl->OnUnderPageBackgroundColorChanged();
 }
 
 - (void)fullscreenStateDidChange {

@@ -267,6 +267,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     bool require_audio_offload = false;
   };
 
+  // Returns a string which contains the full bitmask for the given `mask`.
+  // Example: mask=3 => returns "ECHO_CANCELLER | DUCKING".
+  static std::string EffectsMaskToString(int mask);
+
   AudioParameters();
 
   AudioParameters(Format format,

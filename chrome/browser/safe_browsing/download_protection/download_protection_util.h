@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/download_protection/deep_scanning_metadata.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
@@ -22,6 +21,8 @@
 #include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {
+
+class DeepScanningMetadata;
 
 // Enum to keep track why a particular download verdict was chosen.
 // Used for UMA metrics. Do not reorder.

@@ -404,13 +404,17 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, DiscardedTabIsUnloaded) {
 
   // Discard the background tab.
   auto* lifecycle_unit_to_discard = GetLifecycleUnitAt(0);
-  ASSERT_EQ(lifecycle_unit_to_discard->GetVisibility(),
-            content::Visibility::HIDDEN);
+  auto* web_contents = GetWebContentsAt(0);
+  ASSERT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
   lifecycle_unit_to_discard->Discard(LifecycleUnitDiscardReason::URGENT,
                                      /* resident_set_size_estimate=*/0);
 
-  // Verify that it is considered unloaded by `TabLoadTracker`.
+  // Get the WebContents at index 0 again. This is necessary because discarding
+  // the tab via LifecycleUnit might replace the original WebContents object at
+  // that index with a new, empty WebContents. We need to obtain a reference to
+  // this newly created WebContents to correctly verify its unloaded state.
   auto* discarded_contents = GetWebContentsAt(0);
+  // Verify that it is considered unloaded by `TabLoadTracker`.
   ASSERT_TRUE(discarded_contents->WasDiscarded());
   EXPECT_EQ(TabLoadTracker::Get()->GetLoadingState(discarded_contents),
             TabLoadTracker::LoadingState::UNLOADED);

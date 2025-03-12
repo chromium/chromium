@@ -132,7 +132,7 @@ const CGFloat kTableViewSectionFooterHeight = 3;
     case kGeneralScreenBeforeDBPromo:
     case kShoppingUsersWithFallbackBeforeDBPromo:
       return l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
-    case kAddressBarPromoInsteadOfDBPromo:
+    case kAddressBarPromoInsteadOfBestFeaturesScreen:
     case kDisabled:
       NOTREACHED();
   }

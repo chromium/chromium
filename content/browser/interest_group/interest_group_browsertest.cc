@@ -28328,6 +28328,112 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
   EXPECT_EQ(ad_url, RunAuctionAndWaitForUrl(auction_config));
 }
 
+class DisableLocalAuctionInterestGroupBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  DisableLocalAuctionInterestGroupBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kFledgeDisableLocalAdsAuctions},
+        /*disabled_features=*/
+        {});
+  }
+
+  ~DisableLocalAuctionInterestGroupBrowserTest() override {
+    content_browser_client_.reset();
+  }
+
+  void SetUpTestWithOneInterestGroup() {
+    test_url_ =
+        embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+    ASSERT_TRUE(NavigateToURL(shell(), test_url_));
+    test_origin_ = url::Origin::Create(test_url_);
+
+    ad_url_ = embedded_https_test_server().GetURL(
+        "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+    EXPECT_EQ(
+        kSuccess,
+        JoinInterestGroupAndVerify(
+            blink::TestInterestGroupBuilder(
+                /*owner=*/test_origin_,
+                /*name=*/"cars")
+                .SetBiddingUrl(embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"))
+                .SetTrustedBiddingSignalsUrl(
+                    embedded_https_test_server().GetURL(
+                        "a.test",
+                        "/interest_group/trusted_bidding_signals.json"))
+                .SetTrustedBiddingSignalsKeys({{"key1"}})
+                .SetAds({{{ad_url_, R"({"ad":"metadata","here":[1,2]})"}}})
+                .SetAllSellersCapabilities(
+                    {blink::SellerCapabilities::kInterestGroupCounts,
+                     blink::SellerCapabilities::kLatencyStats})
+                .Build()));
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  GURL test_url_;
+  url::Origin test_origin_;
+  GURL ad_url_;
+};
+
+IN_PROC_BROWSER_TEST_F(DisableLocalAuctionInterestGroupBrowserTest,
+                       DisableLocalAuctions) {
+  SetUpTestWithOneInterestGroup();
+  // If local auctions are disable via kFledgeDisableLocalAdsAuctions and
+  // there's no "serverResponse" key in the auctionConfig, runAdAuction will not
+  // throw an error. It will return nullptr, which matches what happens when
+  // there is no auction winner.
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
+                         R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 100n, scale: 10 },
+    }})",
+                         test_origin_,
+                         embedded_https_test_server().GetURL(
+                             "a.test", "/interest_group/decision_logic.js"))));
+}
+
+IN_PROC_BROWSER_TEST_F(DisableLocalAuctionInterestGroupBrowserTest,
+                       DisableLocalComponentAuctions) {
+  SetUpTestWithOneInterestGroup();
+
+  // Even if the top-level auction has a server response, verify that the
+  // component auctions are also not locally hosted.
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        serverResponse: "serverResponse",
+        auctionSignals: "bidderAllowsComponentAuction,"+
+                        "sellerAllowsComponentAuction",
+        componentAuctions:
+            [{
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            },
+            {
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1],
+              auctionSignals: "bidderAllowsComponentAuction,"+
+                              "sellerAllowsComponentAuction"
+            }]
+      })",
+      test_origin_,
+      embedded_https_test_server().GetURL(test_origin_.host(),
+                                          "/interest_group/decision_logic.js"));
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+}
+
 }  // namespace
 
 }  // namespace content

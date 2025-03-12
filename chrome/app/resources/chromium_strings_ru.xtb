@@ -127,11 +127,9 @@
 <translation id="2738871930057338499">Не удалось подключиться к интернету. Ошибка HTTP 403: доступ запрещен. Проверьте настройки прокси-сервера.</translation>
 <translation id="2753623023919742414">Нажмите на объект для поиска</translation>
 <translation id="2770231113462710648">Назначить браузером по умолчанию:</translation>
-<translation id="277338894894732084">Затем Chromium спросит, хотите ли вы использовать сохраненные данные для автозаполнения форм.</translation>
 <translation id="2785438272836277133">Это расширение содержит вредоносное ПО и может быть опасным. Удалите его из Chromium, чтобы оно больше не могло читать и менять ваши данные с сайтов (включая личную информацию), которые вы посещаете.</translation>
 <translation id="2799223571221894425">Перезапустить</translation>
 <translation id="2803971713792056305">Ваш Chromium</translation>
-<translation id="2806241689335397269">Chromium будет спрашивать, хотите ли вы сохранять данные форм, например свой день рождения, возраст и номер паспорта.</translation>
 <translation id="2841525013647267359">Язык оригинала</translation>
 <translation id="2846251086934905009">Произошла ошибка. Не удалось завершить установку. Она была прервана.</translation>
 <translation id="2847479871509788944">Удалить из Chromium</translation>
@@ -175,7 +173,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Переключиться на существующий профиль Chromium?</translation>
 <translation id="3412460710772753638">В Менеджере паролей на этом устройстве</translation>
-<translation id="3451656833730006755">Чтобы пользоваться установленными расширениями на всех компьютерах, войдите в Chromium.</translation>
 <translation id="347328004046849135">Вы получите уведомление от Chromium, если войдете в аккаунт с паролем, который был раскрыт.</translation>
 <translation id="3474745554856756813">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Переключиться на другой профиль Chromium можно с помощью сочетания клавиш <ph name="SHORTCUT" /></translation>
@@ -456,7 +453,6 @@
 <translation id="734373864078049451">Все веб-страницы, закладки и другие данные Chromium можно найти здесь.</translation>
 <translation id="7349591376906416160">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Это расширение больше не поддерживается. Рекомендуем удалить его из Chromium.</translation>
-<translation id="7389750180956889333">Chromium лучше определяет формы и быстрее их заполняет. Подробнее <ph name="BEGIN_LINK" />об автозаполнении Chrome<ph name="END_LINK" />…</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>
 <translation id="7450541714075000668">Текст скопирован.</translation>
 <translation id="7451052299415159299">Для этого сайта Chromium запрашивает доступ к камере.</translation>

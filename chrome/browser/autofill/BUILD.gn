@@ -52,7 +52,6 @@ static_library("autofill") {
     "//chrome/browser/profiles:profile",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
-    "//components/autofill_ai/core/browser:features",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager:identity_manager",

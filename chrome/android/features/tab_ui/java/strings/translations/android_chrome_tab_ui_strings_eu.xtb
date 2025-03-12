@@ -66,6 +66,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> fitxa taldearen ikonoaren kolorea</translation>
 <translation id="311432875115153175">Itxi da fitxa taldeen zerrenda</translation>
 <translation id="3194464645767632461">balorazioa</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Gehitu fitxa <ph name="TABS_COUNT_ONE" /> taldean}other{Gehitu <ph name="TABS_COUNT_MANY" /> fitxa taldean}}</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" /> kontuan saioa hasita daukaten gailuetan ezabatuko da taldea</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fitxa berri}other{<ph name="MANY_ADDED" /> fitxa berri}}</translation>
@@ -98,6 +99,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="4783638485675352219">Partekatu gailu honetan irekita dauden fitxen izenak eta URLak sistema eragilearekin</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> iritzi)}other{(<ph name="REVIEWS_COUNT_MANY" /> iritzi)}}</translation>
 <translation id="4850886885716139402">Ikusi</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Gehitu hautatutako fitxa <ph name="TABS_COUNT_ONE" /> taldean}other{Gehitu hautatutako fitxa <ph name="TABS_COUNT_MANY" /> taldean}}</translation>
 <translation id="4861611890274104875">Baztertu txartela.</translation>
 <translation id="4861953997778766866">Guztiek egin ditzakete aldaketak zure fitxa talde partekatuetan</translation>
 <translation id="4870911314065352661">Fitxa guztiak itxi nahi dituzu?</translation>
@@ -134,6 +136,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
 <translation id="6271513594716432922">Itxi fitxa inaktibo guztiak</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
 <translation id="6333260925957816943">Denda honi buruzko informazioa</translation>
 <translation id="6381032505162537930">Hemen aurkituko dituzu fitxa taldeak</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desegin hautatutako <ph name="TABS_COUNT_ONE" /> fitxaren taldea}other{Desegin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen taldea}}</translation>
@@ -186,6 +189,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="799469866974412355">Beste gailuko talde berria</translation>
 <translation id="8029301326595421733">Denda honi buruzko informazioa altuera osoan irekita dago</translation>
 <translation id="8053770993984522566">Fitxa taldeen zerrenda, altuera erdian irekita dago</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Zabaldu <ph name="TABS_COUNT_ONE" /> fitxa duen <ph name="TITLE_OF_GROUP" /> fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>
 <translation id="8205266828577616993">Eraman fitxa gora</translation>

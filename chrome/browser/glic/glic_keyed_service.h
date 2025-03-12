@@ -161,6 +161,11 @@ class GlicKeyedService : public KeyedService {
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
+  const base::flat_set<raw_ptr<GlicPageHandler>>& GetPageHandlersForTesting()
+      const {
+    return page_handlers_;
+  }
+
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
 

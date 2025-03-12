@@ -49,8 +49,8 @@ constexpr int kFirstChipOffsetX =
 void SetupChip(views::LabelButton* chip, bool first) {
   chip->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   chip->SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedRoundedRectBorder(1, kChipHeight,
-                                           cros_tokens::kCrosSysSeparator),
+      views::CreateRoundedRectBorder(1, kChipHeight,
+                                     cros_tokens::kCrosSysSeparator),
       kChipInsets));
   // Add a border to space out chips on all chips but the first.
   chip->SetProperty(views::kMarginsKey,

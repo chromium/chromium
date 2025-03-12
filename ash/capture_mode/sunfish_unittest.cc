@@ -496,7 +496,8 @@ TEST_F(SunfishTest, AccelEntryPointMetrics) {
 
 // Tests that the accelerator entry point is a no-op when the enabled pref is
 // false.
-TEST_F(SunfishTest, AccelEntryPointIsNoopIfEnabledPrefIsFalse) {
+TEST_F(SunfishEnabledScannerDisabledTest,
+       AccelEntryPointIsNoopIfEnabledPrefIsFalse) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kSunfishEnabled, false);
 
@@ -1791,7 +1792,8 @@ TEST_F(SunfishTest, FeedbackButtonShownInDefaultMode) {
 
 // Tests that the feedback button is hidden in default capture mode if the
 // enabled pref is false.
-TEST_F(SunfishTest, FeedbackButtonNotShownInDefaultModeIfEnabledPrefIsFalse) {
+TEST_F(SunfishEnabledScannerDisabledTest,
+       FeedbackButtonNotShownInDefaultModeIfEnabledPrefIsFalse) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -2680,7 +2682,7 @@ TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
 }
 
 // Should not show scanner disclaimer since scanner is not enabled.
-TEST_F(SunfishTest, DoesNotShowScannerDisclaimer) {
+TEST_F(SunfishEnabledScannerDisabledTest, DoesNotShowScannerDisclaimer) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       kSunfishConsentDisclaimerAccepted, false);
 

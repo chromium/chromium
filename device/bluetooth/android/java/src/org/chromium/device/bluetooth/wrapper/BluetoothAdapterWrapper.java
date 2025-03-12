@@ -160,8 +160,11 @@ public class BluetoothAdapterWrapper {
         return mHasBluetoothFeature;
     }
 
-    public Set<BluetoothDeviceWrapper> getBondedDevices() {
+    public @Nullable Set<BluetoothDeviceWrapper> getBondedDevices() {
         Set<BluetoothDevice> bondedDevices = mAdapter.getBondedDevices();
+        if (bondedDevices == null) {
+            return null;
+        }
 
         ArraySet<BluetoothDeviceWrapper> set = new ArraySet<>(bondedDevices.size());
         for (BluetoothDevice device : bondedDevices) {
@@ -169,10 +172,5 @@ public class BluetoothAdapterWrapper {
         }
 
         return set;
-    }
-
-    public DeviceBondStateReceiverWrapper createDeviceBondStateReceiver(
-            DeviceBondStateReceiverWrapper.Callback callback) {
-        return new DeviceBondStateReceiverWrapper(callback);
     }
 }

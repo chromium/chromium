@@ -110,6 +110,32 @@ static std::string MakeRandomPath(std::string_view suffix) {
   return "/" + MakeRandomHexString(12) + std::string(suffix);
 }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+std::vector<std::string> ParseNetLogCertificatesList(
+    const base::Value::List& list) {
+  std::vector<std::string> result;
+  for (const auto& pem_value : list) {
+    if (!pem_value.is_string()) {
+      result.push_back("Value is not a string");
+      continue;
+    }
+    CertificateList certs = X509Certificate::CreateCertificateListFromBytes(
+        base::as_byte_span(pem_value.GetString()),
+        X509Certificate::Format::FORMAT_PEM_CERT_SEQUENCE);
+    if (certs.empty()) {
+      result.push_back("error decoding pem");
+      continue;
+    }
+    if (certs.size() > 1) {
+      result.push_back("multiple certs in pem");
+      continue;
+    }
+    result.emplace_back(base::as_string_view(certs[0]->cert_span()));
+  }
+  return result;
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
 int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          scoped_refptr<X509Certificate> cert,
                          const std::string& hostname,
@@ -1887,7 +1913,7 @@ class CertVerifyProcBuiltin1QwacTest
 };
 
 TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresEutl) {
-  // TODO(crbug.com/392931068): test netlogs, histograms
+  // TODO(crbug.com/392931068): test histograms
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   // intermediate->SetCertificatePolicies({"2.5.29.32.0"}); // anyPolicy
 
@@ -2054,6 +2080,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacCanBuildAlternatePath) {
       intermediate->GetSubjectKeyIdentifier());
   AddMockEutlRoot(eutl_intermediate.GetCertBuffer());
 
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -2072,7 +2099,86 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacCanBuildAlternatePath) {
             verify_result.verified_cert->intermediate_buffers()[0].get());
   EXPECT_EQ(root->GetCertBuffer(),
             verify_result.verified_cert->intermediate_buffers()[1].get());
-  // TODO(crbug.com/392931068): test that the eutl chain was netlogged
+
+  auto events = net_log_observer.GetEntriesForSource(verify_net_log_source);
+
+  auto event = std::ranges::find(
+      events, NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
+      &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+  EXPECT_EQ(std::nullopt, event->params.FindBool("is_qwac_attempt"));
+
+  event = std::ranges::find(++event, events.end(),
+                            NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                            &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+
+  event = std::ranges::find(++event, events.end(),
+                            NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                            &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
+  EXPECT_EQ(true, event->params.FindBool("is_valid"));
+  base::Value::List* pem_certs = event->params.FindList("certificates");
+  ASSERT_TRUE(pem_certs);
+  // The CERT_VERIFY_PROC_PATH_BUILT netlog for the main verification should
+  // contain the TLS cert chain.
+  EXPECT_THAT(ParseNetLogCertificatesList(*pem_certs),
+              testing::ElementsAre(leaf->GetDER(), intermediate->GetDER(),
+                                   root->GetDER()));
+
+  event = std::ranges::find(
+      ++event, events.end(),
+      NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
+  EXPECT_EQ(true, event->params.FindBool("has_valid_path"));
+
+  event = std::ranges::find(
+      ++event, events.end(),
+      NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, &NetLogEntry::type);
+  if (!GetParam()) {
+    // If the feature flag wasn't enabled, there should only be one
+    // CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT.
+    ASSERT_EQ(event, events.end());
+    return;
+  }
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+  EXPECT_EQ(true, event->params.FindBool("is_qwac_attempt"));
+
+  event = std::ranges::find(++event, events.end(),
+                            NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                            &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+
+  event = std::ranges::find(++event, events.end(),
+                            NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                            &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
+  EXPECT_EQ(true, event->params.FindBool("is_valid"));
+  pem_certs = event->params.FindList("certificates");
+  ASSERT_TRUE(pem_certs);
+  // The CERT_VERIFY_PROC_PATH_BUILT netlog for the 1-QWAC verification should
+  // contain the QWAC cert chain.
+  EXPECT_THAT(ParseNetLogCertificatesList(*pem_certs),
+              testing::ElementsAre(leaf->GetDER(), eutl_intermediate.GetDER()));
+
+  event = std::ranges::find(
+      ++event, events.end(),
+      NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
+  EXPECT_EQ(true, event->params.FindBool("has_valid_path"));
+
+  event = std::ranges::find(
+      ++event, events.end(),
+      NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, &NetLogEntry::type);
+  ASSERT_EQ(event, events.end());
 }
 
 INSTANTIATE_TEST_SUITE_P(, CertVerifyProcBuiltin1QwacTest, testing::Bool());

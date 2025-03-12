@@ -232,7 +232,7 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
 const SimpleFontData* FontFallbackIterator::FallbackPriorityFont(UChar32 hint) {
   const SimpleFontData* font_data = FontCache::Get().FallbackFontForCharacter(
       font_description_, hint,
-      font_fallback_list_->PrimarySimpleFontData(font_description_),
+      font_fallback_list_->PrimarySimpleFontDataWithSpace(font_description_),
       font_fallback_priority_);
 
   return font_data;
@@ -276,7 +276,7 @@ const SimpleFontData* FontFallbackIterator::UniqueSystemFontForHintList(
 
   const SimpleFontData* font_data = font_cache.FallbackFontForCharacter(
       font_description_, hint,
-      font_fallback_list_->PrimarySimpleFontData(font_description_));
+      font_fallback_list_->PrimarySimpleFontDataWithSpace(font_description_));
 
   return font_data;
 }

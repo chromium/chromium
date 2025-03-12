@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Të dhënat ekzistuese të shfletimit do të lidhen me <ph name="USER_EMAIL" />. Këto të dhëna mund të shikohen nga organizata jote.</translation>
 <translation id="1713777106376424209">Dorëzuar nga</translation>
 <translation id="1715515772563243997">Nëse ke besim te <ph name="SITE" />, mund të përdorësh një fjalëkalim të ruajtur për t'u identifikuar.</translation>
+<translation id="1718835860248848330">Ora e fundit</translation>
 <translation id="1728549374069268714">Ngjit dhe vazhdo</translation>
 <translation id="1732468323901456775">Aktivizo njoftimet për "<ph name="MODULE_NAME" />"</translation>
 <translation id="1740468249224277719">Trokit dy herë për ta instaluar.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Zbulimi i adresës është joaktiv. Riaktivizoje atë te "Cilësimet".</translation>
 <translation id="1904580727789512086">URL-të që viziton ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
-<translation id="1923342640370224680">Ora e fundit</translation>
 <translation id="1941314575388338491">Trokit dy herë për të kopjuar.</translation>
 <translation id="1943478190258551035">Menyja → Cilësimet</translation>
 <translation id="1952728750904661634">Identifikohu me llogari të menaxhuar</translation>
@@ -1206,6 +1206,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6187302354554850004">Sinkronizimi i fundit: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Krijuar më <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Të palexuara</translation>
+<translation id="6192388920090306326">Udhëtim në Tokio</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6196207969502475924">Kërkimi me zë</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
@@ -1370,6 +1371,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6779455296366983087">Të dhënat e tua të shfletimit do të fshihen</translation>
 <translation id="6790502149545262384">Së shpejti do të shikosh histori nga <ph name="CHANNEL_NAME" /> kur të hapësh një skedë të re.</translation>
 <translation id="6794476726485507147">Zgjidh një datë dhe orë për të marrë një njoftim rikujtues për të rivizituar këtë faqe</translation>
+<translation id="6807287147325542056">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="6825078212112407882">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{{count} faqeshënues u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="6830728435402077660">Jo e sigurt</translation>
@@ -1934,6 +1936,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9106655997975673326">Nga "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Kontrollo për fjalëkalime të komprometuara</translation>
 <translation id="9124387962554796433">Google mund ta përdorë historikun tënd për të personalizuar "Kërko" dhe shërbime të tjera të Google.</translation>
+<translation id="9124978074365039456">Bli, përkthe dhe identifiko ato që shikon duke përdorur kamerën dhe galerinë e fotografive</translation>
 <translation id="9130317582644834675">Fshih "Zmadho tekstin"</translation>
 <translation id="913036870884277353">Hap me lehtësi lidhjet në aplikacione të tjera.</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>

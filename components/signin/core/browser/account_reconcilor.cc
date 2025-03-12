@@ -370,9 +370,8 @@ void AccountReconcilor::OnPrimaryAccountChanged(
   // Perform the "clear on exit" migration if applicable.
   MaybeMigrateClearOnExit(*client_, *identity_manager_);
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      event_details.GetEventTypeFor(ConsentLevel::kSignin) ==
-          signin::PrimaryAccountChangeEvent::Type::kCleared) {
+  if (event_details.GetEventTypeFor(ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
     VLOG(1) << "AccountReconcilor::OnPrimaryAccountChanged";
     StartReconcile(Trigger::kPrimaryAccountChanged);
   }

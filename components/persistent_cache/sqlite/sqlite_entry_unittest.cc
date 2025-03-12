@@ -10,7 +10,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 constexpr char kContent[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 }  // namespace
 
 namespace persistent_cache {

@@ -377,7 +377,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1244265436519979884">Probíhá obnovování kontejneru systému Linux</translation>
 <translation id="1244303850296295656">Chyba rozšíření</translation>
 <translation id="1244917379075403655">Klikněte na Nastavení</translation>
-<translation id="1245041875932187638">Vymazání všech dat používaných k automatickému vyplňování s AI</translation>
 <translation id="1245331638296910488">Soubory, které otevřete v sadě Microsoft 365, se přesunou do úložiště OneDrive</translation>
 <translation id="1245628370644070008">Místní obnovení dat</translation>
 <translation id="1246863218384630739">Položku <ph name="VM_NAME" /> se nepodařilo nainstalovat: adresa URL obrazu vrátila kód chyby <ph name="HTTP_ERROR" />. Obraťte se na administrátora.</translation>
@@ -1409,7 +1408,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Příprava</translation>
 <translation id="1969654639948595766">Textové protokoly WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Všechna data se vymažou. Akci nelze vrátit zpět.</translation>
 <translation id="1972313920920745320">Weby, které přidáte, zůstanou vždy aktivní a neuvolní se z nich paměť. <ph name="BEGIN_LINK" />Další informace o tom, jak určité weby zachovat aktivní<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
 <translation id="197288927597451399">Uložit</translation>
@@ -2292,6 +2290,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="256517381556987641">Synchronizace souborů zatím nalezla <ph name="ITEMS_FOUND" /> souborů a stále kontroluje úložný prostor. Zkuste za několik minut zapnout znovu.</translation>
 <translation id="2565214867520763227">Zapnutí čtečky obrazovky</translation>
 <translation id="2566146433999774844">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> dalšími</translation>
+<translation id="256726287944589768">Zobrazovat na stránce Nová karta zápatí</translation>
 <translation id="2568694057933302218">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="2568774940984945469">Kontejner informačního panelu</translation>
 <translation id="2569972178052279830">Název prodejce</translation>
@@ -2800,6 +2799,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2921081876747860777">Ochraňte svá místní data pomocí hesla.</translation>
 <translation id="2923006468155067296">Vaše zařízení <ph name="DEVICE_TYPE" /> se teď uzamkne.
 <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}few{<ph name="TASK_ROW" />. Další <ph name="OTHER_TASK_NUM" /> úlohy ve stejné skupině: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Dalších <ph name="OTHER_TASK_NUM" /> úlohy ve stejné skupině: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Dalších <ph name="OTHER_TASK_NUM" /> úloh ve stejné skupině: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Odebrat tento účet</translation>
 <translation id="2923644930701689793">Přístup k albu fotoaparátu telefonu</translation>
 <translation id="292371311537977079">Nastavení Chromu</translation>
@@ -3057,7 +3057,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3108957152224931571">Barva zvýraznění</translation>
 <translation id="3109206895301430738">Uložené skupiny karet</translation>
 <translation id="3109724472072898302">Sbaleno</translation>
-<translation id="310979712355504754">Smazat vše</translation>
 <translation id="3112292765614504292">Velikost aplikace: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Přidal(a) tuto kartu</translation>
 <translation id="311394601889664316">Nepovolovat webům upravovat soubory a složky v zařízení</translation>
@@ -4075,7 +4074,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozšíření bylo schváleno}few{# rozšíření byla schválena}many{# rozšíření bylo schváleno}other{# rozšíření bylo schváleno}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Pro Linux je doporučeno alespoň <ph name="INSTALL_SIZE" /> místa.</translation>
-<translation id="3824203811509979971">Nechte si shrnout obsah nebo se ptejte</translation>
 <translation id="3824621460022590830">Token registrace zařízení není platný. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Pokud chcete zobrazit karty z jiných zařízení, přihlaste se</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamatovat moji volbu pro tento typ souboru: <ph name="FILE_TYPES" />}few{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}many{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}other{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}}</translation>
@@ -5888,7 +5886,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="512642543295077915">hledat + backspace</translation>
 <translation id="5126611267288187364">Zobrazit změny</translation>
 <translation id="5127620150973591153">ID bezpečného připojení: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Nechte si shrnout obsah nebo se ptejte.</translation>
 <translation id="5127881134400491887">Správa síťových připojení</translation>
 <translation id="5127934926273826089">Květiny</translation>
 <translation id="5127986747308934633">Vaše zařízení ovládá administrátor</translation>
@@ -7435,7 +7432,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6254892857036829079">Perfektní</translation>
 <translation id="6257131917452817589">automatické změně hesla</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Tato síť bude preferována, pokud bude k dispozici více než jedna dříve připojená nebo nakonfigurovaná síť</translation>
 <translation id="6259776178973198997">Obnovit informace o vlastnících WiFi Direct</translation>
 <translation id="6262371516389954471">Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
@@ -9870,6 +9866,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7990863024647916394">Hlas <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automaticky přenést Wi-Fi z telefonu Android</translation>
 <translation id="7991296728590311172">Nastavení přístupu pomocí přepínačů</translation>
+<translation id="7992080146463834191">Shrne obsah, zjednoduší složitý text a odpoví na otázky</translation>
 <translation id="7992203134935383159">Syntéza řeči</translation>
 <translation id="7997826902155442747">Priorita procesu</translation>
 <translation id="7997828719430450286">Úspěch.</translation>
@@ -11136,6 +11133,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8874448314264883207">Rozšíření <ph name="EXTENSION_NAME" /> bylo vypnuto</translation>
 <translation id="8874647982044395866">Organické</translation>
 <translation id="8874790741333031443">Zkuste dočasně povolit soubory cookie třetích stran – budete při procházení méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat správně.</translation>
+<translation id="8875221558267407626">Shrne obsah, zjednoduší složitý text a odpoví na otázky</translation>
 <translation id="8875520811099717934">Upgradovat Linux</translation>
 <translation id="8875736897340638404">Vyberte svou viditelnost</translation>
 <translation id="8876307312329369159">Toto nastavení v ukázkové relaci nelze změnit.</translation>

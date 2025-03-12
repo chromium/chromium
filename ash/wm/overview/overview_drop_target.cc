@@ -41,7 +41,7 @@ class OverviewDropTargetView : public views::View {
     background_view_->SetBackground(views::CreateRoundedRectBackground(
         kColorAshShieldAndBase20, corner_radius));
 
-    SetBorder(views::CreateThemedRoundedRectBorder(
+    SetBorder(views::CreateRoundedRectBorder(
         kDropTargetBorderThickness, corner_radius,
         cros_tokens::kCrosSysSystemBaseElevated));
   }

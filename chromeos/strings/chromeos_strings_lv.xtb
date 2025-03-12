@@ -128,6 +128,9 @@
 <translation id="1526389707933164996">Ekrānsaudzētāja animācija</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
 <translation id="1539864135338521185">lazurīts</translation>
+<translation id="1548555207631326346">Izvēlieties tēmu un pēc tam atlasiet pasvītrotos vārdus, lai personalizētu savus MI attēlus.<ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Atlasiet opciju “Iedvesmot mani”, lai iegūtu unikālākas un daudzveidīgākas MI attēlu iespējas.
+          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ja izveidei izmantojat MI, uzvedne tiek nosūtīta Google MI serveriem, lai ģenerētu attēlus un uzlabotu produktu, ievērojot <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ģeneratīvais MI ir eksperimentāls, tas ir agrīnā izstrādes stadijā, un pašlaik tam ir ierobežota pieejamība.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
 <translation id="1561927818299383735">aizmugures apgaismojuma krāsa</translation>
@@ -1553,6 +1556,10 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8183975772394450380">pludmale</translation>
 <translation id="819278132617411009">Izmantojiet Google MI, lai strādātu produktīvāk</translation>
+<translation id="82003371436638355">Atlasot opciju “Izveidot savu”, varat rakstīt pielāgotu uzvedni. Varat arī atlasīt opciju “Izvēlēties motīvu” un pēc tam atlasīt pasvītrotos vārdus, lai personalizētu MI tapeti.
+          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Atlasiet opciju “Iedvesmot mani”, lai iegūtu unikālākas un daudzveidīgākas MI attēlu iespējas.
+          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Kad izveidojat savu fona tapeti, uzvedne tiek nosūtīta Google serveriem, lai ģenerētu attēlus un uzlabotu produktu, ievērojot <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google pakalpojumu sniegšanas noteikumus un konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.
+          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ģeneratīvais MI var pieļaut kļūdas, tostarp par personām, tāpēc pārbaudiet tā atbildes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Uzziniet vairāk<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
@@ -1574,6 +1581,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8312330582793120272">atskaņot multivides saturu</translation>
 <translation id="8318753676953949627">Nav attēlu</translation>
 <translation id="8320910311642849813">mežs</translation>
+<translation id="8322464149031882595">Noklikšķiniet, lai pārietu uz priekšu</translation>
 <translation id="8329018942023753850">lietotne Kalkulators</translation>
 <translation id="8336739000755212683">Mainīt ierīces konta attēlu</translation>
 <translation id="8339024191194156249">Uzzināt vairāk par automātisko palaišanu</translation>
@@ -1720,6 +1728,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8961025972867871808">pingvīni</translation>
 <translation id="8968751544471797276">Uzlādes ātrums</translation>
 <translation id="8970109610781093811">Izpildīt vēlreiz</translation>
+<translation id="8972061581514441296">Noklikšķiniet, lai pārietu atpakaļ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenēt}=1{Skenēt {NUMBER_OF_PAGES}. lapu}zero{Skenēt {NUMBER_OF_PAGES}. lapu}one{Skenēt {NUMBER_OF_PAGES}. lapu}other{Skenēt {NUMBER_OF_PAGES}. lapu}}</translation>
 <translation id="89945434909472341">ciems</translation>

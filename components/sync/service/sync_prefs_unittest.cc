@@ -15,6 +15,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -41,10 +42,9 @@ using ::testing::StrictMock;
 constexpr char kObsoleteAutofillWalletImportEnabled[] =
     "autofill.wallet_import_enabled";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr GaiaId::Literal kGaiaId("gaia-id");
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
@@ -541,7 +541,6 @@ class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin,
                               switches::kSyncEnableBookmarksInTransportMode,
-                              switches::kExplicitBrowserSigninUIOnDesktop,
                               kSeparateLocalAndAccountSearchEngines,
                               switches::kEnablePreferencesAccountStorage,
                               syncer::kSeparateLocalAndAccountThemes,
@@ -872,7 +871,6 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
             switches::kSyncEnableBookmarksInTransportMode,
             kReadingListEnableSyncTransportModeUponSignIn,
-            switches::kExplicitBrowserSigninUIOnDesktop,
             kSeparateLocalAndAccountSearchEngines,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
             switches::kEnablePreferencesAccountStorage},
@@ -982,11 +980,9 @@ TEST_F(SyncPrefsMigrationTest,
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SyncPrefsMigrationTest,
        DoNotMigratePasswordsToPerAccountPrefIfLastGaiaIdMissing) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   ASSERT_EQ(pref_service_.GetString(::prefs::kGoogleServicesLastSyncingGaiaId),
             std::string());
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
@@ -1004,8 +1000,6 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        DoNotMigratePasswordsToPerAccountPrefIfSyncEverythingEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
                           kGaiaId.ToString());
   ASSERT_TRUE(
@@ -1024,8 +1018,6 @@ TEST_F(SyncPrefsMigrationTest,
 
 TEST_F(SyncPrefsMigrationTest,
        DoNotMigratePasswordsToPerAccountPrefIfPasswordsEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
                           kGaiaId.ToString());
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
@@ -1041,29 +1033,7 @@ TEST_F(SyncPrefsMigrationTest,
                   .Has(UserSelectableType::kPasswords));
 }
 
-TEST_F(SyncPrefsMigrationTest,
-       DoNotMigratePasswordsToPerAccountPrefIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kExplicitBrowserSigninUIOnDesktop);
-  pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
-                          kGaiaId.ToString());
-  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-  ASSERT_FALSE(pref_service_.GetBoolean(kGlobalPasswordsPref));
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  EXPECT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-}
-
 TEST_F(SyncPrefsMigrationTest, MigratePasswordsToPerAccountPrefRunsOnce) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
                           kGaiaId.ToString());
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
@@ -1091,8 +1061,6 @@ TEST_F(SyncPrefsMigrationTest, MigratePasswordsToPerAccountPrefRunsOnce) {
 }
 
 TEST_F(SyncPrefsMigrationTest, MigrateAddressesToPerAccountPref) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
                           kGaiaId.ToString());
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
@@ -1107,7 +1075,7 @@ TEST_F(SyncPrefsMigrationTest, MigrateAddressesToPerAccountPref) {
                    .GetSelectedTypesForAccount(kGaiaId)
                    .Has(UserSelectableType::kAutofill));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   SyncPrefs prefs(&pref_service_);

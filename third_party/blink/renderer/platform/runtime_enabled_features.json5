@@ -434,6 +434,7 @@
     {
       name: "AriaNotify",
       status: "test",
+      implied_by: ["AriaNotifyV2"],
     },
     {
       name: "AriaNotifyV2",
@@ -2355,6 +2356,8 @@
     {
       name: "HTMLInterestTargetAttribute",
       status: "experimental",
+      base_feature: "none",
+      public: true,
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
     },
     {
@@ -3940,6 +3943,11 @@
       // See https://crbug.com/40622041
       // This feature was shipped in M133, so this flag can be removed in M135.
       name: "SelectionOnShadowDOMWithDelegatesFocus",
+      status: "stable",
+    },
+    {
+      // Killswitch M136.
+      name: "SelectionVisibilityAfterPaint",
       status: "stable",
     },
     {

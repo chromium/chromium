@@ -120,7 +120,7 @@ void DeskIconButton::UpdateState(State state) {
   // the new `state_`.
   if (background()) {
     SetBackground(views::CreateRoundedRectBackground(
-        background()->get_color(), GetCornerRadiusOnState(state_)));
+        background()->color(), GetCornerRadiusOnState(state_)));
   }
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),

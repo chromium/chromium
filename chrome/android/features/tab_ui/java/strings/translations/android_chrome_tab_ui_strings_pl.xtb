@@ -66,6 +66,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona koloru grupy kart</translation>
 <translation id="311432875115153175">Lista grup kart zamknięta</translation>
 <translation id="3194464645767632461">ocena</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> kartę do grupy}few{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}many{Dodaj <ph name="TABS_COUNT_MANY" /> kart do grupy}other{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}}</translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="3547352561153509682">Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nowa karta}few{<ph name="MANY_ADDED" /> nowe karty}many{<ph name="MANY_ADDED" /> nowych kart}other{<ph name="MANY_ADDED" /> nowej karty}}</translation>
@@ -98,6 +99,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="4783638485675352219">Udostępniaj systemowi operacyjnemu tytuły i adresy URL otwartych kart z tego urządzenia</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinia)}few{(<ph name="REVIEWS_COUNT_MANY" /> opinie)}many{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}other{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}}</translation>
 <translation id="4850886885716139402">Widok</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> wybraną kartę do grupy}few{Dodaj <ph name="TABS_COUNT_MANY" /> wybrane karty do grupy}many{Dodaj <ph name="TABS_COUNT_MANY" /> wybranych kart do grupy}other{Dodaj <ph name="TABS_COUNT_MANY" /> wybranej karty do grupy}}</translation>
 <translation id="4861611890274104875">Zamknij kartę.</translation>
 <translation id="4861953997778766866">Każdy może wprowadzać zmiany w udostępnionych grupach kart</translation>
 <translation id="4870911314065352661">Zamknąć wszystkie karty?</translation>
@@ -134,6 +136,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6271513594716432922">Zamknij wszystkie nieaktywne karty</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj kartę do nowej grupy}few{Dodaj karty do nowej grupy}many{Dodaj karty do nowej grupy}other{Dodaj karty do nowej grupy}}</translation>
 <translation id="6333260925957816943">Informacje o tym sklepie</translation>
 <translation id="6381032505162537930">Tutaj znajdziesz grupy kart</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Rozgrupuj <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
@@ -186,6 +189,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="799469866974412355">Nowa grupa z innego urządzenia</translation>
 <translation id="8029301326595421733">Informacje o tym sklepie zostały otwarte na pełną wysokość</translation>
 <translation id="8053770993984522566">Lista grup kart otwarta do połowy wysokości</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Przesuń kartę w górę</translation>

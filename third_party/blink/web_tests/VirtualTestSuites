@@ -513,15 +513,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "hsts-top-level-navigations-only",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/security/only-top-level-navigation-hsts-upgrade.php"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=HstsTopLevelNavigationsOnly"],
-    "expires": "Feb 12, 2026",
-    "owners": ["bingler@chromium.org"]
-  },
-  {
     "prefix": "speech-with-unified-autoplay",
     "owners": ["media-dev@chromium.org", "evliu@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
@@ -1411,26 +1402,6 @@
       "--disable-features=FledgeSampleDebugReports"
     ],
     "expires": "Jul 14, 2025"
-  },
-  {
-    "prefix": "fledge-devtools-with-key-value-v2",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "owners": [
-      "mmenke@chromium.org",
-      "morlovich@chromium.org",
-      "pauljensen@chromium.org"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/network/auction-network-events-handler.js"
-    ],
-    "args": [
-      "--enable-features=FledgeTrustedSignalsKVv2Support,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fa.test%22%3A%22https%3A%2F%2Fa.test%3A8443%2Finspector-protocol%2Fresources%2Fba-public-keys\"}"
-    ],
-    "expires": "July 1, 2025"
   },
   {
     "prefix": "low-priority-async-script-execution",

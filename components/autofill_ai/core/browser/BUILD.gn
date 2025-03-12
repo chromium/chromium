@@ -4,19 +4,6 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-static_library("features") {
-  sources = [
-    "autofill_ai_features.cc",
-    "autofill_ai_features.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/optimization_guide/core",
-    "//components/prefs",
-  ]
-}
-
 if (is_win || is_mac || is_linux || is_chromeos) {
   static_library("browser") {
     sources = [
@@ -32,15 +19,11 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "suggestion/autofill_ai_suggestions.h",
     ]
 
-    public_deps = [ ":features" ]
-
     deps = [
       "//base",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
-      "//components/optimization_guide/core",
-      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/strings",
       "//ui/native_theme:native_theme",
     ]
@@ -65,7 +48,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "autofill_ai_features_unittest.cc",
       "autofill_ai_logger_unittest.cc",
       "autofill_ai_manager_unittest.cc",
       "suggestion/autofill_ai_suggestions_unittest.cc",
@@ -77,9 +59,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//base/test:test_support",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
-      "//components/optimization_guide/core",
-      "//components/optimization_guide/core:test_support",
-      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/prefs:test_support",
       "//testing/gmock",
       "//testing/gtest",

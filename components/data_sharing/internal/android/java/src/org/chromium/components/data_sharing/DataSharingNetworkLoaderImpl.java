@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -17,9 +18,9 @@ import org.chromium.url.GURL;
  * calls are delegated to the native C++ class.
  */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingNetworkLoaderImpl implements DataSharingNetworkLoader {
     private long mNativePtr;
-
 
     @CalledByNative
     private static DataSharingNetworkLoaderImpl create(long nativePtr) {

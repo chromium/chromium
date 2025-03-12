@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -1932,6 +1933,44 @@ TEST_F(TileManagerTest, AllWorkFinished) {
     host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
     run_loop.Run();
   }
+}
+
+// Same test as `AllWorkFinished` above, but with kFastPathNoRaster enabled.
+TEST_F(TileManagerTest, FastPathWhenNoRasterWork) {
+  base::test::ScopedFeatureList feature_list{features::kFastPathNoRaster};
+  base::HistogramTester histogram_tester;
+
+  host_impl()->tile_manager()->DisbleMetricsSubsamplingForTesting();
+
+  // Check with no tile work enqueued.
+  {
+    base::RunLoop run_loop;
+    EXPECT_FALSE(
+        host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    EXPECT_CALL(MockHostImpl(), NotifyReadyToDraw());
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    EXPECT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    run_loop.Run();
+  }
+
+  // Check that the "schedule more work" path also triggers the expected
+  // callback.
+  {
+    base::RunLoop run_loop;
+    EXPECT_FALSE(
+        host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    EXPECT_CALL(MockHostImpl(), NotifyReadyToDraw());
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    host_impl()->tile_manager()->SetMoreTilesNeedToBeRasterizedForTesting();
+    EXPECT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+    run_loop.Run();
+  }
+  histogram_tester.ExpectTotalCount(
+      "Compositing.TileManager.RasterTasksDuration", 2u);
 }
 
 TEST_F(TileManagerTest, ActivateAndDrawWhenOOM) {

@@ -66,6 +66,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="3078350928901129212">Pictograma de culoare pentru grupul de file <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Lista de grupuri de file a fost închisă</translation>
 <translation id="3194464645767632461">evaluare</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă în grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file în grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file în grup}}</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="3547352561153509682">Astfel, grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă nouă}few{<ph name="MANY_ADDED" /> file noi}other{<ph name="MANY_ADDED" /> de file noi}}</translation>
@@ -98,6 +99,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="4783638485675352219">Permite accesul sistemului de operare la titlurile și adresele URL ale filelor deschise de pe acest dispozitiv</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
 <translation id="4850886885716139402">Afișează</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă selectată în grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file selectate în grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file selectate în grup}}</translation>
 <translation id="4861611890274104875">Închide cardul.</translation>
 <translation id="4861953997778766866">Oricine poate să facă modificări în grupurile de file la care se permite accesul</translation>
 <translation id="4870911314065352661">Închizi toate filele?</translation>
@@ -134,6 +136,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6271513594716432922">Închide toate filele inactive</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
 <translation id="6333260925957816943">Informații despre magazin</translation>
 <translation id="6381032505162537930">Aici vei vedea grupurile de file</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
@@ -186,6 +189,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="799469866974412355">Grup nou de pe celălalt dispozitiv</translation>
 <translation id="8029301326595421733">Informațiile despre magazin deschise la înălțimea completă</translation>
 <translation id="8053770993984522566">Lista de grupuri de file, deschisă la jumătate din înălțime</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Adaugă fila în grup}few{Adaugă filele în grup}other{Adaugă filele în grup}}</translation>
 <translation id="8076492880354921740">File</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Mută fila mai sus</translation>

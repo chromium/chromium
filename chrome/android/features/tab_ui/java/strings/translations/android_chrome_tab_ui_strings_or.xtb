@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ଟାବ ଗ୍ରୁପ ରଙ୍ଗ ଆଇକନ</translation>
 <translation id="311432875115153175">ଟାବ ଗ୍ରୁପ ତାଲିକା ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="3194464645767632461">ରେଟିଂ</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{ଗ୍ରୁପରେ <ph name="TABS_COUNT_ONE" /> ଟାବ ଯୋଗ କରନ୍ତୁ}other{ଗ୍ରୁପରେ <ph name="TABS_COUNT_MANY" /> ଟାବ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="3328308545011660196">ପରାମର୍ଶ: <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଜଣାପଡ଼ୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
 <translation id="3547352561153509682">ଏହା <ph name="USER_EMAIL" />ରେ ସାଇନ ଇନ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବ</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ନୂଆ ଟାବ}other{<ph name="MANY_ADDED" /> ନୂଆ ଟାବ}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">ଅପରେଟିଂ ସିଷ୍ଟମ ସହିତ ଏହି ଡିଭାଇସରୁ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକର ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା)}other{(<ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା)}}</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{ଗ୍ରୁପରେ <ph name="TABS_COUNT_ONE" /> ଚୟନିତ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ଗ୍ରୁପରେ <ph name="TABS_COUNT_MANY" /> ଚୟନିତ ଟାବ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="4861611890274104875">କାର୍ଡକୁ ଖାରଜ କରନ୍ତୁ।</translation>
 <translation id="4861953997778766866">ଆପଣଙ୍କର ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପରେ ସମସ୍ତେ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="4870911314065352661">ସମସ୍ତ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6271513594716432922">ସମସ୍ତ ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{ନୂଆ ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ନୂଆ ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="6333260925957816943">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="6381032505162537930">ଆପଣ ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପକୁ ଏଠାରେ ପାଇବେ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସରୁ ନୂଆ ଗ୍ରୁପ</translation>
 <translation id="8029301326595421733">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="8053770993984522566">ଟାବ ଗ୍ରୁପ ତାଲିକା ଅଧା ଖୋଲାଯାଇଛ</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>

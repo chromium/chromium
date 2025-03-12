@@ -57,8 +57,11 @@ class PriceNotificationsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
   LegacyChromeTableViewController* InstantiateController() override {
-    return [[PriceNotificationsTableViewController alloc]
-        initWithStyle:UITableViewStylePlain];
+    PriceNotificationsTableViewController* viewController =
+        [[PriceNotificationsTableViewController alloc]
+            initWithStyle:UITableViewStylePlain];
+    viewController.showCurrentPage = YES;
+    return viewController;
   }
 };
 

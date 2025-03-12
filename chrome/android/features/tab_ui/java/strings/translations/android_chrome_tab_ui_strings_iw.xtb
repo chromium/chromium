@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">סמל בצבע <ph name="COLOR_NAME" /> של קבוצת הכרטיסיות</translation>
 <translation id="311432875115153175">רשימת קבוצות הכרטיסיות נסגרה</translation>
 <translation id="3194464645767632461">דירוג</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{הוספת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) לקבוצה}one{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}two{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}other{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}}</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="3547352561153509682">הפעולה הזו תמחק את הקבוצה מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{מספר הכרטיסיות החדשות: <ph name="ONE_ADDED" />}one{מספר הכרטיסיות החדשות: <ph name="MANY_ADDED" />}two{מספר הכרטיסיות החדשות: <ph name="MANY_ADDED" />}other{מספר הכרטיסיות החדשות: <ph name="MANY_ADDED" />}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">‏שיתוף הכותרות וכתובות ה-URL של הכרטיסיות הפתוחות מהמכשיר הזה עם מערכת ההפעלה</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}one{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{הוספת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה לקבוצה}one{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו לקבוצה}two{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו לקבוצה}other{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו לקבוצה}}</translation>
 <translation id="4861611890274104875">סגירת הכרטיס.</translation>
 <translation id="4861953997778766866">כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
 <translation id="4870911314065352661">לסגור את כל הכרטיסיות?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6271513594716432922">סגירה של כל הכרטיסיות הלא פעילות</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
 <translation id="6333260925957816943">מידע על החנות הזו</translation>
 <translation id="6381032505162537930">קבוצות הכרטיסיות יופיעו כאן</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ביטול הקיבוץ של הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">קבוצה חדשה מהמכשיר השני</translation>
 <translation id="8029301326595421733">המידע על החנות הזו פתוח בגובה מלא</translation>
 <translation id="8053770993984522566">רשימת קבוצות הכרטיסיות, שנפתחה בחצי מגובה המסך</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>

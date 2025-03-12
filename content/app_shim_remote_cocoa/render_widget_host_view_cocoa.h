@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_set.h"
 #include "content/browser/renderer_host/input/mouse_wheel_rails_filter_mac.h"
-#include "content/common/content_export.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
@@ -50,7 +49,6 @@ struct DidOverscrollParams;
 // but that means that the view needs to own the delegate and will dispose of it
 // when it's removed from the view system.
 // TODO(ccameron): Hide this interface behind RenderWidgetHostNSViewBridge.
-CONTENT_EXPORT
 @interface RenderWidgetHostViewCocoa
     : ToolTipBaseView <CommandDispatcherTarget,
                        RenderWidgetHostNSViewHostOwner,

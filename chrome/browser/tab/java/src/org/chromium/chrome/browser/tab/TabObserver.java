@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -22,6 +22,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 /** An observer that is notified of changes to a {@link Tab} object. */
+@NullMarked
 public interface TabObserver {
     /**
      * Called when a {@link Tab} finished initialization. The {@link TabState} contains,

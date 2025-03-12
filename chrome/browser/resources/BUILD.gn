@@ -16,7 +16,6 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 group("resources") {
   public_deps = [
-    "data_sharing_internals:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
   ]
@@ -260,6 +259,7 @@ group("dev_ui_resources") {
     "privacy_sandbox/internals:resources",
     "usb_internals:resources",
     "//components/commerce/core/internals/resources",
+    "//components/data_sharing/data_sharing_internals/resources",
     "//components/download/resources/download_internals:resources",
     "//components/history_clusters/history_clusters_internals/resources",
     "//components/metrics/debug:resources",
@@ -325,6 +325,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/privacy_sandbox_internals_resources.pak",
     "$root_gen_dir/chrome/usb_internals_resources.pak",
     "$root_gen_dir/components/commerce_internals_resources.pak",
+    "$root_gen_dir/components/data_sharing_internals_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/history_clusters_internals_resources.pak",

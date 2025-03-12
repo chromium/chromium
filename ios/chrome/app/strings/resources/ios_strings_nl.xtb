@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Bestaande browsegegevens worden gekoppeld aan <ph name="USER_EMAIL" />. Deze gegevens kunnen zichtbaar zijn voor je organisatie.</translation>
 <translation id="1713777106376424209">Bezorgd door</translation>
 <translation id="1715515772563243997">Als je <ph name="SITE" /> vertrouwt, kun je een opgeslagen wachtwoord gebruiken om in te loggen.</translation>
+<translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1728549374069268714">Plakken en zoeken</translation>
 <translation id="1732468323901456775">Meldingen voor <ph name="MODULE_NAME" /> aanzetten</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeren.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adresdetectie uitgezet. Zet deze functie weer aan in Instellingen.</translation>
 <translation id="1904580727789512086">De URL's die je bezoekt, worden opgeslagen in je Google-account</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
-<translation id="1923342640370224680">Afgelopen uur</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
 <translation id="1943478190258551035">Menu → Instellingen</translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
@@ -1206,6 +1206,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6187302354554850004">Laatst gesynchroniseerd: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Gemaakt op <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ongelezen</translation>
+<translation id="6192388920090306326">Reis naar Tokio</translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6196207969502475924">Gesproken zoekopdrachten</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
@@ -1370,6 +1371,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6779455296366983087">Je browsegegevens worden verwijderd</translation>
 <translation id="6790502149545262384">Binnenkort zie je artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="6794476726485507147">Kies een datum en tijd waarop je een herinneringsmelding wilt krijgen om deze pagina opnieuw te bezoeken</translation>
+<translation id="6807287147325542056">Wachtwoorden in andere apps</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{{count} bookmarks opgeslagen in je Google-account {email}}}</translation>
 <translation id="6830728435402077660">Niet beveiligd</translation>
@@ -1934,6 +1936,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9106655997975673326">Van <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Checken op gehackte wachtwoorden</translation>
 <translation id="9124387962554796433">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren.</translation>
+<translation id="9124978074365039456">Winkel, vertaal en identificeer wat je ziet met je camera en fotogalerij</translation>
 <translation id="9130317582644834675">Tekst zoomen verbergen</translation>
 <translation id="913036870884277353">Open links makkelijk in andere apps.</translation>
 <translation id="9137013805542155359">Origineel bekijken</translation>

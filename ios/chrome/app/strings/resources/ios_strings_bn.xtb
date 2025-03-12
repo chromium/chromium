@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">আগে থেকে থাকা ব্রাউজ করা ডেটা <ph name="USER_EMAIL" />-এর সাথে লিঙ্ক করা হবে। আপনার সংস্থা এই ডেটা হয়ত দেখতে পাবেন।</translation>
 <translation id="1713777106376424209">ডেলিভার করছে:</translation>
 <translation id="1715515772563243997"><ph name="SITE" />-এর উপর ভরসা থাকলে, আপনি সেভ করা পাসওয়ার্ড সাইন-ইন করার জন্য ব্যবহার করতে পারেন।</translation>
+<translation id="1718835860248848330">শেষ ঘণ্টা</translation>
 <translation id="1728549374069268714">পেস্ট করে শুরু করুন</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> সংক্রান্ত বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">ঠিকানা শনাক্ত করার সুবিধা বন্ধ আছে। সেটিংস থেকে সেটি আবার চালু করুন।</translation>
 <translation id="1904580727789512086">আপনার ভিজিট করা URL আপনার Google অ্যাকাউন্টে সেভ করা হয়</translation>
 <translation id="1911619930368729126">Google ড্রাইভে আপলোড করুন</translation>
-<translation id="1923342640370224680">শেষ ঘণ্টা</translation>
 <translation id="1941314575388338491">কপি করতে দুবার আলতো চাপুন।</translation>
 <translation id="1943478190258551035">মেনু → সেটিংস</translation>
 <translation id="1952728750904661634">পরিচালিত অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
@@ -1207,6 +1207,7 @@
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> তারিখে তৈরি করা হয়েছে</translation>
 <translation id="6189413832092199491">অপঠিত</translation>
+<translation id="6192388920090306326">টোকিওতে ট্রিপ</translation>
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6196207969502475924">ভয়েস সার্চ</translation>
 <translation id="6196640612572343990">তৃতীয় পক্ষের কুকিজ অবরুদ্ধ করুন</translation>
@@ -1371,6 +1372,7 @@
 <translation id="6779455296366983087">আপনার ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="6790502149545262384">শীঘ্রই আপনি নতুন কোনও ট্যাব খুললেই, <ph name="CHANNEL_NAME" />-এর গল্প পড়তে পারবেন।</translation>
 <translation id="6794476726485507147">এই পৃষ্ঠা আবার ঘুরে দেখতে তারিখ ও সময় বেছে নিয়ে একটি রিমাইন্ডার বিজ্ঞপ্তি পান</translation>
+<translation id="6807287147325542056">অন্যান্য অ্যাপে থাকা পাসওয়ার্ড</translation>
 <translation id="681368974849482173">আইটেম তৈরি করা হয়েছে</translation>
 <translation id="6825078212112407882">{count,plural, =1{আপনার {email} Google অ্যাকাউন্টে বুকমার্ক সেভ করা হয়েছে}one{আপনার {email} Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করা হয়েছে}other{আপনার {email} Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="6830728435402077660">সুরক্ষিত নয়</translation>
@@ -1935,6 +1937,7 @@
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"-এর থেকে</translation>
 <translation id="9107664647686727385">কোনও পাসওয়ার্ড লিক হয়েছে কিনা দেখুন</translation>
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
+<translation id="9124978074365039456">আপনার ক্যামেরা ও ফটো গ্যালারি ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>
 <translation id="9130317582644834675">'টেক্সট বড় করুন' বিকল্পটি লুকান</translation>
 <translation id="913036870884277353">অন্য অ্যাপে সহজেই লিঙ্ক খুলুন।</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>

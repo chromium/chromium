@@ -874,10 +874,11 @@ Called by update_protocol_commands_enum.py.-->
 
 <enum name="DevToolsDebuggingUserDataDirStatus">
   <int value="0" label="Not being debugged"/>
-  <int value="1" label="Being debugged with a non-default user data dir"/>
-  <int value="2" label="Being debugged with a default user data dir"/>
+  <int value="1" label="Debugging requested with a non-default user data dir"/>
+  <int value="2" label="Debugging requested with a default user data dir"/>
   <int value="3"
-      label="Being debugged but was unable to determine the user data dir"/>
+      label="Debugging requested but was unable to determine the user data
+             dir"/>
 </enum>
 
 <enum name="DevToolsDeveloperResourceLoaded">

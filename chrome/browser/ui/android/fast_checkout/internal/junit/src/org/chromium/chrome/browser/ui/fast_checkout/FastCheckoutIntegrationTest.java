@@ -47,7 +47,9 @@ import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.suggestion.Icon;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -72,7 +74,8 @@ public class FastCheckoutIntegrationTest {
                             /* city= */ "New York",
                             /* postalCode= */ "12345",
                             /* email= */ "john.moe@gmail.com",
-                            /* phoneNumber= */ "+1-345-543-645"),
+                            /* phoneNumber= */ "+1-345-543-645",
+                            /* recordType */ RecordType.ACCOUNT),
                     FastCheckoutTestUtils.createDetailedProfile(
                             /* guid= */ "234",
                             /* name= */ "Rufus Dufus",
@@ -80,7 +83,8 @@ public class FastCheckoutIntegrationTest {
                             /* city= */ "Los Angeles",
                             /* postalCode= */ "99999",
                             /* email= */ "dufus.rufus@gmail.com",
-                            /* phoneNumber= */ "+1-345-333-319"),
+                            /* phoneNumber= */ "+1-345-333-319",
+                            /* recordType= */ RecordType.ACCOUNT_HOME),
                     FastCheckoutTestUtils.createDetailedProfile(
                             /* guid= */ "345",
                             /* name= */ "Foo Boo",
@@ -88,7 +92,8 @@ public class FastCheckoutIntegrationTest {
                             /* city= */ "San Francisco",
                             /* postalCode= */ "23441",
                             /* email= */ "foo@gmail.com",
-                            /* phoneNumber= */ "+1-205-333-009"));
+                            /* phoneNumber= */ "+1-205-333-009",
+                            /* recordType */ RecordType.ACCOUNT_WORK));
 
     private static final List<FastCheckoutCreditCard> SAMPLE_CARDS =
             List.of(
@@ -325,7 +330,8 @@ public class FastCheckoutIntegrationTest {
                                 /* city= */ "Munich",
                                 /* postalCode= */ "12345",
                                 /* email= */ "foo@gmail.com",
-                                /* phoneNumber= */ "+1-111-111-111"),
+                                /* phoneNumber= */ "+1-111-111-111",
+                                /* recordType= */ RecordType.ACCOUNT),
                         FastCheckoutTestUtils.createDetailedProfile(
                                 /* guid= */ "9999",
                                 /* name= */ "Bacalau Lee",
@@ -333,7 +339,8 @@ public class FastCheckoutIntegrationTest {
                                 /* city= */ "Berlin",
                                 /* postalCode= */ "12345",
                                 /* email= */ "example@gmail.com",
-                                /* phoneNumber= */ "+1-456-123-113"));
+                                /* phoneNumber= */ "+1-456-123-113",
+                                /* recordType= */ RecordType.ACCOUNT));
 
         runOnUiThreadBlocking(
                 () -> {

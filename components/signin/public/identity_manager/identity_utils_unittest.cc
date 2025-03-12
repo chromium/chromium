@@ -87,12 +87,11 @@ class IdentityUtilsTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IdentityTestEnvironment identity_test_env_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
   // Signed out.
   EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
@@ -113,6 +112,7 @@ TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
   EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
       *identity_manager(), *pref_service()));
 }
+#endif
 
 TEST_F(IdentityUtilsIsUsernameAllowedTest, EmptyPatterns) {
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, "");
@@ -254,18 +254,11 @@ TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
 }
 
 class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
-    : public testing::Test,
-      public base::test::WithFeatureOverride {
+    : public testing::Test {
  public:
   IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled()
-      : base::test::WithFeatureOverride(
-            switches::kExplicitBrowserSigninUIOnDesktop),
-        identity_test_env_(/*test_url_loader_factory=*/nullptr,
+      : identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &pref_service_) {}
-
-  bool IsExplicitBrowserSigninDisabled() const {
-    return !IsParamFeatureEnabled();
-  }
 
   void MakePrimaryAccountAvailable() {
     static const std::string kTestEmail = "test@gmail.com";
@@ -295,29 +288,39 @@ class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
   IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
+TEST_F(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        NoPrimaryAccount) {
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(GetExplicitBrowserSigninPref());
-  EXPECT_EQ(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
-                                                      pref_service()),
-            IsExplicitBrowserSigninDisabled());
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_FALSE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                         pref_service()));
+#else
+  EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                        pref_service()));
+#endif
 }
 
-TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
+TEST_F(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        PrimaryAccountExplicitSignin) {
   MakePrimaryAccountAvailable();
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   SetExplicitBrowserSigninPref(true);
   ASSERT_TRUE(GetExplicitBrowserSigninPref());
 
-  EXPECT_EQ(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
-                                                      pref_service()),
-            IsExplicitBrowserSigninDisabled());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  EXPECT_FALSE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                         pref_service()));
+#else
+  EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                        pref_service()));
+#endif
 }
 
 // Test for users that are already signed in implicitly.
-TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
+TEST_F(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        PrimaryAccountDiceImplicitSignin) {
   MakePrimaryAccountAvailable();
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -327,8 +330,5 @@ TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
   EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
                                                         pref_service()));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled);
 
 }  // namespace signin

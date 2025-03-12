@@ -22,13 +22,13 @@ class AutomationTreeManagerOwner;
 // Class that creates V8 bindings for Automation. This class should contain
 // logic about converting to/from V8 values but should not contain logic about
 // accessibility.
-class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
+class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings final {
  public:
   AutomationV8Bindings(AutomationTreeManagerOwner* owner,
                        AutomationV8Router* router);
   AutomationV8Bindings(const AutomationV8Bindings&) = delete;
   AutomationV8Bindings& operator=(const AutomationV8Bindings&) = delete;
-  virtual ~AutomationV8Bindings();
+  ~AutomationV8Bindings();
 
   //
   // Methods for sending C++ events back to Javascript.

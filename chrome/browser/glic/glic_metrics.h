@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
@@ -15,6 +18,7 @@
 class Profile;
 
 namespace glic {
+class GlicEnabling;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -124,8 +128,8 @@ class GlicMetrics {
   // Stores the source id at the time that context is requested.
   void StoreSourceId();
 
-  // Called when kGlicCompletedFre changes.
-  void OnGlicCompletedFrePrefChanged();
+  // Called when kGlicCompletedFre or GlicEnabling::IsAllowed() changes.
+  void OnMaybeEnabledAndConsentForProfileChanged();
 
   // Called when kGlicPinnedToTabstrip changes.
   void OnPinningPrefChanged();
@@ -165,6 +169,8 @@ class GlicMetrics {
   // Set to true in OnResponseStarted() and set to false in OnResponseStopped().
   // This is a workaround and should be removed, see crbug.com/399151164.
   bool response_started_ = false;
+
+  std::vector<base::CallbackListSubscription> subscriptions_;
 
   // Cache the last value of the kGlicPinnedToTabstrip pref so that we only emit
   // metrics for changes to the last value.

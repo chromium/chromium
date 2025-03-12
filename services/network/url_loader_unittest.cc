@@ -2226,6 +2226,67 @@ TEST_P(ParameterizedURLLoaderTest, SecureLocalToLocalPermission) {
   EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
+TEST_P(ParameterizedURLLoaderTest, SecurePublicToLocalPermissionWarn) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+}
+
+TEST_P(ParameterizedURLLoaderTest, SecurePrivateToLocalPermissionWarn) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionWarn;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+}
+
+TEST_P(ParameterizedURLLoaderTest, LocalNetworkAccessRequestWarning) {
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator = initiator;
+  request.devtools_request_id = "fake-id";
+
+  auto client_security_state = NewSecurityState();
+  client_security_state->is_web_secure_context = false;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionWarn;
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  MockDevToolsObserver devtools_observer;
+  set_devtools_observer_for_next_request(&devtools_observer);
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+
+  devtools_observer.WaitUntilPrivateNetworkRequest();
+  ASSERT_TRUE(devtools_observer.private_network_request_params());
+  auto& params = *devtools_observer.private_network_request_params();
+  ASSERT_TRUE(params.client_security_state);
+  auto& state = params.client_security_state;
+  EXPECT_EQ(state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPermissionWarn);
+  EXPECT_EQ(state->is_web_secure_context, false);
+  EXPECT_EQ(state->ip_address_space, mojom::IPAddressSpace::kPublic);
+  EXPECT_EQ(params.resource_address_space, mojom::IPAddressSpace::kLocal);
+  EXPECT_EQ(params.devtools_request_id, "fake-id");
+  EXPECT_TRUE(params.is_warning);
+  EXPECT_THAT(params.url.spec(), testing::HasSubstr("simple_page.html"));
+}
+
 // Bundles together the inputs to a parameterized private network request test.
 struct URLLoaderFakeTransportInfoTestParams {
   // The address space of the client.

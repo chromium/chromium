@@ -240,10 +240,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       const BucketId& bucket_id,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
-  // Retrieves all storage keys for `type` that are in the buckets table.
+  // Retrieves all storage keys that are in the buckets table.
   // Used for listing storage keys when showing storage key quota usage.
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysCallback callback);
+  void GetAllStorageKeys(GetStorageKeysCallback callback);
 
   // Retrieves all buckets for `type` that are in the buckets table.
   // Used for retrieving global usage data in the UsageTracker.
@@ -331,7 +330,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             bool enabled);
 
   // Deletes `bucket` data for the specified `quota_client_types`. Pass in
@@ -357,7 +355,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Deletes buckets of a particular blink::StorageKey.
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             StatusCallback callback);
 
   // Queries QuotaDatabase for the bucket with `storage_key` and `bucket_name`

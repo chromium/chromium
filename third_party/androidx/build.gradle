@@ -454,7 +454,7 @@ task setUpRepository(type: BuildConfigGenerator) {
     repositoryPath 'third_party/androidx/cipd'
     chromiumSourceRoot '../../..'
     cipdBucket 'chromium'
-    internalTargetVisibility = [ '//third_party/android_deps:*', ':*' ]
+    internalTargetVisibility = ['//third_party/android_deps:*', ':*']
     allFilesInCipd true
     skipLicenses false
     ignoreDEPS true

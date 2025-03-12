@@ -129,11 +129,9 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2738871930057338499">Nepodarilo sa pripojiť k internetu. Chyba odmietnutia prístupu HTTP 403. Skontrolujte konfiguráciu servera proxy.</translation>
 <translation id="2753623023919742414">Vyhľadávanie spustíte kliknutím</translation>
 <translation id="2770231113462710648">Zmeniť predvolený prehliadač na:</translation>
-<translation id="277338894894732084">Neskôr sa vás Chromium opýta, či chcete automaticky dopĺňať formuláre pomocou uložených informácií</translation>
 <translation id="2785438272836277133">Toto rozšírenie obsahuje malvér a je nebezpečné. Odstráňte ho z prehliadača Chromium, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2803971713792056305">Váš prehliadač Chromium</translation>
-<translation id="2806241689335397269">Chromium sa vás opýta, či chcete uložiť informácie z formulára, napríklad dátum narodenia, vek a číslo pasu</translation>
 <translation id="2841525013647267359">Preložiť z jazyka</translation>
 <translation id="2846251086934905009">Chyba inštalácie: inštalátor nebol dokončený. Inštalácia bola prerušená.</translation>
 <translation id="2847479871509788944">Odstrániť z prehliadača Chromium...</translation>
@@ -179,7 +177,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Chcete prepnúť na existujúci profil prehliadača Chromium?</translation>
 <translation id="3412460710772753638">V Správcovi hesiel v tomto zariadení</translation>
-<translation id="3451656833730006755">Ak chcete mať rozšírenia a ďalší obsah k dispozícii vo všetkých svojich počítačoch, prihláste sa do prehliadača Chromium</translation>
 <translation id="347328004046849135">Chromium vás upozorní, keď sa prihlásite pomocou prelomeného hesla</translation>
 <translation id="3474745554856756813">Táto akcia odstráni zo zariadenia niekoľko položiek (počet: <ph name="ITEMS_COUNT" />). Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily prehliadača Chromium</translation>
@@ -462,7 +459,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="734373864078049451">Tu nájdete svoj obsah na webe, záložky a ďalšie položky prehliadača Chromium.</translation>
 <translation id="7349591376906416160">Správca systému nakonfiguroval Chromium, aby <ph name="TARGET_URL_HOSTNAME" /> otváral v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7384121030444253939">Toto rozšírenie už nie je podporované. Chromium odporúča, aby ste ho odstránili.</translation>
-<translation id="7389750180956889333">Chromium lepšie rozumie formulárom a môže ich automaticky dopĺňať rýchlejšie za vás. Ďalšie informácie o <ph name="BEGIN_LINK" />automatickom dopĺňaní v Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text bol skopírovaný</translation>
 <translation id="7451052299415159299">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu</translation>

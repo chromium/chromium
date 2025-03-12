@@ -199,6 +199,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   void FlushImageControllerTasksForTesting();
 
+  void DisbleMetricsSubsamplingForTesting() { metrics_sampling_rate_ = 1.; }
+
   void OnRasterTaskCompleted(Tile::Id tile_id,
                              ResourcePool::InUsePoolResource resource,
                              bool was_canceled);
@@ -327,7 +329,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   void DidFinishRunningTileTasksRequiredForActivation();
   void DidFinishRunningTileTasksRequiredForDraw();
-  void DidFinishRunningAllTileTasks(bool has_pending_queries);
+  void DidFinishRunningAllTileTasks(base::TimeTicks start_time,
+                                    bool has_pending_queries);
   void ExternalDependencyCompletedForRasterTask(
       scoped_refptr<TileTask> dependent);
   void ExternalDependencyCompletedForNonRasterTask(
@@ -441,6 +444,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
 
   base::MetricsSubSampler metrics_sub_sampler_;
+  float metrics_sampling_rate_ = .01;
 
   // The callback scheduled to poll whether the GPU side work for pending tiles
   // has completed.

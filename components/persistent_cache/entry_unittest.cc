@@ -16,8 +16,10 @@ using ::testing::StrictMock;
 namespace persistent_cache {
 
 namespace {
+
 constexpr uint8_t kContentRaw[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 constexpr base::span kContent(kContentRaw);
+
 }  // namespace
 
 TEST(PersistentCacheEntry, NoFunctionsCalledAfterConstruction) {

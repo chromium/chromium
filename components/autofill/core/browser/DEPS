@@ -1,6 +1,5 @@
 include_rules = [
   # go/keep-sorted start
-  "+components/autofill_ai/core/browser/autofill_ai_features.h",
   "+components/browser_ui/device_lock/android",
   "+components/device_reauth/device_authenticator.h",
   "+components/feature_engagement",

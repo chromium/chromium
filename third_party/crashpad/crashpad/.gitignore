@@ -45,6 +45,7 @@
 /third_party/ninja/linux
 /third_party/ninja/mac*
 /third_party/ninja/ninja.exe
+/third_party/windows/clang/win-amd64
 /third_party/zlib/zlib
 /xcodebuild
 tags

@@ -1182,7 +1182,7 @@ class LayerPropertiesUpdater {
   cc::Layer& layer_;
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
-  bool selection_only_;
+  const bool selection_only_;
   const TransformPaintPropertyNode& layer_scroll_translation_;
 
   cc::TouchActionRegion touch_action_region_;
@@ -1504,7 +1504,17 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
     const PaintedSelectionBound& bound) const {
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
-  layer_bound.hidden = bound.hidden;
+  if (RuntimeEnabledFeatures::SelectionVisibilityAfterPaintEnabled()) {
+    // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
+    // Use the end point expanded by 1 as the sample rect to check visibility.
+    gfx::Rect sample(bound.edge_end, gfx::Size());
+    sample.Outset(1);
+    // The bound is treated as visible if the sample rect mapped to layer is
+    // not empty.
+    layer_bound.hidden = chunk_to_layer_mapper_.MapVisualRect(sample).IsEmpty();
+  } else {
+    layer_bound.hidden = bound.hidden;
+  }
   layer_bound.edge_start = MapSelectionBoundPoint(bound.edge_start);
   layer_bound.edge_end = MapSelectionBoundPoint(bound.edge_end);
   return layer_bound;

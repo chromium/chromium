@@ -787,6 +787,17 @@ crbug.com/350292231 [ Fuchsia ] tables/mozilla/bugs/bug2479-4.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug2479-5.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] virtual/text-antialias/international/003.html [ Failure ]
 
+# SVG/SMIL <discard>. Removed in M81.
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove-duplicate.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove-duplicate2.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove-replace2.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove2.html [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-child.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-href.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-a.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-b.svg [ Failure ]
+
 # ====== Paint team owned tests to here ======
 
 # WPT speculative-parsing tests failing
@@ -2609,8 +2620,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/402570321 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
-crbug.com/402597630 external/wpt/svg/animations/reftests/discard-check-remove2.html [ Failure ]
+[ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
 crbug.com/402195188 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash ]
 crbug.com/401111779 [ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
 crbug.com/401111779 [ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
@@ -2636,9 +2646,6 @@ crbug.com/398049418 [ Win11 ] external/wpt/custom-elements/revamped-scoped-regis
 crbug.com/397500917 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?5-6 [ Crash ]
 [ Mac12-arm64 ] external/wpt/notifications/tag.https.html [ Crash Failure ]
 [ Mac11-arm64 ] external/wpt/notifications/tag.https.html [ Crash Failure ]
-crbug.com/397523920 [ Win10.20h2 ] external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
-crbug.com/397523920 [ Mac14 ] external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
-crbug.com/397523920 [ Linux ] external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
 crbug.com/397483597 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Timeout ]
 crbug.com/397483597 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Timeout ]
 crbug.com/397483598 virtual/threaded/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html [ Timeout ]
@@ -2648,7 +2655,6 @@ crbug.com/397483598 virtual/view-transition-mpa-serialization/external/wpt/css/c
 crbug.com/397483598 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html [ Timeout ]
 crbug.com/397483598 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/window-resize-aborts-transition.html [ Timeout ]
 crbug.com/397150490 external/wpt/speech-api/SpeechSynthesis-speak-without-activation-fails.tentative.html [ Failure Timeout ]
-crbug.com/396958489 external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash Failure Timeout ]
 crbug.com/396813145 virtual/threaded/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
 crbug.com/396813145 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
 crbug.com/396813145 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
@@ -2676,9 +2682,6 @@ crbug.com/394656809 [ Mac ] external/wpt/css/css-overflow/scroll-marker-group-ke
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
 crbug.com/393523568 external/wpt/css/css-text/line-breaking/segment-break-transformation-currency-001.html [ Failure ]
-crbug.com/394102145 external/wpt/svg/animations/reftests/discard-check-remove-duplicate.svg [ Failure ]
-crbug.com/394102145 external/wpt/svg/animations/reftests/discard-check-remove-duplicate2.svg [ Failure ]
-crbug.com/394102145 external/wpt/svg/animations/reftests/discard-check-remove-replace2.svg [ Failure ]
 crbug.com/393435830 [ Mac15-arm64 ] external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Skip Timeout ]
 crbug.com/393435830 [ Mac15 ] external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Skip Timeout ]
 external/wpt/clear-site-data/clear-cache-partitioning.sub.https.html [ Failure Timeout ]  # Flaky `*-expected.txt` output
@@ -2715,11 +2718,6 @@ crbug.com/389545685 [ Mac12 ] external/wpt/css/css-position/sticky/position-stic
 crbug.com/389545685 [ Mac13 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac14 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac15-arm64 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
-crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove.svg [ Failure ]
-crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-child.svg [ Failure ]
-crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-href.svg [ Failure ]
-crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-a.svg [ Failure ]
-crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-b.svg [ Failure ]
 crbug.com/388934352 external/wpt/trusted-types/block-eval-function-constructor.html [ Failure ]
 crbug.com/388934352 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/388580242 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Failure ]
@@ -2782,8 +2780,8 @@ crbug.com/385918134 [ Linux ] external/wpt/wasm/core/imports.wast.js.html [ Cras
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_grow.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_trap.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_address.wast.js.html [ Crash ]
-crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.htm [ Crash Pass ]
-crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.htm [ Crash Pass Timeout ]
+crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.htm [ Pass Timeout ]
+crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.htm [ Pass Timeout ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_extend.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_splat.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_zero.wast.js.html [ Crash ]
@@ -3614,7 +3612,6 @@ crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-inline-end.html [ Fai
 crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-inline-start.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-inline.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-trim-ignores-collapsed-tracks.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-values/ch-unit-018.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-values/ic-unit-015.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
@@ -9038,6 +9035,8 @@ crbug.com/400739988 [ Win ] external/wpt/css/css-ruby/line-spacing.html [ Failur
 
 crbug.com/387938119 external/wpt/html/semantics/embedded-content/the-object-element/object-attributes.html [ Failure Pass ]
 
+crbug.com/402564647 external/wpt/scroll-to-text-fragment/scroll-to-text-diretive-center.html [ Failure ]
+
 # Gardener 2025-03-06
 crbug.com/401227377 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html [ Failure Pass ]
 crbug.com/400726001 [ Win ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
@@ -9064,3 +9063,10 @@ crbug.com/402495529 [ Mac12 ] wpt_internal/html/cross-origin-opener-policy/repor
 crbug.com/402546166 [ Linux ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
 crbug.com/402547571 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-setTimeout-redirect-to-cross-origin.sub.any.worker.html [ Failure Pass ]
 crbug.com/402547571 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-setTimeout-same-origin.sub.any.worker.html [ Failure Pass ]
+crbug.com/402686728 [ Linux ] external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Failure Pass ]
+crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-negative-freq.html [ Failure ]
+crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-custom.html [ Failure ]
+crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Failure ]
+crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
+crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
+crbug.com/402796552 [ Mac ] webaudio/Oscillator/start-sampling.html [ Failure ]

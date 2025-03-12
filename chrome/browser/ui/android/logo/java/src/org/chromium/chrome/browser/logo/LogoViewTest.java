@@ -161,7 +161,6 @@ public class LogoViewTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testDoodleAnimation() {
-        mView.setIsLogoPolishFlagEnabledForTesting(true);
         Resources res = mView.getResources();
         int normalLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
         int normalLogoTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);

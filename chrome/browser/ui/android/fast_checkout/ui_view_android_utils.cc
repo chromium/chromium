@@ -74,7 +74,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutAutofillProfile(
           env, profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER)),
       ConvertUTF16ToJavaString(env,
                                profile.GetRawInfo(autofill::EMAIL_ADDRESS)),
-      ConvertUTF8ToJavaString(env, profile.language_code()));
+      ConvertUTF8ToJavaString(env, profile.language_code()),
+      static_cast<jint>(profile.record_type()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(

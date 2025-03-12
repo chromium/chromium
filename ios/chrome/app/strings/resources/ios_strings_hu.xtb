@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">A meglévő böngészési adatokat összekapcsoljuk a következővel: <ph name="USER_EMAIL" />. Ezek az adatok láthatók lehetnek a szervezete számára.</translation>
 <translation id="1713777106376424209">Futárszolgálat:</translation>
 <translation id="1715515772563243997">Ha megbízik a(z) <ph name="SITE" /> webhelyben, a bejelentkezéshez használhatja mentett jelszavát.</translation>
+<translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1728549374069268714">Beillesztés és ugrás</translation>
 <translation id="1732468323901456775">A következő értesítéseinek bekapcsolása: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">A telepítéshez koppintson duplán.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Címfelismerés kikapcsolva. A beállítások között kapcsolhatja be újra.</translation>
 <translation id="1904580727789512086">A felkeresett URL-eket a Google-fiókba menti a rendszer</translation>
 <translation id="1911619930368729126">Feltöltés Google Drive-ba</translation>
-<translation id="1923342640370224680">Az elmúlt óra</translation>
 <translation id="1941314575388338491">A másoláshoz koppintson duplán.</translation>
 <translation id="1943478190258551035">Menü → Beállítások</translation>
 <translation id="1952728750904661634">Bejelentkezés felügyelt fiókkal</translation>

@@ -17,10 +17,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator.Delegate;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -33,6 +36,7 @@ import org.chromium.ui.widget.ButtonCompat;
 public class HomeScreenViewBinder {
     static class ViewHolder {
         final Context mContext;
+        final TextView mRecordTypeTextView;
         final TextView mFullNameTextView;
         final TextView mStreetAddressTextView;
         final LinearLayout mProfileSubsectionView;
@@ -44,9 +48,11 @@ public class HomeScreenViewBinder {
         final LinearLayout mSelectedCreditCardView;
         final ButtonCompat mAcceptButton;
         final ImageView mGPayImageView;
+        final ImageView mAddressImageView;
 
         ViewHolder(Context context, View contentView) {
             mContext = context;
+            mRecordTypeTextView = contentView.findViewById(R.id.fast_checkout_record_type);
             mFullNameTextView =
                     contentView.findViewById(R.id.fast_checkout_home_sheet_profile_name);
             mStreetAddressTextView =
@@ -64,6 +70,7 @@ public class HomeScreenViewBinder {
             mSelectedCreditCardView = contentView.findViewById(R.id.selected_credit_card_view);
             mAcceptButton = contentView.findViewById(R.id.fast_checkout_button_accept);
             mGPayImageView = contentView.findViewById(R.id.fast_checkout_gpay_icon);
+            mAddressImageView = contentView.findViewById(R.id.fast_checkout_address_icon);
         }
     }
 
@@ -103,10 +110,25 @@ public class HomeScreenViewBinder {
 
     private static void updateProfile(PropertyModel model, ViewHolder view) {
         FastCheckoutAutofillProfile profile = model.get(SELECTED_PROFILE);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
+            if (profile.getRecordType() == RecordType.ACCOUNT_HOME) {
+                view.mRecordTypeTextView.setText(
+                        view.mContext.getString(R.string.fast_checkout_record_type_home));
+            } else if (profile.getRecordType() == RecordType.ACCOUNT_WORK) {
+                view.mRecordTypeTextView.setText(
+                        view.mContext.getString(R.string.fast_checkout_record_type_work));
+            }
+        }
+
         view.mFullNameTextView.setText(profile.getFullName());
         view.mStreetAddressTextView.setText(getFullStreetAddress(profile));
         view.mEmailAddressTextView.setText(profile.getEmailAddress());
         view.mPhoneNumberTextView.setText(profile.getPhoneNumber());
+        view.mAddressImageView.setImageResource(profile.getAddressHomeAndWorkIconId());
+
+        hideIfEmpty(view.mRecordTypeTextView);
         hideIfEmpty(view.mFullNameTextView);
         hideIfEmpty(view.mStreetAddressTextView);
         hideIfEmpty(view.mEmailAddressTextView);

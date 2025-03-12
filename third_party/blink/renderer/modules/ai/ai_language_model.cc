@@ -225,6 +225,11 @@ ToMojo(Blob* blob, ExecutionContext* execution_context) {
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
       audio_contents.Data(), audio_contents.DataLength(),
       /*mix_to_mono=*/true, /*sample_rate=*/48000);
+  if (!bus) {
+    return base::unexpected(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError,
+        "Blob contains missing or invalid audio data."));
+  }
 
   on_device_model::mojom::blink::AudioDataPtr audio_data =
       on_device_model::mojom::blink::AudioData::New();

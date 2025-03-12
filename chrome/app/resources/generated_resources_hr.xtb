@@ -377,7 +377,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1244265436519979884">U tijeku je vraćanje Linuxa</translation>
 <translation id="1244303850296295656">Pogreška proširenja</translation>
 <translation id="1244917379075403655">Kliknite Postavke</translation>
-<translation id="1245041875932187638">Izbrišite sve podatke koje upotrebljava automatsko popunjavanje pomoću AI-ja</translation>
 <translation id="1245331638296910488">Datoteke će se premjestiti na OneDrive prilikom otvaranja u Microsoftu 365</translation>
 <translation id="1245628370644070008">Oporavak lokalnih podataka</translation>
 <translation id="1246863218384630739">Instaliranje softvera <ph name="VM_NAME" /> nije uspjelo: URL slike vratio je kôd pogreške <ph name="HTTP_ERROR" />. Obratite se administratoru.</translation>
@@ -1409,7 +1408,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Priprema</translation>
 <translation id="1969654639948595766">WebRTC tekstni zapisnici (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Izbrisat će se svi podaci. Tu radnju nije moguće poništiti</translation>
 <translation id="1972313920920745320">Web-lokacije koje dodate uvijek će ostati aktivne, a memorija za njih neće se osloboditi. <ph name="BEGIN_LINK" />Saznajte više o održavanju aktivnosti određenih web-lokacija<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Pregledavat ćete brže jer se sadržaj učitava proaktivno na temelju vašeg trenutačnog posjeta web-stranici</translation>
 <translation id="197288927597451399">Zadrži</translation>
@@ -3060,7 +3058,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3108957152224931571">Boja isticanja</translation>
 <translation id="3109206895301430738">Spremljeno u grupe kartica</translation>
 <translation id="3109724472072898302">Sažeto</translation>
-<translation id="310979712355504754">Izbriši sve</translation>
 <translation id="3112292765614504292">Veličina aplikacije: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Dodaje ovu karticu</translation>
 <translation id="311394601889664316">Ne dopuštaj web-lokacijama uređivanje datoteka ili mapa na uređaju</translation>
@@ -4079,7 +4076,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Proširenje je odobreno}one{Odobreno je # proširenje}few{Odobrena su # proširenja}other{Odobreno je # proširenja}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Za Linux se preporučuje najmanje <ph name="INSTALL_SIZE" /> prostora.</translation>
-<translation id="3824203811509979971">Sažmite sadržaj ili postavite pitanja</translation>
 <translation id="3824621460022590830">Oznaka za registraciju uređaja nije važeća. Obratite se vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se da biste vidjeli kartice s drugih uređaja</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Upamti moj izbor za ovu vrstu datoteke: <ph name="FILE_TYPES" />.}one{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}few{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}other{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}}</translation>
@@ -4454,7 +4450,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4078738236287221428">Agresivno</translation>
 <translation id="4078903002989614318">Opcije razvrstavanja i popisa</translation>
 <translation id="4079140982534148664">Koristi poboljšanu provjeru pravopisa</translation>
-<translation id="4084682180776658562">Oznaka</translation>
+<translation id="4084682180776658562">Označi</translation>
 <translation id="4084835346725913160">Zatvori karticu <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Na ovoj je stranici blokiran JavaScript.</translation>
 <translation id="4085566053793776107">Prilagodi teme</translation>
@@ -5893,7 +5889,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="512642543295077915">pretraživanje + backspace</translation>
 <translation id="5126611267288187364">Prikaz izmjena</translation>
 <translation id="5127620150973591153">ID sigurne veze: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Sažmite sadržaj ili postavite pitanja.</translation>
 <translation id="5127881134400491887">upravljati mrežnim vezama</translation>
 <translation id="5127934926273826089">Cvijeće</translation>
 <translation id="5127986747308934633">Vaš administrator upravlja vašim uređajem</translation>
@@ -7440,7 +7435,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6254892857036829079">Savršena</translation>
 <translation id="6257131917452817589">automatskoj promjeni zaporke</translation>
 <translation id="6257602895346497974">Uključite sinkronizaciju...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ta će mreža biti preferirana ako je dostupno više od jedne prethodno povezane ili konfigurirane mreže</translation>
 <translation id="6259776178973198997">Osvježi informacije o vlasnicima izravnog Wi-Fija</translation>
 <translation id="6262371516389954471">Sigurnosna kopija prenosi se na Google i kriptira pomoću zaporke vašeg Google računa.</translation>
@@ -9876,6 +9870,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> glas <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automatski prijenos Wi-Fija s Android telefona</translation>
 <translation id="7991296728590311172">Postavke navigacije prekidačima</translation>
+<translation id="7992080146463834191">Sažmite sadržaj, pojednostavite složeni jezik ili postavite pitanja.</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
 <translation id="7997826902155442747">Prioritet obrade</translation>
 <translation id="7997828719430450286">Uspješno.</translation>
@@ -11143,6 +11138,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8874448314264883207">Proširenje <ph name="EXTENSION_NAME" /> je isključeno</translation>
 <translation id="8874647982044395866">Organsko</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dopustiti kolačiće trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati prema očekivanjima.</translation>
+<translation id="8875221558267407626">Sažmite sadržaj, pojednostavite složeni jezik ili postavite pitanja</translation>
 <translation id="8875520811099717934">Nadogradnja Linuxa</translation>
 <translation id="8875736897340638404">Odaberite svoju vidljivost</translation>
 <translation id="8876307312329369159">Ta se postavka ne može promijeniti u demo sesiji.</translation>

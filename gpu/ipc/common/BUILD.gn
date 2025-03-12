@@ -7,6 +7,10 @@ import("//components/nacl/toolchain.gni")
 import("//gpu/vulkan/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
+
 group("common") {
   if (is_component_build) {
     public_deps = [ "//gpu" ]
@@ -158,7 +162,7 @@ source_set("ipc_common_sources") {
     frameworks = [ "IOSurface.framework" ]
   }
 
-  if (is_ios) {
+  if (is_ios && target_platform == "iphoneos") {
     sources += [
       "ios/be_layer_hierarchy_transport.cc",
       "ios/be_layer_hierarchy_transport.h",

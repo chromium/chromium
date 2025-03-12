@@ -3021,6 +3021,7 @@
 <translation id="6337133576188860026">最大で <ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="6337534724793800597">ポリシーを名前でフィルタ</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> の値は無効なため、使用されません。</translation>
+<translation id="6338645927051849741">パスワード • Google パスワード マネージャー</translation>
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}}</translation>
 <translation id="6342069812937806050">たった今</translation>

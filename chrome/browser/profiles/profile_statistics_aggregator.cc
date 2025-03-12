@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/bookmark_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
@@ -21,6 +22,7 @@ using browsing_data::BrowsingDataCounter;
 ProfileStatisticsAggregator::ProfileStatisticsAggregator(
     scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
     autofill::PersonalDataManager* personal_data_manager,
+    const autofill::EntityDataManager* entity_data_manager,
     bookmarks::BookmarkModel* bookmark_model,
     history::HistoryService* history_service,
     scoped_refptr<password_manager::PasswordStoreInterface>
@@ -31,6 +33,7 @@ ProfileStatisticsAggregator::ProfileStatisticsAggregator(
     base::OnceClosure done_callback)
     : autofill_web_data_service_(std::move(autofill_web_data_service)),
       personal_data_manager_(personal_data_manager),
+      entity_data_manager_(entity_data_manager),
       bookmark_model_(bookmark_model),
       history_service_(history_service),
       profile_password_store_(profile_password_store),
@@ -81,7 +84,7 @@ void ProfileStatisticsAggregator::StartAggregator() {
 
   // Initiate autofill counting.
   AddCounter(std::make_unique<browsing_data::AutofillCounter>(
-      personal_data_manager_, autofill_web_data_service_,
+      personal_data_manager_, autofill_web_data_service_, entity_data_manager_,
       /*sync_service=*/nullptr));
 }
 

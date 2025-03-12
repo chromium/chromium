@@ -241,14 +241,16 @@ suite('CrLazyListTest', () => {
 
     // Scrolling 50% of the viewport renders 50% more items.
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT / 2;
-    await eventToPromise('fill-height-end', testApp);
+    await eventToPromise('viewport-filled', testApp);
+    await microtasksFinished();
 
     assertEquals(
         3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT / 2, queryItems().length);
 
     // Scrolling to the end renders remaining items.
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT;
-    await eventToPromise('fill-height-end', testApp);
+    await eventToPromise('viewport-filled', testApp);
+    await microtasksFinished();
     assertEquals(numItems, queryItems().length);
 
     // Scrolling back to the top --> all items are still rendered.
@@ -430,9 +432,10 @@ suite('CrLazyListTest', () => {
     assertEquals(2, chunks[1]!.querySelectorAll('test-item').length);
 
     // Scrolling 50% of the viewport renders 50% more items.
-    let listFilled = eventToPromise('fill-height-end', testApp);
+    let listFilled = eventToPromise('viewport-filled', testApp);
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT / 2;
     await listFilled;
+    await microtasksFinished();
 
     assertEquals(
         3 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT / 2, queryItems().length);
@@ -444,9 +447,10 @@ suite('CrLazyListTest', () => {
     assertEquals(1, chunks[2]!.querySelectorAll('test-item').length);
 
     // Scrolling to the end renders remaining items.
-    listFilled = eventToPromise('fill-height-end', testApp);
+    listFilled = eventToPromise('viewport-filled', testApp);
     testApp.scrollTop = SAMPLE_AVAIL_HEIGHT;
     await listFilled;
+    await microtasksFinished();
     assertEquals(numItems, queryItems().length);
     // 3 chunks holding the items, now all are full.
     chunks = lazyList.querySelectorAll('.chunk');

@@ -246,6 +246,9 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
                                  syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
       break;
+    case AutofillProfileChange::HIDE_IN_AUTOFILL:
+      // `HIDE_IN_AUTOFILL` is not supported for local or syncable profiles.
+      NOTIMPLEMENTED();
   }
 
   // We do not need to commit any local changes (written by the processor via

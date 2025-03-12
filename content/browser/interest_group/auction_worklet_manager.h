@@ -116,7 +116,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // Returns the cookie deprecation label for facilitated testing.
     virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
 
-    virtual void GetBiddingAndAuctionServerKey(
+    virtual void GetTrustedKeyValueServerKey(
         const url::Origin& scope_origin,
         const std::optional<url::Origin>& coordinator,
         base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,

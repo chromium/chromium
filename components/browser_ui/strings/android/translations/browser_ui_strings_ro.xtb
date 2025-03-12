@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Fișierele salvate de site-uri apar aici</translation>
 <translation id="131112695174432497">Datele care influențează personalizarea anunțurilor sunt șterse</translation>
 <translation id="1317194122196776028">Uită site-ul</translation>
+<translation id="1333965224356556482">Nu permite site-urilor să-ți vadă locația</translation>
 <translation id="1343356790768851700">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri</translation>
 <translation id="1369915414381695676">Site-ul <ph name="SITE_NAME" /> a fost adăugat</translation>
 <translation id="1371239764779356792">Permite unui site să salveze date pe dispozitiv</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
+<translation id="1464044141348608623">Nu permite site-urilor să afle când folosești activ dispozitivul</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
 <translation id="1500473259453106018">Ascunde scăderile de preț din cardul File</translation>
+<translation id="1508931164824684991">Site-urile pot folosi JavaScript</translation>
 <translation id="1510341833810331442">Site-urile nu au permisiunea de a salva date pe dispozitiv</translation>
 <translation id="1538031354170655462">Site-urile folosesc de obicei tehnologia NFC (Near Field Communication) pentru a funcționa cu etichete sau dispozitive din apropiere, cum ar fi scanarea insignelor sau atingerea pentru a plăti</translation>
 <translation id="1547123415014299762">Sunt permise cookie-urile terță parte</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="1686785653877010442">De obicei, site-urile trimit notificări ca să te informeze cu privire la știri de ultimă oră sau mesaje din chat.</translation>
 <translation id="169515064810179024">Împiedică site-urile să acceseze senzorii de mișcare</translation>
+<translation id="1703666494654169921">Nu permite site-urilor să folosească dispozitive de realitate virtuală sau date conexe</translation>
+<translation id="1704230497453185209">Nu permite site-urilor să redea sunet</translation>
 <translation id="1717218214683051432">Senzori de mișcare</translation>
 <translation id="1743802530341753419">Întreabă înainte de a permite site-urilor să se conecteze la un dispozitiv (recomandat)</translation>
 <translation id="1779089405699405702">Decodor de imagini</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Când opțiunea este activată, Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător. Când este dezactivată, performanța scade, dar motorul V8 devine mai rezistent la atacuri.</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Site-urile accesează de obicei fișiere și dosare de pe dispozitiv pentru funcții cum ar fi salvarea automată a ceea ce ai lucrat</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1919950603503897840">Selectează persoane de contact</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Site-urile pot solicita permisiunea de a se conecta la dispozitive USB</translation>
 <translation id="1979673356880165407">Mărește sau micșorează textul și imaginile pentru toate site-urile pe care le accesezi</translation>
 <translation id="1984937141057606926">Permise, cu excepția celor terță parte</translation>
 <translation id="1985247341569771101">Când opțiunea este activată, site-urile pot folosi senzorii de mișcare ai dispozitivului. Când opțiunea este dezactivată, site-urile nu pot folosi senzorii de mișcare.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2091887806945687916">Sunet</translation>
 <translation id="2096716221239095980">Șterge toate datele</translation>
+<translation id="2102396546234652240">Nu permite site-urilor să folosească microfonul</translation>
 <translation id="2117655453726830283">Următorul slide</translation>
 <translation id="2146263598007866206">Site-urile pot descărca automat fișierele conexe împreună pentru a te ajuta să economisești timp</translation>
 <translation id="2148716181193084225">Astăzi</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
 <translation id="2626708220538466178">Foaia din partea de jos a browserului prestabilit, închisă</translation>
 <translation id="2653659639078652383">Trimite</translation>
+<translation id="2670403088701171361">Nu permite site-urilor să vadă text sau imagini din clipboard</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2682367912565197520">Șterge nivelul de zoom salvat</translation>
 <translation id="2683434792633810741">Ștergi și resetezi?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Când opțiunea este activată, site-urile pot solicita permisiunea de a urmări poziția camerei și de a afla informații despre împrejurimile tale. Când opțiunea este dezactivată, site-urile nu pot să urmărească poziția camerei sau să afle informații despre împrejurimile tale.</translation>
 <translation id="2968755619301702150">Vizualizator de certificate</translation>
 <translation id="2979365474350987274">Cookie-urile terță parte sunt limitate</translation>
+<translation id="2990583317361835189">Nu permite site-urilor să folosească senzori de mișcare</translation>
 <translation id="3008272652534848354">Resetează permisiunile</translation>
 <translation id="301521992641321250">Blocată automat</translation>
+<translation id="3064871050034234884">Site-urile pot reda sunet</translation>
 <translation id="3069226013421428034">Permite conectarea terță parte pentru un anumit site.</translation>
 <translation id="310297983047869047">Slide-ul anterior</translation>
 <translation id="3109724472072898302">Restrâns</translation>
 <translation id="310979712355504754">Ștergeți tot</translation>
+<translation id="311394601889664316">Nu permite site-urilor să modifice fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="3114012059975132928">Player video</translation>
 <translation id="3115898365077584848">Afișează informațiile</translation>
 <translation id="3123473560110926937">Blocate pe anumite site-uri</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Dezactivează sunetul videoclipului</translation>
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
+<translation id="3611658447322220736">Site-urile închise recent pot să finalizeze trimiterea sau primirea datelor</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
+<translation id="3641456520301071208">Site-urile pot solicita permisiunea de a accesa locația</translation>
 <translation id="3658847490588580244">Foaia din partea de jos a browserului prestabilit</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="RWS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="RWS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="RWS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="3676777756440746804">Site-urile nu au permisiunea de a-ți solicita să folosească informațiile pe care le-au salvat despre tine</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
+<translation id="3708684582558000260">Nu permite site-urilor închise să finalizeze trimiterea sau primirea datelor</translation>
 <translation id="3709818294139939629">S-a eliminat accesul site-ului</translation>
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
+<translation id="3776508619697147021">Site-urile pot solicita permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="3779154269823594982">Schimbă parolele</translation>
 <translation id="3797520601150691162">Nu aplica tema întunecată pentru un anumit site</translation>
 <translation id="3803367742635802571">Este posibil ca site-urile pe care le accesezi să nu mai funcționeze așa cum au fost proiectate</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Chrome va bloca din nou cookie-urile astăzi</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3859306556332390985">Derulează înainte</translation>
+<translation id="389521680295183045">Site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
 <translation id="3905475044299942653">Oprește numărul mare de notificări</translation>
 <translation id="3908288065506437185">Blochează cookie-urile terță parte în modul incognito</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Pe telefon, deschide Setări</translation>
 <translation id="3933121352599513978">Restrânge solicitările nedorite (recomandat)</translation>
 <translation id="3955193568934677022">Permite site-urilor să redea conținutul protejat (recomandat)</translation>
+<translation id="3955321697524543127">Nu permite site-urilor să se conecteze la dispozitive USB</translation>
 <translation id="3965467402665811906">Site-urile pot solicita permisiunea de a folosi informațiile pe care le-au salvat despre tine</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3981465354637804599">În general, site-urile afișează anunțuri pentru a putea oferi conținut sau servicii fără costuri. Unele site-uri afișează însă anunțuri deranjante sau înșelătoare.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
 <translation id="4336566011000459927">Chrome va limita din nou cookie-urile astăzi</translation>
 <translation id="4338831206024587507">Toate site-urile din <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Nu permite site-urilor să trimită notificări</translation>
 <translation id="4402755511846832236">Împiedică site-urile să detecteze când folosești activ dispozitivul</translation>
 <translation id="4412992751769744546">Permite cookie-urile terță parte</translation>
 <translation id="4419929467120297501">Chrome împiedică site-urile să folosească cookie-uri terță parte pentru a te urmări în timp ce navighezi. Accesează setările pentru a <ph name="BEGIN_LINK" />gestiona accesul la cookie-urile terțe<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> nu are permisiunea de a folosi informațiile tale pe</translation>
 <translation id="4953688446973710931">Când opțiunea este activată, site-urile pot solicita permisiunea de a descărca automat mai multe fișiere. Când opțiunea este dezactivată, site-urile nu pot descărca automat mai multe fișiere.</translation>
 <translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
+<translation id="4972737347717125191">Site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
 <translation id="497421865427891073">Înainte</translation>
 <translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nu s-a găsit nicio persoană de contact</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109">S-a blocat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5822675474983796325">Foaia de jos a paginii Personalizează Fila nouă este deschisă la înălțime completă</translation>
+<translation id="5833899990800318936">Nu permite site-urilor să folosească JavaScript</translation>
+<translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="5844448279347999754">Când opțiunea este activată, site-urile pot solicita să vadă textul și imaginile salvate în clipboard. Când opțiunea este dezactivată, site-urile nu pot vedea textul sau imaginile salvate în clipboard.</translation>
 <translation id="5853982612236235577">Când opțiunea este activată, site-urile îți pot solicita să-ți trimită notificări. Când opțiunea este dezactivată, site-urile nu pot trimite notificări.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome restricționează folosirea cookie-urilor terță parte pentru majoritatea site-urilor. Totuși, cookie-urile terță parte sunt permise pe acest site, deoarece se bazează pe ele ca să ofere servicii de bază.\n\nAccesează setările pentru a <ph name="BEGIN_LINK" />gestiona accesul la cookie-urile terță parte<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
 <translation id="789180354981963912">Blochează cookie-urile terță parte în modul incognito:</translation>
+<translation id="789722939441020330">Nu permite site-urilor să descarce automat mai multe fișiere</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
+<translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7990211076305263060">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi microfonul. Când opțiunea este dezactivată, site-urile nu pot folosi microfonul.</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">Aplicația <ph name="APP_NAME" /> este învechită. Reinstalează aplicația.</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="848952951823693243">Solicită întotdeauna site-ul mobil</translation>
+<translation id="8492822722330266509">Site-urile pot să afișeze ferestre pop-up și să folosească redirecționări</translation>
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
 <translation id="8514955299594277296">Nu permite site-urilor să salveze date pe dispozitiv (nu se recomandă)</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
@@ -581,11 +606,13 @@
 <translation id="8926666909099850184">NFC este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Împiedică site-urile să vadă și să modifice informații de pe dispozitive NFC</translation>
 <translation id="8944485226638699751">Limitate</translation>
+<translation id="895054485242522631">Site-urile pot folosi senzori de mișcare</translation>
 <translation id="8959122750345127698">Navigarea nu este accesibilă: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Te vei deconecta de la toate site-urile</translation>
 <translation id="8993853206419610596">Extinde toate solicitările</translation>
 <translation id="9002538116239926534">Când opțiunea este activată, site-urile pot salva date pe dispozitiv. Când opțiunea este dezactivată, site-urile nu pot salva date pe dispozitiv.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permis</translation>
+<translation id="9017522656123387064">Ai ieșit din modul de selectare</translation>
 <translation id="9019902583201351841">Gestionat de părinții tăi</translation>
 <translation id="902236149563113779">Site-urile urmăresc de obicei poziția camerei pentru opțiuni RA, cum ar fi jocuri sau indicații de orientare heads-up</translation>
 <translation id="9039697262778250930">Poți fi deconectat(ă) de pe aceste site-uri</translation>

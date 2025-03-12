@@ -996,6 +996,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5696597120588531049">Chrome var palīdzēt aizsargāt jūs pret datu noplūdi, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="5698878456427040674">Pārbaudiet, vai atlasītais konts tiek atbalstīts.</translation>
 <translation id="570347048394355941">Pāriet uz cilni</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> vēlas izveidot savienojumu ar seriālo portu</translation>
 <translation id="5715150588940290235">Vai dzēst saglabātos drošības kodus?</translation>
 <translation id="571930967925877633">Jūsu grāmatzīmes, vēsture un citi Chrome dati vairs netiks sinhronizēti ar Google kontu.</translation>
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
@@ -1128,6 +1129,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6296366034485697675">Eksportēt un dzēst</translation>
 <translation id="629730747756840877">Konts</translation>
 <translation id="6303969859164067831">Izrakstīties un izslēgt sinhronizēšanu</translation>
+<translation id="6307241780749477694">Apstipriniet savu identitāti, lai iegūtu visas savas paroles šajā ierīcē.</translation>
 <translation id="6312687380483398334">Tīmekļa lietotnes (bez skaņas)</translation>
 <translation id="6315386555979018699">Dzēst un turpināt</translation>
 <translation id="6316139424528454185">Neatbalstīta Android versija</translation>
@@ -1389,6 +1391,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7359002509206457351">Piekļuve maksājumu veidiem</translation>
 <translation id="7363349185727752629">Konfidencialitātes iestatījumu ceļvedis</translation>
 <translation id="7364103838544876661">Citas pārlūkošanas datu dzēšanas iespējas</translation>
+<translation id="7365073365123878797">Lai sāktu saglabāt un izmantot paroles Google paroļu pārvaldniekā, atjauniniet Google Play pakalpojumus.</translation>
 <translation id="7375125077091615385">Veids:</translation>
 <translation id="7376560087009844242">Iekļaujot vairāk lapas teksta, varat iegūt labākus rezultātus, kad izmantojat funkciju “Meklēt pieskaroties”. <ph name="BEGIN_LINK" />Iestatījumos<ph name="END_LINK" /> varat jebkurā laikā mainīt šo opciju.</translation>
 <translation id="7379900596734708416">Ir pieejams tumšais motīvs vietnēm</translation>
@@ -1467,10 +1470,12 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7686086654630106285">Vairāk par vietnēs ieteiktajām reklāmām</translation>
 <translation id="7690596512217303514">Jūsu ierīcē nevarēja atvērt pārlūku Chrome. Lai novērstu problēmu, no lietotņu veikala lejupielādējiet jaunāko Chrome atjauninājumu.</translation>
 <translation id="7691043218961417207">Izpētiet saturu, kam sekot</translation>
+<translation id="7692761875510935111">Ātri atveriet pārlūkā. Lai rediģētu šo saīsni, pieskarieties un turiet.</translation>
 <translation id="7697383401610880082">Vilkšanas turis</translation>
 <translation id="7698359219371678927">Izveidojiet e-pasta ziņojumu lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="7702420606070050505">Ekrāna apakšdaļas lapa “Pēdējās darbības” ir atvērta pilnā augstumā</translation>
 <translation id="7707922173985738739">Izmantot mobilos datus</translation>
+<translation id="7708994397325774423">Iegūstiet visas savas paroles</translation>
 <translation id="7733878270780732638">Ierīcē nepietiek vietas.</translation>
 <translation id="7746817319925672889">Drīzumā tiks pārtraukta Google paroļu pārvaldnieka darbība šajā ierīcē</translation>
 <translation id="774876555279732384">Automātiskās aizpildes pakalpojumus var pārvaldīt arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
@@ -1612,6 +1617,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8310451567823644042">Drīz tiks pārtraukta paroļu darbība</translation>
 <translation id="831192587911042850">Pašlaik atvērtā tīmekļa vietne tiek pievienota to tīmekļa vietņu sarakstam, kurām sekojat.</translation>
 <translation id="8320212361750431956">Pēdējās darbības</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome jums paziņos par vietnēm, no kurām varētu tikt sūtīts daudz paziņojumu.</translation>
 <translation id="834313815369870491">Nekad netulkot vietnes</translation>
 <translation id="8348430946834215779">Kad vien iespējams, izmantojiet protokolu HTTPS un saņemiet brīdinājumus pirms tādu vietņu ielādes, kas šo protokolu neatbalsta.</translation>
@@ -1743,6 +1749,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8937772741022875483">Vai noņemt jūsu Chrome darbības no Digitālās labjutības?</translation>
 <translation id="8942627711005830162">Atvērt citā logā</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — šo valodu nevarēja lejupielādēt. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="8946759102391960088">Saglabājiet piekļuvi savām parolēm</translation>
 <translation id="8957528460562961174">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt un pēc tam importējiet tās vēlamajā paroļu pārvaldniekā. Google paroļu pārvaldnieka darbība tika pārtraukta, jo nav pieejami Google Play pakalpojumi.</translation>
 <translation id="8963117664422609631">Pāriet uz vietnes iestatījumiem</translation>
 <translation id="8965591936373831584">gaida</translation>

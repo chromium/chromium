@@ -243,10 +243,9 @@ void SavedTabGroupButton::UpdateButtonLayout() {
   if (!local_group_id_.has_value()) {
     SetBorder(views::CreateEmptyBorder(insets));
   } else {
-    std::unique_ptr<views::Border> border =
-        views::CreateThemedRoundedRectBorder(
-            kBorderThickness, kButtonRadius,
-            GetSavedTabGroupOutlineColorId(tab_group_color_id_));
+    std::unique_ptr<views::Border> border = views::CreateRoundedRectBorder(
+        kBorderThickness, kButtonRadius,
+        GetSavedTabGroupOutlineColorId(tab_group_color_id_));
     SetBorder(views::CreatePaddedBorder(std::move(border), insets));
   }
 

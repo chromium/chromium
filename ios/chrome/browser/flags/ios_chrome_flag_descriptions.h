@@ -189,6 +189,9 @@ extern const char kCredentialProviderExtensionPromoDescription[];
 extern const char kDataSharingName[];
 extern const char kDataSharingDescription[];
 
+extern const char kDataSharingDebugLogsName[];
+extern const char kDataSharingDebugLogsDescription[];
+
 extern const char kDataSharingJoinOnlyName[];
 extern const char kDataSharingJoinOnlyDescription[];
 

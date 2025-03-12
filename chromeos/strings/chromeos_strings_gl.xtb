@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animación do protector de pantalla</translation>
 <translation id="152892567002884378">Sube o volume</translation>
 <translation id="1539864135338521185">lapislázuli</translation>
+<translation id="1548555207631326346">Escolle un tema e despois selecciona as palabras subliñadas para personalizar as túas imaxes xeradas por IA.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A opción Inspírame pode ofrecerche unha selección de imaxes de IA únicas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cando creas contido con IA, a solicitude envíase aos servidores de IA de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA xenerativa é experimental, está nas primeiras etapas de programación e actualmente ten dispoñibilidade limitada.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1561927818299383735">cor da retroiluminación</translation>
@@ -1553,6 +1562,16 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Usa a IA de Google para ser unha persoa máis produtiva</translation>
+<translation id="82003371436638355">Se elixes a opción Crear un propio, podes escribir unha solicitude personalizada. Tamén podes darlle a Escoller un tema e despois seleccionar as palabras subliñadas para personalizar un fondo de pantalla xerado por IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A opción Inspírame pode ofrecerche unha selección de imaxes de IA únicas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cando creas o teu propio fondo de pantalla, a solicitude envíase aos servidores de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade e nas Condicións de servizo de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Non inclúas información persoal, delicada nin confidencial.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA xenerativa pode cometer erros (mesmo no referente á información sobre persoas), polo que debes revisar os resultados. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Máis información<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
@@ -1574,6 +1593,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8312330582793120272">reproducir o contido multimedia</translation>
 <translation id="8318753676953949627">Sen imaxes</translation>
 <translation id="8320910311642849813">bosque</translation>
+<translation id="8322464149031882595">Facer clic para continuar</translation>
 <translation id="8329018942023753850">aplicación da calculadora</translation>
 <translation id="8336739000755212683">Cambiar imaxe da conta do dispositivo</translation>
 <translation id="8339024191194156249">Máis información sobre o inicio automático</translation>
@@ -1720,6 +1740,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8961025972867871808">pingüíns</translation>
 <translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
+<translation id="8972061581514441296">Facer clic para volver</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear páxina {NUMBER_OF_PAGES}}other{Escanear páxina {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">vila</translation>

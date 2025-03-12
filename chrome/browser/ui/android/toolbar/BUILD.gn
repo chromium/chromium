@@ -343,6 +343,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonViewTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/reload_button/ReloadButtonMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/settings/AddressBarSettingsFragmentUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/PhoneCaptureStateTokenTest.java",

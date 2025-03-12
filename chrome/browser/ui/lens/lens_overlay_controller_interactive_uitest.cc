@@ -43,6 +43,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace {
 
@@ -1047,14 +1048,14 @@ IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
                   WaitForHide(LensOverlayController::kOverlayId));
 }
 
-class LensOverlayControllerSimplifedSelectionCUJTest
+class LensOverlayControllerSimplifiedSelectionCUJTest
     : public LensOverlayControllerCUJTest {
  public:
-  LensOverlayControllerSimplifedSelectionCUJTest() = default;
-  ~LensOverlayControllerSimplifedSelectionCUJTest() override = default;
-  LensOverlayControllerSimplifedSelectionCUJTest(
-      const LensOverlayControllerSimplifedSelectionCUJTest&) = delete;
-  void operator=(const LensOverlayControllerSimplifedSelectionCUJTest&) =
+  LensOverlayControllerSimplifiedSelectionCUJTest() = default;
+  ~LensOverlayControllerSimplifiedSelectionCUJTest() override = default;
+  LensOverlayControllerSimplifiedSelectionCUJTest(
+      const LensOverlayControllerSimplifiedSelectionCUJTest&) = delete;
+  void operator=(const LensOverlayControllerSimplifiedSelectionCUJTest&) =
       delete;
 
   void SetUpFeatureList() override {
@@ -1075,23 +1076,29 @@ class LensOverlayControllerSimplifedSelectionCUJTest
 //  (2) User opens lens overlay.
 //  (3) User highlights some region.
 //  (4) User presses CTRL+C.
-//  (5) Region gets copied.
-// TODO(crbug.com/399520257): Fix test failure on ChromeOS, and ASAN.
-#if BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
-// Flaky on ASAN, and on ChromeOS.
-#define MAYBE_CopyKeyCommandCopiesImage DISABLED_CopyKeyCommandCopiesImage
+//  (5) Text in region gets copied.
+// TODO(crbug.com/399520257): Fix test failure on Linux, and ASAN.
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER)
+// Flaky on ASAN, and on Linux.
+#define MAYBE_CopyKeyCommandCopiesText DISABLED_CopyKeyCommandCopiesText
 #else
-#define MAYBE_CopyKeyCommandCopiesImage CopyKeyCommandCopiesImage
+#define MAYBE_CopyKeyCommandCopiesText CopyKeyCommandCopiesText
 #endif
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifedSelectionCUJTest,
-                       MAYBE_CopyKeyCommandCopiesImage) {
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifiedSelectionCUJTest,
+                       MAYBE_CopyKeyCommandCopiesText) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                      kRegionCopiedState);
+                                      kTextCopiedState);
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  auto top_left_point = base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+    return gfx::Point(el->AsA<views::TrackedElementViews>()
+                          ->view()
+                          ->GetBoundsInScreen()
+                          .origin());
+  });
 
   // Path to region selection layer.
   const DeepQuery kPathToRegionSelection{
@@ -1117,11 +1124,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifedSelectionCUJTest,
       // Wait for the webview to finish loading to prevent re-entrancy. Then
       // click the center of the region selection layer to select a region.
       // Flush tasks after click to prevent flakiness.
-      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
-                    WaitForScreenshotRendered(kOverlayId),
-                    EnsurePresent(kOverlayId, kPathToRegionSelection),
-                    MoveMouseTo(kOverlayId, kPathToRegionSelection),
-                    ClickMouse()),
+      InSameContext(
+          WaitForShow(LensOverlayController::kOverlayId),
+          WaitForScreenshotRendered(kOverlayId),
+          EnsurePresent(kOverlayId, kPathToRegionSelection),
+          MoveMouseTo(kOverlayId, kPathToRegionSelection),
+          DragMouseTo(LensOverlayController::kOverlayId, top_left_point)),
 
       // Clicking the overlay should have opened the side panel with the results
       // frame.
@@ -1139,17 +1147,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifedSelectionCUJTest,
           WaitForShow(kOverlaySidePanelWebViewId),
           FocusWebContents(kOverlaySidePanelWebViewId),
           SendAccelerator(kOverlaySidePanelWebViewId, ctrl_c_accelerator),
-          PollState(kRegionCopiedState,
-                    [&]() {
-                      ui::Clipboard* clipboard =
-                          ui::Clipboard::GetForCurrentThread();
-                      std::string clipboard_data;
-                      clipboard->ReadData(ui::ClipboardFormatType::PngType(),
-                                          /*data_dst=*/nullptr,
-                                          &clipboard_data);
-                      return !clipboard_data.empty();
-                    }),
-          WaitForState(kRegionCopiedState, true)));
+          PollState(
+              kTextCopiedState,
+              [&]() {
+                ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+                std::u16string clipboard_text;
+                clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                    /* data_dst = */ nullptr, &clipboard_text);
+                return base::EqualsASCII(clipboard_text, "This is test text.");
+              }),
+          WaitForState(kTextCopiedState, true)));
 }
 
 }  // namespace

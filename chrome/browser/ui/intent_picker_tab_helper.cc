@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
@@ -344,11 +345,13 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
     return;
   }
 
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(&GetWebContents());
-  UpdatePageAction(tab_interface, should_show_icon);
-
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    tabs::TabInterface* tab_interface =
+        tabs::TabInterface::GetFromContents(&GetWebContents());
+    UpdatePageAction(tab_interface, should_show_icon);
+  } else {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+  }
 
   icon_resolved_ = true;
   if (icon_update_closure_for_testing_) {

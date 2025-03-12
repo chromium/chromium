@@ -116,7 +116,7 @@
       }
       break;
     case kDisabled:
-    case kAddressBarPromoInsteadOfDBPromo:
+    case kAddressBarPromoInsteadOfBestFeaturesScreen:
       NOTREACHED();
   }
 

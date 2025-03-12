@@ -103,7 +103,7 @@ class Separator : public views::View {
         views::Builder<views::View>()
             // make sure that the view is displayed by setting non-zero size
             .SetPreferredSize(gfx::Size(1, 1))
-            .SetBorder(views::CreateThemedSolidSidedBorder(
+            .SetBorder(views::CreateSolidSidedBorder(
                 gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness,
                                   0),
                 cros_tokens::kCrosSysSeparator))

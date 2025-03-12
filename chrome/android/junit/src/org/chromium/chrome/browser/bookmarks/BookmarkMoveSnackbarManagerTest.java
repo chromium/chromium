@@ -29,10 +29,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -62,7 +60,6 @@ public class BookmarkMoveSnackbarManagerTest {
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private IdentityManager mIdentityManager;
-    @Mock private BookmarkFolderPickerActivity mFolderPickerActivity;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
@@ -136,9 +133,7 @@ public class BookmarkMoveSnackbarManagerTest {
         mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
                 mBookmarkManagerOpener, mBookmarkId1);
         verifyNoInteractions(mSnackbarManager);
-
-        mBookmarkMoveSnackbarManager.onActivityStateChange(
-                mFolderPickerActivity, ActivityState.DESTROYED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
         verifyNoInteractions(mSnackbarManager);
 
         // Subsequent move events shouldn't be captured.
@@ -147,7 +142,7 @@ public class BookmarkMoveSnackbarManagerTest {
                 0,
                 mBookmarkModel.getBookmarkById(mMobileFolderId),
                 0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
         verifyNoInteractions(mSnackbarManager);
     }
 
@@ -162,7 +157,7 @@ public class BookmarkMoveSnackbarManagerTest {
                 0,
                 mBookmarkModel.getBookmarkById(mMobileFolderId),
                 0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
 
         ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -184,7 +179,7 @@ public class BookmarkMoveSnackbarManagerTest {
                 0,
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
                 0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
 
         ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -205,7 +200,7 @@ public class BookmarkMoveSnackbarManagerTest {
                 0,
                 mBookmarkModel.getBookmarkById(mMobileFolderId),
                 0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
 
         ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -228,7 +223,7 @@ public class BookmarkMoveSnackbarManagerTest {
                 0,
                 mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
                 0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
 
         ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -236,22 +231,6 @@ public class BookmarkMoveSnackbarManagerTest {
         assertEquals(
                 "Bookmarks saved to \"Mobile bookmarks\" in your account, test@gmail.com.",
                 snackbar.getTextForTesting());
-    }
-
-    @Test
-    @SmallTest
-    public void testMovementWithoutFeatureFlag() {
-        mBookmarkModel.setAreAccountBookmarkFoldersActive(false);
-        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                mBookmarkManagerOpener, mBookmarkId1);
-
-        mBookmarkModelObserver.bookmarkNodeMoved(
-                mBookmarkModel.getBookmarkById(mAccountMobileFolderId),
-                0,
-                mBookmarkModel.getBookmarkById(mMobileFolderId),
-                0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
-        verifyNoInteractions(mSnackbarManager);
     }
 
     @Test
@@ -266,10 +245,10 @@ public class BookmarkMoveSnackbarManagerTest {
                 mBookmarkModel.getBookmarkById(mMobileFolderId),
                 0);
         doReturn(false).when(mSnackbarManager).canShowSnackbar();
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
         verify(mSnackbarManager, times(0)).showSnackbar(any());
         doReturn(true).when(mSnackbarManager).canShowSnackbar();
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
 
         ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
@@ -290,7 +269,7 @@ public class BookmarkMoveSnackbarManagerTest {
                 0,
                 mBookmarkModel.getBookmarkById(mLongTextFolderId),
                 0);
-        mBookmarkMoveSnackbarManager.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        mBookmarkMoveSnackbarManager.onFolderPickerActivityFinished();
 
         ArgumentCaptor<Snackbar> mSnackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());

@@ -638,10 +638,6 @@ class DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest
     handler.HandleSetChromeSigninUserChoiceForTesting(
         email, ChromeSigninUserChoice::kDoNotSignin);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1183,15 +1179,6 @@ IN_PROC_BROWSER_TEST_F(
       ChromeSigninUserChoice::kSignin);
 }
 
-// Test to sign in to Chrome from the Chrome Signin Bubble Intercept with
-// `switches::kExplicitBrowserSigninUIOnDesktop` enabled.
-class DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest
-    : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
 // This test mainly checks the combination of dismissal and the effect it has on
 // the user choice. Simulating multiple accounts and checks that they do not
 // affect each other:
@@ -1203,7 +1190,7 @@ class DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest
 // - Account1 changes it's pref to always ask and should show the bubble even
 // after 5 dismisses.
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
+    DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest,
     ChromeSigninInterceptDismissBehavior) {
   base::HistogramTester histogram_tester;
 
@@ -1300,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
+    DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest,
     OverrideUserChoicePrefAfterAccept) {
   // Setup an account for interception.
   const std::string email("alice1@example.com");
@@ -1336,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
+    DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest,
     OverrideUserChoicePrefAfterDecline) {
   // Setup an account for interception.
   const std::string email("alice1@example.com");
@@ -1368,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithExplicitBrowserSigninBrowserTest,
+    DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest,
     ChromeSigninBubbleResultsWithAlwaysAskUserChoice) {
   // Setup an account for interception.
   const std::string email("alice1@example.com");
@@ -1414,27 +1401,20 @@ IN_PROC_BROWSER_TEST_F(
 class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  public:
-  DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest() {
-    feature_list_.InitWithFeatureState(
-        switches::kExplicitBrowserSigninUIOnDesktop, !content::IsPreTest());
-  }
+  DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest() = default;
 
  protected:
   const std::string email_ = "alice@example.com";
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-// Signing in to Chrome while `switches::kExplicitBrowserSigninUIOnDesktop` is
-// disabled, to simulate a signed in user prior to
-// `switches::kExplicitBrowserSigninUIOnDesktop` activation, then enabling the
-// feature for them.
+// Signing in to Chrome while UNO is disabled, to simulate a signed in user
+// prior to UNO activation, then enabling the feature for them.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
     PRE_ChromeSignedInTransitionToUnoEnabled) {
-  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
+  Profile* profile = browser()->profile();
+  profile->GetPrefs()->ClearPref(
+      prefs::kCookieClearOnExitMigrationNoticeComplete);
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager(),
@@ -1455,12 +1435,11 @@ IN_PROC_BROWSER_TEST_F(
   SetSignoutAllowed(false);
 }
 
-// Enabling `switches::kExplicitBrowserSigninUIOnDesktop`, after being signed in
+// Enabling UNO, after being signed in
 // already.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
     ChromeSignedInTransitionToUnoEnabled) {
-  ASSERT_TRUE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   // We are still signed in from the PRE_ test.
   ASSERT_TRUE(IsChromeSignedIn());
 
@@ -1502,108 +1481,6 @@ IN_PROC_BROWSER_TEST_F(
   identity_test_env()->ClearPrimaryAccount();
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kExplicitBrowserSignin));
-}
-
-// Test Suite where PRE_* tests are with
-// `switches::kExplicitBrowserSigninUIOnDesktop` enabled, and regular test with
-// `switches::kExplicitBrowserSigninUIOnDesktop` disabled. Simulating a
-// rollback.
-class DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest
-    : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
- public:
-  DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest() {
-    feature_list_.InitWithFeatureState(
-        switches::kExplicitBrowserSigninUIOnDesktop, content::IsPreTest());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest,
-    PRE_ChromeSignedinWithUnoShouldRevertBackToDefaultWithUnoDisabled) {
-  ASSERT_TRUE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
-  signin::MakeAccountAvailable(
-      identity_manager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          .WithAccessPoint(
-              signin_metrics::AccessPoint::kChromeSigninInterceptBubble)
-          .Build("alice@example.com"));
-
-  EXPECT_TRUE(IsChromeSignedIn());
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kExplicitBrowserSignin));
-  // Passwords are defaulted to enabled with an explicit sign in and
-  // `switches::kExplicitBrowserSigninUIOnDesktop` active.
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile()->GetPrefs(),
-      SyncServiceFactory::GetForProfile(GetProfile())));
-
-  SetSignoutAllowed(false);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest,
-    ChromeSignedinWithUnoShouldRevertBackToDefaultWithUnoDisabled) {
-  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
-  // Disabling `switches::kExplicitBrowserSigninUIOnDesktop` should reset the
-  // pref.
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kExplicitBrowserSignin));
-  // Disabling `switches::kExplicitBrowserSigninUIOnDesktop` feature should
-  // revert back to the previous default state, since there were no
-  // interactions, defaults to disabled.
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile()->GetPrefs(),
-      SyncServiceFactory::GetForProfile(GetProfile())));
-}
-
-// WebApps do not trigger interception. Regression test for
-// https://crbug.com/1414988
-IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
-                       WebAppNoInterception) {
-  base::HistogramTester histogram_tester;
-  // Setup profile for interception.
-  identity_test_env()->MakeAccountAvailable("alice@example.com");
-  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
-      "bob@example.com", kNoHostedDomainFound);
-
-  SetupGaiaResponses();
-
-  // Install web app
-  Profile* profile = browser()->profile();
-  const GURL kWebAppURL("https://www.webapp.com");
-  auto web_app_info =
-      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppURL);
-  web_app_info->scope = kWebAppURL.GetWithoutFilename();
-  web_app_info->user_display_mode =
-      web_app::mojom::UserDisplayMode::kStandalone;
-  web_app_info->title = u"A Web App";
-  webapps::AppId app_id =
-      web_app::test::InstallWebApp(profile, std::move(web_app_info));
-
-  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
-
-  ASSERT_NE(app_browser, nullptr);
-  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
-
-  // Trigger signin interception in the web app.
-  DiceWebSigninInterceptor* interceptor =
-      DiceWebSigninInterceptorFactory::GetForProfile(profile);
-  interceptor->MaybeInterceptWebSignin(
-      app_browser->tab_strip_model()->GetActiveWebContents(),
-      account_info.account_id, signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
-
-  // Check that the interception was aborted.
-  histogram_tester.ExpectUniqueSample(
-      "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser, 1);
 }
 
 // Tests the complete interception flow including profile and browser creation.

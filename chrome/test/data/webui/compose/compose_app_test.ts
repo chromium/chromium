@@ -13,7 +13,7 @@ import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
-import {isVisible, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
+import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
@@ -738,39 +738,6 @@ suite('ComposeApp', () => {
         'App result container should be visible.');
     assertStringContains(
         app.$.resultText.$.root.innerText, 'Refreshed output.');
-  });
-
-  test('UpdatesScrollableResultContainerAfterResize', async () => {
-    // Assert scrolling container is set correctly.
-    assertEquals(app.$.resultTextContainer, app.getContainer());
-    mockInput('Some fake input.');
-    app.$.submitButton.click();
-
-    // The results text should not yet be visible because the result has not
-    // been fetched yet.
-    assertFalse(isVisible(app.$.resultTextContainer));
-
-    // Results text should be scrollable when a long response is received.
-    await testProxy.whenCalled('compose');
-    const longResponse = 'x'.repeat(1000);
-    await mockResponse(longResponse);
-    await whenCheck(
-        app.$.resultTextContainer,
-        () => app.$.resultTextContainer.classList.contains('can-scroll'));
-    assertEquals(220, app.$.body.offsetHeight);
-    assertTrue(
-        220 < app.$.resultTextContainer.scrollHeight,
-        'Scroll height (' + app.$.resultTextContainer.scrollHeight +
-            ' should be bigger than 220.');
-
-    // Results text should not be scrollable when a short response is received.
-    app.$.modifierMenu.value = `${StyleModifier.kRetry}`;
-    app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
-    await testProxy.whenCalled('rewrite');
-    await mockResponse('Refreshed output.');
-    await whenCheck(
-        app.$.resultTextContainer,
-        () => !app.$.resultTextContainer.classList.contains('can-scroll'));
   });
 
   test('ComposeWithModifierResult', async () => {

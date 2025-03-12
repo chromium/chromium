@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Анімацыя застаўкі</translation>
 <translation id="152892567002884378">Павялічыць гучнасць</translation>
 <translation id="1539864135338521185">лазурыт</translation>
+<translation id="1548555207631326346">Выберыце тэму, а потым націсніце на падкрэсленыя словы, каб персаналізаваць відарысы, створаныя з дапамогай AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Калі вы выкарыстоўваеце штучны інтэлект, ваш запыт адпраўляецца на серверы Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генератыўны штучны інтэлект – гэта эксперыментальная функцыя, якая знаходзіцца на раннім этапе распрацоўкі і пакуль даступная не ўсім.</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
 <translation id="1561927818299383735">колер падсветкі</translation>
@@ -1551,6 +1560,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Выкарыстоўвайце штучны інтэлект ад Google для больш эфектыўнай працы</translation>
+<translation id="82003371436638355">Выберыце "Стварыць уласны варыянт" і напішыце свой запыт. Або націсніце "Выбраць тэму", а потым выберыце падкрэсленыя словы, каб персаналізаваць шпалеры ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Калі вы ствараеце ўласныя шпалеры, ваш запыт адпраўляецца на серверы Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Умовамі выкарыстання і Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Пры выкарыстанні гэтых функцый не ўключайце ў тэксты асабістую і канфідэнцыяльную інфармацыю.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генератыўны штучны інтэлект можа рабіць памылкі, у тым ліку ў інфармацыі пра людзей, таму пераправярайце атрыманыя звесткі. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Даведацца больш<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
@@ -1572,6 +1591,7 @@
 <translation id="8312330582793120272">прайграць медыязмесціва</translation>
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8320910311642849813">лес</translation>
+<translation id="8322464149031882595">Націснуць, каб рухацца далей</translation>
 <translation id="8329018942023753850">праграма "Калькулятар"</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
 <translation id="8339024191194156249">Даведацца больш пра аўтазапуск</translation>
@@ -1718,6 +1738,7 @@
 <translation id="8961025972867871808">пінгвіны</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
+<translation id="8972061581514441296">Націснуць, каб вярнуцца</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">вёска</translation>

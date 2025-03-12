@@ -21,6 +21,8 @@ struct PLATFORM_EXPORT PaintedSelectionBound {
   gfx::Point edge_end;
   // Whether this bound is hidden (clipped out/occluded) within the painted
   // content of the layer (as opposed to being outside of the layer's bounds).
+  // TODO(crbug.com/376381581): This is not used in
+  // SelectionVisibilityAfterPaint. Remove this field when removing the flag.
   bool hidden;
 
   DISALLOW_NEW();

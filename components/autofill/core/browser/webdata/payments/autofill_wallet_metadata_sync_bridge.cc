@@ -732,6 +732,10 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
       CreateMetadataChangeList();
 
   switch (change.type()) {
+    case AutofillDataModelChange<DataType, KeyType>::HIDE_IN_AUTOFILL:
+      // `HIDE_IN_AUTOFILL` is not supported for wallet metadata.
+      NOTIMPLEMENTED();
+      break;
     case AutofillDataModelChange<DataType, KeyType>::REMOVE:
       if (RemoveServerMetadata(GetAutofillTable(), type, metadata_id)) {
         cache_.erase(storage_key);

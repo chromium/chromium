@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
 #import "ios/chrome/browser/webui/ui_bundled/chrome_urls/chrome_urls_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/crashes_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/data_sharing_internals/data_sharing_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/download_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/flags_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/gcm/gcm_internals_ui.h"
@@ -122,6 +123,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   }
   if (url_host == kChromeUICrashesHost) {
     return &NewWebUIIOS<CrashesUI>;
+  }
+  if (url_host == kChromeUIDataSharingInternalsHost) {
+    return &NewWebUIIOS<DataSharingInternalsUI>;
   }
   if (url_host == kChromeUIDownloadInternalsHost) {
     return InternalDebugPagesEnabled()

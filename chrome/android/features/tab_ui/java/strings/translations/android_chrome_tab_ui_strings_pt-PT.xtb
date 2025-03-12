@@ -66,6 +66,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="3078350928901129212">Ícone da cor do grupo de separadores <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Lista de grupos de separadores fechada</translation>
 <translation id="3194464645767632461">classificação</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores ao grupo}}</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
 <translation id="3547352561153509682">Esta ação elimina o grupo de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> novo separador}other{<ph name="MANY_ADDED" /> novos separadores}}</translation>
@@ -75,7 +76,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="374923079891132274">Miniat. pré-visual. folha partilha</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="381219490185664296">Desagrupar o grupo de separadores?</translation>
-<translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>
+<translation id="3940195383040445971">Acompanhe os preços nos separadores</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> novo separador, <ph name="ANY_CLOSED" /> fechado}other{<ph name="MANY_ADDED" /> novos separadores, <ph name="ANY_CLOSED" /> fechados}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar separador}other{Agrupar separadores}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador inativo}other{<ph name="TABS_COUNT_MANY" /> separadores inativos}}</translation>
@@ -98,6 +99,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="4783638485675352219">Partilhe os títulos e os URLs dos separadores abertos deste dispositivo com o sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> crítica)}other{(<ph name="REVIEWS_COUNT_MANY" /> críticas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados ao grupo}}</translation>
 <translation id="4861611890274104875">Ignorar o cartão.</translation>
 <translation id="4861953997778766866">Todos podem fazer alterações aos seus grupos de separadores partilhados</translation>
 <translation id="4870911314065352661">Fechar todos os separadores?</translation>
@@ -134,6 +136,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6271513594716432922">Fechar todos os separadores inativos</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
 <translation id="6333260925957816943">Informações acerca desta loja</translation>
 <translation id="6381032505162537930">Os seus grupos de separadores vão ser apresentados aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Desagrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
@@ -186,6 +189,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="799469866974412355">Novo grupo do seu outro dispositivo</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>
 <translation id="8053770993984522566">Lista de grupos de separadores, aberta a meia altura</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Expanda o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Expanda o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Mover separador para cima</translation>

@@ -996,6 +996,7 @@
 <translation id="5696597120588531049">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते</translation>
 <translation id="5698878456427040674">निवडलेल्या खात्याला सपोर्ट आहे का हे तपासा.</translation>
 <translation id="570347048394355941">टॅब वर स्विच करा</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> ला सिरीअल पोर्टशी कनेक्ट करायचे आहे</translation>
 <translation id="5715150588940290235">सेव्ह केलेले सुरक्षा कोड हटवायचे आहेत का?</translation>
 <translation id="571930967925877633">तुमचे बुकमार्क, इतिहास आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
 <translation id="572328651809341494">अलीकडील टॅब</translation>
@@ -1128,6 +1129,7 @@
 <translation id="6296366034485697675">एक्सपोर्ट करा आणि हटवा</translation>
 <translation id="629730747756840877">खाते</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
+<translation id="6307241780749477694">तुम्हाला या डिव्हाइसवर तुमचे सर्व पासवर्ड मिळवण्यासाठी तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
 <translation id="6315386555979018699">हटवा आणि पुढे सुरू ठेवा</translation>
 <translation id="6316139424528454185">Android आवृत्तीला सपोर्ट नाही</translation>
@@ -1389,6 +1391,7 @@
 <translation id="7359002509206457351">पेमेंट पद्धती अ‍ॅक्सेस करा</translation>
 <translation id="7363349185727752629">तुमच्या गोपनीयता निवडींचे मार्गदर्शक</translation>
 <translation id="7364103838544876661">ब्राउझिंग डेटा हटवण्याचे आणखी पर्याय</translation>
+<translation id="7365073365123878797">Google Password Manager सह पासवर्ड सेव्ह करणे आणि वापरणे सुरू करण्यासाठी, Google Play सेवा अपडेट करा</translation>
 <translation id="7375125077091615385">प्रकार:</translation>
 <translation id="7376560087009844242">एखाद्या पेजवरील जास्त मजकुराचा समावेश केल्याने, शोधण्यासाठी स्पर्श करा हे वापरताना तुम्हाला आणखी चांगले परिणाम दिसू शकतात. हे बदलण्यासाठी तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> ना कधीही भेट देऊ शकता.</translation>
 <translation id="7379900596734708416">साइटसाठी गडद थीम उपलब्ध आहेत</translation>
@@ -1467,10 +1470,12 @@
 <translation id="7686086654630106285">साइटने सुचवलेल्या जाहिरातींबद्दल आणखी</translation>
 <translation id="7690596512217303514">तुमच्या डिव्हाइसला Chrome उघडता आले नाही. समस्येचे निराकरण करण्यासाठी, तुमच्या अ‍ॅप स्टोअरवरून नवीनतम Chrome अपडेट डाउनलोड करा.</translation>
 <translation id="7691043218961417207">फॉलो करण्यासाठी आशय एक्सप्लोर करा</translation>
+<translation id="7692761875510935111">ब्राउझरमध्ये झटपट उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
 <translation id="7697383401610880082">ड्रॅग हॅंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मध्ये ईमेल तयार करा</translation>
 <translation id="7702420606070050505">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट पूर्णपणे उघडली आहे</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
+<translation id="7708994397325774423">तुमचे सर्व पासवर्ड मिळवा</translation>
 <translation id="7733878270780732638">डिव्हाइसवर पुरेशी रिकामी जागा नाही.</translation>
 <translation id="7746817319925672889">Google Password Manager या डिव्हाइसवर काम करणे लवकरच थांबवेल</translation>
 <translation id="774876555279732384">ऑटोफिल सेवा <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील व्यवस्थापित केल्या जातात.</translation>
@@ -1612,6 +1617,7 @@
 <translation id="8310451567823644042">पासवर्ड लवकरच काम करणे थांबवतील</translation>
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
 <translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome हे अशा साइटविषयी तुम्हाला कळवू शकते, ज्या कदाचित खूप जास्त नोटिफिकेशन पाठवत असतील</translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8348430946834215779">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा</translation>
@@ -1743,6 +1749,7 @@
 <translation id="8937772741022875483">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाकायची का?</translation>
 <translation id="8942627711005830162">इतर विंडोमध्ये उघडा</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ही भाषा डाउनलोड करता आली नाही. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="8946759102391960088">तुमच्या सर्व पासवर्डचा अ‍ॅक्सेस ठेवा</translation>
 <translation id="8957528460562961174">तुमच्या पासवर्डचा ॲक्सेस कायम ठेवण्यासाठी, ते आता एक्सपोर्ट करा आणि नंतर ते तुमच्या प्राधान्य दिलेल्या पासवर्ड व्यवस्थापकामध्ये इंपोर्ट करा. Google Play सेवा उपलब्ध नसल्यामुळे, Google Password Manager काम करणे थांबले आहे.</translation>
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8965591936373831584">प्रलंबित</translation>

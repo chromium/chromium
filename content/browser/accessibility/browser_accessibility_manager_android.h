@@ -115,9 +115,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void FireAriaNotificationEvent(
       ui::BrowserAccessibility* node,
       const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority_property,
       const std::string& notification_id,
-      ax::mojom::AriaNotificationInterrupt interrupt_property,
-      ax::mojom::AriaNotificationPriority priority_property) override;
+      ax::mojom::AriaNotificationInterrupt interrupt_property) override;
 
   void FireLocationChanged(ui::BrowserAccessibility* node);
 

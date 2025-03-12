@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/network_service_devtools_observer.h"
 
+#include "base/feature_list.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/audits_handler.h"
@@ -12,6 +13,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -130,10 +132,15 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   if (!ftn)
     return;
+
   auto cors_error_status =
       protocol::Network::CorsErrorStatus::Create()
           .SetCorsError(
-              protocol::Network::CorsErrorEnum::InsecurePrivateNetwork)
+              base::FeatureList::IsEnabled(
+                  network::features::kLocalNetworkAccessChecks)
+                  ? protocol::Network::CorsErrorEnum::
+                        LocalNetworkAccessPermissionDenied
+                  : protocol::Network::CorsErrorEnum::InsecurePrivateNetwork)
           .SetFailedParameter("")
           .Build();
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =

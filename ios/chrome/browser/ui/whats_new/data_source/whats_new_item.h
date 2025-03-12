@@ -53,7 +53,7 @@ enum class WhatsNewPrimaryAction {
   kIOSSettings = 1,
   kPrivacySettings = 2,
   kChromeSettings = 3,
-  kIOSSettingsPasswords = 4,
+  kIOSCredentialProviderSettings = 4,
   kLens = 5,
   kSafeBrowsingSettings = 6,
   kChromePasswordManager = 7,

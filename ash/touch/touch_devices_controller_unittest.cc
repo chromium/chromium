@@ -77,7 +77,7 @@ class TouchDevicesControllerSigninTest : public NoSessionAshTestBase {
   }
 
   void CreateTestUserSessions() {
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
     SimulateUserLogin({kUser1Email});
     SimulateUserLogin({kUser2Email});
     SwitchActiveUser(kUser1Email);

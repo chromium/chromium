@@ -148,8 +148,7 @@ int ImpressionsCount(const base::Value::List& impressions,
       _safetyCheckState.delegate = self;
 
       if (ShouldHideSafetyCheckModuleIfNoIssues()) {
-        [self updateIssueCount:[_safetyCheckState numberOfIssues]
-               withPrefService:localState];
+        [self updateIssueCount:[_safetyCheckState numberOfIssues]];
       }
 
       _safetyCheckManagerObserver =
@@ -258,8 +257,7 @@ int ImpressionsCount(const base::Value::List& impressions,
   _safetyCheckState.shouldShowSeeMore = [_safetyCheckState numberOfIssues] > 2;
 
   if (ShouldHideSafetyCheckModuleIfNoIssues()) {
-    [self updateIssueCount:[_safetyCheckState numberOfIssues]
-           withPrefService:_localState];
+    [self updateIssueCount:[_safetyCheckState numberOfIssues]];
   }
 
   if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
@@ -489,13 +487,11 @@ int ImpressionsCount(const base::Value::List& impressions,
 }
 
 // Persists the current number of Safety Check issues, `issuesCount`, to
-// `localPrefService`.
-- (void)updateIssueCount:(NSUInteger)issuesCount
-         withPrefService:(PrefService*)localPrefService {
-  CHECK(localPrefService);
+// `_userState`.
+- (void)updateIssueCount:(NSUInteger)issuesCount {
   CHECK(ShouldHideSafetyCheckModuleIfNoIssues());
 
-  localPrefService->SetInteger(
+  _userState->SetInteger(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
 }
 

@@ -176,8 +176,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
 
   void SetQuota(int64_t quota) {
     quota_manager_->SetQuota(
-        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        blink::mojom::StorageType::kTemporary, quota);
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin), quota);
   }
 
   int64_t GetFreeQuota() {

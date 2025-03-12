@@ -246,7 +246,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
  private:
   void UpdateBackgroundColor(bool is_active) {
-    background()->SetNativeControlColor(GetFolderBackgroundColor(is_active));
+    background()->SetColor(GetFolderBackgroundColor(is_active));
     SchedulePaint();
   }
 

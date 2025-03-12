@@ -42,11 +42,21 @@ class DownloadProtectionDelegate {
 
   // Returns whether the download item should be checked by
   // CheckClientDownload() based on whether the file supports the check.
-  virtual bool IsSupportedDownload(const download::DownloadItem& item,
+  // May modify the DownloadItem with a SupportsUserData::Data.
+  virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const = 0;
 
   // Returns the URL that will be contacted for download protection requests.
   virtual const GURL& GetDownloadRequestUrl() const = 0;
+
+  // Sampling rate for when an allowlisted download may generate a sampled ping,
+  // if other requirements are met.
+  virtual float GetAllowlistedDownloadSampleRate() const = 0;
+
+  // Sampling rate for when an unsupported download may generate a sampled ping,
+  // if other requirements are met.
+  virtual float GetUnsupportedFileSampleRate(
+      const base::FilePath& filename) const = 0;
 
   // Completes the network traffic annotation for CheckClientDownloadRequest.
   virtual net::NetworkTrafficAnnotationTag

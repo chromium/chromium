@@ -375,7 +375,6 @@
 <translation id="1244265436519979884">現在、Linux の復元が進行中です</translation>
 <translation id="1244303850296295656">拡張機能のエラー</translation>
 <translation id="1244917379075403655">[設定] をクリックします</translation>
-<translation id="1245041875932187638">AI による自動入力で使用するすべてのデータを削除</translation>
 <translation id="1245331638296910488">Microsoft 365 で開いたファイルは OneDrive に移動します</translation>
 <translation id="1245628370644070008">ローカルデータの復元</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
@@ -1404,7 +1403,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />（USB）</translation>
 <translation id="1969550816138571473">準備しています</translation>
 <translation id="1969654639948595766">WebRTC テキストログ（<ph name="WEBRTC_TEXT_LOG_COUNT" />）</translation>
-<translation id="1971694696800660479">データはすべて削除されます。この操作は元に戻せません</translation>
 <translation id="1972313920920745320">追加したサイトは常にアクティブになり、メモリの解放は行われません。<ph name="BEGIN_LINK" />特定のサイトを常にアクティブにする方法について<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="197288927597451399">保存</translation>
@@ -2284,6 +2282,7 @@
 <translation id="256517381556987641">ファイル同期により、これまでに <ph name="ITEMS_FOUND" /> 個のファイルが見つかりました。現在、保存容量を確認しています。数分後にファイル同期をもう一度オンにしてみてください。</translation>
 <translation id="2565214867520763227">スクリーン リーダーをオンにする</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> さんと他 <ph name="NUM_OTHER_MEMBERS" /> 人のタブグループに参加</translation>
+<translation id="256726287944589768">新しいタブページにフッターを表示する</translation>
 <translation id="2568694057933302218">シークレット モードのとき、サイトは Cookie を使用して他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
 <translation id="2569972178052279830">販売店の名前</translation>
@@ -2792,6 +2791,7 @@
 <translation id="2921081876747860777">ローカルデータを保護するパスワードを作成してください。</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> は今すぐロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />。同じタスクグループ内の他 <ph name="OTHER_TASK_NUM" /> 件のタスク: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">このアカウントを削除</translation>
 <translation id="2923644930701689793">スマートフォンのカメラロールにアクセス</translation>
 <translation id="292371311537977079">Chrome の設定</translation>
@@ -3049,7 +3049,6 @@
 <translation id="3108957152224931571">ハイライトの色</translation>
 <translation id="3109206895301430738">保存したタブグループ</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
-<translation id="310979712355504754">すべて削除</translation>
 <translation id="3112292765614504292">アプリのサイズ: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">このタブを追加しました</translation>
 <translation id="311394601889664316">サイトにデバイス上のファイルやフォルダの編集を許可しない</translation>
@@ -4066,7 +4065,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が承認されました}other{# 個の拡張機能が承認されました}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。</translation>
-<translation id="3824203811509979971">コンテンツの要約や質問を行う</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">ログインして他のデバイスのタブを表示</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}other{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}}</translation>
@@ -5878,7 +5876,6 @@
 <translation id="512642543295077915">検索+Backspace</translation>
 <translation id="5126611267288187364">変更の表示</translation>
 <translation id="5127620150973591153">安全な接続 ID: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">コンテンツを要約したり、質問したりできます。</translation>
 <translation id="5127881134400491887">ネットワーク接続の管理</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5127986747308934633">管理者がデバイスを制御しています</translation>
@@ -7425,7 +7422,6 @@
 <translation id="6254892857036829079">非常に良い</translation>
 <translation id="6257131917452817589">自動パスワード変更</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 所有者情報を更新</translation>
 <translation id="6262371516389954471">バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
@@ -9854,6 +9850,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 音声 <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android スマートフォンから Wi-Fi を自動的に移行</translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
+<translation id="7992080146463834191">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます。</translation>
 <translation id="7992203134935383159">音声合成</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
 <translation id="7997828719430450286">成功。</translation>
@@ -11119,6 +11116,7 @@
 <translation id="8874448314264883207">「<ph name="EXTENSION_NAME" />」をオフにしました</translation>
 <translation id="8874647982044395866">オーガニック</translation>
 <translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
+<translation id="8875221558267407626">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます</translation>
 <translation id="8875520811099717934">Linux のアップグレード</translation>
 <translation id="8875736897340638404">公開設定を選択します</translation>
 <translation id="8876307312329369159">この設定はデモセッションでは変更できません。</translation>

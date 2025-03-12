@@ -832,7 +832,6 @@ static_library("browser") {
     "//build:branding_buildflags",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
-    "//components/autofill_ai/core/browser:features",
     "//components/device_reauth",
     "//components/feature_engagement",
     "//components/google/core/common",
@@ -953,6 +952,8 @@ static_library("test_support") {
     "data_manager/addresses/address_data_manager_test_utils.h",
     "data_manager/addresses/test_address_data_manager.cc",
     "data_manager/addresses/test_address_data_manager.h",
+    "data_manager/autofill_ai/entity_data_manager_test_utils.cc",
+    "data_manager/autofill_ai/entity_data_manager_test_utils.h",
     "data_manager/payments/payments_data_manager_test_api.cc",
     "data_manager/payments/payments_data_manager_test_api.h",
     "data_manager/payments/payments_data_manager_test_utils.cc",
@@ -1274,7 +1275,6 @@ source_set("unit_tests") {
     "field_type_utils_unittest.cc",
     "field_types_unittest.cc",
     "filling/addresses/field_filling_address_util_unittest.cc",
-    "filling/autofill_ai/field_filling_entity_util_unittest.cc",
     "filling/field_filling_util_unittest.cc",
     "filling/form_autofill_history_unittest.cc",
     "filling/form_filler_unittest.cc",
@@ -1499,8 +1499,10 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android && !is_fuchsia) {
-    sources +=
-        [ "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc" ]
+    sources += [
+      "filling/autofill_ai/field_filling_entity_util_unittest.cc",
+      "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc",
+    ]
   }
 
   if (build_with_model_execution) {

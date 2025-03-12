@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
@@ -57,13 +59,17 @@ std::u16string GetValueForInput(const std::u16string& value,
 
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
-    const EntityDataManager& edm) {
+    const AutofillClient& client) {
+  const EntityDataManager* const edm = client.GetEntityDataManager();
+  if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
+    return {};
+  }
   auto fillable_by_autofill_ai =
       [&, fillable_types =
               std::optional<FieldTypeSet>()](FieldType field_type) mutable {
         if (!fillable_types) {
           fillable_types.emplace();
-          for (const EntityInstance& entity : edm.GetEntityInstances()) {
+          for (const EntityInstance& entity : edm->GetEntityInstances()) {
             for (const AttributeInstance& attribute : entity.attributes()) {
               fillable_types->insert(attribute.type().field_type());
             }

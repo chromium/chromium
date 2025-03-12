@@ -2925,26 +2925,24 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
-            # TODO(crbug.com/396611135): Enable actual tests.
-            # "gpu_fyi_win_gtests",
-            # "gpu_fyi_win_amd_release_telemetry_tests",
+            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_amd_release_telemetry_tests",
         ],
         mixins = [
             "win11_amd_rx_7600_stable",
         ],
         per_test_modifications = {
-            # "gl_unittests": targets.mixin(
-            #     args = [
-            #         "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_unittests.filter",
-            #     ],
-            # ),
-            # "media_foundation_browser_tests": targets.remove(
-            #     reason = [
-            #         "TODO(crbug.com/40912267): Enable Media Foundation browser tests on ",
-            #         "gpu bots once the Windows OS supports HW secure decryption.",
-            #     ],
-            # ),
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_tests_passthrough.filter",
+                ],
+            ),
+            "media_foundation_browser_tests": targets.remove(
+                reason = [
+                    "TODO(crbug.com/40912267): Enable Media Foundation browser tests on ",
+                    "gpu bots once the Windows OS supports HW secure decryption.",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(

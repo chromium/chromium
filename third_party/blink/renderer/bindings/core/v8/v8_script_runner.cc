@@ -701,7 +701,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       // `SharedStorageWorkletGlobalScope` has a out-of-process worklet
       // architecture that does not have a `page` associated.
       // TODO(crbug.com/340920456): Figure out what should be done here.
-      if (compile_options == v8::ScriptCompiler::kProduceCompileHints &&
+      if ((compile_options & v8::ScriptCompiler::kProduceCompileHints) != 0 &&
           !execution_context->IsSharedStorageWorkletGlobalScope()) {
         CHECK(page);
         CHECK(frame);

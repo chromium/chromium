@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> のタブグループ カラーアイコン</translation>
 <translation id="311432875115153175">タブグループのリストを閉じました</translation>
 <translation id="3194464645767632461">評価</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブをグループに追加}other{<ph name="TABS_COUNT_MANY" /> 個のタブをグループに追加}}</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個の新しいタブ}other{<ph name="MANY_ADDED" /> 個の新しいタブ}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">このデバイスで開いているタブのタイトルと URL をオペレーティング システムと共有する</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ）}other{（<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ）}}</translation>
 <translation id="4850886885716139402">表示</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループに追加}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループに追加}}</translation>
 <translation id="4861611890274104875">カードを閉じます。</translation>
 <translation id="4861953997778766866">共有タブグループは誰でも変更できます</translation>
 <translation id="4870911314065352661">タブをすべて閉じますか？</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6271513594716432922">アクティブでないタブをすべて閉じる</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
 <translation id="6333260925957816943">このショップに関する情報</translation>
 <translation id="6381032505162537930">タブグループはここに表示されます</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブのグループ化を解除}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブのグループ化を解除}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">他のデバイスで作成された新しいグループ</translation>
 <translation id="8029301326595421733">このショップに関する情報が画面全体に表示されています</translation>
 <translation id="8053770993984522566">タブグループのリストが画面の下半分に表示されています</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{<ph name="TITLE_OF_GROUP" /> タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
 <translation id="8205266828577616993">タブを上に移動</translation>

@@ -40,6 +40,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Tabs" summary="Tabs"/>
 </variants>
 
+<variants name="ExternalAppType">
+  <variant name="PixelLauncher" summary="Pixel launcher app"/>
+  <variant name="ThirdPartyLauncher" summary="Third party launcher app"/>
+</variants>
+
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
     expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
@@ -150,6 +155,21 @@ chromium-metrics-reviews@google.com.
     The histogram is logged when Chrome is paused and a small set of favicon
     fetching is completed for the auxiliary search. Android-only.
   </summary>
+</histogram>
+
+<histogram
+    name="Search.AuxiliarySearch.LaunchedFromExternalApp.{ExternalAppType}.{AuxiliarySearchEntryType}"
+    enum="EntryClickedPosition" expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type and the position of a donated data when it is clicked by
+    users from the external app. The histogram is logged when Chrome is launched
+    via an View Intent from the external app. Android only.
+  </summary>
+  <token key="ExternalAppType" variants="ExternalAppType"/>
+  <token key="AuxiliarySearchEntryType" variants="AuxiliarySearchEntryType"/>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.Module.ClickInfo" enum="ClickInfo"

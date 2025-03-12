@@ -83,7 +83,7 @@ void KeyItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void KeyItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  GetBackground()->SetNativeControlColor(GetColor());
+  GetBackground()->SetColor(GetColor());
   SchedulePaint();
 }
 

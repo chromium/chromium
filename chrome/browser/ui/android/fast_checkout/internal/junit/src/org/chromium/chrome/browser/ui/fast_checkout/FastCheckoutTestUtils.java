@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.suggestion.Icon;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 
 /** A collection of helper methods for FastCheckout tests. */
@@ -19,7 +20,8 @@ class FastCheckoutTestUtils {
             String city,
             String postalCode,
             String email,
-            String phoneNumber) {
+            String phoneNumber,
+            @RecordType int recordType) {
         return new FastCheckoutAutofillProfile(
                 guid,
                 name,
@@ -34,7 +36,8 @@ class FastCheckoutTestUtils {
                 /* countryName= */ "",
                 phoneNumber,
                 email,
-                /* languageCode= */ "en-US");
+                /* languageCode= */ "en-US",
+                /* recordType= */ recordType);
     }
 
     /** Creates a detailed {@link FastCheckoutCreditCard}. */

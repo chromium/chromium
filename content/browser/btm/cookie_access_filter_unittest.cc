@@ -35,7 +35,7 @@ TEST(CookieAccessFilter, NoAccesses) {
   CookieAccessFilter filter;
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kNone,
                                            BtmDataAccessType::kNone));
 }
@@ -47,7 +47,7 @@ TEST(CookieAccessFilter, OneRead_Former) {
   filter.AddAccess(url1, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kRead,
                                            BtmDataAccessType::kNone));
 }
@@ -59,7 +59,7 @@ TEST(CookieAccessFilter, OneRead_Latter) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kNone,
                                            BtmDataAccessType::kRead));
 }
@@ -71,7 +71,7 @@ TEST(CookieAccessFilter, OneWrite) {
   filter.AddAccess(url2, CookieOperation::kChange);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kNone,
                                            BtmDataAccessType::kWrite));
 }
@@ -83,7 +83,7 @@ TEST(CookieAccessFilter, UnexpectedURL) {
   filter.AddAccess(GURL("http://other.com"), CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_FALSE(filter.Filter({url1, url2}, &result));
+  ASSERT_FALSE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kUnknown,
                                            BtmDataAccessType::kUnknown));
 }
@@ -96,7 +96,7 @@ TEST(CookieAccessFilter, TwoReads) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kRead,
                                            BtmDataAccessType::kRead));
 }
@@ -110,7 +110,7 @@ TEST(CookieAccessFilter, CoalesceReadBeforeWrite) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kRead));
 }
@@ -124,7 +124,7 @@ TEST(CookieAccessFilter, CoalesceReadBeforeWrite_Repeated) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kRead));
@@ -139,7 +139,7 @@ TEST(CookieAccessFilter, CoalesceWrites) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kWrite,
                                            BtmDataAccessType::kRead));
 }
@@ -153,7 +153,7 @@ TEST(CookieAccessFilter, CoalesceWrites_Repeated) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kWrite,
                                            BtmDataAccessType::kWrite,
                                            BtmDataAccessType::kRead));
@@ -168,7 +168,7 @@ TEST(CookieAccessFilter, CoalesceReads) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kRead,
                                            BtmDataAccessType::kRead));
 }
@@ -182,7 +182,7 @@ TEST(CookieAccessFilter, CoalesceReads_Repeated) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kRead,
                                            BtmDataAccessType::kRead,
                                            BtmDataAccessType::kRead));
@@ -197,7 +197,7 @@ TEST(CookieAccessFilter, CoalesceWriteBeforeRead) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kRead));
 }
@@ -211,7 +211,7 @@ TEST(CookieAccessFilter, CoalesceWriteBeforeRead_Repeated) {
   filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url1, url2}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kRead));
@@ -227,7 +227,7 @@ TEST(CookieAccessFilter, SameURLTwiceWithDifferentAccessTypes) {
   filter.AddAccess(url1, CookieOperation::kRead);
 
   std::vector<BtmDataAccessType> result;
-  ASSERT_TRUE(filter.Filter({url1, url2, url1}, &result));
+  ASSERT_TRUE(filter.Filter({url1, url2, url1}, result));
   EXPECT_THAT(result, testing::ElementsAre(BtmDataAccessType::kWrite,
                                            BtmDataAccessType::kReadWrite,
                                            BtmDataAccessType::kRead));

@@ -3817,7 +3817,6 @@ zorunlu kılınmaz ve istekler engellenmez.
 
       Not: <ph name="MS_AD_NAME" /> tarafından yönetilen cihazlarda bu politika, <ph name="MACHINE_NAME_VARIABLE" /> değişkeninin <ph name="MS_AD_NAME" /> makine adına veya bunun bir alt dizesine genişletilmesini destekler. Örneğin, makine adı <ph name="MACHINE_NAME_EXAMPLE" /> ise <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />, 6. konumdan sonra başlayan 4 karakterle değiştirilir (<ph name="MACHINE_NAME_PART_EXAMPLE" /> gibi). Konum sıfır tabanlıdır.</translation>
 <translation id="377044054160169374">Kötüye Kullanım Deneyimi Müdahele Yaptırımı</translation>
-<translation id="3772558247108478825">Üretken Yapay Zeka Akıllı Gruplandırma özelliğiyle ilgili ayarlar</translation>
 <translation id="3778689139323007309">Yerel olarak yüklü CA sertifikaları tarafından imzalanmış başarıyla doğrulanmış sunucu sertifikaları için iptal kontrolleri gerçekleştir</translation>
 <translation id="3780152581321609624">Kerberos SPN'sine standart dışı bağlantı noktasını dahil et</translation>
 <translation id="3785423718413114598">GenAI özelliklerine izin verme</translation>
@@ -4726,17 +4725,6 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="4467952432486360968">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="4472740647327683596">Mikrometre cinsinden sayfanın genişliği</translation>
 <translation id="4474167089968829729">Şifrelerin, şifre yöneticisine kaydedilmesini etkinleştir</translation>
-<translation id="4474320817847428197">Bu politika, <ph name="PRODUCT_OS_NAME" /> için Üretken Yapay Zeka Akıllı Gruplandırma özelliğinin ayarlarını kontrol eder.
-
-0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliğe izin vermez.
-
-Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
-
-Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="447692108909279121">WebRTC IP işleme</translation>
 <translation id="4478248026668918517">Politika kapsamını algılamayı engelle.</translation>
 <translation id="4479671363221255277">Bu politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sisteminde bulunan dosya veya dizinlere File System API üzerinden okuma erişimi vermelerini isteyebilecek sitelerin belirtildiği URL kalıpları listesini oluşturabilirsiniz.
@@ -4748,6 +4736,27 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="4480694116501920047">Güvenli Arama'nın kullanılmasını zorunlu tut</translation>
 <translation id="4481202456143946404">Şartlar'ın yeni sürümünü kullanıma sunan Google3 CL'den türetilen geçerli Hizmet Şartları sürümü.</translation>
+<translation id="4481804933320714808">Bu bir beta özelliktir. Güvenilir test kullanıcılarımız tarafından kullanılabilen bu özellik geliştirme aşamasında olduğu için özellikte değişiklik ve güncelleme yapılabileceğini hatırlatırız.
+
+Bu politikayla yöneticiler, belirli bir anahtar kelimeyle tetiklendiğinde adres çubuğunda arama önerileri ve sonuçlar gösteren bir kurumsal arama toplayıcı belirleyebilir. Kullanıcılar adres çubuğuna <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanında belirtilen anahtar kelimeyi başına @ ekleyerek veya eklemeden (ör. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) yazıp Boşluk veya Sekme tuşuna basarak arama başlatabilir.
+
+Şu alanlar gereklidir: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, adres çubuğunda kullanıcıya gösterilen arama motoru adına karşılık gelir.
+
+<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, kullanıcının aramayı tetiklemek için girdiği anahtar kelimeye karşılık gelir. Kısayol düz kelimeler ve karakterler içerebilir, ancak boşluk içeremez veya @ sembolüyle başlayamaz. Kısayollar benzersiz olmalıdır.
+
+<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, aramanın yapılacağı URL'yi belirtir. Arama motoru sonuç sayfasının web adresini girin ve sorgu alanında <ph name="SEARCH_TERM_MARKER" /> öğesini kullanın.
+
+<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerileri sağlayan URL'yi belirtir. <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_TERM_MARKER" /> öğesini içeriyorsa Chrome, <ph name="SEARCH_TERM_MARKER" /> yerine kullanıcının arama sorgusunu koyarak URL'ye bir GET isteği yapıp arama önerileri elde eder. Aksi takdirde POST isteği yapılır ve kullanıcının sorgusu, <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" /> anahtarının altındaki POST parametrelerinde iletilir.
+
+<ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerilerinde kullanılacak resmin URL'sini belirtir. Bu alan ayarlanmadığında varsayılan simge kullanılır. Site simgesi (ör. <ph name="ICON_URL_EXAMPLE" />) kullanılması önerilir.
+
+<ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerilerini görmek için adres çubuğunun (<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />) gerekli olup olmadığını belirtir. Bu alan ayarlanmazsa adres çubuğu (<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />) gerekli değildir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya "<ph name="MS_AAD_NAME" />" alan adına katılmış ya da "<ph name="CHROME_ENTERPRISE_CORE_NAME" />" öğesine kaydolmuş örneklerde kullanılabilir.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="4481952213163895432">Google Asistan özel kelimesini devre dışı bırak</translation>
 <translation id="4482784169143060077">Otomatik HTTPS yükseltmelerini etkinleştir</translation>
 <translation id="4483120730995943109">0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenmez.</translation>
@@ -8452,12 +8461,6 @@ Bu politika, gelecekte işlem dışı yazıcı sürücüleri özelliği tamamen 
       Bu politika ayarlanmazsa HTTP/0.9, varsayılan olmayan bağlantı noktalarında devre dışı bırakılır.</translation>
 <translation id="6969332115615661188">Video girişini devre dışı bırak</translation>
 <translation id="6969949359984470271">Kiosk web uygulaması, çevrimdışı kullanılamaz</translation>
-<translation id="6971579036359007697">Yerel dosyaların buluta taşınmasını kontrol eder.
-LocalUserFilesAllowed yanlış değerine ayarlandığında yalnızca SkyVault kullanıcıları için geçerlidir. Aksi takdirde yoksayılır.
-
-Politika, "google_drive" değerine ayarlanırsa yerel dosyalar Google Drive'a taşınır ve yerel klasörler gizlenir.
-Politika, "microsoft_onedrive" değerine ayarlanırsa yerel dosyalar OneDrive'a taşınır ve yerel klasörler gizlenir.
-Politika, "salt okuma" değerine ayarlanır veya ayarlanmadan bırakılırsa yerel dosyalar salt okuma modunda kalır.</translation>
 <translation id="6972540544240464302">Görev planlayıcı yapılandırması seç</translation>
 <translation id="6975533677426693807">PDF dosyalarını her zaman dahili PDF görüntüleyiciyi kullanarak aç</translation>
 <translation id="6986172482189158664">Tarama Verisi Geçerlilik Süresi Ayarları</translation>

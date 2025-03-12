@@ -32,7 +32,9 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
@@ -292,12 +294,27 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<ManagementStatus, const char*>> {
+          std::tuple<ManagementStatus, const char*, bool>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
       : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
+    if (enhanced_fields_enabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
+                                policy::features::kEnhancedSecurityEventFields},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              safe_browsing::kEnhancedFieldsForSecOps,
+              policy::features::kEnhancedSecurityEventFields});
+    }
   }
+
   const char* settings_value() { return std::get<1>(GetParam()); }
+
+  bool enhanced_fields_enabled() { return std::get<2>(GetParam()); }
 
   bool is_cloud() {
     return strcmp(settings_value(), kNormalCloudAnalysisSettingsPref) == 0;
@@ -403,6 +420,18 @@ class ConnectorsServiceAnalysisProfileBrowserTest
       ASSERT_TRUE(metadata.device().has_name());
       ASSERT_EQ(metadata.device().name(),
                 *reporting_metadata.FindStringByDottedPath("device.name"));
+
+      if (enhanced_fields_enabled()) {
+        ASSERT_TRUE(metadata.device().has_device_fqdn());
+        ASSERT_EQ(
+            metadata.device().device_fqdn(),
+            *reporting_metadata.FindStringByDottedPath("device.deviceFqdn"));
+
+        ASSERT_TRUE(metadata.device().has_network_name());
+        ASSERT_EQ(
+            metadata.device().network_name(),
+            *reporting_metadata.FindStringByDottedPath("device.networkName"));
+      }
     }
 
     ASSERT_TRUE(metadata.has_profile());
@@ -442,7 +471,8 @@ INSTANTIATE_TEST_SUITE_P(
                                      ManagementStatus::UNAFFILIATED,
                                      ManagementStatus::UNMANAGED),
                      testing::Values(kNormalCloudAnalysisSettingsPref,
-                                     kNormalLocalAnalysisSettingsPref)));
+                                     kNormalLocalAnalysisSettingsPref),
+                     testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {

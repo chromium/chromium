@@ -4,17 +4,15 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {LetterSpacingMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LetterSpacingMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEventForPolymer} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('LetterSpacing', () => {
-  let letterSpacingMenu: LetterSpacingMenu;
+  let letterSpacingMenu: LetterSpacingMenuElement;
   let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
@@ -29,26 +27,22 @@ suite('LetterSpacing', () => {
 
     letterSpacingMenu = document.createElement('letter-spacing-menu');
     document.body.appendChild(letterSpacingMenu);
-    flush();
   });
 
   test('spacing change', async () => {
     const veryWide = chrome.readingMode.veryWideLetterSpacing;
-    emitEventForPolymer(
-        letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
-        {detail: {data: veryWide}});
+    letterSpacingMenu.$.menu.dispatchEvent(new CustomEvent(
+        ToolbarEvent.LETTER_SPACING, {detail: {data: veryWide}}));
     assertEquals(veryWide, chrome.readingMode.letterSpacing);
 
     const wide = chrome.readingMode.wideLetterSpacing;
-    emitEventForPolymer(
-        letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
-        {detail: {data: wide}});
+    letterSpacingMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.LETTER_SPACING, {detail: {data: wide}}));
     assertEquals(wide, chrome.readingMode.letterSpacing);
 
     const standard = chrome.readingMode.standardLetterSpacing;
-    emitEventForPolymer(
-        letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
-        {detail: {data: standard}});
+    letterSpacingMenu.$.menu.dispatchEvent(new CustomEvent(
+        ToolbarEvent.LETTER_SPACING, {detail: {data: standard}}));
     assertEquals(standard, chrome.readingMode.letterSpacing);
 
     assertEquals(

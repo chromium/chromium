@@ -99,6 +99,8 @@
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -6923,11 +6925,25 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(adm.GetProfiles().empty());
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 class BrowserAutofillManagerWithAiModelTest
     : public BrowserAutofillManagerTest {
  public:
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
+
+    // Features.
+    feature_list_.InitWithFeatures(
+        {features::kAutofillAiWithDataSchema, features::kAutofillAiServerModel},
+        {});
+
+    // Pref and identity state.
+    client().SetUpPrefsAndIdentityForAutofillAi();
+    client().set_entity_data_manager(std::make_unique<EntityDataManager>(
+        webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+        /*strike_database=*/nullptr));
+
     ON_CALL(client(), GetAutofillAiModelCache).WillByDefault(Return(&cache_));
     ON_CALL(client(), GetAutofillAiModelExecutor)
         .WillByDefault(Return(&executor_));
@@ -6985,6 +7001,9 @@ class BrowserAutofillManagerWithAiModelTest
   MockAutofillAiModelExecutor& executor() { return executor_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
   MockAutofillAiModelCache cache_;
   MockAutofillAiModelExecutor executor_;
 };
@@ -7014,6 +7033,19 @@ TEST_F(BrowserAutofillManagerWithAiModelTest,
   EXPECT_CALL(executor(), GetPredictions).Times(0);
   SeeForm(/*may_run_model=*/false);
 }
+
+// Tests that the Autofill AI server model is not run if the user does not have
+// model permissions.
+TEST_F(BrowserAutofillManagerWithAiModelTest,
+       AutofillAiServerModelNotRunWhenNotUserIneligible) {
+  client().SetCanUseModelExecutionFeatures(false);
+  ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(executor(), GetPredictions).Times(0);
+  SeeForm(/*may_run_model=*/true);
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Test param indicates if there is an active screen reader.
 class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
