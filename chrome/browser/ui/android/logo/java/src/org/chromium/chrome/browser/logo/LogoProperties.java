@@ -44,7 +44,6 @@ interface LogoProperties {
     WritableObjectPropertyKey<BaseGifImage> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Callback<Logo>> LOGO_AVAILABLE_CALLBACK =
             new WritableObjectPropertyKey<>();
-    WritableObjectPropertyKey<Boolean> LOGO_POLISH_FLAG_ENABLED = new WritableObjectPropertyKey<>();
     WritableIntPropertyKey LOGO_SIZE_FOR_LOGO_POLISH = new WritableIntPropertyKey();
 
     PropertyKey[] ALL_KEYS =
@@ -62,7 +61,6 @@ interface LogoProperties {
                 SHOW_LOADING_VIEW,
                 ANIMATED_LOGO,
                 LOGO_AVAILABLE_CALLBACK,
-                LOGO_POLISH_FLAG_ENABLED,
                 LOGO_SIZE_FOR_LOGO_POLISH
             };
 }

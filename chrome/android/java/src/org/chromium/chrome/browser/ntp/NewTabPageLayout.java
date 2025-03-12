@@ -133,7 +133,6 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsInNarrowWindowOnTablet;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
-    private boolean mIsLogoPolishFlagEnabled;
     private boolean mIsLogoPolishEnabled;
     private @LogoSizeForLogoPolish int mLogoSizeForLogoPolish;
     private View mFakeSearchBoxLayout;
@@ -210,7 +209,6 @@ public class NewTabPageLayout extends LinearLayout {
         mProfile = profile;
         mUiConfig = uiConfig;
         mWindowAndroid = windowAndroid;
-        mIsLogoPolishFlagEnabled = LogoUtils.isLogoPolishEnabled();
         mIsLogoPolishEnabled =
                 LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
                         mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo);
@@ -379,8 +377,7 @@ public class NewTabPageLayout extends LinearLayout {
                         logoClickedCallback,
                         mLogoView,
                         mOnLogoAvailableCallback,
-                        /* visibilityObserver= */ null,
-                        mIsLogoPolishFlagEnabled);
+                        /* visibilityObserver= */ null);
         mLogoCoordinator.setLogoSizeForLogoPolish(
                 mIsInMultiWindowModeOnTablet
                         ? LogoSizeForLogoPolish.SMALL

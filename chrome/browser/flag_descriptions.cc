@@ -4580,12 +4580,6 @@ const char kLegacyTabStateDeprecationDescription[] =
 const char kLogoPolishName[] = "Logo Polish";
 const char kLogoPolishDescription[] = "Enable bigger doodle size for NTP.";
 
-const char kLogoPolishAnimationKillSwitchName[] =
-    "Logo Polish Animation Kill Switch";
-const char kLogoPolishAnimationKillSwitchDescription[] =
-    "Enable bigger doodle size with an animation for NTP, this is a kill "
-    "switch";
-
 const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "

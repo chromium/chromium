@@ -7265,11 +7265,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLogoPolishVariations,
                                     "LogoPolish")},
 
-    {"enable-logo-polish-animation-kill-switch",
-     flag_descriptions::kLogoPolishAnimationKillSwitchName,
-     flag_descriptions::kLogoPolishAnimationKillSwitchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kLogoPolishAnimationKillSwitch)},
-
     {"search-in-cct", flag_descriptions::kSearchInCCTName,
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},

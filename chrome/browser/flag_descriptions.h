@@ -2697,9 +2697,6 @@ extern const char kLegacyTabStateDeprecationDescription[];
 extern const char kLogoPolishName[];
 extern const char kLogoPolishDescription[];
 
-extern const char kLogoPolishAnimationKillSwitchName[];
-extern const char kLogoPolishAnimationKillSwitchDescription[];
-
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 

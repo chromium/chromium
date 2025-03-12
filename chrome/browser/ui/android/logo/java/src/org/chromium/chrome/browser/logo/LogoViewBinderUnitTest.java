@@ -231,16 +231,6 @@ public class LogoViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testLogoPolishFlagEnabled() {
-        assertEquals(false, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, true);
-        assertEquals(true, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, false);
-        assertEquals(false, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-    }
-
-    @Test
-    @SmallTest
     public void testSetLogoSizeForLogoPolish() {
         assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
         mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.MEDIUM);
