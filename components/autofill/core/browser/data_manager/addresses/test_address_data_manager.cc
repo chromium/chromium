@@ -44,11 +44,6 @@ void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   }
 }
 
-void TestAddressDataManager::RemoveProfile(const std::string& guid) {
-  profiles_.erase(std::ranges::find(profiles_, guid, &AutofillProfile::guid));
-  NotifyObservers();
-}
-
 void TestAddressDataManager::LoadProfiles() {
   // Usually, this function would reload data from the database. Since the
   // TestAddressDataManager doesn't use a database, this is a no-op.
@@ -87,6 +82,12 @@ bool TestAddressDataManager::IsEligibleForAddressAccountStorage() const {
 
 void TestAddressDataManager::ClearProfiles() {
   profiles_.clear();
+}
+
+void TestAddressDataManager::RemoveProfileImpl(const std::string& guid,
+                                           bool is_deduplication_initiated) {
+  profiles_.erase(std::ranges::find(profiles_, guid, &AutofillProfile::guid));
+  NotifyObservers();
 }
 
 }  // namespace autofill

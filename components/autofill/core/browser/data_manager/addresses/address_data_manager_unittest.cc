@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -57,6 +58,19 @@ class MockAddressDataManagerObserver : public AddressDataManager::Observer {
  public:
   MOCK_METHOD(void, OnAddressDataChanged, (), (override));
 };
+
+class MockWebDataServiceObserver
+    : public AutofillWebDataServiceObserverOnDBSequence {
+ public:
+  MOCK_METHOD(void,
+              AutofillProfileChanged,
+              (const AutofillProfileChange&),
+              (override));
+};
+
+MATCHER_P(AutofillProfileChangeHasCorrectType, type, "") {
+  return arg.type() == type;
+}
 
 class AddressDataManagerTest : public testing::Test {
  protected:
@@ -660,6 +674,47 @@ TEST_F(AddressDataManagerTest, RemoveLocalProfilesModifiedBetween) {
   EXPECT_THAT(
       address_data_manager().GetProfiles(),
       UnorderedElementsAre(Pointee(local_profile1), Pointee(account_profile)));
+}
+
+TEST_F(AddressDataManagerTest, RemoveProfileTriggeredByDeduplication) {
+  AutofillProfile local_profile1 = test::GetFullProfile();
+  AutofillProfile local_profile2 = test::GetFullProfile2();
+  AutofillProfile account_profile1 = test::GetFullCanadianProfile();
+  test_api(account_profile1)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  AutofillProfile account_profile2 = test::GetFullValidProfileForCanada();
+  test_api(account_profile2)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+
+  AddProfileToAddressDataManager(local_profile1);
+  AddProfileToAddressDataManager(local_profile2);
+  AddProfileToAddressDataManager(account_profile1);
+  AddProfileToAddressDataManager(account_profile2);
+
+  // Expect that local profiles or deletions not triggered by deduplication, are
+  // permanently removed.
+  testing::NiceMock<MockWebDataServiceObserver> observer;
+  profile_database_service_->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              AutofillProfileChanged(AutofillProfileChangeHasCorrectType(
+                  AutofillProfileChange::REMOVE)))
+      .Times(3);
+  address_data_manager().RemoveProfile(local_profile1.guid(),
+                                       /*is_deduplication_initiated=*/false);
+  address_data_manager().RemoveProfile(local_profile2.guid(),
+                                       /*is_deduplication_initiated=*/false);
+  address_data_manager().RemoveProfile(account_profile1.guid(),
+                                       /*is_deduplication_initiated=*/false);
+  task_environment_.RunUntilIdle();
+
+  // TODO(crbug.com/357074792): This should expect `HIDE_IN_AUTOFILL`. Will be
+  // updated once the db supports this type.
+  EXPECT_CALL(observer,
+              AutofillProfileChanged(AutofillProfileChangeHasCorrectType(
+                  AutofillProfileChange::REMOVE)));
+  address_data_manager().RemoveProfile(account_profile2.guid(),
+                                       /*is_deduplication_initiated=*/true);
+  task_environment_.RunUntilIdle();
 }
 
 // Tests that `UpdateProfile()` takes changes in the `ProfileTokenQuality`

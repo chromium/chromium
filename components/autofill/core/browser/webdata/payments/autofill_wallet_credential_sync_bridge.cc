@@ -288,6 +288,10 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
                                  syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
       break;
+    case ServerCvcChange::HIDE_IN_AUTOFILL:
+      // `HIDE_IN_AUTOFILL` is not supported for wallet credentials.
+      NOTIMPLEMENTED();
+      break;
   }
 }
 
