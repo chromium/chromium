@@ -119,7 +119,7 @@ TEST_F(IpProtectionGeoUtilsTest, GetGeoHintFromGeoIdForTesting_EmptyGeoId) {
 class IpProtectionPRTSerializeTest : public testing::Test {};
 
 TEST_F(IpProtectionPRTSerializeTest, SerializeEmptyPRT) {
-  ProbabilisticRevealToken token;
+  ProbabilisticRevealToken token{};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
