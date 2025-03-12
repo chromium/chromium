@@ -50,8 +50,6 @@ class TestSharedImageInterface : public SharedImageInterface {
                     gpu::SurfaceHandle surface_handle,
                     gfx::BufferUsage buffer_usage));
 
-  MOCK_METHOD0(DoFlush, void());
-
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
@@ -101,8 +99,6 @@ class TestSharedImageInterface : public SharedImageInterface {
   SyncToken GenUnverifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
-
-  void Flush() override;
 
   void CreateSharedImagePool(
       const SharedImagePoolId& pool_id,

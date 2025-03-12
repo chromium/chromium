@@ -102,7 +102,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   SyncToken GenVerifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
-  void Flush() override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 

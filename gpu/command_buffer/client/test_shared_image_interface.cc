@@ -419,11 +419,6 @@ void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
   NOTREACHED();
 }
 
-void TestSharedImageInterface::Flush() {
-  // No need to flush in this implementation. DoFlush() is for mock.
-  DoFlush();
-}
-
 bool TestSharedImageInterface::CheckSharedImageExists(
     const Mailbox& mailbox) const {
   base::AutoLock locked(lock_);
