@@ -134,8 +134,6 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   const std::unique_ptr<cc::RenderingStatsInstrumentation> rendering_stats_;
   const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
 
-  BeginFrameArgs last_begin_frame_args_;
-
   std::vector<TransferableResource> next_frame_resources_;
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
