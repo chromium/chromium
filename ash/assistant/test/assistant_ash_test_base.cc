@@ -134,10 +134,7 @@ void AssistantAshTestBase::TearDown() {
 void AssistantAshTestBase::CreateAndSwitchActiveUser(
     const std::string& display_email,
     const std::string& given_name) {
-  TestSessionControllerClient* session_controller_client =
-      GetSessionControllerClient();
-
-  session_controller_client->Reset();
+  ClearLogin();
   SimulateUserLogin({.display_email = display_email, .given_name = given_name});
 
   SetUpActiveUser();

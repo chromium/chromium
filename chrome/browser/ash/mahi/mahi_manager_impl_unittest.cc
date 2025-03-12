@@ -472,11 +472,11 @@ TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
     EXPECT_EQ(IsEnabled(), !mahi_enabled);
 
     // Switching back to the previous user will update to correct pref.
-    GetSessionControllerClient()->SwitchActiveUser(user1_account_id);
+    SwitchActiveUser(user1_account_id);
     EXPECT_EQ(IsEnabled(), mahi_enabled);
 
     // Clears all logins and re-logins the default user.
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
     SimulateUserLogin(user1_account_id);
   }
 }

@@ -67,7 +67,7 @@ class ActiveSessionAuthControllerTest
 
     NoSessionAshTestBase::SetUp();
 
-    GetSessionControllerClient()->Reset();
+    ClearLogin();
     SimulateUserLogin({kUserEmail, user_manager::UserType::kRegular});
   }
 
