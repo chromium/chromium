@@ -996,6 +996,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5696597120588531049">Chrome kan help om jou teen dataskendings, onveilige webwerwe, en meer te beskerm</translation>
 <translation id="5698878456427040674">Kyk of die gekose rekening gesteun word.</translation>
 <translation id="570347048394355941">Wissel Na Oortjie</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> wil aan 'n seriepoort koppel</translation>
 <translation id="5715150588940290235">Vee gestoorde sekuriteitskodes uit?</translation>
 <translation id="571930967925877633">Jou boekmerke, geskiedenis en ander Chrome-data sal nie meer met jou Google-rekening gesinkroniseer word nie</translation>
 <translation id="572328651809341494">Onlangse oortjies</translation>
@@ -1128,6 +1129,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6296366034485697675">Voer uit en vee uit</translation>
 <translation id="629730747756840877">Rekening</translation>
 <translation id="6303969859164067831">Meld af en skakel sinkronisering af</translation>
+<translation id="6307241780749477694">Verifieer dat dit jy is om al jou wagwoorde op hierdie toestel te kry</translation>
 <translation id="6312687380483398334">Webprogramme (stil)</translation>
 <translation id="6315386555979018699">Vee uit en gaan voort</translation>
 <translation id="6316139424528454185">Steun nie Android-weergawe nie</translation>
@@ -1389,6 +1391,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7359002509206457351">Toegang tot betaalmetodes</translation>
 <translation id="7363349185727752629">'n Gids tot jou privaatheidkeuses</translation>
 <translation id="7364103838544876661">Nog opsies om blaaierdata uit te vee</translation>
+<translation id="7365073365123878797">Dateer Google Play Dienste op om wagwoorde met Google Wagwoordbestuurder te begin stoor en te gebruik</translation>
 <translation id="7375125077091615385">Tipe:</translation>
 <translation id="7376560087009844242">As jy meer van 'n bladsy se teks insluit, sal jy dalk beter resultate sien wanneer jy Raak om te Soek gebruik. Jy kan altyd <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> besoek om dit te verander.</translation>
 <translation id="7379900596734708416">Donkertema vir werwe is beskikbaar</translation>
@@ -1467,10 +1470,12 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7686086654630106285">Meer oor advertensies wat deur ’n werf voorgestel is</translation>
 <translation id="7690596512217303514">Jou toestel kon nie Chrome oopmaak nie. Laai die jongste Chrome-opdatering uit jou appwinkel af om die kwessie reg te stel.</translation>
 <translation id="7691043218961417207">Verken inhoud om te volg</translation>
+<translation id="7692761875510935111">Maak vinnig in blaaier oop. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="7697383401610880082">Sleephandvatsel</translation>
 <translation id="7698359219371678927">Skep e-pos in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Onderste blad van onlangse aktiwiteit is teen volle hoogte oopgemaak</translation>
 <translation id="7707922173985738739">Gebruik mobiele data</translation>
+<translation id="7708994397325774423">Kry al jou wagwoorde</translation>
 <translation id="7733878270780732638">Nie genoeg spasie op toestel nie.</translation>
 <translation id="7746817319925672889">Google Wagwoordbestuurder sal binnekort ophou om op hierdie toestel te werk</translation>
 <translation id="774876555279732384">Outovuldienste word ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> bestuur.</translation>
@@ -1612,6 +1617,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8310451567823644042">Wagwoorde sal binnekort ophou werk</translation>
 <translation id="831192587911042850">Voeg die huidige webwerf by die lys webwerwe wat jy tans volg.</translation>
 <translation id="8320212361750431956">Onlangse aktiwiteit</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome sal jou laat weet van werwe wat moontlik te veel kennisgewings stuur</translation>
 <translation id="834313815369870491">Moet nooit werwe vertaal nie</translation>
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
@@ -1743,6 +1749,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8937772741022875483">Verwyder jou Chrome-aktiwiteit van Digitale Welstand?</translation>
 <translation id="8942627711005830162">Maak in 'n ander venster oop</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – hierdie taal kon nie afgelaai word nie. Probeer later weer.</translation>
+<translation id="8946759102391960088">Behou toegang tot jou wagwoorde</translation>
 <translation id="8957528460562961174">Om toegang tot jou wagwoorde te behou, moet jy hulle nou uitvoer en hulle dan na jou voorkeurwagwoordbestuurder invoer. Google Wagwoordbestuurder het opgehou werk omdat Google Play Dienste nie beskikbaar is nie.</translation>
 <translation id="8963117664422609631">Gaan na werfinstellings</translation>
 <translation id="8965591936373831584">hangende</translation>

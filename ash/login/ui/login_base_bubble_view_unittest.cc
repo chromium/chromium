@@ -85,9 +85,8 @@ TEST_F(LoginBaseBubbleViewTest, BasicProperties) {
   EXPECT_TRUE(bubble_->GetVisible());
 
   EXPECT_EQ(bubble_->width(), kBubbleTotalWidthDp);
-  SkColor background_color = bubble_->GetColorProvider()->GetColor(
-      cros_tokens::kCrosSysSystemBaseElevated);
-  EXPECT_EQ(bubble_->background()->get_color(), background_color);
+  EXPECT_EQ(bubble_->background()->color(),
+            cros_tokens::kCrosSysSystemBaseElevated);
 
   bubble_->Hide();
   EXPECT_FALSE(bubble_->GetVisible());

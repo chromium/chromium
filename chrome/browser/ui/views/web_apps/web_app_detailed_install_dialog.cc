@@ -213,7 +213,7 @@ class ImageCarouselView : public views::View {
       throbber->Start();
 
       throbber_container_view->AddChildView(std::move(throbber));
-      throbber_container_view->SetBorder(views::CreateThemedSolidBorder(
+      throbber_container_view->SetBorder(views::CreateSolidBorder(
           /*thickness=*/1, ui::kColorSysSecondaryContainer));
       throbber_container_view->SetProperty(
           views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, image_padding_));

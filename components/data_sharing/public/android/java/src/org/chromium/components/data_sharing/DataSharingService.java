@@ -7,6 +7,7 @@ package org.chromium.components.data_sharing;
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -43,13 +44,14 @@ public interface DataSharingService {
          *
          * <p>The list if null if the request failed. Group IDs cannot be repeated in the list.
          */
-        public final List<GroupData> groupDataSet;
+        public final @Nullable List<GroupData> groupDataSet;
 
         /** Result of the action */
         public final @PeopleGroupActionFailure int actionFailure;
 
         public GroupsDataSetOrFailureOutcome(
-                List<GroupData> groupDataSet, @PeopleGroupActionFailure int actionFailure) {
+                @Nullable List<GroupData> groupDataSet,
+                @PeopleGroupActionFailure int actionFailure) {
             this.groupDataSet = groupDataSet;
             this.actionFailure = actionFailure;
         }

@@ -179,7 +179,6 @@
 <translation id="3245429137663807393">Shuningdek, Chrome foydalanish statistikasini ham ulashsangiz, bu hisobotlarga siz tashrif qilgan URL manzillar ham kiradi</translation>
 <translation id="3282568296779691940">Chrome hisobiga kirish</translation>
 <translation id="3286538390144397061">Hozir qaytadan ishga tushirish</translation>
-<translation id="3289358082435924389">Keyinroq Chrome shakllarni toʻldirishda saqlangan axborotlarni avtomatik kiritishni taklif qiladi</translation>
 <translation id="3292333338048274092">Keyin Chrome qayta ishga tushirilishi kerak.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome hozir qayta ishga tushadi}=1{Chrome 1 soniyadan keyin qayta ishga tushadi}other{Chrome # soniyadan keyin qayta ishga tushadi}}</translation>
@@ -339,7 +338,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5602351063754773347">Chrome uni olib tashlashni tavsiya qiladi. <ph name="BEGIN_LINK" />Dastaklanadigan kengaytmalar haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Chrome profillari brauzerdan alohida foydalanish uchun kerak. Doʻstlar va oila uchun profillar yarating yoki ish va hordiqni ajrating.</translation>
-<translation id="5649680279845190972">Oʻrnatilgan kengaytmalarni barcha kompyuterlarda ishlatish uchun Chromega kiring</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> zararli bo‘lishi mumkin, shuning uchun u Chrome tomonidan bloklandi.</translation>
 <translation id="566568153320186256">Chrome fondagi amallar hamda ravon varaqlash va video freyming kabi vizual effektlarni cheklash orqali batareya quvvatini tejashni boshlaydi. <ph name="BEGIN_LINK" />Quvvat tejash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Hisobingizda Chrome maʼlumotlarini tozalang</translation>
@@ -518,7 +516,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7886087451482920026">Google Lens yordamida matn belgilang</translation>
 <translation id="7890208801193284374">Agar kompyuterdan yaqinlaringiz va do‘stlaringiz ham foydalansa, ular Chrome brauzerini o‘zlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="7896673875602241923">Oldinroq Chrome profiliga kimdir bu kompyuterdan <ph name="ACCOUNT_EMAIL_LAST" /> sifatida kirgan. Ma’lumotlaringizni alohida saqlash uchun yangi Chrome profilini yarating.</translation>
-<translation id="7917470403848199310">Chrome tavallud kun, yosh va pasport raqami kabi axborotlarni saqlashni taklif qiladi</translation>
 <translation id="7917876797003313048">Kirilgan Google hisoblaringizni boshqarishingiz mumkin. Google hisoblaringizdan Chrome brauzeri, Play Market va Gmail kabilardan foydalaniladi. Oila aʼzosi kabi biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, yangi shaxsni <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome bu yuklamani blokladi, chunki fayl aldamchi va qurilmangizga kutilmagan oʻzgarishlar kiritishi mumkin</translation>
 <translation id="7951272445806340501">Yangilanishni oʻrnatish uchun ChromeOS Flex qayta ishga tushirilishi kerak.</translation>
@@ -600,7 +597,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8914504000324227558">Chrome’ni qayta ishga tushiring</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8948460679427074738">Bu kengaytma axborot jamlashi va ishlatishi kabi maxfiylikka oid ochiqlama joylamagan. Chrome uni olib tashlashni tavsiya qiladi.</translation>
-<translation id="8983860655274963234">Chrome shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin. <ph name="BEGIN_LINK" />Chrome avtomatik kiritish vositalari<ph name="END_LINK" /> haqida batafsil</translation>
 <translation id="8986207147630327271">Bu brauzerga ish profilini kiritish bilan siz administratorga ish profili orqali barcha boshqaruv ruxsatlarini berasiz.</translation>
 <translation id="8989968390305463310">Ochgan saytlaringiz tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chrome har oyda qiziqishlaringizni avtomatik oʻchiradi. Qiziqishlar ularni olib tashlamaguningizga qadar yangilanishi mumkin.</translation>
 <translation id="8992769679401294069">Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google hisobingizda saqlash va ulardan foydalanish uchun uni kiriting.</translation>

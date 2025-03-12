@@ -38,6 +38,16 @@ namespace {
 
 using internal::InProcessIntermediateDumpHandler;
 
+class ReadToString : public crashpad::MemorySnapshot::Delegate {
+ public:
+  std::string result;
+
+  bool MemorySnapshotDelegateRead(void* data, size_t size) override {
+    result = std::string(reinterpret_cast<const char*>(data), size);
+    return true;
+  }
+};
+
 class InProcessIntermediateDumpHandlerTest : public testing::Test {
  protected:
   // testing::Test:
@@ -228,6 +238,37 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
       ADD_FAILURE() << "unexpected annotation " << annotation.name;
     }
   }
+}
+
+TEST_F(InProcessIntermediateDumpHandlerTest, TestExtraMemoryRanges) {
+#if TARGET_OS_SIMULATOR
+  // This test will fail on older (<iOS17 simulators) when running on macOS 14.3
+  // or newer due to a bug in Simulator. crbug.com/328282286
+  if (IsMacOSVersion143OrGreaterAndiOS16OrLess()) {
+    // For TearDown.
+    ASSERT_TRUE(LoggingRemoveFile(path()));
+    return;
+  }
+#endif
+
+  constexpr char kSomeExtraMemoryString[] = "extra memory range";
+  crashpad::SimpleAddressRangeBag* ios_extra_ranges =
+      new crashpad::SimpleAddressRangeBag();
+  crashpad::CrashpadInfo::GetCrashpadInfo()->set_extra_memory_ranges(
+      ios_extra_ranges);
+  ios_extra_ranges->Insert((void*)kSomeExtraMemoryString, 18);
+  WriteReportAndCloseWriter();
+  crashpad::CrashpadInfo::GetCrashpadInfo()->set_extra_memory_ranges(nullptr);
+  internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
+  ASSERT_EQ(process_snapshot.ExtraMemory().size(), 1LU);
+  auto memory = process_snapshot.ExtraMemory()[0];
+  EXPECT_EQ(memory->Address(),
+            reinterpret_cast<uint64_t>(kSomeExtraMemoryString));
+  EXPECT_EQ(memory->Size(), 18LU);
+  ReadToString delegate;
+  ASSERT_TRUE(memory->Read(&delegate));
+  EXPECT_EQ(delegate.result, kSomeExtraMemoryString);
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestThreads) {

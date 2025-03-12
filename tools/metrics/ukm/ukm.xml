@@ -21657,6 +21657,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SharedStorage.Worklet.OnDestroyed">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>cammie@chromium.org</owner>
+  <summary>
+    Metrics for Shared Storage worklet. Each document can create zero or more
+    worklets, and the recorded URL represents the URL of the top-level page that
+    creates the worklet. (Note: The Storage.SharedStorage.Worklet.NumPerPage
+    histogram tracks the number of worklets per page.) Recorded when a worklet
+    is destroyed. See https://wicg.github.io/shared-storage/#worklet.
+  </summary>
+  <metric name="AbsoluteUsefulResourceDuration">
+    <summary>
+      The total duration (ms) that a Shared Storage worklet is actively
+      processing operations (i.e, from the worklet's creation until either its
+      last operation completes or it is destroyed). The number is exponentially
+      bucketed.
+    </summary>
+  </metric>
+</event>
+
 <event name="Sharing.ClickToCall">
   <owner>knollr@chromium.org</owner>
   <summary>

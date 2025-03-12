@@ -47,7 +47,6 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   base::TimeTicks GetLastFocusedTimeTicks() const override;
   base::Time GetLastFocusedTime() const override;
   SortKey GetSortKey() const override;
-  content::Visibility GetVisibility() const override;
   LifecycleUnitLoadingState GetLoadingState() const override;
   bool Load() override;
   bool CanDiscard(LifecycleUnitDiscardReason reason,

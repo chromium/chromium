@@ -66,6 +66,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab group colour icon</translation>
 <translation id="311432875115153175">Tab group list closed</translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Add <ph name="TABS_COUNT_ONE" /> tab to group}other{Add <ph name="TABS_COUNT_MANY" /> tabs to group}}</translation>
 <translation id="3328308545011660196">Suggestion: <ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
 <translation id="3547352561153509682">This will delete the group from all devices signed in to <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> new tab}other{<ph name="MANY_ADDED" /> new tabs}}</translation>
@@ -98,6 +99,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="4783638485675352219">Share titles and the URLs of open tabs from this device with the operating system</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">View</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Add <ph name="TABS_COUNT_ONE" /> selected tab to group}other{Add <ph name="TABS_COUNT_MANY" /> selected tabs to group}}</translation>
 <translation id="4861611890274104875">Dismiss the card.</translation>
 <translation id="4861953997778766866">Everyone can make changes to your shared tab groups</translation>
 <translation id="4870911314065352661">Close all tabs?</translation>
@@ -134,6 +136,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6271513594716432922">Close all inactive tabs</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="6333260925957816943">Information about this shop</translation>
 <translation id="6381032505162537930">You'll find your tab groups here</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ungroup <ph name="TABS_COUNT_ONE" /> selected tab}other{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
@@ -186,6 +189,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="799469866974412355">New group from your other device</translation>
 <translation id="8029301326595421733">Information about this shop opened at full height</translation>
 <translation id="8053770993984522566">Tab group list, opened at half height</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Move tab up</translation>

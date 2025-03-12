@@ -1234,7 +1234,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3182185041786697613">Guardar o código de segurança?</translation>
 <translation id="3185635157430775689">Componentes informáticos</translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
-<translation id="3190736958609431397">Desativar monitorização</translation>
+<translation id="3190736958609431397">Desativar acompanhamento</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente dados no seu dispositivo.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando está a utilizar ativamente este dispositivo</translation>
@@ -3021,6 +3021,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6337133576188860026">Liberta menos de <ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="6337534724793800597">Filtrar políticas pelo nome</translation>
 <translation id="633770708279464947">O valor de <ph name="SECURE_DNS_SALT" /> é inválido e não vai ser usado.</translation>
+<translation id="6338645927051849741">Palavra-passe • Gestor de Palavras-passe da Google</translation>
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de ecrã nem gravações quando existe conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda o carregamento deste ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda o carregamento destes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
@@ -4010,7 +4011,7 @@ Detalhes adicionais:
 <translation id="8057711352706143257">O "<ph name="SOFTWARE_NAME" />" não está configurado corretamente. Normalmente, a desinstalação do "<ph name="SOFTWARE_NAME" />" resolve o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Não obrigatório</translation>
 <translation id="8061691770921837575">Maquilhagem e cosméticos</translation>
-<translation id="8063875539456488183">Guarde e monitorize o preço</translation>
+<translation id="8063875539456488183">Guarde e acompanhe o preço</translation>
 <translation id="8066225060526005217">Gerido pelas definições de cookies</translation>
 <translation id="8067872629359326442">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium pode ajudar. Para alterar a sua palavra-passe e notificar a Google de que a sua conta pode estar em risco, clique em Proteger conta.</translation>
 <translation id="8070439594494267500">Ícone da app</translation>

@@ -996,6 +996,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5696597120588531049">Chrome inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi</translation>
 <translation id="5698878456427040674">Angalia iwapo akaunti uliyochagua inaweza kutumika.</translation>
 <translation id="570347048394355941">Nenda Kwenye Kichupo</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> inataka kuunganisha kwenye mlango wa ufuatiliaji</translation>
 <translation id="5715150588940290235">Ungependa kufuta misimbo ya usalama iliyohifadhiwa?</translation>
 <translation id="571930967925877633">Alamisho, historia na data yako nyingine ya Chrome hazitasawazishwa tena kwenye Akaunti yako ya Google</translation>
 <translation id="572328651809341494">Vichupo vya hivi punde</translation>
@@ -1128,6 +1129,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6296366034485697675">Hamisha na ufute</translation>
 <translation id="629730747756840877">Akaunti</translation>
 <translation id="6303969859164067831">Ondoka kwenye akaunti na uzime usawazishaji</translation>
+<translation id="6307241780749477694">Thibitisha kuwa ni wewe ili upate manenosiri yako yote kwenye kifaa hiki</translation>
 <translation id="6312687380483398334">Programu za wavuti (tuli)</translation>
 <translation id="6315386555979018699">Futa na uendelee</translation>
 <translation id="6316139424528454185">Haiwezi kutumia toleo la Android</translation>
@@ -1389,6 +1391,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7359002509206457351">Ufikiaji wa njia za kulipa</translation>
 <translation id="7363349185727752629">Mwongozo wa chaguo zako za faragha</translation>
 <translation id="7364103838544876661">Chaguo zaidi za kufuta data ya kuvinjari</translation>
+<translation id="7365073365123878797">Ili uanze kuhifadhi na kutumia manenosiri yaliyo kwenye Kidhibiti cha Manenosiri cha Google, sasisha huduma za Google Play</translation>
 <translation id="7375125077091615385">Aina:</translation>
 <translation id="7376560087009844242">Ukijumuisha maandishi zaidi ya ukurasa, huenda ukaona matokeo bora zaidi unapotumia kipengele cha 'Gusa ili Utafute'. Unaweza kwenda kwenye sehemu ya <ph name="BEGIN_LINK" />mipangilio<ph name="END_LINK" /> ili ubadilishe chaguo hili wakati wowote.</translation>
 <translation id="7379900596734708416">Mandhari meusi ya tovuti yanapatikana</translation>
@@ -1467,10 +1470,12 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7686086654630106285">Maelezo zaidi kuhusu matangazo yanayopendekezwa na tovuti</translation>
 <translation id="7690596512217303514">Kifaa chako kimeshindwa kufungua Chrome. Ili utatue hitilafu, pakua sasisho la hivi karibuni zaidi la Chrome kwenye duka lako la programu.</translation>
 <translation id="7691043218961417207">Gundua maudhui ya kufuatilia</translation>
+<translation id="7692761875510935111">Fungua kwenye kivinjari kwa haraka. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
 <translation id="7697383401610880082">Aikoni ya buruta</translation>
 <translation id="7698359219371678927">Tunga barua pepe katika <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Safu ya chini ya shughuli za hivi majuzi imefunguliwa katika skrini nzima</translation>
 <translation id="7707922173985738739">Tumia data ya mtandao wa simu</translation>
+<translation id="7708994397325774423">Pata manenosiri yako yote</translation>
 <translation id="7733878270780732638">Hamna nafasi ya kutosha kwenye kifaa.</translation>
 <translation id="7746817319925672889">Kidhibiti cha Manenosiri cha Google kitaacha kufanya kazi hivi karibuni kwenye kifaa hiki</translation>
 <translation id="774876555279732384">Huduma za kujaza kiotomatiki zinadhibitiwa pia katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
@@ -1612,6 +1617,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8310451567823644042">Manenosiri yataacha kufanya kazi hivi karibuni</translation>
 <translation id="831192587911042850">Huongeza tovuti unayoitumia sasa kwenye orodha ya tovuti unazofuatilia.</translation>
 <translation id="8320212361750431956">Shughuli za Hivi Majuzi</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome itakujulisha kuhusu tovuti ambazo huenda zinatuma arifa nyingi mno</translation>
 <translation id="834313815369870491">Kamwe usitafsiri tovuti</translation>
 <translation id="8348430946834215779">Tumia HTTPS panapowezekana na upate tahadhari kabla ya kupakia tovuti zisizotumia kiendelezi hicho</translation>
@@ -1743,6 +1749,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8937772741022875483">Ungependa kuondoa Shughuli zako za Chrome kwenye mpango wa Nidhamu Dijitali?</translation>
 <translation id="8942627711005830162">Fungua katika dirisha jingine</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Imeshindwa kupakua lugha hii. Jaribu tena baadaye.</translation>
+<translation id="8946759102391960088">Endelea kufikia manenosiri yako</translation>
 <translation id="8957528460562961174">Ili uendelee kufikia manenosiri yako, yahamishe sasa kisha uyapakie kwenye kidhibiti cha manenosiri unachopendelea. Kidhibiti cha Manenosiri cha Google kimeacha kufanya kazi kwa sababu Huduma za Google Play hazipatikani.</translation>
 <translation id="8963117664422609631">Nenda kwenye mipangilio ya tovuti</translation>
 <translation id="8965591936373831584">inasubiri</translation>

@@ -23,14 +23,10 @@ using ::testing::Invoke;
 namespace on_device_translation {
 
 MockComponentManager::MockComponentManager(const base::FilePath& package_dir)
-    : package_dir_(package_dir) {
-  ComponentManager::SetForTesting(this);
-}
+    : package_dir_(package_dir),
+      mock_component_manager_(ComponentManager::SetForTesting(this)) {}
 
-MockComponentManager::~MockComponentManager() {
-  ComponentManager::SetForTesting(nullptr);
-}
-
+MockComponentManager::~MockComponentManager() = default;
 void MockComponentManager::DoNotExpectCallRegisterTranslateKitComponent() {
   EXPECT_CALL(*this, RegisterTranslateKitComponentImpl()).Times(0);
 }

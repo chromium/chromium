@@ -109,7 +109,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
   std::optional<std::string> GetCookieDeprecationLabel() override;
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedKeyValueServerKey(
       const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,

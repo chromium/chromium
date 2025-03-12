@@ -182,7 +182,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
-<translation id="3289358082435924389">Later, Chrome will ask if you want to use saved info to automatically fill forms</translation>
 <translation id="3292333338048274092">You'll then need to restart Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
@@ -343,7 +342,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5602351063754773347">Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">With Chrome profiles, you can separate all your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
-<translation id="5649680279845190972">To get your extensions and more on all your computers, sign in to Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
 <translation id="566568153320186256">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Clear the Chrome data in your account</translation>
@@ -522,7 +520,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7886087451482920026">Select text with Google Lens</translation>
 <translation id="7890208801193284374">If you share a computer, friends and family can browse separately and set up Chrome just the way they want.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
-<translation id="7917470403848199310">Chrome will ask if you want to save form information, such as your birthday, age and passport number</translation>
 <translation id="7917876797003313048">You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome Browser, Play Store, Gmail and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE" /> instead. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="7951272445806340501">Chrome OS Flex needs to be restarted to apply the update.</translation>
@@ -604,7 +601,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8948460679427074738">This extension hasn't published privacy practices, such as how it collects and uses data. Chrome recommends that you remove it.</translation>
-<translation id="8983860655274963234">Chrome understands forms better and can autofill them faster for you. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>

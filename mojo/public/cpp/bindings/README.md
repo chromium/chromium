@@ -1437,17 +1437,26 @@ methods:
 
 In order to define the mapping for `gfx::Rect`, we want the following
 `StructTraits` specialization, which we'll define in
-`//ui/gfx/geometry/mojo/geometry_mojom_traits.h`:
+`//ui/gfx/geometry/mojo/geometry_mojom_traits.h`.
 
-``` cpp
+*** note
+**NOTE**:  whereas in other usages of the mojom type in C++ we might directly
+use the mojom type `gfx::mojom::Rect`, our `StructTraits` template must use the
+[DataView](#using-generated-dataview-types) version (e.g.
+`gfx::mojom::RectDataView`), which exposes a direct view of the serialized Mojom
+structure within an incoming message's contents which we need in order to
+perform the serialization.
+***
+
+<pre><code>
 #include "mojo/public/cpp/bindings/mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/mojo/geometry.mojom.h"
 
 namespace mojo {
 
-template <>
-class StructTraits<gfx::mojom::RectDataView, gfx::Rect> {
+template &lt;>
+class StructTraits&lt;gfx::mojom::Rect<b>DataView</b>, gfx::Rect> {
  public:
   static int32_t x(const gfx::Rect& r) { return r.x(); }
   static int32_t y(const gfx::Rect& r) { return r.y(); }
@@ -1458,7 +1467,7 @@ class StructTraits<gfx::mojom::RectDataView, gfx::Rect> {
 };
 
 }  // namespace mojo
-```
+</code></pre>
 
 And in `//ui/gfx/geometry/mojo/geometry_mojom_traits.cc`:
 

@@ -42,7 +42,7 @@ SkColor4f GetShadowColor(TabStrip* tab_strip) {
       tab_strip->GetColorProvider()->GetColor(ui::kColorShadowBase));
 }
 
-// Define a custom FlexRule for |scroll_view_|. Equivalent to using a
+// Define a custom FlexRule for `scroll_view_`. Equivalent to using a
 // (kScaleToMinimum, kPreferred) flex specification on the tabstrip itself,
 // bypassing the ScrollView.
 // TODO(crbug.com/40721975): Make ScrollView take on TabStrip's preferred size
@@ -123,7 +123,7 @@ TabStripScrollContainer::TabStripScrollContainer(
   overflow_indicator_strategy_->Init();
   // This base::Unretained is safe because the callback is called by the
   // layout manager, which is cleaned up before view children like
-  // |scroll_view| (which owns |tab_strip|).
+  // `scroll_view` (which owns `tab_strip`).
   scroll_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(base::BindRepeating(

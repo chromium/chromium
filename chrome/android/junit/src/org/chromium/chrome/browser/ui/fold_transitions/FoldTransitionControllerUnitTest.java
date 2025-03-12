@@ -12,7 +12,6 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.DID_CHANGE_TABLET_MODE;
@@ -28,7 +27,6 @@ import android.os.Handler;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +35,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -53,8 +50,6 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
-
-import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link FoldTransitionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -106,6 +101,24 @@ public class FoldTransitionControllerUnitTest {
         String text = "hello";
         doReturn(true).when(mToolbarManager).isUrlBarFocused();
         doReturn(text).when(mToolbarManager).getUrlBarTextWithoutAutocomplete();
+        mFoldTransitionController.prepareUiState();
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
+
+        verify(mSavedInstanceState).putBoolean(URL_BAR_FOCUS_STATE, true);
+        verify(mSavedInstanceState).putString(URL_BAR_EDIT_TEXT, text);
+    }
+
+    @Test
+    public void testSaveUiState_urlBarFocusCleared() {
+        String text = "hi";
+        String emptyText = "";
+        doReturn(true).when(mToolbarManager).isUrlBarFocused();
+        doReturn(text).when(mToolbarManager).getUrlBarTextWithoutAutocomplete();
+        mFoldTransitionController.prepareUiState();
+        // Remove focus from the URL bar.
+        doReturn(false).when(mToolbarManager).isUrlBarFocused();
+        doReturn(emptyText).when(mToolbarManager).getUrlBarTextWithoutAutocomplete();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
@@ -116,6 +129,7 @@ public class FoldTransitionControllerUnitTest {
     @Test
     public void testSaveUiState_urlBarNotFocused() {
         doReturn(false).when(mToolbarManager).isUrlBarFocused();
+        mFoldTransitionController.prepareUiState();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
@@ -127,6 +141,7 @@ public class FoldTransitionControllerUnitTest {
     public void testSaveUiState_keyboardVisibleOnWebContentsFocus() {
         doReturn(true).when(mWebContents).isFocusedElementEditable();
         doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
+        mFoldTransitionController.prepareUiState();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
@@ -141,20 +156,12 @@ public class FoldTransitionControllerUnitTest {
         doReturn(true).when(mWebContents).isFocusedElementEditable();
         doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
         InOrder inOrder = Mockito.inOrder(mSavedInstanceState);
+        mFoldTransitionController.prepareUiState();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         inOrder.verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
-        Assert.assertTrue(
-                "|mKeyboardVisibleDuringFoldTransition| should be true.",
-                mFoldTransitionController.getKeyboardVisibleDuringFoldTransitionForTesting());
-        Assert.assertNotNull(
-                "|mKeyboardVisibilityTimestamp| should not be null.",
-                mFoldTransitionController.getKeyboardVisibilityTimestampForTesting());
 
-        ShadowSystemClock.advanceBy(
-                FoldTransitionController.KEYBOARD_RESTORATION_TIMEOUT_MS - 1,
-                TimeUnit.MILLISECONDS);
         // Simulate a second invocation of Activity#onSaveInstanceState.
         doReturn(true).when(mWebContents).isFocusedElementEditable();
         doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
@@ -162,55 +169,9 @@ public class FoldTransitionControllerUnitTest {
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         inOrder.verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
-        Assert.assertFalse(
-                "|mKeyboardVisibleDuringFoldTransition| should be reset.",
-                mFoldTransitionController.getKeyboardVisibleDuringFoldTransitionForTesting());
-        Assert.assertNull(
-                "|mKeyboardVisibilityTimestamp| should be reset.",
-                mFoldTransitionController.getKeyboardVisibilityTimestampForTesting());
 
-        verify(mWebContents, times(2)).isFocusedElementEditable();
-        verify(mKeyboardVisibilityDelegate, times(2))
-                .isKeyboardShowing(mActivityTab.getContext(), mContentView);
-    }
-
-    @Test
-    public void testSaveUiState_keyboardVisible_crbug1426678_stateValidityTimedOut()
-            throws InterruptedException {
-        doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
-        InOrder inOrder = Mockito.inOrder(mSavedInstanceState);
-        mFoldTransitionController.saveUiState(
-                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
-
-        inOrder.verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
-        Assert.assertTrue(
-                "|mKeyboardVisibleDuringFoldTransition| should be true.",
-                mFoldTransitionController.getKeyboardVisibleDuringFoldTransitionForTesting());
-        Assert.assertNotNull(
-                "|mKeyboardVisibilityTimestamp| should not be null.",
-                mFoldTransitionController.getKeyboardVisibilityTimestampForTesting());
-
-        ShadowSystemClock.advanceBy(
-                FoldTransitionController.KEYBOARD_RESTORATION_TIMEOUT_MS + 1,
-                TimeUnit.MILLISECONDS);
-        // Simulate a second invocation of Activity#onSaveInstanceState.
-        doReturn(true).when(mWebContents).isFocusedElementEditable();
-        doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
-        mFoldTransitionController.saveUiState(
-                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
-
-        inOrder.verify(mSavedInstanceState, never())
-                .putBoolean(eq(KEYBOARD_VISIBILITY_STATE), anyBoolean());
-        Assert.assertFalse(
-                "|mKeyboardVisibleDuringFoldTransition| should be reset.",
-                mFoldTransitionController.getKeyboardVisibleDuringFoldTransitionForTesting());
-        Assert.assertNull(
-                "|mKeyboardVisibilityTimestamp| should be reset.",
-                mFoldTransitionController.getKeyboardVisibilityTimestampForTesting());
-
-        verify(mWebContents, times(2)).isFocusedElementEditable();
-        verify(mKeyboardVisibilityDelegate, times(2))
+        verify(mWebContents).isFocusedElementEditable();
+        verify(mKeyboardVisibilityDelegate)
                 .isKeyboardShowing(mActivityTab.getContext(), mContentView);
     }
 
@@ -218,6 +179,7 @@ public class FoldTransitionControllerUnitTest {
     public void testSaveUiState_keyboardNotVisible() {
         doReturn(false).when(mWebContents).isFocusedElementEditable();
         doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
+        mFoldTransitionController.prepareUiState();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
         verify(mSavedInstanceState, never()).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
@@ -226,6 +188,7 @@ public class FoldTransitionControllerUnitTest {
     @Test
     public void testSaveUiState_tabSwitcherVisible() {
         doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        mFoldTransitionController.prepareUiState();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
         verify(mSavedInstanceState).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
@@ -234,6 +197,7 @@ public class FoldTransitionControllerUnitTest {
     @Test
     public void testSaveUiState_tabSwitcherNotVisible() {
         doReturn(false).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        mFoldTransitionController.prepareUiState();
         mFoldTransitionController.saveUiState(
                 mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
         verify(mSavedInstanceState, never()).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);

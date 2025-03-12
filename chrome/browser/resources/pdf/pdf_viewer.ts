@@ -218,6 +218,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       sidenavCollapsed_: {type: Boolean},
       title_: {type: String},
       twoUpViewEnabled_: {type: Boolean},
+
+      // <if expr="enable_pdf_ink2">
+      useSidePanelForInk_: {type: Boolean},
+      // </if>
+
       viewportZoom_: {type: Number},
       zoomBounds_: {type: Object},
     };
@@ -293,6 +298,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected title_: string = '';
   protected toolbarEnabled_: boolean = false;
   protected twoUpViewEnabled_: boolean = false;
+  // <if expr="enable_pdf_ink2">
+  private useSidePanelForInk_: boolean = false;
+  // </if>
   protected viewportZoom_: number = 1;
   protected zoomBounds_: ZoomBounds = {min: 0, max: 0};
   private hasSearchifyText_: boolean = false;
@@ -324,7 +332,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     super.connectedCallback();
     this.tracker.add(window, 'beforeunload', this.onBeforeUnload_.bind(this));
     // <if expr="enable_pdf_ink2">
-    this.tracker.add(window, 'resize', this.onResize_.bind(this));
+    const mediaQuery = window.matchMedia('(min-width: 960px)');
+    this.useSidePanelForInk_ = mediaQuery.matches;
+    this.tracker.add(
+        mediaQuery, 'change',
+        () => this.useSidePanelForInk_ = mediaQuery.matches);
     // </if> enable_pdf_ink2
   }
 
@@ -1496,7 +1508,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    *     shown if the Ink side panel is shown.
    */
   protected shouldShowInkBottomToolbar_(): boolean {
-    return this.inInk2AnnotationMode_() && !this.shouldShowInkSidePanel_();
+    return this.inInk2AnnotationMode_() && !this.useSidePanelForInk_;
   }
 
   /**
@@ -1505,16 +1517,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    *     window width is at least a certain width.
    */
   protected shouldShowInkSidePanel_(): boolean {
-    return this.inInk2AnnotationMode_() && window.innerWidth >= 960;
-  }
-
-  /**
-   * On resize, request updates so that the correct Ink elements will be shown.
-   */
-  private onResize_() {
-    if (this.inInk2AnnotationMode_()) {
-      this.requestUpdate();
-    }
+    return this.inInk2AnnotationMode_() && this.useSidePanelForInk_;
   }
 
   /**

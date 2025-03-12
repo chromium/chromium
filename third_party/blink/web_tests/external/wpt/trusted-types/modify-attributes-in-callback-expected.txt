@@ -9,9 +9,5 @@ This is a testharness.js-based test.
   assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNS"
 [FAIL] Ensure setAttribute results in right attribute value.
   assert_equals: expected 2 but got 3
-[FAIL] Ensure setAttributeNode throws InUseAttributeError when callback assigns attributes.
-  assert_true: DOMException exception reported expected true got false
-[FAIL] Ensure setAttributeNodeNS throws InUseAttributeError when callback assigns attributes.
-  assert_true: DOMException exception reported expected true got false
 Harness: the test ran to completion.
 

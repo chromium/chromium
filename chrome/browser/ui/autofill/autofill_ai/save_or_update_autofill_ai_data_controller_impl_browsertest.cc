@@ -97,15 +97,6 @@ IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
             SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
                 kNewEntityAttributeAdded);
   EXPECT_EQ(update_details[1].attribute_value, u"Sweden");
-
-  // The third value is the old entity updated value. The reason why this is the
-  // third value is because the schema attributes definition puts name as first
-  // in the list. However note that, updated and addition in the new entity
-  // always come first.
-  EXPECT_EQ(update_details[2].update_type,
-            SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
-                kOldEntityAttributeUpdated);
-  EXPECT_EQ(update_details[2].attribute_value, u"Jonas doe");
 }
 
 IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,

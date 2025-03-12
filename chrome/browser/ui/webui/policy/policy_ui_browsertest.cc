@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                     .ExtractString();
 
   if (isFeatureEnabled()) {
-    EXPECT_EQ(result, kBannerVisible);
+    EXPECT_EQ(result, kBannerHidden);
   } else {
     EXPECT_EQ(result, kBannerHidden);
   }
@@ -1206,83 +1206,23 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
 
-  const bool expected_bucket = isFeatureEnabled() ? true : false;
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerDisplayed", expected_bucket, 1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.PolicyPromotionBannerDisplayed", false, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       HistogramRecordedWhenBannerDismissedNotDisplayed) {
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
+  // Verifies that the page opens in guest session.
+  Browser* policy_browser = OpenURLOffTheRecord(
+      browser()->profile(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(policy_browser);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(policy_browser,
+                               GURL(chrome::kChromeUIPolicyURL)));
 
-  SetBrowserLocale(kValidLocale);
-
-  // Banner will not be displayed if it has been dismissed
-  SetPromotionBannerDismissedPref(true);
-
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerDisplayed", false, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       HistogramRecordedWhenBannerDismissed) {
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  if (!isFeatureEnabled()) {
-    GTEST_SKIP() << "Test only relevant when feature is enabled";
-  }
-
-  SetBrowserLocale(kValidLocale);
-
-  SetPromotionBannerDismissedPref(false);
-
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     kPromotionBannerDismissJavaScript));
-
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerAction",
-      policy::PolicyPromotionBannerAction::kBannerDismissed, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       HistoramRecordedWhenBannerRedirected) {
-  policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  if (!isFeatureEnabled()) {
-    GTEST_SKIP() << "Test only relevant when feature is enabled";
-  }
-
-  SetBrowserLocale(kValidLocale);
-
-  SetPromotionBannerDismissedPref(false);
-
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     kPromotionBannerRedirectJavaScript));
-
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerAction",
-      policy::PolicyPromotionBannerAction::kBannerRedirected, 1);
+  auto result =
+      EvalJs(policy_browser->tab_strip_model()->GetActiveWebContents(),
+             kPromotionBannerVisibilityJavaScript)
+          .ExtractString();
+  EXPECT_EQ(result, kBannerHidden);
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,

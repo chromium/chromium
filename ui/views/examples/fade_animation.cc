@@ -61,7 +61,7 @@ FadingView::FadingView() {
       .AddChildren(
           Builder<BoxLayoutView>()
               .CopyAddressTo(&primary_view_)
-              .SetBorder(CreateThemedRoundedRectBorder(
+              .SetBorder(CreateRoundedRectBorder(
                   1, kCornerRadius,
                   ExamplesColorIds::kColorFadeAnimationExampleBorder))
               .SetBackground(CreateRoundedRectBackground(
@@ -83,7 +83,7 @@ FadingView::FadingView() {
                                .SetVerticalAlignment(gfx::ALIGN_MIDDLE)),
           Builder<BoxLayoutView>()
               .CopyAddressTo(&secondary_view_)
-              .SetBorder(CreateThemedRoundedRectBorder(
+              .SetBorder(CreateRoundedRectBorder(
                   1, kCornerRadius,
                   ExamplesColorIds::kColorFadeAnimationExampleBorder))
               .SetBackground(CreateRoundedRectBackground(

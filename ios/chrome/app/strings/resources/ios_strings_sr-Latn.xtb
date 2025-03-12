@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Postojeći podaci pregledanja će biti povezani sa: <ph name="USER_EMAIL" />. Vaša organizacija može da vidi ove podatke.</translation>
 <translation id="1713777106376424209">Isporuka do</translation>
 <translation id="1715515772563243997">Ako veb-sajt <ph name="SITE" /> smatrate pouzdanim, možete da koristite sačuvanu lozinku za prijavljivanje.</translation>
+<translation id="1718835860248848330">Poslednjih sat vremena</translation>
 <translation id="1728549374069268714">Nalepi i idi</translation>
 <translation id="1732468323901456775">Uključi obaveštenja za: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Otkrivanje adresa je isključeno. Ponovo ga uključite u Podešavanjima.</translation>
 <translation id="1904580727789512086">URL-ovi koje posećujete se čuvaju na Google nalogu</translation>
 <translation id="1911619930368729126">Otpremi u Google disk</translation>
-<translation id="1923342640370224680">Prethodni sat</translation>
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Meni → Podešavanja</translation>
 <translation id="1952728750904661634">Prijavite se pomoću naloga kojim se upravlja</translation>

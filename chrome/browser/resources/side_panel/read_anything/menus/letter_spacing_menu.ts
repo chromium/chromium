@@ -3,32 +3,38 @@
 // found in the LICENSE file.
 
 import './simple_action_menu.js';
-import '../toolbar_styles_shared.css.js';
 
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from '../common.js';
 import {ReadAnythingSettingsChange} from '../metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 
-import {getTemplate} from './letter_spacing_menu.html.js';
+import {getHtml} from './letter_spacing_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem} from './menu_util.js';
 import type {SimpleActionMenu} from './simple_action_menu.js';
 
-export interface LetterSpacingMenu {
+export interface LetterSpacingMenuElement {
   $: {
     menu: SimpleActionMenu,
   };
 }
 
-const LetterSpacingMenuBase = WebUiListenerMixin(PolymerElement);
+const LetterSpacingMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the letter spacing menu.
-export class LetterSpacingMenu extends LetterSpacingMenuBase {
-  private options_: Array<MenuStateItem<number>> = [
+export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase {
+  static get is() {
+    return 'letter-spacing-menu';
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('letterSpacingStandardTitle'),
       icon: 'read-anything:letter-spacing-standard',
@@ -45,47 +51,28 @@ export class LetterSpacingMenu extends LetterSpacingMenuBase {
       data: chrome.readingMode.veryWideLetterSpacing,
     },
   ];
-
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
-  static get is() {
-    return 'letter-spacing-menu';
-  }
-
-  static get template() {
-    return getTemplate();
-  }
-
-  static get properties() {
-    return {
-      options_: Array,
-      settingsPrefs: Object,
-      toolbarEventEnum_: {
-        type: Object,
-        value: ToolbarEvent,
-      },
-    };
-  }
 
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
   }
 
-  private onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
+  protected onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
     chrome.readingMode.onLetterSpacingChange(event.detail.data);
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LETTER_SPACING_CHANGE);
   }
 
-  private restoredLetterSpacingIndex_(): number {
+  protected restoredLetterSpacingIndex_(): number {
     return getIndexOfSetting(this.options_, chrome.readingMode.letterSpacing);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'letter-spacing-menu': LetterSpacingMenu;
+    'letter-spacing-menu': LetterSpacingMenuElement;
   }
 }
 
-customElements.define(LetterSpacingMenu.is, LetterSpacingMenu);
+customElements.define(LetterSpacingMenuElement.is, LetterSpacingMenuElement);

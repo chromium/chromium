@@ -119,7 +119,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::string account_id = kAccountId1) {
     IdentityRequestAccountPtr account = base::MakeRefCounted<Account>(
-        account_id, "", "", "", GURL(),
+        account_id, "", "", "", "", "", GURL(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),

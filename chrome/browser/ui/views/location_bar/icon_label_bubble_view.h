@@ -205,7 +205,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Set up for icons that animate their labels in. Animating out is initiated
   // manually.
-  void SetUpForAnimation();
+  void SetUpForAnimation(base::TimeDelta duration = base::Milliseconds(150));
 
   // Set up for icons that animate their labels in and then automatically out
   // after a period of time. The duration of the slide includes the just the

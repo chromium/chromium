@@ -93,7 +93,7 @@ class AlertIndicatorButton : public views::ImageButton,
   class FadeAnimationDelegate;
 
   // Returns a non-continuous Animation that performs a fade-in or fade-out
-  // appropriate for the given |alert_state|.  This is used by the tab alert
+  // appropriate for the given `alert_state`.  This is used by the tab alert
   // indicator to alert the user that recording, tab capture, or audio playback
   // has started/stopped.
   std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
@@ -102,7 +102,7 @@ class AlertIndicatorButton : public views::ImageButton,
   // Returns the tab (parent view) of this AlertIndicatorButton.
   Tab* GetTab();
 
-  // Resets the images to display on the button to reflect |state| and the
+  // Resets the images to display on the button to reflect `state` and the
   // parent tab's button color.  Should be called when either of these changes.
   void UpdateIconForAlertState(TabAlertState state);
 

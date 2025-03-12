@@ -127,11 +127,9 @@
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
-<translation id="277338894894732084">Chromium 稍後會詢問你，是否要使用已儲存的資訊自動填寫表單</translation>
 <translation id="2785438272836277133">這項擴充功能含有惡意軟體且不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2803971713792056305">你的 Chromium</translation>
-<translation id="2806241689335397269">Chromium 會詢問你是否要儲存表單資訊，例如生日、年齡和護照號碼</translation>
 <translation id="2841525013647267359">原文語言</translation>
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
 <translation id="2847479871509788944">從 Chromium 中移除...</translation>
@@ -177,7 +175,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">要切換至現有的 Chromium 設定檔嗎？</translation>
 <translation id="3412460710772753638">在這部裝置的密碼管理工具中更新</translation>
-<translation id="3451656833730006755">如要在所有電腦上使用你的擴充功能和其他資料，請登入 Chromium</translation>
 <translation id="347328004046849135">如果你使用遭外洩的密碼登入帳戶，Chromium 會通知你</translation>
 <translation id="3474745554856756813">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換不同的 Chromium 設定檔</translation>
@@ -460,7 +457,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="734373864078049451">你瀏覽的網頁、書籤和其他 Chromium 設定都在這裡。</translation>
 <translation id="7349591376906416160">你的系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7384121030444253939">Chromium 不再支援這項擴充功能，建議你移除。</translation>
-<translation id="7389750180956889333">Chromium 可以更準確地辨識表單，更快自動填入相關資訊。進一步瞭解 <ph name="BEGIN_LINK" />Chrome 自動填入功能<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7451052299415159299">Chromium 需要相關權限，才能讓這個網站使用你的攝影機</translation>

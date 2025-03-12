@@ -191,13 +191,6 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(features::kGroupSuggestionService)) {
-    auto tab_events_visit_transformer =
-        std::make_unique<TabEventsVisitTransformer>();
-    transformers.emplace(URLVisitAggregatesTransformType::kTabEventsData,
-                         std::move(tab_events_visit_transformer));
-  }
-
   return std::make_unique<VisitedURLRankingServiceImpl>(
       sps, std::move(data_fetchers), std::move(transformers),
       std::move(deduplication_helper));

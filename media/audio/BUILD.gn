@@ -214,6 +214,8 @@ source_set("audio") {
     sources += [
       "win/audio_device_listener_win.cc",
       "win/audio_device_listener_win.h",
+      "win/audio_ducker_win.cc",
+      "win/audio_ducker_win.h",
       "win/audio_low_latency_input_win.cc",
       "win/audio_low_latency_input_win.h",
       "win/audio_low_latency_output_win.cc",

@@ -299,7 +299,6 @@ TEST_F(DocumentProviderTest, IsInputLikelyURL) {
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("https://"));
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("http://web.site"));
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("https://web.site"));
-  EXPECT_TRUE(IsInputLikelyURL_Wrapper("https://web.site"));
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("w"));
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("www."));
   EXPECT_TRUE(IsInputLikelyURL_Wrapper("www.web.site"));

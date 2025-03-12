@@ -283,9 +283,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       for (auto index = grouped_tabs.start(); index < grouped_tabs.end();
            ++index) {
         dragging_views.push_back(GetTabAt(index));
-        // Set |selection_model| if and only if the original selection does not
+        // Set `selection_model` if and only if the original selection does not
         // match the group exactly. See TabDragController::Init() for details
-        // on how |selection_model| is used.
+        // on how `selection_model` is used.
         if (!original_selection.IsSelected(index)) {
           selection_model = original_selection;
         }
@@ -521,7 +521,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     }
 
     // If we're dragging a group by its header, the first element of
-    // |dragged_views| is a group header, and the second one is the first tab
+    // `dragged_views` is a group header, and the second one is the first tab
     // in that group.
     const int first_dragged_tab_model_index =
         tab_strip_->GetModelIndexOf(dragged_views[group.has_value() ? 1 : 0])
@@ -773,7 +773,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
  private:
   // Animates tabs after a drag has ended, then hands them back to
-  // |tab_container_|.
+  // `tab_container_`.
   class ResetDraggingStateDelegate : public gfx::AnimationDelegate {
    public:
     ResetDraggingStateDelegate(TabContainer& tab_container,
@@ -808,8 +808,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   };
 
   // Determines the index to move the dragged tabs to. The dragged tabs must
-  // already be in the tabstrip. |dragged_bounds| is the union of the bounds
-  // of the dragged tabs and group header, if any. |first_dragged_tab_index| is
+  // already be in the tabstrip. `dragged_bounds` is the union of the bounds
+  // of the dragged tabs and group header, if any. `first_dragged_tab_index` is
   // the current model index in this tabstrip of the first dragged tab. The
   // dragged tabs must be in the tabstrip already!
   int CalculateInsertionIndex(
@@ -886,7 +886,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       return true;
     }
 
-    // If |candidate_index| is right after one of the tabs we're dragging,
+    // If `candidate_index` is right after one of the tabs we're dragging,
     // inserting here would be nonsensical - we can't insert the dragged tabs
     // into the middle of the dragged tabs. That's just silly.
     if (candidate_index > first_dragged_tab_index &&
@@ -916,7 +916,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   // Determines the x position that the dragged tabs would have if they were
-  // inserted at |candidate_index|. If there's a group header at that index,
+  // inserted at `candidate_index`. If there's a group header at that index,
   // this assumes the dragged tabs *would not* be inserted into the group,
   // and would therefore end up to the left of that header.
   int CalculateIdealX(int candidate_index,
@@ -928,13 +928,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
     const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
-    // We'll insert just right of the tab at |candidate_index| - 1.
+    // We'll insert just right of the tab at `candidate_index` - 1.
     int ideal_x =
         tab_strip_->tab_container_->GetIdealBounds(candidate_index - 1).right();
 
-    // If the dragged tabs are currently left of |candidate_index|, moving
-    // them to |candidate_index| would move the tab at |candidate_index| - 1
-    // to the left by |num_dragged_tabs| slots. This would change the ideal x
+    // If the dragged tabs are currently left of `candidate_index`, moving
+    // them to `candidate_index` would move the tab at `candidate_index` - 1
+    // to the left by `num_dragged_tabs` slots. This would change the ideal x
     // for the dragged tabs, as well, by the width of the dragged tabs.
     if (candidate_index - 1 > first_dragged_tab_index) {
       ideal_x -= dragged_bounds.width() - tab_overlap;
@@ -943,13 +943,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return ideal_x - tab_overlap;
   }
 
-  // There might be a group starting at |candidate_index|. If there is,
+  // There might be a group starting at `candidate_index`. If there is,
   // this determines how the ideal x would change if the dragged tabs were
   // added to that group, thereby moving them to that header's right.
   int CalculateIdealXAdjustmentIfAddedToGroup(
       int candidate_index,
       std::optional<tab_groups::TabGroupId> dragged_group) const {
-    // If the tab to the right of |candidate_index| is the first tab in a
+    // If the tab to the right of `candidate_index` is the first tab in a
     // (non-collapsed) group, we are sharing this model index with a group
     // header. We might end up on either side of it, so we need to check
     // both positions.
@@ -1029,7 +1029,7 @@ TabStrip::~TabStrip() {
   // animate back into place over time.
   drag_context_->CompleteEndDragAnimations();
 
-  // |tab_container_|'s tabs may call back to us or to |drag_context_| from
+  // `tab_container_`'s tabs may call back to us or to `drag_context_` from
   // their destructors. Delete them first so that if they call back we aren't in
   // a weird state.
   RemoveChildViewT(base::to_address(tab_container_));
@@ -1138,7 +1138,7 @@ void TabStrip::AddTabsAt(
     }
 
     // At the start of AddTabAt() the model and tabs are out of sync. Any
-    // queries to find a tab given a model index can go off the end of |tabs_|.
+    // queries to find a tab given a model index can go off the end of `tabs_`.
     // As such, it is important that we complete the drag *after* adding the tab
     // so that the model and tabstrip are in sync.
     drag_context_->TabWasAdded();
@@ -2113,7 +2113,7 @@ void TabStrip::ChildPreferredSizeChanged(views::View* child) {
 
 std::optional<BrowserRootView::DropIndex> TabStrip::GetDropIndex(
     const ui::DropTargetEvent& event) {
-  // BrowserView should talk directly to |tab_container_| instead of asking us.
+  // BrowserView should talk directly to `tab_container_` instead of asking us.
   NOTREACHED();
 }
 
@@ -2123,7 +2123,7 @@ BrowserRootView::DropTarget* TabStrip::GetDropTarget(
 }
 
 views::View* TabStrip::GetViewForDrop() {
-  // BrowserView should talk directly to |tab_container_| instead of asking us.
+  // BrowserView should talk directly to `tab_container_` instead of asking us.
   NOTREACHED();
 }
 

@@ -130,11 +130,9 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2738871930057338499">Интернетке туташуу мүмкүн болбой жатат. HTTP 403 Тыюу салынган. Прокси конфигурациясын текшериңиз.</translation>
 <translation id="2753623023919742414">Издөө үчүн чыкылдатыңыз</translation>
 <translation id="2770231113462710648">Демейки серепчини төмөнкүгө өзгөртүү:</translation>
-<translation id="277338894894732084">Кийинчерээк Chromium сакталган маалыматты формаларды автотолтуруу үчүн колдоносузбу деп сурайт</translation>
 <translation id="2785438272836277133">Бул кеңейтүүдө кесепеттүү программа бар ал жана кооптуу. Сиз кирген сайттардагы дайын-даректериңизди, анын ичинде жеке маалыматыңызды мындан ары көрүп жана өзгөртпөшү үчүн аны Chromium'дан алып салыңыз.</translation>
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
 <translation id="2803971713792056305">Сиздин Chromium</translation>
-<translation id="2806241689335397269">Chromium туулган күн, курак жана паспорттун номери сыяктуу формага киргизилген маалыматтын сакталар сакталбасын сурайт.</translation>
 <translation id="2841525013647267359">Төмөнкү тилден которуу</translation>
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
@@ -180,7 +178,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Учурдагы Chromium профилине өтөсүзбү?</translation>
 <translation id="3412460710772753638">Ушул түзмөктөгү Сырсөздөр бөлүмүндө</translation>
-<translation id="3451656833730006755">Кеңейтүүлөрдү жана башкаларды бардык компьютерлериңизде колдонуу үчүн Chromium'га кириңиз</translation>
 <translation id="347328004046849135">Chromium уурдалган сырсөз менен киргениңизде эскертет</translation>
 <translation id="3474745554856756813">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium профилдерин которо алат</translation>
@@ -463,7 +460,6 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="734373864078049451">Веб, кыстармаларыңыз жана Chromium'дагы жеке дайын-даректериңиз бул жерде жайгашкан.</translation>
 <translation id="7349591376906416160">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> доменин <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачууга конфигуациялады.</translation>
 <translation id="7384121030444253939">Бул кеңейтүү колдоого алынбай калган. Chromium аны өчүрүүнү сунуштайт.</translation>
-<translation id="7389750180956889333">Chromium формаларды жакшыраак түшүнүп, сизден тезирээк автотолтура алат. <ph name="BEGIN_LINK" />Chrome Автотолтуруу<ph name="END_LINK" /> жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Иштеп чыгуучулар үчүн</translation>
 <translation id="7450541714075000668">Текст көчүрүлдү</translation>
 <translation id="7451052299415159299">Бул сайтта иштөө үчүн Chromium камераңызды колдонушу керек</translation>

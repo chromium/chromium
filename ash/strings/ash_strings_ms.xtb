@@ -324,7 +324,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Buka Pemilih Emoji</translation>
 <translation id="2088116547584365419">permainan</translation>
-<translation id="2092517835716911174">Anda mestilah berumur sekurang-kurangnya 18 tahun untuk menggunakan ciri Bantu saya baca dan Bantu saya tulis.</translation>
 <translation id="209965399369889474">Tidak bersambung ke rangkaian</translation>
 <translation id="2107581415810719320">Butang Lain <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C anda tidak menyokong Thunderbolt. Prestasi peranti mungkin terhad.</translation>
@@ -1055,6 +1054,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="450584155212756404">Saluran Pembangunan</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
+<translation id="4518096944902121253">Tiada tindakan untuk bahasa ini lagi</translation>
 <translation id="4518404433291145981">Untuk membuka kunci Chromebook anda, buka kunci telefon anda dahulu</translation>
 <translation id="4525887279712865285">Paparkan tetapan Quick Share</translation>
 <translation id="4527045527269911712">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan.</translation>
@@ -1885,6 +1885,7 @@ Pemasangan baharu</translation>
 <translation id="7189412385142492784">Berapa jauhkah Venus</translation>
 <translation id="7198435252016571249">Kamera diautojajar ke penjuru kanan sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="7219573373513695352">Tiada peranti disambungkan</translation>
+<translation id="7228968829656641943">Pilih untuk membuat carian pada skrin saya. Tekan tab, kemudian tekan kekunci ruang untuk menavigasi papan kekunci.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> memori | Jumlah <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Kedua-dua butang tetikus</translation>
 <translation id="7244725679040769470">Baki kuasa bateri <ph name="PERCENTAGE" />(%). Sambungkan peranti anda kepada sumber kuasa.</translation>

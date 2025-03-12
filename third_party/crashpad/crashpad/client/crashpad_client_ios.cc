@@ -153,8 +153,10 @@ class CrashHandler : public Thread,
   }
 
   void ProcessIntermediateDumps(
-      const std::map<std::string, std::string>& annotations) {
-    in_process_handler_.ProcessIntermediateDumps(annotations);
+      const std::map<std::string, std::string>& annotations,
+      const UserStreamDataSources* user_stream_sources) {
+    in_process_handler_.ProcessIntermediateDumps(annotations,
+                                                 user_stream_sources);
   }
 
   void ProcessIntermediateDump(
@@ -457,10 +459,11 @@ bool CrashpadClient::StartCrashpadInProcessHandler(
 
 // static
 void CrashpadClient::ProcessIntermediateDumps(
-    const std::map<std::string, std::string>& annotations) {
+    const std::map<std::string, std::string>& annotations,
+    const UserStreamDataSources* user_stream_sources) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
-  crash_handler->ProcessIntermediateDumps(annotations);
+  crash_handler->ProcessIntermediateDumps(annotations, user_stream_sources);
 }
 
 // static

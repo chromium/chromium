@@ -37,6 +37,7 @@ const char kChromeUICrashHost[] = "crash";
 const char kChromeUIChromeURLsHost[] = "chrome-urls";
 const char kChromeUICrashesHost[] = "crashes";
 const char kChromeUICreditsHost[] = "credits";
+const char kChromeUIDataSharingInternalsHost[] = "data-sharing-internals";
 const char kChromeUIDinoHost[] = "dino";
 const char kChromeUIDownloadInternalsHost[] = "download-internals";
 const char kChromeUIExternalFileHost[] = "external-file";

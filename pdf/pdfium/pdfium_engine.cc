@@ -4656,12 +4656,26 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
 
   std::map<InkModeledShapeId, ink::PartitionedMesh> page_shape_map;
 
+  PDFiumPage* page = pages_[page_index].get();
   std::vector<ReadV2InkPathResult> read_results =
-      ReadV2InkPathsFromPageAsModeledShapes(pages_[page_index]->GetPage());
+      ReadV2InkPathsFromPageAsModeledShapes(page->GetPage());
   for (auto& read_result : read_results) {
     InkModeledShapeId id(next_ink_modeled_shape_id_++);
     page_shape_map[id] = std::move(read_result.shape);
     ink_modeled_shape_map_[id] = read_result.page_object;
+  }
+
+  // Should be unique due to the caller's responsibility to call
+  // `LoadV2InkPathsForPage()` at most once per page.
+  CHECK(!stroked_pages_unload_preventers_.contains(page_index));
+
+  // Prevent pages with existing Ink paths from unloading. Otherwise, if the
+  // page unloads and reloads, then the loaded V2 Ink path will no longer match
+  // the PDF object, and any updates to the Ink path will not be visible in the
+  // PDF.
+  if (!page_shape_map.empty()) {
+    stroked_pages_unload_preventers_.insert(
+        {page_index, PDFiumPage::ScopedUnloadPreventer(page)});
   }
 
   return page_shape_map;

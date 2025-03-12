@@ -931,9 +931,12 @@ void Label::PaintText(gfx::Canvas* canvas) {
     // This is our approximation of being painted on an opaque region. If any
     // parent has an opaque background we assume that that background covers the
     // text bounds. This is not necessarily true as the background could be
-    // inset from the parent bounds, and get_color() does not imply that all of
+    // inset from the parent bounds, and color() does not imply that all of
     // the background is painted with the same opaque color.
-    if (view->background() && IsOpaque(view->background()->get_color())) {
+    const auto* background = view->background();
+    auto* color_provider = view->GetColorProvider();
+    if (background && color_provider &&
+        IsOpaque(background->color().ConvertToSkColor(color_provider))) {
       break;
     }
 

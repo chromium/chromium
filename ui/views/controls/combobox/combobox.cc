@@ -570,7 +570,7 @@ void Combobox::UpdateBorder() {
     SetBorder(nullptr);
     return;
   }
-  SetBorder(CreateThemedRoundedRectBorder(
+  SetBorder(CreateRoundedRectBorder(
       kBorderThickness, GetCornerRadius(),
       invalid_
           ? ui::kColorAlertHighSeverity

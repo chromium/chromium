@@ -63,6 +63,7 @@ public class HttpsFirstModeSettingTest {
 
     @Test
     @LargeTest
+    @EnableFeatures("HttpsFirstBalancedModeAutoEnable")
     public void testSetting_AdvancedProtectionDisabled() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();

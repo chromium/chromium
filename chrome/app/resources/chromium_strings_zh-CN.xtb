@@ -127,11 +127,9 @@
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2770231113462710648">将默认浏览器更改为：</translation>
-<translation id="277338894894732084">之后，Chromium 会询问您是否要使用已保存的信息自动填写表单</translation>
 <translation id="2785438272836277133">此扩展程序包含恶意软件，所以不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2803971713792056305">您的 Chromium</translation>
-<translation id="2806241689335397269">Chromium 会询问您是否要保存表单信息，例如生日、年龄和护照号码</translation>
 <translation id="2841525013647267359">源语言</translation>
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
 <translation id="2847479871509788944">从Chromium中移除…</translation>
@@ -177,7 +175,6 @@
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3412460710772753638">在此设备上的密码管理工具中更新</translation>
-<translation id="3451656833730006755">若要在所有计算机上使用您的扩展程序等，请登录 Chromium</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可用于切换 Chromium 个人资料</translation>
@@ -460,7 +457,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="734373864078049451">您的上网记录、书签和其他Chromium内容都保存在此处。</translation>
 <translation id="7349591376906416160">您的系统管理员已将 Chromium 配置为使用<ph name="ALTERNATIVE_BROWSER_NAME" />访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7384121030444253939">此扩展程序已不再受支持。Chromium 建议您移除它。</translation>
-<translation id="7389750180956889333">Chromium 可以更好地理解表单，并更快地为您自动填充表单。详细了解 <ph name="BEGIN_LINK" />Chrome 自动填充功能<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 开发者版</translation>
 <translation id="7450541714075000668">文本已复制</translation>
 <translation id="7451052299415159299">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头</translation>

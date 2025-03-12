@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -22,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface TabLoadIfNeededCaller {
     int SET_TAB = 0;
     int ON_ACTIVITY_SHOWN = 1;

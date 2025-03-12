@@ -48,7 +48,6 @@
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -203,19 +202,12 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
 // TODO(crbug.com/40073814): Remove this test in favor of a unit test
 // extension_urls::GetWebstoreLaunchURL().
 class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
-    : public AppMenuModelInteractiveTest,
-      public testing::WithParamInterface<bool> {
+    : public AppMenuModelInteractiveTest {
  public:
   ExtensionsMenuVisitChromeWebstoreModelInteractiveTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kExtensionsMenuInAppMenu};
     std::vector<base::test::FeatureRef> disabled_features{};
-    if (GetParam()) {
-      enabled_features.push_back(extensions_features::kNewWebstoreURL);
-    } else {
-      LOG(ERROR) << "disabling new webstore URL";
-      disabled_features.push_back(extensions_features::kNewWebstoreURL);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -229,23 +221,12 @@ class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
   base::HistogramTester histograms;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
-                         // extensions_features::kNewWebstoreURL enabled status.
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "NewVisitChromeWebstoreUrl"
-                                             : "OldVisitChromeWebstoreUrl";
-                         });
-
 // Test to confirm that the visit Chrome Web Store menu item navigates to the
 // correct chrome webstore URL when selected and emits histograms that it did
 // so.
-IN_PROC_BROWSER_TEST_P(ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
                        VisitChromeWebStore) {
-  GURL expected_webstore_launch_url =
-      GetParam() ? extension_urls::GetNewWebstoreLaunchURL()
-                 : extension_urls::GetWebstoreLaunchURL();
+  GURL expected_webstore_launch_url = extension_urls::GetNewWebstoreLaunchURL();
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),

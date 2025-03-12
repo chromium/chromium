@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback.Status;
 import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
 import org.chromium.components.data_sharing.protocol.AddAccessTokenResult;
@@ -29,6 +30,7 @@ import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 
 /** Java counterpart to the C++ DataSharingSDKDelegateAndroid class. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingSDKDelegateBridge {
 
     private DataSharingSDKDelegate mSDKDelegateImpl;

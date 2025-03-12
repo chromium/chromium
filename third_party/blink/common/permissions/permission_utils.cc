@@ -99,6 +99,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "AutomaticFullscreen";
     case PermissionType::WEB_APP_INSTALLATION:
       return "WebAppInstallation";
+    case PermissionType::LOCAL_NETWORK_ACCESS:
+      return "LocalNetworkAccess";
     case PermissionType::NUM:
       NOTREACHED();
   }
@@ -171,6 +173,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     case PermissionType::NOTIFICATIONS:
     case PermissionType::KEYBOARD_LOCK:
     case PermissionType::POINTER_LOCK:
+    // TODO(crbug.com/394009026): Add permission policy for LNA.
+    case PermissionType::LOCAL_NETWORK_ACCESS:
       return std::nullopt;
 
     case PermissionType::NUM:
@@ -307,6 +311,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return std::nullopt;
     case PermissionName::WEB_APP_INSTALLATION:
       return PermissionType::WEB_APP_INSTALLATION;
+    case PermissionName::LOCAL_NETWORK_ACCESS:
+      return PermissionType::LOCAL_NETWORK_ACCESS;
     default:
       NOTREACHED();
   }

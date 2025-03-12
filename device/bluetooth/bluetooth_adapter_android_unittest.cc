@@ -344,26 +344,6 @@ TEST_F(BluetoothAdapterAndroidTest, ChromeBluetoothLeScannerFailToResume) {
   EXPECT_EQ(bluetooth_scanner_callback_->GetScanFinishCount(), 1);
 }
 
-TEST_F(BluetoothAdapterAndroidTest, NotifyNewDevicesForPairedDevices) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
-
-  InitWithFakeAdapter();
-
-  TestBluetoothAdapterObserver observer(adapter_);
-
-  adapter_->GetDevices();
-  task_environment_.FastForwardUntilNoTasksRemain();
-
-  SimulatePairedClassicDevice(1);
-  EXPECT_EQ(observer.device_added_count(), 1);
-  EXPECT_EQ(observer.last_device_address(), kTestDeviceAddress1);
-
-  SimulatePairedClassicDevice(2);
-  EXPECT_EQ(observer.device_added_count(), 2);
-  EXPECT_EQ(observer.last_device_address(), kTestDeviceAddress2);
-}
-
 TEST_F(BluetoothAdapterAndroidTest, GetPairedDevices) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
@@ -374,7 +354,6 @@ TEST_F(BluetoothAdapterAndroidTest, GetPairedDevices) {
   SimulatePairedClassicDevice(2);
 
   adapter_->GetDevices();
-  task_environment_.FastForwardUntilNoTasksRemain();
 
   BluetoothAdapter::DeviceList list = adapter_->GetDevices();
   EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress1));
@@ -388,7 +367,6 @@ TEST_F(BluetoothAdapterAndroidTest, ExposeUuidFromPairedDevices) {
   InitWithFakeAdapter();
 
   adapter_->GetDevices();
-  task_environment_.FastForwardUntilNoTasksRemain();
 
   SimulatePairedClassicDevice(1);
   BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);

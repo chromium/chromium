@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
@@ -96,6 +97,17 @@ class DeepScanningMetadata {
   // Removes the observation from the internal tracking.
   // Called by `DownloadScopedObservation` when it's destroyed.
   virtual void RemoveObservation(download::DownloadItem::Observer* observer) {}
+
+  // Runs download callback with appropriate deep scan result.
+  virtual void ProcessScanResult(DownloadCheckResultReason reason,
+                                 DownloadCheckResult deep_scan_result) = 0;
+
+ protected:
+  // Potentially overrides the deep scan result based on verdict reason and
+  // precedence.
+  DownloadCheckResult MaybeOverrideScanResult(
+      DownloadCheckResultReason reason,
+      DownloadCheckResult deep_scan_result);
 };
 
 }  // namespace safe_browsing

@@ -79,8 +79,13 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
-
+  if ([self isRunningTest:@selector(testOpenSettings)]) {
+    config.features_enabled_and_params.push_back(
+        {kIdentityDiscAccountMenu,
+         {{{kShowSettingsInAccountMenuParam, "true"}}}});
+  } else {
+    config.features_enabled.push_back(kIdentityDiscAccountMenu);
+  }
   if ([self isRunningTest:@selector
             (testMultipleIdentities_IdentityConfirmationToast)] ||
       [self isRunningTest:@selector

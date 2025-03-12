@@ -324,7 +324,7 @@ TabSlotView::ViewType TabGroupHeader::GetTabSlotViewType() const {
 
 TabSizeInfo TabGroupHeader::GetTabSizeInfo() const {
   TabSizeInfo size_info;
-  // Group headers have a fixed width based on |title_|'s width.
+  // Group headers have a fixed width based on `title_`'s width.
   const int width = GetDesiredWidth();
   size_info.pinned_tab_width = width;
   size_info.min_active_width = width;
@@ -449,7 +449,7 @@ void TabGroupHeader::UpdateAccessibleName() {
       tab_slot_controller_->GetGroupContentString(group().value());
   std::u16string collapsed_state = std::u16string();
 
-// Windows screen reader properly announces the state set above in |node_data|
+// Windows screen reader properly announces the state set above in `node_data`
 // and will read out the state change when the header's collapsed state is
 // toggled. The state is added into the title for other platforms and the title
 // will be reread with the updated state when the header's collapsed state is

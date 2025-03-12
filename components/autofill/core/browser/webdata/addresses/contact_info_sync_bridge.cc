@@ -227,6 +227,10 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
                                  syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
       break;
+    case AutofillProfileChange::HIDE_IN_AUTOFILL:
+      // TODO(crbug.com/357074792): Implement.
+      NOTIMPLEMENTED();
+      break;
   }
 
   // Local changes (written by the processor via the metadata change list) don't

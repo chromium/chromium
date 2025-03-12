@@ -52,7 +52,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   // Get the single instance of this class.
   static AXActionHandlerRegistry* GetInstance();
 
-  virtual ~AXActionHandlerRegistry();
+  ~AXActionHandlerRegistry();
   AXActionHandlerRegistry(const AXActionHandlerRegistry&) = delete;
   AXActionHandlerRegistry& operator=(const AXActionHandlerRegistry&) = delete;
 

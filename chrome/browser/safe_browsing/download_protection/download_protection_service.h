@@ -136,7 +136,8 @@ class DownloadProtectionService {
 
   // Returns true iff the download specified by |info| should be scanned by
   // CheckClientDownload() for malicious content.
-  virtual bool IsSupportedDownload(const download::DownloadItem& item,
+  // May modify the DownloadItem with a SupportsUserData::Data.
+  virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const;
 
   virtual void CheckPPAPIDownloadRequest(
@@ -171,6 +172,7 @@ class DownloadProtectionService {
   bool enabled() const { return enabled_; }
 
   DownloadProtectionDelegate* delegate() { return delegate_.get(); }
+  const DownloadProtectionDelegate* delegate() const { return delegate_.get(); }
 
   // Returns the URL that will be contacted for download protection requests.
   const GURL& GetDownloadRequestUrl() const;
@@ -200,7 +202,7 @@ class DownloadProtectionService {
   base::CallbackListSubscription RegisterPPAPIDownloadRequestCallback(
       const PPAPIDownloadRequestCallback& callback);
 
-  double allowlist_sample_rate() const { return allowlist_sample_rate_; }
+  double allowlist_sample_rate() const;
 
   static void SetDownloadProtectionData(
       download::DownloadItem* item,
@@ -234,7 +236,7 @@ class DownloadProtectionService {
                                 download::DownloadDangerType danger_type);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Uploads `item` to Safe Browsing for deep scanning, using the upload
+  // Uploads `metadata` to Safe Browsing for deep scanning, using the upload
   // service attached to the profile `item` was downloaded in. This is
   // non-blocking, and the result we be provided through `callback`. `trigger`
   // is used to identify the reason for deep scanning, aka enterprise policy or
@@ -244,7 +246,7 @@ class DownloadProtectionService {
   // whether to block/allow large files, etc). This must be called on the UI
   // thread.
   void UploadForDeepScanning(
-      download::DownloadItem* item,
+      std::unique_ptr<DeepScanningMetadata> metadata,
       CheckDownloadRepeatingCallback callback,
       DownloadItemWarningData::DeepScanTrigger trigger,
       DownloadCheckResult download_check_result,
@@ -451,7 +453,8 @@ class DownloadProtectionService {
   std::set<std::string> manual_blocklist_hashes_;
 
   // Rate of allowlisted downloads we sample to send out download ping.
-  double allowlist_sample_rate_;
+  // Overrides the value provided by the delegate. Intended for testing only.
+  std::optional<double> allowlist_sample_rate_ = std::nullopt;
 
   // DownloadProtectionObserver to send real time reports for dangerous download
   // events and handle special user actions on the download.

@@ -23,7 +23,7 @@
     },
     "1": {
         "crossbench": {
-            "loadline-phone": {
+            "loadline-phone-fast": {
                 "display_name": "loadline_phone.crossbench",
                 "arguments": [
                     "--cool-down-threshold=moderate",

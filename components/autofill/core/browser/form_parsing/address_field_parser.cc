@@ -707,6 +707,11 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
   if (landmark_result == RESULT_MATCH_NAME_LABEL) {
     return true;
   }
+  ParseNameLabelResult street_location_result =
+      ParseNameAndLabelForStreetLocation(context, scanner);
+  if (street_location_result == RESULT_MATCH_NAME_LABEL) {
+    return true;
+  }
   ParseNameLabelResult between_streets_result =
       ParseNameAndLabelForBetweenStreets(context, scanner);
   if (between_streets_result == RESULT_MATCH_NAME_LABEL) {
@@ -734,7 +739,7 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
         zip_result, landmark_result, between_streets_result,
         between_street_lines12_result, admin_level2_result,
         between_streets_or_landmark_result, overflow_and_landmark_result,
-        overflow_result}) {
+        overflow_result, street_location_result}) {
     if (result != RESULT_MATCH_NONE)
       ++num_of_matches;
   }
@@ -764,6 +769,10 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
     }
     if (landmark_result != RESULT_MATCH_NONE) {
       return SetFieldAndAdvanceCursor(scanner, landmark_result, &landmark_);
+    }
+    if (street_location_result != RESULT_MATCH_NONE) {
+      return SetFieldAndAdvanceCursor(scanner, street_location_result,
+                                      &street_location_);
     }
     if (between_streets_result != RESULT_MATCH_NONE) {
       return SetFieldAndAdvanceCursor(scanner, between_streets_result,
@@ -840,6 +849,10 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
     if (landmark_result == result) {
       return SetFieldAndAdvanceCursor(scanner, landmark_result, &landmark_);
     }
+    if (street_location_result == result) {
+      return SetFieldAndAdvanceCursor(scanner, street_location_result,
+                                      &street_location_);
+    }
     if (between_streets_result == result) {
       return SetFieldAndAdvanceCursor(scanner, between_streets_result,
                                       &between_streets_);
@@ -903,6 +916,12 @@ AddressFieldParser::ParseNameAndLabelForDependentLocality(
     AutofillScanner* scanner) {
   if (dependent_locality_) {
     return RESULT_MATCH_NONE;
+  }
+
+  if (context.client_country == GeoIpCountryCode("IN") &&
+      base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return ParseNameAndLabelSeparately(
+        context, scanner, "IN_DEPENDENT_LOCALITY", &dependent_locality_);
   }
 
   return ParseNameAndLabelSeparately(context, scanner,
@@ -1006,6 +1025,19 @@ AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
   }
 
   return ParseNameAndLabelSeparately(context, scanner, "LANDMARK", &landmark_);
+}
+
+AddressFieldParser::ParseNameLabelResult
+AddressFieldParser::ParseNameAndLabelForStreetLocation(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (street_location_ || context.client_country != GeoIpCountryCode("IN") ||
+      !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return RESULT_MATCH_NONE;
+  }
+  return ParseNameAndLabelSeparately(context, scanner, "IN_STREET_LOCATION",
+                                     &street_location_);
 }
 
 AddressFieldParser::ParseNameLabelResult

@@ -44,7 +44,7 @@ class ASH_EXPORT WallpaperMetricsManager : public WallpaperControllerObserver {
   void OnWallpaperChanged() override;
   void OnWallpaperPreviewStarted() override;
 
-  void LogSettingTimeOfDayWallpaperAfterOobe(bool success);
+  void LogSettingTimeOfDayWallpaperAfterOobe(uint64_t unit_id, bool success);
   void LogWallpaperResult(WallpaperType type, SetWallpaperResult reason);
 
  private:

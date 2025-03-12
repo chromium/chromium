@@ -497,6 +497,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcherTest.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinatorTest.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediatorTest.java",
+      "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerTest.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinderTest.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkModelListTestUtil.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkMoveSnackbarManagerTest.java",

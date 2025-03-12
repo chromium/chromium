@@ -996,6 +996,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5696597120588531049">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más</translation>
 <translation id="5698878456427040674">Revisa si se admite la cuenta seleccionada.</translation>
 <translation id="570347048394355941">Cambiar a la pestaña</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> quiere conectarse a un puerto en serie</translation>
 <translation id="5715150588940290235">¿Quieres borrar los códigos de seguridad guardados?</translation>
 <translation id="571930967925877633">Ya no se sincronizarán con tu Cuenta de Google los favoritos, el historial ni otros datos de Chrome</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
@@ -1128,6 +1129,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6296366034485697675">Exportar y borrar</translation>
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6303969859164067831">Salir y desactivar la sincronización</translation>
+<translation id="6307241780749477694">Verifica tu identidad para obtener todas tus contraseñas en este dispositivo</translation>
 <translation id="6312687380483398334">Aplicaciones web (discretas)</translation>
 <translation id="6315386555979018699">Borrar y continuar</translation>
 <translation id="6316139424528454185">Versión Android no compatible</translation>
@@ -1389,6 +1391,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7359002509206457351">Acceder a formas de pago</translation>
 <translation id="7363349185727752629">Una guía de las opciones de privacidad</translation>
 <translation id="7364103838544876661">Más opciones para borrar los datos de navegación</translation>
+<translation id="7365073365123878797">Para comenzar a guardar y usar contraseñas con el Administrador de contraseñas de Google, actualiza los Servicios de Google Play</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Si incluyes más texto de la página, obtendrás mejores resultados cuando uses la función Tocar para buscar. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> en cualquier momento.</translation>
 <translation id="7379900596734708416">El Tema oscuro está disponible para los sitios</translation>
@@ -1467,10 +1470,12 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
 <translation id="7690596512217303514">No se pudo abrir Chrome en tu dispositivo. Para solucionar este problema, descarga la actualización más reciente de Chrome desde tu tienda de aplicaciones.</translation>
 <translation id="7691043218961417207">Explorar contenido para seguir</translation>
+<translation id="7692761875510935111">Abre rápidamente en el navegador. Para editar este atajo, mantenlo presionado.</translation>
 <translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">La hoja inferior de la actividad reciente está totalmente abierta</translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
+<translation id="7708994397325774423">Accede a todas tus contraseñas</translation>
 <translation id="7733878270780732638">No hay espacio suficiente en el dispositivo.</translation>
 <translation id="7746817319925672889">El Administrador de contraseñas de Google dejará de funcionar pronto en este dispositivo</translation>
 <translation id="774876555279732384">Los servicios de autocompletado también se administran en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
@@ -1612,6 +1617,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8310451567823644042">Las contraseñas dejarán de funcionar pronto</translation>
 <translation id="831192587911042850">Agrega el sitio web actual a la lista de sitios web que sigues.</translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" /> <ph name="BEGIN_NEW" />Novedad<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome te informará sobre los sitios que podrían estar enviando demasiadas notificaciones</translation>
 <translation id="834313815369870491">Nunca traducir sitios</translation>
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no lo admitan</translation>
@@ -1743,6 +1749,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8937772741022875483">¿Quieres quitar tu actividad en Chrome de Bienestar digital?</translation>
 <translation id="8942627711005830162">Abrir en otra ventana</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no se pudo descargar este idioma. Vuelve a intentarlo más tarde.</translation>
+<translation id="8946759102391960088">Mantén el acceso a tus contraseñas</translation>
 <translation id="8957528460562961174">Para mantener el acceso a tus contraseñas, expórtalas ahora y, luego, impórtalas al administrador de contraseñas que prefieras. El Administrador de contraseñas de Google dejó de funcionar porque los Servicios de Google Play no están disponibles.</translation>
 <translation id="8963117664422609631">Ir a la configuración del sitio</translation>
 <translation id="8965591936373831584">pendiente</translation>

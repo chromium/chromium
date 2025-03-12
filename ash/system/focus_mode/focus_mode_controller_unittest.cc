@@ -139,10 +139,7 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
     CHECK(test_web_view_factory_.get());
     NoSessionAshTestBase::SetUp();
 
-    TestSessionControllerClient* session_controller =
-        GetSessionControllerClient();
-    session_controller->Reset();
-
+    ClearLogin();
     owned_user_1_prefs_ =
         TestPrefServiceProvider::CreateUserPrefServiceSimple();
     owned_user_2_prefs_ =

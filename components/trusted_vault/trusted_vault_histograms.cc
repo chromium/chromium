@@ -207,6 +207,15 @@ void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
       domain_for_uma);
 }
 
+void RecordTrustedVaultListSecurityDomainMembersPinStatus(
+    SecurityDomainId security_domain_id,
+    TrustedVaultListSecurityDomainMembersPinStatus status) {
+  base::UmaHistogramEnumeration(
+      "TrustedVault.ListSecurityDomainMembersPinStatus." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      status);
+}
+
 std::string GetSecurityDomainNameForUma(SecurityDomainId domain) {
   switch (domain) {
     // These strings get embedded in histogram names and so should not be

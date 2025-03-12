@@ -115,7 +115,7 @@ class InteractiveGlicTestT : public T {
     // use the embedded test server to get the right URL and it's not started
     // at that time.
     std::ostringstream path;
-    path << "/glic/test_client/index.html";
+    path << glic_page_path_;
 
     // Append the query parameters to the URL.
     bool first_param = true;
@@ -150,6 +150,10 @@ class InteractiveGlicTestT : public T {
   void TearDownOnMainThread() override {
     T::TearDownOnMainThread();
     glic_test_environment_.reset();
+  }
+
+  void SetGlicPagePath(const std::string& glic_page_path) {
+    glic_page_path_ = glic_page_path;
   }
 
   // Ensures that the WebContents for some combination of glic host and contents
@@ -343,6 +347,9 @@ class InteractiveGlicTestT : public T {
   // are here for convenience to make the methods above more readable.
   using Api = InteractiveBrowserTestApi;
   using Test = InProcessBrowserTest;
+
+  // This is the default test file. Tests can override with a different path.
+  std::string glic_page_path_ = "/glic/test_client/index.html";
 
   base::test::ScopedFeatureList features_;
 

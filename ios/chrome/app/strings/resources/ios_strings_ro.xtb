@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Datele de navigare existente vor fi asociate cu <ph name="USER_EMAIL" />. Aceste date pot fi vizibile pentru organizația ta.</translation>
 <translation id="1713777106376424209">Livrat de</translation>
 <translation id="1715515772563243997">Dacă ai încredere în <ph name="SITE" />, poți folosi o parolă salvată pentru a te conecta.</translation>
+<translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1728549374069268714">Inserează și accesează</translation>
 <translation id="1732468323901456775">Activează notificările pentru <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Atinge de două ori pentru a instala.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Detectarea adresei este dezactivată. Activeaz-o din nou în Setări.</translation>
 <translation id="1904580727789512086">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
-<translation id="1923342640370224680">Ultima oră</translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
 <translation id="1943478190258551035">Meniu → Setări</translation>
 <translation id="1952728750904661634">Conectează-te cu un cont gestionat</translation>
@@ -1206,6 +1206,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6187302354554850004">Ultima sincronizare: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Data creării: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Necitite</translation>
+<translation id="6192388920090306326">Călătorie la Tokyo</translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6196207969502475924">Căutare vocală</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
@@ -1370,6 +1371,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6779455296366983087">Datele de navigare vor fi șterse</translation>
 <translation id="6790502149545262384">În curând, vei vedea articole de la <ph name="CHANNEL_NAME" /> când deschizi o filă nouă.</translation>
 <translation id="6794476726485507147">Alege o dată și o oră pentru a primi un memento ca să revii la această pagină</translation>
+<translation id="6807287147325542056">Parole din alte aplicații</translation>
 <translation id="681368974849482173">Element creat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcajul s-a salvat în Contul Google {email}}few{{count} marcaje s-au salvat în Contul Google {email}.}other{{count} de marcaje s-au salvat în Contul Google {email}.}}</translation>
 <translation id="6830728435402077660">Nesecurizată</translation>
@@ -1934,6 +1936,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9106655997975673326">De pe <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Verifică dacă există parole compromise</translation>
 <translation id="9124387962554796433">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google.</translation>
+<translation id="9124978074365039456">Cumpără, tradu și identifică ceea ce vezi cu ajutorul camerei foto și al galeriei foto</translation>
 <translation id="9130317582644834675">Ascunde opțiunea Fă zoom pe text</translation>
 <translation id="913036870884277353">Deschide cu ușurință linkuri în alte aplicații.</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>

@@ -1293,6 +1293,49 @@ const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
      {"staging url", kOmniboxStarterPackExpansionStagingUrl,
       std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxSearchAggregatorProdParams[] = {
+    {"name", "Agentspace (prod)"},
+    {"shortcut", "agentspace"},
+    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
+    {"search_url",
+     "https://vertexaisearch.cloud.google.com/home/cid/"
+     "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?q={searchTerms}"},
+    {"suggest_url",
+     "https://discoveryengine.googleapis.com/v1alpha/projects/862721868538/"
+     "locations/global/collections/default_collection/engines/"
+     "teamfood-v11_1720671063545/completionConfig:completeQuery"}};
+const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
+    {"name", "Agentspace (staging)"},
+    {"shortcut", "agentspace"},
+    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
+    {"search_url",
+     "https://vertexaisearch.cloud.google.com/home/cid/"
+     "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?e=97710846%2C97750609%2C97760709%"
+     "2C97711975&q={searchTerms}"},
+    {"suggest_url",
+     "https://staging-discoveryengine.sandbox.googleapis.com/v1alpha/projects/"
+     "862721868538/locations/global/collections/default_collection/engines/"
+     "teamfood-v11/completionConfig:completeQuery"}};
+const FeatureEntry::FeatureParam kOmniboxSearchAggregatorAlternateParams[] = {
+    {"name", "Agentspace (alternate)"},
+    {"shortcut", "agentspace"},
+    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
+    {"search_url",
+     "https://vertexaisearch.cloud.google.com/home/cid/"
+     "e04a19e6-1fc2-48ba-9d0d-53c6aabcba7b?e=97844069%2C-97770083&"
+     "q={searchTerms}"},
+    {"suggest_url",
+     "https://discoveryengine.googleapis.com/v1alpha/projects/301214329925/"
+     "locations/global/collections/default_collection/engines/"
+     "neuravibeblendedsearch_1727383849310/completionConfig:completeQuery"}};
+const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
+    {"prod", kOmniboxSearchAggregatorProdParams,
+     std::size(kOmniboxSearchAggregatorProdParams), nullptr},
+    {"staging", kOmniboxSearchAggregatorStagingParams,
+     std::size(kOmniboxSearchAggregatorStagingParams), nullptr},
+    {"alternate", kOmniboxSearchAggregatorAlternateParams,
+     std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -2230,27 +2273,6 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLogoPolish_large[] = {
-    {"polish_logo_size_large", "true"},
-    {"polish_logo_size_medium", "false"}};
-
-const FeatureEntry::FeatureParam kLogoPolish_medium[] = {
-    {"polish_logo_size_large", "false"},
-    {"polish_logo_size_medium", "true"}};
-
-const FeatureEntry::FeatureParam kLogoPolish_small[] = {
-    {"polish_logo_size_large", "false"},
-    {"polish_logo_size_medium", "false"}};
-
-const FeatureEntry::FeatureVariation kLogoPolishVariations[] = {
-    {"Logo height is large", kLogoPolish_large, std::size(kLogoPolish_large),
-     nullptr},
-    {"Logo height is medium", kLogoPolish_medium, std::size(kLogoPolish_medium),
-     nullptr},
-    {"Logo height is small", kLogoPolish_small, std::size(kLogoPolish_small),
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kSearchResumption_use_new_service[] = {
     {"use_new_service", "true"}};
 const FeatureEntry::FeatureVariation
@@ -6454,6 +6476,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kFocusTriggersWebAndSRPZeroSuggest)},
 
+    {"omnibox-enterprise-search-aggregator",
+     flag_descriptions::kOmniboxSearchAggregatorName,
+     flag_descriptions::kOmniboxSearchAggregatorDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::SearchAggregatorProvider::
+             kSearchAggregatorProvider,
+         kOmniboxSearchAggregatorVariations,
+         "SearchAggregatorProvider")},
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -6878,6 +6909,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpDriveModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-drive-module-no-sync-requirement",
+     flag_descriptions::kNtpDriveModuleNoSyncRequirementName,
+     flag_descriptions::kNtpDriveModuleNoSyncRequirementDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpDriveModuleNoSyncRequirement)},
+
     {"ntp-drive-module-segmentation",
      flag_descriptions::kNtpDriveModuleSegmentationName,
      flag_descriptions::kNtpDriveModuleSegmentationDescription, kOsDesktop,
@@ -7209,14 +7245,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-logo-polish", flag_descriptions::kLogoPolishName,
      flag_descriptions::kLogoPolishDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLogoPolish,
-                                    kLogoPolishVariations,
-                                    "LogoPolish")},
-
-    {"enable-logo-polish-animation-kill-switch",
-     flag_descriptions::kLogoPolishAnimationKillSwitchName,
-     flag_descriptions::kLogoPolishAnimationKillSwitchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kLogoPolishAnimationKillSwitch)},
+     FEATURE_VALUE_TYPE(chrome::android::kLogoPolish)},
 
     {"search-in-cct", flag_descriptions::kSearchInCCTName,
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
@@ -9854,15 +9883,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kRenderDocumentVariations,
                                     "RenderDocument")},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"enable-search-aggregator-policy",
-     flag_descriptions::kEnableSearchAggregatorPolicyName,
-     flag_descriptions::kEnableSearchAggregatorPolicyDescription,
-     static_cast<unsigned short>(kOsCrOS | kOsLinux | kOsMac | kOsWin),
-     FEATURE_VALUE_TYPE(omnibox::kEnableSearchAggregatorPolicy)},
-#endif
-
     {"site-instance-groups-for-data-urls",
      flag_descriptions::kSiteInstanceGroupsForDataUrlsName,
      flag_descriptions::kSiteInstanceGroupsForDataUrlsDescription, kOsAll,
@@ -11349,6 +11369,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
+    {"glic-detached", flag_descriptions::kGlicDetachedName,
+     flag_descriptions::kGlicDetachedDescription, kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicDetached)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -16,9 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
@@ -115,6 +114,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // Shared state
     private boolean mIsShared;
     @Nullable private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    @Nullable private SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
     @Nullable private ViewResourceAdapter mAvatarResource;
     private float mAvatarWidthWithPadding;
     @ColorInt private final int mBubbleTint;
@@ -227,8 +227,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
         // Update the shared group avatar border color if a shared image tiles coordinator exists.
         if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.updateColorStyle(
-                    new SharedImageTilesColor(SharedImageTilesColor.Style.TAB_GROUP, mColor));
+            mSharedImageTilesCoordinator.updateConfig(
+                    mSharedImageTilesConfigBuilder.setTabGroupColor(mColor).build());
         }
     }
 
@@ -357,12 +357,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
         // Initialize the shared image tiles coordinator if it doesn't exist.
         if (mSharedImageTilesCoordinator == null) {
+            mSharedImageTilesConfigBuilder =
+                    SharedImageTilesConfig.Builder.createThumbnail(mContext, mColor);
             mSharedImageTilesCoordinator =
                     new SharedImageTilesCoordinator(
                             mContext,
-                            SharedImageTilesType.SMALL,
-                            new SharedImageTilesColor(
-                                    SharedImageTilesColor.Style.TAB_GROUP, mColor),
+                            mSharedImageTilesConfigBuilder.build(),
                             dataSharingService,
                             collaborationService);
         }

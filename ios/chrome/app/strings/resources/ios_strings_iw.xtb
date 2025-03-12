@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">נתוני הגלישה הקיימים יקושרו אל <ph name="USER_EMAIL" />. יכול להיות שהארגון שלך יוכל לראות את הנתונים האלה.</translation>
 <translation id="1713777106376424209">החבילה תימסר על ידי</translation>
 <translation id="1715515772563243997">אם הכתובת <ph name="SITE" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה כדי להיכנס לחשבון.</translation>
+<translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1728549374069268714">הדבקה והמשך</translation>
 <translation id="1732468323901456775">הפעלת ההתראות של <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">יש ללחוץ פעמיים כדי להתקין.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">זיהוי הכתובת מושבת. אפשר להפעיל אותו שוב בהגדרות.</translation>
 <translation id="1904580727789512086">‏כתובות ה-URL שנכנסת אליהן נשמרות בחשבון Google</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
-<translation id="1923342640370224680">בשעה האחרונה</translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים פעמיים.</translation>
 <translation id="1943478190258551035">תפריט ← הגדרות</translation>
 <translation id="1952728750904661634">כניסה עם חשבון מנוהל</translation>

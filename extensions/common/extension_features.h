@@ -217,11 +217,6 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 // only.
 BASE_DECLARE_FEATURE(kIncludeJSCallStackInExtensionApiRequest);
 
-// If enabled, the button for visiting the chrome webstore in both the
-// extensions menu in the app menu and the chrome://extensions sidebar will send
-// the user to the new chrome webstore URL.
-BASE_DECLARE_FEATURE(kNewWebstoreURL);
-
 // If enabled, use the new CWS itemSnippets API to fetch extension info.
 BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
 

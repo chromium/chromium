@@ -49,6 +49,7 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
 
   // Overridden from ChromeBrowserMainExtraParts:
   void ToolkitInitialized() override;
+  void PostCreateMainMessageLoop() override;
   void PreCreateThreads() override;
   void PreProfileInit() override;
   void PostBrowserStart() override;

@@ -996,6 +996,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5696597120588531049">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="5698878456427040674">Tanlangan hisob ishlashini tekshiring.</translation>
 <translation id="570347048394355941">Varaqqa oʻtish</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> seriyali portga ulanmoqchi</translation>
 <translation id="5715150588940290235">Saqlangan xavfsizlik kodlari oʻchirilsinmi?</translation>
 <translation id="571930967925877633">Bukmarklar, tarix, parollar va boshqa Chrome maʼlumotlaringiz bilan Google hisobingiz sinxronizatsiyasi uziladi</translation>
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
@@ -1128,6 +1129,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6296366034485697675">Eksport qilish va oʻchirish</translation>
 <translation id="629730747756840877">Hisob</translation>
 <translation id="6303969859164067831">Hisobdan chiqish va sinxronizatsiyani to‘xtatish</translation>
+<translation id="6307241780749477694">Bu qurilmadagi barcha parollaringizni olish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6312687380483398334">Veb-ilovalar (sokin)</translation>
 <translation id="6315386555979018699">Oʻchirish va davom etish</translation>
 <translation id="6316139424528454185">Android versiyasi bilan mos emas</translation>
@@ -1389,6 +1391,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7359002509206457351">To‘lov usullariga kirish uchun ruxsat</translation>
 <translation id="7363349185727752629">Maxfiylik sozlamalaringizga oid qoʻllanma</translation>
 <translation id="7364103838544876661">Brauzer maʼlumotlarini oʻchirish uchun qoʻshimcha parametrlar</translation>
+<translation id="7365073365123878797">Parollarni Google Parollar menejerida saqlash va ulardan foydalanish uchun Google Play xizmatlarini yangilang</translation>
 <translation id="7375125077091615385">Turi:</translation>
 <translation id="7376560087009844242">Teginib qidirish vaqtida sahifada koʻproq matn tanlansa, yanada yaxshi natija berishi mumkin. Buni istalgan vaqt <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="7379900596734708416">Saytlar uchun tungi mavzu chiqdi</translation>
@@ -1467,10 +1470,12 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7686086654630106285">Saytlar tomonidan tavsiya etilgan reklamalar haqida</translation>
 <translation id="7690596512217303514">Qurilmangizda Chrome ochilmadi. Buni tuzatish uchun ilovalar doʻkoni orqali Chromening oxirgi versiyasini yuklab oling.</translation>
 <translation id="7691043218961417207">Kuzatish uchun kontent toping</translation>
+<translation id="7692761875510935111">Brauzerda tezkor ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="7697383401610880082">Surish dastagi</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> orqali e-pochta yaratish</translation>
 <translation id="7702420606070050505">Quyi ekrandagi oxirgi amallar toʻliq hajmda ochildi</translation>
 <translation id="7707922173985738739">Mobil internetdan foydalanish</translation>
+<translation id="7708994397325774423">Barcha parollaringizni oling</translation>
 <translation id="7733878270780732638">Qurilmadagi joy yetarli emas.</translation>
 <translation id="7746817319925672889">Google parollar menejeri tez orada bu qurilmada ishlamay qoladi</translation>
 <translation id="774876555279732384">Avtomatik kiritish xizmatlarini <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali ham boshqarish mumkin.</translation>
@@ -1612,6 +1617,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8310451567823644042">Tez orada parollar ishlamay qoladi</translation>
 <translation id="831192587911042850">Joriy saytni kuzatuvdagi saytlar roʻyxatiga kiritadi.</translation>
 <translation id="8320212361750431956">Oxirgi faollik</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome saytlarning juda koʻp bildirishnoma yuborishi haqida xabar qiladi</translation>
 <translation id="834313815369870491">Saytlar hech qachon tarjima qilinmasin</translation>
 <translation id="8348430946834215779">Imkon qadar HTTPS ishlating va bu protokolda ishlamaydigan saytlarni yuklashdan oldin ogohlantirish oling</translation>
@@ -1743,6 +1749,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8937772741022875483">Raqamli muvozanat xizmatidan Chrome amallari olib tashlansinmi?</translation>
 <translation id="8942627711005830162">Yangi oynada ochish</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Bu til yuklab olinmadi. Keyinroq urining.</translation>
+<translation id="8946759102391960088">Parollarga ruxsatni saqlab qoling</translation>
 <translation id="8957528460562961174">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qiling va afzal parollar menejeriga import qiling. Google Play xizmatlari ishlamagani sababli Google Parollar menejeri ishlamay qoldi.</translation>
 <translation id="8963117664422609631">Sayt sozlamalarini ochish</translation>
 <translation id="8965591936373831584">kutilmoqda</translation>

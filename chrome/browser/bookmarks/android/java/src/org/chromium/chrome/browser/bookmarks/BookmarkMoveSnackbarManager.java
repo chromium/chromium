@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -35,7 +31,7 @@ import java.util.List;
  *
  * <p>Note: This class can be used for multiple launches of BookmarkFolderPickerActivity.
  */
-public class BookmarkMoveSnackbarManager implements ActivityStateListener {
+public class BookmarkMoveSnackbarManager {
     static final int FOLDER_CHARACTER_LIMIT = 32;
     private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
@@ -110,12 +106,10 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mSnackbarManager = snackbarManager;
         mIdentityManager = identityManager;
-        ApplicationStatus.registerStateListenerForAllActivities(this);
     }
 
     /** Called when the BookmarkMoveSnackbarManager is no longer needed. */
     public void destroy() {
-        ApplicationStatus.unregisterActivityStateListener(this);
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
     }
 
@@ -127,24 +121,17 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
      */
     public void startFolderPickerAndObserveResult(
             BookmarkManagerOpener bookmarkManagerOpener, BookmarkId... bookmarkIds) {
-        // Snackbars will only be shown when the feature is enabled.
-        mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
+        mIsObserving = true;
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
         // TODO(crbug.com/1465757): Record user action.
-        bookmarkManagerOpener.startFolderPickerActivity(mContext, mProfile, bookmarkIds);
+        bookmarkManagerOpener.startFolderPickerActivity(
+                mContext, mProfile, this::onFolderPickerActivityFinished, bookmarkIds);
     }
 
-    // ActivityStateListener implementation.
-
-    @Override
-    public void onActivityStateChange(Activity activity, int newState) {
-        // It's possible that the activity was closed without anything being moved. In that case,
-        // stop observing and wait for the next call to {@link startFolderPickerAndObserveResult}.
-        if (activity instanceof BookmarkFolderPickerActivity
-                && newState == ActivityState.DESTROYED) {
-            mIsObserving = false;
-        }
+    @VisibleForTesting
+    void onFolderPickerActivityFinished() {
+        mIsObserving = false;
 
         // This will only happen when we get back to the calling context which owns this snackbar
         // (e.g. BookmarkEditActivity, BookmarkManager).

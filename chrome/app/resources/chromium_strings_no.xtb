@@ -128,11 +128,9 @@
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2753623023919742414">Klikk for å søke</translation>
 <translation id="2770231113462710648">Endre standardnettleser til:</translation>
-<translation id="277338894894732084">Senere spør Chromium om du vil bruke lagret informasjon til å fylle ut skjemaer automatisk</translation>
 <translation id="2785438272836277133">Denne utvidelsen inneholder skadelig programvare og er utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2803971713792056305">Din Chromium</translation>
-<translation id="2806241689335397269">Chromium spør om du vil lagre skjemainformasjon, for eksempel fødselsdag, alder og passnummer</translation>
 <translation id="2841525013647267359">Oversett fra</translation>
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
 <translation id="2847479871509788944">Fjern fra Chromium</translation>
@@ -178,7 +176,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
 <translation id="3412460710772753638">I Passordlagring på denne enheten</translation>
-<translation id="3451656833730006755">For å få utvidelsene dine med mer på alle datamaskinene dine, logg på Chromium</translation>
 <translation id="347328004046849135">Chromium varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="3474745554856756813">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Bruk <ph name="SHORTCUT" /> til å bytte mellom Chromium-profiler</translation>
@@ -461,7 +458,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="734373864078049451">Her finner du nettinnholdet, bokmerkene og de andre Chromium-tingene dine.</translation>
 <translation id="7349591376906416160">Systemadministratoren din har konfigurert Chromium til å åpne <ph name="ALTERNATIVE_BROWSER_NAME" /> for å få tilgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den i stedet.</translation>
-<translation id="7389750180956889333">Chromium forstår skjemaer bedre og kan autofylle dem raskere for deg. Finn ut mer om <ph name="BEGIN_LINK" />Chrome Autofyll<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for utviklere</translation>
 <translation id="7450541714075000668">Teksten er kopiert</translation>
 <translation id="7451052299415159299">Chromium trenger tilgang til kameraet ditt for dette nettstedet</translation>

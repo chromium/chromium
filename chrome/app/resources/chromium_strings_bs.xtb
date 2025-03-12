@@ -130,11 +130,9 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2738871930057338499">Nije moguće povezati se s internetom. HTTP 403 je zabranjen. Provjerite konfiguraciju proksi servera.</translation>
 <translation id="2753623023919742414">Kliknite da pretražite</translation>
 <translation id="2770231113462710648">Promijenite zadani preglednik u:</translation>
-<translation id="277338894894732084">Kasnije će vas Chromium pitati želite li upotrijebiti sačuvane podatke za automatsko popunjavanje obrazaca</translation>
 <translation id="2785438272836277133">Ova ekstenzija sadrži zlonamjerni softver i nije sigurna. Uklonite je s Chromiuma kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
-<translation id="2806241689335397269">Chromium će vas pitati želite li sačuvati podatke iz obrasca, kao što su datum rođenja, dob i broj pasoša</translation>
 <translation id="2841525013647267359">Prevod s jezika</translation>
 <translation id="2846251086934905009">Greška prilikom instaliranja: program za instaliranje nije završio. Instalacija je prekinuta.</translation>
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
@@ -180,7 +178,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Želite li se prebaciti na Chromium profil?</translation>
 <translation id="3412460710772753638">U Upravitelju lozinki na ovom uređaju</translation>
-<translation id="3451656833730006755">Da dobijete ekstenzije i drugo na svim svojim računarima, prijavite se u Chromium</translation>
 <translation id="347328004046849135">Chromium će vas obavijestiti kada se prijavite s ugroženom lozinkom</translation>
 <translation id="3474745554856756813">Ovim će se s ovog uređaja izbrisati sljedeći broj stavki: <ph name="ITEMS_COUNT" />. Za preuzimanje podataka kasnije prijavite se na Chromium kao korisnik <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Prečicom <ph name="SHORTCUT" /> možete prebacivati između Chromium profila</translation>
@@ -463,7 +460,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="734373864078049451">Vaš web, oznake i ostali sadržaji s Chromiuma se nalaze ovdje.</translation>
 <translation id="7349591376906416160">Administrator sistema je konfigurirao Chromium da otvori preglednik <ph name="ALTERNATIVE_BROWSER_NAME" /> radi pristupa web lokaciji <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Ta ekstenzija više nije podržana. Chromium preporučuje da je uklonite.</translation>
-<translation id="7389750180956889333">Chromium bolje razumije obrasce i može ih brže automatski popuniti za vas. Saznajte više o <ph name="BEGIN_LINK" />automatskom popunjavanju u Chromeu<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Tekst je kopiran</translation>
 <translation id="7451052299415159299">Chromiumu treba odobrenje za pristup vašoj kameri na ovoj web lokaciji</translation>

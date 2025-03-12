@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -95,9 +96,13 @@ web_package::SignedWebBundleSignatureVerifier*
 }  // namespace
 
 SignedWebBundleReader::SignedWebBundleReader(
+    base::PassKey<SignedWebBundleReader>,
     const base::FilePath& web_bundle_path,
-    const std::optional<GURL>& base_url)
-    : web_bundle_path_(web_bundle_path), base_url_(base_url) {}
+    const std::optional<GURL>& base_url,
+    bool verify_signatures)
+    : web_bundle_path_(web_bundle_path),
+      base_url_(base_url),
+      verify_signatures_(verify_signatures) {}
 
 SignedWebBundleReader::~SignedWebBundleReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -106,11 +111,26 @@ SignedWebBundleReader::~SignedWebBundleReader() {
   }
 }
 
-// static
-std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
-    const base::FilePath& web_bundle_path,
-    const std::optional<GURL>& base_url) {
-  return base::WrapUnique(new SignedWebBundleReader(web_bundle_path, base_url));
+void SignedWebBundleReader::Create(const base::FilePath& web_bundle_path,
+                                   const std::optional<GURL>& base_url,
+                                   bool verify_signatures,
+                                   CreateCallback callback) {
+  auto reader = std::make_unique<SignedWebBundleReader>(
+      base::PassKey<SignedWebBundleReader>(), web_bundle_path, base_url,
+      verify_signatures);
+  auto* reader_ptr = reader.get();
+
+  reader_ptr->Start(
+      base::BindOnce(
+          [](std::unique_ptr<SignedWebBundleReader> reader,
+             base::expected<void, UnusableSwbnFileError> status) -> Result {
+            RETURN_IF_ERROR(status);
+            CHECK_EQ(reader->GetState(),
+                     SignedWebBundleReader::State::kInitialized);
+            return reader;
+          },
+          std::move(reader))
+          .Then(std::move(callback)));
 }
 
 void SignedWebBundleReader::Close(base::OnceClosure callback) {
@@ -143,21 +163,18 @@ void SignedWebBundleReader::OnParserClosed(base::OnceClosure callback) {
   ReplyClosedIfNecessary();
 }
 
-void SignedWebBundleReader::ReadIntegrityBlock(
-    IntegrityBlockReadResultCallback integrity_block_result_callback) {
+void SignedWebBundleReader::Start(Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kUninitialized);
+  callback_ = std::move(callback);
 
   state_ = State::kInitializing;
   OpenFile(web_bundle_path_,
            base::BindOnce(&SignedWebBundleReader::OnFileOpened,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(integrity_block_result_callback)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SignedWebBundleReader::OnFileOpened(
-    IntegrityBlockReadResultCallback integrity_block_result_callback,
-    base::File file) {
+void SignedWebBundleReader::OnFileOpened(base::File file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
@@ -169,24 +186,22 @@ void SignedWebBundleReader::OnFileOpened(
 
   parser_->ParseIntegrityBlock(
       base::BindOnce(&SignedWebBundleReader::OnIntegrityBlockParsed,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(integrity_block_result_callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SignedWebBundleReader::OnIntegrityBlockParsed(
-    IntegrityBlockReadResultCallback integrity_block_result_callback,
     web_package::mojom::BundleIntegrityBlockPtr raw_integrity_block,
     web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
   if (error) {
-    std::move(integrity_block_result_callback)
-        .Run(base::unexpected(UnusableSwbnFileError(std::move(error))));
+    FulfillWithError(UnusableSwbnFileError(std::move(error)));
     return;
   }
 
-  auto integrity_block =
+  ASSIGN_OR_RETURN(
+      integrity_block_,
       web_package::SignedWebBundleIntegrityBlock::Create(
           std::move(raw_integrity_block))
           .transform_error([&](std::string error) {
@@ -195,47 +210,26 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
                 "Error while parsing the Signed Web Bundle's integrity "
                 "block: " +
                     std::move(error));
-          });
+          }),
+      [&](auto error) { FulfillWithError(std::move(error)); });
 
-  if (integrity_block.has_value()) {
-    integrity_block_ = integrity_block.value();
-  }
-  std::move(integrity_block_result_callback).Run(integrity_block);
-}
-
-void SignedWebBundleReader::ProceedWithAction(
-    SignatureVerificationAction action,
-    ReadErrorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kInitializing);
-
-  switch (action.type()) {
-    case SignatureVerificationAction::Type::kAbort:
-      FulfillWithError(std::move(callback), std::move(action).error());
-      return;
-    case SignatureVerificationAction::Type::kContinueAndVerifySignatures:
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(ReadLengthOfFile, file_->Duplicate()),
-          base::BindOnce(&SignedWebBundleReader::OnFileLengthRead,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-      return;
-    case SignatureVerificationAction::Type::
-        kContinueAndSkipSignatureVerification:
-      ReadMetadata(std::move(callback));
-      return;
+  if (verify_signatures_) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(ReadLengthOfFile, file_->Duplicate()),
+        base::BindOnce(&SignedWebBundleReader::OnFileLengthRead,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    ReadMetadata();
   }
 }
 
 void SignedWebBundleReader::OnFileLengthRead(
-    ReadErrorCallback callback,
     base::expected<uint64_t, base::File::Error> file_length) {
   RETURN_IF_ERROR(file_length, [&](base::File::Error error) {
-    FulfillWithError(
-        std::move(callback),
-        UnusableSwbnFileError(
-            UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
-            base::File::ErrorToString(error)));
+    FulfillWithError(UnusableSwbnFileError(
+        UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
+        base::File::ErrorToString(error)));
   });
 
   CHECK(integrity_block_.has_value())
@@ -244,13 +238,12 @@ void SignedWebBundleReader::OnFileLengthRead(
       file_->Duplicate(), *integrity_block_,
       base::BindOnce(&SignedWebBundleReader::OnSignaturesVerified,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     *file_length, std::move(callback)));
+                     *file_length));
 }
 
 void SignedWebBundleReader::OnSignaturesVerified(
     const base::TimeTicks& verification_start_time,
     uint64_t file_length,
-    ReadErrorCallback callback,
     base::expected<void, web_package::SignedWebBundleSignatureVerifier::Error>
         verification_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -267,14 +260,14 @@ void SignedWebBundleReader::OnSignaturesVerified(
   RETURN_IF_ERROR(
       verification_result,
       [&](web_package::SignedWebBundleSignatureVerifier::Error error) {
-        FulfillWithError(std::move(callback), UnusableSwbnFileError(error));
+        FulfillWithError(UnusableSwbnFileError(error));
       });
 
   // Signatures are valid; continue with parsing of metadata.
-  ReadMetadata(std::move(callback));
+  ReadMetadata();
 }
 
-void SignedWebBundleReader::ReadMetadata(ReadErrorCallback callback) {
+void SignedWebBundleReader::ReadMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
@@ -283,20 +276,18 @@ void SignedWebBundleReader::ReadMetadata(ReadErrorCallback callback) {
   uint64_t metadata_offset = integrity_block_->size_in_bytes();
 
   parser_->ParseMetadata(
-      metadata_offset,
-      base::BindOnce(&SignedWebBundleReader::OnMetadataParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      metadata_offset, base::BindOnce(&SignedWebBundleReader::OnMetadataParsed,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SignedWebBundleReader::OnMetadataParsed(
-    ReadErrorCallback callback,
     web_package::mojom::BundleMetadataPtr metadata,
     web_package::mojom::BundleMetadataParseErrorPtr error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
   if (error) {
-    FulfillWithError(std::move(callback), UnusableSwbnFileError(error));
+    FulfillWithError(UnusableSwbnFileError(error));
     return;
   }
 
@@ -305,14 +296,13 @@ void SignedWebBundleReader::OnMetadataParsed(
 
   state_ = State::kInitialized;
 
-  std::move(callback).Run(base::ok());
+  std::move(callback_).Run(base::ok());
 }
 
-void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
-                                             UnusableSwbnFileError error) {
+void SignedWebBundleReader::FulfillWithError(UnusableSwbnFileError error) {
   state_ = State::kError;
   Close(
-      base::BindOnce(std::move(callback), base::unexpected(std::move(error))));
+      base::BindOnce(std::move(callback_), base::unexpected(std::move(error))));
 }
 
 const web_package::SignedWebBundleIntegrityBlock&
@@ -345,8 +335,8 @@ void SignedWebBundleReader::ReadResponse(
   CHECK_EQ(state_, State::kInitialized);
 
   const GURL& url = net::SimplifyUrlForRequest(resource_request.url);
-  auto entry_it = entries_.find(url);
-  if (entry_it == entries_.end()) {
+  auto* entry = base::FindOrNull(entries_, url);
+  if (!entry) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -357,7 +347,7 @@ void SignedWebBundleReader::ReadResponse(
     return;
   }
 
-  ReadResponseInternal(entry_it->second->Clone(), std::move(callback));
+  ReadResponseInternal(entry->Clone(), std::move(callback));
 }
 
 void SignedWebBundleReader::ReadResponseInternal(
@@ -411,7 +401,8 @@ void SignedWebBundleReader::ReadResponseBody(
   OpenFileDataSource(
       file_->Duplicate(), response_start, response_end,
       base::BindOnce(&SignedWebBundleReader::StartReadingFromDataSource,
-                     this->AsWeakPtr(), raw_producer, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), raw_producer,
+                     std::move(callback)));
 }
 
 void SignedWebBundleReader::StartReadingFromDataSource(
@@ -421,7 +412,7 @@ void SignedWebBundleReader::StartReadingFromDataSource(
   data_pipe_producer->Write(
       std::move(data_source),
       base::BindOnce(&SignedWebBundleReader::OnResponseBodyRead,
-                     this->AsWeakPtr(), data_pipe_producer,
+                     weak_ptr_factory_.GetWeakPtr(), data_pipe_producer,
                      std::move(callback)));
 }
 
@@ -495,38 +486,6 @@ SignedWebBundleReader::ReadResponseError::ForResponseNotFound(
     const std::string& message) {
   return ReadResponseError(Type::kResponseNotFound, message);
 }
-
-// static
-SignedWebBundleReader::SignatureVerificationAction
-SignedWebBundleReader::SignatureVerificationAction::Abort(
-    UnusableSwbnFileError error) {
-  return SignatureVerificationAction(Type::kAbort, std::move(error));
-}
-
-// static
-SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
-    SignatureVerificationAction::ContinueAndVerifySignatures() {
-  return SignatureVerificationAction(Type::kContinueAndVerifySignatures,
-                                     std::nullopt);
-}
-
-// static
-SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
-    SignatureVerificationAction::ContinueAndSkipSignatureVerification() {
-  return SignatureVerificationAction(
-      Type::kContinueAndSkipSignatureVerification, std::nullopt);
-}
-
-SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
-    Type type,
-    std::optional<UnusableSwbnFileError> error)
-    : type_(type), error_(std::move(error)) {}
-
-SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
-    const SignatureVerificationAction&) = default;
-
-SignedWebBundleReader::SignatureVerificationAction::
-    ~SignatureVerificationAction() = default;
 
 UnsecureReader::UnsecureReader(const base::FilePath& web_bundle_path)
     : web_bundle_path_(web_bundle_path) {}

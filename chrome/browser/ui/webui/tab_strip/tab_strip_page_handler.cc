@@ -209,23 +209,46 @@ void TabStripPageHandler::NotifyContextMenuClosed() {
 // TabStripModelObserver:
 void TabStripPageHandler::OnTabGroupChanged(const TabGroupChange& change) {
   TRACE_EVENT0("browser", "TabStripPageHandler:OnTabGroupChanged");
+  DCHECK(browser_->tab_strip_model()->SupportsTabGroups());
+  TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
+
+  if (!group_model) {
+    return;
+  }
+
   switch (change.type) {
-    case TabGroupChange::kCreated:
-    case TabGroupChange::kEditorOpened:
-      break;
-    case TabGroupChange::kVisualsChanged: {
-      TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
-      if (group_model) {
+    case TabGroupChange::kCreated: {
+      if (change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::
+              kInsertedFromAnotherTabstrip) {
+        // Set the group information of all the tabs and create group webUI
+        // object.
+        for (tabs::TabInterface* tab :
+             change.GetCreateChange()->GetDetachedTabs()) {
+          const SessionID::id_type tab_id =
+              extensions::ExtensionTabUtil::GetTabId(tab->GetContents());
+          page_->TabGroupStateChanged(tab_id, change.model->GetIndexOfTab(tab),
+                                      change.group.ToString());
+        }
+
+        // Notify webUI of initial visual information.
         page_->TabGroupVisualsChanged(
             change.group.ToString(),
             GetTabGroupData(group_model->GetTabGroup(change.group)));
       }
       break;
     }
+    case TabGroupChange::kEditorOpened:
+      break;
+    case TabGroupChange::kVisualsChanged: {
+        page_->TabGroupVisualsChanged(
+            change.group.ToString(),
+            GetTabGroupData(group_model->GetTabGroup(change.group)));
+      break;
+    }
 
     case TabGroupChange::kMoved: {
       DCHECK(browser_->tab_strip_model()->SupportsTabGroups());
-      TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
       const int start_tab =
           group_model->GetTabGroup(change.group)->ListTabs().start();
       page_->TabGroupMoved(change.group.ToString(), start_tab);

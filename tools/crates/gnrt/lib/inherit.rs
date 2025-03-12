@@ -31,6 +31,10 @@ fn get_group(
     config.per_crate_config.get(&packages[id].name)?.group
 }
 
+// TODO(https://crbug.com/395924069): Delete this functiona and use `collect_dependencies` result
+// instead.  This will be possible once `gnrt vendor` is also transitioned to
+// use `guppy` and `collect_dependencies` instead of working directly with
+// `cargo_metadata`.
 pub fn find_inherited_privilege_group(
     id: &PackageId,
     root: &PackageId,

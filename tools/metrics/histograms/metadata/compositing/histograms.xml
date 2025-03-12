@@ -734,18 +734,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SkiaRenderer.SkipOverlayRenderPassDrawQuad"
-    enum="BooleanSkipped" expires_after="2025-07-13">
-  <owner>magchen@chromium.org</owner>
-  <owner>ccameron@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Logged for every RenderPassDrawQuad in the overlay list during
-    ScheduleOverlays. An Overlay RenderPassDrawQuad is skipped if there is no
-    damages to the render pass and the RenderPassDrawQuad settings are the same.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
     units="microseconds" expires_after="2025-08-03">
   <owner>kylechar@chromium.org</owner>
@@ -882,6 +870,16 @@ chromium-metrics-reviews@google.com.
     limit that the tile assignment was breaching.
   </summary>
   <token key="ProcessType" variants="TileManagerProcessType"/>
+</histogram>
+
+<histogram name="Compositing.TileManager.RasterTasksDuration"
+    units="microseconds" expires_after="2025-08-10">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Total duration (in us) for all raster tasks to execute. Recorded when raster
+    tasks are scheduled, at a downsampled rate.
+  </summary>
 </histogram>
 
 <histogram name="Compositing.TileManager.TileInvalidationArea" units="%"

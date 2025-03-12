@@ -419,9 +419,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
 void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
     ui::BrowserAccessibility* node,
     const std::string& announcement,
+    ax::mojom::AriaNotificationPriority priority_property,
     const std::string& notification_id,
-    ax::mojom::AriaNotificationInterrupt interrupt_property,
-    ax::mojom::AriaNotificationPriority priority_property) {
+    ax::mojom::AriaNotificationInterrupt interrupt_property) {
   DCHECK(node);
 
   auto* wcax = GetWebContentsAXFromRootManager();

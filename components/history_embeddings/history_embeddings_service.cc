@@ -848,58 +848,54 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
 
   // Check the map for identical passages, which can reuse stored embeddings
   // instead of recomputing them with the embedder. Preserve the structure
-  // in `url_data` and remove already-embedded passages from the `passages`
-  // that get sent to the embedder. The missing embeddings will be filled in
+  // in `url_data` and move any passages that still need embedding to
+  // `noncached_passages`. The missing embeddings will be filled in
   // with the computed embeddings in `OnPassagesEmbeddingsComputed()`.
-  size_t passages_size_before = passages.size();
-  for (auto passages_iter = passages.begin();
-       passages_iter != passages.end();) {
-    const auto& passage = *passages_iter;
-    url_data.passages.add_passages(passage);
+  std::vector<std::string> noncached_passages;
+  noncached_passages.reserve(passages.size());
+  for (std::string& passage : passages) {
     if (embedding_cache.contains(passage)) {
-      VLOG(5) << "Cached passage: " << passage;
+      VLOG(6) << "Cached passage: " << passage;
       // Reuse the embeddings from the cache.
       url_data.embeddings.emplace_back(embedding_cache[passage]);
-      passages_iter = passages.erase(passages_iter);
     } else {
-      VLOG(5) << "Noncached passage: " << passage;
+      VLOG(6) << "Noncached passage: " << passage;
       // Reserve room for the embeddings to be filled in once computed.
       url_data.embeddings.emplace_back(std::vector<float>{});
-      passages_iter++;
+      noncached_passages.push_back(passage);
     }
+    url_data.passages.add_passages(std::move(passage));
   }
-  size_t passages_size_after = passages.size();
 
-  if (passages_size_before > 0) {
+  if (passages.size() > 0) {
     base::UmaHistogramPercentage(
         "History.Embeddings.DatabaseCachedPassageRatio",
-        100 * (passages_size_before - passages_size_after) /
-            passages_size_before);
+        100 * (passages.size() - noncached_passages.size()) / passages.size());
     base::UmaHistogramCounts100(
         "History.Embeddings.DatabaseCachedPassageHitCount",
-        passages_size_before - passages_size_after);
+        passages.size() - noncached_passages.size());
     base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseCachedPassageTryCount",
-        passages_size_before);
-    for (size_t i = 0; i < passages_size_before; i++) {
+        "History.Embeddings.DatabaseCachedPassageTryCount", passages.size());
+    for (size_t i = 0; i < passages.size(); i++) {
       base::UmaHistogramBoolean("History.Embeddings.DatabaseCacheHit",
-                                i >= passages_size_after);
+                                i >= noncached_passages.size());
     }
   }
 
-  VLOG(4) << "All " << passages.size() << " non-cached passages for url_id "
-          << url_data.url_id << ":";
-  for (size_t i = 0; i < passages.size(); i++) {
-    VLOG(5) << i << ": \"" << passages[i] << '"';
+  VLOG(4) << "All " << noncached_passages.size()
+          << " noncached passages for url_id " << url_data.url_id << ":";
+  for (size_t i = 0; i < noncached_passages.size(); i++) {
+    VLOG(5) << i << ": \"" << noncached_passages[i] << '"';
   }
 
   // TODO(crbug.com/390241271): Move this inside Embedder implementations once
   //  they are no longer wrapped inside the SchedulingEmbedder.
   if (GetFeatureParameters().erase_non_ascii_characters) {
-    EraseNonAsciiCharacters(passages);
+    EraseNonAsciiCharacters(noncached_passages);
   }
   embedder_->ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority::kPassive, std::move(passages),
+      passage_embeddings::PassagePriority::kPassive,
+      std::move(noncached_passages),
       base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_data)));
 }

@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">نماد رنگ گروه برگه <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">فهرست گروه برگه بسته شد</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> برگه به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> برگه به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> برگه به گروه}}</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3547352561153509682">با این کار، گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه جدید}one{‫<ph name="MANY_ADDED" /> برگه جدید}other{‫<ph name="MANY_ADDED" /> برگه جدید}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">عنوان‌ها و نشانی‌های وب برگه‌های باز این دستگاه با سیستم‌عامل هم‌رسانی شود</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده به گروه}}</translation>
 <translation id="4861611890274104875">بستن کارت.</translation>
 <translation id="4861953997778766866">همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
 <translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="6271513594716432922">بستن همه برگه‌های غیرفعال</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
 <translation id="6333260925957816943">اطلاعات مربوط به این فروشگاه</translation>
 <translation id="6381032505162537930">گروه‌های برگه‌تان را اینجا خواهید دید</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{لغو گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">گروه جدید از دستگاه دیگرتان</translation>
 <translation id="8029301326595421733">اطلاعات مربوط به این فروشگاه به‌صورت کامل باز شده است</translation>
 <translation id="8053770993984522566">فهرست گروه برگه، به‌صورت نیمه باز شده است</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{افزودن برگه به گروه}one{افزودن برگه به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">انتقال برگه به بالا</translation>

@@ -189,17 +189,17 @@ Note: There are two bidding requests because we reload the bidding worklet when 
         cacheDisabled : true
         finished : true
         headers : {
-            Accept : application/json
+            Accept : message/ad-auction-trusted-signals-response
             acceptLanguage : ar
             userAgent : Vending Machine
         }
-        method : GET
+        method : POST
         received : true
         requestExtraInfoReceived : true
         requestHasTiming : true
         responseExtraInfoReceived : true
         responseHasTiming : true
-        url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.json.php?hostname=a.test&interestGroupNames=0
+        url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.json.php
     }
     [5] : {
         cacheDisabled : true
@@ -221,17 +221,17 @@ Note: There are two bidding requests because we reload the bidding worklet when 
         cacheDisabled : true
         finished : true
         headers : {
-            Accept : application/json
+            Accept : message/ad-auction-trusted-signals-response
             acceptLanguage : ar
             userAgent : Vending Machine
         }
-        method : GET
+        method : POST
         received : true
         requestExtraInfoReceived : true
         requestHasTiming : true
         responseExtraInfoReceived : true
         responseHasTiming : true
-        url : https://a.test:8443/inspector-protocol/resources/fledge_scoring_signals.json.php?hostname=a.test&renderUrls=https%3A%2F%2Fexample.com%2Frender0
+        url : https://a.test:8443/inspector-protocol/resources/fledge_scoring_signals.json.php
     }
 ]
 

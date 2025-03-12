@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Наявні дані вебперегляду буде зв’язано з обліковим записом <ph name="USER_EMAIL" />, і адміністратор вашої організації зможе переглядати їх.</translation>
 <translation id="1713777106376424209">Перевізник:</translation>
 <translation id="1715515772563243997">Якщо ви довіряєте сайту <ph name="SITE" />, то можете входити за допомогою збереженого пароля.</translation>
+<translation id="1718835860248848330">Остання година</translation>
 <translation id="1728549374069268714">Вставити й перейти</translation>
 <translation id="1732468323901456775">Увімкнути сповіщення для функції "<ph name="MODULE_NAME" />"</translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Функцію виявлення адрес вимкнено. Її можна ввімкнути в налаштуваннях.</translation>
 <translation id="1904580727789512086">URL-адреси, на які ви переходите, зберігаються в обліковому записі Google</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
-<translation id="1923342640370224680">Остання година</translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
 <translation id="1943478190258551035">Меню → Налаштування</translation>
 <translation id="1952728750904661634">Увійти в керований обліковий запис</translation>
@@ -1206,6 +1206,7 @@
 <translation id="6187302354554850004">Востаннє синхрон.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Створено <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитані</translation>
+<translation id="6192388920090306326">Подорож до Токіо</translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
 <translation id="6196207969502475924">Голосовий пошук</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
@@ -1370,6 +1371,7 @@
 <translation id="6779455296366983087">Дані веб-перегляду буде видалено</translation>
 <translation id="6790502149545262384">Незабаром, відкривши нову вкладку, ви бачитимете історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6794476726485507147">Виберіть дату й час, коли має надійти сповіщення з нагадуванням повернутися на цю сторінку</translation>
+<translation id="6807287147325542056">Паролі в інших додатках</translation>
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{{count} закладку збережено у вашому обліковому записі Google ({email}).}few{{count} закладки збережено у вашому обліковому записі Google ({email}).}many{{count} закладок збережено у вашому обліковому записі Google ({email}).}other{{count} закладки збережено у вашому обліковому записі Google ({email}).}}</translation>
 <translation id="6830728435402077660">Небезпечно</translation>
@@ -1934,6 +1936,7 @@
 <translation id="9106655997975673326">З пристрою "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Перевіряйте, чи були ваші паролі зламані</translation>
 <translation id="9124387962554796433">Google може використовувати вашу історію для персоналізації Пошуку й інших сервісів Google.</translation>
+<translation id="9124978074365039456">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти навколо за допомогою камери й фотогалереї</translation>
 <translation id="9130317582644834675">Сховати опцію "Масштабувати текст"</translation>
 <translation id="913036870884277353">Легко відкривайте посилання в інших додатках.</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>

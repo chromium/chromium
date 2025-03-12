@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Isigcini sesikrini sikapopayi</translation>
 <translation id="152892567002884378">Ivolumu phezulu</translation>
 <translation id="1539864135338521185">i-lapis lazuli</translation>
+<translation id="1548555207631326346">Khetha itimu bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu imifanekiso yakho ye-AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Khetha okuthi "Ngikhuthaze" ukuze uthole imifanekiso ongakhetha kuyo ye-AI eyingqayizivele nezihlukile.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Uma usungula nge-AI, umyalo uthunyelwa kumaseva e-Google AI ukuze kukhiqizwe imifanekiso futhi kuthuthukiswe umkhiqizo, ngaphansi kokuthi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Inqubomgomo Yobumfihlo ye-Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          I-AI Ekhiqizayo ingukuhlola okusathuthukiswa, futhi manje inokutholakala okukhawulelwe.</translation>
 <translation id="1555130319947370107">Okuluhlaza okwesibhakabhaka</translation>
 <translation id="155865706765934889">Iphedi yokuthinta</translation>
 <translation id="1561927818299383735">umbala we-backlit</translation>
@@ -1553,6 +1562,16 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8179976553408161302">Faka</translation>
 <translation id="8183975772394450380">ibhishi</translation>
 <translation id="819278132617411009">Sebenzisa iGoogle AI ukuze ukhiqize kakhudlwana</translation>
+<translation id="82003371436638355">Uma ukhetha okuthi "Sungula okwakho," bhala umyalelo womuntu ngamunye. Noma ungakhetha okuthi "Khetha itimu" bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu iphepha lakho langemuva le-AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Khetha okuthi "Ngikhuthaze" ukuze uthole imifanekiso ongakhetha kuyo ye-AI eyingqayizivele nezihlukile.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Uma usungula isithombe sakho sangemuva, umyalelo uthunyelwa kumaseva eGoogle ukuze ukhiqize izithombe uphinde uthuthukise umkhiqizo, ngaphansi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kwemigomo Yesevisi yeGoogle Nenqubomgomo Yobumfihlo<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ungafaki lutho lomuntu siqu, oluzwelayo, noma oluyimfihlo.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          I-AI ekhiqizayo ingenza amaphutha, okufaka okumayelana nabantu, ngakho ihloke ngokuphindiwe. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Funda kabanzi<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Qala futhi</translation>
 <translation id="8206859287963243715">Iselula</translation>
 <translation id="8208861521865154048">Izinzuzo</translation>
@@ -1574,6 +1593,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8312330582793120272">dlala imidiya</translation>
 <translation id="8318753676953949627">Azikho Izithombe</translation>
 <translation id="8320910311642849813">ihlathi</translation>
+<translation id="8322464149031882595">Chofoza ukuze uye phambili</translation>
 <translation id="8329018942023753850">i-app yesibali</translation>
 <translation id="8336739000755212683">Shintsha isithombe se-akhawunti yedivayisi</translation>
 <translation id="8339024191194156249">Funda kabanzi mayelana nokwethulwa okuzenzekelayo</translation>
@@ -1720,6 +1740,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8961025972867871808">amaphengwini</translation>
 <translation id="8968751544471797276">Isilinganisela sokushaja</translation>
 <translation id="8970109610781093811">Sebenzisa futhi</translation>
+<translation id="8972061581514441296">Chofoza ukuze ubuyele emuva</translation>
 <translation id="8983038754672563810">I-HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skena}=1{Skena ikhasi elingu-{NUMBER_OF_PAGES}}one{Skena ikhasi elingu-{NUMBER_OF_PAGES}}other{Skena ikhasi elingu-{NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">idolobhana</translation>

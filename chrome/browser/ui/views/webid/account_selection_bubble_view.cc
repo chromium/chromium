@@ -574,7 +574,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
                           base::Unretained(owner_), account),
-      button_title, this, idp_metadata, base::UTF8ToUTF16(account->email));
+      button_title, this, idp_metadata,
+      base::UTF8ToUTF16(account->display_identifier));
   row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in or if we were requested

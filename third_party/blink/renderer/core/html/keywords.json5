@@ -117,6 +117,10 @@
     "show",
     "hide",
 
+    // hidden=until-found attribute
+    // https://html.spec.whatwg.org/#the-hidden-attribute
+    "until-found",
+
     // dialog closedby attribute
     // See https://github.com/whatwg/html/pull/10737.
     "any",

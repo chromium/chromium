@@ -206,4 +206,21 @@ bool DownloadItemMetadata::IsForDownloadItem(
   return item_ == download;
 }
 
+void DownloadItemMetadata::SetCallback(
+    CheckDownloadRepeatingCallback callback) {
+  callback_ = std::move(callback);
+}
+
+void DownloadItemMetadata::ProcessScanResult(
+    DownloadCheckResultReason reason,
+    DownloadCheckResult deep_scan_result) {
+  if (!callback_.is_null()) {
+    callback_.Run(MaybeOverrideScanResult(reason, deep_scan_result));
+  }
+}
+
+base::WeakPtr<DownloadItemMetadata> DownloadItemMetadata::GetWeakPtr() {
+  return weakptr_factory_.GetWeakPtr();
+}
+
 }  // namespace safe_browsing

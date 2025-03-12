@@ -376,7 +376,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1244265436519979884">Endurheimt Linux stendur yfir</translation>
 <translation id="1244303850296295656">Villa í viðbót</translation>
 <translation id="1244917379075403655">Smelltu á „Stillingar“</translation>
-<translation id="1245041875932187638">Eyða öllum gögnum sem notuð eru til sjálfvirkrar útfyllingar með gervigreind</translation>
 <translation id="1245331638296910488">Skrár verða færðar í OneDrive þegar þær eru opnaðar í Microsoft 365</translation>
 <translation id="1245628370644070008">Endurheimt staðbundinna gagna</translation>
 <translation id="1246863218384630739">Ekki var hægt að setja upp <ph name="VM_NAME" />: Vefslóð myndar skilaði <ph name="HTTP_ERROR" /> villukóða. Hafðu samband við kerfisstjórann.</translation>
@@ -1418,7 +1417,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Undirbýr</translation>
 <translation id="1969654639948595766">WebRTC-textaannálar (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Öllum gögnum verður eytt. Ekki er hægt að afturkalla þessa aðgerð</translation>
 <translation id="1972313920920745320">Vefsvæði sem þú bætir við verða alltaf virk og ekki verður losað um minni úr þeim. <ph name="BEGIN_LINK" />Nánar um að halda tilteknum vefsvæðum virkum<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Þú getur vafrað hraðar því að efni er hlaðið forvirkt í samræmi við vefsíðuna sem þú ert að skoða í hvert skipti</translation>
 <translation id="197288927597451399">Halda</translation>
@@ -3071,7 +3069,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3108957152224931571">Yfirstrikunarlitur</translation>
 <translation id="3109206895301430738">Vistaðir flipahópar</translation>
 <translation id="3109724472072898302">Minnkað</translation>
-<translation id="310979712355504754">Eyða öllum</translation>
 <translation id="3112292765614504292">Stærð forrits <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Bætti þessum flipa við</translation>
 <translation id="311394601889664316">Ekki leyfa vefsvæðum að breyta skrám eða möppum í tækinu</translation>
@@ -4091,7 +4088,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Viðbót var samþykkt}one{# viðbót var samþykkt}other{# viðbætur voru samþykktar}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Mælt er með að minnsta kosti <ph name="INSTALL_SIZE" /> af lausu plássi til að nota Linux.</translation>
-<translation id="3824203811509979971">Taktu saman efni eða spyrðu spurninga</translation>
 <translation id="3824621460022590830">Skráningarlykill tækis er ógildur. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Skráðu þig inn til að sjá flipa úr öðrum tækjum</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muna valið mitt fyrir þessa skráargerð: <ph name="FILE_TYPES" />}one{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}other{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}}</translation>
@@ -5906,7 +5902,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="512642543295077915">leitarlykill + bakklykill</translation>
 <translation id="5126611267288187364">Skoða breytingar</translation>
 <translation id="5127620150973591153">Auðkenni öruggrar tengingar: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Taktu saman efni eða spyrðu spurninga.</translation>
 <translation id="5127881134400491887">Stjórna nettengingum</translation>
 <translation id="5127934926273826089">Blóm</translation>
 <translation id="5127986747308934633">Stjórnandinn þinn stjórnar tækinu þínu</translation>
@@ -7457,7 +7452,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6254892857036829079">Fullkomið</translation>
 <translation id="6257131917452817589">sjálfvirk breyting aðgangsorðs</translation>
 <translation id="6257602895346497974">Kveikja á samstillingu...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Þetta net hefur forgang ef fleiri en eitt net sem áður hafa verið notuð eða grunnstillt eru í boði.</translation>
 <translation id="6259776178973198997">Endurnýja upplýsingar um WiFi Direct-eigendur</translation>
 <translation id="6262371516389954471">Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reikningsins.</translation>
@@ -9890,6 +9884,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Rödd <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Flytja WiFi sjálfkrafa frá Android-símanum</translation>
 <translation id="7991296728590311172">Stillingar rofaaðgangs</translation>
+<translation id="7992080146463834191">Taktu saman efni, einfaldaðu flókið orðalag eða spurðu spurninga.</translation>
 <translation id="7992203134935383159">Talgervill</translation>
 <translation id="7997826902155442747">Forgangur ferla</translation>
 <translation id="7997828719430450286">Tókst.</translation>
@@ -11155,6 +11150,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8874448314264883207">Slökkt var á „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="8874647982044395866">Lífrænt</translation>
 <translation id="8874790741333031443">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
+<translation id="8875221558267407626">Taktu saman efni, einfaldaðu flókið orðalag eða spurðu spurninga</translation>
 <translation id="8875520811099717934">Uppfærsla á Linux</translation>
 <translation id="8875736897340638404">Veldu sýnileika</translation>
 <translation id="8876307312329369159">Ekki er hægt að breyta þessari stillingu í prufuútgáfu.</translation>

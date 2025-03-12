@@ -249,6 +249,7 @@ std::u16string GetCounterTextFromResult(
     AutofillCounter::ResultInt num_payment_methods =
         autofill_result->num_credit_cards();
     AutofillCounter::ResultInt num_addresses = autofill_result->num_addresses();
+    AutofillCounter::ResultInt num_entities = autofill_result->num_entities();
 
     std::vector<std::u16string> displayed_strings;
 
@@ -260,21 +261,26 @@ std::u16string GetCounterTextFromResult(
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
           IDS_DEL_AUTOFILL_COUNTER_ADDRESSES, num_addresses));
     }
-    if (num_suggestions) {
+
+    auto num_suggestions_and_entities = num_suggestions + num_entities;
+    if (num_suggestions_and_entities > 0) {
       // We use a different wording for autocomplete suggestions based on the
       // length of the entire string.
       switch (displayed_strings.size()) {
         case 0:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS,
+              num_suggestions_and_entities));
           break;
         case 1:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG,
+              num_suggestions_and_entities));
           break;
         case 2:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT,
+              num_suggestions_and_entities));
           break;
         default:
           NOTREACHED();

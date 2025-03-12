@@ -2,17 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("metrics") {
-  sources = [
-    "metrics.h",
-    "metrics.mm",
-  ]
-  deps = [
-    ":tracking_source",
-    "//base",
-  ]
-}
-
 source_set("tracking_source") {
   sources = [ "tracking_source.h" ]
 }

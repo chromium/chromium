@@ -106,8 +106,8 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
   auto color_id = button->GetEnabled() ? ui::kColorSysTonalOutline
                                        : ui::kColorButtonBorderDisabled;
   button->SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedRoundedRectBorder(kButtonBorderThickness,
-                                           kButtonCornerRadius, color_id),
+      views::CreateRoundedRectBorder(kButtonBorderThickness,
+                                     kButtonCornerRadius, color_id),
       kButtonPadding));
 }
 

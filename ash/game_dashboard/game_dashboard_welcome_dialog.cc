@@ -63,7 +63,7 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
       gfx::Insets::VH(kPrimaryLayoutInsideBorder, kPrimaryLayoutInsideBorder));
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kDialogCornerRadius));
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       game_dashboard::kWelcomeDialogBorderThickness, kDialogCornerRadius,
       ui::ColorIds::kColorHighlightBorderHighlight1));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(

@@ -27,7 +27,7 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -143,6 +143,11 @@ crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
+
+# Win/AMD RX 7600 Failures
+crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

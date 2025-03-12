@@ -49,7 +49,11 @@ template <typename DataType, typename KeyType>
            std::same_as<DataType, ServerCvc>
 class AutofillDataModelChange {
  public:
-  enum Type { ADD, UPDATE, REMOVE };
+  // The difference between `REMOVE` and `HIDE_IN_AUTOFILL` is that the latter
+  // does not actually remove the profile from the server, but instead marks
+  // it as uninteresting to Chrome. This profile may become visible again if
+  // it is updated in a different product.
+  enum Type { ADD, UPDATE, REMOVE, HIDE_IN_AUTOFILL };
 
   // The `type` input specifies the change type.  The `key` input is the key
   // that identifies the `data_model`; it is the GUID of the entry for local

@@ -3021,6 +3021,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nome</translation>
 <translation id="633770708279464947">O valor de <ph name="SECURE_DNS_SALT" /> non é válido e non se utilizará.</translation>
+<translation id="6338645927051849741">Contrasinal • Xestor de contrasinais de Google</translation>
 <translation id="6340739886198108203">Na política do administrador recoméndase que non se fagan capturas nin gravacións se na pantalla se mostra contido confidencial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador non recomenda cargar este ficheiro en <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda cargar estes ficheiros en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Agora mesmo</translation>

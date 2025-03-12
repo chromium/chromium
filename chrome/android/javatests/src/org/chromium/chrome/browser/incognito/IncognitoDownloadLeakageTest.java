@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.incognito;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import android.os.Build;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.os.Build;
 import android.os.Environment;
 import android.view.View;
 
@@ -20,7 +20,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.chromium.base.test.util.DisableIf;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +33,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -262,7 +262,9 @@ public class IncognitoDownloadLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(IncognitoDataTestUtils.TestParams.IncognitoToIncognito.class)
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/391749002")
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.S,
+            message = "crbug.com/391749002, crbug.com/40935094")
     public void testIncognitoDowloadEntriesNotVisibleInAnotherIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws Exception {
         IncognitoDataTestUtils.ActivityType incognitoActivity1 =

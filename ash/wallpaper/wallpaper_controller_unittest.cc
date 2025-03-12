@@ -1736,10 +1736,13 @@ TEST_P(WallpaperControllerTest, SetTimeOfDayWallpaper) {
   ClearWallpaperCount();
   controller_->SetTimeOfDayWallpaper(
       kAccountId1,
-      base::BindLambdaForTesting([quit = run_loop.QuitClosure()](bool success) {
-        EXPECT_TRUE(success);
-        std::move(quit).Run();
-      }));
+      base::BindLambdaForTesting(
+          [quit = run_loop.QuitClosure()](uint64_t unit_id, bool success) {
+            EXPECT_EQ(unit_id,
+                      wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId);
+            EXPECT_TRUE(success);
+            std::move(quit).Run();
+          }));
   run_loop.Run();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
@@ -1783,8 +1786,8 @@ TEST_P(WallpaperControllerTest,
             actual_info.collection_id);
   EXPECT_EQ(wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
             actual_info.unit_id.value_or(0));
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
-                                      1);
+  histogram_tester().ExpectUniqueSample(
+      "Ash.Wallpaper.SetTimeOfDayAfterOobe.Default", true, 1);
 }
 
 TEST_P(WallpaperControllerTest,
@@ -1821,8 +1824,8 @@ TEST_P(WallpaperControllerTest,
             actual_info.collection_id);
   EXPECT_EQ(wallpaper_constants::kAlternateTimeOfDayWallpaperUnitId,
             actual_info.unit_id.value_or(0));
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
-                                      1);
+  histogram_tester().ExpectUniqueSample(
+      "Ash.Wallpaper.SetTimeOfDayAfterOobe.Alternate", true, 1);
 }
 
 TEST_P(WallpaperControllerTest,
@@ -1886,8 +1889,8 @@ TEST_P(WallpaperControllerTest,
   EXPECT_EQ(WallpaperType::kOnline, actual_info.type);
   EXPECT_EQ(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
             actual_info.collection_id);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
-                                      1);
+  histogram_tester().ExpectUniqueSample(
+      "Ash.Wallpaper.SetTimeOfDayAfterOobe.Default", true, 1);
 }
 
 TEST_P(

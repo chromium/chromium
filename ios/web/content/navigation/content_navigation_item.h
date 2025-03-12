@@ -65,6 +65,9 @@ class ContentNavigationItem : public NavigationItem {
   void SetUserAgentType(UserAgentType type) override;
   UserAgentType GetUserAgentType() const override;
 
+  void SetSecurityScopedFileResource(NSData* data) override;
+  NSData* GetSecurityScopedFileResource() override;
+
   bool HasPostData() const override;
 
   HttpRequestHeaders* GetHttpRequestHeaders() const override;
@@ -87,6 +90,7 @@ class ContentNavigationItem : public NavigationItem {
   mutable HttpRequestHeaders* headers_ = nil;
   mutable FaviconStatus favicon_status_;
   mutable SSLStatus ssl_status_;
+  NSData* security_scoped_file_resource_ = nil;
 
   UserAgentType user_agent_type_ = UserAgentType::MOBILE;
 };

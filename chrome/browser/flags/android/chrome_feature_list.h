@@ -85,7 +85,6 @@ BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTRevampedBranding);
 BASE_DECLARE_FEATURE(kCCTTabModalDialog);
-BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid2);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
@@ -133,7 +132,6 @@ BASE_DECLARE_FEATURE(kLegacyTabStateDeprecation);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kLogoPolish);
-BASE_DECLARE_FEATURE(kLogoPolishAnimationKillSwitch);
 BASE_DECLARE_FEATURE(kMagicStackAndroid);
 BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);
@@ -215,7 +213,6 @@ BASE_DECLARE_FEATURE(kTabResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUpdateCompositorForSurfaceControl);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
-BASE_DECLARE_FEATURE(kVoiceSearchAudioCapturePolicy);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 
 // For FeatureParam, Alphabetical:

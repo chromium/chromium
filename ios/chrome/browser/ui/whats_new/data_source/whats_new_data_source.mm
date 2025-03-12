@@ -71,7 +71,7 @@ UIColor* GenerateColor(NSString* color) {
 NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
   switch (action) {
     case WhatsNewPrimaryAction::kIOSSettings:
-    case WhatsNewPrimaryAction::kIOSSettingsPasswords:
+    case WhatsNewPrimaryAction::kIOSCredentialProviderSettings:
       return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
     case WhatsNewPrimaryAction::kPrivacySettings:
     case WhatsNewPrimaryAction::kChromeSettings:

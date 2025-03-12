@@ -22,7 +22,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"

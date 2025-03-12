@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Vorhandene Browserdaten werden mit <ph name="USER_EMAIL" /> verknüpft. Diese Daten können möglicherweise von deiner Organisation eingesehen werden.</translation>
 <translation id="1713777106376424209">Geliefert von</translation>
 <translation id="1715515772563243997">Wenn du <ph name="SITE" /> vertraust, kannst du ein gespeichertes Passwort zur Anmeldung verwenden.</translation>
+<translation id="1718835860248848330">Letzte Stunde</translation>
 <translation id="1728549374069268714">Einfügen und los</translation>
 <translation id="1732468323901456775">Benachrichtigungen für „<ph name="MODULE_NAME" />“ aktivieren</translation>
 <translation id="1740468249224277719">Tippe hier doppelt, um die Installation zu starten.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adressenerkennung deaktiviert. Du kannst sie in den Einstellungen wieder aktivieren.</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
-<translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
 <translation id="1943478190258551035">Menü → Einstellungen</translation>
 <translation id="1952728750904661634">Mit verwaltetem Konto anmelden</translation>

@@ -17,6 +17,8 @@ namespace {
 
 constexpr char kOauthConsumerName[] = "promotion_eligibility_checker";
 
+constexpr char kPolicyPromotionBannerLocale[] = "en-US";
+
 }  // namespace
 
 namespace enterprise_promotion {
@@ -24,8 +26,14 @@ namespace enterprise_promotion {
 PromotionEligibilityChecker::PromotionEligibilityChecker(
     const std::string& profile_id,
     policy::CloudPolicyClient* client,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    std::string locale,
+    bool dismissed_banner_pref)
     : identity_manager_(std::move(identity_manager)) {
+  if (dismissed_banner_pref || locale != kPolicyPromotionBannerLocale) {
+    return;
+  }
+
   if (!client || !client->is_registered()) {
     return;
   }
@@ -45,11 +53,12 @@ void PromotionEligibilityChecker::MaybeCheckPromotionEligibility(
     PromotionEligibilityChecker::PromotionEligibilityCallback callback) {
   DCHECK(!access_token_fetcher_);
   // The caller must supply a username.
-  DCHECK(!account_id.empty());
-  DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
   DCHECK(callback);
   callback_ = std::move(callback);
-  if (!promotion_query_client_ || !promotion_query_client_->is_registered()) {
+
+  if (account_id.empty() ||
+      !identity_manager_->HasAccountWithRefreshToken(account_id) ||
+      !promotion_query_client_ || !promotion_query_client_->is_registered()) {
     std::move(callback_).Run(
         enterprise_management::GetUserEligiblePromotionsResponse());
     return;

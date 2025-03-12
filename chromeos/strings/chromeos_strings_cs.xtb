@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animace spořiče obrazovky</translation>
 <translation id="152892567002884378">Zvýšit hlasitost</translation>
 <translation id="1539864135338521185">lazurit</translation>
+<translation id="1548555207631326346">Vyberte motiv a pak si obrázky vygenerované pomocí AI přizpůsobte výběrem podtržených slov.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pokud chcete získat další jedinečné a rozmanité možnosti obrázků AI, vyberte Inspiruj mě.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Při vytváření pomocí AI se pokyn odesílá na servery Google AI, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativní umělá inteligence je experimentální, na počátku vývoje a v současnosti má omezenou dostupnost.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">barva podsvícení</translation>
@@ -1553,6 +1562,16 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pláž</translation>
 <translation id="819278132617411009">Buďte s Google AI produktivnější</translation>
+<translation id="82003371436638355">Můžete vybrat možnost Vytvořit vlastní a napsat vlastní pokyn. Nebo můžete vybrat možnost Vybrat motiv, zvolit motiv a pak AI tapetu upravit tím, že vyberete podtržená slova.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pokud chcete získat další jedinečné a rozmanité možnosti obrázků AI, vyberte Inspiruj mě.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Když vytvoříte vlastní tapetu, odešle se pokyn na servery Google, aby vygenerovaly obrázky a aby tuhle službu bylo možné vylepšovat. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />smluvní podmínky a zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpovědi kontrolujte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Další informace<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
@@ -1574,6 +1593,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8312330582793120272">přehrát médium</translation>
 <translation id="8318753676953949627">Žádné obrázky</translation>
 <translation id="8320910311642849813">les</translation>
+<translation id="8322464149031882595">Kliknutím přejdete vpřed</translation>
 <translation id="8329018942023753850">aplikace kalkulačka</translation>
 <translation id="8336739000755212683">Změnit obrázek účtu zařízení</translation>
 <translation id="8339024191194156249">Další informace o automatickém spouštění</translation>
@@ -1720,6 +1740,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8961025972867871808">tučňáci</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
+<translation id="8972061581514441296">Kliknutím se vrátíte zpět</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Naskenovat}=1{Naskenovat {NUMBER_OF_PAGES} stránek}few{Naskenovat {NUMBER_OF_PAGES} stránky}many{Naskenovat {NUMBER_OF_PAGES} stránky}other{Naskenovat {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="89945434909472341">vesnice</translation>

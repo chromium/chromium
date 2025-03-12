@@ -92,7 +92,7 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
   // Visible tabs are treated as having been immediately focused, while
   // non-visible tabs have their focus set to the last active time (the time at
   // which they stopped being the active tab in a tabstrip).
-  if (GetVisibility() == content::Visibility::VISIBLE) {
+  if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     last_focused_time_ticks_ = NowTicks();
     last_focused_time_ = Now();
   } else {
@@ -187,11 +187,6 @@ base::Time TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
 LifecycleUnit::SortKey TabLifecycleUnitSource::TabLifecycleUnit::GetSortKey()
     const {
   return SortKey(last_focused_time_ticks_);
-}
-
-content::Visibility TabLifecycleUnitSource::TabLifecycleUnit::GetVisibility()
-    const {
-  return web_contents()->GetVisibility();
 }
 
 LifecycleUnitLoadingState

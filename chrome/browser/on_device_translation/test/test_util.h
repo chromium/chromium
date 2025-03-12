@@ -97,6 +97,7 @@ class MockComponentManager : public ComponentManager {
   void InstallComponent(base::FilePath library_path);
 
   const base::FilePath package_dir_;
+  base::AutoReset<ComponentManager*> mock_component_manager_;
   base::WeakPtrFactory<MockComponentManager> weak_ptr_factory_{this};
 };
 

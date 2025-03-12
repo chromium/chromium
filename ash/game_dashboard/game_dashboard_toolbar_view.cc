@@ -245,7 +245,7 @@ GameDashboardToolbarView::GameDashboardToolbarView(
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kCornerRadius));
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       1, kCornerRadius, ui::ColorIds::kColorCrosSystemHighlightBorder));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);

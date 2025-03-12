@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">现有的浏览数据将关联到 <ph name="USER_EMAIL" />。您组织的成员或许可以查看这些数据。</translation>
 <translation id="1713777106376424209">递送方：</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
+<translation id="1718835860248848330">过去一小时</translation>
 <translation id="1728549374069268714">粘贴并前往</translation>
 <translation id="1732468323901456775">开启“<ph name="MODULE_NAME" />”的通知</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">地址检测已关闭。您可以在“设置”中重新开启此功能。</translation>
 <translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
-<translation id="1923342640370224680">过去 1 小时</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="1952728750904661634">登录受管理的账号</translation>

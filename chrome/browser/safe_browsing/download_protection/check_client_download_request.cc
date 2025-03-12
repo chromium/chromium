@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
+#include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/pref_names.h"
@@ -40,7 +41,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
+#else
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
@@ -52,64 +55,6 @@ namespace safe_browsing {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-// This function is called when the result of malware scanning is already known
-// (via |reason|), but we still want to perform DLP scanning.
-void MaybeOverrideScanResult(DownloadCheckResultReason reason,
-                             CheckDownloadRepeatingCallback callback,
-                             DownloadCheckResult deep_scan_result) {
-  switch (deep_scan_result) {
-    // These results are more dangerous or equivalent to any |reason|, so they
-    // take precedence.
-    case DownloadCheckResult::DANGEROUS_HOST:
-    case DownloadCheckResult::DANGEROUS:
-    case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
-      callback.Run(deep_scan_result);
-      return;
-
-    // These deep scanning results don't override any dangerous reasons.
-    case DownloadCheckResult::UNKNOWN:
-    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
-    case DownloadCheckResult::DEEP_SCANNED_SAFE:
-    case DownloadCheckResult::DEEP_SCANNED_FAILED:
-    case DownloadCheckResult::SAFE:
-    case DownloadCheckResult::PROMPT_FOR_SCANNING:
-    case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-    case DownloadCheckResult::POTENTIALLY_UNWANTED:
-    case DownloadCheckResult::UNCOMMON:
-    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
-      if (reason == REASON_DOWNLOAD_DANGEROUS) {
-        callback.Run(DownloadCheckResult::DANGEROUS);
-      } else if (reason == REASON_DOWNLOAD_DANGEROUS_HOST) {
-        callback.Run(DownloadCheckResult::DANGEROUS_HOST);
-      } else if (reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED) {
-        callback.Run(DownloadCheckResult::POTENTIALLY_UNWANTED);
-      } else if (reason == REASON_DOWNLOAD_UNCOMMON) {
-        callback.Run(DownloadCheckResult::UNCOMMON);
-      } else if (reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
-        callback.Run(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE);
-      } else {
-        callback.Run(deep_scan_result);
-      }
-      return;
-
-    // These other results have precedence over dangerous ones because they
-    // indicate the scan is not done, that the file is blocked for another
-    // reason, or that the file is allowed by policy.
-    case DownloadCheckResult::ASYNC_SCANNING:
-    case DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
-    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
-    case DownloadCheckResult::BLOCKED_TOO_LARGE:
-    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
-    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
-    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
-      callback.Run(deep_scan_result);
-      return;
-  }
-
-  // This function should always run |callback| and return before reaching this.
-  NOTREACHED();
-}
-
 bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
   switch (result) {
     case DownloadCheckResult::DANGEROUS_HOST:
@@ -271,6 +216,11 @@ void CheckClientDownloadRequest::NotifySendRequest(
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.DownloadAttribution",
       request->referrer_chain().size());
+#if BUILDFLAG(IS_ANDROID)
+  DownloadProtectionMetricsData::SetOutcome(
+      item_, DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome::
+                 kClientDownloadRequestSent);
+#endif
 }
 
 void CheckClientDownloadRequest::SetDownloadProtectionData(
@@ -359,21 +309,17 @@ void CheckClientDownloadRequest::UploadBinary(
     DownloadCheckResultReason reason,
     enterprise_connectors::AnalysisSettings settings) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (reason == REASON_DOWNLOAD_DANGEROUS ||
-      reason == REASON_DOWNLOAD_DANGEROUS_HOST ||
-      reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED ||
-      reason == REASON_DOWNLOAD_UNCOMMON || reason == REASON_ALLOWLISTED_URL ||
-      reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
-    service()->UploadForDeepScanning(
-        item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
-        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
-        std::move(settings), /*password=*/std::nullopt);
-  } else {
-    service()->UploadForDeepScanning(
-        item_, callback_,
-        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
-        std::move(settings), /*password=*/std::nullopt);
-  }
+  auto metadata = std::make_unique<DownloadItemMetadata>(item_);
+  metadata->SetCallback(callback_);
+  auto weak_metadata = metadata->GetWeakPtr();
+
+  service()->UploadForDeepScanning(
+      std::move(metadata),
+      base::BindRepeating(&DownloadItemMetadata::ProcessScanResult,
+                          weak_metadata, reason),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
+      std::move(settings),
+      /*password=*/std::nullopt);
 #endif
 }
 
@@ -385,6 +331,10 @@ void CheckClientDownloadRequest::NotifyRequestFinished(
 
   DVLOG(2) << "SafeBrowsing download verdict for: " << item_->DebugString(true)
            << " verdict:" << reason << " result:" << static_cast<int>(result);
+
+#if BUILDFLAG(IS_ANDROID)
+  DownloadProtectionMetricsData::GetOrCreate(item_)->LogToHistogram();
+#endif
 
   item_->RemoveObserver(this);
 }

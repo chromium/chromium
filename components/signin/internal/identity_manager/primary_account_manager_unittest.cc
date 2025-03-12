@@ -877,8 +877,6 @@ TEST_F(PrimaryAccountManagerTest, RestoreFailedFeatureNotEnabled) {
 }
 
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
@@ -894,7 +892,12 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#else
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#endif
+
   EXPECT_TRUE(prefs()->GetBoolean(
       kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
@@ -909,9 +912,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
 }
 
 TEST_F(PrimaryAccountManagerTest, ImplicitSigninDoesNotSetExplicitSigninPref) {
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
@@ -931,9 +931,6 @@ TEST_F(PrimaryAccountManagerTest, ImplicitSigninDoesNotSetExplicitSigninPref) {
 }
 
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
@@ -948,7 +945,11 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#else
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#endif
   EXPECT_TRUE(prefs()->GetBoolean(
       kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
@@ -971,8 +972,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
   // Web signin can trigger automatic sign in if the user previously enabled
   // automatic sign in. Signing in through WEB_SIGNIN should clear the
   // `prefs::kExplicitBrowserSignin` pref anyway.
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
@@ -988,7 +987,12 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#else
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#endif
+
   EXPECT_TRUE(prefs()->GetBoolean(
       kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
@@ -1008,86 +1012,9 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
       kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 }
 
-TEST_F(
-    PrimaryAccountManagerTest,
-    ExplicitBrowserSigninDoesNotSetPrefWithExplicitBrowserSigninFeatureDisabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(switches::kExplicitBrowserSigninUIOnDesktop);
-
-  CreatePrimaryAccountManager();
-  CoreAccountId account_id =
-      AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-
-  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(prefs()->GetBoolean(
-      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
-
-  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  // Explicit pref is not set.
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  // Internal version of the pref is set though.
-  EXPECT_TRUE(prefs()->GetBoolean(
-      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
-}
-
-TEST_F(PrimaryAccountManagerTest,
-       RollingBackUsersOfExplicitBrowserSigninPrefCheck) {
-  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(prefs()->GetBoolean(
-      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
-
-  // Explicit sign in with `switches::kExplicitBrowserSigninUIOnDesktop` on.
-  {
-    base::test::ScopedFeatureList feature{
-        switches::kExplicitBrowserSigninUIOnDesktop};
-
-    CreatePrimaryAccountManager();
-    CoreAccountId account_id =
-        AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-
-    // Simulate an explicit signin through the Chrome Signin Intercept bubble.
-    manager_->SetPrimaryAccountInfo(
-        account_tracker()->GetAccountInfo(account_id),
-        signin::ConsentLevel::kSignin,
-        signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-    // The explicit sign in pref should be reset.
-    EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-    EXPECT_TRUE(prefs()->GetBoolean(
-        kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
-  }
-
-  // Simulate a restart by shutting down the manager and creating a new one with
-  // `switches::kExplicitBrowserSigninUIOnDesktop` off.
-  ShutDownManager();
-  {
-    ASSERT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-    ASSERT_TRUE(prefs()->GetBoolean(
-        kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
-
-    base::test::ScopedFeatureList feature;
-    feature.InitAndDisableFeature(switches::kExplicitBrowserSigninUIOnDesktop);
-
-    CreatePrimaryAccountManager();
-
-    // Explicit pref is cleared.
-    EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-    // Internal version of the pref is still set though.
-    EXPECT_TRUE(prefs()->GetBoolean(
-        kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
-  }
-}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithinSession) {
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
@@ -1107,9 +1034,6 @@ TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithinSession) {
 }
 
 TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesAfterRestart) {
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
@@ -1137,9 +1061,6 @@ TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesAfterRestart) {
 }
 
 TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithSync) {
-  base::test::ScopedFeatureList feature{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");

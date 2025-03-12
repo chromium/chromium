@@ -109,4 +109,8 @@ UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item);
 // If there is no such link, returns nil instead.
 NSString* GetImageLinkForDriveItem(const DriveItem& item);
 
+// Returns a string to display next to a file input when `file_urls` is
+// submitted.
+NSString* GetDisplayStringForFileUrls(NSArray<NSURL*>* file_urls);
+
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_HELPER_H_

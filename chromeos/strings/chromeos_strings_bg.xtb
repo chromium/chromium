@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Анимация за скрийнсейвъра</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
 <translation id="1539864135338521185">лапис лазули</translation>
+<translation id="1548555207631326346">Посочете тема и след това изберете от подчертаните думи, за да персонализирате генерираните от AI изображения.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Вдъхнови ме“, за да получите повече уникални и разнообразни опции за изображения от AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когато създавате с AI, подканата се изпраща до сървърите за AI на Google с цел генериране на изображения и подобряване на продукта, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Декларацията за поверителност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративният AI е експериментален, в ранен етап на разработка и понастоящем е с ограничена наличност.</translation>
 <translation id="1555130319947370107">Синьо</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1561927818299383735">цвят на фоновото осветление</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плаж</translation>
 <translation id="819278132617411009">Използвайте AI на Google, за да повишите продуктивността си</translation>
+<translation id="82003371436638355">Когато изберете „Създаване на ваша собствена“, напишете персонализирана подкана. Можете също да изберете „Избиране на тема“ и след това да изберете от подчертаните думи, за да персонализирате тапета от AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Вдъхнови ме“, за да получите повече уникални и разнообразни опции за изображения от AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когато създавате собствен тапет, подканата се изпраща до сървърите на Google с цел генериране на изображения и подобряване на продукта, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Общите условия и Декларацията за поверителност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не включвайте лично, чувствително или поверително съдържание.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративният AI може да допуска грешки, включително за хора, затова проверявайте отговорите. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Научете повече<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">пускане на мултимедията</translation>
 <translation id="8318753676953949627">Няма изображения</translation>
 <translation id="8320910311642849813">гора</translation>
+<translation id="8322464149031882595">Кликнете, за да продължите напред</translation>
 <translation id="8329018942023753850">приложение за калкулатор</translation>
 <translation id="8336739000755212683">Промяна на изображението за профила на устройството</translation>
 <translation id="8339024191194156249">Научете повече за автоматичното стартиране</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Скорост на зареждане</translation>
 <translation id="8970109610781093811">Повторно изпълняване</translation>
+<translation id="8972061581514441296">Кликнете, за да се върнете назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканиране}=1{Сканиране на страница {NUMBER_OF_PAGES}}other{Сканиране на страница {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">село</translation>

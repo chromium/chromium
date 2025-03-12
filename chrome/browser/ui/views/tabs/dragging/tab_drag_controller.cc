@@ -134,7 +134,7 @@ aura::Window* GetWindowForTabDraggingProperties(const TabDragContext* context) {
   return context ? context->GetWidget()->GetNativeWindow() : nullptr;
 }
 
-// Returns true if |context| browser window is snapped.
+// Returns true if `context` browser window is snapped.
 bool IsSnapped(const TabDragContext* context) {
   DCHECK(context);
   chromeos::WindowStateType type =
@@ -161,8 +161,8 @@ gfx::Rect GetTabstripScreenBounds(const TabDragContext* context) {
   return view_screen_bounds;
 }
 
-// Returns true if |bounds| contains the y-coordinate |y|. The y-coordinate
-// of |bounds| is adjusted by |vertical_adjustment|.
+// Returns true if `bounds` contains the y-coordinate `y`. The y-coordinate
+// of `bounds` is adjusted by `vertical_adjustment`.
 bool DoesRectContainVerticalPointExpanded(const gfx::Rect& bounds,
                                           int vertical_adjustment,
                                           int y) {
@@ -171,7 +171,7 @@ bool DoesRectContainVerticalPointExpanded(const gfx::Rect& bounds,
   return y >= lower_threshold && y <= upper_threshold;
 }
 
-// Adds |x_offset| to all the rectangles in |rects|.
+// Adds `x_offset` to all the rectangles in `rects`.
 void OffsetX(int x_offset, std::vector<gfx::Rect>* rects) {
   if (x_offset == 0) {
     return;
@@ -700,7 +700,7 @@ void TabDragController::EndDrag(EndDragReason reason) {
     return;
   }
 
-  // We always lose capture when hiding |attached_context_|, just ignore it.
+  // We always lose capture when hiding `attached_context_`, just ignore it.
   if (reason == END_DRAG_CAPTURE_LOST &&
       current_state_ == DragState::kDraggingUsingSystemDnD) {
     return;
@@ -917,7 +917,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
       tab_strip_to_attach_to_after_exit_ = target_context;
       current_state_ = DragState::kWaitingToDragTabs;
     } else {
-      // We already transferred ownership of |this| above, before we released
+      // We already transferred ownership of `this` above, before we released
       // capture.
       DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context);
 
@@ -1054,7 +1054,7 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
         drag_image_, {drag_image_.width() / 2, drag_image_.height() / 2});
   }
 
-  // Pull into a local to avoid use-after-free if RunShellDrag deletes |this|.
+  // Pull into a local to avoid use-after-free if RunShellDrag deletes `this`.
   base::OnceClosure drag_loop_done_callback =
       std::move(drag_loop_done_callback_);
 
@@ -1564,7 +1564,7 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, Detach should release capture; |can_release_capture_| is
+  // On ChromeOS, Detach should release capture; `can_release_capture_` is
   // false on ChromeOS because it can cancel touches, but for this cases
   // the touches are already transferred, so releasing is fine. Without
   // releasing, the capture remains and further touch events can be sent to a
@@ -1644,7 +1644,7 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
           ? views::Widget::MoveLoopEscapeBehavior::kHide
           : views::Widget::MoveLoopEscapeBehavior::kDontHide;
 
-  // Pull into a local to avoid use-after-free if RunMoveLoop deletes |this|.
+  // Pull into a local to avoid use-after-free if RunMoveLoop deletes `this`.
   base::OnceClosure drag_loop_done_callback =
       std::move(drag_loop_done_callback_);
 
@@ -1657,7 +1657,7 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
   in_move_loop_ = true;
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
       drag_offset, move_loop_source, escape_behavior);
-  // Note: |this| can be deleted here!
+  // Note: `this` can be deleted here!
 
   if (drag_loop_done_callback) {
     std::move(drag_loop_done_callback).Run();
@@ -1882,7 +1882,7 @@ void TabDragController::ResetSelection(TabStripModel* model) {
   ui::ListSelectionModel selection_model;
   bool has_one_valid_tab = false;
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size(); ++i) {
-    // |contents| is NULL if a tab was deleted out from under us.
+    // `contents` is NULL if a tab was deleted out from under us.
     if (drag_data_.tab_drag_data_[i].contents) {
       int index =
           model->GetIndexOfWebContents(drag_data_.tab_drag_data_[i].contents);
@@ -1924,9 +1924,9 @@ void TabDragController::RestoreInitialSelection() {
     return;
   }
 
-  // Tabs in |source_context_| may have closed since the drag began. In that
-  // case, |initial_selection_model_| may include indices that are no longer
-  // valid in |source_context_|. Abort restoring the selection if so.
+  // Tabs in `source_context_` may have closed since the drag began. In that
+  // case, `initial_selection_model_` may include indices that are no longer
+  // valid in `source_context_`. Abort restoring the selection if so.
   if (!source_context_->GetTabStripModel()->ContainsIndex(
           *(selection_model.selected_indices().rbegin()))) {
     return;

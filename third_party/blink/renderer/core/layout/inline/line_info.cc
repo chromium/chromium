@@ -540,15 +540,11 @@ void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
                           return a->StartItemIndex() < b->StartItemIndex();
                         }));
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  for (auto iter = parallel_flow_break_tokens_.begin();
-       iter != parallel_flow_break_tokens_.end(); UNSAFE_TODO(++iter)) {
-    const InlineBreakToken* break_token = *iter;
+  for (wtf_size_t i = 0; i < parallel_flow_break_tokens_.size(); ++i) {
+    const InlineBreakToken* break_token = parallel_flow_break_tokens_[i];
     DCHECK(break_token->IsInParallelBlockFlow());
     if (break_token->StartItemIndex() >= item_index) {
-      const wtf_size_t index =
-          static_cast<wtf_size_t>(iter - parallel_flow_break_tokens_.begin());
-      parallel_flow_break_tokens_.Shrink(index);
+      parallel_flow_break_tokens_.Shrink(i);
       break;
     }
   }

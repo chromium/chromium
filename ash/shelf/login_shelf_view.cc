@@ -251,7 +251,7 @@ LoginShelfView::LoginShelfView() {
                                   ButtonId id) -> LoginShelfButton* {
     View* button_container = AddChildView(std::make_unique<View>());
     button_container->SetLayoutManager(std::make_unique<views::FillLayout>());
-    button_container->SetBorder(views::CreateThemedRoundedRectBorder(
+    button_container->SetBorder(views::CreateRoundedRectBorder(
         kButtonHighlightBorderWidth, kButtonHighlightBorderRadius,
         ui::kColorCrosSystemHighlightBorder));
     button_container->SetID(kButtonContainerDiff + id);

@@ -204,7 +204,7 @@ class UnpinnedTabContainerController final : public TabContainerController {
 };
 
 // Animates tabs being pinned or unpinned, then hands them back to
-// |tab_container_|.
+// `tab_container_`.
 class PinUnpinAnimationDelegate : public TabSlotAnimationDelegate {
  public:
   PinUnpinAnimationDelegate(TabContainer* tab_container, TabSlotView* slot_view)
@@ -614,7 +614,7 @@ void CompoundTabContainer::CompleteAnimationAndLayout() {
 
 int CompoundTabContainer::GetAvailableWidthForTabContainer() const {
   // Falls back to views::View::GetAvailableSize() when
-  // |available_width_callback_| is not defined, e.g. when tab scrolling is
+  // `available_width_callback_` is not defined, e.g. when tab scrolling is
   // disabled.
   return available_width_callback_
              ? available_width_callback_.Run()

@@ -373,6 +373,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
                             resource_request,
                             read_response_future.GetCallback());
     FulfillIntegrityBlock();
+    FulfillMetadata();
     EXPECT_THAT(read_response_future.Take(),
                 testing::Not(base::test::HasValue()));
   }
@@ -387,6 +388,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
                             resource_request,
                             read_response_future.GetCallback());
     FulfillIntegrityBlock();
+    FulfillMetadata();
     EXPECT_THAT(read_response_future.Take(),
                 testing::Not(base::test::HasValue()));
   }
@@ -599,6 +601,10 @@ INSTANTIATE_TEST_SUITE_P(
             UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
@@ -614,6 +620,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
                           resource_request, read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
+  FulfillMetadata();
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());

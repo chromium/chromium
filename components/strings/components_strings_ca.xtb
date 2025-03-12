@@ -814,7 +814,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2385809941344967209">Actualitza Chrome des de la configuració de Chrome</translation>
 <translation id="2386255080630008482">El certificat del servidor s'ha revocat.</translation>
 <translation id="2388828676877700238">Preparació i planificació d'impostos</translation>
-<translation id="239203817277685015">Versió detallada</translation>
+<translation id="239203817277685015">Elabora</translation>
 <translation id="239293030466334554">Descapotables</translation>
 <translation id="2392959068659972793">Mostra les polítiques sense valors definits</translation>
 <translation id="239429038616798445">Aquest mètode d'enviament no està disponible. Prova'n un altre.</translation>
@@ -3021,6 +3021,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6337133576188860026">Allibera menys de <ph name="SIZE" />. És possible que alguns llocs web es carreguin més a poc a poc la propera vegada que els visitis.</translation>
 <translation id="6337534724793800597">Filtra les polítiques pel nom</translation>
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no és vàlid i no s'utilitzarà.</translation>
+<translation id="6338645927051849741">Contrasenya • Gestor de contrasenyes de Google</translation>
 <translation id="6340739886198108203">La política de l'administrador no recomana fer captures de pantalla ni gravacions quan hi hagi contingut confidencial visible:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La política de l'administrador no recomana penjar aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana penjar aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Ara mateix</translation>

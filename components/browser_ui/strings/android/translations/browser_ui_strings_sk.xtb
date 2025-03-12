@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Tu sa zobrazia súbory uložené webmi</translation>
 <translation id="131112695174432497">Dáta, ktoré ovplyvňujú prispôsobenie reklám, sa odstránia</translation>
 <translation id="1317194122196776028">Zabudnúť tento web</translation>
+<translation id="1333965224356556482">Nepovoliť webom zobrazovať polohu</translation>
 <translation id="1343356790768851700">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom</translation>
 <translation id="1369915414381695676">Boli pridané stránky <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Povolenie ukladania údajov webom vo vašom zariadení</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
 <translation id="1415855080660575082">Povoľte Chromu zdieľať vaše nedávne karty so zariadením, aby sa v ňom mohli zobrazovať v zozname aplikácií a výsledkoch vyhľadávania. Túto možnosť môžete zapnúť alebo vypnúť v nastaveniach Chromu.</translation>
 <translation id="1448064542941920355">Znížiť úroveň lupy</translation>
+<translation id="1464044141348608623">Nepovoliť webom zisťovať, kedy aktívne používate zariadenie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webe}few{<ph name="SITE_COUNT" /> weboch}many{<ph name="SITE_COUNT" /> sites}other{<ph name="SITE_COUNT" /> weboch}}</translation>
 <translation id="1500473259453106018">Skryť kartu Poklesy cien na kartách</translation>
+<translation id="1508931164824684991">Weby môžu používať JavaScript</translation>
 <translation id="1510341833810331442">Weby nemôžu ukladať údaje vo vašom zariadení</translation>
 <translation id="1538031354170655462">Weby zvyčajne používajú technológiu NFC (Near Field Communication), aby mohli fungovať so značkami alebo zariadeniami v okolí. Umožňuje im to napríklad skenovať odznaky alebo realizovať bezkontaktné platby</translation>
 <translation id="1547123415014299762">Súbory cookie tretích strán sú povolené</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Stránky si vás pomocou súborov cookie a ďalších údajov webov zapamätajú, napríklad vás pomocou nich prihlásia alebo prispôsobia reklamy. Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="1686785653877010442">Weby zvyčajne odosielajú upozornenia, aby vás informovali o mimoriadnych alebo četových správach.</translation>
 <translation id="169515064810179024">Brániť webom v prístupe k senzorom pohybu</translation>
+<translation id="1703666494654169921">Nepovoliť webom používať zariadenia alebo údaje virtuálnej reality</translation>
+<translation id="1704230497453185209">Nepovoliť webom prehrávať zvuk</translation>
 <translation id="1717218214683051432">Senzory pohybu</translation>
 <translation id="1743802530341753419">Pýtať sa, či chcete povoliť webu pripojiť sa k zariadeniu (odporúčané)</translation>
 <translation id="1779089405699405702">Dekodér obrázkov</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Keď je prepínač zapnutý, Chrome je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní. Keď je vypnutý, zníži sa výkonnosť, ale optimalizátor V8 bude odolnejší voči útokom.</translation>
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Weby zvyčajne získavajú prístup k súborom a priečinkom vo vašom zariadení, aby mohli poskytovať funkcie, ako je automatické ukladanie vašej práce</translation>
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1919950603503897840">Výber kontaktov</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Weby môžu žiadať o pripjenie k zariadeniam USB</translation>
 <translation id="1979673356880165407">Zväčšite alebo zmenšite si text a obrázky na všetkých weboch, ktoré navštívite</translation>
 <translation id="1984937141057606926">Povolené (okrem tretích strán)</translation>
 <translation id="1985247341569771101">Keď je táto možnosť zapnutá, weby môžu používať senzory pohybu vášho zariadenia. Keď je táto možnosť vypnutá, weby nemôžu používať senzory pohybu.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2096716221239095980">Odstrániť všetky dáta</translation>
+<translation id="2102396546234652240">Nepovoliť webom používať mikrofón</translation>
 <translation id="2117655453726830283">Nasledujúca snímka</translation>
 <translation id="2146263598007866206">Weby môžu automaticky spolu sťahovať súvisiace súbory a šetriť tým váš čas</translation>
 <translation id="2148716181193084225">Dnes</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Povoliť JavaScript na konkrétnom webe.</translation>
 <translation id="2626708220538466178">Dolný hárok predvoleného prehliadača je zavretý</translation>
 <translation id="2653659639078652383">Odoslať</translation>
+<translation id="2670403088701171361">Nepovoliť webom zobrazovať text alebo obrázky v schránke</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2682367912565197520">Odstrániť uloženú úroveň lupy</translation>
 <translation id="2683434792633810741">Chcete odstrániť a resetovať?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie sledovať polohu vašej kamery a získať informácie o vašom okolí. Keď je táto možnosť vypnutá, weby nemôžu sledovať polohu vašej kamery ani získať informácie o vašom okolí.</translation>
 <translation id="2968755619301702150">Zobrazovač certifikátov</translation>
 <translation id="2979365474350987274">Súbory cookie tretích strán sú obmedzené</translation>
+<translation id="2990583317361835189">Nepovoliť webom používať senzory pohybu</translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
 <translation id="301521992641321250">Automaticky blokované</translation>
+<translation id="3064871050034234884">Weby môžu prehrávať zvuk</translation>
 <translation id="3069226013421428034">Na konkrétnom webe môžete povoliť prihlasovanie tretími stranami.</translation>
 <translation id="310297983047869047">Predchádzajúca snímka</translation>
 <translation id="3109724472072898302">Zbalené</translation>
 <translation id="310979712355504754">Odstrániť všetko</translation>
+<translation id="311394601889664316">Nepovoliť webom upravovať súbory alebo priečinky v zariadení</translation>
 <translation id="3114012059975132928">Prehrávač videa</translation>
 <translation id="3115898365077584848">Zobraziť informácie</translation>
 <translation id="3123473560110926937">Blokované na niektorých weboch</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Vypnúť zvuk videa</translation>
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
 <translation id="3602290021589620013">Ukážka</translation>
+<translation id="3611658447322220736">Nedávno zatvorené weby môžu dokončiť odosielanie a prijímanie údajov</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
+<translation id="3641456520301071208">Weby môžu žiadať o vašu polohu</translation>
 <translation id="3658847490588580244">Dolný hárok predvoleného prehliadača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}few{<ph name="RWS_MEMBERS_COUNT" /> weby v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}many{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> webov v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}}</translation>
 <translation id="3676777756440746804">Weby majú zablokované žiadať vás o používanie informácií, ktoré o vás uložili</translation>
 <translation id="3697164069658504920">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať zariadenia s rozhraním USB. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia s rozhraním USB.</translation>
 <translation id="3707034683772193706">Web, ktorý navštívite, môže v Chrome uložiť malé množstvo informácií, najmä na overenie, že nie ste robot</translation>
+<translation id="3708684582558000260">Nepovoliť zavretým webom dokončovať odosielanie alebo prijímanie údajov</translation>
 <translation id="3709818294139939629">Odstránený prístup webu k súboru</translation>
 <translation id="3721953990244350188">Zavrieť a zobraziť ďalšiu dostupnú akciu</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
+<translation id="3776508619697147021">Weby môžu žiadať o automatické sťahovanie viacerých súborov</translation>
 <translation id="3779154269823594982">Zmeniť heslá</translation>
 <translation id="3797520601150691162">Nepoužívať tmavý motív pre konkrétny web</translation>
 <translation id="3803367742635802571">Weby, ktoré navštívite, môžu prestať fungovať podľa plánu</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Chrome bude dnes súbory cookie znova blokovať</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3859306556332390985">Pretočiť dopredu</translation>
+<translation id="389521680295183045">Weby sa môžu pýtať, keď chcú zistiť, kedy aktívne používate zariadenie</translation>
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
 <translation id="3905475044299942653">Zastavenie veľkého množstva upozornení</translation>
 <translation id="3908288065506437185">Blokovať súbory cookie tretích strán v režime inkognito</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Otvorte v telefóne Nastavenia</translation>
 <translation id="3933121352599513978">Zbaliť nechcené požiadavky (odporúčané)</translation>
 <translation id="3955193568934677022">Povoliť webom prehrávať chránený obsah (odporúčané)</translation>
+<translation id="3955321697524543127">Nepovoliť webom pripájať sa k zariadeniam s rozhraním USB</translation>
 <translation id="3965467402665811906">Weby môžu žiadať o používanie informácií, ktoré o vás uložili</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3981465354637804599">Weby zvyčajne zobrazujú reklamy, aby mohli poskytovať obsah či služby bez peňažného poplatku. Niektoré weby sú však známe tým, že zobrazujú obťažujúce alebo zavádzajúce reklamy.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="4336566011000459927">Chrome dnes znova obmedzí súbory cookie</translation>
 <translation id="4338831206024587507">Všetky weby v doméne <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Nepovoliť webom odosielať upozornenia</translation>
 <translation id="4402755511846832236">Neumožniť webom zistiť, či aktívne používate toto zariadenie</translation>
 <translation id="4412992751769744546">Povoliť súbory cookie tretích strán</translation>
 <translation id="4419929467120297501">Chrome blokuje webom možnosť sledovať vás pri prehliadaní pomocou súborov cookie tretích strán. Prejdite do nastavení a <ph name="BEGIN_LINK" />spravujte prístup k súborom cookie tretej strany<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> má zablokované používanie vašich informácií na webe</translation>
 <translation id="4953688446973710931">Keď je táto možnosť zapnutá, weby môžu žiadať o automatické sťahovanie viacerých súborov. Keď je táto možnosť vypnutá, weby nemôžu automaticky stiahnuť viacero súborov.</translation>
 <translation id="4962975101802056554">Odvolať všetky povolenia pre zariadenie</translation>
+<translation id="4972737347717125191">Weby môžu žiadať o použitie zariadení virtuálnej reality a súvisiacich údajov</translation>
 <translation id="497421865427891073">Ďalej</translation>
 <translation id="4976702386844183910">Naposledy navštívené <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nenašli sa žiadne kontakty</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5822675474983796325">Dolný hárok úprav stránky na novej karte je otvorený na celú výšku</translation>
+<translation id="5833899990800318936">Nepovoliť webom používať JavaScript</translation>
+<translation id="583673505367439042">Weby môžu žiadať o úpravu súborov a priečinkov v zariadení</translation>
 <translation id="5844448279347999754">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie zobrazovať text a obrázky uložené do schránky. Keď je táto možnosť vypnutá, weby nemôžu zobrazovať text ani obrázky uložené do schránky.</translation>
 <translation id="5853982612236235577">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie odosielať upozornenia. Keď je táto možnosť vypnutá, weby nemôžu odosielať upozornenia.</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome obmedzuje väčšine webom používanie súborov cookie tretích strán. Súbory cookie tretích strán sú však na tomto webe povolené, pretože sú preň nevyhnutné na poskytovanie základných služieb.\n\nPrejdite do nastavení a <ph name="BEGIN_LINK" />spravujte prístup k súborom cookie tretej strany<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Povoliť zvuk na konkrétnom webe.</translation>
 <translation id="789180354981963912">Blokovať súbory cookie tretích strán v režime inkognito:</translation>
+<translation id="789722939441020330">Nepovoliť webom automaticky sťahovať viacero súborov</translation>
 <translation id="7940722705963108451">Pripomenúť mi</translation>
+<translation id="7952708427581814389">Weby môžu žiadať o zobrazenie textu a obrázkov vo vašej schránke</translation>
 <translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7990211076305263060">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať váš mikrofón. Keď je táto možnosť vypnutá, weby nemôžu používať váš mikrofón.</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">Aplikácia <ph name="APP_NAME" /> je zastaraná. Preinštalujte ju.</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>
 <translation id="848952951823693243">Vždy požadovať mobilný web</translation>
+<translation id="8492822722330266509">Weby môžu odosielať vyskakovacie okná a používať presmerovania</translation>
 <translation id="8499083585497694743">Zapnúť mikrofón</translation>
 <translation id="8514955299594277296">Nepovoliť webom ukladať dáta v zariadení (neodporúča sa)</translation>
 <translation id="851751545965956758">Brániť webom pripájať sa k zariadeniam</translation>
@@ -581,6 +606,7 @@
 <translation id="8926666909099850184">Technológia NFC je v tomto zariadení vypnutá. Zapnite ju v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Zakázať webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC</translation>
 <translation id="8944485226638699751">Obmedzené</translation>
+<translation id="895054485242522631">Weby môžu používať senzory pohybu</translation>
 <translation id="8959122750345127698">Navigácia je nedostupná: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Systém vás odhlási zo všetkých webov</translation>
 <translation id="8993853206419610596">Rozbaliť všetky požiadavky</translation>

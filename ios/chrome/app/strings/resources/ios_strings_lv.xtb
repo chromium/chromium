@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Esošie pārlūkošanas dati tiks saistīti ar kontu <ph name="USER_EMAIL" />. Šie dati var būt redzami jūsu organizācijai.</translation>
 <translation id="1713777106376424209">Piegādātājs:</translation>
 <translation id="1715515772563243997">Ja uzticaties vietnei <ph name="SITE" />, varat pierakstīties, izmantojot saglabātu paroli.</translation>
+<translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1728549374069268714">Ielīmēt un pāriet</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" />: paziņojumu ieslēgšana</translation>
 <translation id="1740468249224277719">Divreiz pieskarieties, lai instalētu.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adreses noteikšana ir izslēgta. Iestatījumos varat to atkal ieslēgt.</translation>
 <translation id="1904580727789512086">Jūsu apmeklētie URL tiek saglabāti Google kontā</translation>
 <translation id="1911619930368729126">Augšupielādēt Google diskā</translation>
-<translation id="1923342640370224680">Pēdējā stunda</translation>
 <translation id="1941314575388338491">Veiciet dubultskārienu, lai kopētu.</translation>
 <translation id="1943478190258551035">Izvēlne → Iestatījumi</translation>
 <translation id="1952728750904661634">Pierakstīšanās pārvaldītā kontā</translation>
@@ -1206,6 +1206,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6187302354554850004">Pēdējoreiz sinhr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Izveides datums: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nelasīts</translation>
+<translation id="6192388920090306326">Ceļojums uz Tokiju</translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
 <translation id="6196207969502475924">Meklēšana ar balsi</translation>
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
@@ -1370,6 +1371,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6779455296366983087">Jūsu pārlūkošanas dati tiks dzēsti</translation>
 <translation id="6790502149545262384">Drīzumā, atverot jaunu cilni, būs redzami raksti no vietnes <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6794476726485507147">Izvēlieties datumu un laiku, kad saņemt atgādinājuma paziņojumu par atgriešanos šajā lapā.</translation>
+<translation id="6807287147325542056">Paroles citās lietotnēs</translation>
 <translation id="681368974849482173">Vienums izveidots</translation>
 <translation id="6825078212112407882">{count,plural, =1{Grāmatzīme tika saglabāta jūsu Google kontā ({email}).}zero{{count} grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}one{{count} grāmatzīme tika saglabāta jūsu Google kontā ({email}).}other{{count} grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}}</translation>
 <translation id="6830728435402077660">Nav droši</translation>
@@ -1934,6 +1936,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9106655997975673326">No ierīces <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Uzlauztu paroļu pārbaude</translation>
 <translation id="9124387962554796433">Google var izmantot jūsu vēsturi, lai personalizētu pakalpojumu Meklēšana un citus Google pakalpojumus.</translation>
+<translation id="9124978074365039456">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru un fotoattēlu galeriju.</translation>
 <translation id="9130317582644834675">Paslēpt vienumu “Veikt teksta tālummaiņu”</translation>
 <translation id="913036870884277353">Ērti atveriet saites citās lietotnēs.</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>

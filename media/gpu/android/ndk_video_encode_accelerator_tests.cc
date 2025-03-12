@@ -31,8 +31,6 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
-    NDK_MEDIA_CODEC_MIN_API)
 using testing::Return;
 
 namespace media {
@@ -41,6 +39,11 @@ struct VideoParams {
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
 };
+
+// We're putting this *after* VideoParams, so that it can be used with
+// ::testing::ValuesIn without triggering -Wunguarded-availability warnings.
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
 
 class NdkVideoEncoderAcceleratorTest
     : public ::testing::TestWithParam<VideoParams>,

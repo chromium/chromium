@@ -377,7 +377,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1244265436519979884">Vraćanje Linuxa je trenutno u toku</translation>
 <translation id="1244303850296295656">Greška ekstenzije</translation>
 <translation id="1244917379075403655">Kliknite na "Postavke"</translation>
-<translation id="1245041875932187638">Izbrišite sve podatke koje koristi automatsko popunjavanje pomoću AI-ja</translation>
 <translation id="1245331638296910488">Fajlovi će se premjestiti na OneDrive prilikom otvaranja u softveru Microsoft 365</translation>
 <translation id="1245628370644070008">Oporavak lokalnih podataka</translation>
 <translation id="1246863218384630739">Instaliranje virtualnog računara <ph name="VM_NAME" /> nije uspjelo: URL slike je rezultirao kodom greške <ph name="HTTP_ERROR" />. Kontaktirajte administratora.</translation>
@@ -1416,7 +1415,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Priprema</translation>
 <translation id="1969654639948595766">WebRTC tekstualni zapisnici (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Svi podaci će se izbrisati. Ova radnja se ne može opozvati</translation>
 <translation id="1972313920920745320">Web lokacije koje dodate će uvijek biti aktivne i zauzimat će memoriju. <ph name="BEGIN_LINK" />Saznajte više o zadržavanju određenih web lokacija aktivnima<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Pregledat ćete brže jer se sadržaj učitava proaktivno na osnovu vaše posjete trenutnoj web stranici</translation>
 <translation id="197288927597451399">Zadrži</translation>
@@ -2302,7 +2300,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="256517381556987641">Sinhronizacija fajlova je dosad pronašla više fajlova (ukupno <ph name="ITEMS_FOUND" />) i još uvijek provjerava prostor za pohranu. Za nekoliko minuta pokušajte ponovo uključiti Sinhronizaciju fajlova.</translation>
 <translation id="2565214867520763227">Uključite čitač ekrana</translation>
 <translation id="2566146433999774844">Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUM_OTHER_MEMBERS" /> osoba/e</translation>
-<translation id="256726287944589768">Prikaži podnožje na stranici Nova kartica</translation>
+<translation id="256726287944589768">Prikazuj podnožje na stranici Nova kartica</translation>
 <translation id="2568694057933302218">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="2568774940984945469">Spremnik trake s informacijama</translation>
 <translation id="2569972178052279830">Naziv maloprodavca</translation>
@@ -2811,7 +2809,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2921081876747860777">Kreirajte lozinku da zaštitite svoje lokalne podatke.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> će se sada zaključati.
 Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Ostali zadaci (njih <ph name="OTHER_TASK_NUM" />) u istoj grupi zadataka: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Ostali zadaci (njih <ph name="OTHER_TASK_NUM" />) u istoj grupi zadataka: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ostali zadaci (njih <ph name="OTHER_TASK_NUM" />) u istoj grupi zadataka: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Još <ph name="OTHER_TASK_NUM" /> zadatak u istoj grupi zadataka: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Još <ph name="OTHER_TASK_NUM" /> zadatka u istoj grupi zadataka: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Još <ph name="OTHER_TASK_NUM" /> zadataka u istoj grupi zadataka: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Ukloni ovaj račun</translation>
 <translation id="2923644930701689793">Pristupite snimljenim fotografijama telefona</translation>
 <translation id="292371311537977079">Postavke Chromea</translation>
@@ -3069,7 +3067,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3108957152224931571">Boja isticanja</translation>
 <translation id="3109206895301430738">Sačuvane grupe kartica</translation>
 <translation id="3109724472072898302">Skupljeno</translation>
-<translation id="310979712355504754">Izbriši sve</translation>
 <translation id="3112292765614504292">Veličina aplikacije: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Dodao/la je ovu karticu</translation>
 <translation id="311394601889664316">Nemoj dozvoliti web lokacijama uređivanje fajlova ili foldera na mom uređaju</translation>
@@ -4089,7 +4086,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ekstenzija je odobrena}one{# ekstenzija je odobrena}few{# ekstenzije su odobrene}other{# ekstenzija je odobreno}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Preporučuje se najmanje <ph name="INSTALL_SIZE" /> slobodnog prostora za Linux.</translation>
-<translation id="3824203811509979971">Sažimajte sadržaje ili postavljajte pitanja</translation>
 <translation id="3824621460022590830">Token za prijavu uređaja je nevažeći. Kontaktirajte vlasnika ili administratora uređaja. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se da vidite svoje kartice s drugih uređaja</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamti moj izbor za ovu vrstu fajla: <ph name="FILE_TYPES" />}one{Zapamti moj izbor za ove vrste fajlova: <ph name="FILE_TYPES" />}few{Zapamti moj izbor za ove vrste fajlova: <ph name="FILE_TYPES" />}other{Zapamti moj izbor za ove vrste fajlova: <ph name="FILE_TYPES" />}}</translation>
@@ -5904,7 +5900,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="512642543295077915">tipka za pretraživanje + Backspace</translation>
 <translation id="5126611267288187364">Pogledajte promjene</translation>
 <translation id="5127620150973591153">ID sigurne veze: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Sažimajte sadržaje ili postavljajte pitanja.</translation>
 <translation id="5127881134400491887">Upravljanje mrežnim vezama</translation>
 <translation id="5127934926273826089">Cvijeće</translation>
 <translation id="5127986747308934633">Vaš administrator kontrolira uređaj</translation>
@@ -7455,7 +7450,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6254892857036829079">Savršeno</translation>
 <translation id="6257131917452817589">automatiziranoj promjeni lozinke</translation>
 <translation id="6257602895346497974">Uključi sinhronizaciju…</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Ova mreža će se preferirati ako je dostupno više od jedne prethodno povezane ili konfigurirane mreže</translation>
 <translation id="6259776178973198997">Osvježi informacije o vlasnicima WiFi Directa</translation>
 <translation id="6262371516389954471">Vaše sigurnosne kopije se otpremaju na Google i šifriraju pomoću lozinke Google računa.</translation>
@@ -9891,6 +9885,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> glas <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automatski prenesite WiFi s Android telefona</translation>
 <translation id="7991296728590311172">Postavke Pristupa pomoću prekidača</translation>
+<translation id="7992080146463834191">Sažimajte sadržaje, pojednostavljujte složene tekstove ili postavljajte pitanja.</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
 <translation id="7997826902155442747">Prioritet procesa</translation>
 <translation id="7997828719430450286">Uspješno.</translation>
@@ -11158,6 +11153,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8874448314264883207">Ekstenzija "<ph name="EXTENSION_NAME" />" je isključena</translation>
 <translation id="8874647982044395866">Organsko</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
+<translation id="8875221558267407626">Sažimajte sadržaje, pojednostavljujte složene tekstove ili postavljajte pitanja</translation>
 <translation id="8875520811099717934">Nadogradnja Linuxa</translation>
 <translation id="8875736897340638404">Odaberite vidljivost</translation>
 <translation id="8876307312329369159">Ovu postavku ne možete promijeniti u demo sesiji.</translation>

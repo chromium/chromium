@@ -130,11 +130,9 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2753623023919742414">Smelltu til að leita</translation>
 <translation id="2770231113462710648">Breyta sjálfgefnum vafra í:</translation>
-<translation id="277338894894732084">Seinna spyr Chromium þig hvort þú viljir nota vistaðar upplýsingar til að fylla eyðublöð út á sjálfvirkan hátt</translation>
 <translation id="2785438272836277133">Þessi viðbót inniheldur spilliforrit og er ekki örugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2803971713792056305">Chromium-prófíllinn þinn</translation>
-<translation id="2806241689335397269">Chromium spyr þig hvort þú viljir vista eyðublaðsupplýsingar, eins og fæðingardaginn þinn, aldur og númer vegabréfs</translation>
 <translation id="2841525013647267359">Þýða úr</translation>
 <translation id="2846251086934905009">Uppsetningarvilla: Uppsetningarforrit lauk ekki verki sínu. Hætt var við uppsetningu.</translation>
 <translation id="2847479871509788944">Fjarlægja úr Chromium...</translation>
@@ -180,7 +178,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Skipta yfir í Chromium prófíl sem er til?</translation>
 <translation id="3412460710772753638">Í Aðgangsorðastjórnun í þessu tæki</translation>
-<translation id="3451656833730006755">Skráðu þig inn í Chromium til að fá viðbæturnar þínar og fleira í öllum tölvunum þínum</translation>
 <translation id="347328004046849135">Chromium lætur þig vita þegar þú skráir þig inn með aðgangsorði sem er í hættu</translation>
 <translation id="3474745554856756813">Þetta mun eyða <ph name="ITEMS_COUNT" /> atriðum úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> getur skipt á milli Chromium prófíla</translation>
@@ -463,7 +460,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="734373864078049451">Hér er vefefnið þitt, bókamerkin og annað dót úr Chromium.</translation>
 <translation id="7349591376906416160">Kerfisstjórinn hefur stillt Google Chromium á að opna <ph name="ALTERNATIVE_BROWSER_NAME" /> til að fá aðgang að <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Þessi viðbót er ekki lengur studd. Chromium mælir með að þú fjarlægir hana þess í stað.</translation>
-<translation id="7389750180956889333">Chromium skilur eyðublöð betur og er fljótari að fylla þau út sjálfkrafa fyrir þig. Nánar um <ph name="BEGIN_LINK" />sjálfvirka útfyllingu í Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Texti afritaður</translation>
 <translation id="7451052299415159299">Chromium þarf leyfi til að nota myndavélina á þessu vefsvæði</translation>

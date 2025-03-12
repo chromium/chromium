@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">የማያ ገፅ አሳራፊ እነማ</translation>
 <translation id="152892567002884378">ድምፅ ጨምር</translation>
 <translation id="1539864135338521185">ላፒስ ላዙሊ</translation>
+<translation id="1548555207631326346">የእርስዎን የሰው ሠራሽ አስተውሎት ምስሎች ግላዊ ለማድረግ አንድ ገፅታ ይምረጡ እና ከዚያ የተሰመረባቸውን ቃላት ይምረጡ።<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ተጨማሪ ልዩ እና የተለያዩ የሰው ሰራሽ አስተውሎት ምስሎች አማራጮችን ለማግኘት «አነሳሳኝ» የሚለውን ይምረጡ።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          በAI ሲፈጥሩ ለ<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ግላዊነት መመሪያ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ተገዢ ሆኖ ምስሎችን ለማመንጨት እና ምርቱን ለማሻሻል ጥያቄው ወደ የGoogle AI አገልጋዮች ይላካል።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI አመንጪ በሙከራ ደረጃ ላይ ያለ፣ ከጊዜው በቀደመ ግንባታ ላይ ያለ እና በአሁኑ ጊዜ ውሱን ተደራሽነት ያለው ነው።</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8183975772394450380">የባህር ዳርቻ</translation>
 <translation id="819278132617411009">የበለጠ ውጤታማ ለመሆን Google ሰው ሠራሽ አስተውሎት ይጠቀሙ</translation>
+<translation id="82003371436638355">«የራስዎን ይፍጠሩ» የሚለውን ሲመርጡ ብጁ ጥያቄ ይጻፉ። ወይም የእርስዎን የሰው ሠራሽ አስተውሎት ልጣፍ ግላዊ ለማድረግ አንድ ገፅታ መምረጥ ይችላሉ እና ከዚያ የተሰመረባቸውን ቃላት ይምረጡ።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ተጨማሪ ልዩ እና የተለያዩ የሰው ሰራሽ አስተውሎት ምስሎች አማራጮችን ለማግኘት «አነሳሳኝ» የሚለውን ይምረጡ።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          የራስዎን ልጣፍ ሲፈጥሩ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ለGoogle የአገልግሎት ውል እና የግላዊነት መመሪያ <ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ተገዢ በሆነ መልኩ ምስሎችን እንዲያመነጩ እና ምርቱን እንዲያሻሽሉ ጥያቄው ወደ የGoogle ሰው ሠራሽ አስተውሎት አገልጋዮች ይላካል። የግል፣ ልዩ ጥንቃቄ የሚያስፈልገው ወይም ምስጢራዊ የሆነ ማንኛውም ነገር አያካትቱ።
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ስለ ሰዎች ጨምሮ ሰው ሠራሽ አስተውሎት አመንጪ ስሕተቶችን ሊሠራ ይችላል፣ ስለዚህ በድጋሚ ያረጋግጡት። <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />የበለጠ ለመረዳት<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">ከቆመበት ቀጥል</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">ሚዲያ ማጫወቻ</translation>
 <translation id="8318753676953949627">ምንም ምስሎች የሉም</translation>
 <translation id="8320910311642849813">ደን</translation>
+<translation id="8322464149031882595">ወደፊት ለመሄድ ጠቅ ያድርጉ</translation>
 <translation id="8329018942023753850">የሒሳብ ማስያ መተግበሪያ</translation>
 <translation id="8336739000755212683">የመሣሪያ መለያ ምስልን ለውጥ</translation>
 <translation id="8339024191194156249">ስለ በራስ-ሰር አስጀምር የበለጠ ይረዱ</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">ፔንግዊኖች</translation>
 <translation id="8968751544471797276">ኃይል መሙላት መጠን</translation>
 <translation id="8970109610781093811">እንደገና ያሂዱ</translation>
+<translation id="8972061581514441296">መልሰው ለመሄድ ጠቅ ያድርጉ</translation>
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ቃኝ}=1{ገፅ {NUMBER_OF_PAGES} ቃኝ}one{ገፅ {NUMBER_OF_PAGES} ቃኝ}other{ገፅ {NUMBER_OF_PAGES} ቃኝ}}</translation>
 <translation id="89945434909472341">መንደር</translation>

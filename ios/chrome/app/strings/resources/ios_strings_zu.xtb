@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Idatha yokuphequlula ekhona izolinkwa ku-imeyili ethi <ph name="USER_EMAIL" />. Inhlangano yakho ingakwazi ukubuka le datha.</translation>
 <translation id="1713777106376424209">Idilivwe ngu-</translation>
 <translation id="1715515772563243997">Uma uyethemba i-<ph name="SITE" />, ungasebenzisa iphasiwedi elondoloziwe ukuze ungene ngemvume</translation>
+<translation id="1718835860248848330">Ihora lokugcina</translation>
 <translation id="1728549374069268714">Namathisela uphinde uhambe</translation>
 <translation id="1732468323901456775">Vula izaziso ze-<ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Thepha kabili ukuze ufake.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Ukutholwa kwekheli kuvaliwe. Kuvule futhi kokuthi Amasethingi.</translation>
 <translation id="1904580727789512086">Ama-URL owavakashelayo alondolozwe ku-akhawunti yakho ye-Google</translation>
 <translation id="1911619930368729126">Layisha ku-Google Drayivu</translation>
-<translation id="1923342640370224680">Ihora lokugcina</translation>
 <translation id="1941314575388338491">Thepha kabili ukuze ukopishe.</translation>
 <translation id="1943478190258551035">Imenyu → Amasethingi</translation>
 <translation id="1952728750904661634">Ngena ngemvume nge-akhawunti ephethwe</translation>
@@ -1206,6 +1206,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6187302354554850004">Ukugcina ukuvumelanisa: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Kudalwe ngo-<ph name="DATE" /></translation>
 <translation id="6189413832092199491">Akufundiwe</translation>
+<translation id="6192388920090306326">Uhambo oluya eTokyo</translation>
 <translation id="6193448654517602979">Khetha amathebhu</translation>
 <translation id="6196207969502475924">Usesho lwezwi</translation>
 <translation id="6196640612572343990">Vimba amakhukhi enkampani yangaphandle</translation>
@@ -1370,6 +1371,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="6779455296366983087">Idatha yakho yopheqululo izosulwa</translation>
 <translation id="6790502149545262384">Maduze, uzobona izindaba ezivela ku-<ph name="CHANNEL_NAME" /> uma uvula ithebhu entsha.</translation>
 <translation id="6794476726485507147">Khetha ilanga nesikhathi sokuthola isaziso sesikhumbuzi sokuvakashela leli khasi kabusha</translation>
+<translation id="6807287147325542056">Amaphasiwedi kwamanye ama-app</translation>
 <translation id="681368974849482173">Into idaliwe</translation>
 <translation id="6825078212112407882">{count,plural, =1{Ibhukhimakhi ilondolozwe kuGoogle Account yakho, ye-{email}}one{Amabhukhimakhi angu-{count} alondolozwe kuGoogle Account yakho, ye-{email}}other{Amabhukhimakhi angu-{count} alondolozwe kuGoogle Account yakho, ye-{email}}}</translation>
 <translation id="6830728435402077660">Akuphephile</translation>
@@ -1934,6 +1936,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="9106655997975673326">Kusukela "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Hlola amaphasiwedi onakalisiwe</translation>
 <translation id="9124387962554796433">I-Google ingasebenzisa umlando wakho ukuze yenze kube ngokwakho Ukusesha namanye amasevisi e-Google</translation>
+<translation id="9124978074365039456">Thenga, humusha, uphinde usho okubonayo usebenzisa ikhamera yakho negalari yesithombe</translation>
 <translation id="9130317582644834675">Fihla Umbhalo Osondeziwe</translation>
 <translation id="913036870884277353">Vula kalula amalinki kwamanye ama-app.</translation>
 <translation id="9137013805542155359">Bonisa okwangempela</translation>

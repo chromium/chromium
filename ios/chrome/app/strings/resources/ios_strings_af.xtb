@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Bestaande blaaierdata sal aan <ph name="USER_EMAIL" /> gekoppel word. Hierdie data kan vir jou organisasie sigbaar wees.</translation>
 <translation id="1713777106376424209">Afgelewer deur</translation>
 <translation id="1715515772563243997">As jy <ph name="SITE" /> vertrou, kan jy ’n gestoorde wagwoord gebruik om aan te meld.</translation>
+<translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1728549374069268714">Plak en gaan</translation>
 <translation id="1732468323901456775">Skakel kennisgewings vir <ph name="MODULE_NAME" /> aan</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adresbespeuring is af. Skakel dit weer aan in Instellings.</translation>
 <translation id="1904580727789512086">Die URL'e wat jy besoek, word in jou Google-rekening gestoor</translation>
 <translation id="1911619930368729126">Laai op na Google Drive</translation>
-<translation id="1923342640370224680">Afgelope uur</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopieer.</translation>
 <translation id="1943478190258551035">Kieslys → Instellings</translation>
 <translation id="1952728750904661634">Meld met bestuurde rekening aan</translation>
@@ -1206,6 +1206,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6187302354554850004">Laas gesinkroniseer: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Geskep op <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nie gelees nie</translation>
+<translation id="6192388920090306326">Reis na Tokyo</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6196207969502475924">Stemsoektog</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
@@ -1370,6 +1371,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6779455296366983087">Jou blaaierdata sal uitgevee word</translation>
 <translation id="6790502149545262384">Jy sal binnekort stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy ’n nuwe oortjie oopmaak.</translation>
 <translation id="6794476726485507147">Kies ’n datum en tyd om ’n onthounotakennisgewing te kry om hierdie bladsy weer te besoek</translation>
+<translation id="6807287147325542056">Wagwoorde in ander apps</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="6825078212112407882">{count,plural, =1{Boekmerk is gestoor in jou Google-rekening, {email}}other{{count} boekmerke is gestoor in jou Google-rekening, {email}}}</translation>
 <translation id="6830728435402077660">Nie veilig nie</translation>
@@ -1934,6 +1936,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9106655997975673326">Van “<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">Gaan na vir gekompromitteerde wagwoorde</translation>
 <translation id="9124387962554796433">Google kan dalk jou geskiedenis gebruik om Search en ander Google-dienste te personaliseer.</translation>
+<translation id="9124978074365039456">Koop, vertaal en identifiseer wat jy sien deur jou kamera en fotogalery te gebruik</translation>
 <translation id="9130317582644834675">Versteek zoemteks</translation>
 <translation id="913036870884277353">Maak maklik skakels in ander apps oop</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>

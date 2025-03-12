@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Data iliyopo ya kuvinjari itaunganishwa kwenye <ph name="USER_EMAIL" />. Huenda data hii ikaonekana kwenye shirika lako.</translation>
 <translation id="1713777106376424209">Unaletewa na</translation>
 <translation id="1715515772563243997">Ikiwa unaiamini tovuti ya <ph name="SITE" />, unaweza kutumia nenosiri ulilohifadhi ili uingie katika akaunti.</translation>
+<translation id="1718835860248848330">Saa iliyopita</translation>
 <translation id="1728549374069268714">Bandika na utafute</translation>
 <translation id="1732468323901456775">Washa arifa za <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Gusa mara mbili ili usakinishe.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Umezima kipengele cha kutambua anwani. Kiwashe tena kwenye Mipangilio.</translation>
 <translation id="1904580727789512086">URL unazotembelea huhifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="1911619930368729126">Pakia kwenye Hifadhi ya Google</translation>
-<translation id="1923342640370224680">Saa ya Mwisho</translation>
 <translation id="1941314575388338491">Gusa mara mbili ili unakili.</translation>
 <translation id="1943478190258551035">Menyu → Mipangilio</translation>
 <translation id="1952728750904661634">Ingia ukitumia akaunti inayodhibitiwa</translation>
@@ -1206,6 +1206,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6187302354554850004">Ilisawazishwa mara ya mwisho: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Yalitayarishwa tarehe <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ambazo Hazijasomwa</translation>
+<translation id="6192388920090306326">Mandhari ya Tokyo</translation>
 <translation id="6193448654517602979">Chagua vichupo</translation>
 <translation id="6196207969502475924">Utafutaji wa Sauti</translation>
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
@@ -1370,6 +1371,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6779455296366983087">Data yako ya kuvinjari itafutwa</translation>
 <translation id="6790502149545262384">Hivi karibuni, utaona hadithi kutoka <ph name="CHANNEL_NAME" /> unapofungua kichupo kipya.</translation>
 <translation id="6794476726485507147">Chagua tarehe na muda wa kupata arifa ya kikumbusho ili utembelee tena ukurasa huu baadaye</translation>
+<translation id="6807287147325542056">Manenosiri katika programu nyingine</translation>
 <translation id="681368974849482173">Umeunda kipengee</translation>
 <translation id="6825078212112407882">{count,plural, =1{Alamisho imehifadhiwa kwenye Akaunti yako ya Google, {email}}other{Alamisho {count}zimehifadhiwa kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="6830728435402077660">Si salama</translation>
@@ -1934,6 +1936,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9106655997975673326">Kwenye "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Kagua kama kuna manenosiri yaliyoathiriwa</translation>
 <translation id="9124387962554796433">Huenda Google ikatumia historia yako kuboresha huduma ya Tafuta na huduma nyingine za Google.</translation>
+<translation id="9124978074365039456">Nunua, tafsiri na utambue unachokiona ukitumia kamera na matunzio yako ya picha</translation>
 <translation id="9130317582644834675">Ficha Chaguo la Kukuza Maandishi</translation>
 <translation id="913036870884277353">Fungua viungo kwenye programu nyingine kwa urahisi.</translation>
 <translation id="9137013805542155359">Onyesha asili</translation>

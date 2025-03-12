@@ -30,7 +30,9 @@ constexpr char kExpectedAccessToken[] = "access_token";
 constexpr char kNonEmptyDMToken[] = "dm_token";
 constexpr char kProfileId[] = "profile_id";
 constexpr char kClientId[] = "client_id";
-
+constexpr char kValidLocale[] = "en-US";
+constexpr char kInvalidLocale[] = "en-GB";
+constexpr bool kDismissedBannerPref = true;
 }  // namespace
 
 namespace enterprise_promotion {
@@ -53,7 +55,8 @@ class PromotionEligibilityCheckerTest : public testing::Test {
                       .account_id;
 
     checker_ = std::make_unique<PromotionEligibilityChecker>(
-        kProfileId, client_.get(), identity_test_env()->identity_manager());
+        kProfileId, client_.get(), identity_test_env()->identity_manager(),
+        kValidLocale, !kDismissedBannerPref);
   }
 
  protected:
@@ -175,10 +178,79 @@ TEST_F(PromotionEligibilityCheckerTest,
                   enterprise_management::GetUserEligiblePromotionsResponse())));
   PromotionEligibilityChecker checker_no_dm_token(
       kProfileId, client_no_dm_token.get(),
-      identity_test_env()->identity_manager());
+      identity_test_env()->identity_manager(), kValidLocale,
+      !kDismissedBannerPref);
 
   checker_no_dm_token.MaybeCheckPromotionEligibility(account_id_,
                                                      callback.Get());
+}
+
+TEST_F(PromotionEligibilityCheckerTest,
+       DeterminePromotionEligibilityDismissedBannerPref) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+  std::unique_ptr<policy::MockCloudPolicyClient> client =
+      std::make_unique<policy::MockCloudPolicyClient>();
+
+  client->SetDMToken(kNonEmptyDMToken);
+  client->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  EXPECT_CALL(callback,
+              Run(EqualsProto(
+                  enterprise_management::GetUserEligiblePromotionsResponse())));
+  PromotionEligibilityChecker checker(kProfileId, client.get(),
+                                      identity_test_env()->identity_manager(),
+                                      kValidLocale, kDismissedBannerPref);
+
+  checker.MaybeCheckPromotionEligibility(account_id_, callback.Get());
+}
+
+TEST_F(PromotionEligibilityCheckerTest,
+       DeterminePromotionEligibilityInvalidLocale) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_invalid_locale =
+      std::make_unique<policy::MockCloudPolicyClient>();
+
+  client_invalid_locale->SetDMToken(kNonEmptyDMToken);
+  client_invalid_locale->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  EXPECT_CALL(callback,
+              Run(EqualsProto(
+                  enterprise_management::GetUserEligiblePromotionsResponse())));
+  PromotionEligibilityChecker checker_invalid_locale(
+      kProfileId, client_invalid_locale.get(),
+      identity_test_env()->identity_manager(), kInvalidLocale,
+      !kDismissedBannerPref);
+
+  checker_invalid_locale.MaybeCheckPromotionEligibility(account_id_,
+                                                        callback.Get());
+}
+
+TEST_F(PromotionEligibilityCheckerTest,
+       DeterminePromotionEligibilityNoAccount) {
+  base::MockCallback<base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>>
+      callback;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_no_account =
+      std::make_unique<policy::MockCloudPolicyClient>();
+
+  client_no_account->SetClientId(kClientId);
+  client_no_account->SetDMToken(kNonEmptyDMToken);
+  client_no_account->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  EXPECT_CALL(callback,
+              Run(EqualsProto(
+                  enterprise_management::GetUserEligiblePromotionsResponse())));
+  PromotionEligibilityChecker checker_no_account(
+      kProfileId, client_no_account.get(),
+      identity_test_env()->identity_manager(), kValidLocale,
+      !kDismissedBannerPref);
+
+  checker_no_account.MaybeCheckPromotionEligibility(CoreAccountId(),
+                                                    callback.Get());
 }
 
 }  // namespace enterprise_promotion

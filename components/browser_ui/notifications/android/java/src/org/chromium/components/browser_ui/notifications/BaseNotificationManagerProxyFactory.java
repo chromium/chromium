@@ -21,7 +21,7 @@ public class BaseNotificationManagerProxyFactory {
         if (sProxyForTest != null) {
             return sProxyForTest;
         } else if (BrowserUiUtilsCachedFlags.getInstance().getAsyncNotificationManagerFlag()) {
-            return new AsyncNotificationManagerProxyImpl();
+            return AsyncNotificationManagerProxyImpl.getInstance();
         } else {
             return NotificationManagerProxyImpl.getInstance();
         }

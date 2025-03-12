@@ -66,6 +66,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="3078350928901129212">Icona del colore del gruppo di schede <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Elenco dei gruppi di schede chiuso</translation>
 <translation id="3194464645767632461">valutazione</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda al gruppo}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede al gruppo}}</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3547352561153509682">Il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nuova scheda}other{<ph name="MANY_ADDED" /> nuove schede}}</translation>
@@ -98,6 +99,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="4783638485675352219">Condividi i titoli e gli URL delle schede aperte da questo dispositivo con il sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda selezionata al gruppo}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede selezionate al gruppo}}</translation>
 <translation id="4861611890274104875">Ignora la scheda.</translation>
 <translation id="4861953997778766866">Tutti possono apportare modifiche ai tuoi gruppi di schede condivisi</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
@@ -134,6 +136,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
 <translation id="6271513594716432922">Chiudi tutte le schede non attive</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="6333260925957816943">Informazioni su questo negozio</translation>
 <translation id="6381032505162537930">Qui troverai i tuoi gruppi di schede</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
@@ -186,6 +189,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="799469866974412355">Nuovo gruppo dall'altro dispositivo</translation>
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
 <translation id="8053770993984522566">Elenco dei gruppi di schede aperto nella parte inferiore dello schermo</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Aggiungi scheda al gruppo}other{Aggiungi schede al gruppo}}</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>

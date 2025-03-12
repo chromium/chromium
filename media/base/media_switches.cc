@@ -1510,6 +1510,13 @@ const base::FeatureParam<int> kAudioDuckingAttenuation{&kAudioDucking,
                                                        "attenuation", 80};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+// Enables ducking of other Windows applications.
+BASE_FEATURE(kAudioDuckingWin,
+             "AudioDuckingWin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Enables flash to be ducked by audio focus. This is enabled on Chrome OS which
 // has audio focus enabled.
 BASE_FEATURE(kAudioFocusDuckFlash,

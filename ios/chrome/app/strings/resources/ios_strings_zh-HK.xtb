@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">現有的瀏覽資料將會連結 <ph name="USER_EMAIL" />。你的機構或可查看有關資料。</translation>
 <translation id="1713777106376424209">物流服務公司</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，可使用已儲存的密碼登入。</translation>
+<translation id="1718835860248848330">過去一小時</translation>
 <translation id="1728549374069268714">貼上並前往</translation>
 <translation id="1732468323901456775">開啟「<ph name="MODULE_NAME" />」通知</translation>
 <translation id="1740468249224277719">輕按兩下即可安裝。</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">已關閉地址偵測，你可前往「設定」重啟此功能。</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
-<translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕按兩下即可複製。</translation>
 <translation id="1943478190258551035">「選單」→「設定」</translation>
 <translation id="1952728750904661634">登入受管理的帳戶</translation>

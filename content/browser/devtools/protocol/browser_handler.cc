@@ -8,9 +8,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -25,6 +29,7 @@
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
@@ -202,6 +207,8 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::AUTOMATIC_FULLSCREEN;
   } else if (name == "web-app-installation") {
     *permission_type = PermissionType::WEB_APP_INSTALLATION;
+  } else if (name == "local-network-access") {
+    *permission_type = PermissionType::LOCAL_NETWORK_ACCESS;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -295,6 +302,9 @@ Response FromProtocolPermissionType(
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::WebAppInstallation) {
     *out_type = PermissionType::WEB_APP_INSTALLATION;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::LocalNetworkAccess) {
+    *out_type = PermissionType::LOCAL_NETWORK_ACCESS;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }
@@ -594,6 +604,59 @@ Response BrowserHandler::CrashGpuProcess() {
     host->gpu_service()->Crash();
   }
   return Response::Success();
+}
+
+void BrowserHandler::AddPrivacySandboxCoordinatorKeyConfig(
+    const std::string& in_api,
+    const std::string& in_coordinator_origin,
+    const std::string& in_key_config,
+    std::optional<std::string> browser_context_id,
+    std::unique_ptr<AddPrivacySandboxCoordinatorKeyConfigCallback> callback) {
+  BrowserContext* browser_context = nullptr;
+  Response response = FindBrowserContext(browser_context_id, &browser_context);
+  if (!response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
+
+  url::Origin coordinator_origin =
+      url::Origin::Create(GURL(in_coordinator_origin));
+
+  if (!base::EndsWith(coordinator_origin.host(), ".test")) {
+    callback->sendFailure(
+        Response::InvalidParams("coordinatorOrigin not a .test domain"));
+    return;
+  }
+
+  std::optional<TrustedServerAPIType> api;
+  if (in_api ==
+      protocol::Browser::PrivacySandboxAPIEnum::BiddingAndAuctionServices) {
+    api = TrustedServerAPIType::kBiddingAndAuction;
+  } else if (in_api ==
+             protocol::Browser::PrivacySandboxAPIEnum::TrustedKeyValue) {
+    api = TrustedServerAPIType::kTrustedKeyValue;
+  } else {
+    callback->sendFailure(Response::InvalidParams("Unrecognized API target"));
+    return;
+  }
+
+  CHECK(api.has_value());
+  static_cast<InterestGroupManagerImpl*>(
+      browser_context->GetDefaultStoragePartition()->GetInterestGroupManager())
+      ->AddTrustedServerKeysDebugOverride(
+          *api, coordinator_origin, in_key_config,
+          base::BindOnce(
+              [](std::unique_ptr<AddPrivacySandboxCoordinatorKeyConfigCallback>
+                     callback,
+                 std::optional<std::string> maybe_error) {
+                if (maybe_error.has_value()) {
+                  callback->sendFailure(
+                      Response::InvalidParams(std::move(maybe_error).value()));
+                } else {
+                  callback->sendSuccess();
+                }
+              },
+              std::move(callback)));
 }
 
 void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {

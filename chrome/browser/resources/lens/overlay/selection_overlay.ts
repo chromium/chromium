@@ -1205,7 +1205,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       return;
     }
 
-    this.handleCopyAsImage();
+    const shouldCopyAsImage = loadTimeData.getBoolean('shouldCopyAsImage');
+    if (shouldCopyAsImage) {
+      this.handleCopyAsImage();
+      return;
+    }
+
+    this.getTextSelectionLayer().onCopyDetectedText(
+        this.detectedTextStartIndex, this.detectedTextEndIndex,
+        this.copyText.bind(this));
   }
 
   /**

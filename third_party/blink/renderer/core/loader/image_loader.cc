@@ -876,6 +876,8 @@ gfx::Size ImageLoader::AccessNaturalSize() const {
           ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
               *sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
                                        LayoutReplaced::kDefaultHeight))));
+      size = ToRoundedSize(PhysicalSize::FromSizeFFloor(
+          blink::ConcreteObjectSize(*sizing_info, gfx::SizeF())));
     }
     if (size != concrete_object_size) {
       element_->GetDocument().CountUse(

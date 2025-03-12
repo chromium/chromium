@@ -38,6 +38,9 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
@@ -349,6 +352,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           !data_origin.IsSameOriginWith(script_source_url)),
       saved_queries_enabled_(base::FeatureList::IsEnabled(
           blink::features::kSharedStorageSelectURLSavedQueries)),
+      source_id_(page_->GetMainDocument().GetPageUkmSourceId()),
       creation_time_(base::TimeTicks::Now()) {
   GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
       &(document_service.render_frame_host()));
@@ -511,6 +515,15 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   base::UmaHistogramTimes(
       "Storage.SharedStorage.Worklet.Timing.AbsoluteUsefulResourceDuration",
       useful_resource_duration);
+
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::SharedStorage_Worklet_OnDestroyed builder(source_id_);
+
+  builder.SetAbsoluteUsefulResourceDuration(
+      ukm::GetExponentialBucketMinForUserTiming(
+          useful_resource_duration.InMilliseconds()));
+
+  builder.Record(ukm_recorder->Get());
 
   if (!page_) {
     return;

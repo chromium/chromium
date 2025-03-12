@@ -996,6 +996,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5696597120588531049">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest</translation>
 <translation id="5698878456427040674">Kontrollige, kas valitud kontot toetatakse.</translation>
 <translation id="570347048394355941">Lülitu vahelehele</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> soovib luua ühendust jadapordiga</translation>
 <translation id="5715150588940290235">Kas kustutada salvestatud turvakoodid?</translation>
 <translation id="571930967925877633">Teie järjehoidjaid, ajalugu ja muid Chrome'i andmeid ei sünkroonita enam teie Google'i kontoga</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
@@ -1128,6 +1129,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6296366034485697675">Ekspordi ja kustuta</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6303969859164067831">Logi välja ja lülita sünkroonimine välja</translation>
+<translation id="6307241780749477694">Kõigile oma paroolidele selles seadmes juurdepääsemiseks kinnitage oma isik</translation>
 <translation id="6312687380483398334">Veebirakendused (vaiksed)</translation>
 <translation id="6315386555979018699">Kustuta ja jätka</translation>
 <translation id="6316139424528454185">Seda Androidi versiooni ei toetata</translation>
@@ -1389,6 +1391,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7359002509206457351">Makseviisidele juurdepääsemine</translation>
 <translation id="7363349185727752629">Teie privaatsusvalikute juhend</translation>
 <translation id="7364103838544876661">Rohkem võimalusi sirvimisandmete kustutamiseks</translation>
+<translation id="7365073365123878797">Google'i paroolihalduri abil paroolide salvestamise ja kasutamise alustamiseks värskendage Google Play teenuseid</translation>
 <translation id="7375125077091615385">Tüüp:</translation>
 <translation id="7376560087009844242">Kaasates rohkem lehe teksti võite näha paremaid tulemusi, kui kasutate otsimiseks puudutamist. Selle muutmiseks võite alati avada <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Saitide tume teema on saadaval</translation>
@@ -1454,7 +1457,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7628417132421583481">Avage paroolihaldur</translation>
 <translation id="7630202231528827509">Teenusepakkuja URL</translation>
 <translation id="7638584964844754484">Vale parool</translation>
-<translation id="7646499124171960488">Hoiatab teid ebaturvalistest saitidest</translation>
+<translation id="7646499124171960488">Hoiatab teid ebaturvaliste avalike saitide eest</translation>
 <translation id="7646772052135772216">Paroolide sünkroonimine ei tööta</translation>
 <translation id="7655240423373329753">viimase 7 päeva jooksul</translation>
 <translation id="7656721520530864426">Saite pole</translation>
@@ -1467,10 +1470,12 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7686086654630106285">Lisateave saidi soovitatud reklaamide kohta</translation>
 <translation id="7690596512217303514">Teie seade ei saanud Chrome’i avada. Probleemi lahendamiseks laadige oma rakenduste poest alla uusim Chrome’i värskendus.</translation>
 <translation id="7691043218961417207">Avastage sisu, mida jälgida</translation>
+<translation id="7692761875510935111">Avage kiirelt brauseris. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="7697383401610880082">Lohistamispide</translation>
 <translation id="7698359219371678927">Looge meil rakenduses <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Hiljutiste toimingute alumine leht avati täispikkuses</translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
+<translation id="7708994397325774423">Hankige juurdepääs kõigile oma paroolidele</translation>
 <translation id="7733878270780732638">Seadmes ei ole piisavalt ruumi</translation>
 <translation id="7746817319925672889">Google'i paroolihaldur peagi selles seadmes enam ei tööta</translation>
 <translation id="774876555279732384">Automaattäite teenuseid saab hallata ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -1612,6 +1617,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8310451567823644042">Paroolid varsti enam ei tööta</translation>
 <translation id="831192587911042850">Lisab praeguse veebisaidi teie jälgitavate veebisaitide loendisse.</translation>
 <translation id="8320212361750431956">Hiljutised toimingud</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome annab teile teada saitidest, mis võivad saata liiga palju märguandeid</translation>
 <translation id="834313815369870491">Ära kunagi tõlgi järgmisi saite</translation>
 <translation id="8348430946834215779">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse</translation>
@@ -1743,6 +1749,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8937772741022875483">Kas eemaldada teie Chrome'i tegevused teenusest Digitaalne heaolu?</translation>
 <translation id="8942627711005830162">Ava teises aknas</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – seda keelt ei saanud alla laadida. Proovige hiljem uuesti.</translation>
+<translation id="8946759102391960088">Säilitage juurdepääs oma paroolidele</translation>
 <translation id="8957528460562961174">Paroolide kasutamise jätkamiseks eksportige need kohe ja importige need seejärel paroolihaldurisse, mida soovite kasutada. Google Password Manager ei tööta enam, sest Google Play teenused ei ole saadaval.</translation>
 <translation id="8963117664422609631">Saidi seadete avamine</translation>
 <translation id="8965591936373831584">ootel</translation>

@@ -182,7 +182,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
-<translation id="3289358082435924389">Chrome vas bo pozneje vprašal, ali želite uporabiti shranjene podatke za samodejno izpolnjevanje obrazcev</translation>
 <translation id="3292333338048274092">Nato boste morali znova zagnati Chrome.</translation>
 <translation id="3360895254066713204">Pomočnik za Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
@@ -343,7 +342,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5602351063754773347">Chrome priporoča, da jo odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">S profili v Chromu lahko ločite vse stvari v Chromu. Ustvarite profile za prijatelje in svojce ali ustvarite ločene za delo in zabavo.</translation>
-<translation id="5649680279845190972">Če želite dostopati do razširitev in drugega v vseh računalnikih, se prijavite v Chrome</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="566568153320186256">Chrome varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Preberite več o varčevanju z energijo<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Izbris podatkov iz Chroma v računu</translation>
@@ -522,7 +520,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7886087451482920026">Izberite besedilo z Googlom Lens</translation>
 <translation id="7890208801193284374">Če računalnik souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chrome tako, kot želijo.</translation>
 <translation id="7896673875602241923">Nekdo se je prijavil v Chrome v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chrome, če želite, da bodo vaši podatki ločeni.</translation>
-<translation id="7917470403848199310">Chrome vas bo vprašal, ali želite shraniti podatke iz obrazca, kot so datum rojstva, starost in številka potnega lista</translation>
 <translation id="7917876797003313048">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chrome, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome je blokiral ta prenos, ker je datoteka zavajajoča in v napravi morda izvaja nepričakovane spremembe</translation>
 <translation id="7951272445806340501">Za uveljavitev posodobitve je treba znova zagnati ChromeOS Flex.</translation>
@@ -604,7 +601,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>
 <translation id="8922193594870374009">Če želite telefonsko številko iz <ph name="ORIGIN" /> poslati v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
 <translation id="8948460679427074738">Ta razširitev še ni objavila postopkov zagotavljanja zasebnosti, na primer kako zbira in uporablja podatke. Chrome priporoča, da jo odstranite.</translation>
-<translation id="8983860655274963234">Chrome bolje razume obrazce in jih lahko hitreje samodejno izpolni. Preberite več o <ph name="BEGIN_LINK" />samodejnem izpolnjevanju v Chromu<ph name="END_LINK" />.</translation>
 <translation id="8986207147630327271">V ta brskalnik dodajate delovni profil in skrbniku omogočate nadzor samo nad delovnim profilom.</translation>
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8992769679401294069">Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma uporabljati in shranjevati v računu Google.</translation>

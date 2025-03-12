@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">မင်္ဂလာ ညချမ်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">‘အီမိုဂျီရွေးချယ်စနစ်’ ဖွင့်ရန်</translation>
 <translation id="2088116547584365419">ဂိမ်းများ</translation>
-<translation id="2092517835716911174">သင်သည် ‘ကူဖတ်ပေးပါ’ နှင့် ‘ကူရေးပေးပါ’ တို့ကို သုံးရန် အသက် ၁၈ နှစ် အနည်းဆုံး ရှိရမည်။</translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2107581415810719320">အခြားခလုတ် <ph name="BUTTON_NUMBER" /> ခု</translation>
 <translation id="2107914222138020205">သင့် USB-C ကေဘယ်သည် Thunderbolt ကို မပံ့ပိုးပါ။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">တိုးတက်မှုချန်နယ်</translation>
 <translation id="4513044611477939680">အမြန်မျှဝေပါ</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
+<translation id="4518096944902121253">ဤဘာသာစကားအတွက် နောက်ထပ်လုပ်ဆောင်ချက် မရှိပါ</translation>
 <translation id="4518404433291145981">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်းကို ဦးစွာ လော့ခ်ဖွင့်ပါ</translation>
 <translation id="4525887279712865285">‘အမြန် မျှဝေပါ’ ဆက်တင်များကို ပြပါ</translation>
 <translation id="4527045527269911712">ဘလူးတုသ် ကိရိယာ "<ph name="DEVICE_NAME" />" က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။</translation>
@@ -1885,6 +1885,7 @@
 <translation id="7189412385142492784">သောကြာဂြိုဟ်က ဘယ်လောက်ဝေးလဲ</translation>
 <translation id="7198435252016571249">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="7219573373513695352">စက်ပစ္စည်းများ ချိတ်ဆက်မထားပါ</translation>
+<translation id="7228968829656641943">ကျွန်ုပ်၏ဖန်သားပြင်တွင် ရှာရန် ရွေးနိုင်သည်။ ကီးဘုတ်လမ်းညွှန်အတွက် တဘ်နှိပ်ပြီးနောက် နေရာခြားခလုတ်နှိပ်ပါ။</translation>
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">မောက်စ်ခလုတ် နှစ်ခုစလုံး</translation>
 <translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>

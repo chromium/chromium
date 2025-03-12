@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/remote_debugging_server.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -48,12 +50,12 @@ const int kBackLog = 10;
 // numeric values should never be reused.
 enum class DevToolsDebuggingUserDataDirStatus {
   kNotBeingDebugged = 0,
-  kBeingDebuggedWithNonDefaultUserDataDir = 1,
-  kBeingDebuggedWithDefaultUserDataDir = 2,
-  kBeingDebuggedErrorObtainingUserDataDir = 3,
+  kDebuggingRequestedWithNonDefaultUserDataDir = 1,
+  kDebuggingRequestedWithDefaultUserDataDir = 2,
+  kDebuggingRequestedErrorObtainingUserDataDir = 3,
 
   // New values go above here.
-  kMaxValue = kBeingDebuggedErrorObtainingUserDataDir,
+  kMaxValue = kDebuggingRequestedErrorObtainingUserDataDir,
 };
 
 class TCPServerSocketFactory
@@ -98,6 +100,25 @@ class TCPServerSocketFactory
   uint16_t last_tethering_port_;
 };
 
+// Returns true, or a reason why remote debugging is not allowed.
+base::expected<bool, RemoteDebuggingServer::NotStartedReason>
+IsRemoteDebuggingAllowed(const std::optional<bool>& is_default_user_data_dir,
+                         PrefService* local_state) {
+  if (!local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+    return base::unexpected(
+        RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy);
+  }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kDevToolsDebuggingRestrictions) &&
+      is_default_user_data_dir.value_or(true)) {
+    return base::unexpected(
+        RemoteDebuggingServer::NotStartedReason::kDisabledByDefaultUserDataDir);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return true;
+}
+
 }  // namespace
 
 RemoteDebuggingServer::RemoteDebuggingServer() = default;
@@ -117,22 +138,29 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+
+  // Track whether debugging was requested. This determines the metric reported
+  // on function exit.
+  bool wanted_debugging = false;
+  // Track whether debugging was started. This determines whether or not to
+  // return an instance of the class.
   bool being_debugged = false;
-  absl::Cleanup record_histogram = [&being_debugged] {
+  std::optional<bool> is_default_user_data_dir =
+      chrome::IsUsingDefaultDataDirectory();
+
+  absl::Cleanup record_histogram = [&wanted_debugging,
+                                    &is_default_user_data_dir] {
     DevToolsDebuggingUserDataDirStatus status =
         DevToolsDebuggingUserDataDirStatus::kNotBeingDebugged;
-    if (being_debugged) {
-      const auto maybe_using_default_user_data_dir =
-          chrome::IsUsingDefaultDataDirectory();
-      if (maybe_using_default_user_data_dir.has_value()) {
-        status = maybe_using_default_user_data_dir.value()
+    if (wanted_debugging) {
+      status = DevToolsDebuggingUserDataDirStatus::
+          kDebuggingRequestedErrorObtainingUserDataDir;
+      if (is_default_user_data_dir.has_value()) {
+        status = is_default_user_data_dir.value()
                      ? DevToolsDebuggingUserDataDirStatus::
-                           kBeingDebuggedWithDefaultUserDataDir
+                           kDebuggingRequestedWithDefaultUserDataDir
                      : DevToolsDebuggingUserDataDirStatus::
-                           kBeingDebuggedWithNonDefaultUserDataDir;
-      } else {
-        status = DevToolsDebuggingUserDataDirStatus::
-            kBeingDebuggedErrorObtainingUserDataDir;
+                           kDebuggingRequestedWithNonDefaultUserDataDir;
       }
     }
     base::UmaHistogramEnumeration("DevTools.DevToolsDebuggingUserDataDirStatus",
@@ -140,6 +168,12 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
   };
 
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
+    wanted_debugging = true;
+    if (const auto maybe_allow_debugging =
+            IsRemoteDebuggingAllowed(is_default_user_data_dir, local_state);
+        !maybe_allow_debugging.has_value()) {
+      return base::unexpected(maybe_allow_debugging.error());
+    }
     being_debugged = true;
     content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
         base::BindOnce(&ChromeDevToolsManagerDelegate::CloseBrowserSoon));
@@ -166,6 +200,12 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
         net::FileURLToFilePath(custom_devtools_frontend_url,
                                &debug_frontend_dir);
       }
+    }
+    wanted_debugging = true;
+    if (const auto maybe_allow_debugging =
+            IsRemoteDebuggingAllowed(is_default_user_data_dir, local_state);
+        !maybe_allow_debugging.has_value()) {
+      return base::unexpected(maybe_allow_debugging.error());
     }
     being_debugged = true;
     content::DevToolsAgentHost::StartRemoteDebuggingServer(

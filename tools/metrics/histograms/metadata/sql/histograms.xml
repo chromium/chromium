@@ -57,6 +57,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
   <variant name="Passwords" summary="Passwords"/>
   <variant name="PermissionAuditingLogs" summary="PermissionAuditingLogs"/>
+  <variant name="PersistentCache" summary="PersistentCache"/>
   <variant name="PowerBookmarks" summary="PowerBookmarks"/>
   <variant name="Predictor" summary="Predictor"/>
   <variant name="PrivateAggregation" summary="PrivateAggregation"/>

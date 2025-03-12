@@ -130,11 +130,9 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2738871930057338499">Hindi makakonekta sa Internet. HTTP 403 Forbidden. Tingnan ang configuration ng iyong proxy.</translation>
 <translation id="2753623023919742414">I-click para maghanap</translation>
 <translation id="2770231113462710648">Baguhin ang default na browser sa:</translation>
-<translation id="277338894894732084">Itatanong sa iyo ng Chromium sa ibang pagkakataon kung gusto mong gamitin ang naka-save na impormasyon para awtomatikong punan ang mga form</translation>
 <translation id="2785438272836277133">May malware ang extension na ito at hindi ito ligtas. Alisin ito sa Chromium para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2803971713792056305">Iyong Chromium</translation>
-<translation id="2806241689335397269">Itatanong sa iyo ng Chromium kung gusto mong i-save ang impormasyon ng form, gaya ng iyong kaarawan, edad, at numero ng passport</translation>
 <translation id="2841525013647267359">Isalin mula sa</translation>
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2847479871509788944">Alisin sa Chromium...</translation>
@@ -180,7 +178,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Lumipat sa kasalukuyang profile sa Chromium?</translation>
 <translation id="3412460710772753638">Sa Password Manager sa device na ito</translation>
-<translation id="3451656833730006755">Para makuha ang iyong mga extension at higit pa sa lahat ng computer mo, mag-sign in sa Chromium</translation>
 <translation id="347328004046849135">Aabisuhan ka ng Chromium kapag nag-sign in ka gamit ang isang nakompromisong password</translation>
 <translation id="3474745554856756813">Magde-delete ito ng <ph name="ITEMS_COUNT" /> (na) item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Puwedeng magpalipat-lipat sa mga profile sa Chromium sa pamamagitan ng <ph name="SHORTCUT" /></translation>
@@ -463,7 +460,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="734373864078049451">Makikita dito ang iyong web, mga bookmark at iba pang mga bagay-bagay sa Chromium.</translation>
 <translation id="7349591376906416160">Na-configure ng iyong system administrator ang Chromium para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo na lang ito.</translation>
-<translation id="7389750180956889333">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Matuto pa tungkol sa <ph name="BEGIN_LINK" />Autofill ng Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
 <translation id="7451052299415159299">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera para sa site na ito</translation>

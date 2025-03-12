@@ -130,11 +130,9 @@
 <translation id="2738871930057338499">Интернэтэд холбогдох боломжгүй байна. HTTP 403 хориотой. Прокси тохируулгаа шалгана уу.</translation>
 <translation id="2753623023919742414">Хайхын тулд товшино уу</translation>
 <translation id="2770231113462710648">Стандарт веб хөтчийг дараах руу өөрчил:</translation>
-<translation id="277338894894732084">Дараа нь Chromium танаас хадгалсан мэдээллийг маягтыг автоматаар бөглөхөд ашиглахыг хүсэж байгаа эсэхийг асууна</translation>
 <translation id="2785438272836277133">Энэ өргөтгөл хортой программ агуулж байгаа бөгөөд аюултай байна. Үүнийг Chromium-с хассанаар энэ нь цаашид таны хувийн мэдээллийг оруулаад зочилсон сайтуудын тань өгөгдлийг харах болон өөрчлөх боломжгүй болно.</translation>
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
 <translation id="2803971713792056305">Таны Chromium</translation>
-<translation id="2806241689335397269">Chromium танаас өөрийн төрсөн огноо, нас, паспортын дугаар зэрэг маягтын мэдээллийг хадгалахыг хүсэж байгаа эсэхийг асууна</translation>
 <translation id="2841525013647267359">Дараах хэлээс орчуулах</translation>
 <translation id="2846251086934905009">Суулгах үед алдаа гарлаа: Суулгагч дуусгаагүй. Суулгалтыг тасалсан.</translation>
 <translation id="2847479871509788944">Chromium-аас устгах ...</translation>
@@ -178,7 +176,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Chromium-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="3412460710772753638">Энэ төхөөрөмж дээрх Нууц үгний менежерт</translation>
-<translation id="3451656833730006755">Өргөтгөл болон бусад зүйлээ бүх компьютер дээрээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
 <translation id="347328004046849135">Таныг алдагдсан нууц үгээр нэвтрэх үед Chromium танд мэдэгдэнэ</translation>
 <translation id="3474745554856756813">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium-н профайлууд хооронд сэлгэх боломжтой</translation>
@@ -459,7 +456,6 @@
 <translation id="734373864078049451">Таны веб хуудас, хавчуурга, болон бусад Chromium-ийн зүйлс энд байдаг.</translation>
 <translation id="7349591376906416160">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд <ph name="ALTERNATIVE_BROWSER_NAME" />-г нээхээр тохируулсан байна.</translation>
 <translation id="7384121030444253939">Энэ өргөтгөлийг дэмжихээ больсон. Chromium танд оронд нь үүнийг хасахыг зөвлөж байна.</translation>
-<translation id="7389750180956889333">Chromium маягтыг илүү сайн ойлгодог ба танд илүү хурдан автоматаар бөглөж өгөх боломжтой. <ph name="BEGIN_LINK" />Chrome-н автоматаар бөглөх хэсгийн<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авах</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Дев</translation>
 <translation id="7450541714075000668">Текстийг хуулсан</translation>
 <translation id="7451052299415159299">Энэ сайтыг ашиглахын тулд Chromium-д таны камерт хандах зөвшөөрөл шаардлагатай</translation>

@@ -3021,7 +3021,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6337133576188860026">Oslobodit će se manje od <ph name="SIZE" />. Neke web lokacije će se prilikom sljedeće posjete možda sporije učitavati.</translation>
 <translation id="6337534724793800597">Filtriraj pravila po nazivu</translation>
 <translation id="633770708279464947">Vrijednost <ph name="SECURE_DNS_SALT" /> nije važeća i neće se koristiti.</translation>
-<translation id="6338645927051849741">Zaporka • Google upravitelj zaporki</translation>
+<translation id="6338645927051849741">Lozinka • Google upravitelj lozinki</translation>
 <translation id="6340739886198108203">Pravila administratora ne preporučuju pravljenje snimaka ekrana niti snimanje kada je vidljiv povjerljiv sadržaj:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Pravila administratora ne preporučuju otpremanje ovog fajla na <ph name="DESTINATION_NAME" />}one{Pravila administratora ne preporučuju otpremanje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Pravila administratora ne preporučuju otpremanje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Pravila administratora ne preporučuju otpremanje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Maloprije</translation>

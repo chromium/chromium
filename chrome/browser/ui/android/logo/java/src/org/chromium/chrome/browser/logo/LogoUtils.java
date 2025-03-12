@@ -17,17 +17,15 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Utility classes for {@link LogoView} */
 public class LogoUtils {
-    /** Used to specify the logo size when Logo Polish is enabled. */
-    @IntDef({
-        LogoSizeForLogoPolish.SMALL,
-        LogoSizeForLogoPolish.MEDIUM,
-        LogoSizeForLogoPolish.LARGE
-    })
+    /**
+     * Used to specify the logo size when Logo Polish is enabled. Medium size is used in most cases
+     * while the small size is used only in split screens on tablets.
+     */
+    @IntDef({LogoSizeForLogoPolish.SMALL, LogoSizeForLogoPolish.MEDIUM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LogoSizeForLogoPolish {
         int SMALL = 0;
         int MEDIUM = 1;
-        int LARGE = 2;
     }
 
     /** Returns whether logo polish flag is enabled in the given context. */
@@ -44,79 +42,23 @@ public class LogoUtils {
         return isLogoDoodle && isLogoPolishEnabled();
     }
 
-    /**
-     * Returns the logo size to use when logo polish is enabled. When logo polish is disabled, the
-     * return value should be invalid.
-     */
-    public static @LogoSizeForLogoPolish int getLogoSizeForLogoPolish() {
-        if (ChromeFeatureList.sLogoPolishLargeSize.getValue()) {
-            return LogoSizeForLogoPolish.LARGE;
-        }
-
-        if (ChromeFeatureList.sLogoPolishMediumSize.getValue()) {
-            return LogoSizeForLogoPolish.MEDIUM;
-        }
-
-        return LogoSizeForLogoPolish.SMALL;
-    }
-
     /** Returns the top margin of the LogoView if Logo Polish is enabled. */
     public static int getTopMarginForLogoPolish(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
     }
 
-    /** Returns the height of the LogoView if Logo Polish is enabled with large height. */
-    @VisibleForTesting
-    public static int getLogoHeightForLogoPolishWithLargeSize(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
-    }
-
-    /** Returns the height of the LogoView if Logo Polish is enabled with medium height. */
+    /** Returns the height of the LogoView if Logo Polish is enabled. */
     @VisibleForTesting
     public static int getLogoHeightForLogoPolishWithMediumSize(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_medium);
     }
 
-    /** Returns the height of the LogoView if Logo Polish is enabled. */
+    /**
+     * Returns the height of the LogoView if Logo Polish is enabled and in split screens on tablets.
+     */
     @VisibleForTesting
     public static int getLogoHeightForLogoPolishWithSmallSize(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_small);
-    }
-
-    /** Returns the sum of the height, the top margin and the bottom margin of the LogoView. */
-    public static int getLogoTotalHeight(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_height)
-                + resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top)
-                + resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-    }
-
-    /**
-     * Returns the sum of the height, the top margin and the bottom margin of the LogoView if Logo
-     * Polish is enabled.
-     *
-     * @param resources The current Android's resources.
-     * @param logoSize The type of the logo size to be used for the logo.
-     */
-    public static int getLogoTotalHeightForLogoPolish(
-            Resources resources, final @LogoSizeForLogoPolish int logoSize) {
-        int bottomMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-        switch (logoSize) {
-            case LogoSizeForLogoPolish.LARGE:
-                return getLogoHeightForLogoPolishWithLargeSize(resources)
-                        + getTopMarginForLogoPolish(resources)
-                        + bottomMargin;
-            case LogoSizeForLogoPolish.MEDIUM:
-                return getLogoHeightForLogoPolishWithMediumSize(resources)
-                        + getTopMarginForLogoPolish(resources)
-                        + bottomMargin;
-            case LogoSizeForLogoPolish.SMALL:
-                return getLogoHeightForLogoPolishWithSmallSize(resources)
-                        + getTopMarginForLogoPolish(resources)
-                        + bottomMargin;
-            default:
-                assert false;
-                return getLogoTotalHeight(resources);
-        }
     }
 
     /** Sets the layout params for the LogoView when Logo Polished is enabled. */
@@ -140,11 +82,6 @@ public class LogoUtils {
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
         if (isLogoPolishEnabled) {
             switch (logoSizeForLogoPolish) {
-                case LogoSizeForLogoPolish.LARGE:
-                    return new int[] {
-                        getLogoHeightForLogoPolishWithLargeSize(resources),
-                        getTopMarginForLogoPolish(resources),
-                    };
                 case LogoSizeForLogoPolish.MEDIUM:
                     return new int[] {
                         getLogoHeightForLogoPolishWithMediumSize(resources),

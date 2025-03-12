@@ -178,7 +178,6 @@
 <translation id="3245429137663807393">Hvis du også deler Chrome-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
-<translation id="3289358082435924389">Senere spørger Chrome dig, om du vil bruge gemte oplysninger til automatisk at udfylde formularer</translation>
 <translation id="3292333338048274092">Du skal derefter genstarte Chrome.</translation>
 <translation id="3360895254066713204">Hjælp til Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
@@ -335,7 +334,6 @@
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5602351063754773347">Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til venner og familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
-<translation id="5649680279845190972">Log ind i Chrome for at få dine udvidelser m.m. på alle dine computere</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>
 <translation id="566568153320186256">Chrome sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Ryd Chrome-dataene på din konto</translation>
@@ -514,7 +512,6 @@
 <translation id="7886087451482920026">Vælg tekst med Google Lens</translation>
 <translation id="7890208801193284374">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chrome, som de ønsker hver især.</translation>
 <translation id="7896673875602241923">Nogen har tidligere logget ind på Chrome på denne computer som <ph name="ACCOUNT_EMAIL_LAST" />. Opret en ny Chrome-bruger for at holde dine oplysninger adskilt.</translation>
-<translation id="7917470403848199310">Chrome spørger dig, om du vil gemme formularoplysninger, f.eks. din fødselsdag, din alder og dit pasnummer</translation>
 <translation id="7917876797003313048">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chrome-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome har blokeret denne download, fordi filen er vildledende og kan foretage uventede ændringer på din enhed</translation>
 <translation id="7951272445806340501">ChromeOS Flex skal genstartes, før opdateringen kan anvendes.</translation>
@@ -596,7 +593,6 @@
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8948460679427074738">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chrome anbefaler, at du fjerner den.</translation>
-<translation id="8983860655274963234">Chrome forstår formularer bedre og kan udfylde dem automatisk for dig. Få flere oplysninger om <ph name="BEGIN_LINK" />autofyld i Chrome<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8992769679401294069">Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chrome-data på din Google-konto.</translation>

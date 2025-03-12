@@ -996,6 +996,7 @@
 <translation id="5696597120588531049">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="5698878456427040674">বাছনি কৰা একাউণ্টটো সমৰ্থিত হয়নে নহয় পৰীক্ষা কৰক।</translation>
 <translation id="570347048394355941">টেবলৈ সলনি কৰক</translation>
+<translation id="5709213329446699338"><ph name="SITE" />এ এটা ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ হ’ব বিচাৰে</translation>
 <translation id="5715150588940290235">ছেভ কৰি ৰখা সুৰক্ষা ক'ড মচিবনে?</translation>
 <translation id="571930967925877633">আপোনাৰ বুকমাৰ্কসমূহ, ইতিহাস আৰু অন্য Chrome ডেটা এতিয়া আৰু আপোনাৰ Google একাউণ্টত ছিংক কৰা নহ’ব</translation>
 <translation id="572328651809341494">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>
@@ -1128,6 +1129,7 @@
 <translation id="6296366034485697675">এক্সপ’ৰ্ট কৰক আৰু মচক</translation>
 <translation id="629730747756840877">একাউণ্ট</translation>
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
+<translation id="6307241780749477694">এই ডিভাইচটোত আপোনাৰ আটাইবোৰ পাছৱৰ্ড পাবলৈ নিজৰ পৰিচয় সত্যাপন কৰক</translation>
 <translation id="6312687380483398334">ৱেব এপ্‌সমূহ (নীৰৱ)</translation>
 <translation id="6315386555979018699">মচক আৰু অব্যাহত ৰাখক</translation>
 <translation id="6316139424528454185">Android সংস্কৰণটো নচলে</translation>
@@ -1389,6 +1391,7 @@
 <translation id="7359002509206457351">পৰিশোধৰ পদ্ধতি এক্সেছ কৰক</translation>
 <translation id="7363349185727752629">আপোনাৰ গোপনীয়তাৰ বাছনিসমূহৰ এক নিৰ্দেশনা</translation>
 <translation id="7364103838544876661">ব্ৰাউজিঙৰ ডেটা মচাৰ অধিক বিকল্প</translation>
+<translation id="7365073365123878797">Google Password Managerত পাছৱৰ্ড ছেভ কৰি ব্যৱহাৰ কৰা আৰম্ভ কৰিবলৈ, Google Play সেৱা আপডে’ট কৰক</translation>
 <translation id="7375125077091615385">ধৰণ:</translation>
 <translation id="7376560087009844242">কোনো পৃষ্ঠাৰ অধিক পাঠ অন্তৰ্ভুক্ত কৰি, সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটো ব্যৱহাৰ কৰোঁতে আপুনি হয়তো উন্নত ফলাফল দেখা পাব পাৰে। এইটো সলনি কৰিবলৈ আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" /> লৈ যাব পাৰে।</translation>
 <translation id="7379900596734708416">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম উপলব্ধ</translation>
@@ -1467,10 +1470,12 @@
 <translation id="7686086654630106285">ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপনৰ বিষয়ে অধিক</translation>
 <translation id="7690596512217303514">আপোনাৰ ডিভাইচটোৱে Chrome খুলিব নোৱাৰিলে। সমস্যাটো সমাধান কৰিবলৈ, আপোনাৰ এপ্‌ ষ্ট’ৰৰ পৰা Chromeৰ শেহতীয়া আপডে'টটো ডাউনল'ড কৰক।</translation>
 <translation id="7691043218961417207">ফ’ল’ কৰিবলৈ সমল অন্বেষণ কৰক</translation>
+<translation id="7692761875510935111">ক্ষিপ্ৰভাৱে ব্ৰাউজাৰত খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="7697383401610880082">টানি আনি এৰা হেণ্ডেল</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />ত ইমেইল সৃষ্টি কৰক</translation>
 <translation id="7702420606070050505">শেহতীয়া কাৰ্যকলাপৰ তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা আছে</translation>
 <translation id="7707922173985738739">ম’বাইল ডেটা ব্যৱহাৰ কৰক</translation>
+<translation id="7708994397325774423">আপোনাৰ আটাইবোৰ পাছৱৰ্ড পাওক</translation>
 <translation id="7733878270780732638">ডিভাইচত পৰ্যাপ্ত খালী ঠাই নাই।</translation>
 <translation id="7746817319925672889">এই ডিভাইচটোত সোনকালেই Google Password Managerএ কাম কৰা বন্ধ কৰিব</translation>
 <translation id="774876555279732384">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱাসমূহো <ph name="BEGIN_LINK" />Androidৰ ছেটিঙ<ph name="END_LINK" />ত পৰিচালনা কৰা হয়।</translation>
@@ -1612,6 +1617,7 @@
 <translation id="8310451567823644042">পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব</translation>
 <translation id="831192587911042850">বৰ্তমানৰ ৱেবছাইটটোক আপুনি ফ’ল’ কৰি থকা ৱেবছাইটসমূহৰ সূচীত যোগ দিয়ে।</translation>
 <translation id="8320212361750431956">শেহতীয়া কাৰ্যকলাপ</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chromeএ আপোনাক অতি বেছিসংখ্যক জাননী পঠিয়াব পৰা ছাইটসমূহৰ বিষয়ে জনাব</translation>
 <translation id="834313815369870491">কেতিয়াও অনুবাদ কৰিব নলগীয়া ছাইট</translation>
 <translation id="8348430946834215779">সম্ভৱ হ’লে HTTPS ব্যৱহাৰ কৰক আৰু এইটো সমৰ্থন নকৰা ছাইটসমূহ ল’ড কৰাৰ পূৰ্বে সকীয়নি লাভ কৰক</translation>
@@ -1743,6 +1749,7 @@
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="8946759102391960088">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখক</translation>
 <translation id="8957528460562961174">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখিবলৈ, এতিয়াই সেইসমূহ ৰপ্তানি কৰি আপুনি অগ্ৰাধিকাৰ দিয়া Password Managerলৈ সেয়া আমদানি কৰক। Google Play সেৱাসমূহ উপলব্ধ নোহোৱাৰ বাবে Google Password Managerএ কাম নকৰা হৈছে।</translation>
 <translation id="8963117664422609631">ছাইটৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8965591936373831584">বিবেচনাধীন হৈ আছে</translation>

@@ -129,11 +129,9 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
 <translation id="2770231113462710648">Ndrysho shfletuesin me parazgjedhje në:</translation>
-<translation id="277338894894732084">Më vonë, Chromium do të të pyesë nëse dëshiron të përdorësh informacionet e ruajtura për të plotësuar automatikisht formularët</translation>
 <translation id="2785438272836277133">Kjo shtesë përmban softuerë keqdashës dhe nuk është e sigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2803971713792056305">Shfletuesi yt Chromium</translation>
-<translation id="2806241689335397269">Chromium do të pyesë nëse dëshiron të ruash informacionet e formularit, si p.sh. ditëlindjen, moshën dhe numrin e pasaportës</translation>
 <translation id="2841525013647267359">Përkthe nga</translation>
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2847479871509788944">Hiqe nga Chromium...</translation>
@@ -179,7 +177,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Të kalohet te profili ekzistues i Chromium?</translation>
 <translation id="3412460710772753638">Në "Menaxherin e fjalëkalimeve" në këtë pajisje</translation>
-<translation id="3451656833730006755">Për të marrë shtesat e tua dhe më shumë në të gjithë kompjuterët e tu, identifikohu në Chromium</translation>
 <translation id="347328004046849135">Chromium do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>
 <translation id="3474745554856756813">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> mund të kalojë nga një profil i Chromium te një tjetër</translation>
@@ -462,7 +459,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="734373864078049451">Këtu janë materialet e tua të uebit, të faqeshënuesve dhe të tjera nga Chromium.</translation>
 <translation id="7349591376906416160">Administratori i sistemit ka konfiguruar Chromium që të hapë <ph name="ALTERNATIVE_BROWSER_NAME" /> për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Kjo shtesë nuk mbështetet më. Chromium rekomandon që ta heqësh më mirë atë.</translation>
-<translation id="7389750180956889333">Chromium i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty. Mëso më shumë rreth <ph name="BEGIN_LINK" />"Plotësimit automatik" të Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Teksti u kopjua</translation>
 <translation id="7451052299415159299">Chromium ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>

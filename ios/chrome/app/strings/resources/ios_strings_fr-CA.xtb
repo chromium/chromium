@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Les données de navigation existantes seront associées à <ph name="USER_EMAIL" />. Ces données peuvent être visibles par votre organisation.</translation>
 <translation id="1713777106376424209">Livré par</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
+<translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1728549374069268714">Coller et rechercher</translation>
 <translation id="1732468323901456775">Activer les notifications pour <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Appuyez deux fois pour lancer l'installation.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Détection d'adresse désactivée. Réactivez-la dans les paramètres.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
-<translation id="1923342640370224680">Dernière heure</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1943478190258551035">Menu → Paramètres</translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
@@ -1206,6 +1206,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Non lu</translation>
+<translation id="6192388920090306326">Voyage à Tokyo</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
@@ -1370,6 +1371,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
 <translation id="6794476726485507147">Choisissez une date et une heure pour recevoir une notification de rappel pour revisiter cette page</translation>
+<translation id="6807287147325542056">Mots de passe dans d'autres applis</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{{count} favori enregistré dans votre compte Google, {email}}other{{count} favoris enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="6830728435402077660">Pas sécuritaire</translation>
@@ -1934,6 +1936,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9106655997975673326">De « <ph name="SOURCE_DEVICE" /> »</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
+<translation id="9124978074365039456">Magasinez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie de photos</translation>
 <translation id="9130317582644834675">Masquer Zoomer sur le texte</translation>
 <translation id="913036870884277353">Ouvrez facilement des liens dans d'autres applications.</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>

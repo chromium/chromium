@@ -81,14 +81,23 @@ struct CrashpadInfo {
   //! this method is called, or they may be added, removed, or modified in \a
   //! address_range_bag after this method is called.
   //!
-  //! TODO(scottmg) This is currently only supported on Windows.
+  //! TODO(scottmg) This is currently only supported on Windows and iOS.
   //!
   //! \param[in] address_range_bag A bag of address ranges. The CrashpadInfo
   //!     object does not take ownership of the SimpleAddressRangeBag object.
   //!     It is the caller’s responsibility to ensure that this pointer remains
   //!     valid while it is in effect for a CrashpadInfo object.
+  //!
+  //! \sa extra_memory_ranges()
   void set_extra_memory_ranges(SimpleAddressRangeBag* address_range_bag) {
     extra_memory_ranges_ = address_range_bag;
+  }
+
+  //! \return The simple extra memory ranges SimpleAddressRangeBag object.
+  //!
+  //! \sa set_extra_memory_ranges()
+  SimpleAddressRangeBag* extra_memory_ranges() const {
+    return extra_memory_ranges_;
   }
 
   //! \brief Sets the simple annotations dictionary.

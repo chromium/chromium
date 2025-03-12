@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -44,9 +45,8 @@ public class SharedImageTilesCoordinator {
     private final Context mContext;
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
-    private final @SharedImageTilesType int mType;
-    private final DataSharingService mDataSharingService;
-    private final CollaborationService mCollaborationService;
+    private final @NonNull DataSharingService mDataSharingService;
+    private final @NonNull CollaborationService mCollaborationService;
     private @Nullable String mCollaborationId;
     private int mAvailableMemberCount;
     private int mIconTilesCount;
@@ -57,24 +57,20 @@ public class SharedImageTilesCoordinator {
      * Constructor for {@link SharedImageTilesCoordinator} component.
      *
      * @param context The Android context used to inflate the views.
-     * @param type The {@link SharedImageTilesType} of the SharedImageTiles.
-     * @param color The {@link SharedImageTilesColor} of the SharedImageTiles.
+     * @param config The {@link SharedImageTilesConfig} for styling the component.
      * @param dataSharingService Used to access UI delegate.
      * @param collaborationService Used to fetch collaboration group data.
      */
     public SharedImageTilesCoordinator(
             Context context,
-            @SharedImageTilesType int type,
-            SharedImageTilesColor color,
-            DataSharingService dataSharingService,
-            CollaborationService collaborationService) {
+            SharedImageTilesConfig config,
+            @NonNull DataSharingService dataSharingService,
+            @NonNull CollaborationService collaborationService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
-                        .with(SharedImageTilesProperties.TYPE, type)
-                        .with(SharedImageTilesProperties.COLOR_STYLE, color)
+                        .with(SharedImageTilesProperties.VIEW_CONFIG, config)
                         .build();
         mContext = context;
-        mType = type;
         mDataSharingService = dataSharingService;
         mCollaborationService = collaborationService;
 
@@ -87,12 +83,12 @@ public class SharedImageTilesCoordinator {
     }
 
     /**
-     * Update the color style of the current view.
+     * Update the styling configuration of the current tab group.
      *
-     * @param color The updated {@link SharedImageTilesColor}.
+     * @param config The {@link SharedImageTilesConfig} for styling the component.
      */
-    public void updateColorStyle(SharedImageTilesColor color) {
-        mModel.set(SharedImageTilesProperties.COLOR_STYLE, color);
+    public void updateConfig(SharedImageTilesConfig config) {
+        mModel.set(SharedImageTilesProperties.VIEW_CONFIG, config);
     }
 
     /** Cleans up any resources or observers this class used. */
@@ -216,10 +212,8 @@ public class SharedImageTilesCoordinator {
 
         if (count == 0) return;
 
-        int sizeInDp =
-                (mType == SharedImageTilesType.SMALL)
-                        ? R.dimen.small_shared_image_tiles_icon_height
-                        : R.dimen.shared_image_tiles_icon_height;
+        int sizeInDp = mModel.get(SharedImageTilesProperties.VIEW_CONFIG).iconSizeDp;
+
         mTracker =
                 new UpdateTracker(
                         mContext,

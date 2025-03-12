@@ -229,7 +229,9 @@ BuildAndCompute(
 
 void VerifyFloatDataIsEqual(base::span<const float> data,
                             base::span<const float> expected_data) {
-  EXPECT_THAT(data, testing::Pointwise(testing::FloatEq(), expected_data));
+  float epsilon = 1e-5;
+  EXPECT_THAT(data,
+              testing::Pointwise(testing::FloatNear(epsilon), expected_data));
 }
 
 // Convert a vector of 32-bit floating-point data to a vector of 16-bit

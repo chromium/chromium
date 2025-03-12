@@ -730,27 +730,34 @@
 
 // Configures `self.headerViewController`.
 - (void)configureHeaderViewController {
-  DCHECK(self.headerViewController);
+  NewTabPageHeaderViewController* headerViewController =
+      self.headerViewController;
+  DCHECK(headerViewController);
   DCHECK(self.NTPMediator);
   DCHECK(self.NTPMetricsRecorder);
 
-  self.headerViewController.isGoogleDefaultSearchEngine =
+  headerViewController.isGoogleDefaultSearchEngine =
       [self isGoogleDefaultSearchEngine];
-  // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.headerViewController.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCoordinatorCommands,
-                     OmniboxCommands, FakeboxFocuser, LensCommands>>(
-          self.browser->GetCommandDispatcher());
-  self.headerViewController.commandHandler = self;
-  self.headerViewController.customizationDelegate = self;
-  self.headerViewController.delegate = self.NTPViewController;
-  self.headerViewController.layoutGuideCenter =
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  headerViewController.fakeboxFocuserHandler =
+      HandlerForProtocol(dispatcher, FakeboxFocuser);
+  headerViewController.lensHandler =
+      HandlerForProtocol(dispatcher, LensCommands);
+  headerViewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  headerViewController.browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+
+  headerViewController.commandHandler = self;
+  headerViewController.customizationDelegate = self;
+  headerViewController.delegate = self.NTPViewController;
+  headerViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.headerViewController.toolbarDelegate = self.toolbarDelegate;
-  self.headerViewController.baseViewController = self.baseViewController;
-  self.headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
-  [self.headerViewController setLogoVendor:self.logoVendor];
+  headerViewController.toolbarDelegate = self.toolbarDelegate;
+  headerViewController.baseViewController = self.baseViewController;
+  headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
+  [headerViewController setLogoVendor:self.logoVendor];
 }
 
 // Configures `self.contentSuggestionsCoordinator`.

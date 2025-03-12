@@ -376,7 +376,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1244265436519979884">A restauração do Linux está em andamento</translation>
 <translation id="1244303850296295656">Erro na extensão</translation>
 <translation id="1244917379075403655">Clique em "Configurações"</translation>
-<translation id="1245041875932187638">Excluir todos os dados usados pelo preenchimento automático com IA</translation>
 <translation id="1245331638296910488">Os arquivos serão movidos para o OneDrive quando abertos no Microsoft 365</translation>
 <translation id="1245628370644070008">Recuperação de dados locais</translation>
 <translation id="1246863218384630739">Não foi possível instalar o <ph name="VM_NAME" />: o URL da imagem retornou um código de erro <ph name="HTTP_ERROR" />. Entre em contato com o administrador.</translation>
@@ -1418,7 +1417,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Só um momento...</translation>
 <translation id="1969654639948595766">Registros de texto WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Todos os dados serão excluídos. Essa ação não pode ser desfeita.</translation>
 <translation id="1972313920920745320">Os sites adicionados sempre ficam ativos e a memória não é liberada. <ph name="BEGIN_LINK" />Saiba mais sobre como deixar sites específicos ativos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Como o conteúdo é carregado proativamente com base na página da Web atual, você navega com mais rapidez</translation>
 <translation id="197288927597451399">Manter</translation>
@@ -3068,7 +3066,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3108957152224931571">Cor de destaque</translation>
 <translation id="3109206895301430738">Grupos de guias salvos</translation>
 <translation id="3109724472072898302">Recolhido</translation>
-<translation id="310979712355504754">Excluir tudo</translation>
 <translation id="3112292765614504292">Tamanho do app: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Adicionou esta guia</translation>
 <translation id="311394601889664316">Não permitir que os sites editem arquivos ou pastas no seu dispositivo</translation>
@@ -4089,7 +4086,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}one{# extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Recomenda-se ter pelo menos <ph name="INSTALL_SIZE" /> de espaço livre para o Linux.</translation>
-<translation id="3824203811509979971">Resuma conteúdo ou faça perguntas</translation>
 <translation id="3824621460022590830">O token de registro do dispositivo é inválido. Entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Faça login para conferir guias de outros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Lembrar minha escolha para este tipo de arquivo: <ph name="FILE_TYPES" />}one{Lembrar minha escolha para este tipo de arquivo: <ph name="FILE_TYPES" />}other{Lembrar minha escolha para estes tipos de arquivos: <ph name="FILE_TYPES" />}}</translation>
@@ -5904,7 +5900,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="512642543295077915">pesquisar + backspace</translation>
 <translation id="5126611267288187364">Ver alterações</translation>
 <translation id="5127620150973591153">Código da conexão segura: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Resuma conteúdo ou faça perguntas.</translation>
 <translation id="5127881134400491887">Gerenciar conexões de rede</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5127986747308934633">O administrador está controlando seu dispositivo</translation>
@@ -7456,7 +7451,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6254892857036829079">Perfeita</translation>
 <translation id="6257131917452817589">mudança automática de senha</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Esta rede terá preferência se mais de uma rede conectada ou configurada anteriormente estiver disponível</translation>
 <translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
@@ -9890,6 +9884,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7990863024647916394">Voz em <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir a rede Wi-Fi automaticamente do seu smartphone Android</translation>
 <translation id="7991296728590311172">Configurações do acesso com interruptor</translation>
+<translation id="7992080146463834191">Resuma conteúdos, simplifique textos complexos ou faça perguntas.</translation>
 <translation id="7992203134935383159">Sintetização de voz</translation>
 <translation id="7997826902155442747">Prioridade de processo</translation>
 <translation id="7997828719430450286">Pronto.</translation>
@@ -11156,6 +11151,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8874448314264883207">A extensão "<ph name="EXTENSION_NAME" />" foi desativada</translation>
 <translation id="8874647982044395866">Orgânico</translation>
 <translation id="8874790741333031443">Permita o uso de cookies de terceiros temporariamente, o que diminui a proteção da navegação, mas os recursos do site têm mais chances de funcionar conforme o esperado.</translation>
+<translation id="8875221558267407626">Resuma conteúdos, simplifique textos complexos ou faça perguntas</translation>
 <translation id="8875520811099717934">Upgrade do Linux</translation>
 <translation id="8875736897340638404">Escolher sua visibilidade</translation>
 <translation id="8876307312329369159">Não é possível alterar essa configuração em uma sessão de demonstração.</translation>

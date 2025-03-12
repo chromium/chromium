@@ -136,11 +136,11 @@ class RecentActivityRowImageView : public views::View {
   // views::View
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // Perform the avatar fetch, calling |SetAvatar| when complete.
+  // Perform the avatar fetch, calling `SetAvatar` when complete.
   void FetchAvatar();
   void SetAvatar(const gfx::Image& avatar);
 
-  // Perform the favicon fetch, calling |SetFavicon| when complete.
+  // Perform the favicon fetch, calling `SetFavicon` when complete.
   void FetchFavicon();
   void SetFavicon(const favicon_base::FaviconImageResult& favicon);
   void PaintFavicon(gfx::Canvas* canvas, const gfx::Rect& avatar_bounds);

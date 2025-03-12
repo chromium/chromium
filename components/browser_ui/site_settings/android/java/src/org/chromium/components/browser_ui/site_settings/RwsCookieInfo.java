@@ -15,11 +15,18 @@ import java.util.List;
 @NullMarked
 public class RwsCookieInfo implements Serializable {
     private final String mOwnerHost;
+    // List of all members, including member variations with different subdomains, used to delete
+    // data for an entire RWS
+    // Example: www.example.com, example.com
     private final List<Website> mMembers;
+    // List of all members, grouped by domain, used to display data about the RWS
+    // Example: example.com
+    private final List<WebsiteEntry> mMembersGroupedByDomain;
 
     public RwsCookieInfo(String ownerHost, List<Website> members) {
         mOwnerHost = ownerHost;
         mMembers = members;
+        mMembersGroupedByDomain = WebsiteGroup.groupWebsites(members);
     }
 
     public String getOwner() {
@@ -32,5 +39,9 @@ public class RwsCookieInfo implements Serializable {
 
     public ImmutableList<Website> getMembers() {
         return ImmutableList.copyOf(mMembers);
+    }
+
+    public ImmutableList<WebsiteEntry> getMembersGroupedByDomain() {
+        return ImmutableList.copyOf(mMembersGroupedByDomain);
     }
 }

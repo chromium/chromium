@@ -37,61 +37,38 @@ namespace blink {
 
 namespace {
 
-// Checks if any frame in V8 stack trace is from an extension source.
-// Returns true if an extension frame is found, false otherwise.
-bool HasExtensionFrames(v8::Isolate* isolate,
-                        v8::Local<v8::StackTrace>& stack_trace) {
-  const int frame_count = stack_trace->GetFrameCount();
-  for (int i = 0; i < frame_count; ++i) {
-    v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, i);
-    if (frame.IsEmpty()) {
-      continue;
-    }
-
-    v8::Local<v8::String> script_name = frame->GetScriptName();
-    if (script_name.IsEmpty() || !script_name->Length()) {
-      continue;
-    }
-
-    String url = ToCoreString(isolate, script_name);
-    KURL kurl(url);
-    if (kurl.IsValid() &&
-        CommonSchemeRegistry::IsExtensionScheme(kurl.Protocol().Ascii())) {
-      return true;
-    }
+// Determines whether a script frame should be included in the call stack.
+// frames whose URL protocol matches an extension scheme are excluded.
+// Returns true to include the frame (i.e. not redacted) and false to exclude
+// it.
+bool IsScriptFrameAllowed(v8::Isolate* isolate,
+                          v8::Local<v8::String> script_name) {
+  String script_url =
+      ToCoreStringWithUndefinedOrNullCheck(isolate, script_name);
+  if (script_url.empty()) {
+    return true;
   }
-  return false;
+  KURL url(script_url);
+  if (!url.IsValid()) {
+    return true;
+  }
+
+  return !CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii());
 }
 
-// Formats the current JavaScript call stack in a format that's
-// consistent with Error.stack. If any extension frames are detected, it omits
-// the stack to protect privacy by appending a predefined omission message.
-void FormatStackTrace(v8::Isolate* isolate, StringBuilder& builder) {
-  const int stack_trace_limit = isolate->GetStackTraceLimit();
-  v8::Local<v8::StackTrace> stack_trace =
-      v8::StackTrace::CurrentStackTrace(isolate, stack_trace_limit);
-
-  if (stack_trace.IsEmpty()) {
-    return;
-  }
-
-  if (HasExtensionFrames(isolate, stack_trace)) {
-    builder.Append(kExtensionFrameOmittedMessage);
-    return;
-  }
-
+// Gathers and formats the call stack in a format that's
+// consistent with Error.stack If extension frames are detected,
+// we replace them with <redacted> to protect privacy.
+// The function respects the stack trace limit set in the isolate.
+void CollectFilteredCallStack(v8::Isolate* isolate, StringBuilder& builder) {
   std::ostringstream oss;
-  v8::Message::PrintCurrentStackTrace(isolate, oss);
-  const std::string& stack_trace_string = oss.str();
-
-  if (stack_trace_string.empty()) {
-    return;
-  }
-
-  std::istringstream iss(stack_trace_string);
+  v8::Message::PrintCurrentStackTrace(isolate, oss, &IsScriptFrameAllowed);
+  const std::string stack_trace = oss.str();
+  std::istringstream iss(stack_trace);
   std::string line;
   int processed_frames = 0;
 
+  const int stack_trace_limit = isolate->GetStackTraceLimit();
   while (std::getline(iss, line) && processed_frames < stack_trace_limit) {
     builder.Append(kStackFramePrefix);
     builder.Append(base::as_byte_span(line));
@@ -152,7 +129,7 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
       UseCounter::Count(
           execution_context,
           WebFeature::kDocumentPolicyIncludeJSCallStacksInCrashReports);
-      FormatStackTrace(isolate, builder);
+      CollectFilteredCallStack(isolate, builder);
     }
   }
   PostHandleCollectedCallStackTask(collector, builder, frame_token);

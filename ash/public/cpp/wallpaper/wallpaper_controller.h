@@ -42,6 +42,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // successfully.
   using SetWallpaperCallback = base::OnceCallback<void(bool success)>;
 
+  // A callback specifically for `SetTimeOfDayWallpaper` that also gives
+  // information about which wallpaper image was set, and if the operation was
+  // successful.
+  using SetTimeOfDayWallpaperCallback =
+      base::OnceCallback<void(uint64_t unit_id, bool success)>;
+
   using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
   using LoadPreviewImageCallback =
@@ -150,10 +156,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Downloads and sets a time of day wallpaper to be the active wallpaper.
   // |acount_id|: The user's account id.
-  // |callback|: Called with a boolean to indicate success when the wallpaper is
-  // fetched and decoded.
-  virtual void SetTimeOfDayWallpaper(const AccountId& account_id,
-                                     SetWallpaperCallback callback) = 0;
+  // |callback|: Called with the unit_id of the selected wallpaper, and a
+  // boolean to indicate success when the wallpaper is fetched and decoded.
+  virtual void SetTimeOfDayWallpaper(
+      const AccountId& account_id,
+      SetTimeOfDayWallpaperCallback callback) = 0;
 
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
   // types may have different default wallpapers.

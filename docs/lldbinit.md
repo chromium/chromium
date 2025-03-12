@@ -16,6 +16,12 @@ script import lldbinit
 
 Make sure the build configurations include `is_debug=true`, this will set `symbol_level=2` by default, which is required if need to view the content of frame-level local variables.
 
+If you want visualizer support for common pointer, string, and vector types in the Chromium codebase, you can also add the following:
+
+```
+script import chromium_visualizers
+```
+
 ## How to attach to a process with lldb and start debugging
 
 - Follow the instructions above to create your `~/.lldbinit` file, don't forget to put the correct path to Chromium source in there.

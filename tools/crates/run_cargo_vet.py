@@ -51,7 +51,13 @@ def main():
         old_config_toml = f.read()
 
     _CARGO_ARGS = ['-Zunstable-options', '-C', _MANIFEST_DIR]
-    _EXTRA_VET_ARGS = ['--cargo-arg=-Zbindeps', '--no-registry-suggestions']
+    _EXTRA_VET_ARGS = [
+        # See the `[dependencies.cxxbridge-cmd]` section in
+        # `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+        # `-Zbindeps` flag is needed.
+        '--cargo-arg=-Zbindeps',
+        '--no-registry-suggestions'
+    ]
     success = RunCargo(
         args.rust_sysroot, None,
         _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)

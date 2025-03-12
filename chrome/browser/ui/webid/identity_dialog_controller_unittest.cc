@@ -137,7 +137,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
 
   std::vector<IdentityRequestAccountPtr> CreateAccount() {
     return {base::MakeRefCounted<Account>(
-        "account_id1", "", "", "", GURL(),
+        "account_id1", "", "", "", "", "", GURL(),
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>(),

@@ -1531,6 +1531,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.AudioDuckerWin.UnduckSessionIterationResult"
+    enum="BooleanSuccess" expires_after="2026-03-11">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the AudioDuckerWin attempts to stop ducking other applications
+    while at least 1 application is currently being ducked. Records `Failure` if
+    we receive errors querying the OS for the list of audio sessions, otherwise
+    records `Success`.
+  </summary>
+</histogram>
+
+<histogram name="Media.AudioDuckerWin.UnduckSessionResult"
+    enum="BooleanSuccess" expires_after="2026-03-11">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the AudioDuckerWin attempts to stop ducking another
+    application. Records `Failure` if we receive errors from the OS when
+    attempting to re-adjust the other application's volume, otherwise records
+    `Success`.
+  </summary>
+</histogram>
+
 <histogram name="Media.AudioInputController" units="ms" expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->
 

@@ -77,7 +77,6 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/version_info.h"
 #include "url/origin.h"

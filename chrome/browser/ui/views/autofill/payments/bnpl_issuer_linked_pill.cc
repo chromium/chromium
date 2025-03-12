@@ -22,10 +22,10 @@ BnplLinkedIssuerPill::BnplLinkedIssuerPill()
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
                    views::style::STYLE_SECONDARY) {
   // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
-  SetBackground(views::CreateRoundedRectBackground(
-      ui::ColorVariant(ui::kColorBadgeBackground), gfx::RoundedCornersF(8)));
-  SetBorder(views::CreateThemedRoundedRectBorder(
-      0, 8, gfx::Insets::TLBR(0, 4, 0, 4), ui::kColorBadgeBackground));
+  SetBackground(views::CreateRoundedRectBackground(ui::kColorBadgeBackground,
+                                                   gfx::RoundedCornersF(8)));
+  SetBorder(views::CreateRoundedRectBorder(0, 8, gfx::Insets::TLBR(0, 4, 0, 4),
+                                           ui::kColorBadgeBackground));
 }
 
 BnplLinkedIssuerPill::~BnplLinkedIssuerPill() = default;

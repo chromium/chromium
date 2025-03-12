@@ -178,7 +178,6 @@
 <translation id="3245429137663807393">Se também partilhar relatórios de utilização do Chrome, esses relatórios incluem os URLs que visita</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
-<translation id="3289358082435924389">Mais tarde, o Chrome vai perguntar-lhe se quer usar as informações guardadas para preencher automaticamente formulários</translation>
 <translation id="3292333338048274092">Em seguida, tem de reiniciar o Chrome.</translation>
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}other{O Chrome será reiniciado dentro de # segundos}}</translation>
@@ -335,7 +334,6 @@
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5602351063754773347">O Chrome recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Com os perfis do Chrome, pode separar todos os seus itens do Chrome. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
-<translation id="5649680279845190972">Para usar as suas extensões e muito mais em todos os seus computadores, inicie sessão no Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
 <translation id="566568153320186256">O Chrome poupa a energia da bateria limitando a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de energia<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Limpar os dados do Chrome na sua conta</translation>
@@ -514,7 +512,6 @@
 <translation id="7886087451482920026">Selecione texto com o Google Lens</translation>
 <translation id="7890208801193284374">Se partilhar um computador, os amigos e os familiares podem navegar separadamente e configurar o Chrome da forma que quiserem.</translation>
 <translation id="7896673875602241923">Anteriormente, alguém iniciou sessão no Chrome neste computador com a conta <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo utilizador do Chrome para manter as informações em separado.</translation>
-<translation id="7917470403848199310">O Chrome vai perguntar-lhe se quer guardar informações de formulários, como a data de nascimento, a idade e o número de passaporte</translation>
 <translation id="7917876797003313048">Pode gerir as suas Contas Google com sessão iniciada. As suas Contas Google são utilizadas para o navegador Chrome, a Play Store, o Gmail e muito mais. Se pretender adicionar uma conta para outra pessoa, como um membro da família, adicione uma nova pessoa ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">O Chrome bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
 <translation id="7951272445806340501">É necessário reiniciar o ChromeOS Flex para aplicar a atualização.</translation>
@@ -596,7 +593,6 @@
 <translation id="8914504000324227558">Reiniciar o Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados. O Chrome recomenda que a remova.</translation>
-<translation id="8983860655274963234">O Chrome compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida. Saiba mais sobre o <ph name="BEGIN_LINK" />preenchimento automático do Chrome<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">Está a adicionar um perfil de trabalho a este navegador e a conceder ao seu administrador controlo apenas sobre o perfil de trabalho.</translation>
 <translation id="8989968390305463310">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="8992769679401294069">Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>

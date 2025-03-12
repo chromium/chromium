@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Stávající údaje o prohlížení budou propojeny s účtem <ph name="USER_EMAIL" />. K těmto datům může mít přístup vaše organizace.</translation>
 <translation id="1713777106376424209">Doručeno</translation>
 <translation id="1715515772563243997">Pokud webu <ph name="SITE" /> důvěřujete, můžete k přihlášení použít uložené heslo.</translation>
+<translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1728549374069268714">Vložit a přejít</translation>
 <translation id="1732468323901456775">Zapnout oznámení pro: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Detekce adresy je vypnutá. Znovu ji zapnete v Nastavení.</translation>
 <translation id="1904580727789512086">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="1911619930368729126">Nahrát na Disk Google</translation>
-<translation id="1923342640370224680">Poslední hodina</translation>
 <translation id="1941314575388338491">Zkopírujete dvojitým klepnutím.</translation>
 <translation id="1943478190258551035">Nabídka → Nastavení</translation>
 <translation id="1952728750904661634">Přihlášení pomocí spravovaného účtu</translation>
@@ -1206,6 +1206,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6187302354554850004">Synchronizace: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Vytvořeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepřečtené</translation>
+<translation id="6192388920090306326">Výlet do Tokia</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196207969502475924">Hlasové vyhledávání</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
@@ -1370,6 +1371,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6779455296366983087">Vaše údaje o prohlížení se vymažou</translation>
 <translation id="6790502149545262384">Brzy se vám po otevření nové karty začnou zobrazovat články z webu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6794476726485507147">Vyberte datum a čas, kdy chcete dostat připomenutí, že tuto stránku máte znovu navštívit</translation>
+<translation id="6807287147325542056">Hesla v jiných aplikacích</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
 <translation id="6825078212112407882">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{Do vašeho účtu Google {email} byly uloženy {count} záložky}many{Do vašeho účtu Google {email} bylo uloženo {count} záložky}other{Do vašeho účtu Google {email} bylo uloženo {count} záložek}}</translation>
 <translation id="6830728435402077660">Nezabezpečeno</translation>
@@ -1934,6 +1936,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9106655997975673326">Ze zařízení <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Kontroluje, zda nedošlo k prolomení hesel</translation>
 <translation id="9124387962554796433">Google vaši historii může používat k personalizaci Vyhledávání a dalších služeb Google</translation>
+<translation id="9124978074365039456">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu a galerie fotek</translation>
 <translation id="9130317582644834675">Skrýt možnost Přiblížit text</translation>
 <translation id="913036870884277353">Snadno otevírejte odkazy v jiných aplikacích.</translation>
 <translation id="9137013805542155359">Zobrazit originál</translation>

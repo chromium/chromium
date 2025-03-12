@@ -284,26 +284,16 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     ASSERT_TRUE(prerender_manager_);
   }
 
-  void NavigateToPrerenderedResult(const GURL& expected_prerender_url) {
-    content::TestNavigationObserver observer(GetActiveWebContents());
-    GetActiveWebContents()->OpenURL(
-        content::OpenURLParams(
-            expected_prerender_url, content::Referrer(),
-            WindowOpenDisposition::CURRENT_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
-    observer.Wait();
-  }
-
   void PrerenderAndActivate(const std::string& search_terms) {
     PrerenderQuery(search_terms);
     GURL prerendered_url =
         GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
     prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                       prerendered_url);
-    NavigateToPrerenderedResult(prerendered_url);
+    prerender_helper().NavigatePrimaryPage(
+        prerendered_url,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
     EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerendered_url);
   }
 

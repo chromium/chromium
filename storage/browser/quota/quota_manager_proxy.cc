@@ -463,8 +463,7 @@ void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClientType client_id,
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
-    quota_manager_impl_->SetUsageCacheEnabled(
-        client_id, storage_key, blink::mojom::StorageType::kTemporary, enabled);
+    quota_manager_impl_->SetUsageCacheEnabled(client_id, storage_key, enabled);
   }
 }
 

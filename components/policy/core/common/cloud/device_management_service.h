@@ -380,6 +380,7 @@ class POLICY_EXPORT JobConfigurationBase
   JobConfigurationBase(JobType type,
                        DMAuth auth_data,
                        std::optional<std::string> oauth_token,
+                       bool use_cookies,
                        scoped_refptr<network::SharedURLLoaderFactory> factory);
   ~JobConfigurationBase() override;
 
@@ -406,6 +407,11 @@ class POLICY_EXPORT JobConfigurationBase
   // OAuth token that will be passed as a query parameter. Both |auth_data_|
   // and |oauth_token_| can be specified for one request.
   std::optional<std::string> oauth_token_;
+
+  // Will allow using cookies as part of the request when true. Cookies can
+  // be used in combination with other auth models, the order of precedence
+  // will be determined server-side.
+  bool use_cookies_;
 
   // Query parameters for the network request.
   ParameterMap query_params_;

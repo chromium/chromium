@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Los datos de navegación existentes se vincularán a <ph name="USER_EMAIL" />. Es posible que tu organización pueda ver estos datos.</translation>
 <translation id="1713777106376424209">Empresa de transporte a cargo de la entrega:</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para acceder.</translation>
+<translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Pegar y acceder</translation>
 <translation id="1732468323901456775">Activar las notificaciones de <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">La detección de direcciones está desactivada. Vuelve a activarla en Configuración.</translation>
 <translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
-<translation id="1923342640370224680">Última hora</translation>
 <translation id="1941314575388338491">Presiona dos veces para copiar.</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="1952728750904661634">Acceder con una cuenta administrada</translation>
@@ -1206,6 +1206,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Se creó el <ph name="DATE" /></translation>
 <translation id="6189413832092199491">No leídas</translation>
+<translation id="6192388920090306326">Viaje a Tokio</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
@@ -1370,6 +1371,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6779455296366983087">Se borrarán tus datos de navegación</translation>
 <translation id="6790502149545262384">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6794476726485507147">Elige una fecha y hora para recibir una notificación de recordatorio para volver a visitar esta página</translation>
+<translation id="6807287147325542056">Contraseñas en otras apps</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6825078212112407882">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google ({email})}other{Se guardaron {count} favoritos en tu Cuenta de Google ({email})}}</translation>
 <translation id="6830728435402077660">No seguro</translation>
@@ -1934,6 +1936,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verifica si hay contraseñas hackeadas</translation>
 <translation id="9124387962554796433">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
+<translation id="9124978074365039456">Compra, identifica y traduce lo que ves con la cámara y la galería de fotos</translation>
 <translation id="9130317582644834675">Ocultar la opción Hacer zoom en el texto</translation>
 <translation id="913036870884277353">Abre vínculos en otras apps fácilmente.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>

@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Befintlig webbinformation kopplas till <ph name="USER_EMAIL" />. Denna data kan vara synlig för organisationen.</translation>
 <translation id="1713777106376424209">Levereras av</translation>
 <translation id="1715515772563243997">Om du litar på <ph name="SITE" /> kan du använda ett sparat lösenord när du loggar in.</translation>
+<translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1728549374069268714">Klistra in och öppna</translation>
 <translation id="1732468323901456775">Slå på aviseringar för <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adressidentifiering har inaktiverats. Aktivera funktionen igen i inställningarna.</translation>
 <translation id="1904580727789512086">Webbadresserna du besöker sparas i Google-kontot</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
-<translation id="1923342640370224680">Senaste timmen</translation>
 <translation id="1941314575388338491">Tryck snabbt två gånger om du vill kopiera informationen.</translation>
 <translation id="1943478190258551035">Meny → Inställningar</translation>
 <translation id="1952728750904661634">Logga in med ett hanterat konto</translation>
@@ -1206,6 +1206,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Olästa</translation>
+<translation id="6192388920090306326">Resa till Tokyo</translation>
 <translation id="6193448654517602979">Välj flikar</translation>
 <translation id="6196207969502475924">Röstsökning</translation>
 <translation id="6196640612572343990">Blockera tredjepartscookies</translation>
@@ -1370,6 +1371,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
 <translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="6794476726485507147">Välj ett datum och en tidpunkt då du vill få en påminnelse om att besöka den här sidan igen</translation>
+<translation id="6807287147325542056">Lösenord i andra appar</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{{count} bokmärken har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
@@ -1934,6 +1936,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9106655997975673326">Från <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Sök efter utsatta lösenord</translation>
 <translation id="9124387962554796433">Google kan anpassa Sök och andra Google-tjänster utifrån historiken.</translation>
+<translation id="9124978074365039456">Köp, översätt och identifiera det du ser med hjälp av kameran och fotogalleriet</translation>
 <translation id="9130317582644834675">Dölj Zooma text</translation>
 <translation id="913036870884277353">Öppna länkar enkelt i andra appar.</translation>
 <translation id="9137013805542155359">Visa original</translation>

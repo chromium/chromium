@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.reload_button;
 
+import android.annotation.SuppressLint;
+import android.view.MotionEvent;
 import android.widget.ImageButton;
 
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -18,7 +22,34 @@ class ReloadButtonViewBinder {
      * @param button reload button.
      * @param key key of a property that has changed in the model.
      */
-    public static void bind(PropertyModel model, ImageButton button, PropertyKey key) {}
+    public static void bind(PropertyModel model, ImageButton button, PropertyKey key) {
+        if (key == ReloadButtonProperties.CLICK_LISTENER) {
+            final Runnable listener = model.get(ReloadButtonProperties.CLICK_LISTENER);
+            if (listener == null) {
+                button.setOnClickListener(null);
+            } else {
+                button.setOnClickListener(view -> listener.run());
+            }
+        } else if (key == ReloadButtonProperties.TOUCH_LISTENER) {
+            final Callback<MotionEvent> listener = model.get(ReloadButtonProperties.TOUCH_LISTENER);
+            setTouchListener(button, listener);
+        }
+    }
+
+    // required to set a touch listener to intercept clicks with shift
+    @SuppressLint("ClickableViewAccessibility")
+    private static void setTouchListener(
+            ImageButton button, @Nullable Callback<MotionEvent> listener) {
+        if (listener == null) {
+            button.setOnTouchListener(null);
+        } else {
+            button.setOnTouchListener(
+                    (view, event) -> {
+                        listener.onResult(event);
+                        return false;
+                    });
+        }
+    }
 
     private ReloadButtonViewBinder() {}
 }

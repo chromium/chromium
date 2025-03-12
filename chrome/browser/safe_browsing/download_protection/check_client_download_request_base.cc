@@ -162,11 +162,9 @@ bool CheckClientDownloadRequestBase::ShouldSampleUnsupportedFile(
   // all "unknown" extensions), we may want to sample it. Sampling it means
   // we'll send a "light ping" with private info removed, and we won't
   // use the verdict.
-  const FileTypePolicies* policies = FileTypePolicies::GetInstance();
   return service_ && is_extended_reporting_ && !is_incognito_ &&
-         base::RandDouble() < policies->SampledPingProbability() &&
-         policies->PingSettingForFile(filename) ==
-             DownloadFileType::SAMPLED_PING;
+         base::RandDouble() <
+             service_->delegate()->GetUnsupportedFileSampleRate(filename);
 }
 
 // If the hash of either the original file or any executables within an

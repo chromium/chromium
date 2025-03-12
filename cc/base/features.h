@@ -239,6 +239,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderThrottleFrameRate);
 CC_BASE_EXPORT extern const base::FeatureParam<int>
     kRenderThrottledFrameIntervalHz;
 
+// Adds a fast path to avoid waking up the thread pool when there are no raster
+// tasks.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFastPathNoRaster);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

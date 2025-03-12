@@ -128,11 +128,9 @@
 <translation id="2738871930057338499">Tidak dapat terhubung ke internet. HTTP 403 Terlarang. Periksa konfigurasi proxy Anda.</translation>
 <translation id="2753623023919742414">Klik untuk menelusuri</translation>
 <translation id="2770231113462710648">Ubah browser default ke:</translation>
-<translation id="277338894894732084">Nanti, Chromium akan menanyakan apakah Anda ingin menggunakan info tersimpan untuk mengisi formulir secara otomatis</translation>
 <translation id="2785438272836277133">Ekstensi ini berisi malware dan tidak aman. Hapus dari Chromium agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2803971713792056305">Chromium Anda</translation>
-<translation id="2806241689335397269">Chromium akan menanyakan apakah Anda ingin menyimpan informasi formulir, seperti tanggal lahir, usia, dan nomor paspor</translation>
 <translation id="2841525013647267359">Terjemahkan dari</translation>
 <translation id="2846251086934905009">Error penginstalan: Penginstal tidak selesai. Penginstalan telah dibatalkan.</translation>
 <translation id="2847479871509788944">Buang dari Chromium...</translation>
@@ -178,7 +176,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Beralih ke profil Chromium yang sudah ada?</translation>
 <translation id="3412460710772753638">Di Pengelola Sandi di perangkat ini</translation>
-<translation id="3451656833730006755">Untuk mendapatkan ekstensi dan yang lainnya di semua komputer Anda, login ke Chromium</translation>
 <translation id="347328004046849135">Chromium akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chromium</translation>
@@ -461,7 +458,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="734373864078049451">Web, bookmark, dan barang Chromium Anda lainnya tersedia di sini.</translation>
 <translation id="7349591376906416160">Administrator sistem Anda telah mengonfigurasi Chromium untuk membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Ekstensi ini tidak lagi didukung. Chromium merekomendasikan agar Anda menghapusnya.</translation>
-<translation id="7389750180956889333">Chromium memahami formulir lebih baik dan dapat melakukan pengisian otomatis lebih cepat untuk Anda. Pelajari lebih lanjut <ph name="BEGIN_LINK" />Isi Otomatis Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Teks disalin</translation>
 <translation id="7451052299415159299">Chromium memerlukan izin akses ke kamera untuk situs ini</translation>

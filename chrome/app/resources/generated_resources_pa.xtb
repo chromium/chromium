@@ -376,7 +376,6 @@
 <translation id="1244265436519979884">ਇਸ ਵੇਲੇ Linux ਦੀ ਮੁੜ-ਬਹਾਲੀ ਜਾਰੀ ਹੈ</translation>
 <translation id="1244303850296295656">ਐਕਸਟੈਂਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="1244917379075403655">"ਸੈਟਿੰਗਾਂ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="1245041875932187638">AI ਨਾਲ ਆਟੋਫਿਲ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਰਾਹੀਂ ਵਰਤਿਆ ਗਿਆ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="1245331638296910488">Microsoft 365 ਵਿੱਚ ਖੋਲ੍ਹਣ 'ਤੇ ਫ਼ਾਈਲਾਂ OneDrive ਵਿੱਚ ਚਲੇ ਜਾਣਗੀਆਂ</translation>
 <translation id="1245628370644070008">ਸਥਾਨਕ ਡਾਟਾ ਰਿਕਵਰੀ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: ਚਿੱਤਰ URL 'ਤੇ <ph name="HTTP_ERROR" /> ਗੜਬੜ ਕੋਡ ਆਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -1418,7 +1417,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">ਤਿਆਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1969654639948595766">WebRTC ਲਿਖਤ ਲੌਗ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1972313920920745320">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਹਮੇਸ਼ਾਂ ਕਿਰਿਆਸ਼ੀਲ ਰਹਿਣਗੀਆਂ ਅਤੇ ਉਨ੍ਹਾਂ ਤੋਂ ਮੈਮੋਰੀ ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="BEGIN_LINK" />ਖਾਸ ਸਾਈਟਾਂ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਰੱਖਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">ਤੁਸੀਂ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰੋਗੇ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਮੌਜੂਦਾ ਵੈੱਬ-ਪੰਨੇ ਦੇ ਆਧਾਰ 'ਤੇ ਸਮੱਗਰੀ ਚੁਸਤੀ ਨਾਲ ਲੋਡ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -3072,7 +3070,6 @@
 <translation id="3108957152224931571">ਉਜਾਗਰ ਕਰਨ ਦਾ ਰੰਗ</translation>
 <translation id="3109206895301430738">ਰੱਖਿਅਤ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="3109724472072898302">ਨਸ਼ਟ ਹੋਇਆ</translation>
-<translation id="310979712355504754">ਸਭ ਮਿਟਾਓ</translation>
 <translation id="3112292765614504292">ਐਪ ਦਾ ਆਕਾਰ: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">ਇਸ ਟੈਬ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="311394601889664316">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਫ਼ਾਈਲਾਂ ਜਾਂ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -4092,7 +4089,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ ਗਿਆ}one{# ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ ਗਿਆ}other{# ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux ਲਈ ਘੱਟੋ-ਘੱਟ <ph name="INSTALL_SIZE" /> ਜਗ੍ਹਾ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
-<translation id="3824203811509979971">ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦਿਓ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ</translation>
 <translation id="3824621460022590830">ਡੀਵਾਈਸ ਦਾਖਲਾ ਟੋਕਨ ਅਵੈਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਮਾਲਕ ਜਾਂ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="3824757763656550700">ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਦੇਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ਫ਼ਾਈਲ ਦੀ ਇਸ ਕਿਸਮ ਲਈ ਮੇਰੀ ਚੋਣ ਯਾਦ ਰੱਖੋ: <ph name="FILE_TYPES" />}one{ਫ਼ਾਈਲ ਦੀ ਇਸ ਕਿਸਮ ਲਈ ਮੇਰੀ ਚੋਣ ਯਾਦ ਰੱਖੋ: <ph name="FILE_TYPES" />}other{ਫ਼ਾਈਲ ਦੀਆਂ ਇਨ੍ਹਾਂ ਕਿਸਮਾਂ ਲਈ ਮੇਰੀ ਚੋਣ ਯਾਦ ਰੱਖੋ: <ph name="FILE_TYPES" />}}</translation>
@@ -5906,7 +5902,6 @@
 <translation id="512642543295077915">ਖੋਜ + ਬੈਕਸਪੇਸ</translation>
 <translation id="5126611267288187364">ਤਬਦੀਲੀਆਂ ਦੇਖੋ</translation>
 <translation id="5127620150973591153">ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਆਈਡੀ: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦਿਓ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ।</translation>
 <translation id="5127881134400491887">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5127934926273826089">ਫੁੱਲ</translation>
 <translation id="5127986747308934633">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਕੰਟਰੋਲ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -7457,7 +7452,6 @@
 <translation id="6254892857036829079">ਬਿਲਕੁਲ ਸਹੀ ਚੱਲਣਾ</translation>
 <translation id="6257131917452817589">ਸਵੈਚਲਿਤ ਪਾਸਵਰਡ ਤਬਦੀਲੀ</translation>
 <translation id="6257602895346497974">ਸਿੰਕ ਚਾਲੂ ਕਰੋ...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">ਇਸ ਨੈੱਟਵਰਕ ਨੂੰ ਤਰਜੀਹ ਦਿੱਤੀ ਜਾਵੇਗੀ ਜੇ ਇੱਕ ਤੋਂ ਵੱਧ ਪਿਛਲਾ ਕਨੈਕਟ ਕੀਤਾ ਜਾਂ ਸੰਰੂਪਣ ਕੀਤਾ ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="6259776178973198997">ਵਾਈ‑ਫਾਈ ਡਾਇਰੈਕਟ ਮਾਲਕ ਜਾਣਕਾਰੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="6262371516389954471">ਤੁਹਾਡੇ ਬੈਕਅੱਪ Google 'ਤੇ ਅੱਪਲੋਡ ਕੀਤੇ ਜਾਂਦੇ ਹਨ ਅਤੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਦੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।</translation>
@@ -9890,6 +9884,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ਅਵਾਜ਼ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">ਆਪਣੇ Android ਫ਼ੋਨ ਤੋਂ ਵਾਈ-ਫਾਈ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰੋ</translation>
 <translation id="7991296728590311172">ਸਵਿੱਚ ਪਹੁੰਚ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="7992080146463834191">ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦਿਓ, ਪੇਚੀਦਾ ਭਾਸ਼ਾ ਨੂੰ ਸਰਲ ਬਣਾਓ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ।</translation>
 <translation id="7992203134935383159">ਸਪੀਚ ਸਿੰਥੈਸਿਸ</translation>
 <translation id="7997826902155442747">ਪ੍ਰਕਿਰਿਆ ਤਰਜੀਹ</translation>
 <translation id="7997828719430450286">ਹੋ ਗਿਆ।</translation>
@@ -11155,6 +11150,7 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8874647982044395866">ਆਰਗੈਨਿਕ</translation>
 <translation id="8874790741333031443">ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ, ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਘਟ ਜਾਵੇਗੀ ਪਰ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰਨਗੀਆਂ।</translation>
+<translation id="8875221558267407626">ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦਿਓ, ਪੇਚੀਦਾ ਭਾਸ਼ਾ ਨੂੰ ਸਰਲ ਬਣਾਓ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ</translation>
 <translation id="8875520811099717934">Linux ਅੱਪਗ੍ਰੇਡ</translation>
 <translation id="8875736897340638404">ਆਪਣੀ ਦਿਖਣਯੋਗਤਾ ਚੁਣੋ</translation>
 <translation id="8876307312329369159">ਕਿਸੇ ਡੈਮੋ ਸੈਸ਼ਨ ਵਿੱਚ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।</translation>

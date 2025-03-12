@@ -3464,11 +3464,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-logo-polish-animation-kill-switch",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-mac-a11y-api-migration",
     "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
     "expiry_milestone": 142
@@ -3770,11 +3765,6 @@
     "name": "enable-seamless-refresh-rate-switching",
     "owners": [ "ddavenport@chromium.org", "chromeos-gfx-display@google.com" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "enable-search-aggregator-policy",
-    "owners": [ "ftirelo@chromium.org", "jdonnelly@chromium.org", "mahmadi@chromium.org", "cbe-magic@google.com"],
-    "expiry_milestone": 145
   },
   {
     "name": "enable-search-customizable-shortcuts-in-launcher",
@@ -4907,7 +4897,15 @@
       "birnie@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 137
+  },
+  {
+    "name": "glic-detached",
+    "owners": [
+      "andreaxg@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 137
   },
   {
     "name": "global-media-controls-updated-ui",
@@ -6219,6 +6217,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ntp-drive-module-no-sync-requirement",
+    "owners": [ "rtatum@google.com", "tiborg@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-drive-module-segmentation",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 125
@@ -6485,6 +6488,11 @@
     "name": "omnibox-dynamic-max-autocomplete",
     "owners": [ "stkhapugin@chromium.org", "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-enterprise-search-aggregator",
+    "owners": [ "ftirelo@chromium.org", "jdonnelly@chromium.org", "mahmadi@chromium.org", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "omnibox-focus-triggers-web-and-srp-zero-suggest",

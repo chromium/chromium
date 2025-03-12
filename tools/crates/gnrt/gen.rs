@@ -8,8 +8,8 @@ use crate::deps;
 use crate::gn;
 use crate::paths;
 use crate::util::{
-    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed, init_handlebars,
-    run_cargo_metadata,
+    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
+    get_guppy_package_graph, init_handlebars,
 };
 use crate::GenCommandArgs;
 
@@ -96,16 +96,19 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
     let mut dependencies = {
-        let metadata =
-            run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)
-                .with_context(|| {
-                    format!(
-                        "Failed to parse cargo metadata in a directory synthesized from \
+        let metadata = get_guppy_package_graph(
+            paths.std_fake_root.into(),
+            cargo_extra_options,
+            cargo_extra_env,
+        )
+        .with_context(|| {
+            format!(
+                "Failed to parse cargo metadata in a directory synthesized from \
                          {} and {}",
-                        paths.std_fake_root_cargo_template.display(),
-                        paths.std_fake_root_config_template.display(),
-                    )
-                })?;
+                paths.std_fake_root_cargo_template.display(),
+                paths.std_fake_root_config_template.display(),
+            )
+        })?;
         deps::collect_dependencies(&metadata, &config.resolve.root, &config)?
     };
 
@@ -222,7 +225,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
 
     // Compute the set of all third-party crates.
     let dependencies = deps::collect_dependencies(
-        &run_cargo_metadata(
+        &get_guppy_package_graph(
             paths.third_party_cargo_root.into(),
             cargo_extra_options,
             HashMap::new(),

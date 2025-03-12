@@ -29,9 +29,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -170,13 +169,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             if (isDataSharingAndroidEnabled) {
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(originalProfile);
+
+                SharedImageTilesConfig config =
+                        new SharedImageTilesConfig.Builder(activity).build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
-                                activity,
-                                SharedImageTilesType.DEFAULT,
-                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                dataSharingService,
-                                collaborationService);
+                                activity, config, dataSharingService, collaborationService);
             }
 
             Runnable showColorPickerPopupRunnable =

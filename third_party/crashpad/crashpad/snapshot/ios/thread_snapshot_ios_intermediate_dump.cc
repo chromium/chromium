@@ -242,6 +242,7 @@ uint64_t ThreadSnapshotIOSIntermediateDump::ThreadSpecificDataAddress() const {
 
 std::vector<const MemorySnapshot*>
 ThreadSnapshotIOSIntermediateDump::ExtraMemory() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   std::vector<const MemorySnapshot*> extra_memory;
   for (const auto& memory : extra_memory_) {
     extra_memory.push_back(memory.get());

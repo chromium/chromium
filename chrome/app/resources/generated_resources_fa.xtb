@@ -376,7 +376,6 @@
 <translation id="1244265436519979884">‏درحال‌حاضر بازیابی Linux درحال انجام است</translation>
 <translation id="1244303850296295656">خطای افزونه</translation>
 <translation id="1244917379075403655">روی «تنظیمات» کلیک کنید</translation>
-<translation id="1245041875932187638">حذف همه داده‌های استفاده‌شده توسط تکمیل خودکار با هوش مصنوعی</translation>
 <translation id="1245331638296910488">‏فایل‌ها هنگام باز شدن در Microsoft 365 به OneDrive منتقل می‌شوند</translation>
 <translation id="1245628370644070008">بازیابی داده‌های محلی</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> نصب نشد: نشانی وب تصویر کد خطای <ph name="HTTP_ERROR" /> را برگرداند. لطفاً با سرپرست تماس بگیرید.</translation>
@@ -1414,7 +1413,6 @@
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1969550816138571473">درحال آماده‌سازی</translation>
 <translation id="1969654639948595766">‏گزارش‌های نوشتاری WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">همه داده‌ها حذف خواهد شد. این کنش واگردشدنی نیست</translation>
 <translation id="1972313920920745320">سایت‌هایی که اضافه می‌کنید همیشه فعال می‌مانند و از حافظه پاک نمی‌شوند. <ph name="BEGIN_LINK" />درباره فعال نگه داشتن سایت‌های به‌خصوص بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
 <translation id="197288927597451399">ادامه دادن</translation>
@@ -2300,6 +2298,7 @@
 <translation id="256517381556987641">«همگام‌سازی فایل‌ها» تاکنون <ph name="ITEMS_FOUND" /> فایل پیدا کرده است و همچنان درحال بررسی فضای ذخیره‌سازی است. چند دقیقه دیگر «همگام‌سازی فایل‌ها» را دوباره روشن کنید.</translation>
 <translation id="2565214867520763227">روشن کردن صفحه‌خوان</translation>
 <translation id="2566146433999774844">به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUM_OTHER_MEMBERS" /> نفر دیگر بپیوندید</translation>
+<translation id="256726287944589768">نمایش پانویس در صفحه «برگه جدید»</translation>
 <translation id="2568694057933302218">وقتی در حالت «ناشناس» هستید، سایت‌ها نمی‌توانند از کوکی‌هایتان برای دیدن فعالیت مرور شما در سایت‌ها استفاده کنند. از فعالیت مرور شما برای کارهایی مثل شخصی‌سازی آگهی استفاده نمی‌شود. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
 <translation id="2568774940984945469">قسمت نوار اطلاعات</translation>
 <translation id="2569972178052279830">نام فروشنده</translation>
@@ -2808,6 +2807,7 @@
 <translation id="2921081876747860777">لطفاً برای محافظت از داده محلی گذرواژه‌ای ایجاد کنید.</translation>
 <translation id="2923006468155067296">دستگاه <ph name="DEVICE_TYPE" /> شما اکنون قفل می‌شود.
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{‫<ph name="TASK_ROW" />}one{‫<ph name="TASK_ROW" />.‏ <ph name="OTHER_TASK_NUM" /> وظیفه دیگر در همان گروه وظیفه: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />.‏ <ph name="OTHER_TASK_NUM" /> وظیفه دیگر در همان گروه وظیفه: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">حذف این حساب</translation>
 <translation id="2923644930701689793">دسترسی به حلقه فیلم دوربین تلفن</translation>
 <translation id="292371311537977079">‏تنظیمات Chrome</translation>
@@ -3065,7 +3065,6 @@
 <translation id="3108957152224931571">رنگ برجسته‌سازی</translation>
 <translation id="3109206895301430738">گروه‌های برگه ذخیره‌شده</translation>
 <translation id="3109724472072898302">جمع شده</translation>
-<translation id="310979712355504754">حذف همه</translation>
 <translation id="3112292765614504292">اندازه برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">این برگه را اضافه کرد</translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
@@ -4085,7 +4084,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{یک افزونه تأیید شد}one{# افزونه تأیید شد}other{# افزونه تأیید شد}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">‏توصیه می‌شود حداقل <ph name="INSTALL_SIZE" />  فضا برای Linux داشته باشید.</translation>
-<translation id="3824203811509979971">محتوا را خلاصه کنید یا سؤال بپرسید</translation>
 <translation id="3824621460022590830">کد ثبت‌نام دستگاه نامعتبر است. لطفاً با مالک یا سرپرست دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">به سیستم وارد شوید تا برگه‌های دستگاه‌های دیگر را ببینید</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{انتخاب من برای این نوع فایل به‌خاطر سپرده شود: <ph name="FILE_TYPES" />}one{انتخاب من برای این نوع فایل به‌خاطر سپرده شود: <ph name="FILE_TYPES" />}other{انتخاب من برای این نوع فایل‌ها به‌خاطر سپرده شود: <ph name="FILE_TYPES" />}}</translation>
@@ -5900,7 +5898,6 @@
 <translation id="512642543295077915">جستجو + پس‌بَر</translation>
 <translation id="5126611267288187364">مشاهده تغییرات</translation>
 <translation id="5127620150973591153">شناسه اتصال ایمن: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">خلاصه کردن محتوا یا پرسیدن سؤال.</translation>
 <translation id="5127881134400491887">مدیریت اتصالات شبکه</translation>
 <translation id="5127934926273826089">گل</translation>
 <translation id="5127986747308934633">دستگاهتان تحت کنترل سرپرست است</translation>
@@ -7451,7 +7448,6 @@
 <translation id="6254892857036829079">عالی</translation>
 <translation id="6257131917452817589">تغییر خودکار گذرواژه</translation>
 <translation id="6257602895346497974">روشن کردن همگام‌سازی…</translation>
-<translation id="6257614441619555296">‫<ph name="KEY" />:‎ <ph name="VALUE" /></translation>
 <translation id="625827534921607067">اگر بیش‌از یک شبکه قبلاً متصل‌شده یا پیکربندی‌شده دردسترس باشد، این شبکه در اولویت خواهد بود</translation>
 <translation id="6259776178973198997">‏بازآوری اطلاعات مالکان Wi-Fi Direct</translation>
 <translation id="6262371516389954471">‏داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود.</translation>
@@ -9884,6 +9880,7 @@
 <translation id="7990863024647916394">صدای <ph name="DISPLAY_NAME" />‏ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">‏انتقال خودکار Wi-Fi از تلفن Android</translation>
 <translation id="7991296728590311172">تنظیمات دسترسی کلیدی</translation>
+<translation id="7992080146463834191">محتوا را خلاصه کنید، زبان پیچیده را ساده کنید، یا سؤال بپرسید.</translation>
 <translation id="7992203134935383159">ترکیب گفتار</translation>
 <translation id="7997826902155442747">پردازش اولویت‌دار</translation>
 <translation id="7997828719430450286">انجام شد.</translation>
@@ -11150,6 +11147,7 @@
 <translation id="8874448314264883207">‫«<ph name="EXTENSION_NAME" />» خاموش شد</translation>
 <translation id="8874647982044395866">اندامگانی</translation>
 <translation id="8874790741333031443">کوکی‌های طرف سوم را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
+<translation id="8875221558267407626">خلاصه کردن محتوا، ساده کردن زبان پیچیده، یا پرسیدن سؤال</translation>
 <translation id="8875520811099717934">‏ارتقا دادن Linux</translation>
 <translation id="8875736897340638404">انتخاب وضعیت رؤیت‌پذیری</translation>
 <translation id="8876307312329369159">این تنظیم در جلسه نمایشی قابل‌تغییر نیست.</translation>

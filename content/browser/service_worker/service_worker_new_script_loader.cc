@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
 
 #include <memory>
@@ -55,8 +50,8 @@ const uint32_t ServiceWorkerNewScriptLoader::kReadBufferSize = 32768;
 class ServiceWorkerNewScriptLoader::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
-  WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(base::span(data, size)) {}
+  explicit WrappedIOBuffer(base::span<const char> data)
+      : net::WrappedIOBuffer(data) {}
 
  private:
   ~WrappedIOBuffer() override = default;
@@ -575,9 +570,9 @@ void ServiceWorkerNewScriptLoader::OnNetworkDataAvailable(MojoResult) {
 void ServiceWorkerNewScriptLoader::WriteData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_available) {
-  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
-      pending_buffer ? pending_buffer->buffer() : nullptr,
-      pending_buffer ? pending_buffer->size() : 0);
+  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_TODO(
+      base::span(pending_buffer ? pending_buffer->buffer() : nullptr,
+                 pending_buffer ? pending_buffer->size() : 0)));
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.

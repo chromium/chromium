@@ -996,6 +996,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5696597120588531049">Chrome te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai</translation>
 <translation id="5698878456427040674">Verifică dacă este acceptat contul selectat.</translation>
 <translation id="570347048394355941">Comută la fila</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> vrea să se conecteze la un port serial</translation>
 <translation id="5715150588940290235">Ștergi codurile de securitate salvate?</translation>
 <translation id="571930967925877633">Marcajele, istoricul, parolele și alte date Chrome nu se vor mai sincroniza cu Contul Google</translation>
 <translation id="572328651809341494">File recente</translation>
@@ -1128,6 +1129,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6296366034485697675">Exportă și șterge</translation>
 <translation id="629730747756840877">Cont</translation>
 <translation id="6303969859164067831">Deconectează-te și dezactivează sincronizarea</translation>
+<translation id="6307241780749477694">Confirmă-ți identitatea pentru a obține toate parolele de pe acest dispozitiv</translation>
 <translation id="6312687380483398334">Aplicații web (silențioase)</translation>
 <translation id="6315386555979018699">Șterge și continuă</translation>
 <translation id="6316139424528454185">Versiunea Android nu este acceptată</translation>
@@ -1389,6 +1391,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7359002509206457351">Acces la metodele de plată</translation>
 <translation id="7363349185727752629">Un ghid pentru opțiunile de confidențialitate</translation>
 <translation id="7364103838544876661">Mai multe opțiuni pentru ștergerea datelor de navigare</translation>
+<translation id="7365073365123878797">Pentru a începe să salvezi și să folosești parole cu Managerul de parole Google, actualizează serviciile Google Play</translation>
 <translation id="7375125077091615385">Tip:</translation>
 <translation id="7376560087009844242">Dacă incluzi mai mult din textul paginii, ai putea vedea rezultate mai bune când folosești Atinge pentru a căuta. Poți accesa oricând<ph name="BEGIN_LINK" />setările<ph name="END_LINK" /> pentru a schimba această setare.</translation>
 <translation id="7379900596734708416">Tema întunecată pentru site-uri este disponibilă</translation>
@@ -1467,10 +1470,12 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7686086654630106285">Mai multe despre anunțurile sugerate de site-uri</translation>
 <translation id="7690596512217303514">Dispozitivul nu a putut deschide Chrome. Pentru a remedia problema, descarcă cea mai recentă actualizare Chrome din magazinul de aplicații.</translation>
 <translation id="7691043218961417207">Explorează conținutul de urmărit</translation>
+<translation id="7692761875510935111">Deschide rapid în browser. Pentru a edita comanda rapidă, atinge-o lung.</translation>
 <translation id="7697383401610880082">Ghidaj de tragere</translation>
 <translation id="7698359219371678927">Creează un e-mail în <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Foaia din partea de jos pentru activitatea recentă este deschisă la înălțimea completă</translation>
 <translation id="7707922173985738739">va folosi datele mobile;</translation>
+<translation id="7708994397325774423">Accesează toate parolele</translation>
 <translation id="7733878270780732638">Spațiu insuficient pe dispozitiv.</translation>
 <translation id="7746817319925672889">În curând, Managerul de parole Google nu va mai funcționa pe acest dispozitiv</translation>
 <translation id="774876555279732384">Serviciile de completare automată sunt gestionate și din <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
@@ -1612,6 +1617,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8310451567823644042">În curând, parolele nu vor mai funcționa</translation>
 <translation id="831192587911042850">Adaugă site-ul actual la lista de site-uri pe care le urmărești.</translation>
 <translation id="8320212361750431956">Activitate recentă</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome te va informa despre site-urile care trimit prea multe notificări</translation>
 <translation id="834313815369870491">Nu traduce niciodată site-uri</translation>
 <translation id="8348430946834215779">Folosește HTTPS ori de câte ori este posibil și primește un avertisment înainte de a încărca site-uri care nu acceptă acest protocol</translation>
@@ -1743,6 +1749,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8937772741022875483">Elimini activitatea în Chrome din Bunăstarea digitală?</translation>
 <translation id="8942627711005830162">Deschide în altă fereastră</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Limba nu a putut fi descărcată. Încearcă din nou mai târziu.</translation>
+<translation id="8946759102391960088">Păstrează accesul la parole</translation>
 <translation id="8957528460562961174">Pentru a păstra accesul la parole, exportă-le acum și apoi importă-le în managerul de parole preferat. Managerul de parole Google nu mai funcționează deoarece serviciile Google Play nu sunt disponibile.</translation>
 <translation id="8963117664422609631">Accesează setările site-ului</translation>
 <translation id="8965591936373831584">în așteptare</translation>

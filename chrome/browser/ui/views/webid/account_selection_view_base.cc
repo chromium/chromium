@@ -329,15 +329,15 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     int additional_vertical_padding,
     std::optional<std::u16string> last_used_string) {
   int avatar_size = is_modal_dialog ? kModalAvatarSize : kDesiredAvatarSize;
-  views::style::TextStyle account_name_style =
+  views::style::TextStyle account_display_name_style =
       is_modal_dialog ? views::style::STYLE_BODY_3_MEDIUM
                       : views::style::STYLE_PRIMARY;
-  views::style::TextStyle account_email_style =
+  views::style::TextStyle account_identifier_style =
       is_modal_dialog ? views::style::STYLE_BODY_5
                       : views::style::STYLE_SECONDARY;
   if (account->is_filtered_out) {
-    account_name_style = views::style::STYLE_DISABLED;
-    account_email_style = views::style::STYLE_DISABLED;
+    account_display_name_style = views::style::STYLE_DISABLED;
+    account_identifier_style = views::style::STYLE_DISABLED;
   }
 
   auto account_image_view = std::make_unique<AccountImageView>();
@@ -372,11 +372,12 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
                             base::Unretained(owner_), account),
         std::move(account_image_view),
-        /*title=*/account->is_filtered_out ? base::UTF8ToUTF16(account->email)
-                                           : base::UTF8ToUTF16(account->name),
+        /*title=*/account->is_filtered_out
+            ? base::UTF8ToUTF16(account->display_identifier)
+            : base::UTF8ToUTF16(account->display_name),
         /*subtitle=*/account->is_filtered_out
             ? l10n_util::GetStringUTF16(IDS_FILTERED_ACCOUNT_MESSAGE)
-            : base::UTF8ToUTF16(account->email),
+            : base::UTF8ToUTF16(account->display_identifier),
         /*secondary_view=*/
         is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
                         : nullptr,
@@ -388,11 +389,14 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*vertical=*/additional_vertical_padding,
         /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
                                        : kLeftRightPadding)));
-    row->SetTitleTextStyle(account_name_style, ui::kColorDialogBackground,
+    row->SetTitleTextStyle(account_display_name_style,
+                           ui::kColorDialogBackground,
                            /*color_id=*/std::nullopt);
-    row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL, account_email_style);
+    row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
+                              account_identifier_style);
     if (should_include_idp) {
-      row->SetFooterTextStyle(views::style::CONTEXT_LABEL, account_email_style);
+      row->SetFooterTextStyle(views::style::CONTEXT_LABEL,
+                              account_identifier_style);
     }
     if (account->is_filtered_out) {
       row->SetEnabled(false);
@@ -417,19 +421,20 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   text_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  // Add account name.
+  // Add account display name.
   views::StyledLabel* const account_name =
       text_column->AddChildView(std::make_unique<views::StyledLabel>());
-  account_name->SetDefaultTextStyle(account_name_style);
-  account_name->SetText(base::UTF8ToUTF16(account->name));
+  account_name->SetDefaultTextStyle(account_display_name_style);
+  account_name->SetText(base::UTF8ToUTF16(account->display_name));
   account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  // Add account email.
-  views::Label* const account_email =
+  // Add account identifier.
+  views::Label* const account_identifier =
       text_column->AddChildView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(account->email),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, account_email_style));
-  account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+          base::UTF8ToUTF16(account->display_identifier),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, account_identifier_style));
+  account_identifier->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
 }

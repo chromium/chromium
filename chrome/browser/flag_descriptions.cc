@@ -2202,15 +2202,6 @@ const char kContextualPageActionsShareModelName[] =
 const char kContextualPageActionsShareModelDescription[] =
     "Enables share model data collection.";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-const char kEnableSearchAggregatorPolicyName[] =
-    "Enable EnterpriseSearchAggregatorSettings policy";
-const char kEnableSearchAggregatorPolicyDescription[] =
-    "Enable the policy that allows organizations to set a Search Aggregator "
-    "engine that can be used in the Omnibox";
-#endif
-
 const char kHappyEyeballsV3Name[] = "Happy Eyeballs Version 3";
 const char kHappyEyeballsV3Description[] =
     "Enables the Happy Eyeballs Version 3 algorithm. See "
@@ -2755,6 +2746,11 @@ const char kOmniboxStarterPackIPHName[] =
 const char kOmniboxStarterPackIPHDescription[] =
     "Enables an informational IPH message for the  Site search starter pack "
     "feature";
+
+const char kOmniboxSearchAggregatorName[] =
+    "Omnibox search aggregator";
+const char kOmniboxSearchAggregatorDescription[] =
+    "Enables omnibox suggestions from the search aggregator provider";
 
 const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
     "Omnibox on-focus suggestions on web and SRP";
@@ -4584,12 +4580,6 @@ const char kLegacyTabStateDeprecationDescription[] =
 const char kLogoPolishName[] = "Logo Polish";
 const char kLogoPolishDescription[] = "Enable bigger doodle size for NTP.";
 
-const char kLogoPolishAnimationKillSwitchName[] =
-    "Logo Polish Animation Kill Switch";
-const char kLogoPolishAnimationKillSwitchDescription[] =
-    "Enable bigger doodle size with an animation for NTP, this is a kill "
-    "switch";
-
 const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "
@@ -5144,6 +5134,12 @@ const char kNtpChromeCartModuleDescription[] =
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
+
+const char kNtpDriveModuleNoSyncRequirementName[] =
+    "NTP Drive Module No Sync Requirement";
+const char kNtpDriveModuleNoSyncRequirementDescription[] =
+    "Removes the requirement for Sync to be enabled for the Drive module on "
+    "the New Tab Page.";
 
 const char kNtpDriveModuleSegmentationName[] = "NTP Drive Module Segmentation";
 const char kNtpDriveModuleSegmentationDescription[] =
@@ -7872,6 +7868,9 @@ const char kExplicitBrowserSigninUIOnDesktopDescription[] =
 
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
+
+const char kGlicDetachedName[] = "Glic Detached Mode";
+const char kGlicDetachedDescription[] = "Enables glic detached mode";
 
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";

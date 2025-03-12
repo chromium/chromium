@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Esami naršymo duomenys bus susieti su <ph name="USER_EMAIL" />. Šiuos duomenis gali matyti jūsų organizacija.</translation>
 <translation id="1713777106376424209">Bus pristatyta iki</translation>
 <translation id="1715515772563243997">Jei pasitikite <ph name="SITE" />, prisijungdami galite naudoti išsaugotą slaptažodį.</translation>
+<translation id="1718835860248848330">Paskutinė valanda</translation>
 <translation id="1728549374069268714">Įklijuoti ir eiti</translation>
 <translation id="1732468323901456775">„<ph name="MODULE_NAME" />“ pranešimų įjungimas</translation>
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Adreso aptikimas išjungtas. Įjunkite jį nustatymuose.</translation>
 <translation id="1904580727789512086">URL, kuriais lankotės, išsaugomi jūsų „Google“ paskyroje</translation>
 <translation id="1911619930368729126">Įkelti į „Google“ diską</translation>
-<translation id="1923342640370224680">Pastaroji valanda</translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
 <translation id="1943478190258551035">Meniu → „Nustatymai“</translation>
 <translation id="1952728750904661634">Prisijunkite naudodami valdomą paskyrą</translation>
@@ -1206,6 +1206,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6187302354554850004">Pask. k. sinchr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Sukurta <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Neskaityti</translation>
+<translation id="6192388920090306326">Kelionė į Tokiją</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
 <translation id="6196207969502475924">Paieška balsu</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
@@ -1370,6 +1371,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6779455296366983087">Naršymo duomenys bus ištrinti</translation>
 <translation id="6790502149545262384">Netrukus atidarę naują skirtuką matysite istorijas iš „<ph name="CHANNEL_NAME" />“.</translation>
 <translation id="6794476726485507147">Pasirinkite datą ir laiką, kad gautumėte priminimo pranešimą ir galėtumėte dar kartą apsilankyti šiame puslapyje</translation>
+<translation id="6807287147325542056">Kitų programų slaptažodžiai</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
 <translation id="6825078212112407882">{count,plural, =1{Žymė išsaugota „Google“ paskyroje {email}}one{{count} žymė išsaugota „Google“ paskyroje {email}}few{{count} žymės išsaugotos „Google“ paskyroje {email}}many{{count} žymės išsaugota „Google“ paskyroje {email}}other{{count} žymių išsaugota „Google“ paskyroje {email}}}</translation>
 <translation id="6830728435402077660">Nesaugu</translation>
@@ -1934,6 +1936,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9106655997975673326">Iš „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Patikrinkite, ar nėra pažeistų slaptažodžių</translation>
 <translation id="9124387962554796433">Naudodama naršymo istoriją „Google“ gali suasmeninti Paiešką ir kitas „Google“ paslaugas.</translation>
+<translation id="9124978074365039456">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą ir nuotraukų galeriją</translation>
 <translation id="9130317582644834675">Slėpti parinktį „Keisti teksto mastelį“</translation>
 <translation id="913036870884277353">Lengvai atidarykite nuorodas kitose programose.</translation>
 <translation id="9137013805542155359">Rodyti originalą</translation>

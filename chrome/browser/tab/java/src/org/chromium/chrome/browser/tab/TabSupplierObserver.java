@@ -10,6 +10,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A utility class for observing a {@link Tab} changing via {@link TabObserver}.<br>
@@ -18,6 +20,7 @@ import org.chromium.base.supplier.ObservableSupplier;
  * This can be used with an {@code ActivityTabProvider} to track which Tab is the current Tab for an
  * Activity.
  */
+@NullMarked
 public class TabSupplierObserver extends EmptyTabObserver implements Destroyable {
     /** A handle to the tab supplier. */
     private final ObservableSupplier<Tab> mTabSupplier;
@@ -26,7 +29,7 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
     private final Callback<Tab> mTabObserver;
 
     /** The current tab. */
-    private Tab mTab;
+    private @Nullable Tab mTab;
 
     public TabSupplierObserver(ObservableSupplier<Tab> tabSupplier) {
         this(tabSupplier, false);

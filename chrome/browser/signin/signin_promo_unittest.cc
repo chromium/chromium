@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -325,6 +326,16 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
       .WillByDefault(testing::Return(syncer::DataTypeSet()));
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       DoNotShowBookmarkPromoAfterSyncingAccount) {
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                                   "test_gaia");
+
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,

@@ -449,6 +449,15 @@ void VisitedURLRankingServiceImpl::RecordAction(
       wait_for_activation);
 }
 
+void VisitedURLRankingServiceImpl::RegisterTransformer(
+    URLVisitAggregatesTransformType type,
+    std::unique_ptr<URLVisitAggregatesTransformer> transformer) {
+  if (transformers_.count(type)) {
+    return;
+  }
+  transformers_.emplace(type, std::move(transformer));
+}
+
 void VisitedURLRankingServiceImpl::TriggerTrainingData(
     ScoredURLUserAction action,
     const std::string& visit_id,

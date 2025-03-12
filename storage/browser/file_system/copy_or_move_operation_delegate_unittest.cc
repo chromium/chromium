@@ -350,10 +350,8 @@ class CopyOrMoveOperationTestHelper {
 
     // Grant relatively big quota initially.
     quota_manager_->SetQuota(blink::StorageKey::CreateFirstParty(origin_),
-                             FileSystemTypeToQuotaStorageType(src_type_),
                              1024 * 1024);
     quota_manager_->SetQuota(blink::StorageKey::CreateFirstParty(origin_),
-                             FileSystemTypeToQuotaStorageType(dest_type_),
                              1024 * 1024);
   }
 

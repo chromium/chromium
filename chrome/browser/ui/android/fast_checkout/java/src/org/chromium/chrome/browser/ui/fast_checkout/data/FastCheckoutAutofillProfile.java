@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.ui.fast_checkout.data;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.fast_checkout.R;
+import org.chromium.components.autofill.RecordType;
 
 /** A profile, similar to the one used by the PersonalDataManager. */
 @NullMarked
@@ -25,6 +28,7 @@ public class FastCheckoutAutofillProfile {
     private final String mPhoneNumber;
     private final String mEmailAddress;
     private final String mLanguageCode;
+    private @RecordType int mRecordType;
 
     @CalledByNative
     public FastCheckoutAutofillProfile(
@@ -41,7 +45,8 @@ public class FastCheckoutAutofillProfile {
             String countryName,
             String phoneNumber,
             String emailAddress,
-            String languageCode) {
+            String languageCode,
+            @RecordType int recordType) {
         mGUID = guid;
         mFullName = fullName;
         mCompanyName = companyName;
@@ -56,6 +61,7 @@ public class FastCheckoutAutofillProfile {
         mPhoneNumber = phoneNumber;
         mEmailAddress = emailAddress;
         mLanguageCode = languageCode;
+        mRecordType = recordType;
     }
 
     @CalledByNative
@@ -125,5 +131,26 @@ public class FastCheckoutAutofillProfile {
     @CalledByNative
     public String getLanguageCode() {
         return mLanguageCode;
+    }
+
+    public @RecordType int getRecordType() {
+        return mRecordType;
+    }
+
+    public int getAddressHomeAndWorkIconId() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
+            return R.drawable.location_on_logo;
+        }
+
+        @RecordType int recordType = getRecordType();
+        switch (recordType) {
+            case RecordType.ACCOUNT_HOME:
+                return R.drawable.home_logo;
+            case RecordType.ACCOUNT_WORK:
+                return R.drawable.work_logo;
+            default:
+                return R.drawable.location_on_logo;
+        }
     }
 }

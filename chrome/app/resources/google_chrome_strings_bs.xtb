@@ -182,7 +182,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3245429137663807393">Ako dijelite i izvještaje o korištenju Chromea, ti izvještaji uključuju URL-ove koje posjećujete</translation>
 <translation id="3282568296779691940">Prijava na Chrome</translation>
 <translation id="3286538390144397061">Ponovo pokreni sada</translation>
-<translation id="3289358082435924389">Kasnije će vas Chrome pitati želite li upotrijebiti sačuvane informacije za automatsko popunjavanje obrazaca</translation>
 <translation id="3292333338048274092">Zatim ćete morati ponovo pokrenuti Chrome.</translation>
 <translation id="3360895254066713204">Pomoćnik za Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za 1 sekundu}one{Chrome će se ponovo pokrenuti za # sekundu}few{Chrome će se ponovo pokrenuti za # sekunde}other{Chrome će se ponovo pokrenuti za # sekundi}}</translation>
@@ -343,7 +342,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5602351063754773347">Chrome vam preporučuje da je uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim ekstenzijama<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Pomoću Chrome profila možete odvojiti sve svoje sadržaje u Chromeu. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
-<translation id="5649680279845190972">Da dobijete ekstenzije i drugo na svim svojim računarima, prijavite se u Chrome</translation>
 <translation id="565744775970812598">Fajl <ph name="FILE_NAME" /> može biti opasan, pa ga je Chrome blokirao.</translation>
 <translation id="566568153320186256">Chrome štedi energiju baterije ograničavanjem pozadinske aktivnosti i vizuelnih efekata, poput glatkog klizanja i broja slika u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o Uštedi energije<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Brisanje podataka Chromea na računu</translation>
@@ -522,7 +520,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7886087451482920026">Odaberite tekst putem Google Objektiva</translation>
 <translation id="7890208801193284374">Ako dijelite računar, prijatelji i porodica mogu odvojeno pretraživati i postaviti Chrome na način koji njima odgovara.</translation>
 <translation id="7896673875602241923">Neko se prethodno prijavio u Chrome s ovog računara kao <ph name="ACCOUNT_EMAIL_LAST" />. Kreirajte novog korisnika Chromea da odvojite svoje informacije.</translation>
-<translation id="7917470403848199310">Chrome će vas pitati želite li sačuvati informacije iz obrasca, kao što su datum rođenja, dob i broj pasoša</translation>
 <translation id="7917876797003313048">Možete upravljati Google računima na koje ste prijavljeni. Google računi se koriste za preglednik Chrome, Play trgovinu, Gmail i drugo. Ako želite dodati račun za nekog drugog, kao što je član porodice, umjesto računa dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome je blokirao ovo preuzimanje jer je fajl obmanjujući i može izvršiti neočekivane izmjene na uređaju</translation>
 <translation id="7951272445806340501">ChromeOS Flex je potrebno ponovo pokrenuti da se primijeni ažuriranje.</translation>
@@ -604,7 +601,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8948460679427074738">Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke. Chrome vam preporučuje da je uklonite.</translation>
-<translation id="8983860655274963234">Chrome bolje razumije obrasce i može ih brže automatski popuniti za vas. Saznajte više o <ph name="BEGIN_LINK" />automatskom popunjavanju u Chromeu<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">Dodajete radni profil na ovaj preglednik i dajte administratoru kontrolu samo nad radnim profilom.</translation>
 <translation id="8989968390305463310">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše vaša interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="8992769679401294069">Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuvate podatke Chromea na Google računu.</translation>

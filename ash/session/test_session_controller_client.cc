@@ -338,11 +338,4 @@ void TestSessionControllerClient::MaybeNotifyFirstSessionReady() {
   }
 }
 
-void TestSessionControllerClient::NotifyUserPrefServiceInitialized(
-    const AccountId& account_id) {
-  CHECK(controller_->IsActiveUserSessionStarted());
-  controller_->OnProfilePrefServiceInitialized(
-      account_id, prefs_provider_->GetUserPrefs(account_id));
-}
-
 }  // namespace ash

@@ -375,7 +375,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1244265436519979884">Pemulihan Linux sedang dijalankan</translation>
 <translation id="1244303850296295656">Ralat sambungan</translation>
 <translation id="1244917379075403655">Klik “Tetapan”</translation>
-<translation id="1245041875932187638">Padamkan semua data yang digunakan oleh autolengkap dengan AI</translation>
 <translation id="1245331638296910488">Fail akan dialihkan kepada OneDrive apabila dibuka pada Microsoft 365</translation>
 <translation id="1245628370644070008">Pemulihan data setempat</translation>
 <translation id="1246863218384630739">Tidak dapat memasang <ph name="VM_NAME" />: URL imej mengembalikan kod ralat <ph name="HTTP_ERROR" />. Sila hubungi pentadbir anda.</translation>
@@ -1417,7 +1416,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Menyediakan</translation>
 <translation id="1969654639948595766">Log teks WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Semua data akan dipadamkan. Tindakan ini tidak boleh dibuat asal</translation>
 <translation id="1972313920920745320">Laman yang anda tambahkan akan sentiasa aktif dan memori tidak akan dikosongkan daripada laman tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang memastikan laman tertentu aktif<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
 <translation id="197288927597451399">Simpan</translation>
@@ -3070,7 +3068,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3108957152224931571">Warna serlahan</translation>
 <translation id="3109206895301430738">Kumpulan Tab Disimpan</translation>
 <translation id="3109724472072898302">Diruntuhkan</translation>
-<translation id="310979712355504754">Padamkan semua</translation>
 <translation id="3112292765614504292">Saiz apl: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Tab ini ditambahkan</translation>
 <translation id="311394601889664316">Jangan benarkan laman mengedit fail atau folder pada peranti anda</translation>
@@ -4090,7 +4087,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah diluluskan}other{# sambungan telah diluluskan}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sekurang-kurangnya <ph name="INSTALL_SIZE" /> ruang disyorkan untuk Linux.</translation>
-<translation id="3824203811509979971">Ringkaskan kandungan atau tanya soalan</translation>
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log masuk untuk melihat tab daripada peranti lain</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}other{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}}</translation>
@@ -5905,7 +5901,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="512642543295077915">Search + undur ruang</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127620150973591153">ID sambungan selamat: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Ringkaskan kandungan atau tanya soalan.</translation>
 <translation id="5127881134400491887">Urus sambungan rangkaian</translation>
 <translation id="5127934926273826089">Bunga</translation>
 <translation id="5127986747308934633">Pentadbir anda mengawal peranti anda</translation>
@@ -7456,7 +7451,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6254892857036829079">Sempurna</translation>
 <translation id="6257131917452817589">penukaran kata laluan automatik</translation>
 <translation id="6257602895346497974">Hidupkan penyegerakan...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Rangkaian ini akan dipilih jika lebih daripada satu rangkaian yang sebelum ini disambungkan atau dikonfigurasikan tersedia</translation>
 <translation id="6259776178973198997">Segarkan semula Maklumat Pemilik Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Sandaran anda dimuat naik pada Google dan disulitkan menggunakan kata laluan Google Account anda.</translation>
@@ -9888,6 +9882,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7990863024647916394">Suara <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Pindahkan Wi-Fi secara automatik daripada telefon Android anda</translation>
 <translation id="7991296728590311172">Tetapan Akses Suis</translation>
+<translation id="7992080146463834191">Ringkaskan kandungan, permudahkan bahasa yang kompleks atau tanya soalan.</translation>
 <translation id="7992203134935383159">Sintesis pertuturan</translation>
 <translation id="7997826902155442747">Keutamaan Proses</translation>
 <translation id="7997828719430450286">Berjaya.</translation>
@@ -11154,6 +11149,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" dimatikan</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan penyemakan imbas tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangka.</translation>
+<translation id="8875221558267407626">Ringkaskan kandungan, permudahkan bahasa yang kompleks atau tanya soalan</translation>
 <translation id="8875520811099717934">Peningkatan Linux</translation>
 <translation id="8875736897340638404">Pilih keterlihatan anda</translation>
 <translation id="8876307312329369159">Tetapan ini tidak boleh ditukar dalam sesi tunjuk cara.</translation>

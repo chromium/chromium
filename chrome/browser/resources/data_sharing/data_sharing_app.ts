@@ -230,7 +230,7 @@ export function createTranslationMap(): TranslationMap {
           ) =>
           loadTimeData.getStringF(
               'ownerRemoveMemberDialogBody', params.displayedUser!.name!,
-              params.displayedUser!.email!),
+              params.displayedUser!.email!, getTabGroupName()),
       [DynamicMessageKey.GET_LEAVE_GROUP_DIALOG_CONTENT]: () =>
           loadTimeData.getStringF('leaveDialogBody', getTabGroupName()),
       [DynamicMessageKey.GET_BLOCK_DIALOG_TITLE]: (

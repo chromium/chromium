@@ -62,15 +62,14 @@ public class SharedImageTilesCoordinatorUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        initialize(
-                SharedImageTilesType.DEFAULT,
-                new SharedImageTilesColor(SharedImageTilesColor.Style.DEFAULT));
+        SharedImageTilesConfig config = new SharedImageTilesConfig.Builder(mActivity).build();
+        initialize(config);
     }
 
-    private void initialize(@SharedImageTilesType int type, SharedImageTilesColor color) {
+    private void initialize(SharedImageTilesConfig config) {
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(
-                        mActivity, type, color, mDataSharingService, mCollaborationService);
+                        mActivity, config, mDataSharingService, mCollaborationService);
         mView = mSharedImageTilesCoordinator.getView();
         mCountTileView = mView.findViewById(R.id.tiles_count);
         doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();

@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
@@ -18,6 +18,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 
 /** User data for a {@link Tab} managing an ID of an external application that opened it. */
+@NullMarked
 public final class TabAssociatedApp extends TabWebContentsUserData implements ImeEventObserver {
     private static final Class<TabAssociatedApp> USER_DATA_KEY = TabAssociatedApp.class;
 
@@ -25,7 +26,7 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
      * The external application that this Tab is associated with (null if not associated with any
      * app). Allows reusing of tabs opened from the same application.
      */
-    private String mId;
+    private @Nullable String mId;
 
     public static TabAssociatedApp from(Tab tab) {
         TabAssociatedApp app = get(tab);
@@ -69,14 +70,14 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
                 });
     }
 
-    private static TabAssociatedApp get(Tab tab) {
+    private static @Nullable TabAssociatedApp get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
     /**
      * @see #getAppId()
      */
-    public static String getAppId(Tab tab) {
+    public static @Nullable String getAppId(Tab tab) {
         TabAssociatedApp app = get(tab);
         return app != null ? app.getAppId() : null;
     }
@@ -99,7 +100,7 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
     }
 
     @Override
-    public void cleanupWebContents(WebContents webContents) {}
+    public void cleanupWebContents(@Nullable WebContents webContents) {}
 
     /**
      * Associates this tab with the external app with the specified id. Once a Tab is associated
@@ -118,7 +119,7 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
      * @return The id of the application associated with that tab (null if not
      *         associated with an app).
      */
-    public String getAppId() {
+    public @Nullable String getAppId() {
         return mId;
     }
 

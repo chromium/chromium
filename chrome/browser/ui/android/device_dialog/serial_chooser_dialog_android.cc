@@ -128,6 +128,10 @@ void SerialChooserDialogAndroid::ListDevices(JNIEnv* env) {
 }
 
 void SerialChooserDialogAndroid::OnOptionsInitialized() {
+  while (!item_id_map_.empty()) {
+    OnOptionRemoved(item_id_map_.size() - 1);
+  }
+
   for (size_t i = 0; i < controller_->NumOptions(); ++i) {
     OnOptionAdded(i);
   }

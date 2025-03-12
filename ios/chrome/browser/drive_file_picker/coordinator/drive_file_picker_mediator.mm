@@ -557,7 +557,8 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   }
   CHECK(fileURLs.count > 0);
   _metricsHelper.submittedFiles = fileURLs;
-  tab_helper->StopChoosingFiles(fileURLs, nil, nil);
+  NSString* displayString = GetDisplayStringForFileUrls(fileURLs);
+  tab_helper->StopChoosingFiles(fileURLs, displayString, nil);
   [self.delegate mediatorDidStopFileSelection:self];
 }
 

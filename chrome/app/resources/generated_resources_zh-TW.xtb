@@ -375,7 +375,6 @@
 <translation id="1244265436519979884">目前正在執行 Linux 還原作業</translation>
 <translation id="1244303850296295656">擴充功能錯誤</translation>
 <translation id="1244917379075403655">按一下「設定」</translation>
-<translation id="1245041875932187638">刪除「使用 AI 自動填入」功能的所有資料</translation>
 <translation id="1245331638296910488">使用 Microsoft 365 開啟檔案時，系統會將檔案移至 OneDrive</translation>
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1246863218384630739">無法安裝 <ph name="VM_NAME" />：映像檔網址傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請與管理員聯絡。</translation>
@@ -1407,7 +1406,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">準備中</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 筆)</translation>
-<translation id="1971694696800660479">請注意，這麼做將刪除裝置上的所有資料。這項操作無法復原</translation>
 <translation id="1972313920920745320">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體。<ph name="BEGIN_LINK" />進一步瞭解如何讓特定網站保持使用中的狀態<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="197288927597451399">保留</translation>
@@ -2290,6 +2288,7 @@
 <translation id="256517381556987641">檔案同步程序目前找到 <ph name="ITEMS_FOUND" /> 個檔案，且仍在檢查儲存空間。請稍候片刻再嘗試開啟同步處理檔案功能。</translation>
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
 <translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
+<translation id="256726287944589768">在新分頁中顯示頁尾</translation>
 <translation id="2568694057933302218">在無痕模式下，網站無法使用 Cookie 瞭解你在各網站的瀏覽活動，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="2568774940984945469">資訊列容器</translation>
 <translation id="2569972178052279830">零售商名稱</translation>
@@ -2798,6 +2797,7 @@
 <translation id="2921081876747860777">請設定密碼，保護你的本機資料。</translation>
 <translation id="2923006468155067296">系統會立即鎖定 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />。同一工作群組中的另外 <ph name="OTHER_TASK_NUM" /> 項工作：<ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">移除這個帳戶</translation>
 <translation id="2923644930701689793">存取手機的相機膠卷</translation>
 <translation id="292371311537977079">Chrome 設定</translation>
@@ -3055,7 +3055,6 @@
 <translation id="3108957152224931571">醒目顯示顏色</translation>
 <translation id="3109206895301430738">已儲存的分頁群組</translation>
 <translation id="3109724472072898302">已收合</translation>
-<translation id="310979712355504754">全部刪除</translation>
 <translation id="3112292765614504292">應用程式大小：<ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">已新增這個分頁</translation>
 <translation id="311394601889664316">禁止網站編輯裝置上的檔案或資料夾</translation>
@@ -4072,7 +4071,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{已核准擴充功能}other{已核准 # 個擴充功能}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">建議你至少為 Linux 保留 <ph name="INSTALL_SIZE" /> 的空間。</translation>
-<translation id="3824203811509979971">生成內容摘要或提出問題</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">登入即可查看在其他裝置上開啟的分頁</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
@@ -5885,7 +5883,6 @@
 <translation id="512642543295077915">搜尋鍵 + Backspace 鍵</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">生成內容摘要或提出問題。</translation>
 <translation id="5127881134400491887">管理網路連線</translation>
 <translation id="5127934926273826089">花卉</translation>
 <translation id="5127986747308934633">管理員已在控管你的裝置</translation>
@@ -7431,7 +7428,6 @@
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257131917452817589">自動變更密碼</translation>
 <translation id="6257602895346497974">開啟同步功能...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />：<ph name="VALUE" /></translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網路，系統會優先使用這個網路</translation>
 <translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資訊</translation>
 <translation id="6262371516389954471">備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
@@ -9862,6 +9858,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 語音 <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">自動傳送 Android 手機上的 Wi-Fi 資訊</translation>
 <translation id="7991296728590311172">切換控制功能設定</translation>
+<translation id="7992080146463834191">生成內容摘要、簡化複雜語言或提問。</translation>
 <translation id="7992203134935383159">語音合成</translation>
 <translation id="7997826902155442747">處理優先順序</translation>
 <translation id="7997828719430450286">成功。</translation>
@@ -11127,6 +11124,7 @@
 <translation id="8874448314264883207">「<ph name="EXTENSION_NAME" />」已關閉</translation>
 <translation id="8874647982044395866">有機</translation>
 <translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表網頁瀏覽保護程度較低，但網站功能較容易正常運作。</translation>
+<translation id="8875221558267407626">生成內容摘要、簡化複雜語言或提問</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
 <translation id="8875736897340638404">選擇瀏覽權限</translation>
 <translation id="8876307312329369159">這項設定無法在示範工作階段中變更。</translation>

@@ -35,7 +35,7 @@ std::unique_ptr<views::View> CreatePreviewBadge() {
   const int kBorderThickness = 0;
   const int kRoundedRadius =
       GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS);
-  badge_view->SetBorder(views::CreateThemedRoundedRectBorder(
+  badge_view->SetBorder(views::CreateRoundedRectBorder(
       kBorderThickness, kRoundedRadius,
       gfx::Insets::TLBR(kVerticalInset, kLeftInset, kVerticalInset,
                         kRightInset),

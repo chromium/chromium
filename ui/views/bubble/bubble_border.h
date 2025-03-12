@@ -191,10 +191,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Get the shadow type.
   Shadow shadow() const { return shadow_; }
 
-  // Get or set the color for the bubble and arrow body.
-  ui::ColorVariant color() const { return color_; }
-  void SetColor(ui::ColorVariant color);
-
   // Sets a desired pixel distance between the arrow tip and the outside edge of
   // the neighboring border image. For example:        |----offset----|
   // '(' represents shadow around the '{' edge:        ((({           ^   })))
@@ -325,7 +321,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   std::optional<bool> draw_border_stroke_;
   Shadow shadow_;
   std::optional<int> md_shadow_elevation_;
-  ui::ColorVariant color_{ui::kColorDialogBackground};
   bool avoid_shadow_overlap_ = false;
   std::optional<gfx::Insets> insets_;
 };

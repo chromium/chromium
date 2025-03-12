@@ -46,7 +46,7 @@ enum class BestFeaturesScreenVariationType {
   // users, don't show screen. Appears after Default Browser promo.
   kSignedInUsersOnlyAfterDBPromo,
   // Show the address bar promo instead of the Best Features screen.
-  kAddressBarPromoInsteadOfDBPromo,
+  kAddressBarPromoInsteadOfBestFeaturesScreen,
 };
 
 // Enum to represent arms of feature kUpdatedFirstRunSequence.

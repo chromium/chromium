@@ -27,7 +27,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/test_event_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,7 +89,6 @@ class RealtimeReportingClientTestBase : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
 };
 }  // namespace
 

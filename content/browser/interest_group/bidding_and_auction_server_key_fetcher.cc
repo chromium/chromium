@@ -292,6 +292,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     PerCoordinatorFetcherState state;
     state.key_url = GURL(key_config.key_url);
     state.version = 1;
+    state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+    state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
     if (!state.key_url.is_valid()) {
       continue;
     }
@@ -317,6 +319,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
           PerCoordinatorFetcherState state;
           state.key_url = GURL(kv.second.GetString());
           state.version = 1;
+          state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+          state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
           if (!state.key_url.is_valid()) {
             fetcher_state_map_.erase(coordinator);
             continue;
@@ -331,6 +335,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
       PerCoordinatorFetcherState state;
       state.key_url = std::move(key_url);
       state.version = 1;
+      state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+      state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
       fetcher_state_map_.insert_or_assign(default_gcp_coordinator_,
                                           std::move(state));
     }
@@ -352,6 +358,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
           PerCoordinatorFetcherState state;
           state.key_url = GURL(kv.second.GetString());
           state.version = 2;
+          state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+          state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
           if (!state.key_url.is_valid()) {
             fetcher_state_map_.erase(coordinator);
             continue;
@@ -382,6 +390,7 @@ void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys() {
 }
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
+    TrustedServerAPIType api,
     const url::Origin& scope_origin,
     const std::optional<url::Origin>& maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
@@ -395,15 +404,15 @@ void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
     return;
   }
   PerCoordinatorFetcherState& state = it->second;
-  if (!state.key_url.is_valid()) {
+  if (!state.apis.Has(api)) {
     std::move(callback).Run(
-        base::unexpected<std::string>("Invalid Coordinator"));
+        base::unexpected<std::string>("API not supported by coordinator"));
     return;
   }
 
   // If we have keys and they haven't expired just call the callback now.
   if (state.keyset && state.keyset->HasKeys() &&
-      state.expiration > base::Time::Now()) {
+      (state.debug_override || state.expiration > base::Time::Now())) {
     std::optional<BiddingAndAuctionServerKey> key =
         state.keyset->GetRandomKey(scope_origin);
     if (!key) {
@@ -419,9 +428,41 @@ void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
     std::move(callback).Run(std::move(*key));
     return;
   }
+
+  if (!state.key_url.is_valid()) {
+    std::move(callback).Run(
+        base::unexpected<std::string>("Invalid Coordinator"));
+    return;
+  }
+
   base::UmaHistogramBoolean("Ads.InterestGroup.ServerAuction.KeyFetch.Cached",
                             false);
   FetchKeys(scope_origin, coordinator, state, std::move(callback));
+}
+
+void BiddingAndAuctionServerKeyFetcher::AddKeysDebugOverride(
+    TrustedServerAPIType api,
+    const url::Origin& coordinator,
+    std::string serialized_keys,
+    DebugOverrideCallback callback) {
+  auto it = fetcher_state_map_.find(coordinator);
+  if (it != fetcher_state_map_.end()) {
+    std::move(callback).Run(
+        "Can't add debug override because coordinator with origin "
+        "already exists");
+    return;
+  }
+
+  PerCoordinatorFetcherState state;
+  state.version = 2;
+  state.apis.Put(api);
+  state.debug_override = true;
+  state.debug_override_callback = std::move(callback);
+  fetcher_state_map_.insert(std::pair(coordinator, std::move(state)));
+  // Pretend we succeeded in loading from network.
+  OnFetchKeysFromNetworkComplete(
+      std::move(coordinator),
+      std::make_unique<std::string>(std::move(serialized_keys)));
 }
 
 void BiddingAndAuctionServerKeyFetcher::FetchKeys(
@@ -431,7 +472,9 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeys(
     BiddingAndAuctionServerKeyFetcherCallback callback) {
   state.fetch_start = base::TimeTicks::Now();
   state.queue.emplace_back(std::move(callback), scope_origin);
-  if (state.queue.size() > 1) {
+  // If we're already fetching or parsing a debug override, just wait for that
+  // to finish.
+  if (state.queue.size() > 1 || state.debug_override) {
     return;
   }
 
@@ -502,17 +545,19 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromNetworkComplete(
     url::Origin coordinator,
     std::unique_ptr<std::string> response) {
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
-  bool was_cached = state.loader->LoadedFromCache();
+  bool was_cached = !state.debug_override && state.loader->LoadedFromCache();
   state.loader.reset();
   if (!response) {
     FailAllCallbacks(coordinator);
     return;
   }
-  base::UmaHistogramTimes(
-      "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkTime",
-      base::TimeTicks::Now() - state.network_fetch_start);
-  base::UmaHistogramBoolean(
-      "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached", was_cached);
+  if (!state.debug_override) {
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkTime",
+        base::TimeTicks::Now() - state.network_fetch_start);
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached", was_cached);
+  }
   if (state.version == 1) {
     data_decoder::DataDecoder::ParseJsonIsolated(
         *response,
@@ -555,7 +600,8 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
 
   BiddingAndAuctionKeySet keyset(std::move(keys));
   base::Time expiration = base::Time::Now() + kKeyRequestInterval;
-  if (base::FeatureList::IsEnabled(features::kFledgeStoreBandAKeysInDB)) {
+  if (base::FeatureList::IsEnabled(features::kFledgeStoreBandAKeysInDB) &&
+      !fetcher_state_map_.at(coordinator).debug_override) {
     manager_->SetBiddingAndAuctionServerKeys(
         coordinator, keyset.AsBinaryProto(), expiration);
   }
@@ -622,7 +668,8 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2(
 
   BiddingAndAuctionKeySet keyset(std::move(origin_scoped_keys));
   base::Time expiration = base::Time::Now() + kKeyRequestInterval;
-  if (base::FeatureList::IsEnabled(features::kFledgeStoreBandAKeysInDB)) {
+  if (base::FeatureList::IsEnabled(features::kFledgeStoreBandAKeysInDB) &&
+      !fetcher_state_map_.at(coordinator).debug_override) {
     manager_->SetBiddingAndAuctionServerKeys(
         coordinator, keyset.AsBinaryProto(), expiration);
   }
@@ -657,6 +704,10 @@ void BiddingAndAuctionServerKeyFetcher::CacheKeysAndRunAllCallbacks(
     }
     state.queue.pop_front();
   }
+
+  if (state.debug_override_callback) {
+    std::move(state.debug_override_callback).Run(std::nullopt);
+  }
 }
 
 void BiddingAndAuctionServerKeyFetcher::FailAllCallbacks(
@@ -671,6 +722,10 @@ void BiddingAndAuctionServerKeyFetcher::FailAllCallbacks(
     std::move(state.queue.front().callback)
         .Run(base::unexpected<std::string>("Key fetch failed"));
     state.queue.pop_front();
+  }
+
+  if (state.debug_override_callback) {
+    std::move(state.debug_override_callback).Run("Key config decoding failed");
   }
 }
 

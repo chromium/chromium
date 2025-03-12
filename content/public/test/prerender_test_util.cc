@@ -718,13 +718,18 @@ void PrerenderTestHelper::CancelPrerenderedPage(FrameTreeNodeId host_id) {
 // static
 std::unique_ptr<content::TestNavigationObserver>
 PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
-                                              const GURL& url) {
+                                              const GURL& url,
+                                              ui::PageTransition transition) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrimaryPage",
               "web_contents", web_contents, "url", url);
-  if (web_contents.IsLoading()) {
+  const bool is_renderer_initiated =
+      PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK);
+  if (is_renderer_initiated && web_contents.IsLoading()) {
     // Ensure that any ongoing navigation is complete prior to the construction
     // of |observer| below (this navigation may complete while executing ExecJs
     // machinery).
+    // Skip this wait when testing browser initiated navigations which don't
+    // expect this wait.
     content::TestNavigationObserver initial_observer(&web_contents);
     initial_observer.set_wait_event(
         content::TestNavigationObserver::WaitEvent::kLoadStopped);
@@ -736,29 +741,39 @@ PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
       std::make_unique<content::TestNavigationObserver>(&web_contents);
   observer->set_wait_event(
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
-  // Ignore the result of ExecJs().
-  //
-  // Depending on timing, activation could destroy a navigating frame before
-  // ExecJs() gets a result from the frame. This results in execution failure
-  // even when the navigation succeeded.
-  std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
-                       JsReplace("location = $1", url));
+  if (is_renderer_initiated) {
+    // Ignore the result of ExecJs().
+    //
+    // Depending on timing, activation could destroy a navigating frame before
+    // ExecJs() gets a result from the frame. This results in execution failure
+    // even when the navigation succeeded.
+    std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
+                         JsReplace("location = $1", url));
+  } else {
+    web_contents.OpenURL(
+        OpenURLParams(url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+                      transition, is_renderer_initiated),
+        /*navigation_handle_callback=*/{});
+  }
   return observer;
 }
 
 std::unique_ptr<content::TestNavigationObserver>
-PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& url) {
-  return NavigatePrimaryPageAsync(*GetWebContents(), url);
+PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& url,
+                                              ui::PageTransition transition) {
+  return NavigatePrimaryPageAsync(*GetWebContents(), url, transition);
 }
 
 // static
 void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
-                                              const GURL& url) {
-  NavigatePrimaryPageAsync(web_contents, url)->Wait();
+                                              const GURL& url,
+                                              ui::PageTransition transition) {
+  NavigatePrimaryPageAsync(web_contents, url, transition)->Wait();
 }
 
-void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url) {
-  NavigatePrimaryPage(*GetWebContents(), url);
+void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url,
+                                              ui::PageTransition transition) {
+  NavigatePrimaryPage(*GetWebContents(), url, transition);
 }
 
 void PrerenderTestHelper::OpenNewWindowWithoutOpener(WebContents& web_contents,

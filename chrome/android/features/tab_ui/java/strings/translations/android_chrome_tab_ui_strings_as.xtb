@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> টেবৰ গোটৰ ৰঙৰ চিহ্ন</translation>
 <translation id="311432875115153175">টেবৰ গোটৰ সূচী বন্ধ কৰা হৈছে</translation>
 <translation id="3194464645767632461">মূল্যাংকন</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{গোটত <ph name="TABS_COUNT_ONE" /> টা টেব যোগ দিয়ক}one{গোটত <ph name="TABS_COUNT_MANY" /> টা টেব যোগ দিয়ক}other{গোটত <ph name="TABS_COUNT_MANY" /> টা টেব যোগ দিয়ক}}</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
 <translation id="3547352561153509682">ই <ph name="USER_EMAIL" />ত ছাইন কৰা আটাইবোৰ ডিভাইচৰ পৰা গোটটো মচি পেলাব</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> টা নতুন টেব}one{<ph name="MANY_ADDED" /> টা নতুন টেব}other{<ph name="MANY_ADDED" /> টা নতুন টেব}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">এই ডিভাইচটোৰ পৰা খোলা থকা টেবৰ শিৰোনাম আৰু URL অপাৰেটিং ছিষ্টেমৰ সৈতে শ্বেয়াৰ কৰক</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা)}one{(<ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা)}other{(<ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা)}}</translation>
 <translation id="4850886885716139402">চাওক</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{গোটত <ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব যোগ দিয়ক}one{গোটত <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব যোগ দিয়ক}other{গোটত <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব যোগ দিয়ক}}</translation>
 <translation id="4861611890274104875">কাৰ্ড অগ্ৰাহ্য কৰক।</translation>
 <translation id="4861953997778766866">আপোনাৰ শ্বেয়াৰ কৰা টেবৰ গোটত যিকোনো লোকে সালসলনি কৰিব পাৰে</translation>
 <translation id="4870911314065352661">আটাইবোৰ টেব বন্ধ কৰিবনে?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
 <translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
 <translation id="6271513594716432922">আটাইবোৰ নিষ্ক্ৰিয় টেব বন্ধ কৰক</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="6333260925957816943">এই দোকানৰ বিষয়ে তথ্য</translation>
 <translation id="6381032505162537930">আপুনি আপোনাৰ টেবৰ গোটসমূহ ইয়াত বিচাৰি পাব</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{বাছনি কৰা <ph name="TABS_COUNT_ONE" /> টা টেবৰ গোট ভংগ কৰক}one{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেবৰ গোট ভংগ কৰক}other{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেবৰ গোট ভংগ কৰক}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">আপোনাৰ আনটো ডিভাইচৰ পৰা নতুন গোট</translation>
 <translation id="8029301326595421733">এই দোকানৰ বিষয়ে তথ্য পূৰ্ণ স্ক্ৰীনত দেখুওৱা হৈছে</translation>
 <translation id="8053770993984522566">টেবৰ গোটৰ সূচী, অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="8076492880354921740">টেব</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
 <translation id="8205266828577616993">টেবটো ওপৰলৈ নিয়ক</translation>

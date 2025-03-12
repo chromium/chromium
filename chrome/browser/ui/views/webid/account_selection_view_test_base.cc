@@ -58,11 +58,15 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
     IdentityProviderDataPtr idp,
     content::IdentityRequestAccount::LoginState login_state,
     std::optional<base::Time> last_used_timestamp) {
+  std::string display_identifier =
+      std::string(kDisplayIdentifierBase) + account_suffix;
+  std::string display_name = std::string(kDisplayNameBase) + account_suffix;
+  std::string name = std::string(kNameBase) + account_suffix;
+  std::string email = std::string(kEmailBase) + account_suffix;
   IdentityRequestAccountPtr account =
       base::MakeRefCounted<content::IdentityRequestAccount>(
-          std::string(kIdBase) + account_suffix,
-          std::string(kEmailBase) + account_suffix,
-          std::string(kNameBase) + account_suffix,
+          std::string(kIdBase) + account_suffix, display_identifier,
+          display_name, email, name,
           std::string(kGivenNameBase) + account_suffix, GURL(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
@@ -155,16 +159,19 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
       text_view->children();
   ASSERT_EQ(text_view_children.size(), 2u);
 
-  std::string expected_name(std::string(kNameBase) + account_suffix);
+  std::string expected_display_name(std::string(kDisplayNameBase) +
+                                    account_suffix);
   views::StyledLabel* name_view =
       static_cast<views::StyledLabel*>(text_view_children[0]);
   ASSERT_TRUE(name_view);
-  EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_name));
+  EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_display_name));
 
-  std::string expected_email(std::string(kEmailBase) + account_suffix);
+  std::string expected_display_identifier(std::string(kDisplayIdentifierBase) +
+                                          account_suffix);
   views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
   ASSERT_TRUE(email_view);
-  EXPECT_EQ(email_view->GetText(), base::UTF8ToUTF16(expected_email));
+  EXPECT_EQ(email_view->GetText(),
+            base::UTF8ToUTF16(expected_display_identifier));
 }
 
 void AccountSelectionViewTestBase::CheckHoverableAccountRows(
@@ -199,17 +206,18 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
   HoverButton* account_row = static_cast<HoverButton*>(account);
   ASSERT_TRUE(account_row);
 
-  // Check for the title, which is the name if the account is not filtered out
-  // and the email otherwise.
+  // Check for the title, which is the display name if the account is not
+  // filtered out and the display identifier otherwise.
   EXPECT_EQ(GetHoverButtonTitle(account_row),
             is_disabled
-                ? base::UTF8ToUTF16(std::string(kEmailBase) + account_suffix)
-                : base::UTF8ToUTF16(kNameBase + account_suffix));
+                ? base::UTF8ToUTF16(kDisplayIdentifierBase + account_suffix)
+                : base::UTF8ToUTF16(kDisplayNameBase + account_suffix));
 
   if (!is_disabled) {
-    // Check for account email in subtitle.
+    // Check for account display identifier in subtitle.
     EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
-              base::UTF8ToUTF16(std::string(kEmailBase) + account_suffix));
+              base::UTF8ToUTF16(std::string(kDisplayIdentifierBase) +
+                                account_suffix));
     EXPECT_TRUE(account_row->GetEnabled());
   } else {
     // Check that the subtitle says that the account is disabled.

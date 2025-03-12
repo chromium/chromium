@@ -38,6 +38,7 @@
 using base::UserMetricsAction;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddANoteTabMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSideBySideMenuItem);
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
@@ -135,6 +136,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                         IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
     SetEnabledAt(GetItemCount() - 1,
                  num_tabs == 1 && index != tab_strip->active_index());
+    SetElementIdentifierAt(GetItemCount() - 1, kSideBySideMenuItem);
   }
 
   for (const auto& selection : indices) {

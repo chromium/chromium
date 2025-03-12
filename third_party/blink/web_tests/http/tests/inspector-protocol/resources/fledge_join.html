@@ -10,8 +10,9 @@ if (location.search !== '') {
     trustedBiddingSignalsURL =
         "https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.json.php";
   }
-  if (searchParams.get("useCoordinator") === "true") {
-    trustedBiddingSignalsCoordinator = "https://a.test";
+  let coordinator = searchParams.get("coordinator");
+  if (coordinator) {
+    trustedBiddingSignalsCoordinator = coordinator;
   }
 }
 for (var i = 0; i < iterLimit; ++i) {

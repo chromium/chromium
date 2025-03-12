@@ -94,7 +94,7 @@ pub struct ResolveConfig {
     /// sparingly; it does not affect Cargo's dependency resolution, so the
     /// output can easily be incorrect. This is primarily intended to work
     /// around bugs in `cargo metadata` output.
-    pub remove_crates: Vec<String>,
+    pub remove_crates: HashSet<String>,
 }
 
 /// Customizes GN output for a crate.

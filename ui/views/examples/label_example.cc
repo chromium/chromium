@@ -44,8 +44,7 @@ class ExamplePreferredSizeLabel : public Label {
 
  public:
   ExamplePreferredSizeLabel() {
-    SetBorder(
-        CreateThemedSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
+    SetBorder(CreateSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
   }
 
   ExamplePreferredSizeLabel(const ExamplePreferredSizeLabel&) = delete;
@@ -128,8 +127,8 @@ void LabelExample::CreateExampleView(View* container) {
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(u"Label with thick border");
-  label->SetBorder(CreateThemedSolidBorder(
-      20, ExamplesColorIds::kColorLabelExampleThickBorder));
+  label->SetBorder(
+      CreateSolidBorder(20, ExamplesColorIds::kColorLabelExampleThickBorder));
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(
@@ -172,8 +171,8 @@ void LabelExample::ContentsChanged(Textfield* sender,
 
 void LabelExample::AddCustomLabel(View* container) {
   std::unique_ptr<View> control_container = std::make_unique<View>();
-  control_container->SetBorder(CreateThemedSolidBorder(
-      2, ExamplesColorIds::kColorLabelExampleCustomBorder));
+  control_container->SetBorder(
+      CreateSolidBorder(2, ExamplesColorIds::kColorLabelExampleCustomBorder));
   control_container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorLabelExampleCustomBackground));
   control_container->SetLayoutManager(

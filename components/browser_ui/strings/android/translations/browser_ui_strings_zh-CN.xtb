@@ -20,6 +20,7 @@
 <translation id="129382876167171263">网站保存的文件会显示在这里</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
 <translation id="1317194122196776028">移除此网站</translation>
+<translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
 <translation id="1343356790768851700">该网站会先判断您的喜好，然后向其他网站建议相关广告</translation>
 <translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
 <translation id="1371239764779356792">允许某个网站将数据保存在您的设备上</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
 <translation id="1448064542941920355">缩小</translation>
+<translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
 <translation id="1500473259453106018">隐藏“在标签页上显示降价通知”卡片</translation>
+<translation id="1508931164824684991">网站可以使用 JavaScript</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>
 <translation id="1538031354170655462">网站通常会通过近距离无线通信 (NFC) 与附近的标签或设备互动，例如扫描徽章或感应式付款</translation>
 <translation id="1547123415014299762">允许使用第三方 Cookie</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请查看<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="1686785653877010442">网站通常会发送通知，告知您重大新闻或聊天消息。</translation>
 <translation id="169515064810179024">禁止网站使用移动传感器</translation>
+<translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
+<translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1717218214683051432">移动传感器</translation>
 <translation id="1743802530341753419">需先询问，得到许可后才允许网站连接设备（推荐）</translation>
 <translation id="1779089405699405702">图片解码器</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">启用此设置后，Chrome 的运行速度会更快，并且使用 JavaScript 的功能能按预期运行。关闭此设置会降低性能，但提高 V8 防范攻击的能力。</translation>
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
+<translation id="1906181697255754968">网站通常会访问您设备上的文件和文件夹以实现某些功能（例如自动保存您的工作成果）</translation>
 <translation id="1915307458270490472">中止</translation>
 <translation id="1919950603503897840">选择联系人</translation>
 <translation id="1923695749281512248">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，共 <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">网站可以请求连接到 USB 设备</translation>
 <translation id="1979673356880165407">在您访问的所有网站上放大或缩小文字和图片</translation>
 <translation id="1984937141057606926">允许（第三方除外）</translation>
 <translation id="1985247341569771101">开启此设置后，网站可以使用设备的移动传感器。关闭此设置后，网站无法使用移动传感器。</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2091887806945687916">声音</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
+<translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
 <translation id="2117655453726830283">下一张幻灯片</translation>
 <translation id="2146263598007866206">网站可能会自动将相关文件一起下载，从而为您节省时间</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
 <translation id="2626708220538466178">默认浏览器底部动作条已关闭</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2670403088701171361">不允许网站查看您剪贴板中的文字或图片</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2682367912565197520">删除已保存的缩放级别</translation>
 <translation id="2683434792633810741">删除并重置？</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">开启此设置后，网站可以请求跟踪您的摄像头位置并了解您周围的环境。关闭此设置后，网站无法跟踪您的摄像头位置，也无法了解您周围的环境。</translation>
 <translation id="2968755619301702150">证书查看器</translation>
 <translation id="2979365474350987274">第三方 Cookie 受到限制</translation>
+<translation id="2990583317361835189">不允许网站使用移动传感器</translation>
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
+<translation id="3064871050034234884">网站可以播放声音</translation>
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="310979712355504754">全部删除</translation>
+<translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3114012059975132928">视频播放器</translation>
 <translation id="3115898365077584848">显示信息</translation>
 <translation id="3123473560110926937">已禁止部分网站显示广告</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">将视频静音</translation>
 <translation id="3600792891314830896">将播放声音的网站静音</translation>
 <translation id="3602290021589620013">预览</translation>
+<translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
+<translation id="3641456520301071208">网站可以请求取得您的位置信息</translation>
 <translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="3676777756440746804">禁止网站向您请求使用其保存的与您相关的信息</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
+<translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
 <translation id="3709818294139939629">已撤消网站对文件的访问权限</translation>
 <translation id="3721953990244350188">关闭此操作并显示下一项可查看的操作</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
+<translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
 <translation id="3779154269823594982">更改密码</translation>
 <translation id="3797520601150691162">不对特定网站应用深色主题</translation>
 <translation id="3803367742635802571">您访问的网站可能会停止按预期运行</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Chrome 将于今天再次屏蔽 Cookie</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
+<translation id="389521680295183045">网站可以询问能否了解您何时在主动使用自己的设备</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3905475044299942653">停止发送大量通知</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">打开手机上的“设置”</translation>
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
+<translation id="3955321697524543127">不允许网站连接到 USB 设备</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3981465354637804599">网站通常会显示广告，以便能够免费提供内容或服务。但据我们所知，有些网站会展示侵扰性或误导性广告。</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
 <translation id="4336566011000459927">Chrome 将于今天再次限制 Cookie</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有网站</translation>
+<translation id="4340799661701629185">不允许网站发送通知</translation>
 <translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
 <translation id="4419929467120297501">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> 已被禁止使用您在以下网站上的信息</translation>
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
+<translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="4994033804516042629">找不到任何联系人</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5822675474983796325">自定义新标签页页面底部动作条已全屏打开</translation>
+<translation id="5833899990800318936">不允许网站使用 JavaScript</translation>
+<translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5844448279347999754">开启此设置后，网站可以请求查看保存到剪贴板中的文字和图片。关闭此设置后，网站无法查看保存到剪贴板中的文字或图片。</translation>
 <translation id="5853982612236235577">开启此设置后，网站可以请求发送通知。关闭此设置后，网站无法发送通知。</translation>
 <translation id="5860033963881614850">关闭</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站已获准使用第三方 Cookie，因为它需要依赖这类 Cookie 来提供基本服务。\n\n访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
 <translation id="789180354981963912">在无痕模式下阻止第三方 Cookie：</translation>
+<translation id="789722939441020330">不允许网站自动下载多个文件</translation>
 <translation id="7940722705963108451">提醒我</translation>
+<translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7990211076305263060">开启此设置后，网站可以请求使用您的麦克风。关闭此设置后，网站无法使用您的麦克风。</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">“<ph name="APP_NAME" />”版本过旧。请重新安装该应用。</translation>
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="848952951823693243">始终请求访问移动网站</translation>
+<translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>
 <translation id="8499083585497694743">将麦克风取消静音</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
@@ -581,6 +606,7 @@
 <translation id="8926666909099850184">此设备的 NFC 功能处于关闭状态。请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此功能。</translation>
 <translation id="8928445016601307354">禁止网站查看和更改 NFC 设备上的信息</translation>
 <translation id="8944485226638699751">受限</translation>
+<translation id="895054485242522631">网站可以使用移动传感器</translation>
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8990043154272859344">您将会从所有网站上自动退出账号</translation>
 <translation id="8993853206419610596">展开所有请求</translation>

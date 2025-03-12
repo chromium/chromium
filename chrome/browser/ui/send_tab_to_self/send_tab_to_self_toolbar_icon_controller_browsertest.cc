@@ -66,6 +66,23 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
+                       ControllerExists) {
+  const std::vector<std::unique_ptr<ReceivingUiHandler>>& handlers =
+      send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
+          ->GetHandlers();
+  bool toolbar_button_controller_exists = false;
+  for (const std::unique_ptr<ReceivingUiHandler>& handler : handlers) {
+    auto* button_controller =
+        static_cast<SendTabToSelfToolbarIconController*>(handler.get());
+    if (button_controller &&
+        button_controller->profile() == browser()->profile()) {
+      toolbar_button_controller_exists = true;
+    }
+  }
+  EXPECT_TRUE(toolbar_button_controller_exists);
+}
+
 // This test cannot work on Wayland because the platform does not allow clients
 // to position top level windows, activate them, and set focus.
 #if !(BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS))

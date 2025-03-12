@@ -164,11 +164,15 @@ const CGFloat kShareSheetCornerRadius = 20;
 #pragma mark - Private methods
 
 - (void)displayShareSheet {
-  self.shareSheet.sharedURL = _shareURL;
-  self.shareSheet.sharedTitle = _shareTitle;
-  if (_preview) {
-    self.shareSheet.sharedURLPreview = _preview;
+  if (_shareURL) {
+    self.shareSheet.sharedURL = _shareURL;
+    self.shareSheet.sharedTitle = _shareTitle;
+  } else if (_shareImage) {
+    self.shareSheet.sharedImage = _shareImage;
+  } else if (_shareText) {
+    self.shareSheet.sharedText = _shareText;
   }
+
   __weak ExtendedShareViewController* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf presentViewController:weakSelf.shareSheet
@@ -256,13 +260,33 @@ const CGFloat kShareSheetCornerRadius = 20;
 - (void)handleSharedImage:(id)idImage
                   forItem:(NSExtensionItem*)item
                 withError:(NSError*)error {
-  // TODO(crbug.com/396326079): Handle shared images.
+  if ([idImage isKindOfClass:[UIImage class]]) {
+    self.shareImage = base::apple::ObjCCast<UIImage>(idImage);
+  } else if ([idImage isKindOfClass:[NSURL class]]) {
+    self.shareImage = [UIImage
+        imageWithData:[NSData
+                          dataWithContentsOfURL:base::apple::ObjCCast<NSURL>(
+                                                    idImage)]];
+  }
+  self.shareItem = item;
+  if (self.shareImage) {
+    [self displayShareSheet];
+  } else {
+    [self displayErrorView];
+  }
 }
 
 - (void)handleText:(id)idText
            forItem:(NSExtensionItem*)item
          withError:(NSError*)error {
-  // TODO(crbug.com/396326361): Handle shared text.
+  self.shareText = [[item attributedContentText] string];
+  self.shareItem = item;
+
+  if (self.shareText) {
+    [self displayShareSheet];
+  } else {
+    [self displayErrorView];
+  }
 }
 
 - (void)loadElementsFromContext {

@@ -20,6 +20,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -34,12 +36,13 @@ import org.chromium.url.GURL;
  * |show()| request from a Tab, and destroyed together with it. TODO(crbug.com/40162422): Consider
  * moving this to its own target.
  */
+@NullMarked
 public class SadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<SadTab> USER_DATA_KEY = SadTab.class;
 
     private final Tab mTab;
 
-    private View mView;
+    private @Nullable View mView;
 
     /**
      * Counts the number of successive refreshes on the sad tab page. The count is is reset after a
@@ -55,7 +58,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         return sadTab;
     }
 
-    public static SadTab get(Tab tab) {
+    public static @Nullable SadTab get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
@@ -302,7 +305,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     }
 
     @Override
-    public View getView() {
+    public @Nullable View getView() {
         return mView;
     }
 }

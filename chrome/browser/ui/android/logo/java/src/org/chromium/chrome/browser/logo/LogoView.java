@@ -30,10 +30,8 @@ import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.ui.widget.LoadingView;
-import org.chromium.ui.widget.LoadingView.Observer;
 
 /**
  * This view shows the default search provider's logo and fades in a new logo if one becomes
@@ -70,7 +68,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     private ClickHandler mClickHandler;
     private Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
-    private boolean mIsLogoPolishFlagEnabled;
     private int mLogoSizeForLogoPolish;
 
     private final FloatProperty<LogoView> mTransitionProperty =
@@ -142,11 +139,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
     /** Sets the onLogoAvailableCallback to notify when the new logo has faded in. */
     void setLogoAvailableCallback(Callback<Logo> onLogoAvailableCallback) {
         mOnLogoAvailableCallback = onLogoAvailableCallback;
-    }
-
-    /** Sets the isLogoPolishFlagEnabled to determine if logo polish flag is enabled. */
-    void setLogoPolishFlagEnabled(boolean isLogoPolishFlagEnabled) {
-        mIsLogoPolishFlagEnabled = isLogoPolishFlagEnabled;
     }
 
     /**
@@ -270,9 +262,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         int oldLogoTopMargin = logoViewLayoutParams.topMargin;
         int[] newLogoViewLayoutParams =
                 LogoUtils.getLogoViewLayoutParams(
-                        getResources(),
-                        mIsLogoPolishFlagEnabled && !isDefaultLogo,
-                        mLogoSizeForLogoPolish);
+                        getResources(), !isDefaultLogo, mLogoSizeForLogoPolish);
         int newLogoHeight = newLogoViewLayoutParams[0];
         int newLogoTopMargin = newLogoViewLayoutParams[1];
 
@@ -285,8 +275,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        if (!ChromeFeatureList.sLogoPolishAnimationKillSwitch.isEnabled()
-                                || newLogoHeight == oldLogoHeight) return;
+                        if (newLogoHeight == oldLogoHeight) return;
 
                         float animationValue = (Float) animation.getAnimatedValue();
                         if (animationValue <= 0.5f) {
@@ -440,11 +429,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
             }
 
             if (mNewLogo != null && mTransitionAmount > 0.5f) {
-                if (ChromeFeatureList.sLogoPolishAnimationKillSwitch.isEnabled()) {
-                    mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
-                } else {
-                    mPaint.setAlpha((int) (255 * 2 * (mTransitionAmount - 0.5f)));
-                }
+                mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
                 canvas.save();
                 canvas.concat(mNewLogoMatrix);
                 canvas.drawBitmap(mNewLogo, 0, 0, mPaint);
@@ -503,14 +488,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
         return mAnimationEnabled;
     }
 
-    boolean checkLoadingViewObserverEmptyForTesting() {
-        return mLoadingView.isObserverListEmpty();
-    }
-
-    void addLoadingViewObserverForTesting(Observer listener) {
-        mLoadingView.addObserver(listener);
-    }
-
     ClickHandler getClickHandlerForTesting() {
         return mClickHandler;
     }
@@ -525,14 +502,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     void setLoadingViewVisibilityForTesting(int visibility) {
         mLoadingView.setVisibility(visibility);
-    }
-
-    void setIsLogoPolishFlagEnabledForTesting(boolean isLogoPolishFlagEnabled) {
-        mIsLogoPolishFlagEnabled = isLogoPolishFlagEnabled;
-    }
-
-    boolean getIsLogoPolishFlagEnabledForTesting() {
-        return mIsLogoPolishFlagEnabled;
     }
 
     int getLogoSizeForLogoPolishForTesting() {

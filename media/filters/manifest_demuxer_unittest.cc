@@ -47,6 +47,8 @@ class MockEngine : public ManifestDemuxer::Engine {
   MOCK_METHOD(bool, IsSeekable, (), (const override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, SelectVideoVariant, (const MediaTrack::Id&), (override));
+  MOCK_METHOD(void, SelectAudioRendition, (const MediaTrack::Id&), (override));
 };
 
 // Fixture for ManifestDemuxer tests.

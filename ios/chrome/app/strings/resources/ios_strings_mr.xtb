@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">सद्य ब्राउझिंग डेटा हा <ph name="USER_EMAIL" /> सह लिंक केला जाईल. हा डेटा तुमच्या संस्थेद्वारे पाहण्यायोग्य असू शकतो.</translation>
 <translation id="1713777106376424209">द्वारे डिलिव्हर केले</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> वर तुमचा विश्वास असल्यास, साइन इन करण्यासाठी तुम्ही सेव्ह केलेला पासवर्ड वापरू शकता.</translation>
+<translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1728549374069268714">पेस्ट करा आणि जा</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> साठी नोटिफिकेशन सुरू करा</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">पत्त्याशी संबंधित डिटेक्शन बंद आहे. सेटिंग्ज मध्ये ते परत सुरू करा.</translation>
 <translation id="1904580727789512086">तुम्ही भेट दिलेल्या URL तुमच्या Google खाते मध्ये सेव्ह केल्या जातात</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
-<translation id="1923342640370224680">शेवटचा तास</translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
 <translation id="1943478190258551035">मेनू → सेटिंग्ज</translation>
 <translation id="1952728750904661634">व्यवस्थापित केलेल्या खात्यासह साइन इन करा</translation>
@@ -1206,6 +1206,7 @@
 <translation id="6187302354554850004">अखेरचे संंकालित: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> रोजी तयार केला</translation>
 <translation id="6189413832092199491">न वाचलेले</translation>
+<translation id="6192388920090306326">टोकियोची ट्रिप</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6196207969502475924">व्हॉइस शोध</translation>
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
@@ -1371,6 +1372,7 @@
 <translation id="6779455296366983087">तुमचा ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="6790502149545262384">लवकरच, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="CHANNEL_NAME" /> वरील स्टोरी दिसतील.</translation>
 <translation id="6794476726485507147">या पेजला पुन्हा भेट देण्यासाठी रिमाइंडर नोटिफिकेशन मिळविण्याकरिता तारीख आणि वेळ निवडा.</translation>
+<translation id="6807287147325542056">इतर अ‍ॅप्समधील पासवर्ड</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
 <translation id="6825078212112407882">{count,plural, =1{बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केले आहेत}}</translation>
 <translation id="6830728435402077660">सुरक्षित नाही</translation>
@@ -1935,6 +1937,7 @@
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" कडील</translation>
 <translation id="9107664647686727385">धोक्यात असलेले पासवर्ड तपासा</translation>
 <translation id="9124387962554796433">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमचा इतिहास वापरू शकते.</translation>
+<translation id="9124978074365039456">तुमचा कॅमेरा आणि फोटो गॅलरी वापरून तुम्ही पाहता त्या गोष्टी खरेदी करा, त्यांचे भाषांतर करा व ओळखा</translation>
 <translation id="9130317582644834675">मजकूर झूम करा हे लपवा</translation>
 <translation id="913036870884277353">इतर अ‍ॅप्समध्ये लिंक सहजपणे उघडा.</translation>
 <translation id="9137013805542155359">मूळ दर्शवा</translation>

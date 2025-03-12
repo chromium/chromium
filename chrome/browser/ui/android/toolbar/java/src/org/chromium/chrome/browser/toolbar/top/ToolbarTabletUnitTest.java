@@ -21,8 +21,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -155,52 +153,6 @@ public final class ToolbarTabletUnitTest {
                 "Reloading button position is not as expected",
                 mReloadingButton,
                 mToolbarTabletLayout.getChildAt(3));
-    }
-
-    @Test
-    public void testReloadButton() {
-        mToolbarTablet.onFinishInflate();
-        mToolbarTablet.initialize(
-                mToolbarDataProvider,
-                mToolbarTabController,
-                mMenuButtonCoordinator,
-                mTabSwitcherButtonCoordinator,
-                null,
-                () -> false,
-                null,
-                null,
-                null,
-                mProgressBar);
-        mToolbarTablet.onNativeLibraryReady();
-
-        mToolbarTablet.onClick(mReloadingButton);
-
-        verify(mToolbarTabController).stopOrReloadCurrentTab(false);
-    }
-
-    @Test
-    public void testReloadButton_shiftDown() {
-        mToolbarTablet.onFinishInflate();
-        mToolbarTablet.initialize(
-                mToolbarDataProvider,
-                mToolbarTabController,
-                mMenuButtonCoordinator,
-                mTabSwitcherButtonCoordinator,
-                null,
-                () -> false,
-                null,
-                null,
-                null,
-                mProgressBar);
-        mToolbarTablet.onNativeLibraryReady();
-
-        MotionEvent shiftClick =
-                MotionEvent.obtain(
-                        0, 0, MotionEvent.ACTION_BUTTON_PRESS, 0, 0, KeyEvent.META_SHIFT_ON);
-        mToolbarTablet.getReloadButtonTouchListenerForTest().onTouch(mReloadingButton, shiftClick);
-        mToolbarTablet.onClick(mReloadingButton);
-
-        verify(mToolbarTabController).stopOrReloadCurrentTab(true);
     }
 
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)

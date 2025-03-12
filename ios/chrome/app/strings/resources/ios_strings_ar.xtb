@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">سيتم ربط بيانات التصفُّح الحالية بحساب <ph name="USER_EMAIL" />. وقد تكون هذه البيانات مرئية لمؤسستك.</translation>
 <translation id="1713777106376424209">التسليم بحلول</translation>
 <translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
+<translation id="1718835860248848330">آخر ساعة</translation>
 <translation id="1728549374069268714">‏لصق عنوان URL والانتقال إليه</translation>
 <translation id="1732468323901456775">تفعيل إشعارات "<ph name="MODULE_NAME" />"</translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">ميزة رصد العناوين غير مفعَّلة، يمكنك إعادة تفعيلها في "الإعدادات".</translation>
 <translation id="1904580727789512086">‏يتم حفظ عناوين URL التي تنتقل إليها في حسابك على Google.</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
-<translation id="1923342640370224680">آخر ساعة</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1943478190258551035">القائمة ← الإعدادات</translation>
 <translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>

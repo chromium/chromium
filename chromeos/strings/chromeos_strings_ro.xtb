@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Animație pentru screensaver</translation>
 <translation id="152892567002884378">Mărește volumul</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
+<translation id="1548555207631326346">Alege o temă, apoi selectează cuvintele subliniate pentru a personaliza imaginile AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selectează Inspiră-mă pentru a obține mai multe opțiuni unice și variate de imagini AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Când creezi cu AI, solicitarea se trimite la serverele Google AI pentru a genera imagini și a îmbunătăți produsul, în conformitate cu <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Politica de confidențialitate Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI generativ este o funcție experimentală, în primele etape de dezvoltare și, momentan, are disponibilitate limitată.</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">culoarea iluminării din fundal</translation>
@@ -1553,6 +1562,16 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plajă</translation>
 <translation id="819278132617411009">Folosește Google AI pentru productivitate</translation>
+<translation id="82003371436638355">Când selectezi Creează-ți propriul mesaj, scrie un mesaj personalizat. Sau poți selecta Alege o temă, apoi cuvintele subliniate pentru a personaliza fundalul AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selectează Inspiră-mă pentru a obține mai multe opțiuni unice și variate de imagini AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Când creezi propriul fundal, solicitarea se trimite la serverele Google pentru a genera imagini și a îmbunătăți produsul, în conformitate cu <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termenii și condițiile și Politica de confidențialitate Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nu include conținut personal, sensibil sau confidențial.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI-ul generativ poate să facă greșeli, inclusiv în legătură cu persoane, așadar verifică încă o dată răspunsurile <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Află mai multe<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
@@ -1574,6 +1593,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8312330582793120272">redă conținutul media</translation>
 <translation id="8318753676953949627">Nicio imagine</translation>
 <translation id="8320910311642849813">pădure</translation>
+<translation id="8322464149031882595">Dă clic pentru a merge înainte</translation>
 <translation id="8329018942023753850">aplicația calculator</translation>
 <translation id="8336739000755212683">Schimbă imaginea contului de pe dispozitiv</translation>
 <translation id="8339024191194156249">Află mai multe despre lansarea automată</translation>
@@ -1720,6 +1740,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8961025972867871808">pinguini</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
+<translation id="8972061581514441296">Dă clic pentru a reveni</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
 <translation id="89945434909472341">sat</translation>

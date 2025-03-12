@@ -66,6 +66,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="3078350928901129212">Ikon warna grup tab <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Daftar grup tab ditutup</translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab ke grup}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab ke grup}}</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3547352561153509682">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baru}other{<ph name="MANY_ADDED" /> tab baru}}</translation>
@@ -98,6 +99,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="4783638485675352219">Bagikan judul dan URL tab yang terbuka dari perangkat ini dengan sistem operasi</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab terpilih ke grup}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab terpilih ke grup}}</translation>
 <translation id="4861611890274104875">Tutup kartu.</translation>
 <translation id="4861953997778766866">Siapa saja dapat melakukan perubahan pada grup tab bersama Anda</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
@@ -134,6 +136,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
 <translation id="6271513594716432922">Menutup semua tab tidak aktif</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab ke grup baru}other{Tambahkan tab ke grup baru}}</translation>
 <translation id="6333260925957816943">Informasi tentang toko ini</translation>
 <translation id="6381032505162537930">Anda akan menemukan grup tab di sini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Pisahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Pisahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
@@ -186,6 +189,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="799469866974412355">Grup baru dari perangkat Anda yang lain</translation>
 <translation id="8029301326595421733">Informasi tentang toko ini terbuka sepenuhnya</translation>
 <translation id="8053770993984522566">Daftar grup tab, terbuka setengah</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Tambahkan tab ke grup}other{Tambahkan tab ke grup}}</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Pindahkan tab ke atas</translation>

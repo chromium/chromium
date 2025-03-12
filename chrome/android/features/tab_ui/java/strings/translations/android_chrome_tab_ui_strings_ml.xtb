@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">ടാബ് ഗ്രൂപ്പിന്റെ, <ph name="COLOR_NAME" /> നിറത്തിലുള്ള ഐക്കൺ</translation>
 <translation id="311432875115153175">ടാബ് ഗ്രൂപ്പ് ലിസ്‌റ്റ് അടച്ചു</translation>
 <translation id="3194464645767632461">റേറ്റിംഗ്</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{ഗ്രൂപ്പിലേക്ക് <ph name="TABS_COUNT_ONE" /> ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3547352561153509682">ഇത്, <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{പുതിയ <ph name="ONE_ADDED" /> ടാബ്}other{പുതിയ <ph name="MANY_ADDED" /> ടാബുകൾ}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">ഈ ഉപകരണത്തിൽ നിന്നുള്ള, തുറന്ന ടാബുകളുടെ തലക്കെട്ടുകളും URL-കളും ഓപ്പറേറ്റിംഗ് സിസ്റ്റവുമായി പങ്കിടുക</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ)}}</translation>
 <translation id="4850886885716139402">കാണുക</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ്, ഗ്രൂപ്പിലേക്ക് ചേർക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ, ഗ്രൂപ്പിലേക്ക് ചേർക്കുക}}</translation>
 <translation id="4861611890274104875">കാർഡ് ഡിസ്മിസ് ചെയ്യുക.</translation>
 <translation id="4861953997778766866">നിങ്ങളുടെ പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ എല്ലാവർക്കും മാറ്റങ്ങൾ വരുത്താനാകും</translation>
 <translation id="4870911314065352661">എല്ലാ ടാബുകളും അടയ്‌ക്കണോ?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="6271513594716432922">നിഷ്ക്രിയമായ എല്ലാ ടാബുകളും അടയ്ക്കുക</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="6333260925957816943">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
 <translation id="6381032505162537930">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ കാണാം</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">നിങ്ങളുടെ മറ്റേ ഉപകരണത്തിൽ നിന്നുള്ള പുതിയ ഗ്രൂപ്പ്</translation>
 <translation id="8029301326595421733">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങളുടെ മുഴുവൻ ഉയരത്തിൽ തുറന്ന ലിസ്റ്റ്</translation>
 <translation id="8053770993984522566">ടാബ് ഗ്രൂപ്പ് ലിസ്‌റ്റ് പകുതി ഉയരത്തിൽ തുറന്നു</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>
 <translation id="8205266828577616993">ടാബ് മുകളിലേക്ക് നീക്കുക</translation>

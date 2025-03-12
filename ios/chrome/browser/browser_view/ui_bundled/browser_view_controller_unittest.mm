@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -157,46 +158,46 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 
-    id mockActivityServiceCommandHandler =
+    id mock_activity_service_handler =
         OCMProtocolMock(@protocol(ActivityServiceCommands));
-    [dispatcher startDispatchingToTarget:mockActivityServiceCommandHandler
+    [dispatcher startDispatchingToTarget:mock_activity_service_handler
                              forProtocol:@protocol(ActivityServiceCommands)];
-    id mockFindInPageCommandHandler =
+    id mock_find_in_page_handler =
         OCMProtocolMock(@protocol(FindInPageCommands));
-    [dispatcher startDispatchingToTarget:mockFindInPageCommandHandler
+    [dispatcher startDispatchingToTarget:mock_find_in_page_handler
                              forProtocol:@protocol(FindInPageCommands)];
-    id mockLensCommandHandler = OCMProtocolMock(@protocol(LensCommands));
-    [dispatcher startDispatchingToTarget:mockLensCommandHandler
+    id mock_lens_handler = OCMProtocolMock(@protocol(LensCommands));
+    [dispatcher startDispatchingToTarget:mock_lens_handler
                              forProtocol:@protocol(LensCommands)];
-    id mockTextZoomCommandHandler =
-        OCMProtocolMock(@protocol(TextZoomCommands));
-    [dispatcher startDispatchingToTarget:mockTextZoomCommandHandler
+    id mock_text_zoom_handler = OCMProtocolMock(@protocol(TextZoomCommands));
+    [dispatcher startDispatchingToTarget:mock_text_zoom_handler
                              forProtocol:@protocol(TextZoomCommands)];
-    id mockPageInfoCommandHandler =
-        OCMProtocolMock(@protocol(PageInfoCommands));
-    [dispatcher startDispatchingToTarget:mockPageInfoCommandHandler
+    id mock_page_info_handler = OCMProtocolMock(@protocol(PageInfoCommands));
+    [dispatcher startDispatchingToTarget:mock_page_info_handler
                              forProtocol:@protocol(PageInfoCommands)];
-    id mockQrScannerCommandHandler =
-        OCMProtocolMock(@protocol(QRScannerCommands));
-    [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
+    id mock_qr_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
+    [dispatcher startDispatchingToTarget:mock_qr_scanner_handler
                              forProtocol:@protocol(QRScannerCommands)];
-    id mockSnackbarCommandHandler =
-        OCMProtocolMock(@protocol(SnackbarCommands));
-    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+    id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler
                              forProtocol:@protocol(SnackbarCommands)];
-    id mockContextualSheetCommandHandler =
+    id mock_contextual_sheet_handler =
         OCMProtocolMock(@protocol(ContextualSheetCommands));
-    [dispatcher startDispatchingToTarget:mockContextualSheetCommandHandler
+    [dispatcher startDispatchingToTarget:mock_contextual_sheet_handler
                              forProtocol:@protocol(ContextualSheetCommands)];
-    id mockContextualPanelEntrypointIPHCommandHandler =
+    id mock_contextual_panel_entrypoint_iph_handler =
         OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
     [dispatcher
-        startDispatchingToTarget:mockContextualPanelEntrypointIPHCommandHandler
+        startDispatchingToTarget:mock_contextual_panel_entrypoint_iph_handler
                      forProtocol:@protocol(
                                      ContextualPanelEntrypointIPHCommands)];
+    id mock_browser_coordinator_handler =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler
+                             forProtocol:@protocol(BrowserCoordinatorCommands)];
 
-    id mockHelpHandler = OCMProtocolMock(@protocol(HelpCommands));
-    [dispatcher startDispatchingToTarget:mockHelpHandler
+    id mock_help_handler = OCMProtocolMock(@protocol(HelpCommands));
+    [dispatcher startDispatchingToTarget:mock_help_handler
                              forProtocol:@protocol(HelpCommands)];
 
     // Set up Applicationhander and SettingsHandler mocks.

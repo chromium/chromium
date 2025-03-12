@@ -35,7 +35,9 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
         ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
     const PrefService* pref_service = profile_->GetPrefs();
     version_info::Channel channel = chrome::GetChannel();
-    source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
+    source->AddBoolean("isDevChannel",
+                       channel == version_info::Channel::DEV ||
+                           channel == version_info::Channel::UNKNOWN);
     source->AddBoolean("isProducer", ash::boca_util::IsProducer(user));
     source->AddBoolean("isConsumer", ash::boca_util::IsConsumer(user));
     source->AddBoolean(

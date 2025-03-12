@@ -15,8 +15,7 @@
 
 using extensions::mojom::APIPermissionID;
 
-namespace extensions {
-namespace api_permissions {
+namespace extensions::api_permissions {
 
 namespace {
 
@@ -193,5 +192,5 @@ base::span<const Alias> GetPermissionAliases() {
   return base::span(aliases);
 }
 
-}  // namespace api_permissions
-}  // namespace extensions
+} // namespace extensions::api_permissions
+

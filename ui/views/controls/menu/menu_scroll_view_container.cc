@@ -439,8 +439,7 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   // When a custom background color is used, ensure that the border uses
   // the custom background color for its insets.
   if (border_color_id_.has_value()) {
-    SetBorder(
-        views::CreateThemedSolidSidedBorder(insets, border_color_id_.value()));
+    SetBorder(views::CreateSolidSidedBorder(insets, border_color_id_.value()));
     return;
   }
 

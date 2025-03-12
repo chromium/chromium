@@ -48,15 +48,22 @@ class DownloadItemMetadata : public DeepScanningMetadata {
   void AddScanResultMetadata(
       const enterprise_connectors::FileMetadata& file_metadata) const override;
   bool IsForDownloadItem(download::DownloadItem* download) const override;
+  void SetCallback(CheckDownloadRepeatingCallback callback);
+  void ProcessScanResult(DownloadCheckResultReason reason,
+                         DownloadCheckResult deep_scan_result) override;
+  base::WeakPtr<DownloadItemMetadata> GetWeakPtr();
 
  private:
   // The download item to scan.
   raw_ptr<download::DownloadItem> item_;
+  CheckDownloadRepeatingCallback callback_;
 
   // Map of observers to their observation objects for cleanup.
   std::unordered_map<download::DownloadItem::Observer*,
                      raw_ptr<DownloadScopedObservation>>
       download_observations_;
+
+  base::WeakPtrFactory<DownloadItemMetadata> weakptr_factory_{this};
 };
 
 }  // namespace safe_browsing

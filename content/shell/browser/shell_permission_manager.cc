@@ -76,6 +76,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::POINTER_LOCK:
     case PermissionType::AUTOMATIC_FULLSCREEN:
     case PermissionType::WEB_APP_INSTALLATION:
+    case PermissionType::LOCAL_NETWORK_ACCESS:
       return false;
   }
 

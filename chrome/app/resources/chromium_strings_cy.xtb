@@ -130,11 +130,9 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2753623023919742414">Cliciwch i chwilio</translation>
 <translation id="2770231113462710648">Newid y porwr diofyn i:</translation>
-<translation id="277338894894732084">Yn ddiweddarach, bydd Chromium yn gofyn a ydych chi am ddefnyddio gwybodaeth sydd wedi'i chadw i lenwi ffurflenni'n awtomatig</translation>
 <translation id="2785438272836277133">Mae'r estyniad hwn yn cynnwys drwgwedd ac mae'n anniogel. Tynnwch ef o Chromium fel na all weld na newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
 <translation id="2803971713792056305">Eich Chromium</translation>
-<translation id="2806241689335397269">Bydd Chromium yn gofyn a ydych am gadw gwybodaeth ffurflen, megis eich pen-blwydd, oedran, a rhif pasbort</translation>
 <translation id="2841525013647267359">Cyfieithu o</translation>
 <translation id="2846251086934905009">Gwall gosod: Ni wnaeth y gosodwr orffen. Mae'r gosodiad wedi'i derfynu.</translation>
 <translation id="2847479871509788944">Tynnu o Chromium...</translation>
@@ -180,7 +178,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Newid i broffil Chromium presennol?</translation>
 <translation id="3412460710772753638">Yn Rheolwr Cyfrineiriau ar y ddyfais hon</translation>
-<translation id="3451656833730006755">I gael eich estyniadau a rhagor ar eich holl gyfrifiaduron, mewngofnodwch i Chromium</translation>
 <translation id="347328004046849135">Bydd Chromium yn eich hysbysu pan fyddwch yn mewngofnodi gyda chyfrinair sydd wedi'i ddarganfod</translation>
 <translation id="3474745554856756813">Bydd hyn yn dileu <ph name="ITEMS_COUNT" /> eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Gall <ph name="SHORTCUT" /> newid rhwng proffiliau Chromium</translation>
@@ -463,7 +460,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="734373864078049451">Mae'ch gwe, nodau tudalen, a phethau Chromium eraill yn byw yma.</translation>
 <translation id="7349591376906416160">Mae gweinyddwr eich system wedi ffurfweddu Chromium i agor <ph name="ALTERNATIVE_BROWSER_NAME" /> i gael mynediad at <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Nid yw'r estyniad hwn yn cael ei gefnogi mwyach. Mae Chromium yn argymell eich bod yn ei dynnu yn lle hynny.</translation>
-<translation id="7389750180956889333">Mae Chromium yn deall ffurflenni'n well a gall eu llenwi'n awtomatig yn gyflymach i chi. Dysgu rhagor am <ph name="BEGIN_LINK" />Awtolenwi Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Copïwyd y testun</translation>
 <translation id="7451052299415159299">Mae angen eich caniatâd ar Chromium i ddefnyddio eich camera ar gyfer y wefan hon</translation>

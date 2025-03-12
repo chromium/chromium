@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Fail yang disimpan oleh laman web akan dipaparkan di sini</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
 <translation id="1317194122196776028">Lupakan laman ini</translation>
+<translation id="1333965224356556482">Jangan benarkan laman melihat lokasi anda</translation>
 <translation id="1343356790768851700">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain</translation>
 <translation id="1369915414381695676">Tapak <ph name="SITE_NAME" /> telah ditambahkan</translation>
 <translation id="1371239764779356792">Benarkan laman menyimpan data pada peranti anda</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1415855080660575082">Benarkan Chrome berkongsi tab terbaharu anda dengan peranti anda untuk melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh menghidupkan atau mematikan ciri ini dalam tetapan Chrome.</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
+<translation id="1464044141348608623">Jangan benarkan laman mengetahui waktunya anda aktif menggunakan peranti</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> laman}other{<ph name="SITE_COUNT" /> laman}}</translation>
 <translation id="1500473259453106018">Sembunyikan kad penurunan harga pada tab</translation>
+<translation id="1508931164824684991">Laman boleh menggunakan JavaScript</translation>
 <translation id="1510341833810331442">Laman tidak dibenarkan menyimpan data pada peranti anda</translation>
 <translation id="1538031354170655462">Laman biasanya menggunakan Komunikasi Medan Dekat (NFC) untuk berfungsi dengan tag atau peranti berdekatan, seperti mengimbas lencana atau membuat bayaran tanpa sentuhan</translation>
 <translation id="1547123415014299762">Kuki pihak ketiga dibenarkan</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Kuki dan data tapak lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua tapak, lihat <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="1686785653877010442">Biasanya laman menghantar pemberitahuan untuk memberitahu anda tentang berita mutakhir atau mesej sembang.</translation>
 <translation id="169515064810179024">Sekat tapak daripada mengakses penderia gerakan</translation>
+<translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
+<translation id="1704230497453185209">Jangan benarkan laman memainkan bunyi</translation>
 <translation id="1717218214683051432">Penderia gerakan</translation>
 <translation id="1743802530341753419">Tanya sebelum membenarkan tapak menyambung ke peranti (disyorkan)</translation>
 <translation id="1779089405699405702">Penyahkod imej</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya. Apabila dimatikan, prestasi akan berkurang tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Tapak biasanya mengakses fail dan folder pada peranti anda untuk ciri seperti menyimpan kerja anda secara automatik</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1919950603503897840">Pilih kenalan</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Tapak boleh meminta untuk menyambung kepada peranti USB</translation>
 <translation id="1979673356880165407">Jadikan teks dan imej lebih besar atau lebih kecil untuk semua laman yang anda lawati</translation>
 <translation id="1984937141057606926">Dibenarkan, kecuali pihak ketiga</translation>
 <translation id="1985247341569771101">Apabila dihidupkan, laman dapat menggunakan penderia gerakan peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia gerakan.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2091887806945687916">Bunyi</translation>
 <translation id="2096716221239095980">Padamkan semua data</translation>
+<translation id="2102396546234652240">Jangan benarkan laman menggunakan mikrofon anda</translation>
 <translation id="2117655453726830283">Slaid seterusnya</translation>
 <translation id="2146263598007866206">Tapak mungkin memuat turun beberapa fail yang berkaitan bersama-sama secara automatik untuk menjimatkan masa anda</translation>
 <translation id="2148716181193084225">Hari ini</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
 <translation id="2626708220538466178">Helaian bawah penyemak imbas lalai ditutup</translation>
 <translation id="2653659639078652383">Serah</translation>
+<translation id="2670403088701171361">Jangan benarkan laman melihat teks atau imej pada papan keratan anda</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2682367912565197520">Padamkan tahap zum yang disimpan</translation>
 <translation id="2683434792633810741">Padam &amp; tetapkan semula?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Apabila dihidupkan, laman dapat meminta untuk menjejaki kedudukan kamera anda dan mengetahui tentang persekitaran anda. Apabila dimatikan, laman tidak dapat menjejaki kedudukan kamera anda dan mengetahui tentang persekitaran anda.</translation>
 <translation id="2968755619301702150">Pemapar sijil</translation>
 <translation id="2979365474350987274">Kuki pihak ketiga adalah terhad</translation>
+<translation id="2990583317361835189">Jangan benarkan laman menggunakan penderia gerakan</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
 <translation id="301521992641321250">Disekat secara automatik</translation>
+<translation id="3064871050034234884">Laman boleh memainkan bunyi</translation>
 <translation id="3069226013421428034">Benarkan log masuk pihak ketiga untuk laman tertentu.</translation>
 <translation id="310297983047869047">Slaid sebelumnya</translation>
 <translation id="3109724472072898302">Diruntuhkan</translation>
 <translation id="310979712355504754">Padamkan semua</translation>
+<translation id="311394601889664316">Jangan benarkan laman mengedit fail atau folder pada peranti anda</translation>
 <translation id="3114012059975132928">Pemain video</translation>
 <translation id="3115898365077584848">Tunjukkan Maklumat</translation>
 <translation id="3123473560110926937">Disekat di sesetengah tapak</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Redam video</translation>
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3602290021589620013">Pratonton</translation>
+<translation id="3611658447322220736">Laman yang ditutup baru-baru ini boleh menyelesaikan penghantaran dan penerimaan data</translation>
 <translation id="3628308229821498208">Carian cadangan</translation>
+<translation id="3641456520301071208">Laman boleh meminta lokasi anda</translation>
 <translation id="3658847490588580244">Helaian bawah penyemak imbas lalai</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
 <translation id="3676777756440746804">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3697164069658504920">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti USB. Apabila dimatikan, laman tidak dapat menggunakan peranti USB.</translation>
 <translation id="3707034683772193706">Laman yang anda lawati boleh menyimpan sedikit maklumat dengan Chrome, terutamanya untuk mengesahkan bahawa anda bukan bot</translation>
+<translation id="3708684582558000260">Jangan benarkan laman yang telah ditutup menyelesaikan penghantaran atau penerimaan data</translation>
 <translation id="3709818294139939629">Akses laman kepada fail dialih keluar</translation>
 <translation id="3721953990244350188">Ketepikan dan tunjukkan tindakan seterusnya yang tersedia</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
+<translation id="3776508619697147021">Laman boleh meminta untuk memuat turun berbilang fail secara automatik</translation>
 <translation id="3779154269823594982">Tukar kata laluan</translation>
 <translation id="3797520601150691162">Jangan gunakan tema gelap untuk laman tertentu</translation>
 <translation id="3803367742635802571">Laman yang anda lawati mungkin berhenti berfungsi seperti yang direka</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Chrome akan menyekat kuki lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari ke hadapan</translation>
+<translation id="389521680295183045">Laman boleh meminta untuk mengetahui waktu anda aktif menggunakan peranti</translation>
 <translation id="3895926599014793903">Zum didaya paksa</translation>
 <translation id="3905475044299942653">Hentikan banyak pemberitahuan</translation>
 <translation id="3908288065506437185">Sekat kuki pihak ketiga dalam mod Inkognito</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Pada telefon anda, buka Tetapan</translation>
 <translation id="3933121352599513978">Kuncupkan permintaan yang tidak dikehendaki (disyorkan)</translation>
 <translation id="3955193568934677022">Benarkan tapak untuk memainkan kandungan yang dilindungi (disyorkan)</translation>
+<translation id="3955321697524543127">Jangan benarkan laman menyambung kepada peranti USB</translation>
 <translation id="3965467402665811906">Laman boleh meminta untuk menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3981465354637804599">Laman biasanya memaparkan iklan agar dapat memberikan kandungan atau perkhidmatan percuma. Akan tetapi, sesetengah laman diketahui memaparkan iklan yang mengganggu atau mengelirukan.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
 <translation id="4336566011000459927">Chrome akan mengehadkan kuki lagi hari ini</translation>
 <translation id="4338831206024587507">Semua laman di bawah <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Jangan benarkan laman menghantar pemberitahuan</translation>
 <translation id="4402755511846832236">Sekat tapak daripada mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
 <translation id="4419929467120297501">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> disekat daripada menggunakan maklumat anda pada</translation>
 <translation id="4953688446973710931">Apabila dihidupkan, laman dapat meminta untuk memuat turun berbilang fail secara automatik. Apabila dimatikan, laman tidak dapat memuat turun berbilang fail secara automatik.</translation>
 <translation id="4962975101802056554">Batalkan semua kebenaran untuk peranti</translation>
+<translation id="4972737347717125191">Tapak boleh meminta untuk menggunakan peranti dan data realiti maya</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4976702386844183910">Terakhir dilawati <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Tiada kenalan ditemui</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5822675474983796325">Sesuaikan helaian bawah halaman tab baharu anda dibuka pada ketinggian penuh</translation>
+<translation id="5833899990800318936">Jangan benarkan laman menggunakan JavaScript</translation>
+<translation id="583673505367439042">Laman boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
 <translation id="5844448279347999754">Apabila dihidupkan, laman dapat meminta untuk melihat teks dan imej yang disimpan pada papan keratan anda. Apabila dimatikan, laman tidak dapat melihat teks atau imej pada papan keratan anda.</translation>
 <translation id="5853982612236235577">Apabila dihidupkan, laman dapat meminta untuk menghantar pemberitahuan. Apabila dimatikan, laman tidak dapat menghantar pemberitahuan.</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas.\n\nLawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
 <translation id="789180354981963912">Sekat kuki pihak ketiga dalam Inkognito:</translation>
+<translation id="789722939441020330">Jangan benarkan laman memuat turun berbilang fail secara automatik</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
+<translation id="7952708427581814389">Tapak boleh meminta untuk melihat teks dan imej pada papan keratan anda</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah lapuk. Sila pasang semula apl.</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="848952951823693243">Sentiasa minta laman mudah alih</translation>
+<translation id="8492822722330266509">Tapak boleh menghantar tetingkap timbul dan menggunakan ubah hala</translation>
 <translation id="8499083585497694743">Nyahredamkan mikrofon</translation>
 <translation id="8514955299594277296">Jangan benarkan laman menyimpan data pada peranti anda (tidak disyorkan)</translation>
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
@@ -581,6 +606,7 @@
 <translation id="8926666909099850184">NFC dimatikan untuk peranti ini. Hidupkan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Sekat laman daripada melihat dan menukar maklumat pada peranti NFC</translation>
 <translation id="8944485226638699751">Terhad</translation>
+<translation id="895054485242522631">Tapak boleh menggunakan penderia gerakan</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Anda akan dilog keluar daripada semua laman</translation>
 <translation id="8993853206419610596">Kembangkan semua permintaan</translation>

@@ -3893,7 +3893,6 @@ Consulte as restrições do <ph name="PRIVATE_NETWORK_ACCESS" /> em https://wicg
 
       Observação: para dispositivos gerenciados com o <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.</translation>
 <translation id="377044054160169374">Aplicação de intervenção de experiência ofensiva</translation>
-<translation id="3772558247108478825">Configurações do recurso de agrupamento inteligente com IA generativa</translation>
 <translation id="3778689139323007309">Realizar verificações de revogação para certificados de servidor validados com assinatura dos certificados de CA locais</translation>
 <translation id="3780152581321609624">Incluir porta não padrão no SPN Kerberos</translation>
 <translation id="3785423718413114598">Não permitir recursos de IA generativa</translation>
@@ -4831,17 +4830,6 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="4467952432486360968">Bloquear cookies de terceiros</translation>
 <translation id="4472740647327683596">Largura da página em micrômetros.</translation>
 <translation id="4474167089968829729">Ativar salvamento de senhas no gerenciador de senhas</translation>
-<translation id="4474320817847428197">Esta política controla as configurações do recurso de agrupamento inteligente com IA generativa no <ph name="PRODUCT_OS_NAME" />.
-
-Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, fontes e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, fontes e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Se ela for definida como 2, o recurso não será habilitado.
-
-Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para mais informações sobre como tratar dados dos recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="447692108909279121">Processamento de IPs do WebRTC</translation>
 <translation id="4478248026668918517">Detecção do escopo da política de bloqueio.</translation>
 <translation id="4479671363221255277">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
@@ -8696,12 +8684,6 @@ Esta política será removida após o lançamento do recurso de drivers de impre
       Se esta política não for definida, o HTTP/0.9 será desativado em portas não padrão.</translation>
 <translation id="6969332115615661188">Desativar entrada de vídeo</translation>
 <translation id="6969949359984470271">O app da Web de quiosque não pode ser usado off-line.</translation>
-<translation id="6971579036359007697">Controla a migração de arquivos locais para a nuvem.
-Aplicável apenas a usuários do SkyVault, ou seja, quando o valor LocalUserFilesAllowed é falso. Caso contrário, a política é ignorada.
-
-Se definida como "google_drive", os arquivos locais são movidos para o Google Drive e as pastas locais são ocultas.
-Se definida como "microsoft_onedrive", os arquivos locais são movidos para o OneDrive e as pastas locais são ocultas.
-Se definida como "somente leitura" ou deixada sem definição: os arquivos locais vão continuar no modo somente leitura.</translation>
 <translation id="6972540544240464302">Seleciona a configuração do programador de tarefas</translation>
 <translation id="6975533677426693807">Sempre abrir arquivos PDF usando o leitor de PDF interno</translation>
 <translation id="6986172482189158664">Configurações do ciclo de vida dos dados de navegação</translation>

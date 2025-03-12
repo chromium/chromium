@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Ekran koruyucu animasyon</translation>
 <translation id="152892567002884378">Sesi açar</translation>
 <translation id="1539864135338521185">laciverttaşı</translation>
+<translation id="1548555207631326346">Yapay zeka resimlerinizi kişiselleştirmek için bir tema ve ardından altı çizili kelimeleri seçin.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Daha benzersiz ve çeşitli yapay zeka resim seçenekleri için "Bana ilham ver"i seçin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Yapay zeka ile içerik ürettiğinizde istem, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olarak resim üretmek ve ürünü iyileştirmek için Google Yapay Zeka sunucularına gönderilir.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Üretken yapay zeka henüz geliştirme aşamasındaki deneysel bir çalışma olup şu anda kullanılabilirliği sınırlıdır.</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
 <translation id="1561927818299383735">arkadan aydınlatmalı renk</translation>
@@ -1553,6 +1562,16 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">kumsal</translation>
 <translation id="819278132617411009">Daha üretken olmak için Google Yapay Zeka'yı kullanın</translation>
+<translation id="82003371436638355">"Kendiniz oluşturun"u seçip özel bir istem yazın. Dilerseniz "Bir tema seç" seçeneğini belirleyip yapay zeka duvar kağıdınızı kişiselleştirmek için altı çizili kelimeleri seçebilirsiniz.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Daha benzersiz ve çeşitli yapay zeka resim seçenekleri için "Bana ilham ver"i seçin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kendi duvar kağıdınızı oluşturduğunuzda istem, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Hizmet Şartları ve Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olacak şekilde görsel üretmek ve ürünü iyileştirmek için Google sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Üretken yapay zeka, kişiler de dahil olmak üzere farklı konular hakkında yanlış bilgi verebildiğinden yanıtlarını doğrulayın. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Daha fazla bilgi edinin<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
@@ -1574,6 +1593,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8312330582793120272">medyayı oynat</translation>
 <translation id="8318753676953949627">Resim Yok</translation>
 <translation id="8320910311642849813">orman</translation>
+<translation id="8322464149031882595">Devam etmek için tıklayın</translation>
 <translation id="8329018942023753850">hesap makinesi uygulaması</translation>
 <translation id="8336739000755212683">Cihaz hesap görüntüsünü değiştir</translation>
 <translation id="8339024191194156249">Otomatik başlatma hakkında daha fazla bilgi</translation>
@@ -1720,6 +1740,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8961025972867871808">penguenler</translation>
 <translation id="8968751544471797276">Şarj olma hızı</translation>
 <translation id="8970109610781093811">Yeniden çalıştır</translation>
+<translation id="8972061581514441296">Geri dönmek için tıklayın</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Tara}=1{Taranacak sayfa: {NUMBER_OF_PAGES}}other{Taranacak sayfa: {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">köy</translation>

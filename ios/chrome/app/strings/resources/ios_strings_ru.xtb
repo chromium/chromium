@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Данные о работе в браузере будут связаны с адресом <ph name="USER_EMAIL" />. Ваша организация может просматривать эти сведения.</translation>
 <translation id="1713777106376424209">Служба доставки</translation>
 <translation id="1715515772563243997">Если вы доверяете сайту <ph name="SITE" />, то можете использовать для входа сохраненный пароль.</translation>
+<translation id="1718835860248848330">Последний час</translation>
 <translation id="1728549374069268714">Вставить и перейти</translation>
 <translation id="1732468323901456775">Включить уведомления "<ph name="MODULE_NAME" />"</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Обнаружение адресов выключено. Снова включить его можно в настройках.</translation>
 <translation id="1904580727789512086">URL посещаемых сайтов сохраняются в аккаунте Google.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
-<translation id="1923342640370224680">Последний час</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
 <translation id="1943478190258551035">Меню → Настройки</translation>
 <translation id="1952728750904661634">Вход в управляемый аккаунт</translation>

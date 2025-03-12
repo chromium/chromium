@@ -2029,17 +2029,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-class MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest
-    : public MutableProfileOAuth2TokenServiceDelegateTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
 // Checks that, for a signed in non-syncing account in UNO with clear on exit,
 // set_revoke_all_tokens_on_first_load() keeps the tokens for the primary and
 // secondary accounts, updates the database, and is applied only once.
-TEST_F(MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        KeepPrimaryAccountTokenOnStartupWithClearOnExit) {
   client_->SetNetworkCallsDelayed(true);
   revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;

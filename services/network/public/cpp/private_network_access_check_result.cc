@@ -44,6 +44,8 @@ std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "allowed-potentially-trustworthy-same-origin";
     case Result::kLNABlockedByMissingPermission:
       return "lna-blocked-by-missing-permission";
+    case Result::kLNAAllowedByPolicyWarn:
+      return "lna-allowed-by-policy-warn";
   }
 }
 
@@ -62,6 +64,7 @@ std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kAllowedByTargetIpAddressSpace:
     case Result::kAllowedByPolicyPreflightWarn:
     case Result::kAllowedPotentiallyTrustworthySameOrigin:
+    case Result::kLNAAllowedByPolicyWarn:
       return std::nullopt;
     case Result::kBlockedByLoadOption:
       // TODO(https:/crbug.com/1254689): Return better error than this, which

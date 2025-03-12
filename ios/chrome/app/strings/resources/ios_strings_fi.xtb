@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Aiempi selausdata yhdistetään tähän profiiliin: <ph name="USER_EMAIL" />. Organisaatiosi voi nähdä tämän datan.</translation>
 <translation id="1713777106376424209">Toimitetaan viimeistään</translation>
 <translation id="1715515772563243997">Jos <ph name="SITE" /> on luotettava, voit kirjautua sisään tallennetulla salasanalla.</translation>
+<translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1728549374069268714">Liitä ja siirry</translation>
 <translation id="1732468323901456775">Laita ilmoitukset päälle: <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Asenna kaksoisnapauttamalla.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Osoitteentunnistus on pois päältä. Laita se takaisin päälle asetuksista.</translation>
 <translation id="1904580727789512086">Avaamasi URL-osoitteet tallennetaan Google-tilillesi</translation>
 <translation id="1911619930368729126">Lähetä Google Driveen</translation>
-<translation id="1923342640370224680">Viimeinen tunti</translation>
 <translation id="1941314575388338491">Kopioi kaksoisnapauttamalla.</translation>
 <translation id="1943478190258551035">Valikko → Asetukset</translation>
 <translation id="1952728750904661634">Kirjaudu sisään hallinnoidulla tilillä</translation>

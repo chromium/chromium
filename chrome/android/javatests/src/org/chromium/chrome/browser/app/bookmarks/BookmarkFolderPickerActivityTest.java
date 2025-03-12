@@ -31,10 +31,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -76,6 +78,7 @@ public class BookmarkFolderPickerActivityTest {
 
     private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
     private BookmarkFolderPickerActivity mActivity;
+    private Runnable mRunnable = CallbackUtils.emptyRunnable();
 
     @BeforeClass
     public static void setUpBeforeClass() throws TimeoutException {
@@ -113,6 +116,9 @@ public class BookmarkFolderPickerActivityTest {
         BookmarkId bookmark =
                 addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
         BookmarkId folder = addFolder(sMobileFolderId, 1, "folder");
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mRunnable = callbackHelper::notifyCalled;
         startFolderPickerActivity(bookmark);
 
         ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(mBookmarkModelObserver));
@@ -127,6 +133,7 @@ public class BookmarkFolderPickerActivityTest {
         verifyNoMoreInteractions(mBookmarkModelObserver);
 
         CriteriaHelper.pollUiThread(() -> mActivity.isFinishing());
+        callbackHelper.waitForNext();
     }
 
     @Test
@@ -194,6 +201,7 @@ public class BookmarkFolderPickerActivityTest {
                             mBookmarkManagerOpener.startFolderPickerActivity(
                                     sActivityTestRule.getActivity(),
                                     sActivityTestRule.getProfile(false),
+                                    mRunnable,
                                     ids);
                         });
     }

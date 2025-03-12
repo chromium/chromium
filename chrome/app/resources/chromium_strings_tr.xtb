@@ -127,11 +127,9 @@
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
 <translation id="2770231113462710648">Varsayılan tarayıcıyı şuna dönüştür:</translation>
-<translation id="277338894894732084">Daha sonra Chromium, formları otomatik olarak doldurmak için kayıtlı bilgileri kullanmak isteyip istemediğinizi sorar.</translation>
 <translation id="2785438272836277133">Bu uzantı kötü amaçlı yazılım içerdiği için güvenli değil. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803971713792056305">Chromium'unuz</translation>
-<translation id="2806241689335397269">Chromium; doğum tarihiniz, yaşınız ve pasaport numaranız gibi form bilgilerini kaydetmek isteyip istemediğinizi sorar.</translation>
 <translation id="2841525013647267359">Şu dilden çevir:</translation>
 <translation id="2846251086934905009">Yükleme hatası: Yükleyici tamamlanmadı. Yükleme işlemi iptal edildi.</translation>
 <translation id="2847479871509788944">Chromium'dan kaldır...</translation>
@@ -175,7 +173,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mevcut Chromium profiline geçilsin mi?</translation>
 <translation id="3412460710772753638">Bu cihazdaki Şifre Yöneticisi'nde</translation>
-<translation id="3451656833730006755">Uzantılarınıza ve diğer öğelerinize tüm bilgisayarlarınızda erişmek için Chromium'da oturum açın</translation>
 <translation id="347328004046849135">Chromium, güvenliği ihlal edilmiş bir şifreyle oturum açtığınızda size haber verir</translation>
 <translation id="3474745554856756813">Bu işlem, <ph name="ITEMS_COUNT" /> öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" />, Chromium profilleri arasında geçiş yapabilir</translation>
@@ -458,7 +455,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="734373864078049451">Web, yer işaretleri ve diğer Chromium bilgileriniz burada bulunur.</translation>
 <translation id="7349591376906416160">Sistem yöneticiniz Chromium'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısını açacak şekilde yapılandırmış.</translation>
 <translation id="7384121030444253939">Bu uzantı artık desteklenmiyor. Chromium bunu kaldırmanızı öneriyor.</translation>
-<translation id="7389750180956889333">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. <ph name="BEGIN_LINK" />Chrome otomatik doldurma<ph name="END_LINK" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Metin kopyalandı</translation>
 <translation id="7451052299415159299">Chromium'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>

@@ -3021,6 +3021,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6337133576188860026">Vabastab alla <ph name="SIZE" />. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>
 <translation id="6337534724793800597">Reeglite filtreerimine nime järgi</translation>
 <translation id="633770708279464947">Reegli <ph name="SECURE_DNS_SALT" /> väärtus on sobimatu ja seda ei kasutata.</translation>
+<translation id="6338645927051849741">Parool • Google'i paroolihaldur</translation>
 <translation id="6340739886198108203">Administraatori reegel ei soovita konfidentsiaalse sisu kuvamise ajal jäädvustada ekraanipilte ega salvestisi:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> üles laadida}other{Administraatori reegel ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> üles laadida}}</translation>
 <translation id="6342069812937806050">Äsja</translation>

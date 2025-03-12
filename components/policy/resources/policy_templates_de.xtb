@@ -3750,7 +3750,6 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 
       Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf null.</translation>
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
-<translation id="3772558247108478825">Einstellungen für die Funktion „Generative AI Smart Grouping“</translation>
 <translation id="3778689139323007309">Widerrufsprüfung für Serverzertifikate durchführen, die erfolgreich bestätigt und von lokal installierten CA-Zertifikaten signiert wurden</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
 <translation id="3785423718413114598">Auf generativer KI basierende Funktionen nicht zulassen</translation>
@@ -4632,17 +4631,6 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="4467952432486360968">Drittanbieter-Cookies blockieren</translation>
 <translation id="4472740647327683596">Seitenbreite in Mikrometern.</translation>
 <translation id="4474167089968829729">Aktiviert das Speichern von Passwörtern im Passwortmanager</translation>
-<translation id="4474320817847428197">Mit dieser Richtlinie werden für <ph name="PRODUCT_OS_NAME" /> die Einstellungen der Funktion „Generative AI Smart Grouping“ festgelegt.
-
-„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion darf nicht verwendet werden.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="447692108909279121">WebRTC-IP-Handling</translation>
 <translation id="4478248026668918517">Blockiert die Erkennung des Anwendungsbereichs von Richtlinien.</translation>
 <translation id="4479671363221255277">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
@@ -8319,12 +8307,6 @@ Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Drucker
       Ist die Richtlinie nicht konfiguriert, wird HTTP/0.9 auf nicht standardmäßigen Ports deaktiviert.</translation>
 <translation id="6969332115615661188">Videoeingabe deaktivieren</translation>
 <translation id="6969949359984470271">Kiosk-Web-App ist nicht offlinefähig</translation>
-<translation id="6971579036359007697">Steuert die Migration lokaler Dateien in die Cloud.
-Gilt nur für SkyVault-Nutzer, d. h. wenn „LocalUserFilesAllowed“ auf „false“ gesetzt ist. Ansonsten wird die Option ignoriert.
-
-Wenn die Richtlinie auf „google_drive“ festgelegt ist, werden lokale Dateien in Google Drive verschoben und lokale Ordner ausgeblendet.
-Wenn sie auf „microsoft_onedrive“ festgelegt ist, werden lokale Dateien in OneDrive verschoben und lokale Ordner ausgeblendet.
-Wenn sie auf „read-only“ festgelegt oder nicht konfiguriert ist, bleiben lokale Dateien im Lesemodus.</translation>
 <translation id="6972540544240464302">Konfiguration für Aufgabenplaner auswählen</translation>
 <translation id="6975533677426693807">PDF-Dateien immer mit dem internen PDF-Viewer öffnen</translation>
 <translation id="6986172482189158664">Einstellungen für die Lebensdauer von Browserdaten</translation>
