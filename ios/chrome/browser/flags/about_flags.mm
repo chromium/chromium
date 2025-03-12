@@ -850,9 +850,14 @@ const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
 const FeatureEntry::FeatureParam kIdentityDiscAccountMenuNoEllipsis[] = {
     {kDisableAccountMenuEllipsisParam, "true"},
 };
+const FeatureEntry::FeatureParam kIdentityDiscAccountMenuWithSettings[] = {
+    {kShowSettingsInAccountMenuParam, "true"},
+};
 const FeatureEntry::FeatureVariation kIdentityDiscAccountMenuVariations[] = {
     {" - without account menu ellipsis", kIdentityDiscAccountMenuNoEllipsis,
      std::size(kIdentityDiscAccountMenuNoEllipsis), nullptr},
+    {" - with settings button", kIdentityDiscAccountMenuWithSettings,
+     std::size(kIdentityDiscAccountMenuWithSettings), nullptr},
 };
 
 const FeatureEntry::FeatureParam kIdentityConfirmationSnackbarTestingConfig[] =
