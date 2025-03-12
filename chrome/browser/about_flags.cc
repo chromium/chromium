@@ -7285,10 +7285,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMostVisitedTilesReselectVariations,
                                     "kMostVisitedTilesReselect")},
 
-    {"toolbar-phone-cleanup", flag_descriptions::kToolbarPhoneCleanupName,
-     flag_descriptions::kToolbarPhoneCleanupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kToolbarPhoneCleanup)},
-
     {"hide-tablet-toolbar-download-button",
      flag_descriptions::kHideTabletToolbarDownloadButtonName,
      flag_descriptions::kHideTabletToolbarDownloadButtonDescription, kOsAndroid,
