@@ -44,6 +44,11 @@ class MockVisitedURLRankingService : public VisitedURLRankingService {
                void(ScoredURLUserAction action,
                     const std::string& visit_id,
                     segmentation_platform::TrainingRequestId visit_request_id));
+
+  MOCK_METHOD2(
+      RegisterTransformer,
+      void(URLVisitAggregatesTransformType,
+           std::unique_ptr<URLVisitAggregatesTransformer> transformer));
 };
 
 }  // namespace visited_url_ranking

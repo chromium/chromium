@@ -1678,6 +1678,8 @@ static_library("browser") {
     "v8_compile_hints/v8_compile_hints_tab_helper.h",
     "visibility_timer_tab_helper.cc",
     "visibility_timer_tab_helper.h",
+    "visited_url_ranking/group_suggestions_service_factory.cc",
+    "visited_url_ranking/group_suggestions_service_factory.h",
     "visited_url_ranking/url_deduplication/search_engine_url_strip_handler.cc",
     "visited_url_ranking/url_deduplication/search_engine_url_strip_handler.h",
     "visited_url_ranking/visited_url_ranking_service_factory.cc",
