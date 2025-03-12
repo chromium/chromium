@@ -151,10 +151,6 @@ async def test_file_dialog_input_click_event(websocket, context_id, html,
                          indirect=True)
 async def test_file_dialog_unhandled_prompt_behavior_input_cancel(
         websocket, context_id, html, read_messages, snapshot):
-    pytest.xfail(
-        "TODO: allow `Page.setInterceptFileChooserDialog` to emit `cancel` event"
-    )
-
     await goto_url(websocket, context_id, html("<input id=input type=file />"))
     await subscribe(websocket, ["script.message", 'input.fileDialogOpened'])
 

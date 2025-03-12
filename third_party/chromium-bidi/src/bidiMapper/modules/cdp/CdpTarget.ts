@@ -179,6 +179,8 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
                 'Page.setInterceptFileChooserDialog',
                 {
                   enabled: true,
+                  // The intercepted dialog should be canceled.
+                  cancel: true,
                 },
               ),
             ]),
