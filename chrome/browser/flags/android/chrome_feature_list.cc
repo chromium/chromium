@@ -357,7 +357,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUmaBackgroundSessions,
     &kUpdateCompositorForSurfaceControl,
     &kUseLibunwindstackNativeUnwinderAndroid,
-    &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkMinShellVersion,
     &notifications::features::kUseChimeAndroidSdk,
@@ -1205,10 +1204,6 @@ BASE_FEATURE(kUpdateCompositorForSurfaceControl,
 // only on Android.
 BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
              "UseLibunwindstackNativeUnwinderAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kVoiceSearchAudioCapturePolicy,
-             "VoiceSearchAudioCapturePolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Shows only the remote device name on the Android notification instead of
