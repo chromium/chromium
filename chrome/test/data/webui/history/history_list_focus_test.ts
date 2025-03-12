@@ -102,7 +102,7 @@ suite('<history-list>', function() {
 
     pressAndReleaseKeyOn(focused, 37, [], 'ArrowLeft');
     flush();
-    focused = items[2]!.shadowRoot!.querySelector('#bookmark-star')!;
+    focused = items[2]!.shadowRoot.querySelector('#bookmark-star')!;
     assertEquals(focused, getDeepActiveElement());
     assertTrue(items[2]!.getFocusRow().isActive());
     assertFalse(items[3]!.getFocusRow().isActive());
