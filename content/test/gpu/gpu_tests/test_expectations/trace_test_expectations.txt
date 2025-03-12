@@ -27,7 +27,7 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -224,6 +224,19 @@ crbug.com/371949935 [ angle-metal graphite-enabled intel-0x3e9b mac-x86_64 no-as
 # TODO(crbug.com/398784712): Remove these once culprit is reverted.
 crbug.com/398784712 [ win intel-0x9bc5 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
 crbug.com/398784712 [ win amd-0x7340 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
+
+# Win/AMD RX 7600 failures
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginCacheHits [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineMainThread [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineWorkerAsync [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineMainThread [ Failure ]
+crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineWorkerAsync [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

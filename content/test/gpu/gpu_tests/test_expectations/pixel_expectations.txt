@@ -27,7 +27,7 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -459,13 +459,16 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell
 crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 crbug.com/372055518 [ mac amd-0x67ef angle-opengl graphite-disabled ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ RetryOnFailure ]
 
-
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
-
 # Flaky bad image
 crbug.com/393314286 [ amd angle-metal debug graphite-enabled mac ] Pixel_ViewTransitionsCapture [ RetryOnFailure ]
+
+# Win/AMD RX 7600 failures
+crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
+crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_BGRA [ Failure ]
+crbug.com/402429382 [ win11 amd-0x7480 ] Pixel_ReflectedDiv [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
