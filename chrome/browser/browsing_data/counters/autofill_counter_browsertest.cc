@@ -14,10 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +27,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
@@ -33,7 +37,9 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -69,6 +75,11 @@ class AutofillCounterTest : public InProcessBrowserTest {
     // same order as usual.
     personal_data_manager_ = nullptr;
     web_data_service_ = nullptr;
+  }
+
+  browsing_data::AutofillCounter GetCounter() {
+    return {GetPersonalDataManager(), GetWebDataService(),
+            GetEntityDataManager(), /*sync_service=*/nullptr};
   }
 
   // Autocomplete suggestions --------------------------------------------------
@@ -165,6 +176,11 @@ class AutofillCounterTest : public InProcessBrowserTest {
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
+  autofill::EntityDataManager* GetEntityDataManager() {
+    return autofill::AutofillEntityDataManagerFactory::GetForProfile(
+        browser()->profile());
+  }
+
   autofill::PersonalDataManager* GetPersonalDataManager() {
     return personal_data_manager_;
   }
@@ -187,6 +203,10 @@ class AutofillCounterTest : public InProcessBrowserTest {
     return num_addresses_;
   }
 
+  browsing_data::BrowsingDataCounter::ResultInt GetNumEntities() {
+    return num_entities_;
+  }
+
   browsing_data::AutofillCounter::ResultInt GetCounterValue() {
     return counter_value_;
   }
@@ -204,12 +224,15 @@ class AutofillCounterTest : public InProcessBrowserTest {
     counter_value_ = autofill_result->Value();
     num_credit_cards_ = autofill_result->num_credit_cards();
     num_addresses_ = autofill_result->num_addresses();
+    num_entities_ = autofill_result->num_entities();
   }
 
  protected:
   CounterFuture future;
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::vector<std::string> credit_card_ids_;
   std::vector<std::string> address_ids_;
@@ -223,15 +246,13 @@ class AutofillCounterTest : public InProcessBrowserTest {
   browsing_data::BrowsingDataCounter::ResultInt num_suggestions_;
   browsing_data::BrowsingDataCounter::ResultInt num_credit_cards_;
   browsing_data::BrowsingDataCounter::ResultInt num_addresses_;
+  browsing_data::BrowsingDataCounter::ResultInt num_entities_;
 };
 
 // Tests that we count the correct number of autocomplete suggestions.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
-  Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(
-      GetPersonalDataManager(), GetWebDataService(), /*sync_service=*/nullptr);
-
-  counter.Init(profile->GetPrefs(),
+  browsing_data::AutofillCounter counter = GetCounter();
+  counter.Init(browser()->profile()->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
@@ -264,11 +285,42 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
   EXPECT_EQ(0, GetCounterValue());
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Entities) {
+  browsing_data::AutofillCounter counter = GetCounter();
+  counter.Init(browser()->profile()->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               future.GetRepeatingCallback());
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(GetNumEntities(), 0);
+
+  autofill::EntityInstance passport =
+      autofill::test::GetPassportEntityInstance();
+  GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
+  autofill::EntityDataChangedWaiter(GetEntityDataManager()).Wait();
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(GetNumEntities(), 1);
+
+  autofill::EntityInstance drivers_license =
+      autofill::test::GetDriversLicenseEntityInstance();
+  GetEntityDataManager()->AddOrUpdateEntityInstance(drivers_license);
+  autofill::EntityDataChangedWaiter(GetEntityDataManager()).Wait();
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(GetNumEntities(), 2);
+
+  GetEntityDataManager()->RemoveEntityInstance(passport.guid());
+  autofill::EntityDataChangedWaiter(GetEntityDataManager()).Wait();
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(GetNumEntities(), 1);
+}
+
 // Tests that we count the correct number of credit cards.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(
-      GetPersonalDataManager(), GetWebDataService(), /*sync_service=*/nullptr);
+  browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -312,8 +364,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
 // Tests that we count the correct number of addresses.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(
-      GetPersonalDataManager(), GetWebDataService(), /*sync_service=*/nullptr);
+  browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -371,8 +422,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
   AddAddress("John", "Smith", "Side Street 47");
 
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(
-      GetPersonalDataManager(), GetWebDataService(), /*sync_service=*/nullptr);
+  browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -426,8 +476,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   });
 
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(
-      GetPersonalDataManager(), GetWebDataService(), /*sync_service=*/nullptr);
+  browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,

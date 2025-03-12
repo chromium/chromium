@@ -64,7 +64,8 @@ class BrowsingDataUtilsTest : public testing::Test {
 TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,
-                          base::MakeRefCounted<FakeWebDataService>(), nullptr);
+                          base::MakeRefCounted<FakeWebDataService>(),
+                          /*entity_data_manager=*/nullptr, nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.
@@ -72,35 +73,40 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
     int num_credit_cards;
     int num_addresses;
     int num_suggestions;
+    int num_entities;
     bool sync_enabled;
     std::string expected_output;
   } kTestCases[] = {
-      {0, 0, 0, false, "None"},
-      {0, 0, 0, true, "None"},
-      {1, 0, 0, false, "1 payment method"},
-      {0, 5, 0, false, "5 addresses"},
-      {0, 0, 1, false, "1 suggestion"},
-      {0, 0, 2, false, "2 suggestions"},
-      {0, 0, 2, true, "2 suggestions (synced)"},
-      {4, 7, 0, false, "4 payment methods, 7 addresses"},
-      {4, 7, 0, true, "4 payment methods, 7 addresses (synced)"},
-      {3, 0, 9, false, "3 payment methods, 9 other suggestions"},
-      {0, 1, 1, false, "1 address, 1 other suggestion"},
-      {9, 6, 3, false, "9 payment methods, 6 addresses, 3 others"},
-      {4, 2, 1, false, "4 payment methods, 2 addresses, 1 other"},
-      {4, 2, 1, true, "4 payment methods, 2 addresses, 1 other (synced)"},
+      {0, 0, 0, 0, false, "None"},
+      {0, 0, 0, 0, true, "None"},
+      {1, 0, 0, 0, false, "1 payment method"},
+      {0, 5, 0, 0, false, "5 addresses"},
+      {0, 0, 1, 0, false, "1 suggestion"},
+      {0, 0, 2, 0, false, "2 suggestions"},
+      {0, 0, 2, 1, false, "3 suggestions"},
+      {0, 0, 0, 2, false, "2 suggestions"},
+      {0, 0, 2, 0, true, "2 suggestions (synced)"},
+      {4, 7, 0, 0, false, "4 payment methods, 7 addresses"},
+      {4, 7, 0, 0, true, "4 payment methods, 7 addresses (synced)"},
+      {3, 0, 9, 0, false, "3 payment methods, 9 other suggestions"},
+      {0, 1, 1, 0, false, "1 address, 1 other suggestion"},
+      {9, 6, 3, 0, false, "9 payment methods, 6 addresses, 3 others"},
+      {9, 6, 3, 5, false, "9 payment methods, 6 addresses, 8 others"},
+      {4, 2, 1, 0, false, "4 payment methods, 2 addresses, 1 other"},
+      {4, 2, 1, 0, true, "4 payment methods, 2 addresses, 1 other (synced)"},
   };
 
   for (const TestCase& test_case : kTestCases) {
     AutofillCounter::AutofillResult result(
         &counter, test_case.num_suggestions, test_case.num_credit_cards,
-        test_case.num_addresses, test_case.sync_enabled);
+        test_case.num_addresses, test_case.num_entities,
+        test_case.sync_enabled);
 
     SCOPED_TRACE(
         base::StringPrintf("Test params: %d payment method(s), "
-                           "%d address(es), %d suggestion(s).",
+                           "%d address(es), %d suggestion(s), %d entities",
                            test_case.num_credit_cards, test_case.num_addresses,
-                           test_case.num_suggestions));
+                           test_case.num_suggestions, test_case.num_entities));
 
     std::u16string output = browsing_data::GetCounterTextFromResult(&result);
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
