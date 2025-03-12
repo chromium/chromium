@@ -39,6 +39,9 @@ _IGNORED_CLASSES_RE = [
     r'org.chromium.tools.errorprone.plugin.*',
     # Not sure why this one isn't annotated.
     r'org.chromium.base.test.ClangProfiler',
+    # The target boundary_interface_java sets chromium_code=false in
+    # //android_webview/support_library/boundary_interfaces/BUILD.gn.
+    r'org.chromium.support_lib_boundary.*',
 ]
 
 
@@ -104,33 +107,34 @@ def main():
         '--verbose',
         action='count',
         default=0,
-        help='-v to print deps/dependent count, -vv to print each item.')
+        help='1 to print deps/dependent count, 2 to print each unmarked class, '
+        '3 to print lists of deps, and 4 to print lists of dependents.')
     parser.add_argument(
         '--include-testonly',
         action='store_true',
         help='Include testonly targets, otherwise excluded by default.')
     args = parser.parse_args()
-    subprocess.run([
+    gsutil_cmd = [
         'gsutil.py', 'cp', 'gs://clank-dependency-graphs/latest/all.json',
         _DEPENDENCY_JSON_PATH
-    ],
-                   capture_output=not args.verbose)
+    ]
+    subprocess.run(gsutil_cmd, capture_output=True)
     class_graph, _, _ = serialization.load_class_and_package_graphs_from_file(
         _DEPENDENCY_JSON_PATH)
     target_graph = target_dependency.JavaTargetDependencyGraph(class_graph)
     target_outbound, target_inbound, skipped_targets = gen_build_target_graph(
         args.out_dir, args.include_testonly, args.no_cache)
 
-    cmd = [
+    stats_cmd = [
         str(_SRC / 'tools/android/nullaway/java_file_stats.py'),
         '--nomark-list-path',
         str(_NOMARK_LIST_PATH)
     ]
     if _FILE_CACHE_PATH.exists() and not args.no_cache:
-        cmd += ['--cached-file-list', str(_FILE_CACHE_PATH)]
+        stats_cmd += ['--cached-file-list', str(_FILE_CACHE_PATH)]
     else:
-        cmd += ['--output-file-list', str(_FILE_CACHE_PATH)]
-    subprocess.run(cmd, capture_output=not args.verbose)
+        stats_cmd += ['--output-file-list', str(_FILE_CACHE_PATH)]
+    subprocess.run(stats_cmd, capture_output=True)
     nomark_paths = _NOMARK_LIST_PATH.read_text().splitlines()
 
     unmarked_classes = set()
@@ -241,17 +245,33 @@ def main():
 
     for t in targets_list:
         # Remove the // at the beginning for easy copy/pasting into siso.
-        print(f'[{targets_num_unmarked[t]:2}] {t[2:]}', end='')
+        status = f'{targets_num_unmarked[t]:2}'
         if args.verbose >= 1:
-            print(f' deps={len(targets_unmarked_deps[t])} ', end='')
-            print(f' dependent={len(targets_unmarked_dependents[t])} ', end='')
-        print()
+            status += f' {len(targets_unmarked_dependents[t]):2}'
+            # Without --all this list is all zeros.
+            if args.all:
+                status += f' {len(targets_unmarked_deps[t]):2}'
+        print(f'[{status}] {t[2:]}')
 
         if args.verbose >= 2:
-            for tt in targets_unmarked_deps[t]:
-                print(f'> {tt}')
             for c in targets_unmarked_classes[t]:
                 print(f'$ {c}')
+
+        if args.verbose >= 3:
+            for tt in targets_unmarked_deps[t]:
+                print(f'> {tt}')
+
+        if args.verbose >= 4:
+            for tt in targets_unmarked_dependents[t]:
+                print(f'< {tt}')
+
+    print('''\
+For the status prefix:[A B C] <target-name>:
+- A is the number of unmarked classes in that target.
+- B (shows up only with -v) is the number of unmarked targets that depend on \
+this target.
+- C (shows up only with -v and -a) is the number of unmarked targets that this \
+target depends on.''')
 
 
 if __name__ == '__main__':
