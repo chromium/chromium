@@ -620,6 +620,9 @@
                     },
                     "enable_features": [
                         "AndroidWarmUpSpareRendererWithTimeout"
+                    ],
+                    "disable_features": [
+                        "OverrideAndroidOmniboxSpareRendererDelay"
                     ]
                 }
             ]
