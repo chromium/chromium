@@ -22,6 +22,10 @@
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(USE_AURA)
+#include "ui/views/accessibility/tree/browser_views_ax_manager.h"
+#endif
+
 namespace gfx {
 class ImageSkia;
 class Rect;
@@ -167,6 +171,8 @@ class VIEWS_EXPORT ViewsDelegate {
   // maximized windows; otherwise to restored windows.
   virtual bool WindowManagerProvidesTitleBar(bool maximized);
 
+  void InitializeViewsAXManager();
+
 #if BUILDFLAG(IS_MAC)
   // Returns the context factory for new windows.
   virtual ui::ContextFactory* GetContextFactory();
@@ -197,6 +203,8 @@ class VIEWS_EXPORT ViewsDelegate {
  private:
 #if defined(USE_AURA)
   std::unique_ptr<TouchSelectionMenuRunnerViews> touch_selection_menu_runner_;
+  std::unique_ptr<views::BrowserViewsAXManager::LifetimeHandle>
+      browser_views_ax_manager_handle_;
 #endif
 
   NativeWidgetFactory native_widget_factory_;
