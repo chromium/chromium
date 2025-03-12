@@ -23,7 +23,7 @@
 #include "ui/display/types/display_constants.h"
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include <BrowserEngineKit/BrowserEngineKit.h>
 #endif
 
@@ -110,7 +110,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   base::TimeDelta frame_interval_;
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   BELayerHierarchy* __strong layer_hierarchy_;
 #endif
 

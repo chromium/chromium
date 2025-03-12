@@ -28,7 +28,7 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #endif
 
@@ -124,7 +124,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
       !av_disabled_at_command_line, std::move(buffer_presented_callback));
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   // The BELayerHierarchy needs to be created on a thread that supports
   // libdispatch, so we proxy over to the main dispatch queue to do that.
   CALayer* root_ca_layer = ca_layer_tree_coordinator_->root_ca_layer();
@@ -147,7 +147,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ca_layer_tree_coordinator_.reset();
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   BELayerHierarchy* layer_hierarchy = std::move(layer_hierarchy_);
   dispatch_async(dispatch_get_main_queue(), ^{
     [layer_hierarchy invalidate];
