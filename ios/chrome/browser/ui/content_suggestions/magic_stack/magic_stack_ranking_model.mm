@@ -834,7 +834,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           break;
         }
 
-        int previousIssuesCount = _localState->GetInteger(
+        int previousIssuesCount = _prefService->GetInteger(
             prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount);
 
         int issuesCount =
