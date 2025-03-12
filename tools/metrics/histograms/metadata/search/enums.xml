@@ -206,6 +206,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Succeed"/>
 </enum>
 
+<enum name="EntryClickedPosition">
+  <int value="0" label="1st position"/>
+  <int value="1" label="2nd position"/>
+  <int value="2" label="3rd position"/>
+  <int value="3" label="4th position"/>
+  <int value="4" label="5th position"/>
+  <int value="5" label="6th position"/>
+  <int value="6" label="7th position"/>
+  <int value="7" label="8th position"/>
+  <int value="8" label="9th position"/>
+  <int value="9" label="10th position"/>
+</enum>
+
 <enum name="KeywordTableHashValidationStatus">
   <int value="0" label="Hash was validated successfully"/>
   <int value="1" label="Decryption failed"/>
