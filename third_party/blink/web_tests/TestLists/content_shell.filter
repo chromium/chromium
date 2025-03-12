@@ -324,6 +324,7 @@ external/wpt/css/css-page/margin-boxes/dimensions-014-print.html
 external/wpt/css/css-page/margin-boxes/inapplicable-properties-print.html
 external/wpt/css/css-page/margin-boxes/paint-order-001-print.html
 external/wpt/css/css-page/margin-boxes/paint-order-002-print.html
+external/wpt/css/css-page/margin-boxes/paint-order-003-print.html
 external/wpt/css/css-page/monolithic-overflow-024-print.html
 external/wpt/css/css-page/monolithic-overflow-025-print.html
 external/wpt/css/css-page/page-background-003-print.html

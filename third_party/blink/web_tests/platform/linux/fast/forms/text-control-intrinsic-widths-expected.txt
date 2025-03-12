@@ -4,31 +4,31 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 Lucida Grande
 input
-size=1 clientWidth=11
-size=2 clientWidth=18
-size=3 clientWidth=25
-size=4 clientWidth=32
-size=5 clientWidth=39
-size=10 clientWidth=74
-size=20 clientWidth=144
-size=50 clientWidth=354
-size=100 clientWidth=704
-size=500 clientWidth=3504
-size=1000 clientWidth=7004
+size=1 clientWidth=10
+size=2 clientWidth=16
+size=3 clientWidth=22
+size=4 clientWidth=28
+size=5 clientWidth=34
+size=10 clientWidth=64
+size=20 clientWidth=124
+size=50 clientWidth=304
+size=100 clientWidth=604
+size=500 clientWidth=3004
+size=1000 clientWidth=6004
 
 
 textarea
-cols=1 clientWidth=26
-cols=2 clientWidth=33
-cols=3 clientWidth=40
-cols=4 clientWidth=47
-cols=5 clientWidth=54
-cols=10 clientWidth=89
-cols=20 clientWidth=159
-cols=50 clientWidth=369
-cols=100 clientWidth=719
-cols=500 clientWidth=3519
-cols=1000 clientWidth=7019
+cols=1 clientWidth=25
+cols=2 clientWidth=31
+cols=3 clientWidth=37
+cols=4 clientWidth=43
+cols=5 clientWidth=49
+cols=10 clientWidth=79
+cols=20 clientWidth=139
+cols=50 clientWidth=319
+cols=100 clientWidth=619
+cols=500 clientWidth=3019
+cols=1000 clientWidth=6019
 
 
 Courier
@@ -91,60 +91,60 @@ cols=1000 clientWidth=7019
 
 Monaco
 input
-size=1 clientWidth=11
-size=2 clientWidth=18
-size=3 clientWidth=25
-size=4 clientWidth=32
-size=5 clientWidth=39
-size=10 clientWidth=74
-size=20 clientWidth=144
-size=50 clientWidth=354
-size=100 clientWidth=704
-size=500 clientWidth=3504
-size=1000 clientWidth=7004
+size=1 clientWidth=10
+size=2 clientWidth=16
+size=3 clientWidth=22
+size=4 clientWidth=28
+size=5 clientWidth=34
+size=10 clientWidth=64
+size=20 clientWidth=124
+size=50 clientWidth=304
+size=100 clientWidth=604
+size=500 clientWidth=3004
+size=1000 clientWidth=6004
 
 
 textarea
-cols=1 clientWidth=26
-cols=2 clientWidth=33
-cols=3 clientWidth=40
-cols=4 clientWidth=47
-cols=5 clientWidth=54
-cols=10 clientWidth=89
-cols=20 clientWidth=159
-cols=50 clientWidth=369
-cols=100 clientWidth=719
-cols=500 clientWidth=3519
-cols=1000 clientWidth=7019
+cols=1 clientWidth=25
+cols=2 clientWidth=31
+cols=3 clientWidth=37
+cols=4 clientWidth=43
+cols=5 clientWidth=49
+cols=10 clientWidth=79
+cols=20 clientWidth=139
+cols=50 clientWidth=319
+cols=100 clientWidth=619
+cols=500 clientWidth=3019
+cols=1000 clientWidth=6019
 
 
 Times
 input
-size=1 clientWidth=11
-size=2 clientWidth=18
-size=3 clientWidth=25
-size=4 clientWidth=32
-size=5 clientWidth=39
-size=10 clientWidth=74
-size=20 clientWidth=144
-size=50 clientWidth=354
-size=100 clientWidth=704
-size=500 clientWidth=3504
-size=1000 clientWidth=7004
+size=1 clientWidth=10
+size=2 clientWidth=16
+size=3 clientWidth=22
+size=4 clientWidth=28
+size=5 clientWidth=34
+size=10 clientWidth=64
+size=20 clientWidth=124
+size=50 clientWidth=304
+size=100 clientWidth=604
+size=500 clientWidth=3004
+size=1000 clientWidth=6004
 
 
 textarea
-cols=1 clientWidth=26
-cols=2 clientWidth=33
-cols=3 clientWidth=40
-cols=4 clientWidth=47
-cols=5 clientWidth=54
-cols=10 clientWidth=89
-cols=20 clientWidth=159
-cols=50 clientWidth=369
-cols=100 clientWidth=719
-cols=500 clientWidth=3519
-cols=1000 clientWidth=7019
+cols=1 clientWidth=25
+cols=2 clientWidth=31
+cols=3 clientWidth=37
+cols=4 clientWidth=43
+cols=5 clientWidth=49
+cols=10 clientWidth=79
+cols=20 clientWidth=139
+cols=50 clientWidth=319
+cols=100 clientWidth=619
+cols=500 clientWidth=3019
+cols=1000 clientWidth=6019
 
 
 Andale Mono

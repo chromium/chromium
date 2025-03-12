@@ -6,8 +6,8 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [11, 35, 74, 20],
-        [11, 11, 58, 20]
+        [11, 35, 71, 20],
+        [11, 11, 55, 20]
       ]
     }
   ]
