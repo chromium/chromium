@@ -5,13 +5,35 @@
 #include "chrome/browser/glic/glic_widget.h"
 
 #include "chrome/browser/glic/glic_view.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/common/chrome_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace glic {
+namespace {
+
+class GlicWidgetDelegate : public views::WidgetDelegate {
+ public:
+  GlicWidgetDelegate() {
+    SetFocusTraversesOut(true);
+    SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
+    RegisterDeleteDelegateCallback(
+        base::BindOnce(&GlicWidgetDelegate::Destroy, base::Unretained(this)));
+  }
+
+  GlicWidgetDelegate(const GlicWidgetDelegate&) = delete;
+  GlicWidgetDelegate& operator=(const GlicWidgetDelegate&) = delete;
+
+  ~GlicWidgetDelegate() override = default;
+
+ private:
+  void Destroy() { delete this; }
+};
+}  // namespace
 
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
@@ -35,6 +57,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
   params.name = "GlicWidget";
   params.corner_radius = kCornerRadius;
+  auto delegate = std::make_unique<GlicWidgetDelegate>();
+  params.delegate = delegate.release();
 
   std::unique_ptr<GlicWidget> widget(new GlicWidget(std::move(params)));
 
