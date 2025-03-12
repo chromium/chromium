@@ -241,7 +241,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
     &kChangeUnfocusedPriority,
-    &kDefaultBrowserPromoAndroid,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
@@ -808,10 +807,6 @@ BASE_FEATURE(kControlsVisibilityFromNavigations,
 BASE_FEATURE(kCrossDeviceTabPaneAndroid,
              "CrossDeviceTabPaneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDefaultBrowserPromoAndroid,
-             "DefaultBrowserPromoAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserPromoAndroid2,
              "DefaultBrowserPromoAndroid2",
