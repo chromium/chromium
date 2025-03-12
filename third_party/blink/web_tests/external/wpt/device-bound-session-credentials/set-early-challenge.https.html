@@ -52,7 +52,7 @@
     // for test clarity (not strictly needed).
     configureServer({
       earlyChallengeForNextRegisteredSession: earlyChallenge1,
-      cookieNamesAndValuesForNextRegisteredSessions: [expectedCookieAndValue1]
+      cookieNameAndValueForNextRegisteredSession: expectedCookieAndValue1
     });
 
     // Prompt starting one session, and wait until registration completes.
@@ -64,7 +64,7 @@
     // cookie.
     configureServer({
       earlyChallengeForNextRegisteredSession: earlyChallenge2,
-      cookieNamesAndValuesForNextRegisteredSessions: [expectedCookieAndValue2]
+      cookieNameAndValueForNextRegisteredSession: expectedCookieAndValue2
     });
 
     // Prompt starting second session, and wait until registration completes.
