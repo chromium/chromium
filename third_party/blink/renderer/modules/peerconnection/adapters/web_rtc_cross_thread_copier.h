@@ -17,16 +17,13 @@
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/transport/network_types.h"
+#include "third_party/webrtc/rtc_base/socket_address.h"
 
 namespace cricket {
 class Candidate;
 struct IceParameters;
 struct RelayServerConfig;
 }  // namespace cricket
-
-namespace rtc {
-class SocketAddress;
-}
 
 namespace webrtc {
 class DtlsTransportInformation;
