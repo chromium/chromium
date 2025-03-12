@@ -57,14 +57,14 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
 
-  // Shows the editor for |group|. Returns a *non-owning* pointer to the
+  // Shows the editor for `group`. Returns a *non-owning* pointer to the
   // bubble's widget.
   static views::Widget* Show(
       const Browser* browser,
       const tab_groups::TabGroupId& group,
       TabGroupHeader* header_view,
       std::optional<gfx::Rect> anchor_rect = std::nullopt,
-      // If not provided, will be set to |header_view|.
+      // If not provided, will be set to `header_view`.
       views::View* anchor_view = nullptr,
       bool stop_context_menu_propagation = false);
 
@@ -229,7 +229,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   // styling.
   std::vector<raw_ptr<views::LabelButton>> simple_menu_items_;
 
-  // If true will use the |anchor_rect_| provided in the constructor, otherwise
+  // If true will use the `anchor_rect_` provided in the constructor, otherwise
   // fall back to using the anchor view bounds.
   const bool use_set_anchor_rect_;
 

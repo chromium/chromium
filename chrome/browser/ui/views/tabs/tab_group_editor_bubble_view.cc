@@ -176,7 +176,7 @@ views::Widget* TabGroupEditorBubbleView::Show(
   feature_engagement::TrackerFactory::GetForBrowserContext(browser->profile())
       ->NotifyEvent("tab_group_editor_shown");
 
-  // If |header_view| is not null, use |header_view| as the |anchor_view|.
+  // If `header_view` is not null, use `header_view` as the `anchor_view`.
   TabGroupEditorBubbleView* tab_group_editor_bubble_view =
       new TabGroupEditorBubbleView(browser, group,
                                    header_view ? header_view : anchor_view,
@@ -197,8 +197,8 @@ views::View* TabGroupEditorBubbleView::GetInitiallyFocusedView() {
 
 gfx::Rect TabGroupEditorBubbleView::GetAnchorRect() const {
   // We want to avoid calling BubbleDialogDelegateView::GetAnchorRect() if
-  // |anchor_rect_| has been set. This is because the default behavior uses the
-  // anchor view's bounds and also updates |anchor_rect_| to the views bounds.
+  // `anchor_rect_` has been set. This is because the default behavior uses the
+  // anchor view's bounds and also updates `anchor_rect_` to the views bounds.
   // It does this so that the bubble does not jump when the anchoring view is
   // deleted.
   if (use_set_anchor_rect_) {
@@ -271,8 +271,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   // This dialog should only show up if the browser supports tab groups.
   DCHECK(browser_->tab_strip_model()->SupportsTabGroups());
 
-  // |anchor_view| should always be defined as it will be used to source the
-  // |anchor_widget_|.
+  // `anchor_view` should always be defined as it will be used to source the
+  // `anchor_widget_`.
   DCHECK(anchor_view);
 
   // Initialize the bubble.

@@ -192,7 +192,7 @@ class BrowserTabStripController : public TabStripController,
   HoverTabSelector hover_tab_selector_;
 
   // Forces the tabs to use the regular (non-immersive) style and the
-  // top-of-window views to be revealed when the user is dragging |tabstrip|'s
+  // top-of-window views to be revealed when the user is dragging `tabstrip`'s
   // tabs.
   std::unique_ptr<ImmersiveRevealedLock> immersive_reveal_lock_;
 

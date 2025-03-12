@@ -30,9 +30,9 @@ float ZOrderableTabContainerElement::CalculateZValue(views::View* child) {
   TabGroupHighlight* highlight = views::AsViewClass<TabGroupHighlight>(child);
   DCHECK_EQ(1, !!tab + !!header + !!underline + !!highlight);
 
-  // Construct a bitfield that encodes |child|'s z-value. Higher-order bits
+  // Construct a bitfield that encodes `child`'s z-value. Higher-order bits
   // encode more important properties - see usage below for details on each.
-  // The lowest-order |num_bits_reserved_for_tab_style_z_value| bits are
+  // The lowest-order `num_bits_reserved_for_tab_style_z_value` bits are
   // reserved for the factors considered by TabStyle, e.g. selection and hover
   // state.
   constexpr int num_bits_reserved_for_tab_style_z_value =

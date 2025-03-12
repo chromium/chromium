@@ -73,7 +73,7 @@ class TabDragContext : public TabDragContextBase {
   // Returns the tab drag controller owned by this delegate, or null if none.
   virtual TabDragController* GetDragController() = 0;
 
-  // Takes ownership of |controller|.
+  // Takes ownership of `controller`.
   virtual void OwnDragController(
       std::unique_ptr<TabDragController> controller) = 0;
 
@@ -110,12 +110,12 @@ class TabDragContext : public TabDragContextBase {
   virtual int GetHorizontalDragThreshold() const = 0;
 
   // Returns the index where the dragged WebContents should be inserted into
-  // this tabstrip given the DraggedTabView's bounds |dragged_bounds| in
-  // coordinates relative to |attached_tabstrip_| and has had the mirroring
+  // this tabstrip given the DraggedTabView's bounds `dragged_bounds` in
+  // coordinates relative to `attached_tabstrip_` and has had the mirroring
   // transformation applied.
-  // |dragged_views| are the view children of |attached_tabstrip_| that are
+  // `dragged_views` are the view children of `attached_tabstrip_` that are
   // part of the drag.
-  // |group| is set if the drag is originating from a group header, in which
+  // `group` is set if the drag is originating from a group header, in which
   // case the entire group is dragged and should not be dropped into other
   // groups.
   virtual int GetInsertionIndexForDraggedBounds(
@@ -129,7 +129,7 @@ class TabDragContext : public TabDragContextBase {
   virtual std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
       const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views) = 0;
 
-  // Sets the bounds of |views| to |bounds|.
+  // Sets the bounds of `views` to `bounds`.
   virtual void SetBoundsForDrag(
       const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views,
       const std::vector<gfx::Rect>& bounds) = 0;
@@ -141,13 +141,13 @@ class TabDragContext : public TabDragContextBase {
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
 
-  // Used by TabDragController when the user stops dragging. |completed| is
+  // Used by TabDragController when the user stops dragging. `completed` is
   // true if the drag operation completed successfully, false if it was
   // reverted.
   virtual void StoppedDragging() = 0;
 
-  // Invoked during drag to layout the views being dragged in |views| at
-  // |location|. If |initial_drag| is true, this is the initial layout after the
+  // Invoked during drag to layout the views being dragged in `views` at
+  // `location`. If `initial_drag` is true, this is the initial layout after the
   // user moved the mouse far enough to trigger a drag.
   virtual void LayoutDraggedViewsAt(
       const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views,

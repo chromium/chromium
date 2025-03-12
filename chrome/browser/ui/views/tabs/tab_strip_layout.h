@@ -26,7 +26,7 @@ class TabSizer {
   int CalculateTabWidth(const TabWidthConstraints& tab) const;
 
   // Returns true iff it's OK for this tab to be one pixel wider than
-  // CalculateTabWidth(|tab|).
+  // CalculateTabWidth(`tab`).
   bool TabAcceptsExtraSpace(const TabWidthConstraints& tab) const;
 
   bool IsAlreadyPreferredWidth() const;
@@ -47,10 +47,10 @@ struct TabWidthOverride {
   int extra_space;
 };
 
-// Calculates and returns the bounds of the tabs. |width| is the available
+// Calculates and returns the bounds of the tabs. `width` is the available
 // width to use for tab layout. This never sizes the tabs smaller then the
 // minimum widths in TabSizeInfo, and as a result the calculated bounds may go
-// beyond |width|.
+// beyond `width`.
 std::vector<gfx::Rect> CalculateTabBounds(
     const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
