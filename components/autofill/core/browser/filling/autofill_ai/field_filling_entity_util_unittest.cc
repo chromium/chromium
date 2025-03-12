@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -46,8 +47,12 @@ using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
 
 class GetFieldsFillableByAutofillAiTest : public testing::Test {
  public:
-  void SetUp() override {
-    testing::Test::SetUp();
+  GetFieldsFillableByAutofillAiTest() {
+    client().SetUpPrefsAndIdentityForAutofillAi();
+    client().set_entity_data_manager(std::make_unique<EntityDataManager>(
+        helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+        /*strike_database=*/nullptr));
+
     test_api(form_).PushField(
         test::CreateTestFormField("", "", "", FormControlType::kInputText));
     test_api(form_).PushField(
@@ -55,11 +60,12 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
   }
 
   void AddOrUpdateEntityInstance(EntityInstance entity) {
-    edm_.AddOrUpdateEntityInstance(std::move(entity));
+    edm().AddOrUpdateEntityInstance(std::move(entity));
     helper_.WaitUntilIdle();
   }
 
-  EntityDataManager& edm() { return edm_; }
+  TestAutofillClient& client() { return client_; }
+  EntityDataManager& edm() { return *client().GetEntityDataManager(); }
   FormStructure& form() { return form_; }
 
   FieldGlobalId field(size_t i) const { return form_.fields()[i]->global_id(); }
@@ -70,10 +76,8 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+  TestAutofillClient client_;
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
-  EntityDataManager edm_{helper_.autofill_webdata_service(),
-                         /*history_service=*/nullptr,
-                         /*strike_database=*/nullptr};
   FormStructure form_{{}};
 };
 
@@ -81,7 +85,7 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
 TEST_F(GetFieldsFillableByAutofillAiTest, NoAutofillAiField) {
   AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
   test_api(form()).SetFieldTypes({CREDIT_CARD_NAME_FULL, NAME_FULL});
-  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), edm()), IsEmpty());
+  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()), IsEmpty());
 }
 
 // If there is no Autofill AI entity that could fill the field, none is blocked.
@@ -90,7 +94,7 @@ TEST_F(GetFieldsFillableByAutofillAiTest, NameInFormButNotInEntity) {
   AddOrUpdateEntityInstance(test::GetPassportEntityInstance({.name = nullptr}));
   test_api(form()).SetFieldTypes({CREDIT_CARD_NAME_FULL, NAME_FULL},
                                  {CREDIT_CARD_NAME_FULL, PASSPORT_NAME_TAG});
-  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), edm()), IsEmpty());
+  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()), IsEmpty());
 }
 
 // If there is a fillable AI field, it is blocked.
@@ -98,7 +102,7 @@ TEST_F(GetFieldsFillableByAutofillAiTest, FillableName) {
   AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
   test_api(form()).SetFieldTypes({CREDIT_CARD_NAME_FULL, NAME_FULL},
                                  {CREDIT_CARD_NAME_FULL, PASSPORT_NAME_TAG});
-  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), edm()),
+  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()),
               ElementsAre(field(1)));
 }
 
@@ -107,8 +111,19 @@ TEST_F(GetFieldsFillableByAutofillAiTest, FillableNumber) {
   AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
   test_api(form()).SetFieldTypes({CREDIT_CARD_NAME_FULL, NAME_FULL},
                                  {CREDIT_CARD_NAME_FULL, PASSPORT_NUMBER});
-  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), edm()),
+  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()),
               ElementsAre(field(1)));
+}
+
+// If filling for AutofillAI is not permitted, no fields are blocked even if
+// there is an AutofillAI-related field and there is data in the
+// EntityDataManager.
+TEST_F(GetFieldsFillableByAutofillAiTest, FillingUnavailable) {
+  client().SetCanUseModelExecutionFeatures(false);
+  AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
+  test_api(form()).SetFieldTypes({CREDIT_CARD_NAME_FULL, NAME_FULL},
+                                 {CREDIT_CARD_NAME_FULL, PASSPORT_NAME_TAG});
+  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()), IsEmpty());
 }
 
 class GetFillValueForEntityTest : public testing::Test {

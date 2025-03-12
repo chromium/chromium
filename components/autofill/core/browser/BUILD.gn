@@ -1275,7 +1275,6 @@ source_set("unit_tests") {
     "field_type_utils_unittest.cc",
     "field_types_unittest.cc",
     "filling/addresses/field_filling_address_util_unittest.cc",
-    "filling/autofill_ai/field_filling_entity_util_unittest.cc",
     "filling/field_filling_util_unittest.cc",
     "filling/form_autofill_history_unittest.cc",
     "filling/form_filler_unittest.cc",
@@ -1500,8 +1499,10 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android && !is_fuchsia) {
-    sources +=
-        [ "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc" ]
+    sources += [
+      "filling/autofill_ai/field_filling_entity_util_unittest.cc",
+      "permissions/autofill_ai/autofill_ai_permission_utils_unittest.cc",
+    ]
   }
 
   if (build_with_model_execution) {
