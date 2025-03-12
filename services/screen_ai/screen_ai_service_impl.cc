@@ -313,6 +313,13 @@ void ScreenAIService::InitializeOCR(
   ocr_last_used_ = base::TimeTicks::Now();
 }
 
+void ScreenAIService::BindShutdownHandler(
+    mojo::PendingRemote<mojom::ScreenAIServiceShutdownHandler>
+        shutdown_handler) {
+  DCHECK(!screen_ai_shutdown_handler_.is_bound());
+  screen_ai_shutdown_handler_.Bind(std::move(shutdown_handler));
+}
+
 void ScreenAIService::BindAnnotator(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) {
   screen_ai_annotators_.Add(this, std::move(annotator));
@@ -535,6 +542,7 @@ void ScreenAIService::ShutDownIfNoClients() {
       main_content_extraction_last_used_ < kIdlenessThreshold;
 
   if (ocr_not_needed && main_content_extractioncan_not_needed) {
+    screen_ai_shutdown_handler_->ShuttingDownOnIdle();
     VLOG(2) << "Shutting down since no client or idle.";
     base::Process::TerminateCurrentProcessImmediately(0);
   }
