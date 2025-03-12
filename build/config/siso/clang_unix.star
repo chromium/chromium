@@ -4,11 +4,9 @@
 # found in the LICENSE file.
 """Siso configuration for clang/unix."""
 
-load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
-load("./ar.star", "ar")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")

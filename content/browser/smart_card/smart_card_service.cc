@@ -5,6 +5,7 @@
 #include "content/browser/smart_card/smart_card_service.h"
 
 #include "base/check_deref.h"
+#include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/isolated_context_util.h"
@@ -39,9 +40,12 @@ SmartCardService::SmartCardService(
                           base::Unretained(this)));
   connection_watcher_receivers_.set_disconnect_handler(base::BindRepeating(
       &SmartCardService::OnMojoWatcherPipeClosed, base::Unretained(this)));
+  GetSmartCardDelegate().AddObserver(render_frame_host, this);
 }
 
-SmartCardService::~SmartCardService() {}
+SmartCardService::~SmartCardService() {
+  GetSmartCardDelegate().RemoveObserver(render_frame_host(), this);
+}
 
 // static
 void SmartCardService::Create(
@@ -282,4 +286,25 @@ void SmartCardService::OnMojoWatcherPipeClosed() {
     GetSmartCardDelegate().NotifyLastConnectionLost(render_frame_host());
   }
 }
+
+void SmartCardService::OnPermissionRevoked(const url::Origin& origin) {
+  if (render_frame_host().GetLastCommittedOrigin() != origin) {
+    return;
+  }
+
+  auto& delegate = GetSmartCardDelegate();
+
+  std::vector<mojo::ReceiverId> watchers_of_connections_to_remove;
+  for (const auto& [reader_name, receiver_ids] :
+       connection_watchers_per_reader_) {
+    if (delegate.HasReaderPermission(render_frame_host(), reader_name)) {
+      continue;
+    }
+    base::Extend(watchers_of_connections_to_remove, receiver_ids);
+  }
+  for (const auto& receiver_id : watchers_of_connections_to_remove) {
+    connection_watcher_receivers_.Remove(receiver_id);
+  }
+}
+
 }  // namespace content

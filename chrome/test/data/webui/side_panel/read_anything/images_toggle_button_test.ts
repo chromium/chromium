@@ -5,10 +5,10 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {IMAGES_DISABLED_ICON, IMAGES_ENABLED_ICON, IMAGES_TOGGLE_BUTTON_ID, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -17,7 +17,7 @@ suite('ImageToggle', () => {
   let menuButton: CrIconButtonElement;
   let imagesToggled: boolean;
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
@@ -28,8 +28,8 @@ suite('ImageToggle', () => {
     document.addEventListener(ToolbarEvent.IMAGES, () => imagesToggled = true);
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
-    flush();
-    menuButton = toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
+    await microtasksFinished();
+    menuButton = toolbar.shadowRoot.querySelector<CrIconButtonElement>(
         '#' + IMAGES_TOGGLE_BUTTON_ID)!;
   });
 
@@ -43,6 +43,7 @@ suite('ImageToggle', () => {
   suite('on first click', () => {
     setup(() => {
       menuButton.click();
+      return microtasksFinished();
     });
 
     test('images are turned on', () => {
@@ -55,19 +56,22 @@ suite('ImageToggle', () => {
       assertTrue(imagesToggled);
     });
 
-    test('when unpaused, button is disabled', () => {
+    test('when unpaused, button is disabled', async () => {
       toolbar.isSpeechActive = true;
+      await microtasksFinished();
       assertTrue(menuButton.disabled);
     });
 
-    test('when paused, button is enabled', () => {
+    test('when paused, button is enabled', async () => {
       toolbar.isSpeechActive = false;
+      await microtasksFinished();
       assertFalse(menuButton.disabled);
     });
 
     suite('on next click', () => {
       setup(() => {
         menuButton.click();
+        return microtasksFinished();
       });
 
       test('images are turned back off', () => {
@@ -80,13 +84,15 @@ suite('ImageToggle', () => {
         assertTrue(imagesToggled);
       });
 
-      test('when unpaused, button is disabled', () => {
+      test('when unpaused, button is disabled', async () => {
         toolbar.isSpeechActive = true;
+        await microtasksFinished();
         assertTrue(menuButton.disabled);
       });
 
-      test('when paused, button is enabled', () => {
+      test('when paused, button is enabled', async () => {
         toolbar.isSpeechActive = false;
+        await microtasksFinished();
         assertFalse(menuButton.disabled);
       });
     });

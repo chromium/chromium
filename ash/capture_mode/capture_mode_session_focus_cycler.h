@@ -265,6 +265,18 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // is destroyed while it has focus.
   void OnSearchResultsPanelCreated(views::Widget* panel_widget);
 
+  // Called when Scanner actions are fetched, to move focus onto the first
+  // suggested action if needed after the smart actions button is removed.
+  void OnScannerActionsFetched();
+
+  // Called when the disclaimer widget is opened, to move focus onto the
+  // disclaimer if needed.
+  void OnDisclaimerWidgetOpened(views::Widget* disclaimer_widget);
+
+  // Called when the disclaimer widget is closed, to pass focus back to the
+  // focus cycler if needed.
+  void OnDisclaimerWidgetClosed();
+
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;

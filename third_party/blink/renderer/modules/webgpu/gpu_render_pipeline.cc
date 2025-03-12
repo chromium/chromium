@@ -90,12 +90,13 @@ wgpu::ColorTargetState AsDawnType(const GPUColorTargetState* webgpu_desc) {
 wgpu::VertexBufferLayout AsDawnType(const GPUVertexBufferLayout* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::VertexBufferLayout dawn_desc = {
-      .arrayStride = webgpu_desc->arrayStride(),
-      .stepMode = AsDawnEnum(webgpu_desc->stepMode()),
-      .attributeCount = webgpu_desc->attributes().size(),
-      // .attributes is handled outside separately
-  };
+  // TODO(crbug.com/402499447): Revert to use designated initializers once Dawn
+  // headers have re-ordered these fields.
+  wgpu::VertexBufferLayout dawn_desc = {};
+  dawn_desc.arrayStride = webgpu_desc->arrayStride();
+  dawn_desc.stepMode = AsDawnEnum(webgpu_desc->stepMode());
+  dawn_desc.attributeCount = webgpu_desc->attributes().size();
+  // .attributes is handled outside separately
 
   return dawn_desc;
 }

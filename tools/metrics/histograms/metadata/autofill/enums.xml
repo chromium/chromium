@@ -827,6 +827,12 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="11777"
       label="DRIVERS_LICENSE_ISSUE_DATE: Autofilled value accepted"/>
+  <int value="11840"
+      label="VEHICLE_YEAR: Not autofilled or autofilled value edited"/>
+  <int value="11841" label="VEHICLE_YEAR: Autofilled value accepted"/>
+  <int value="11904"
+      label="VEHICLE_PLATE_STATE: Not autofilled or autofilled value edited"/>
+  <int value="11905" label="VEHICLE_PLATE_STATE: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -1132,6 +1138,10 @@ Called by update_autofill_enums.py.-->
   <int value="2929" label="DRIVERS_LICENSE_EXPIRATION_DATE: accepted"/>
   <int value="2944" label="DRIVERS_LICENSE_ISSUE_DATE: edited"/>
   <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE: accepted"/>
+  <int value="2960" label="VEHICLE_YEAR: edited"/>
+  <int value="2961" label="VEHICLE_YEAR: accepted"/>
+  <int value="2976" label="VEHICLE_PLATE_STATE: edited"/>
+  <int value="2977" label="VEHICLE_PLATE_STATE: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1967,6 +1977,8 @@ Called by update_autofill_enums.py.-->
   <int value="182" label="DRIVERS_LICENSE_NUMBER"/>
   <int value="183" label="DRIVERS_LICENSE_EXPIRATION_DATE"/>
   <int value="184" label="DRIVERS_LICENSE_ISSUE_DATE"/>
+  <int value="185" label="VEHICLE_YEAR"/>
+  <int value="186" label="VEHICLE_PLATE_STATE"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3485,6 +3497,10 @@ Called by update_autofill_enums.py.-->
   <int value="733" label="DRIVERS_LICENSE_EXPIRATION_DATE: Accepted"/>
   <int value="736" label="DRIVERS_LICENSE_ISSUE_DATE: Ignored"/>
   <int value="737" label="DRIVERS_LICENSE_ISSUE_DATE: Accepted"/>
+  <int value="740" label="VEHICLE_YEAR: Ignored"/>
+  <int value="741" label="VEHICLE_YEAR: Accepted"/>
+  <int value="744" label="VEHICLE_PLATE_STATE: Ignored"/>
+  <int value="745" label="VEHICLE_PLATE_STATE: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

@@ -388,6 +388,8 @@ void It2MeHost::ConnectOnNetworkThread(
         !chrome_os_enterprise_params_->suppress_notifications);
     options.set_terminate_upon_input(
         chrome_os_enterprise_params_->terminate_upon_input);
+    options.set_maximum_session_duration(
+        chrome_os_enterprise_params_->maximum_session_duration);
   }
 #endif
 

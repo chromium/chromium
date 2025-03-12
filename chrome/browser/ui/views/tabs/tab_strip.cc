@@ -1869,13 +1869,32 @@ Tab* TabStrip::GetTabAt(const gfx::Point& point) {
                                               : nullptr;
 }
 
-const Tab* TabStrip::GetAdjacentTab(const Tab* tab, int offset) {
+Tab* TabStrip::GetAdjacentTab(const Tab* tab, int offset) {
   const std::optional<int> tab_index = GetModelIndexOf(tab);
   if (!tab_index.has_value()) {
     return nullptr;
   }
   const int adjacent_index = tab_index.value() + offset;
   return IsValidModelIndex(adjacent_index) ? tab_at(adjacent_index) : nullptr;
+}
+
+Tab* TabStrip::GetAdjacentSplitTab(const Tab* tab) {
+  if (!tab->split()) {
+    return nullptr;
+  }
+
+  // TODO(agale): In the future this might need to support more than two tab
+  // splits.
+  Tab* const left_tab = tab->controller()->GetAdjacentTab(tab, -1);
+  if (left_tab && left_tab->split()) {
+    return left_tab;
+  }
+  Tab* const right_tab = tab->controller()->GetAdjacentTab(tab, 1);
+  if (right_tab && right_tab->split()) {
+    return right_tab;
+  }
+
+  return nullptr;
 }
 
 void TabStrip::OnMouseEventInTab(views::View* source,
@@ -1900,6 +1919,22 @@ void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
 bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
   return hover_card_controller_ &&
          hover_card_controller_->IsHoverCardShowingForTab(tab);
+}
+
+void TabStrip::ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) {
+  tab->tab_style_views()->ShowHover(style);
+  if (tab->split()) {
+    Tab* const split_tab = GetAdjacentSplitTab(tab);
+    split_tab->tab_style_views()->ShowHover(style);
+  }
+}
+
+void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
+  tab->tab_style_views()->HideHover(style);
+  if (tab->split()) {
+    Tab* const split_tab = GetAdjacentSplitTab(tab);
+    split_tab->tab_style_views()->HideHover(style);
+  }
 }
 
 int TabStrip::GetBackgroundOffset() const {

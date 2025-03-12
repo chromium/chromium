@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -234,11 +235,23 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             ChromeTabbedActivity targetActivity,
             TabGroupMetadata tabGroupMetadata,
             int tabAtIndex) {
+        // Pause writes to TabPersistentStore while detaching the grouped Tabs.
+        TabPersistentStore tabPersistentStore =
+                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+        tabPersistentStore.pauseSaveTabList();
+
+        // Setup the re-parenting intent, detaching the grouped tabs from the current activity.
         Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
         setupIntentForGroupReparenting(tabGroupMetadata, intent, null);
 
-        targetActivity.onNewIntent(intent);
-        bringTaskForeground(targetActivity.getTaskId());
+        // Resume writes to TabPersistentStore after detaching the grouped Tabs. Don't begin
+        // re-attaching the Tabs to the target activity until they have been cleared from this
+        // activity's TabPersistentStore.
+        tabPersistentStore.resumeSaveTabList(
+                () -> {
+                    targetActivity.onNewIntent(intent);
+                    bringTaskForeground(targetActivity.getTaskId());
+                });
     }
 
     private Intent createIntentForGeneralReparenting(

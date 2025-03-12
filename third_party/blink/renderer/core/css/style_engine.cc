@@ -2054,9 +2054,29 @@ void StyleEngine::ScheduleInvalidationsForRemovedSibling(
 }
 
 void StyleEngine::ScheduleNthPseudoInvalidations(ContainerNode& nth_parent) {
+  DCHECK(nth_parent.ChildrenAffectedByForwardPositionalRules() ||
+         nth_parent.ChildrenAffectedByBackwardPositionalRules());
+
   InvalidationLists invalidation_lists;
+  // We are scheduling the invalidation sets for both :nth-*() selectors, and
+  // the set for invalidating children that rely on
+  // sibling-index()/sibling-count() below (the TreeCountingInvalidationSet()).
+  //
+  // We always schedule both because the flags set on the parent to indicate the
+  // need for invalidation are shared between the two cases:
+  //
+  // - ChildrenAffectedByForwardPositionalRules()
+  // - ChildrenAffectedByBackwardPositionalRules()
+  //
+  // That means we may have unnecessary invalidations for :nth-*() selectors for
+  // siblings when they are only really affected by tree-counting functions.
+  //
   GetRuleFeatureSet().GetRuleInvalidationData().CollectNthInvalidationSet(
       invalidation_lists);
+  if (uses_tree_counting_functions_) {
+    invalidation_lists.siblings.push_back(
+        InvalidationSet::TreeCountingInvalidationSet());
+  }
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          nth_parent);
 }

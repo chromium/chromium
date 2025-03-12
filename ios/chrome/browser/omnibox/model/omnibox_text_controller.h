@@ -51,7 +51,7 @@ class OmniboxViewIOS;
 - (void)onThumbnailSet:(BOOL)hasThumbnail;
 
 /// Called when the thumbnail has been removed during omnibox edit.
-- (void)onThumbnailRemovedDuringEdit;
+- (void)onUserRemoveThumbnail;
 
 @end
 

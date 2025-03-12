@@ -1451,10 +1451,6 @@ extern const char kMostVisitedTilesNewScoringDescription[];
 extern const char kMostVisitedTilesReselectName[];
 extern const char kMostVisitedTilesReselectDescription[];
 
-extern const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[];
-extern const char
-    kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[];
-
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 
@@ -1841,6 +1837,9 @@ extern const char kPwaUpdateDialogForAppIconDescription[];
 
 extern const char kRenderDocumentName[];
 extern const char kRenderDocumentDescription[];
+
+extern const char kRendererSideContentDecodingName[];
+extern const char kRendererSideContentDecodingDescription[];
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 extern const char kRustyPngName[];

@@ -654,7 +654,7 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
 #endif
 
   mouse_hovered_ = true;
-  tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  controller_->ShowHover(this, TabStyle::ShowHoverStyle::kSubtle);
   UpdateForegroundColors();
   DeprecatedLayoutImmediately();
   if (g_show_hover_card_on_mouse_hover) {
@@ -668,7 +668,7 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
     return;
   }
   mouse_hovered_ = false;
-  tab_style_views()->HideHover(TabStyle::HideHoverStyle::kGradual);
+  controller_->HideHover(this, TabStyle::HideHoverStyle::kGradual);
   UpdateForegroundColors();
   DeprecatedLayoutImmediately();
 }

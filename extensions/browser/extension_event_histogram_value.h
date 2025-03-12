@@ -587,6 +587,7 @@ enum HistogramValue {
   PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT = 563,
   OMNIBOX_ON_ACTION_EXECUTED = 564,
   AUTOFILL_PRIVATE_ON_ENTITY_INSTANCES_CHANGED = 565,
+  ENTERPRISE_REPORTING_PRIVATE_ON_DATA_MASKING_RULES_TRIGGERED = 566,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

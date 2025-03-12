@@ -1,11 +1,14 @@
 include_rules = [
-  "+ash/public/cpp",
-  "+ash/webui/firmware_update_ui/mojom",
   "+chromeos/ash/components/dbus/fwupd",
   "+chromeos/ash/components/install_attributes",
   "+chromeos/ash/components/network",
   "+dbus",
   "+third_party/zlib/google",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/fwupd_download_client.h",
+  "+ash/webui/firmware_update_ui/mojom",
 ]
 
 specific_include_rules = {

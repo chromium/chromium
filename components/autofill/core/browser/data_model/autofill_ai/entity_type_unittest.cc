@@ -35,7 +35,7 @@ TEST(AutofillEntityTypeTest, Attributes) {
               UnorderedElementsAre(AttributeType(kPassportName),
                                    AttributeType(kPassportNumber),
                                    AttributeType(kPassportCountry),
-                                   AttributeType(kPassportExpiryDate),
+                                   AttributeType(kPassportExpirationDate),
                                    AttributeType(kPassportIssueDate)));
   ASSERT_FALSE(e.attributes().empty());
 }
@@ -43,22 +43,16 @@ TEST(AutofillEntityTypeTest, Attributes) {
 TEST(AutofillEntityTypeTest, ImportConstraints) {
   using enum AttributeTypeName;
   EntityType e = EntityType(EntityTypeName::kPassport);
-  EXPECT_THAT(e.import_constraints(),
-              UnorderedElementsAre(
-                  UnorderedElementsAre(AttributeType(kPassportNumber),
-                                       AttributeType(kPassportName)),
-                  UnorderedElementsAre(AttributeType(kPassportNumber),
-                                       AttributeType(kPassportCountry)),
-                  UnorderedElementsAre(AttributeType(kPassportNumber),
-                                       AttributeType(kPassportExpiryDate))));
+  EXPECT_THAT(e.import_constraints(), UnorderedElementsAre(UnorderedElementsAre(
+                                          AttributeType(kPassportNumber))));
 }
 
 TEST(AutofillEntityTypeTest, MergeConstraints) {
   using enum AttributeTypeName;
   EntityType e = EntityType(EntityTypeName::kPassport);
-  EXPECT_THAT(e.merge_constraints(), ElementsAre(UnorderedElementsAre(
-                                         AttributeType(kPassportNumber),
-                                         AttributeType(kPassportExpiryDate))));
+  EXPECT_THAT(
+      e.merge_constraints(),
+      ElementsAre(UnorderedElementsAre(AttributeType(kPassportNumber))));
 }
 
 TEST(AutofillEntityTypeTest, StrikeKeys) {
@@ -81,7 +75,7 @@ TEST(AutofillEntityTypeTest, DisambiguationOrder) {
                                               AttributeType(rhs));
   };
   EXPECT_TRUE(lt(kPassportName, kPassportCountry));
-  EXPECT_TRUE(lt(kPassportCountry, kPassportExpiryDate));
+  EXPECT_TRUE(lt(kPassportCountry, kPassportExpirationDate));
   EXPECT_TRUE(lt(kPassportCountry, kPassportIssueDate));
   EXPECT_TRUE(lt(kPassportCountry, kPassportNumber));
   EXPECT_FALSE(lt(kPassportNumber, kPassportIssueDate));
@@ -103,7 +97,7 @@ TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
 TEST(AutofillEntityTypeTest, AttributeGetNameForI18n) {
   using enum AttributeTypeName;
   AttributeType a = AttributeType(kPassportCountry);
-  AttributeType b = AttributeType(kVehicleLicensePlate);
+  AttributeType b = AttributeType(kVehiclePlateNumber);
   AttributeType c = AttributeType(kDriversLicenseExpirationDate);
   EXPECT_EQ(a.GetNameForI18n(), u"Country");
   EXPECT_EQ(b.GetNameForI18n(), u"License plate");

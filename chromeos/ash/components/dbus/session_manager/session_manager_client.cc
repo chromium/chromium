@@ -404,11 +404,11 @@ class SessionManagerClientImpl : public SessionManagerClient {
     }
   }
 
-  void ClearForcedReEnrollmentVpd(
+  void ClearBlockDevmodeVpd(
       chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerClearForcedReEnrollmentVpd);
+        login_manager::kSessionManagerClearBlockDevmodeVpd);
     dbus::MessageWriter writer(&method_call);
     session_manager_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

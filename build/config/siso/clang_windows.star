@@ -5,7 +5,6 @@
 """Siso configuration for clang-cl/windows."""
 
 load("@builtin//lib/gn.star", "gn")
-load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")

@@ -33,6 +33,7 @@ public class ContextMenuParams {
     private final GURL mSrcUrl;
     private final @Nullable Referrer mReferrer;
 
+    private final boolean mIsPage;
     private final boolean mIsAnchor;
     private final boolean mIsImage;
     private final boolean mIsVideo;
@@ -87,7 +88,16 @@ public class ContextMenuParams {
         return mReferrer;
     }
 
-    /** @return Whether or not the context menu is being shown for an anchor. */
+    /**
+     * @return Whether or not the context menu is being shown for a page.
+     */
+    public boolean isPage() {
+        return mIsPage;
+    }
+
+    /**
+     * @return Whether or not the context menu is being shown for an anchor.
+     */
     public boolean isAnchor() {
         return mIsAnchor;
     }
@@ -183,6 +193,13 @@ public class ContextMenuParams {
         mSrcUrl = srcUrl;
         mReferrer = referrer;
 
+        // Note: On desktop it is necessary to also check for the case where the target is an
+        // (editable) text/ password selection. Here that is not necessary because on Clank
+        //  it will open a selection popup instead of a context menu.
+        mIsPage =
+                (mediaType == ContextMenuDataMediaType.NONE
+                        && linkUrl.isEmpty()
+                        && !openedFromHighlight);
         mIsAnchor = !linkUrl.isEmpty();
         mIsImage = mediaType == ContextMenuDataMediaType.IMAGE;
         mIsVideo = mediaType == ContextMenuDataMediaType.VIDEO;

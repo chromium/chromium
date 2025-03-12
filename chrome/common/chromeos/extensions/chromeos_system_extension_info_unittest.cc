@@ -19,7 +19,10 @@ TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
       chromeos::GetChromeOSExtensionInfoById(google_extension_id);
   EXPECT_THAT(extension_info.manufacturers,
               testing::UnorderedElementsAre("ASUS", "HP", "Acer", "Lenovo"));
-  EXPECT_EQ("*://googlechromelabs.github.io/*", extension_info.pwa_origin);
+  EXPECT_EQ(
+      "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+      "test-page/*",
+      extension_info.pwa_origin);
   EXPECT_FALSE(extension_info.iwa_id);
 }
 
@@ -107,8 +110,10 @@ TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
-  EXPECT_EQ("*://googlechromelabs.github.io/*",
-            google_extension_info.pwa_origin);
+  EXPECT_EQ(
+      "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+      "test-page/*",
+      google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
               testing::UnorderedElementsAre(kManufacturerOverride));
   EXPECT_FALSE(google_extension_info.iwa_id);
@@ -160,8 +165,10 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
 
   const auto& google_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
-  EXPECT_EQ("*://googlechromelabs.github.io/*",
-            google_extension_info.pwa_origin);
+  EXPECT_EQ(
+      "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+      "test-page/*",
+      google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
               testing::UnorderedElementsAre("HP", "ASUS", "Acer", "Lenovo"));
   EXPECT_EQ(kIwaIdOverride, google_extension_info.iwa_id->id());

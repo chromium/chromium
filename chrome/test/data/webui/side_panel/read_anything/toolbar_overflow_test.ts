@@ -4,10 +4,10 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {moreOptionsClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -23,7 +23,7 @@ suite('ToolbarOverflow', () => {
     chrome.readingMode.isReadAloudEnabled = true;
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
-    flush();
+    return microtasksFinished();
   });
 
   suite('on reset toolbar', () => {
@@ -34,7 +34,7 @@ suite('ToolbarOverflow', () => {
 
       toolbar.$.toolbarContainer.dispatchEvent(
           new CustomEvent('reset-toolbar'));
-      flush();
+      return microtasksFinished();
     });
 
     test('more options closed', () => {
@@ -50,20 +50,20 @@ suite('ToolbarOverflow', () => {
   });
 
   suite('on toolbar overflow', () => {
-    function overflow(numOverflowButtons: number) {
+    async function overflow(numOverflowButtons: number): Promise<void> {
       toolbar.$.toolbarContainer.dispatchEvent(
           new CustomEvent('toolbar-overflow', {
             bubbles: true,
             composed: true,
             detail: {numOverflowButtons},
           }));
+      await microtasksFinished();
       toolbar.$.moreOptionsMenu.get();
-      flush();
     }
 
-    test('more options contains overflow', () => {
+    test('more options contains overflow', async () => {
       let numOverflow = 3;
-      overflow(numOverflow);
+      await overflow(numOverflow);
       assertEquals(
           numOverflow,
           toolbar.$.moreOptionsMenu.get()
@@ -71,7 +71,7 @@ suite('ToolbarOverflow', () => {
               .length);
 
       numOverflow = 5;
-      overflow(numOverflow);
+      await overflow(numOverflow);
       assertEquals(
           numOverflow,
           toolbar.$.moreOptionsMenu.get()

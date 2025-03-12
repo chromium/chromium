@@ -4,9 +4,9 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {DomIf} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -21,30 +21,27 @@ suite('ReadAloudFlag', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
   });
 
-  function createToolbar(): void {
+  function createToolbar(): Promise<void> {
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
+    return microtasksFinished();
   }
 
-  test('read aloud container is visible if enabled', () => {
+  test('read aloud is visible if enabled', async () => {
     chrome.readingMode.isReadAloudEnabled = true;
-    createToolbar();
+    await createToolbar();
 
-    const container =
-        toolbar.shadowRoot!.querySelector<DomIf>('#read-aloud-container');
+    const audioControls = toolbar.shadowRoot.querySelector('#audio-controls');
 
-    assertTrue(!!container);
-    assertTrue(container.if !);
+    assertTrue(!!audioControls);
   });
 
-  test('read aloud container is invisible if disabled', () => {
+  test('read aloud is invisible if disabled', async () => {
     chrome.readingMode.isReadAloudEnabled = false;
-    createToolbar();
+    await createToolbar();
 
-    const container =
-        toolbar.shadowRoot!.querySelector<DomIf>('#read-aloud-container');
+    const audioControls = toolbar.shadowRoot.querySelector('#audio-controls');
 
-    assertTrue(!!container);
-    assertFalse(container.if !);
+    assertFalse(!!audioControls);
   });
 });

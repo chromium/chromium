@@ -680,6 +680,8 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
     case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOBSTER_LOBSTER_VIEW_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOBSTER_LOBSTER_VIEW_H_
 
-#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/ash/mako/draggable_bubble_dialog_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -13,7 +13,7 @@
 namespace ash {
 
 // A view to contain the Lobster UI.
-class LobsterView : public WebUIBubbleDialogView {
+class LobsterView : public DraggableBubbleDialogView {
   METADATA_HEADER(LobsterView, WebUIBubbleDialogView)
 
  public:
@@ -29,6 +29,10 @@ class LobsterView : public WebUIBubbleDialogView {
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& new_size) override;
   void ShowUI() override;
+
+  // MakoBubbleEventHandler::Delegate
+  bool IsDraggingEnabled() override;
+  bool IsResizingEnabled() override;
 
  private:
   // Caches the current caret bounds of the target input field based on the

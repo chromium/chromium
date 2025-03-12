@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"  // nogncheck
 #include "chrome/browser/extensions/api/braille_display_private/braille_display_private_api.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_event_router.h"
 #include "chrome/browser/extensions/api/font_settings/font_settings_api.h"
 #include "chrome/browser/extensions/api/history/history_api.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
@@ -93,6 +94,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::DocumentScanAPIHandler::GetFactoryInstance();
 #endif
+  extensions::EnterpriseReportingPrivateEventRouterFactory::GetInstance();
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
   extensions::IdentityAPI::GetFactoryInstance();

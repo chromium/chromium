@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -100,6 +101,8 @@ TEST_F(FontTest, IdeographicFullWidthCjkFull) {
 }
 
 TEST_F(FontTest, IdeographicFullWidthCjkNarrow) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   Font* font = CreateTestFont(AtomicString("CSSHWOrientationTest"),
                               blink::test::BlinkWebTestsFontsTestDataPath(
                                   "adobe-fonts/CSSHWOrientationTest.otf"),
@@ -107,7 +110,7 @@ TEST_F(FontTest, IdeographicFullWidthCjkNarrow) {
   const SimpleFontData* font_data = font->PrimaryFont();
   ASSERT_TRUE(font_data);
   EXPECT_TRUE(font_data->IdeographicInlineSize().has_value());
-  EXPECT_EQ(*font_data->IdeographicInlineSize(), 8);
+  EXPECT_FLOAT_EQ(*font_data->IdeographicInlineSize(), 8.0f);
 }
 
 // A font that does not have the CJK "water" glyph.

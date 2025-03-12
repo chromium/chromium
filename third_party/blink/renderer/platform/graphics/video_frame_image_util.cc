@@ -150,12 +150,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   if (allow_zero_copy_images && !reinterpret_video_as_srgb &&
       dest_rect.IsEmpty() && transform == media::kNoTransformation &&
       CanUseZeroCopyImages(*frame)) {
-    // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
-    // may never happen, and SkColorSpace doesn't know about it.
-    auto frame_sk_color_space = frame_color_space.ToSkColorSpace();
-    if (!frame_sk_color_space) {
-      frame_sk_color_space = SkColorSpace::MakeSRGB();
-    }
     // Hold a ref by storing it in the release callback.
     auto release_callback = WTF::BindOnce(
         [](scoped_refptr<media::VideoFrame> frame,
@@ -172,7 +166,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
         frame->shared_image(), frame->acquire_sync_token(), 0u,
         frame->coded_size(), GetN32FormatForCanvas(), kUnpremul_SkAlphaType,
-        frame_sk_color_space,
+        frame_color_space,
         // Pass nullptr for |context_provider_wrapper|, because we don't
         // know which context the mailbox came from. It is used only to
         // detect when the mailbox is invalid due to context loss, and is

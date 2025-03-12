@@ -4,6 +4,7 @@
 
 #include "chrome/updater/update_usage_stats_task.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,20 +16,16 @@
 
 namespace updater {
 
-bool AnyAppUsageStatsAllowed(UpdaterScope scope) {
+class UsageStatsProviderImpl : public UsageStatsProvider {
+ public:
+  UsageStatsProviderImpl() = default;
+
   // TODO(crbug.com/40821596): Implement.
-  return false;
-}
+  bool AnyAppEnablesUsageStats(UpdaterScope scope) override { return false; }
+};
 
-void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&AnyAppUsageStatsAllowed, scope_),
-      base::BindOnce(&UpdateUsageStatsTask::SetUsageStatsEnabled, this,
-                     persisted_data_)
-          .Then(std::move(callback)));
+std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create() {
+  return std::make_unique<UsageStatsProviderImpl>();
 }
 
 }  // namespace updater

@@ -491,6 +491,7 @@ cc_test(
         ":check",
         ":log",
         ":scoped_mock_log",
+        "//absl/base:config",
         "//absl/log/internal:test_matchers",
         "//absl/strings",
         "//absl/strings:str_format",

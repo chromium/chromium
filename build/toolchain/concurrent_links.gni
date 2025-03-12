@@ -106,8 +106,11 @@ if (concurrent_links == -1) {
   # These both have a peak usage of < 4GB, that is large enough for them to
   # need to use a pool since they both typically happen at the same time as
   # linking.
+  # TODO: crbug.com/399665139 - running proguard/r8, android lint steps locally
+  # freqneutly cause bot died issue for unknown reason. Reducing concurrency to
+  # see if it helps.
   if (is_android) {
-    _args += [ "--secondary_mem_per_link=4" ]
+    _args += [ "--secondary_mem_per_link=8" ]
   }
 
   # TODO(crbug.com/41257258) Pass more build configuration info to the script

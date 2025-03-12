@@ -9,6 +9,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -153,7 +154,11 @@ class TabSlotController {
 
   // Returns the tab at offset |offset| from the current tab in the model order.
   // Returns nullptr if that offset does not result in a valid model index.
-  virtual const Tab* GetAdjacentTab(const Tab* tab, int offset) = 0;
+  virtual Tab* GetAdjacentTab(const Tab* tab, int offset) = 0;
+
+  // Returns the split tab adjacent to the provided tab. Returns nullptr if
+  // |tab| is not a split tab.
+  virtual Tab* GetAdjacentSplitTab(const Tab* tab) = 0;
 
   // Invoked when a mouse event occurs on |source|.
   virtual void OnMouseEventInTab(views::View* source,
@@ -167,6 +172,14 @@ class TabSlotController {
 
   // Returns true if the hover card is showing for the given tab.
   virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;
+
+  // Updates the hover effect for all affected tabs when a hover happens on
+  // |tab|.
+  virtual void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) = 0;
+
+  // Hides the hover effect for all affected tabs when a hover happens on
+  // |tab|.
+  virtual void HideHover(Tab* tab, TabStyle::HideHoverStyle style) = 0;
 
   // Returns the background offset used by inactive tabs to match the frame
   // image.

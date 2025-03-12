@@ -66,6 +66,26 @@ void ResourcePool::Backing::CreateSharedImage(
   CHECK(shared_image());
 }
 
+void ResourcePool::Backing::CreateSharedImageForSoftwareCompositor(
+    gpu::SharedImageInterface* sii,
+    std::string_view debug_label) {
+  set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
+      {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+       debug_label}));
+  CHECK(shared_image());
+}
+
+bool ResourcePool::Backing::CreateSharedImage(
+    gpu::SharedImageInterface* sii,
+    const gpu::SharedImageUsageSet& usage,
+    std::string_view debug_label,
+    gfx::BufferUsage buffer_usage) {
+  set_shared_image(sii->CreateSharedImage(
+      {format(), size(), color_space(), usage, debug_label},
+      gpu::kNullSurfaceHandle, buffer_usage));
+  return !!shared_image();
+}
+
 void ResourcePool::InUsePoolResource::InstallGpuBacking(
     gpu::SharedImageInterface* sii,
     bool is_overlay_candidate,
@@ -82,10 +102,7 @@ void ResourcePool::InUsePoolResource::InstallGpuBacking(
   if (is_overlay_candidate) {
     flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
-  backing->set_shared_image(sii->CreateSharedImage(
-      {format(), size(), color_space(), flags, debug_label},
-      gpu::kNullSurfaceHandle));
-  CHECK(backing->shared_image());
+  backing->CreateSharedImage(sii, flags, debug_label);
   set_backing(std::move(backing));
 }
 
@@ -95,10 +112,7 @@ void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
   CHECK(!backing());
   auto backing =
       std::make_unique<ResourcePool::Backing>(size(), format(), color_space());
-  backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
-      {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-       debug_label}));
-  CHECK(backing->shared_image());
+  backing->CreateSharedImageForSoftwareCompositor(sii.get(), debug_label);
   set_backing(std::move(backing));
 }
 

@@ -26,14 +26,6 @@ import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, Respo
 import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
-// Time interval for periodically sending responsiveness check to the web
-// client.
-const WEB_CLIENT_RESPONSIVENESS_CHECK_TIME_INTERVAL_MS = 1000;
-
-// Maximum time to wait for glicWebClientCheckResponsive response before
-// flagging as unresponsive.
-const WEB_CLIENT_RESPONSIVENESS_CHECK_TIMEOUT_MS = 500;
-
 export enum WebClientState {
   UNINITIALIZED,
   RESPONSIVE,
@@ -590,13 +582,18 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   startWebClientResponsivenessCheck() {
+    if (!loadTimeData.getBoolean('isClientResponsivenessCheckEnabled')) {
+      return;
+    }
+
     this.webClientResponsivenessCheckInternalId =
         window.setInterval(async () => {
           const responsePromise = this.sender.requestWithResponse(
               'glicWebClientCheckResponsive', undefined);
 
           let timeoutId: number|undefined;
-          let timeoutMs = WEB_CLIENT_RESPONSIVENESS_CHECK_TIMEOUT_MS;
+          let timeoutMs =
+              loadTimeData.getInteger('clientResponsivenessCheckTimeoutMs');
           if (loadTimeData.getBoolean('devMode')) {
             timeoutMs = timeoutMs * 1000;
           }
@@ -619,9 +616,13 @@ export class GlicApiHost implements PostMessageRequestHandler {
             if (this.webClientState !== WebClientState.UNRESPONSIVE) {
               this.webClientState = WebClientState.UNRESPONSIVE;
               this.embedder?.webClientStateChanged(WebClientState.UNRESPONSIVE);
+              // TODO(crbug.com/402435079): Start a timer of
+              // loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs')
+              // milliseconds to transit from unresponsive UI to error UI if
+              // still no responses, and stopWebClientResponsivenessCheck.
             }
           }
-        }, WEB_CLIENT_RESPONSIVENESS_CHECK_TIME_INTERVAL_MS);
+        }, loadTimeData.getInteger('clientResponsivenessCheckIntervalMs'));
   }
 
   stopWebClientResponsivenessCheck() {

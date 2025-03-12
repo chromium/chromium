@@ -13,6 +13,8 @@
 namespace autofill {
 namespace {
 
+using enum AttributeTypeName;
+
 constexpr char kAppLocaleUS[] = "en-US";
 
 struct GetInfoParams {
@@ -33,7 +35,6 @@ TEST(AutofillEntityInstanceTest, Attributes) {
   const char16_t kName[] = u"Pippi";
   EntityInstance pp =
       test::GetPassportEntityInstance({.name = kName, .number = nullptr});
-  using enum AttributeTypeName;
   EXPECT_EQ(pp.attributes().size(), 4u);
   EXPECT_EQ(pp.type().attributes().size(), 5u);
   EXPECT_FALSE(pp.attribute(AttributeType(kPassportNumber)));
@@ -48,8 +49,7 @@ TEST(AutofillEntityInstanceTest, Attributes) {
 
 // Tests that AttributeInstance appropriately manages structured names.
 TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
-  AttributeInstance passport_name(
-      (AttributeType(AttributeTypeName::kPassportName)));
+  AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"Some Name",
                         /*app_locale=*/"", /*format_string=*/u"",
                         VerificationStatus::kObserved);
@@ -63,8 +63,7 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
 
 // Tests that AttributeInstance appropriately manages dates.
 TEST(AutofillEntityInstanceTest, Attributes_Date) {
-  AttributeInstance passport_name(
-      (AttributeType(AttributeTypeName::kPassportIssueDate)));
+  AttributeInstance passport_name((AttributeType(kPassportIssueDate)));
   passport_name.SetInfo(PASSPORT_ISSUE_DATE, u"2001-02-03",
                         /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
                         VerificationStatus::kNoStatus);
@@ -116,12 +115,11 @@ TEST(
 
   ASSERT_EQ(result.mergeable_attributes.size(), 1u);
   EXPECT_EQ(result.mergeable_attributes[0].type().name(),
-            AttributeTypeName::kPassportExpiryDate);
+            kPassportExpirationDate);
 
   const AttributeInstance& old_attribute = result.mergeable_attributes[0];
   base::optional_ref<const AttributeInstance> new_attribute =
-      new_entity.attribute(
-          AttributeType(AttributeTypeName::kPassportExpiryDate));
+      new_entity.attribute(AttributeType(kPassportExpirationDate));
   EXPECT_EQ(old_attribute.GetCompleteInfo(/*app_locale=*/""),
             new_attribute->GetCompleteInfo(/*app_locale=*/""));
   EXPECT_FALSE(result.is_subset);
@@ -139,12 +137,11 @@ TEST(
       test::GetPassportEntityInstance().GetEntityMergeability(new_entity);
 
   ASSERT_EQ(result.mergeable_attributes.size(), 1u);
-  EXPECT_EQ(result.mergeable_attributes[0].type().name(),
-            AttributeTypeName::kPassportCountry);
+  EXPECT_EQ(result.mergeable_attributes[0].type().name(), kPassportCountry);
 
   const AttributeInstance& old_attribute = result.mergeable_attributes[0];
   base::optional_ref<const AttributeInstance> new_attribute =
-      new_entity.attribute(AttributeType(AttributeTypeName::kPassportCountry));
+      new_entity.attribute(AttributeType(kPassportCountry));
   EXPECT_EQ(old_attribute.GetCompleteInfo(kAppLocaleUS),
             new_attribute->GetCompleteInfo(kAppLocaleUS));
   EXPECT_FALSE(result.is_subset);
@@ -153,11 +150,12 @@ TEST(
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasSameAttributeWithDifferentValue_MergeableAttributesDoNotExists_IsNotASubset) {
-  EntityInstance new_entity = test::GetPassportEntityInstance();
+  EntityInstance old_entity =
+      test::GetPassportEntityInstance({.number = u"123"});
+  EntityInstance new_entity =
+      test::GetPassportEntityInstance({.number = u"456"});
   EntityInstance::EntityMergeability result =
-      test::GetPassportEntityInstance({.expiry_date = u"2034-12-01"})
-          .GetEntityMergeability(new_entity);
-
+      old_entity.GetEntityMergeability(new_entity);
   EXPECT_TRUE(result.mergeable_attributes.empty());
   EXPECT_FALSE(result.is_subset);
 }

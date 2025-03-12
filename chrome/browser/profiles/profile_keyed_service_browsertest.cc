@@ -384,6 +384,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionInstallEventRouter",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ChromeEnterpriseRealTimeUrlLookupService",
+    "EnterpriseReportingPrivateEventRouter",
     "ExtensionNavigationRegistry",
     "ExtensionSystem",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",

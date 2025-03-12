@@ -3369,25 +3369,19 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
     const mojom::GatherPtr& gather,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  uint64_t input_id = gather->input_operand_id;
+  CHECK(context_properties.data_type_limits.gather_input.Supports(
+      id_to_operand_map.at(input_id)->descriptor));
+  uint64_t indices_id = gather->indices_operand_id;
+  CHECK(context_properties.data_type_limits.gather_indices.Supports(
+      id_to_operand_map.at(indices_id)->descriptor));
+
   const NodeOutput* input =
-      GetNodeOutputForOperand(id_to_node_output_map, gather->input_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, input_id);
   auto input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.gather_input.Has(
-      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
-
-  const NodeOutput* indices = GetNodeOutputForOperand(
-      id_to_node_output_map, gather->indices_operand_id);
+  const NodeOutput* indices =
+      GetNodeOutputForOperand(id_to_node_output_map, indices_id);
   auto indices_tensor_desc = indices->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.gather_indices.Has(
-      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
-
-  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
-  if (!base::MakeCheckedNum(indices_rank).IsValid<uint32_t>()) {
-    return base::unexpected(
-        CreateError(mojom::Error::Code::kUnknownError,
-                    "The indices rank of gather operator is too large."));
-  }
-
   uint64_t output_id = gather->output_operand_id;
   const auto original_output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
@@ -3396,6 +3390,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
   size_t input_rank = input_tensor_desc.GetDimensions().size();
   size_t output_rank = output_tensor_desc.GetDimensions().size();
   size_t expanded_rank = std::max(input_rank, output_rank);
+  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
 
   // According to the DirectML documentation
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc,
@@ -3465,18 +3460,19 @@ void CreateOperatorNodeForGatherElements(
     const mojom::GatherElementsPtr& gather_elements,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
-  const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, gather_elements->input_operand_id);
+  uint64_t input_id = gather_elements->input_operand_id;
+  CHECK(context_properties.data_type_limits.gather_elements_input.Supports(
+      id_to_operand_map.at(input_id)->descriptor));
+  uint64_t indices_id = gather_elements->indices_operand_id;
+  CHECK(context_properties.data_type_limits.gather_elements_indices.Supports(
+      id_to_operand_map.at(indices_id)->descriptor));
+
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, input_id);
   const TensorDesc& input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.gather_elements_input.Has(
-      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
-
-  const NodeOutput* indices = GetNodeOutputForOperand(
-      id_to_node_output_map, gather_elements->indices_operand_id);
+  const NodeOutput* indices =
+      GetNodeOutputForOperand(id_to_node_output_map, indices_id);
   const TensorDesc& indices_tensor_desc = indices->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.gather_elements_indices.Has(
-      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
-
   uint64_t output_id = gather_elements->output_operand_id;
   const TensorDesc output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
@@ -3507,18 +3503,19 @@ void CreateOperatorNodeForGatherND(const ContextProperties& context_properties,
                                    const mojom::GatherNDPtr& gather_nd,
                                    GraphBuilderDml& graph_builder,
                                    IdToNodeOutputMap& id_to_node_output_map) {
-  const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, gather_nd->input_operand_id);
+  uint64_t input_id = gather_nd->input_operand_id;
+  CHECK(context_properties.data_type_limits.gather_nd_input.Supports(
+      id_to_operand_map.at(input_id)->descriptor));
+  uint64_t indices_id = gather_nd->indices_operand_id;
+  CHECK(context_properties.data_type_limits.gather_nd_indices.Supports(
+      id_to_operand_map.at(indices_id)->descriptor));
+
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, input_id);
   TensorDesc input_tensor_desc = input->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.gather_nd_input.Has(
-      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
-
-  const NodeOutput* indices = GetNodeOutputForOperand(
-      id_to_node_output_map, gather_nd->indices_operand_id);
+  const NodeOutput* indices =
+      GetNodeOutputForOperand(id_to_node_output_map, indices_id);
   TensorDesc indices_tensor_desc = indices->GetTensorDesc();
-  CHECK(context_properties.data_type_limits.gather_nd_indices.Has(
-      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
-
   uint64_t output_id = gather_nd->output_operand_id;
   const TensorDesc original_output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
@@ -3726,15 +3723,17 @@ void CreateOperatorNodeForGemm(
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& gemm = operation->get_gemm();
+  uint64_t input_a_id = gemm->a_operand_id;
+  uint64_t input_b_id = gemm->b_operand_id;
+  CHECK(context_properties.data_type_limits.gemm_a.SupportsAll(
+      {id_to_operand_map.at(input_a_id)->descriptor,
+       id_to_operand_map.at(input_b_id)->descriptor}));
+
   const NodeOutput* input_a_node_output =
-      GetNodeOutputForOperand(id_to_node_output_map, gemm->a_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, input_a_id);
   auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
-
-  CHECK(context_properties.data_type_limits.gemm_input.Has(
-      DmlDataTypeToOperand(input_a_tensor_desc.GetDataType())));
-
   const NodeOutput* input_b_node_output =
-      GetNodeOutputForOperand(id_to_node_output_map, gemm->b_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, input_b_id);
   auto input_b_tensor_desc = input_b_node_output->GetTensorDesc();
 
   std::vector<const NodeOutput*> inputs{input_a_node_output,
@@ -3749,14 +3748,11 @@ void CreateOperatorNodeForGemm(
   auto& c_operand_id = gemm->c_operand_id;
   if (c_operand_id) {
     uint64_t input_c_id = c_operand_id.value();
-
-    const auto input_c_node_output_iterator =
-        id_to_node_output_map.find(input_c_id);
-    CHECK(input_c_node_output_iterator != id_to_node_output_map.end());
+    CHECK(context_properties.data_type_limits.gemm_c.Supports(
+        id_to_operand_map.at(input_c_id)->descriptor));
 
     const NodeOutput* input_c_node_output =
-        input_c_node_output_iterator->second;
-    CHECK(input_c_node_output);
+        GetNodeOutputForOperand(id_to_node_output_map, input_c_id);
     input_c_tensor_desc = input_c_node_output->GetTensorDesc();
 
     // Ensure the graph edge for c operand will be created.

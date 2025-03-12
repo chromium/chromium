@@ -333,6 +333,7 @@ def _load_library_perf_tests(estimated_runtime=3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
 
+
 def _performance_browser_tests(estimated_runtime=67):
   return ExecutableConfig(
       'performance_browser_tests',
@@ -370,6 +371,7 @@ def _crossbench_speedometer2_0(estimated_runtime=60, arguments=None):
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
+
 def _crossbench_speedometer2_1(estimated_runtime=60, arguments=None):
   return CrossbenchConfig('speedometer2.1.crossbench',
                           'speedometer_2.1',
@@ -383,6 +385,7 @@ def _crossbench_speedometer2(estimated_runtime=60, arguments=None):
                           'speedometer_2.1',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
+
 
 def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
   return CrossbenchConfig('speedometer3.crossbench',
@@ -450,6 +453,7 @@ def _crossbench_jetstream2_0(estimated_runtime=180):
                           'jetstream_2.0',
                           estimated_runtime=estimated_runtime)
 
+
 def _crossbench_jetstream2_1(estimated_runtime=180):
   return CrossbenchConfig('jetstream2.1.crossbench',
                           'jetstream_2.1',
@@ -492,24 +496,28 @@ def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
 
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _crossbench_jetstream2(),
-    _crossbench_speedometer3(),
+    _crossbench_speedometer3_0(),
+    _crossbench_speedometer3_1(),
 ])
 
 _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
     _crossbench_motionmark1_3(),
-    _crossbench_speedometer3(),
+    _crossbench_speedometer3_0(),
+    _crossbench_speedometer3_1(),
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _crossbench_speedometer2(arguments=['--fileserver']),
-    _crossbench_speedometer3(),
+    _crossbench_speedometer3_0(),
+    _crossbench_speedometer3_1(),
     _crossbench_motionmark1_3(),
     _crossbench_jetstream2(),
 ])
 
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
 _CROSSBENCH_ANDROID = frozenset([
-    _crossbench_speedometer3(arguments=['--fileserver']),
+    _crossbench_speedometer3_0(arguments=['--fileserver']),
+    _crossbench_speedometer3_1(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',

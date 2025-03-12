@@ -49,7 +49,6 @@ external/wpt/client-hints/sandbox/iframe-same-origin.https.html
 external/wpt/cookies/attributes/max-age.html
 external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
 external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
-external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html
 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html
 external/wpt/notifications/cross-origin-serviceworker.tentative.https.sub.html
 external/wpt/notifications/event-onclose.https.html
@@ -57,7 +56,6 @@ external/wpt/notifications/instance.https.window.html
 external/wpt/notifications/permissions-non-secure.html
 external/wpt/notifications/shownotification-without-permission.https.window.html
 external/wpt/notifications/shownotification.https.window.html
-external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html
 external/wpt/service-workers/service-worker/controller-on-reload.https.html
 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html
 external/wpt/speech-api/SpeechRecognition-availableOnDevice.https.html

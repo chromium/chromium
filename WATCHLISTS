@@ -146,13 +146,6 @@
     'android_webview_webexposed': {
       'filepath': 'android_webview/test/data/web_tests/(virtual/stable/)?webexposed/global-interface-listing-expected.txt',
     },
-    'app_service': {
-      'filepath': 'chrome/browser/apps/app_service/'\
-                  '|chrome/browser/ash/app_list/app_service/'\
-                  '|chrome/browser/ui/ash/shelf/app_service/'\
-                  '|chrome/browser/ui/views/apps/app_dialog/' \
-                  '|components/services/app_service/',
-    },
     'app_service_protos': {
       'filepath': 'components/services/app_service/public/protos/',
     },
@@ -2527,7 +2520,6 @@
     'android_webview_network_service': [],
     'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
                                    'peter+watch-webexposed@chromium.org'],
-    'app_service': ['tsergeant+watch@chromium.org'],
     'app_service_protos': ['cros-reporting-team+watch@google.com',
                            'vshenvi+watch@google.com'],
     'app_shortcuts': ['loyso+watch@chromium.org',

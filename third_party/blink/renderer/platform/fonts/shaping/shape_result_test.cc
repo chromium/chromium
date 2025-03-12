@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -682,6 +683,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(caret_position_for_offset_test_data));
 
 TEST_P(CaretPositionForOffsetTest, CaretPositionForOffsets) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   HarfBuzzShaper shaper(text_string);
@@ -1134,6 +1137,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(caret_offset_for_position_test_data));
 
 TEST_P(CaretOffsetForPositionTest, OffsetForPositions) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   HarfBuzzShaper shaper(text_string);

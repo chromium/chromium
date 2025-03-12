@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_JOBS_GET_ISOLATED_WEB_APP_SIZE_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_JOBS_GET_ISOLATED_WEB_APP_SIZE_JOB_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -39,20 +41,21 @@ class GetIsolatedWebAppSizeJob {
   void Start(WithAppResources* lock_with_app_resources);
 
  private:
+  void OnGetIconStorageUsage(uint64_t size);
   void StoragePartitionSizeFetched(int64_t size);
-  void MaybeComputeBundleSize();
   void OnBundleSizeComputed(std::optional<int64_t> bundle_size);
   void CompleteJobWithError();
+  void CompleteJob();
 
   const webapps::AppId app_id_;
   url::Origin iwa_origin_;
-  int pending_task_count_ = 0;
   uint64_t browsing_data_size_ = 0u;
+  std::optional<uint64_t> bundle_size_;
+  size_t icon_size_ = 0u;
   const raw_ptr<Profile> profile_;
   raw_ptr<WithAppResources> lock_with_app_resources_ = nullptr;
   const raw_ref<base::Value::Dict> debug_value_;
   ResultCallback result_callback_;
-
   base::WeakPtrFactory<GetIsolatedWebAppSizeJob> weak_factory_{this};
 };
 

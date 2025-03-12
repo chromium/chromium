@@ -1371,7 +1371,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "translatekit_script_tests",
     tests = {
-        "blink_wpt_tests": targets.legacy_test_config(
+        "chrome_wpt_tests": targets.legacy_test_config(
             args = [
                 "-t",
                 "Release",

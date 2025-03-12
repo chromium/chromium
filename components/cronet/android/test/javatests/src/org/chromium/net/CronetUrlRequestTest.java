@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApkInfo;
@@ -45,8 +46,10 @@ import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.apihelpers.UploadDataProviders;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.NetworkExceptionImpl;
+import org.chromium.net.impl.TestLogger;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 import org.chromium.net.test.FailurePhase;
 
@@ -76,12 +79,18 @@ public class CronetUrlRequestTest {
     // URL used for base tests.
     private static final String TEST_URL = "http://127.0.0.1:8000";
 
-    @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
-
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
+    private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
+            new CronetLoggerTestRule<>(TestLogger.class);
     private MockUrlRequestJobFactory mMockUrlRequestJobFactory;
+
+    @Rule public final RuleChain chain = RuleChain.outerRule(mLoggerTestRule).around(mTestRule);
+
+    private TestLogger mTestLogger;
 
     @Before
     public void setUp() throws Exception {
+        mTestLogger = mLoggerTestRule.mTestLogger;
         assertThat(
                         NativeTestServer.startNativeTestServer(
                                 mTestRule.getTestFramework().getContext()))
@@ -192,6 +201,19 @@ public class CronetUrlRequestTest {
             })
     public void testSimpleGetWithReducedNetworkChangeNotifierExperiment() throws Exception {
         testSimpleGet();
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "The output differs depending on the type of Cronet Impl.")
+    @RequiresMinAndroidApi(Build.VERSION_CODES.O)
+    public void testTrafficInfoAtomSourceStaticallyLinked() throws Exception {
+        testSimpleGet();
+        mTestLogger.waitForLogCronetTrafficInfo();
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getCronetSource())
+                .isEqualTo(CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
     }
 
     @Test

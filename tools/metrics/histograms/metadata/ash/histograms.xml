@@ -197,6 +197,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FloatOnBy" summary="Float on by"/>
   <variant name="SlideShow" summary="Slide show"/>
   <variant name="Video.Clouds" summary="Clouds video"/>
+  <variant name="Video.Jupiter" summary="Jupiter video"/>
   <variant name="Video.NewMexico" summary="New Mexico video"/>
 </variants>
 

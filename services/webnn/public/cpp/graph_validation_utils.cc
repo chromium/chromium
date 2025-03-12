@@ -35,6 +35,9 @@ static constexpr char kBiasParam[] = "bias";
 static constexpr char kConditionParam[] = "condition";
 static constexpr char kFalseValueParam[] = "falseValue";
 static constexpr char kFilterParam[] = "filter";
+static constexpr char kGemmAParam[] = "gemm_a";
+static constexpr char kGemmBParam[] = "gemm_b";
+static constexpr char kGemmCParam[] = "gemm_c";
 static constexpr char kIndicesParam[] = "indices";
 static constexpr char kMeanParam[] = "mean";
 static constexpr char kScaleParam[] = "scale";
@@ -1347,9 +1350,11 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
     const OperandDescriptor& indices,
     const uint32_t axis,
     std::string_view label) {
-  if (input.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should not be a scalar."));
+  // Validate input operand.
+  if (!context_properties.data_type_limits.gather_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.gather_input)));
   }
 
   if (input.Rank() <= axis) {
@@ -1359,19 +1364,11 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
                                   axis, input.Rank())));
   }
 
-  if (!context_properties.data_type_limits.gather_input.Has(
-          input.data_type())) {
+  // Validate indices operand.
+  if (!context_properties.data_type_limits.gather_indices.Supports(indices)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.gather_input)));
-  }
-
-  if (!context_properties.data_type_limits.gather_indices.Has(
-          indices.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kIndicesParam, indices.data_type(),
+        label, NotSupportedArgumentError(
+                   kIndicesParam, indices,
                    context_properties.data_type_limits.gather_indices)));
   }
 
@@ -1403,9 +1400,13 @@ ValidateGatherElementsAndInferOutput(
     const OperandDescriptor& indices,
     const uint32_t axis,
     std::string_view label) {
-  if (input.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should not be a scalar."));
+  // Validate input operand.
+  if (!context_properties.data_type_limits.gather_elements_input.Supports(
+          input)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.gather_elements_input)));
   }
 
   if (input.Rank() <= axis) {
@@ -1416,20 +1417,13 @@ ValidateGatherElementsAndInferOutput(
                                   axis, input.Rank())));
   }
 
-  if (!context_properties.data_type_limits.gather_elements_input.Has(
-          input.data_type())) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.gather_elements_input)));
-  }
-
-  if (!context_properties.data_type_limits.gather_elements_indices.Has(
-          indices.data_type())) {
+  // Validate indices operand.
+  if (!context_properties.data_type_limits.gather_elements_indices.Supports(
+          indices)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedArgumentTypeError(
-            kIndicesParam, indices.data_type(),
+        NotSupportedArgumentError(
+            kIndicesParam, indices,
             context_properties.data_type_limits.gather_elements_indices)));
   }
 
@@ -1462,28 +1456,20 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
     const OperandDescriptor& input,
     const OperandDescriptor& indices,
     std::string_view label) {
-  if (input.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should not be a scalar."));
-  }
-  if (!context_properties.data_type_limits.gather_nd_input.Has(
-          input.data_type())) {
+  // Validate input operand.
+  if (!context_properties.data_type_limits.gather_nd_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.gather_nd_input)));
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.gather_nd_input)));
   }
 
-  if (indices.Rank() == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should not be a scalar."));
-  }
-
-  if (!context_properties.data_type_limits.gather_nd_indices.Has(
-          indices.data_type())) {
+  // Validate indices operand.
+  if (!context_properties.data_type_limits.gather_nd_indices.Supports(
+          indices)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedArgumentTypeError(
-                   kIndicesParam, indices.data_type(),
+        label, NotSupportedArgumentError(
+                   kIndicesParam, indices,
                    context_properties.data_type_limits.gather_nd_indices)));
   }
 
@@ -1526,28 +1512,24 @@ base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
     const OperandDescriptor& b,
     const GemmAttributes& attributes) {
   const std::string& label = attributes.label;
-  if (!context_properties.data_type_limits.gemm_input.Has(a.data_type())) {
+  // Validate a and b operand.
+  if (!context_properties.data_type_limits.gemm_a.Supports(a)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            a.data_type(), context_properties.data_type_limits.gemm_input)));
+        NotSupportedArgumentError(kGemmAParam, a,
+                                  context_properties.data_type_limits.gemm_a)));
+  }
+
+  if (!context_properties.data_type_limits.gemm_a.Supports(b)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentError(kGemmBParam, b,
+                                  context_properties.data_type_limits.gemm_a)));
   }
 
   if (a.data_type() != b.data_type()) {
     return base::unexpected(ErrorWithLabel(
         label, "The data types of first two inputs don't match."));
-  }
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm, the first input 2-D
-  // tensor with shape [M, K] if aTranspose is false, or [K, M] if aTranspose is
-  // true.
-  if (a.Rank() != 2) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The first input must be a 2-D tensor."));
-  }
-  if (b.Rank() != 2) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The second input must be a 2-D tensor."));
   }
 
   std::vector<uint32_t> shape_a = a.shape();
@@ -1576,15 +1558,18 @@ base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
   // The third input tensor c is either a scalar, or of the shape that is
   // unidirectionally broadcastable to the output shape [M, N].
   if (attributes.c_operand) {
+    if (!context_properties.data_type_limits.gemm_c.Supports(
+            attributes.c_operand.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kGemmCParam, attributes.c_operand.value(),
+                     context_properties.data_type_limits.gemm_c)));
+    }
+
     if (attributes.c_operand->data_type() != a.data_type()) {
       return base::unexpected(ErrorWithLabel(
           label,
           "The third input data type doesn't match other inputs' data type."));
-    }
-    if (attributes.c_operand->Rank() > 2) {
-      return base::unexpected(ErrorWithLabel(
-          label,
-          "The third input tensor should be either a scalar or a 2-D tensor."));
     }
 
     if (!BroadcastShapes(attributes.c_operand->shape(), output_shape,

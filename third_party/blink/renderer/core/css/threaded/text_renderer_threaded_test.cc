@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/mock_paint_canvas.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
@@ -29,6 +30,8 @@ using blink::test::CreateTestFont;
 namespace blink {
 
 TSAN_TEST(TextRendererThreadedTest, MeasureText) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   RunOnThreads([]() {
     String text = "measure this";
 

@@ -690,12 +690,21 @@ TYPED_TEST(VolatilePtrLogFormatTest, Null) {
   auto comparison_stream = ComparisonStream();
   comparison_stream << value;
 
+  // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p1147r1.html
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202302L
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(TextMessage(MatchesOstream(comparison_stream)),
+                 TextMessage(AnyOf(Eq("(nil)"), Eq("0"), Eq("0x0"),
+                                   Eq("00000000"), Eq("0000000000000000"))))));
+#else
   EXPECT_CALL(
       test_sink,
       Send(AllOf(
           TextMessage(MatchesOstream(comparison_stream)),
           TextMessage(Eq("false")),
           ENCODED_MESSAGE(HasValues(ElementsAre(ValueWithStr(Eq("false"))))))));
+#endif
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << value;
@@ -708,12 +717,23 @@ TYPED_TEST(VolatilePtrLogFormatTest, NonNull) {
   auto comparison_stream = ComparisonStream();
   comparison_stream << value;
 
+  // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p1147r1.html
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202302L
+  EXPECT_CALL(test_sink,
+              Send(AllOf(TextMessage(MatchesOstream(comparison_stream)),
+                         TextMessage(AnyOf(Eq("0xdeadbeef"), Eq("DEADBEEF"),
+                                           Eq("00000000DEADBEEF"))),
+                         ENCODED_MESSAGE(HasValues(ElementsAre(
+                             AnyOf(ValueWithStr(Eq("0xdeadbeef")),
+                                   ValueWithStr(Eq("00000000DEADBEEF")))))))));
+#else
   EXPECT_CALL(
       test_sink,
       Send(AllOf(
           TextMessage(MatchesOstream(comparison_stream)),
           TextMessage(Eq("true")),
           ENCODED_MESSAGE(HasValues(ElementsAre(ValueWithStr(Eq("true"))))))));
+#endif
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << value;

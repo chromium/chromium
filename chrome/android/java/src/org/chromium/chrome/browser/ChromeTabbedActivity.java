@@ -71,6 +71,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -83,6 +84,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
 import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModuleBuilder;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
@@ -347,6 +349,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     private static final String HISTOGRAM_MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS =
             "Startup.Android.Warm.MainIntentTimeToFirstDraw";
+    private static final String PIXEL_LAUNCHER_NAME = "PixelLauncher";
+    private static final String THIRD_PARTY_LAUNCHER_NAME = "ThirdPartyLauncher";
 
     /**
      * A {@link CipherFactory} instance that is shared among all {@link ChromeTabbedActivity}
@@ -1920,6 +1924,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 "MobileIntent.PageLoadDueToExternalApp",
                 externalId,
                 IntentHandler.ExternalAppId.NUM_ENTRIES);
+
+        maybeRecordExternalAppClickInfo(externalId, intent);
+    }
+
+    private void maybeRecordExternalAppClickInfo(
+            @IntentHandler.ExternalAppId int externalId, Intent intent) {
+        if (externalId != ExternalAppId.PIXEL_LAUNCHER
+                || externalId != ExternalAppId.THIRD_PARTY_LAUNCHER) {
+            return;
+        }
+
+        AuxiliarySearchMetrics.maybeRecordExternalAppClickInfo(
+                externalId == ExternalAppId.PIXEL_LAUNCHER
+                        ? PIXEL_LAUNCHER_NAME
+                        : THIRD_PARTY_LAUNCHER_NAME,
+                intent);
     }
 
     /**

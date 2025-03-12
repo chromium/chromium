@@ -125,6 +125,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [CallWith=Isolate, CEReactions, RaisesException] void write(TrustedHTML text);
     [CallWith=Isolate, CEReactions, RaisesException] void writeln(TrustedHTML text);
 
+    // TODO(330516530): Merge all write/writeln variants, once TrustedTypesHTML
+    // is perma-enabled.
+    [CallWith=Isolate, CEReactions, RaisesException, RuntimeEnabled=TrustedTypesHTML] undefined write(TrustedHTML text1, (TrustedHTML or DOMString)... text);
+    [CallWith=Isolate, CEReactions, RaisesException, RuntimeEnabled=TrustedTypesHTML] undefined writeln(TrustedHTML text1, (TrustedHTML or DOMString)... text);
+
     // user interaction
     readonly attribute Window? defaultView;
     [Affects=Nothing] boolean hasFocus();

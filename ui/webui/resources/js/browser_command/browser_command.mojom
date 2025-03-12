@@ -13,7 +13,8 @@ module browser_command.mojom;
 // side-effect-free.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Please update enums.xml upon addition of new commands.
+// Please update PromoBrowserCommandEnum upon addition of new commands in
+// tools/metrics/histograms/metadata/new_tab_page/enums.xml
 enum Command {
   kUnknownCommand = 0,
   kOpenSafetyCheck = 1,
@@ -30,8 +31,7 @@ enum Command {
   kOpenAISettings = 12,
   kOpenSafetyCheckFromWhatsNew = 13,
   kOpenPaymentsSettings = 14,
-  KOpenHistorySearchSettings = 15,
-  kShowCustomizeChromeToolbar = 16,
+  // kOpenHistorySearchSettings = 15 - deprecated
 };
 
 // Click information needed to determine user's desired window disposition using

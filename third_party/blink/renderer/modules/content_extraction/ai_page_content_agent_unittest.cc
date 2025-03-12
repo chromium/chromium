@@ -2296,5 +2296,62 @@ TEST_F(AIPageContentAgentTest, MousePosition) {
   EXPECT_EQ(content->page_interaction_info->mouse_position->y(), 50);
 }
 
+TEST_F(AIPageContentAgentTest, MetaTags) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<head>"
+      "  <meta charset='UTF-8'>"
+      "  <meta content='ignored'>"
+      "  <meta name='author' content='George'>"
+      "  <meta name='keywords' content='HTML, CSS, JavaScript'>"
+      "  <meta name='nocontent'>"
+      "</head>"
+      "<body>"
+      "  <meta name='ignored'>"
+      "  <iframe srcdoc=\""
+      "    <head>"
+      "      <meta charset='UTF-8'>"
+      "      <meta name='author' content='Gary'>"
+      "      <meta name='keywords' content='HTML, CSS, JavaScript'>"
+      "    </head>"
+      "    <body>child frame</body>"
+      "  \""
+      "  </iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  EXPECT_EQ(content->frame_data->meta_data.size(), 3u);
+
+  EXPECT_EQ(content->frame_data->meta_data[0]->name, "author");
+  EXPECT_EQ(content->frame_data->meta_data[0]->content, "George");
+
+  EXPECT_EQ(content->frame_data->meta_data[1]->name, "keywords");
+  EXPECT_EQ(content->frame_data->meta_data[1]->content,
+            "HTML, CSS, JavaScript");
+
+  EXPECT_EQ(content->frame_data->meta_data[2]->name, "nocontent");
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& iframe = *root.children_nodes[0];
+  EXPECT_EQ(iframe.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+
+  const auto& iframe_data = *iframe.content_attributes->iframe_data;
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data.size(), 2u);
+
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->name, "author");
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->content, "Gary");
+
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data[1]->name, "keywords");
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data[1]->content,
+            "HTML, CSS, JavaScript");
+}
+
 }  // namespace
 }  // namespace blink

@@ -1451,7 +1451,7 @@
     "includes": [9980],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_code_cache_resources.grd": {
-    "META": {"sizes": {"includes": [200]}},
+    "META": {"sizes": {"includes": [250]}},
     "includes": [9990],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_resources.grd": {

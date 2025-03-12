@@ -163,10 +163,6 @@ BASE_FEATURE(kLoginDbDeprecationAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions,
-             "UsernameFirstFlowWithIntermediateValuesPredictions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseAsyncOsCryptInLoginDatabase,
              "UseAsyncOsCryptInLoginDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);

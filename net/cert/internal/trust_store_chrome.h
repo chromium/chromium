@@ -171,6 +171,8 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   static ConstraintOverrideMap ParseCrsConstraintsSwitch(
       std::string_view switch_value);
 
+  bssl::TrustStore* eutl_trust_store() { return &eutl_trust_store_; }
+
  private:
   TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
                    bool certs_are_static,
@@ -191,6 +193,9 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   // Map from certificate SHA256 hash to constraints. If a certificate has an
   // entry in this map, it will override the entry in `constraints_` (if any).
   const ConstraintOverrideMap override_constraints_;
+
+  // TODO(crbug.com/392931067): populate the EU Trust List.
+  bssl::TrustStoreInMemory eutl_trust_store_;
 
   int64_t version_;
 };

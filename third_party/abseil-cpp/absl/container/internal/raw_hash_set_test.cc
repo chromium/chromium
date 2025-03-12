@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <bitset>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -68,6 +69,7 @@
 #include "absl/log/log.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
+#include "absl/numeric/int128.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
@@ -928,16 +930,16 @@ TEST(Table, EmptyFunctorOptimization) {
   static_assert(std::is_empty<std::allocator<int>>::value, "");
 
   struct MockTable {
+    size_t capacity;
+    uint64_t size;
     void* ctrl;
     void* slots;
-    size_t size;
-    size_t capacity;
   };
   struct StatelessHash {
     size_t operator()(absl::string_view) const { return 0; }
   };
   struct StatefulHash : StatelessHash {
-    size_t dummy;
+    uint64_t dummy;
   };
 
   struct GenerationData {
@@ -1550,14 +1552,14 @@ TEST(Table, RehashWithNoResize) {
 
 TYPED_TEST(SooTest, InsertEraseStressTest) {
   TypeParam t;
-  const size_t kMinElementCount = 250;
+  const size_t kMinElementCount = 50;
   std::deque<int> keys;
   size_t i = 0;
   for (; i < MaxDensitySize(kMinElementCount); ++i) {
     t.emplace(static_cast<int64_t>(i));
     keys.push_back(i);
   }
-  const size_t kNumIterations = 1000000;
+  const size_t kNumIterations = 20000;
   for (; i < kNumIterations; ++i) {
     ASSERT_EQ(1, t.erase(keys.front()));
     keys.pop_front();
@@ -1579,8 +1581,8 @@ TEST(Table, InsertOverloads) {
 
 TYPED_TEST(SooTest, LargeTable) {
   TypeParam t;
-  for (int64_t i = 0; i != 100000; ++i) t.emplace(i << 40);
-  for (int64_t i = 0; i != 100000; ++i)
+  for (int64_t i = 0; i != 10000; ++i) t.emplace(i << 40);
+  for (int64_t i = 0; i != 10000; ++i)
     ASSERT_EQ(i << 40, static_cast<int64_t>(*t.find(i << 40)));
 }
 
@@ -2699,38 +2701,41 @@ std::vector<int> OrderOfIteration(const T& t) {
   return res;
 }
 
+// Generate irrelevant seeds to avoid being stuck in the same last bit
+// in seed.
+void GenerateIrrelevantSeeds(int cnt) {
+  for (int i = cnt % 17; i > 0; --i) {
+    NextSeedBaseNumber();
+  }
+}
+
 // These IterationOrderChanges tests depend on non-deterministic behavior.
-// We are injecting non-determinism from the pointer of the table, but do so in
-// a way that only the page matters. We have to retry enough times to make sure
-// we are touching different memory pages to cause the ordering to change.
-// We also need to keep the old tables around to avoid getting the same memory
-// blocks over and over.
+// We are injecting non-determinism to the table.
+// We have to retry enough times to make sure that the seed changes in bits that
+// matter for the iteration order.
 TYPED_TEST(SooTest, IterationOrderChangesByInstance) {
+  DisableSampling();  // We do not want test to pass only because of sampling.
   for (bool do_reserve : {false, true}) {
     for (size_t size : {2u, 6u, 12u, 20u}) {
       SCOPED_TRACE(absl::StrCat("size: ", size, " do_reserve: ", do_reserve));
       const auto reference_table = MakeSimpleTable<TypeParam>(size, do_reserve);
       const auto reference = OrderOfIteration(reference_table);
 
-      std::vector<TypeParam> tables;
       bool found_difference = false;
-      for (int i = 0; !found_difference && i < 5000; ++i) {
-        tables.push_back(MakeSimpleTable<TypeParam>(size, do_reserve));
-        found_difference = OrderOfIteration(tables.back()) != reference;
+      for (int i = 0; !found_difference && i < 500; ++i) {
+        auto new_table = MakeSimpleTable<TypeParam>(size, do_reserve);
+        found_difference = OrderOfIteration(new_table) != reference;
+        GenerateIrrelevantSeeds(i);
       }
       if (!found_difference) {
-        FAIL() << "Iteration order remained the same across many attempts with "
-                  "size "
-               << size;
+        FAIL() << "Iteration order remained the same across many attempts.";
       }
     }
   }
 }
 
 TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
-#ifdef ABSL_HAVE_ADDRESS_SANITIZER
-  GTEST_SKIP() << "Hash quality is lower in asan mode, causing flakiness.";
-#endif
+  DisableSampling();  // We do not want test to pass only because of sampling.
 
   // We test different sizes with many small numbers, because small table
   // resize has a different codepath.
@@ -2743,11 +2748,17 @@ TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
            }) {
         SCOPED_TRACE(absl::StrCat("size: ", size, " rehash_size: ", rehash_size,
                                   " do_reserve: ", do_reserve));
-        std::vector<TypeParam> garbage;
         bool ok = false;
-        for (int i = 0; i < 5000; ++i) {
-          auto t = MakeSimpleTable<TypeParam>(size, do_reserve);
-          const auto reference = OrderOfIteration(t);
+        auto t = MakeSimpleTable<TypeParam>(size, do_reserve);
+        const size_t original_capacity = t.capacity();
+        auto reference = OrderOfIteration(t);
+        for (int i = 0; i < 500; ++i) {
+          if (i > 0 && rehash_size != 0) {
+            // Rehash back to original size.
+            t.rehash(0);
+            ASSERT_EQ(t.capacity(), original_capacity);
+            reference = OrderOfIteration(t);
+          }
           // Force rehash.
           t.rehash(rehash_size);
           auto trial = OrderOfIteration(t);
@@ -2756,7 +2767,7 @@ TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
             ok = true;
             break;
           }
-          garbage.push_back(std::move(t));
+          GenerateIrrelevantSeeds(i);
         }
         EXPECT_TRUE(ok)
             << "Iteration order remained the same across many attempts " << size
@@ -3119,7 +3130,7 @@ TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
   start_size += sampler.Iterate([&](const HashtablezInfo&) { ++start_size; });
 
   std::vector<CustomAllocIntTable> tables;
-  for (int i = 0; i < 1000000; ++i) {
+  for (int i = 0; i < 100000; ++i) {
     tables.emplace_back();
     tables.back().insert(1);
   }
@@ -3177,28 +3188,27 @@ TYPED_TEST(AlignOneTest, AlignOne) {
   // first slot when alignof(value_type) is 1. We test repeated
   // insertions/erases and verify that the behavior is correct.
   TypeParam t;
-  std::unordered_set<uint8_t> verifier;  // NOLINT
+  std::bitset<256> verifier;
 
   // Do repeated insertions/erases from the table.
-  for (int64_t i = 0; i < 100000; ++i) {
+  for (int64_t i = 0; i < 10000; ++i) {
     SCOPED_TRACE(i);
     const uint8_t u = (i * -i) & 0xFF;
     auto it = t.find(u);
-    auto verifier_it = verifier.find(u);
     if (it == t.end()) {
-      ASSERT_EQ(verifier_it, verifier.end());
+      ASSERT_FALSE(verifier.test(u));
       t.insert(u);
-      verifier.insert(u);
+      verifier.set(u);
     } else {
-      ASSERT_NE(verifier_it, verifier.end());
+      ASSERT_TRUE(verifier.test(u));
       t.erase(it);
-      verifier.erase(verifier_it);
+      verifier.reset(u);
     }
   }
 
-  EXPECT_EQ(t.size(), verifier.size());
+  EXPECT_EQ(t.size(), verifier.count());
   for (uint8_t u : t) {
-    EXPECT_EQ(verifier.count(u), 1);
+    ASSERT_TRUE(verifier.test(u));
   }
 }
 
@@ -4039,12 +4049,58 @@ TEST(Table, MovedFromCallsFail) {
   }
 }
 
+TEST(Table, MaxValidSize) {
+  IntTable t;
+  EXPECT_EQ(MaxValidSize(sizeof(IntTable::value_type)), t.max_size());
+  if constexpr (sizeof(size_t) == 8) {
+    for (size_t i = 0; i < 35; ++i) {
+      SCOPED_TRACE(i);
+      size_t slot_size = size_t{1} << i;
+      size_t max_size = MaxValidSize(slot_size);
+      ASSERT_FALSE(IsAboveValidSize(max_size, slot_size));
+      ASSERT_TRUE(IsAboveValidSize(max_size + 1, slot_size));
+      ASSERT_LT(max_size, uint64_t{1} << 60);
+      // For non gigantic slot sizes we expect max size to be at least 2^40.
+      if (i <= 22) {
+        ASSERT_FALSE(IsAboveValidSize(size_t{1} << 40, slot_size));
+        ASSERT_GE(max_size, uint64_t{1} << 40);
+      }
+      ASSERT_LT(NormalizeCapacity(GrowthToLowerboundCapacity(max_size)),
+                uint64_t{1} << HashtableSize::kSizeBitCount);
+      ASSERT_LT(absl::uint128(max_size) * slot_size, uint64_t{1} << 63);
+    }
+  }
+  EXPECT_LT(MaxValidSize</*kSizeOfSizeT=*/4>(1), 1 << 30);
+  EXPECT_LT(MaxValidSize</*kSizeOfSizeT=*/4>(2), 1 << 29);
+  for (size_t i = 0; i < 29; ++i) {
+    size_t slot_size = size_t{1} << i;
+    size_t max_size = MaxValidSize</*kSizeOfSizeT=*/4>(slot_size);
+    ASSERT_FALSE(IsAboveValidSize</*kSizeOfSizeT=*/4>(max_size, slot_size));
+    ASSERT_TRUE(IsAboveValidSize</*kSizeOfSizeT=*/4>(max_size + 1, slot_size));
+    ASSERT_LT(max_size, 1 << 30);
+    size_t max_capacity =
+        NormalizeCapacity(GrowthToLowerboundCapacity(max_size));
+    ASSERT_LT(max_capacity, (size_t{1} << 31) / slot_size);
+    ASSERT_GT(max_capacity, (1 << 29) / slot_size);
+    ASSERT_LT(max_capacity * slot_size, size_t{1} << 31);
+  }
+}
+
 TEST(Table, MaxSizeOverflow) {
   size_t overflow = (std::numeric_limits<size_t>::max)();
   EXPECT_DEATH_IF_SUPPORTED(IntTable t(overflow), "Hash table size overflow");
   IntTable t;
   EXPECT_DEATH_IF_SUPPORTED(t.reserve(overflow), "Hash table size overflow");
   EXPECT_DEATH_IF_SUPPORTED(t.rehash(overflow), "Hash table size overflow");
+  size_t slightly_overflow = MaxValidSize(sizeof(IntTable::value_type)) + 1;
+  size_t slightly_overflow_capacity =
+      NextCapacity(NormalizeCapacity(slightly_overflow));
+  EXPECT_DEATH_IF_SUPPORTED(IntTable t2(slightly_overflow_capacity - 10),
+                            "Hash table size overflow");
+  EXPECT_DEATH_IF_SUPPORTED(t.reserve(slightly_overflow),
+                            "Hash table size overflow");
+  EXPECT_DEATH_IF_SUPPORTED(t.rehash(slightly_overflow),
+                            "Hash table size overflow");
 }
 
 // TODO(b/397453582): Remove support for const hasher and ermove this test.

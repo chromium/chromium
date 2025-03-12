@@ -67,6 +67,10 @@ constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
     FineTunePosition::kBottomEdge, FineTunePosition::kBottomLeftVertex,
     FineTunePosition::kLeftEdge};
 
+// The index of the smart actions button within the `FocusGroup::kActionButtons`
+// group.
+constexpr int kSmartActionsButtonIndex = 0;
+
 // We inset the `window_of_interest` by `kWindowOfInterestInset` and outset any
 // other window by `kIntersectingWindowOutset` we intersect with it, so that the
 // resulting points of intersections are inside the bounds of
@@ -690,6 +694,47 @@ void CaptureModeSessionFocusCycler::OnMenuOpened(views::Widget* widget,
 void CaptureModeSessionFocusCycler::OnSearchResultsPanelCreated(
     views::Widget* panel_widget) {
   session_widget_observeration_.AddObservation(panel_widget);
+}
+
+void CaptureModeSessionFocusCycler::OnScannerActionsFetched() {
+  // Only focus the first suggested action if the smart actions button was
+  // previously focused. This is since we don't need to move focus if the user
+  // fetched Scanner actions with a mouse click instead of keyboard navigation,
+  // or the user already navigated away from the action container.
+  if (current_focus_group_ != FocusGroup::kActionButtons ||
+      focus_index_ != kSmartActionsButtonIndex ||
+      GetGroupSize(current_focus_group_) == 0) {
+    return;
+  }
+
+  ClearCurrentVisibleFocus();
+  // Focus on the first action button.
+  focus_index_ = 0;
+  GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
+}
+
+void CaptureModeSessionFocusCycler::OnDisclaimerWidgetOpened(
+    views::Widget* disclaimer_widget) {
+  // Only move focus if the focus cycler previously had focus, i.e. if the user
+  // has spoken feedback enabled or opened the disclaimer using keyboard
+  // navigation.
+  if (HasFocus()) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        disclaimer_widget->GetNativeView());
+  }
+}
+
+void CaptureModeSessionFocusCycler::OnDisclaimerWidgetClosed() {
+  // Try to restore focus to the previously focused view if there was one. If
+  // there was no previously focused view (e.g. because the user opened the
+  // disclaimer using mouse clicks), then there is no need to do anything.
+  if (focus_index_ >= GetGroupSize(current_focus_group_)) {
+    return;
+  }
+
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      GetA11yOverrideWindow());
+  GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
 }
 
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {

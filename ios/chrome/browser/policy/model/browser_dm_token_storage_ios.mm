@@ -120,7 +120,6 @@ std::string BrowserDMTokenStorageIOS::InitDMToken() {
 
 bool BrowserDMTokenStorageIOS::InitEnrollmentErrorOption() {
   // No error should be shown if enrollment fails on iOS.
-  LOG_POLICY(ERROR, CBCM_ENROLLMENT) << "Error initializing enrollment token";
   return false;
 }
 

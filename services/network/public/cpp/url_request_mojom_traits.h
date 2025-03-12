@@ -412,6 +412,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.shared_dictionary_writer_enabled;
   }
+  static bool client_side_content_decoding_enabled(
+      const network::ResourceRequest& request) {
+    return request.client_side_content_decoding_enabled;
+  }
   static network::mojom::IPAddressSpace required_ip_address_space(
       const network::ResourceRequest& request) {
     return request.required_ip_address_space;

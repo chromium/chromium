@@ -75,7 +75,6 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual bool BrowserSupportsTabGroups();
   virtual bool DefaultSearchProviderIsGoogle();
   virtual bool BrowserSupportsSavedTabGroups();
-  virtual bool ActiveTabSupportsCustomizeChrome();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserCommandHandlerTest,
@@ -94,7 +93,6 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void NavigateToEnhancedProtectionSetting();
   virtual void OpenPasswordManager();
   virtual void OpenAISettings();
-  virtual void ShowCustomizeChromeToolbar();
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();

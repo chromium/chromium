@@ -400,6 +400,11 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
   base::UmaHistogramExactLinear("Storage.SharedStorage.SelectURL.UrlsLength",
                                 urls.size(), kExclusiveMaxBucket);
 
+  if (urls.size() == 1) {
+    execution_context->CountUse(
+        WebFeature::kSharedStorageAPI_SelectURL_Method_CalledWithOneURL);
+  }
+
   v8::Local<v8::Context> v8_context =
       script_state->GetIsolate()->GetCurrentContext();
 
@@ -551,7 +556,8 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
-      std::move(private_aggregation_config), options->savedQuery(),
+      std::move(private_aggregation_config), resolve_to_config,
+      options->savedQuery(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,

@@ -49,10 +49,8 @@ class CORE_EXPORT CascadeInterpolations {
   STACK_ALLOCATED();
 
  public:
-  static constexpr size_t kMaxEntryIndex = std::numeric_limits<uint8_t>::max();
-
   struct Entry {
-    DISALLOW_NEW();
+    STACK_ALLOCATED();
 
    public:
     const ActiveInterpolationsMap* map = nullptr;
@@ -61,21 +59,17 @@ class CORE_EXPORT CascadeInterpolations {
 
   void Add(const ActiveInterpolationsMap* map, CascadeOrigin origin) {
     DCHECK(map);
-    entries_.push_back(Entry{map, origin});
+    CHECK_LT(num_entries_, kMaxEntries);
+    entries_[num_entries_++] = Entry{map, origin};
   }
 
   bool IsEmpty() const { return GetEntries().empty(); }
 
-  const Vector<Entry, 4>& GetEntries() const {
-    using EntryVector = Vector<Entry, 4>;
-    DEFINE_STATIC_LOCAL(EntryVector, empty, ());
-    if (entries_.size() > kMaxEntryIndex + 1) {
-      return empty;
-    }
-    return entries_;
+  base::span<const Entry> GetEntries() const {
+    return base::span<const Entry>(entries_).first(num_entries_);
   }
 
-  void Reset() { entries_.clear(); }
+  void Reset() { num_entries_ = 0; }
 
  private:
   // We need to add at most four entries (see CSSAnimationUpdate):
@@ -88,7 +82,10 @@ class CORE_EXPORT CascadeInterpolations {
   // TODO(andruud): Once regular declarations and interpolations are applied
   // using the same StyleCascade object, we can store standard and custom
   // property interpolations together, and use Vector<Entry,2> instead.
-  Vector<Entry, 4> entries_;
+  static constexpr size_t kMaxEntries = 4;
+
+  std::array<Entry, kMaxEntries> entries_;
+  size_t num_entries_ = 0;
 };
 
 }  // namespace blink

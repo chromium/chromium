@@ -780,7 +780,8 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
 static void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string& key = GetRHS(result);
-  const auto* boolean_op = result.Nodes.getNodeAs<clang::Expr>("boolean_op");
+  const auto* operand =
+      result.Nodes.getNodeAs<clang::Expr>("boolean_op_operand");
 
   if (const auto* logical_not_op =
           result.Nodes.getNodeAs<clang::UnaryOperator>("logical_not_op")) {
@@ -788,7 +789,7 @@ static void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
         key, GetReplacementDirective(logical_not_op->getSourceRange(), "",
                                      source_manager));
   } else {
-    EmitReplacement(key, GetReplacementDirective(boolean_op->getBeginLoc(), "!",
+    EmitReplacement(key, GetReplacementDirective(operand->getBeginLoc(), "!",
                                                  source_manager));
   }
 
@@ -2001,14 +2002,15 @@ class Spanifier {
         hasAncestor(cxxRecordDecl(anyOf(hasName("raw_ptr"), hasName("span")))));
 
     // Exclude literal strings as these need to become string_view
-    auto pointer_type = pointerType(pointee(qualType(unless(anyOf(
-        qualType(hasDeclaration(
-            cxxRecordDecl(raw_ptr_plugin::isAnonymousStructOrUnion()))),
-        hasUnqualifiedDesugaredType(anyOf(functionType(), memberPointerType())),
-        hasCanonicalType(
-            anyOf(asString("const char"), asString("const wchar_t"),
-                  asString("const char8_t"), asString("const char16_t"),
-                  asString("const char32_t"))))))));
+    auto pointer_type = pointerType(pointee(qualType(unless(
+        anyOf(qualType(hasDeclaration(
+                  cxxRecordDecl(raw_ptr_plugin::isAnonymousStructOrUnion()))),
+              hasUnqualifiedDesugaredType(
+                  anyOf(functionType(), memberPointerType(), voidType())),
+              hasCanonicalType(
+                  anyOf(asString("const char"), asString("const wchar_t"),
+                        asString("const char8_t"), asString("const char16_t"),
+                        asString("const char32_t"))))))));
 
     auto raw_ptr_type = qualType(
         hasDeclaration(classTemplateSpecializationDecl(hasName("raw_ptr"))));
@@ -2228,6 +2230,7 @@ class Spanifier {
     auto rhs_expr_variations_ignoring_non_spelled_nodes = traverse(
         clang::TK_IgnoreUnlessSpelledInSource, expr(rhs_expr_variations));
     auto raw_ptr_op_bool = cxxMemberCallExpr(
+        on(expr().bind("boolean_op_operand")),
         callee(cxxMethodDecl(hasName("operator bool"),
                              ofClass(hasName("raw_ptr")))),
         has(memberExpr(has(expr(ignoringParenCasts(
@@ -2245,12 +2248,12 @@ class Spanifier {
     auto boolean_op =
         expr(anyOf(implicitCastExpr(
                        hasCastKind(clang::CastKind::CK_PointerToBoolean),
-                       hasSourceExpression(expr(
-                           rhs_expr_variations_ignoring_non_spelled_nodes))),
+                       hasSourceExpression(
+                           expr(rhs_expr_variations_ignoring_non_spelled_nodes)
+                               .bind("boolean_op_operand"))),
                    raw_ptr_op_bool),
              optionally(hasParent(
-                 unaryOperator(hasOperatorName("!")).bind("logical_not_op"))))
-            .bind("boolean_op");
+                 unaryOperator(hasOperatorName("!")).bind("logical_not_op"))));
     Match(boolean_op, DecaySpanToBooleanOp);
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten

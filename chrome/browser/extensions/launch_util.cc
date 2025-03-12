@@ -79,13 +79,4 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
   return *result;
 }
 
-bool HasPreferredLaunchContainer(const ExtensionPrefs* prefs,
-                                 const Extension* extension) {
-  apps::LaunchContainer manifest_launch_container =
-      AppLaunchInfo::GetLaunchContainer(extension);
-  return manifest_launch_container ==
-             apps::LaunchContainer::kLaunchContainerTab &&
-         GetLaunchTypePrefValue(prefs, extension->id()) != LAUNCH_TYPE_INVALID;
-}
-
 }  // namespace extensions

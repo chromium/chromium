@@ -285,6 +285,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kSharedStorageAPI_SharedStorage_DOMReference,
           WebFeature::kSharedStorageAPI_Run_Method,
           WebFeature::kSharedStorageAPI_SelectURL_Method,
+          WebFeature::kSharedStorageAPI_SelectURL_Method_CalledWithOneURL,
           WebFeature::kTopicsAPI_BrowsingTopics_Method,
           WebFeature::kHTMLFencedFrameElement,
           WebFeature::kAuthorizationCrossOrigin,

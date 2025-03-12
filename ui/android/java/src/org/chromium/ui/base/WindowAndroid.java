@@ -4,6 +4,8 @@
 
 package org.chromium.ui.base;
 
+import static androidx.annotation.VisibleForTesting.PRIVATE;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -134,10 +136,10 @@ public class WindowAndroid
     private boolean mHasFocus = true;
     private @Nullable OverlayTransformApiHelper mOverlayTransformApiHelper;
 
-    // TODO(crbug.com/395839333): make sure that these references are cleared when the pointer
-    // capturing view goes out of focus
     private @Nullable View mPointerLockingView;
     private @Nullable View mPointerLockChangeView;
+    private View.@Nullable OnFocusChangeListener mPointerLockingViewFocusChangeListener;
+    private View.@Nullable OnFocusChangeListener mPointerLockingViewPrvFocusChangeListener;
 
     // The information required to draw a replica of the progress bar drawn in
     // java UI in composited UI.
@@ -1290,7 +1292,8 @@ public class WindowAndroid
     }
 
     @CalledByNative
-    private boolean requestPointerLock(View view) {
+    @VisibleForTesting(otherwise = PRIVATE)
+    public boolean requestPointerLock(View view) {
         assert mPointerLockChangeView == null;
         assert mPointerLockingView == null;
 
@@ -1313,8 +1316,12 @@ public class WindowAndroid
             decorViewGroup.addView(mPointerLockChangeView);
         }
 
-        // TODO(crbug.com/395839333): Listen on view focus changes for the capturing view & release
-        // the pointer if it goes out of focus
+        mPointerLockingViewFocusChangeListener =
+                (view2, hasFocus) -> onPointerLockingViewFocusChange(hasFocus);
+        mPointerLockingViewPrvFocusChangeListener = view.getOnFocusChangeListener();
+
+        view.setOnFocusChangeListener(mPointerLockingViewFocusChangeListener);
+
         // Pointer lock API equivalent on Android is called pointer capture
         view.requestPointerCapture();
         mPointerLockingView = view;
@@ -1322,19 +1329,44 @@ public class WindowAndroid
     }
 
     @CalledByNative
-    private void releasePointerLock(View view) {
-        assert mPointerLockingView != null;
-        assert view == mPointerLockingView;
-
-        mPointerLockingView.releasePointerCapture();
-        removePointerLockViews();
+    @VisibleForTesting(otherwise = PRIVATE)
+    public void releasePointerLock(View view) {
+        releasePointerLockHelper(view, true, false);
     }
 
     private void onPointerLockChangeEvent(boolean hasLock) {
-        // TODO(crbug.com/395839333): Forward lock change event to the pointer locking view
+        assert mPointerLockingView != null;
+
         if (!hasLock) {
-            removePointerLockViews();
+            releasePointerLockHelper(mPointerLockingView, false, true);
         }
+    }
+
+    private void onPointerLockingViewFocusChange(boolean hasFocus) {
+        assert mPointerLockingView != null;
+
+        if (mPointerLockingViewPrvFocusChangeListener != null) {
+            mPointerLockingViewPrvFocusChangeListener.onFocusChange(mPointerLockingView, hasFocus);
+        }
+
+        if (!hasFocus) {
+            releasePointerLockHelper(mPointerLockingView, true, true);
+        }
+    }
+
+    private void releasePointerLockHelper(
+            View view, boolean callReleasePointerForView, boolean callbackNativeWindow) {
+        assert mPointerLockingView != null;
+        assert view == mPointerLockingView;
+
+        if (callReleasePointerForView) {
+            mPointerLockingView.releasePointerCapture();
+        }
+        if (callbackNativeWindow && mNativeWindowAndroid != 0) {
+            WindowAndroidJni.get().onWindowPointerLockRelease(mNativeWindowAndroid);
+        }
+
+        removePointerLockViews();
     }
 
     private void removePointerLockViews() {
@@ -1342,9 +1374,22 @@ public class WindowAndroid
         if (mPointerLockChangeView != null && decorView instanceof ViewGroup decorViewGroup) {
             decorViewGroup.removeView(mPointerLockChangeView);
         }
+        if (mPointerLockingView != null) {
+            assert mPointerLockingViewFocusChangeListener != null;
+
+            if (mPointerLockingView.getOnFocusChangeListener()
+                    != mPointerLockingViewFocusChangeListener) {
+                Log.w(TAG, "Pointer locking view focus listener was changed");
+            } else {
+                mPointerLockingView.setOnFocusChangeListener(
+                        mPointerLockingViewPrvFocusChangeListener);
+            }
+        }
 
         mPointerLockChangeView = null;
         mPointerLockingView = null;
+        mPointerLockingViewFocusChangeListener = null;
+        mPointerLockingViewPrvFocusChangeListener = null;
     }
 
     @NativeMethods
@@ -1375,5 +1420,7 @@ public class WindowAndroid
         void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
 
         void sendUnfoldLatencyBeginTimestamp(long nativeWindowAndroid, long beginTimestampMs);
+
+        void onWindowPointerLockRelease(long nativeWindowAndroid);
     }
 }

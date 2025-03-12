@@ -397,11 +397,19 @@ void AutocompleteResult::SortAndCull(
   CompareWithDemoteByType<AutocompleteMatch> comparing_object(
       page_classification);
 
-  const bool is_zero_suggest = input.IsZeroSuggest();
+  bool is_zero_suggest = input.IsZeroSuggest();
   const bool use_grouping_for_non_zps =
       base::FeatureList::IsEnabled(omnibox::kGroupingFrameworkForNonZPS) &&
       !is_zero_suggest;
-  const bool use_grouping = is_zero_suggest || use_grouping_for_non_zps;
+  bool use_grouping = is_zero_suggest || use_grouping_for_non_zps;
+
+  if (is_zero_suggest && OmniboxFieldTrial::IsStarterPackPageEnabled()) {
+    // Keep the the '@page' featured search suggestion showing in zero suggest.
+    // TODO(crbug.com/400812940): Replace this with a more permanent solution if
+    //  we decide to surface such a dedicated suggestion as an entry-point.
+    is_zero_suggest = false;
+    use_grouping = false;
+  }
 
   MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(input));
   // Grouping requires all matches have a group ID. To keep providers 'dumb',

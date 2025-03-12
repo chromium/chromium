@@ -51,8 +51,6 @@ std::vector<Command> supported_commands = {
     Command::kOpenAISettings,
     Command::kOpenSafetyCheckFromWhatsNew,
     Command::kOpenPaymentsSettings,
-    Command::KOpenHistorySearchSettings,
-    Command::kShowCustomizeChromeToolbar,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -90,11 +88,6 @@ class TestCommandHandler : public BrowserCommandHandler {
     // cannot be executed in a unittest.
   }
 
-  void ShowCustomizeChromeToolbar() override {
-    // The functionality of opening the AI settings is removed, as it
-    // cannot be executed in a unittest.
-  }
-
   bool TutorialServiceExists() override { return tutorial_service_exists_; }
 
   CommandUpdater* GetCommandUpdater() override {
@@ -126,10 +119,6 @@ class TestCommandHandler : public BrowserCommandHandler {
     saved_tab_groups_feature_supported_ = is_supported;
   }
 
-  void SetActiveTabSupportsCustomizeChrome(bool is_supported) {
-    customize_chrome_supported_ = is_supported;
-  }
-
  protected:
   bool BrowserSupportsTabGroups() override {
     return tab_groups_feature_supported_;
@@ -143,10 +132,6 @@ class TestCommandHandler : public BrowserCommandHandler {
     return saved_tab_groups_feature_supported_;
   }
 
-  bool ActiveTabSupportsCustomizeChrome() override {
-    return customize_chrome_supported_;
-  }
-
  private:
   bool tutorial_service_exists_ = false;
   std::unique_ptr<CommandUpdater> command_updater_;
@@ -154,7 +139,6 @@ class TestCommandHandler : public BrowserCommandHandler {
   bool tab_groups_feature_supported_ = true;
   bool default_search_provider_is_google_ = true;
   bool saved_tab_groups_feature_supported_ = true;
-  bool customize_chrome_supported_ = true;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -725,37 +709,4 @@ TEST_F(BrowserCommandHandlerTest, OpenPaymentsSettingsCommand) {
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenPaymentsSettings, std::move(info)));
-}
-
-TEST_F(BrowserCommandHandlerTest, OpenHistorySearchSettingsCommand) {
-  // By default, opening the History Search subpage is allowed.
-  EXPECT_TRUE(CanExecuteCommand(Command::KOpenHistorySearchSettings));
-  ClickInfoPtr info = ClickInfo::New();
-  info->middle_button = true;
-  info->meta_key = true;
-  // The KOpenHistorySearchSettings command opens a new settings window with the
-  // History Search settings and the correct disposition.
-  EXPECT_CALL(
-      *command_handler_,
-      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kHistorySearchSubpage)),
-                    DispositionFromClick(*info)));
-  EXPECT_TRUE(
-      ExecuteCommand(Command::KOpenHistorySearchSettings, std::move(info)));
-}
-
-TEST_F(BrowserCommandHandlerTest, ShowCustomizeChromeToolbarCommand) {
-  // If the active tab does not support customize chrome, dont run the command.
-  command_handler_->SetActiveTabSupportsCustomizeChrome(false);
-  EXPECT_FALSE(CanExecuteCommand(Command::kShowCustomizeChromeToolbar));
-
-  // If the active tab supports customize chrome it should
-  // allow running commands.
-  command_handler_->SetActiveTabSupportsCustomizeChrome(true);
-  EXPECT_TRUE(CanExecuteCommand(Command::kShowCustomizeChromeToolbar));
-
-  // Show customize chrome toolbar command calls show customize chrome toolbar.
-  ClickInfoPtr info = ClickInfo::New();
-  EXPECT_CALL(*command_handler_, ShowCustomizeChromeToolbar());
-  EXPECT_TRUE(
-      ExecuteCommand(Command::kShowCustomizeChromeToolbar, std::move(info)));
 }

@@ -358,6 +358,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       net::ReferrerPolicy referrer_policy,
       bool upgrade_if_insecure,
       bool is_ad_tagged,
+      bool client_side_content_decoding_enabled,
       std::optional<net::IsolationInfo> isolation_info,
       bool force_main_frame_for_same_site_cookies,
       net::SecureDnsPolicy secure_dns_policy,

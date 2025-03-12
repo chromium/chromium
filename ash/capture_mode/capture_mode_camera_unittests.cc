@@ -4234,7 +4234,7 @@ TEST_F(CameraPreviewWithNotificationTest,
 
 class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
  public:
-  CameraPreviewWithHoldingSpaceTest() = default;
+  CameraPreviewWithHoldingSpaceTest() { set_start_session(false); }
   CameraPreviewWithHoldingSpaceTest(const CameraPreviewWithHoldingSpaceTest&) =
       delete;
   CameraPreviewWithHoldingSpaceTest& operator=(
@@ -4260,13 +4260,10 @@ class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
 
-    TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession({kTestUser});
-    holding_space_prefs::MarkTimeOfFirstAvailability(
-        session->GetUserPrefService(user_account));
-    holding_space_prefs::MarkTimeOfFirstAdd(
-        session->GetUserPrefService(user_account));
-    session->SwitchActiveUser(user_account);
+    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
+    holding_space_prefs::MarkTimeOfFirstAdd(pref_service.get());
+    SimulateUserLogin({}, user_account, std::move(pref_service));
   }
 
   void TearDown() override {

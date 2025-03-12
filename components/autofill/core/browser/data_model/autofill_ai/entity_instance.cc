@@ -31,21 +31,23 @@ AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
     case AttributeTypeName::kPassportCountry:
       info_ = CountryInfo();
       break;
-    case AttributeTypeName::kPassportExpiryDate:
+    case AttributeTypeName::kPassportExpirationDate:
     case AttributeTypeName::kPassportIssueDate:
     case AttributeTypeName::kDriversLicenseExpirationDate:
     case AttributeTypeName::kDriversLicenseIssueDate:
       info_ = DateInfo();
       break;
-    case AttributeTypeName::kDriversLicenseRegion:
+    case AttributeTypeName::kVehiclePlateState:
+    case AttributeTypeName::kDriversLicenseState:
       info_ = StateInfo();
       break;
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kVehicleOwner:
-    case AttributeTypeName::kVehicleLicensePlate:
+    case AttributeTypeName::kVehiclePlateNumber:
     case AttributeTypeName::kVehicleVin:
     case AttributeTypeName::kVehicleMake:
     case AttributeTypeName::kVehicleModel:
+    case AttributeTypeName::kVehicleYear:
     case AttributeTypeName::kDriversLicenseNumber:
       info_ = u"";
       break;
