@@ -324,7 +324,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Otevřít výběr smajlíků</translation>
 <translation id="2088116547584365419">hry</translation>
-<translation id="2092517835716911174">Funkce Pomoz mi přečíst a Pomoz mi psát můžou používat jen uživatelé starší 18 let</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2107581415810719320">Jiné tlačítko <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Váš kabel USB-C nepodporuje rozhraní Thunderbolt. Výkon zařízení může být omezen.</translation>
@@ -1055,6 +1054,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="450584155212756404">Verze pro vývojáře</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
+<translation id="4518096944902121253">Pro tenhle jazyk nejsou k dispozici žádné další akce</translation>
 <translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon.</translation>
 <translation id="4525887279712865285">Zobrazit nastavení funkce Quick Share</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
@@ -1884,6 +1884,7 @@ Nová instalace</translation>
 <translation id="7189412385142492784">Jak daleko je Venuše</translation>
 <translation id="7198435252016571249">Kamera byla připnuta do pravého dolního rohu. Konflikt s platformou systému.</translation>
 <translation id="7219573373513695352">Žádná připojená zařízení</translation>
+<translation id="7228968829656641943">Výběrem aktivujete vyhledávání na obrazovce. Stisknutím tabulátoru a poté mezerníku aktivujete procházení pomocí klávesnice.</translation>
 <translation id="7229029500464092426">Paměť: <ph name="AVAILABLE_MEMORY" /> | celkem <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Obě tlačítka myši</translation>
 <translation id="7244725679040769470">Stav baterie: <ph name="PERCENTAGE" />. Připojte zařízení k napájení.</translation>

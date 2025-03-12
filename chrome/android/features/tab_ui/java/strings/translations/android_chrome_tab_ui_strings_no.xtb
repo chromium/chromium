@@ -66,6 +66,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="3078350928901129212">Fanegruppeikon med <ph name="COLOR_NAME" /> farge</translation>
 <translation id="311432875115153175">Listen over fanegrupper er lukket</translation>
 <translation id="3194464645767632461">vurdering</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Legg til <ph name="TABS_COUNT_ONE" /> fane i en gruppe}other{Legg til <ph name="TABS_COUNT_MANY" /> faner i en gruppe}}</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="3547352561153509682">Dette medfører at gruppen slettes fra alle enheter som er logget på <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ny fane}other{<ph name="MANY_ADDED" /> nye faner}}</translation>
@@ -98,6 +99,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="4783638485675352219">Del titlene og nettadressene til åpne faner på denne enheten med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Visning</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Legg til <ph name="TABS_COUNT_ONE" /> valgt fane i en gruppe}other{Legg til <ph name="TABS_COUNT_MANY" /> valgte faner i en gruppe}}</translation>
 <translation id="4861611890274104875">Lukk kortet.</translation>
 <translation id="4861953997778766866">Alle kan gjøre endringer i de delte fanegruppene dine</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
@@ -134,6 +136,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6228793724645064692">(butikkvurdering)</translation>
 <translation id="6271513594716432922">Lukk alle inaktive faner</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="6333260925957816943">Informasjon om denne butikken</translation>
 <translation id="6381032505162537930">Her finner du fanegruppene dine</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opphev grupperingen av <ph name="TABS_COUNT_ONE" /> valgt fane}other{Opphev grupperingen av <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
@@ -186,6 +189,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="799469866974412355">Ny gruppe fra den andre enheten</translation>
 <translation id="8029301326595421733">Informasjon om denne butikken er åpnet i full høyde</translation>
 <translation id="8053770993984522566">Liste over fanegrupper, åpnet i halv høyde</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Legg til fanen i en gruppe}other{Legg til fanene i en gruppe}}</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Flytt fanen oppover</translation>

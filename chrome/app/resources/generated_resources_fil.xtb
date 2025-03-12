@@ -376,7 +376,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1244265436519979884">Kasalukuyang isinasagawa ang pag-restore ng Linux</translation>
 <translation id="1244303850296295656">Error sa extension</translation>
 <translation id="1244917379075403655">I-click ang “Mga Setting”</translation>
-<translation id="1245041875932187638">I-delete ang lahat ng data na ginamit ng i-autofill gamit ang AI</translation>
 <translation id="1245331638296910488">Malilipat ang mga file sa OneDrive kapag binubuksan ang mga ito sa Microsoft 365</translation>
 <translation id="1245628370644070008">Pag-recover ng lokal na data</translation>
 <translation id="1246863218384630739">Hindi ma-install ang <ph name="VM_NAME" />: Nagbalik ang URL ng Larawan ng code ng error na <ph name="HTTP_ERROR" />. Makipag-ugnayan sa iyong administrator.</translation>
@@ -1418,7 +1417,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Naghahanda</translation>
 <translation id="1969654639948595766">Mga log ng text sa WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">Ide-delete ang lahat ng data. Hindi maa-undo ang aksyong ito</translation>
 <translation id="1972313920920745320">Palaging mananatiling aktibo ang mga site na idinaragdag mo at hindi magbabakante ng memory mula sa mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pagpapanatiling aktibo ng mga partikular na site<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>
 <translation id="197288927597451399">Panatilihin</translation>
@@ -3071,7 +3069,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3108957152224931571">Kulay ng highlight</translation>
 <translation id="3109206895301430738">Mga na-save na Mga Grupo ng Tab</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
-<translation id="310979712355504754">Tanggalin lahat</translation>
 <translation id="3112292765614504292">Laki ng app: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Idinagdag ang tab na ito</translation>
 <translation id="311394601889664316">Huwag payagan ang mga site na mag-edit ng mga file o folder sa iyong device</translation>
@@ -4091,7 +4088,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Inaprubahan ang isang extension}one{# extension ang inaprubahan}other{# na extension ang inaprubahan}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Hindi bababa sa <ph name="INSTALL_SIZE" /> na espasyo ang inirerekomenda para sa Linux.</translation>
-<translation id="3824203811509979971">Magbuod ng content o magtanong</translation>
 <translation id="3824621460022590830">Invalid ang token sa pag-enroll ng device. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Mag-sign in para makita ang mga tab mula sa iba pang device</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Tandaan ang pinili ko para sa ganitong uri ng file: <ph name="FILE_TYPES" />}one{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}other{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}}</translation>
@@ -5906,7 +5902,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">Tingnan ang mga pagbabago</translation>
 <translation id="5127620150973591153">Secure na connection ID: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">Magbuod ng content o magtanong.</translation>
 <translation id="5127881134400491887">Pamahalaan ang mga koneksyon ng network</translation>
 <translation id="5127934926273826089">Mga bulaklak</translation>
 <translation id="5127986747308934633">Kinokontrol ng iyong administrator ang device mo</translation>
@@ -7457,7 +7452,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6254892857036829079">Perfect</translation>
 <translation id="6257131917452817589">naka-automate na pagpapalit ng password</translation>
 <translation id="6257602895346497974">I-on ang pag-sync...</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">Pipiliin ang network na ito kung mahigit sa isang dati nang nakonektahan o na-configure na network ang available</translation>
 <translation id="6259776178973198997">I-refresh ang Impormasyon ng Mga Direktang May-ari ng WiFi</translation>
 <translation id="6262371516389954471">Ina-upload ang mga backup mo sa Google at ine-encrypt ang mga ito gamit ang password ng iyong Google Account.</translation>
@@ -9891,6 +9885,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Boses <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Awtomatikong i-transfer ang WiFi mula sa iyong Android phone</translation>
 <translation id="7991296728590311172">Mga setting ng Switch Access</translation>
+<translation id="7992080146463834191">Magbuod ng content, pasimplehin ang mga pahayag na hindi madaling maunawaan, o magtanong.</translation>
 <translation id="7992203134935383159">Speech synthesis</translation>
 <translation id="7997826902155442747">Priority ng Proseso</translation>
 <translation id="7997828719430450286">Matagumpay.</translation>
@@ -11159,6 +11154,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8874448314264883207">In-off ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">Organic</translation>
 <translation id="8874790741333031443">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugang mas mahina ang proteksyon sa pag-browse pero mas malamang na gumana ang mga feature ng site gaya ng inaasahan.</translation>
+<translation id="8875221558267407626">Magbuod ng content, pasimplehin ang mga pahayag na hindi madaling maunawaan, o magtanong</translation>
 <translation id="8875520811099717934">Pag-upgrade ng Linux</translation>
 <translation id="8875736897340638404">Piliin ang iyong visibility</translation>
 <translation id="8876307312329369159">Hindi mababago ang setting na ito sa demo session.</translation>

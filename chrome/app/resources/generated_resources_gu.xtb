@@ -376,7 +376,6 @@
 <translation id="1244265436519979884">હાલમાં Linuxને પહેલાંના જેવું કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="1244303850296295656">એક્સટેંશન ભૂલ</translation>
 <translation id="1244917379075403655">“સેટિંગ” પર ક્લિક કરો</translation>
-<translation id="1245041875932187638">AI વડે ઑટોમૅટિક રીતે ભરવાની સુવિધા દ્વારા ઉપયોગમાં લેવાયો બધો ડેટા ડિલીટ કરો</translation>
 <translation id="1245331638296910488">Microsoft 365માં ખુલી રહેલી ફાઇલોને OneDrive પર ખસેડવામાં આવશે</translation>
 <translation id="1245628370644070008">સ્થાનિક ડેટા રિકવરી</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ઇન્સ્ટૉલ કરી શક્યાં નહીં: છબીના URL દ્વારા ભૂલનો કોડ <ph name="HTTP_ERROR" /> પરત આપવામાં આવ્યો છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
@@ -1404,7 +1403,6 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">તૈયાર થઈ રહ્યું છે</translation>
 <translation id="1969654639948595766">WebRTC ટેક્સ્ટ લૉગ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1971694696800660479">બધો ડેટા ડિલીટ કરવામાં આવશે. આ ક્રિયાનો છેલ્લો ફેરફાર રદ કરી શકાતો નથી</translation>
 <translation id="1972313920920745320">તમે ઉમેરો છો તે બધી સાઇટ હંમેશાં સક્રિય રહેશે અને તેમની મેમરી ખાલી કરવામાં આવશે નહીં. <ph name="BEGIN_LINK" />કેટલીક ચોક્કસ સાઇટને સક્રિય રાખવા વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવતું હોવાને કારણે તમે વધુ ઝડપથી બ્રાઉઝ કરી શકશો</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -2288,6 +2286,7 @@
 <translation id="256517381556987641">ફાઇલ સિંકને અત્યાર સુધીમાં <ph name="ITEMS_FOUND" /> ફાઇલ મળી છે અને હજી પણ સ્ટોરેજ સ્પેસ ચેક કરી રહ્યું છે. ફાઇલ સિંકને થોડી મિનિટમાં ફરીથી ચાલુ કરવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2565214867520763227">સ્ક્રીન રીડર ચાલુ કરો</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUM_OTHER_MEMBERS" /> વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
+<translation id="256726287944589768">નવા ટૅબ પેજ પર ફૂટર બતાવો</translation>
 <translation id="2568694057933302218">છૂપા મોડમાં, વિવિધ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકતી નથી. તમારી બ્રાઉઝિંગ પ્રવૃત્તિનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા જેવી વસ્તુઓ માટે કરવામાં આવતો નથી. સુવિધાઓ કેટલીક સાઇટ પર કામ ન કરે એવું બની શકે છે.</translation>
 <translation id="2568774940984945469">માહિતી બાર સંગ્રહક</translation>
 <translation id="2569972178052279830">છૂટક વેપારીનું નામ</translation>
@@ -2796,6 +2795,7 @@
 <translation id="2921081876747860777">તમારો સ્થાનિક ડેટા સુરક્ષિત કરવા માટે કૃપા કરીને એક પાસવર્ડ બનાવો.</translation>
 <translation id="2923006468155067296">હવે તમારું <ph name="DEVICE_TYPE" /> લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. એ જ ટાસ્ક ગ્રૂપમાં અન્ય <ph name="OTHER_TASK_NUM" /> ટાસ્ક: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. એ જ ટાસ્ક ગ્રૂપમાં અન્ય <ph name="OTHER_TASK_NUM" /> ટાસ્ક: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">આ એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="2923644930701689793">તમારા ફોનના કૅમેરા રોલને ઍક્સેસ કરો</translation>
 <translation id="292371311537977079">Chrome સેટિંગ</translation>
@@ -3053,7 +3053,6 @@
 <translation id="3108957152224931571">હાઇલાઇટનો રંગ</translation>
 <translation id="3109206895301430738">સાચવેલા ટૅબના ગ્રૂપ</translation>
 <translation id="3109724472072898302">સંકુચિત</translation>
-<translation id="310979712355504754">બધુ ડિલીટ કરો</translation>
 <translation id="3112292765614504292">ઍપનું કદ: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">આ ટૅબ ઉમેરવામાં આવ્યું</translation>
 <translation id="311394601889664316">સાઇટને તમારા ડિવાઇસમાંની ફાઇલો કે ફોલ્ડરોમાં ફેરફાર કરવાની મંજૂરી આપશો નહીં</translation>
@@ -4073,7 +4072,6 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન મંજૂર કરવામાં આવ્યું છે}one{# એક્સ્ટેંશન મંજૂર કરવામાં આવ્યું છે}other{# એક્સ્ટેંશન મંજૂર કરવામાં આવ્યા છે}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux માટે ઓછામાં ઓછી <ph name="INSTALL_SIZE" />  ખાલી સ્પેસનો સુઝાવ આપવામાં આવે છે.</translation>
-<translation id="3824203811509979971">કન્ટેન્ટનો સારાંશ આપો અથવા પ્રશ્નો પૂછો</translation>
 <translation id="3824621460022590830">ડિવાઇસની નોંધણી માટેનું ટોકન અમાન્ય છે. કૃપા કરીને તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">અન્ય ડિવાઇસમાંથી ટૅબ જોવા માટે સાઇન ઇન કરો</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}one{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}other{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}}</translation>
@@ -5888,7 +5886,6 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">ફેરફારો જુઓ</translation>
 <translation id="5127620150973591153">સુરક્ષિત કનેક્શન ID: <ph name="TOKEN" /></translation>
-<translation id="5127780364354669658">કન્ટેન્ટનો સારાંશ આપો અથવા પ્રશ્નો પૂછો.</translation>
 <translation id="5127881134400491887">નેટવર્ક કનેક્શન્સનું સંચાલન કરો</translation>
 <translation id="5127934926273826089">ફૂલો</translation>
 <translation id="5127986747308934633">તમારા ઍડમિનિસ્ટ્રેટર તમારું ડિવાઇસ નિયંત્રિત કરી રહ્યાં છે</translation>
@@ -7441,7 +7438,6 @@ USB ડિવાઇસ</translation>
 <translation id="6254892857036829079">ઉત્તમ</translation>
 <translation id="6257131917452817589">ઑટોમૅટિક રીતે પાસવર્ડ બદલવાની સુવિધા</translation>
 <translation id="6257602895346497974">સિંક કરવાનું ચાલુ કરો…</translation>
-<translation id="6257614441619555296"><ph name="KEY" />: <ph name="VALUE" /></translation>
 <translation id="625827534921607067">જો અગાઉ કનેક્ટ કરેલા કે કન્ફિગર કરેલા એક કરતાં વધારે નેટવર્ક ઉપલબ્ધ હશે, તો આ નેટવર્કની પસંદગી કરવામાં આવશે</translation>
 <translation id="6259776178973198997">WiFi Directના માલિકોની માહિતી રિફ્રેશ કરો</translation>
 <translation id="6262371516389954471">તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
@@ -9874,6 +9870,7 @@ USB ડિવાઇસ</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> અવાજ <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">તમારા Android ફોનમાંથી ઑટોમૅટિક રીતે વાઇ-ફાઇ ટ્રાન્સફર કરો</translation>
 <translation id="7991296728590311172">સ્વિચ ઍક્સેસ સેટિંગ</translation>
+<translation id="7992080146463834191">કન્ટેન્ટનો સારાંશ આપો, જટિલ ભાષાને સરળ બનાવો અથવા પ્રશ્નો પૂછો.</translation>
 <translation id="7992203134935383159">સ્પીચ સિન્થેસીસ</translation>
 <translation id="7997826902155442747">પ્રાધાન્યતા પર પ્રક્રિયા કરો</translation>
 <translation id="7997828719430450286">સફળતા.</translation>
@@ -11135,6 +11132,7 @@ USB ડિવાઇસ</translation>
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" બંધ કરવામાં આવ્યું હતું</translation>
 <translation id="8874647982044395866">ઑર્ગેનિક</translation>
 <translation id="8874790741333031443">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે બ્રાઉઝિંગ સંરક્ષણ સાઇટ સુવિધાઓની અપેક્ષા મુજબ કાર્ય કરવાની સંભાવના વધુ છે.</translation>
+<translation id="8875221558267407626">કન્ટેન્ટનો સારાંશ આપો, જટિલ ભાષાને સરળ બનાવો અથવા પ્રશ્નો પૂછો</translation>
 <translation id="8875520811099717934">Linux અપગ્રેડ કરો</translation>
 <translation id="8875736897340638404">તમારી દૃશ્યતા પસંદ કરો</translation>
 <translation id="8876307312329369159">ડેમો સત્રમાં આ સેટિંગ બદલી શકાતી નથી.</translation>

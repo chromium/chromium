@@ -66,6 +66,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="3078350928901129212">Välilehtiryhmän (<ph name="COLOR_NAME" />) värikuvake</translation>
 <translation id="311432875115153175">Välilehtiryhmälista suljettu</translation>
 <translation id="3194464645767632461">arvio</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Lisää ryhmään <ph name="TABS_COUNT_ONE" /> välilehti}other{Lisää ryhmään <ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="3547352561153509682">Ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uusi välilehti}other{<ph name="MANY_ADDED" /> uutta välilehteä}}</translation>
@@ -98,6 +99,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="4783638485675352219">Jaa laitteen avointen välilehtien nimet ja URL-osoitteet käyttöjärjestelmälle</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvostelu)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvostelua)}}</translation>
 <translation id="4850886885716139402">Näytä</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Lisää ryhmään <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Lisää ryhmään <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="4861611890274104875">Hylkää kortti.</translation>
 <translation id="4861953997778766866">Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
 <translation id="4870911314065352661">Suljetaanko kaikki välilehdet?</translation>
@@ -134,6 +136,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6228793724645064692">(kaupan arvio)</translation>
 <translation id="6271513594716432922">Sulje kaikki ei-aktiiviset välilehdet</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lisää välilehti uuteen ryhmään}other{Lisää välilehtiä uuteen ryhmään}}</translation>
 <translation id="6333260925957816943">Tietoja tästä kaupasta</translation>
 <translation id="6381032505162537930">Näet välilehtiryhmäsi täällä</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poista <ph name="TABS_COUNT_ONE" /> valitun välilehden ryhmittely}other{Poista <ph name="TABS_COUNT_MANY" /> valitun välilehden ryhmittely}}</translation>
@@ -186,6 +189,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="799469866974412355">Uusi ryhmä toiselta laitteelta</translation>
 <translation id="8029301326595421733">"Tietoja tästä kaupasta" avattu koko näytön kokoisena</translation>
 <translation id="8053770993984522566">Välilehtiryhmälista avattu puoliksi</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>

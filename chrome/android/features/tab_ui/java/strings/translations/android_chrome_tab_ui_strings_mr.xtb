@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> या टॅब गटाच्या रंगाचा आयकन</translation>
 <translation id="311432875115153175">टॅब गट सूची बंद केली आहे</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{गटामध्ये <ph name="TABS_COUNT_ONE" /> टॅब जोडा}other{गटामध्ये <ph name="TABS_COUNT_MANY" /> टॅब जोडा}}</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="3547352561153509682">हे <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हासवरून गट हटवेल</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नवीन टॅब}other{<ph name="MANY_ADDED" /> नवीन टॅब}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">ऑपरेटिंग सिस्टीमसह या डिव्हाइसमधील उघड्या टॅबची शीर्षके आणि URLs शेअर करा</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामध्ये जोडा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामध्ये जोडा}}</translation>
 <translation id="4861611890274104875">कार्ड डिसमिस करा.</translation>
 <translation id="4861953997778766866">सर्वजण तुमच्या शेअर केलेल्या टॅब गटांमध्ये बदल करू शकतात</translation>
 <translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{नवीन गटामध्ये टॅब जोडा}other{नवीन गटामध्ये टॅब जोडा}}</translation>
 <translation id="6333260925957816943">या स्टोअरविषयी माहिती</translation>
 <translation id="6381032505162537930">तुम्हाला तुमचे टॅब गट इथे दिसतील</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">तुमच्या इतर डिव्हाइसवरील नवीन गट</translation>
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8053770993984522566">टॅब गट सूची, अर्ध्या उंचीवर उघडली आहे</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{गटामध्ये टॅब जोडा}other{गटामध्ये टॅब जोडा}}</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>

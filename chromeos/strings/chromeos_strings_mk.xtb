@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">Анимација за штедачот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
 <translation id="1539864135338521185">син камен</translation>
+<translation id="1548555207631326346">Изберете тема, па изберете ги подвлечените зборови за да се персонализираат вашите слики создадени од AI.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики создадени од AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Кога создавате со AI, барањето се испраќа до серверите на Google AI за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политиката за приватност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративната AI е во експериментална фаза и во моментов има ограничена достапност.</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="155865706765934889">Допирна подлога</translation>
 <translation id="1561927818299383735">боја на заднинско осветлување</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плажа</translation>
 <translation id="819278132617411009">Користете ја Google AI за да бидете попродуктивни</translation>
+<translation id="82003371436638355">Кога ќе изберете „Создајте свој“, напишете приспособено барање. Или може да изберете „Изберете тема“, па да ги изберете подвлечените зборови за да се персонализира вашиот AI-тапет.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики создадени од AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Кога создавате свој тапет, барањето се испраќа до серверите на Google за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Условите за користење“ и „Политиката за приватност“ на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не внесувајте лични, чувствителни или доверливи податоци.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративната AI може да прави грешки, што опфаќа и грешки за луѓе, па проверувајте ги одговорите. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Дознајте повеќе<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8208861521865154048">Поволности</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">пуштање аудиовизуелни содржини</translation>
 <translation id="8318753676953949627">Нема слики</translation>
 <translation id="8320910311642849813">шума</translation>
+<translation id="8322464149031882595">Кликнете за да одите напред</translation>
 <translation id="8329018942023753850">апликација „Калкулатор“</translation>
 <translation id="8336739000755212683">Променете ја сликата за сметката на уредот</translation>
 <translation id="8339024191194156249">Дознајте повеќе за автоматското стартување</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Брзина на полнење</translation>
 <translation id="8970109610781093811">Изврши повторно</translation>
+<translation id="8972061581514441296">Кликнете за да се вратите назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES} страница}one{Скенирај {NUMBER_OF_PAGES} страница}other{Скенирај {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="89945434909472341">село</translation>

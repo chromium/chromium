@@ -324,7 +324,6 @@
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2088116547584365419">游戏</translation>
-<translation id="2092517835716911174">您必须年满 18 周岁，才能使用“帮我读”和“帮我写”功能。</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2107581415810719320">其他按钮 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
@@ -1054,6 +1053,7 @@
 <translation id="450584155212756404">开发渠道</translation>
 <translation id="4513044611477939680">快速分享</translation>
 <translation id="4513946894732546136">反馈</translation>
+<translation id="4518096944902121253">没有可对此语言执行的操作了</translation>
 <translation id="4518404433291145981">若要解锁 Chromebook，请先解锁您的手机</translation>
 <translation id="4525887279712865285">显示“快速分享”设置</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
@@ -1883,6 +1883,7 @@
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
 <translation id="7219573373513695352">未连接任何设备</translation>
+<translation id="7228968829656641943">选择即可搜索我的屏幕内容。按 Tab 键然后按空格键即可使用键盘进行导航。</translation>
 <translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">鼠标的两个按钮</translation>
 <translation id="7244725679040769470">电量剩余 <ph name="PERCENTAGE" />%。请为设备接通电源。</translation>

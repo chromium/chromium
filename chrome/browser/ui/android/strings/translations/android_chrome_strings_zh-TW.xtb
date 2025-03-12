@@ -996,6 +996,7 @@
 <translation id="5696597120588531049">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
 <translation id="570347048394355941">切換至分頁</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> 要求與序列埠連線</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
 <translation id="571930967925877633">書籤、歷史記錄和其他 Chrome 資料將不再同步到 Google 帳戶</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
@@ -1128,6 +1129,7 @@
 <translation id="6296366034485697675">匯出並刪除</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
+<translation id="6307241780749477694">通過身分驗證，即可在這部裝置上存取所有密碼</translation>
 <translation id="6312687380483398334">網頁應用程式 (安靜模式)</translation>
 <translation id="6315386555979018699">刪除並繼續</translation>
 <translation id="6316139424528454185">系統不支援目前的 Android 版本</translation>
@@ -1389,6 +1391,7 @@
 <translation id="7359002509206457351">存取付款方式</translation>
 <translation id="7363349185727752629">隱私權選項指南</translation>
 <translation id="7364103838544876661">更多用於刪除瀏覽資料的選項</translation>
+<translation id="7365073365123878797">請先更新 Google Play 服務，再開始透過 Google 密碼管理工具儲存或使用密碼。</translation>
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用輕觸搜尋功能時，納入較多網頁文字也許能找到更相關的結果。你隨時可以前往<ph name="BEGIN_LINK" />設定頁面<ph name="END_LINK" />調整設定。</translation>
 <translation id="7379900596734708416">現已推出網站的深色主題</translation>
@@ -1467,10 +1470,12 @@
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
 <translation id="7690596512217303514">你的裝置無法開啟 Chrome。如要修正問題，請前往應用程式商店下載 Chrome 更新。</translation>
 <translation id="7691043218961417207">探索值得追蹤的內容</translation>
+<translation id="7692761875510935111">在瀏覽器中快速開啟。按住這裡即可編輯這個捷徑。</translation>
 <translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
 <translation id="7702420606070050505">近期活動底部功能表已完整開啟</translation>
 <translation id="7707922173985738739">使用行動數據</translation>
+<translation id="7708994397325774423">取得所有密碼</translation>
 <translation id="7733878270780732638">裝置的可用空間不足。</translation>
 <translation id="7746817319925672889">Google 密碼管理工具即將停止在這部裝置上運作</translation>
 <translation id="774876555279732384">你也可以透過 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />管理自動填入服務。</translation>
@@ -1612,6 +1617,7 @@
 <translation id="8310451567823644042">密碼很快就會停止在這部裝置上運作</translation>
 <translation id="831192587911042850">將目前的網站加到你追蹤的網站清單中。</translation>
 <translation id="8320212361750431956">近期活動</translation>
+<translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome 會通知你哪些網站可能傳送太多通知</translation>
 <translation id="834313815369870491">一律不翻譯的網站</translation>
 <translation id="8348430946834215779">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告</translation>
@@ -1743,6 +1749,7 @@
 <translation id="8937772741022875483">要將你的 Chrome 活動記錄從數位健康中移除嗎？</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載這個語言套件，請稍後再試。</translation>
+<translation id="8946759102391960088">繼續存取密碼</translation>
 <translation id="8957528460562961174">如要繼續存取密碼，請立即匯出密碼，然後匯入至偏好的密碼管理工具。由於無法使用 Google Play 服務，Google 密碼管理工具已停止運作。</translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965591936373831584">正在等待下載</translation>

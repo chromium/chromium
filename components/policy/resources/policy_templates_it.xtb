@@ -3812,7 +3812,6 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
 
       Nota: per i dispositivi <ph name="MS_AD_NAME" /> gestiti, questa policy supporta l'espansione di <ph name="MACHINE_NAME_VARIABLE" /> al nome della macchina <ph name="MS_AD_NAME" /> oppure a una sua sottostringa. Ad esempio, se il nome della macchina è <ph name="MACHINE_NAME_EXAMPLE" />, la variabile <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> viene sostituita dai quattro caratteri che iniziano dopo la sesta posizione, ad esempio <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posizione è in base zero.</translation>
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
-<translation id="3772558247108478825">Impostazioni per la funzionalità di raggruppamento intelligente con AI generativa</translation>
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
 <translation id="3785423718413114598">Non consentire le funzionalità di GenAI</translation>
@@ -4707,17 +4706,6 @@ Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</transla
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
-<translation id="4474320817847428197">Questa policy consente di controllare le impostazioni della funzionalità di raggruppamento intelligente con AI generativa per <ph name="PRODUCT_OS_NAME" />.
-
-0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Non consente di utilizzare la funzionalità.
-
-Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="447692108909279121">Gestione dell'IP di WebRTC</translation>
 <translation id="4478248026668918517">Blocca il rilevamento dell'ambito delle policy.</translation>
 <translation id="4479671363221255277">La configurazione della policy consente di elencare pattern URL che specificano quali siti possono richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
@@ -5790,6 +5778,11 @@ Se questa policy non viene configurata o se l'elenco non contiene riferimenti a 
       Se la policy non viene impostata, viene usato il periodo predefinito di 604800000 millisecondi (una settimana).</translation>
 <translation id="5212810195096589189">Specifica l'autorizzazione per l'interfaccia a riga di comando delle macchine virtuali</translation>
 <translation id="5213038356678567351">Siti web che non devono mai attivare il cambio di browser.</translation>
+<translation id="5216520638921067085">Specifica l'età minima della release oltre la quale le notifiche di riavvio sono più aggressive. La durata viene calcolata a partire dall'ultima volta che la versione attualmente in esecuzione è stata pubblicata ai client.
+
+Se è in attesa una nuova versione, è necessario riavviare il browser o il dispositivo e la versione corrente è stata sostituita per più del numero di giorni specificato da questa impostazione, il criterio <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> viene forzato su 2 ore. Se il criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostato su 1 (obbligatorio), gli utenti saranno costretti a riavviare o ricominciare alla fine del periodo.
+
+Se non viene configurato o se l'età della release non può essere determinata, il criterio <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> verrà utilizzato per tutti gli aggiornamenti.</translation>
 <translation id="5216815237712190041">Configura l'immagine di sfondo a livello di dispositivo da mostrare nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. La policy viene impostata specificando l'URL da cui il dispositivo ChromeOS può scaricare l'immagine di sfondo e un hash crittografico utilizzato per verificare l'integrità del download. L'immagine deve essere in formato JPEG e avere dimensioni non superiori a 16 MB. L'URL deve essere accessibile senza autenticazione. L'immagine di sfondo viene scaricata e memorizzata nella cache. Verrà scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se la policy dello sfondo del dispositivo viene configurata, il dispositivo ChromeOS scarica e utilizza l'immagine di sfondo nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Quando un utente esegue l'accesso, si attiva la policy dello sfondo dell'utente.
@@ -6875,6 +6868,7 @@ Se viene impostata su <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (va
 
       In caso contrario, se è necessario mantenere la compatibilità con un server con errori, è possibile impostare questa policy su "tls1.1". Si tratta di una misura temporanea ed è necessario sistemare rapidamente il server.</translation>
 <translation id="5932767795525445337">Questa policy può essere utilizzata anche per bloccare app per Android.</translation>
+<translation id="5936192285609409992">Calcolatrice (supportata dalla versione 136)</translation>
 <translation id="5936193585187054065">Encrypted ClientHello (ECH) è un'estensione TLS per criptare i campi sensibili di ClientHello e aumentare la privacy.
 
       Se questa policy non viene configurata o se viene impostata su enabled, <ph name="PRODUCT_NAME" /> seguirà la procedura di lancio predefinita di ECH. Se viene disattivata, <ph name="PRODUCT_NAME" /> non abiliterà ECH.
@@ -7363,6 +7357,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla v
 <translation id="6287128640500683781">Consenti a qualsiasi utente di accedere</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
 <translation id="6287742528823584153">Attiva il servizio <ph name="PRODUCT_NAME" /> e avvia la scrivania remota all'accesso</translation>
+<translation id="6288152932495466841">Avvisa gli utenti in caso di versioni del browser superate</translation>
 <translation id="6299147100249359151">Consenti il rilevamento dell'ambito delle policy.</translation>
 <translation id="6299554629216555326">Impostazioni di gestione delle finestre</translation>
 <translation id="6302021021024941085">Disattiva gli strumenti per la risoluzione dei problemi relativi a Kiosk.</translation>
@@ -8459,12 +8454,6 @@ Questa policy verrà rimossa in futuro, una volta completata l'implementazione d
       Se questa policy non viene configurata, HTTP/0.9 verrà disattivato per le porte non predefinite.</translation>
 <translation id="6969332115615661188">Disattiva l'input video</translation>
 <translation id="6969949359984470271">L'app web kiosk non è in grado di funzionare offline</translation>
-<translation id="6971579036359007697">Controlla la migrazione dei file locali sul cloud.
-Si applica solo agli utenti di SkyVault, ovvero quando LocalUserFilesAllowed è False. In caso contrario, viene ignorato.
-
-Se impostato su "google_drive", i file locali vengono spostati su Google Drive e le cartelle locali vengono nascoste.
-Se impostato su "microsoft_onedrive", i file locali vengono spostati su OneDrive e le cartelle locali vengono nascoste.
-Se impostato su "read-only" o se non viene impostato, i file locali rimangono in modalità di sola lettura.</translation>
 <translation id="6972540544240464302">Seleziona configurazione programma di pianificazione attività</translation>
 <translation id="6975533677426693807">Apri sempre i file PDF utilizzando un visualizzatore PDF interno</translation>
 <translation id="6986172482189158664">Impostazioni del periodo di validità dei dati di navigazione</translation>
@@ -11329,6 +11318,7 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 <translation id="9107635531763682565">Se la policy viene impostata su 1, i siti web possono mostrare le notifiche desktop. Se la policy viene impostata su 2, le notifiche desktop vengono negate.
 
 Se non viene configurata, si applica la policy <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="9107664925383184344">Periodo di tempo (giorni)</translation>
 <translation id="910929592571075861">Non partizionare gli URL dei blob durante il recupero e la navigazione.</translation>
 <translation id="9110194749335632373">Impedisci le connessioni di accesso da remoto da parte degli amministratori aziendali a questo computer</translation>
 <translation id="9110198768621013941">Attiva la policy AutofillPredictionSettings.

@@ -182,7 +182,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
-<translation id="3289358082435924389">Plus tard, Chrome vous demandera si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement les formulaires</translation>
 <translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va maintenant redémarrer}=1{Chrome redémarrera dans 1 seconde}one{Chrome redémarrera dans # seconde}other{Chrome redémarrera dans # secondes}}</translation>
@@ -342,7 +341,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5602351063754773347">Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Avec les profils Chromium, vous pouvez séparer toutes vos données Chrome. Créez des profils pour vos amis et votre famille, ou pour dissocier travail et divertissement.</translation>
-<translation id="5649680279845190972">Pour obtenir vos extensions et plus sur tous vos ordinateurs, connectez-vous à Chrome</translation>
 <translation id="565744775970812598">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il peut être dangereux.</translation>
 <translation id="566568153320186256">Chrome économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur d'énergie<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Effacer les données Chrome de votre compte</translation>
@@ -521,7 +519,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7886087451482920026">Sélectionnez du texte avec Lentille Google</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Google Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Google Chrome pour séparer vos données.</translation>
-<translation id="7917470403848199310">Chrome vous demandera si vous souhaitez enregistrer les informations du formulaire, comme votre date de naissance, votre âge et votre numéro de passeport</translation>
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chrome, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome a bloqué ce téléchargement, car le fichier est trompeur et pourrait apporter des modifications inattendues à votre appareil</translation>
 <translation id="7951272445806340501">Chrome OS Flex doit être redémarré pour appliquer la mise à jour.</translation>
@@ -603,7 +600,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro de <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8948460679427074738">Cette extension n'a pas publié de pratiques en matière de confidentialité, telles que la manière dont elle collecte et utilise les données. Chrome vous recommande de la retirer.</translation>
-<translation id="8983860655274963234">Chrome comprend mieux les formulaires et peut les remplir automatiquement plus rapidement. En savoir plus sur le <ph name="BEGIN_LINK" />remplissage automatique de Chrome<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8989968390305463310">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="8992769679401294069">Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>

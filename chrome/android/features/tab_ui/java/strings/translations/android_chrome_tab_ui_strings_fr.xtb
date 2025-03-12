@@ -66,6 +66,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="3078350928901129212">Icône <ph name="COLOR_NAME" /> du groupe d'onglets</translation>
 <translation id="311432875115153175">Liste de groupes d'onglets fermée</translation>
 <translation id="3194464645767632461">note</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet à un groupe}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet à un groupe}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets à un groupe}}</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
 <translation id="3547352561153509682">Le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nouvel onglet}one{<ph name="MANY_ADDED" /> nouvel onglet}other{<ph name="MANY_ADDED" /> nouveaux onglets}}</translation>
@@ -98,6 +99,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="4783638485675352219">Partager les titres et les URL des onglets ouverts depuis cet appareil avec le système d'exploitation</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Afficher</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné à un groupe}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné à un groupe}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés à un groupe}}</translation>
 <translation id="4861611890274104875">Fermer la carte.</translation>
 <translation id="4861953997778766866">Tout le monde peut modifier vos groupes d'onglets partagés</translation>
 <translation id="4870911314065352661">Fermer tous les onglets ?</translation>
@@ -134,6 +136,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter l'onglet à un nouveau groupe}one{Ajouter l'onglet à un nouveau groupe}other{Ajouter les onglets à un nouveau groupe}}</translation>
 <translation id="6333260925957816943">Infos sur ce magasin</translation>
 <translation id="6381032505162537930">Vos groupes d'onglets s'afficheront ici</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
@@ -186,6 +189,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="799469866974412355">Nouveau groupe issu de votre autre appareil</translation>
 <translation id="8029301326595421733">Fiche d'infos sur ce magasin ouverte à pleine hauteur</translation>
 <translation id="8053770993984522566">Liste de groupes d'onglets, ouverte à mi-hauteur</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>

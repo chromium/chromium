@@ -66,9 +66,10 @@
 <translation id="3078350928901129212">ٹیب گروپ کے رنگ آئیکن کا رنگ <ph name="COLOR_NAME" /> ہے</translation>
 <translation id="311432875115153175">ٹیب گروپ کی فہرست بند ہے</translation>
 <translation id="3194464645767632461">درجہ بندی</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب کو گروپ میں شامل کریں}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3547352561153509682">یہ <ph name="USER_EMAIL" /> میں سائن ان کردہ تمام آلات سے گروپ کو حذف کر دے گا</translation>
-<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> نیا ٹیب}other{<ph name="MANY_ADDED" /> نئے ٹیبز}}</translation>
+<translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> نیا ٹیب}other{‫<ph name="MANY_ADDED" /> نئے ٹیبز}}</translation>
 <translation id="3613492231657284463">غیر فعال ٹیبز کا ڈائیلاگ چھپائیں</translation>
 <translation id="3619255692378312441">رسائی کا نظم کریں</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -76,7 +77,7 @@
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="381219490185664296">ٹیب گروپ کا گروپ ختم کریں؟</translation>
 <translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
-<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> نیا ٹیب، <ph name="ANY_CLOSED" /> بند کیا گیا}other{<ph name="MANY_ADDED" /> نئے ٹیبز، <ph name="ANY_CLOSED" /> بند کئے گئے}}</translation>
+<translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> نیا ٹیب، <ph name="ANY_CLOSED" /> بند کیا گیا}other{‫<ph name="MANY_ADDED" /> نئے ٹیبز، <ph name="ANY_CLOSED" /> بند کئے گئے}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ٹیب کو گروپ میں شامل کریں}other{ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> غیر فعال ٹیب}other{<ph name="TABS_COUNT_MANY" /> غیر فعال ٹیبز}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> کھولیں</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">‏اس آلے کے کھلے ہوئے ٹیبز کے عنوانات اور URLs کا آپریٹنگ سسٹم کے ساتھ اشتراک کریں</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> جائزہ)}other{(<ph name="REVIEWS_COUNT_MANY" /> جائزے)}}</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو گروپ میں شامل کریں}other{‫<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیب کو گروپ میں شامل کریں}}</translation>
 <translation id="4861611890274104875">کارڈ کو برخاست کریں۔</translation>
 <translation id="4861953997778766866">ہر کوئی آپ کے مشترکہ ٹیب گروپس میں تبدیلیاں کر سکتا ہے</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6271513594716432922">تمام غیر فعال ٹیبز بند کریں</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{ٹیب کو نئے گروپ میں شامل کریں}other{ٹیبز کو نئے گروپ میں شامل کریں}}</translation>
 <translation id="6333260925957816943">اس اسٹور سے متعلق معلومات</translation>
 <translation id="6381032505162537930">آپ کو اپنے ٹیب گروپس یہاں ملیں گے</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> کو منتخب کردہ ٹیب سے گروپ ختم کریں}other{<ph name="TABS_COUNT_MANY" /> کو منتخب کردہ ٹیبز سے گروپ ختم کریں}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">آپ کے دوسرے آلے سے نیا گروپ</translation>
 <translation id="8029301326595421733">اس اسٹور سے متعلق معلومات مکمل اونچائی پر کھلی ہے</translation>
 <translation id="8053770993984522566">ٹیب گروپ کی فہرست، نصف اونچائی تک کھلی ہے</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{ٹیب کو گروپ میں شامل کریں}other{ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}}</translation>
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>

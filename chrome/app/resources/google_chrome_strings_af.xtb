@@ -182,7 +182,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3245429137663807393">As jy ook Chrome-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
-<translation id="3289358082435924389">Chrome sal jou later vra of jy gestoorde inligting wil gebruik om vorms outomaties in te vul</translation>
 <translation id="3292333338048274092">Jy sal dan Chrome moet herbegin.</translation>
 <translation id="3360895254066713204">Chrome-helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sal nou herbegin}=1{Chrome sal oor 1 sekonde herbegin}other{Chrome sal oor # sekondes herbegin}}</translation>
@@ -343,7 +342,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5602351063754773347">Chrome beveel aan dat jy dit verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Met Chrome-profiele kan jy al jou Chrome-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
-<translation id="5649680279845190972">Meld aan by Chrome om jou uitbreidings en meer op al jou rekenaars te kry</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlik wees en daarom het Chrome dit geblokkeer.</translation>
 <translation id="566568153320186256">Chrome bespaar batterykrag deur agtergrondaktiwiteit en visuele effekte, soos gladde rollees en videoraamtempo’s, te beperk. <ph name="BEGIN_LINK" />Kry meer inligting oor Energiebespaarder<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Vee die Chrome-data in jou rekening uit</translation>
@@ -522,7 +520,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7886087451482920026">Kies teks met Google Lens</translation>
 <translation id="7890208801193284374">As jy 'n rekenaar deel, kan vriende en familie apart blaai en Chrome opstel nes hulle dit wil hê.</translation>
 <translation id="7896673875602241923">Iemand het voorheen op hierdie rekenaar as <ph name="ACCOUNT_EMAIL_LAST" /> by Chrome aangemeld. Skep asseblief 'n nuwe Chrome-gebruiker om jou inligting apart te hou.</translation>
-<translation id="7917470403848199310">Chrome sal jou vra of jy vorminligting wil stoor, soos jou geboortedatum, ouderdom en paspoortnommer</translation>
 <translation id="7917876797003313048">Jy kan jou aangemelde Google-rekeninge bestuur. Jou Google-rekeninge word gebruik vir Chrome-blaaier, Play Winkel, Gmail en meer. As jy 'n rekening vir iemand anders, soos 'n gesinslid, wil byvoeg, kan jy 'n nuwe persoon eerder by jou <ph name="DEVICE_TYPE" /> voeg. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome het hierdie aflaai geblokkeer omdat die lêer misleidend is en onverwagte veranderinge aan jou toestel kan maak</translation>
 <translation id="7951272445806340501">Chrome OS Flex moet herbegin word om die opdatering toe te pas.</translation>
@@ -604,7 +601,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8914504000324227558">Herbegin Chrome</translation>
 <translation id="8922193594870374009">Meld op albei toestelle by Chrome aan om 'n nommer van <ph name="ORIGIN" /> af na jou Android-foon te stuur.</translation>
 <translation id="8948460679427074738">Hierdie uitbreiding het nie privaatheidpraktyke gepubliseer nie, soos hoe dit data insamel en gebruik. Chrome beveel aan dat jy dit verwyder.</translation>
-<translation id="8983860655274963234">Chrome verstaan vorms beter en kan hulle vir jou vinniger outovul. Kry meer inligting oor <ph name="BEGIN_LINK" />Chrome-outovul<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">Jy voeg tans 'n werkprofiel by hierdie blaaier en gee jou administrateur beheer oor net jou werkprofiel.</translation>
 <translation id="8989968390305463310">Jou blaaigeskiedenis beïnvloed die advertensies wat jy sien en die belangstellings soos hieronder geskat. Chrome vee outomaties elke maand jou belangstellings op ’n rollende basis uit om jou privaatheid te beskerm. Belangstellings kan herlaai, tensy jy hulle verwyder.</translation>
 <translation id="8992769679401294069">Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Google-rekening te gebruik en te stoor.</translation>

@@ -130,11 +130,9 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2753623023919742414">Haz clic para buscar</translation>
 <translation id="2770231113462710648">Cambiar navegador predeterminado por:</translation>
-<translation id="277338894894732084">Más adelante, Chromium te preguntará si quieres usar la información guardada para rellenar formularios automáticamente</translation>
 <translation id="2785438272836277133">Esta extensión contiene malware y no es segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803971713792056305">Tu Chromium</translation>
-<translation id="2806241689335397269">Chromium te preguntará si quieres guardar información de formularios, como tu fecha de nacimiento, edad y número de pasaporte</translation>
 <translation id="2841525013647267359">Traducir del</translation>
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
 <translation id="2847479871509788944">Desinstalar de Chromium...</translation>
@@ -180,7 +178,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">¿Cambiar a un perfil de Chromium?</translation>
 <translation id="3412460710772753638">En el gestor de contraseñas de este dispositivo</translation>
-<translation id="3451656833730006755">Para obtener tus extensiones y más en todos tus ordenadores, inicia sesión en Chromium</translation>
 <translation id="347328004046849135">Chromium te avisará cuando inicies sesión con una contraseña vulnerada</translation>
 <translation id="3474745554856756813">Se eliminarán <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chromium a otro</translation>
@@ -463,7 +460,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="734373864078049451">Aquí puedes encontrar tus páginas web, marcadores y otros contenidos de Chromium.</translation>
 <translation id="7349591376906416160">El administrador del sistema ha configurado Chromium para que abra <ph name="ALTERNATIVE_BROWSER_NAME" /> al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">Esta extensión ya no se admite. Chromium te recomienda que la elimines.</translation>
-<translation id="7389750180956889333">Chromium entiende mejor los formularios y puede autocompletarlos más rápido. Más información sobre <ph name="BEGIN_LINK" />Autocompletar de Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> ‑ Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a la cámara en este sitio web</translation>

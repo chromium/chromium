@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Bydd data pori presennol yn cael eu cysylltu â <ph name="USER_EMAIL" />. Mae'n bosib y bydd eich sefydliad yn gallu gweld y data hwn.</translation>
 <translation id="1713777106376424209">Yn cyrraedd erbyn</translation>
 <translation id="1715515772563243997">Os ydych yn ymddiried yn <ph name="SITE" />, gallwch ddefnyddio cyfrinair a gadwyd i fewngofnodi.</translation>
+<translation id="1718835860248848330">Awr ddiwethaf</translation>
 <translation id="1728549374069268714">Gludo a mynd</translation>
 <translation id="1732468323901456775">Troi hysbysiadau ymlaen ar gyfer <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Mae canfod cyfeiriad wedi'i ddiffodd. Trowch ef ymlaen eto yn y Gosodiadau.</translation>
 <translation id="1904580727789512086">Mae'r cyfeiriadau URL rydych yn ymweld â nhw wedi'u cadw i'ch Cyfrif Google</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
-<translation id="1923342640370224680">Awr Ddiwethaf</translation>
 <translation id="1941314575388338491">Tapiwch ddwywaith i gopïo.</translation>
 <translation id="1943478190258551035">Dewislen → Gosodiadau</translation>
 <translation id="1952728750904661634">Mewngofnodi gyda chyfrif a rheolir</translation>
@@ -1206,6 +1206,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6187302354554850004">Cysonwyd ddiwethaf: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Crëwyd ar <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Heb eu darllen</translation>
+<translation id="6192388920090306326">Taith i Tokyo</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6196207969502475924">Chwilio â Llais</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
@@ -1370,6 +1371,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6779455296366983087">Bydd eich data pori yn cael eu dileu</translation>
 <translation id="6790502149545262384">Yn fuan, byddwch yn gweld straeon o <ph name="CHANNEL_NAME" /> pan fyddwch yn agor tab newydd.</translation>
 <translation id="6794476726485507147">Dewiswch ddyddiad ac amser i dderbyn hysbysiad atgoffa i ailymweld â'r dudalen hon</translation>
+<translation id="6807287147325542056">Cyfrineiriau mewn apiau eraill</translation>
 <translation id="681368974849482173">Wedi creu'r eitem</translation>
 <translation id="6825078212112407882">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}}zero{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}two{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}few{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}many{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}other{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}}</translation>
 <translation id="6830728435402077660">Ddim yn ddiogel</translation>
@@ -1934,6 +1936,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9106655997975673326">O "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Gwirio am gyfrineiriau sydd wedi'u datgelu</translation>
 <translation id="9124387962554796433">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill.</translation>
+<translation id="9124978074365039456">Siopa, cyfieithu, a nodi'r hyn a welwch gan ddefnyddio'ch camera a'ch oriel luniau</translation>
 <translation id="9130317582644834675">Cuddio Chwyddo Testun</translation>
 <translation id="913036870884277353">Agor dolenni mewn apiau eraill yn hawdd.</translation>
 <translation id="9137013805542155359">Dangos y gwreiddiol</translation>

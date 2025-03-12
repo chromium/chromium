@@ -324,7 +324,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
 <translation id="2086334242442703436">Åpne emojivelgeren</translation>
 <translation id="2088116547584365419">spill</translation>
-<translation id="2092517835716911174">Du må være minst 18 år for å bruke Hjelp meg å lese og Hjelp meg å skrive.</translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2107581415810719320">Annen knapp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabelen din støtter ikke Thunderbolt. Enhetens ytelse kan være begrenset.</translation>
@@ -1055,6 +1054,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="450584155212756404">Utviklerkanal</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
+<translation id="4518096944902121253">Ingen flere handlinger for dette språket</translation>
 <translation id="4518404433291145981">For å låse opp Chromebooken, lås opp telefonen først</translation>
 <translation id="4525887279712865285">Vis innstillinger for Quick Share</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
@@ -1885,6 +1885,7 @@ Nylig installert</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="7219573373513695352">Ingen enheter er koblet til</translation>
+<translation id="7228968829656641943">Velg for å søke på skjermen. Trykk på Tab og deretter på mellomromstasten for å navigere med tastaturet.</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7239814253344511868">Begge museknappene</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>

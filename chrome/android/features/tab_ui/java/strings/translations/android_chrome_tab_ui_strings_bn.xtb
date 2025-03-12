@@ -66,6 +66,7 @@
 <translation id="3078350928901129212">ট্যাব গ্রুপ রঙের আইকন <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">ট্যাব গ্রুপের তালিকা বন্ধ আছে</translation>
 <translation id="3194464645767632461">রেটিং</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{গ্রুপে <ph name="TABS_COUNT_ONE" />টি ট্যাব যোগ করুন}one{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}other{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}}</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" /> ব্যবহার করে সাইন-ইন করা হয়েছে এমন সবকটি ডিভাইস থেকে গ্রুপ মুছে ফেলা হবে</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি নতুন ট্যাব}one{<ph name="MANY_ADDED" />টি নতুন ট্যাব}other{<ph name="MANY_ADDED" />টি নতুন ট্যাব}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">এই ডিভাইস থেকে খোলা ট্যাবের শিরোনাম ও URL, অপারেটিং সিস্টেমের সাথে শেয়ার করুন</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />টি রিভিউ)}one{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}other{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}}</translation>
 <translation id="4850886885716139402">দেখুন</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{গ্রুপে <ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া ট্যাব যোগ করুন}one{গ্রুপে <ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব যোগ করুন}other{গ্রুপে <ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব যোগ করুন}}</translation>
 <translation id="4861611890274104875">কার্ড বাতিল করুন।</translation>
 <translation id="4861953997778766866">আপনার শেয়ার করা ট্যাব গ্রুপে প্রত্যেকে পরিবর্তন করতে পারবেন</translation>
 <translation id="4870911314065352661">সব ট্যাব বন্ধ করবেন?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
 <translation id="6271513594716432922">সব ইনঅ্যাক্টিভ ট্যাব বন্ধ করুন</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="6333260925957816943">এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="6381032505162537930">আপনার ট্যাব গ্রুপ এখানে দেখতে পাবেন</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব আনগ্রুপ করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">আপনার অন্য ডিভাইসে থাকা নতুন গ্রুপ</translation>
 <translation id="8029301326595421733">সম্পূর্ণ খোলা স্টোরের বিষয়ে তথ্য</translation>
 <translation id="8053770993984522566">ট্যাব গ্রুপের তালিকা, অর্ধ উচ্চতায় খোলা আছে</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="8205266828577616993">ট্যাব উপরে সরান</translation>

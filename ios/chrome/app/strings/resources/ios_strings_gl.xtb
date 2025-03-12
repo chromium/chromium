@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Os datos de navegación actuais vincularanse a <ph name="USER_EMAIL" />. A túa organización poderá velos.</translation>
 <translation id="1713777106376424209">Entregado por</translation>
 <translation id="1715515772563243997">Se confías en <ph name="SITE" />, podes usar un contrasinal gardado para iniciar sesión.</translation>
+<translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Pegar e acceder</translation>
 <translation id="1732468323901456775">Activa as notificacións de <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Toca dúas veces para instalar.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">A detección de enderezos está desactivada. Volve activala en Configuración.</translation>
 <translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
-<translation id="1923342640370224680">Última hora</translation>
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="1952728750904661634">Iniciar sesión cunha conta xestionada</translation>
@@ -1206,6 +1206,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Creado o <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Mensaxes non lidas</translation>
+<translation id="6192388920090306326">Viaxe a Tokyo</translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
 <translation id="6196207969502475924">Busca por voz</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
@@ -1370,6 +1371,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6779455296366983087">Eliminaranse os teus datos de navegación</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6794476726485507147">Escolle unha data e unha hora na que recibir unha notificación de recordatorio para volver visitar esta páxina</translation>
+<translation id="6807287147325542056">Contrasinais doutras aplicacións</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="6825078212112407882">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{{count} marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="6830728435402077660">Non seguro</translation>
@@ -1934,6 +1936,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Comproba se hai contrasinais vulnerados</translation>
 <translation id="9124387962554796433">Google pode usar o teu historial de para personalizar a Busca e outros servizos seus.</translation>
+<translation id="9124978074365039456">Compra, traduce e identifica o que vexas mediante a cámara e a galería de fotos</translation>
 <translation id="9130317582644834675">Ocultar Aplicar zoom ao texto</translation>
 <translation id="913036870884277353">Abrir as ligazóns noutras aplicacións facilmente</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>

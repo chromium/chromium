@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">Добра ноќ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Отвори го избирачот на емоџија</translation>
 <translation id="2088116547584365419">игри</translation>
-<translation id="2092517835716911174">Мора да имате најмалку 18 години за да ги користите „Помош при читање“ и „Помош при пишување“.</translation>
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2107581415810719320">Друго копче <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Вашиот USB-C не поддржува Thunderbolt. Изведбата на уредот може да биде ограничена.</translation>
@@ -1056,6 +1055,7 @@
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513044611477939680">Брзо споделување</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
+<translation id="4518096944902121253">Нема веќе дејства за јазиков</translation>
 <translation id="4518404433291145981">За да го отклучите вашиот Chromebook, прво отклучете го телефонот</translation>
 <translation id="4525887279712865285">Прикажи ги поставките за „Брзо споделување“</translation>
 <translation id="4527045527269911712">Уредот Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување.</translation>
@@ -1886,6 +1886,7 @@
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
 <translation id="7219573373513695352">Не се поврзани уреди</translation>
+<translation id="7228968829656641943">Изберете да го пребарување својот екран. Притиснете Tab, па Space за навигација со тастатурата.</translation>
 <translation id="7229029500464092426">Меморија: <ph name="AVAILABLE_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Двете копчиња на глувчето</translation>
 <translation id="7244725679040769470">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата. Приклучете го уредот во струја.</translation>

@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">داده‌های مرور موجود به <ph name="USER_EMAIL" /> پیوند داده خواهد شد. ممکن است سازمانتان بتواند این داده‌ها را مشاهده کند.</translation>
 <translation id="1713777106376424209">تحویل‌دهنده:</translation>
 <translation id="1715515772563243997">اگر به <ph name="SITE" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای ورود به سیستم استفاده کنید.</translation>
+<translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1728549374069268714">جای‌گذاری کردن و رفتن</translation>
 <translation id="1732468323901456775">روشن کردن اعلان‌های <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">تشخیص نشانی غیرفعال شد. برای فعال کردن دوباره آن به «تنظیمات» بروید.</translation>
 <translation id="1904580727789512086">‏نشانی‌های وبی که بازدید می‌کنید در «حساب Google» شما ذخیره می‌شوند</translation>
 <translation id="1911619930368729126">‏بارگذاری در Google Drive</translation>
-<translation id="1923342640370224680">یک ساعت گذشته</translation>
 <translation id="1941314575388338491">برای کپی کردن دو ضربه سریع بزنید.</translation>
 <translation id="1943478190258551035">تنظیمات ← منو</translation>
 <translation id="1952728750904661634">ورود به سیستم با حساب مدیریت‌شده</translation>
@@ -304,7 +304,7 @@
 <translation id="2223461067862937305">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="2229345671837147090">جدول برگه دور</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
-<translation id="2236949375853147973">فعالیت من</translation>
+<translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="2240256190924001613">پیکربندی نمایه دردسترس است</translation>
 <translation id="2244080985779413662">این وب‌سایت می‌خواهد فایلی را بارگیری کند و آن را در «کیف پول» شما باز کند.</translation>
 <translation id="2245007488813216650">درحال ترجمه کردن…</translation>

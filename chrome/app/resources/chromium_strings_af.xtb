@@ -130,11 +130,9 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2738871930057338499">Kon nie aan die internet koppel nie. HTTP 403 verbode. Gaan asseblief jou proxy-opstelling na.</translation>
 <translation id="2753623023919742414">Klik om te soek</translation>
 <translation id="2770231113462710648">Verander verstekblaaier na:</translation>
-<translation id="277338894894732084">Chromium sal jou later vra of jy gestoorde inligting wil gebruik om vorms outomaties in te vul</translation>
 <translation id="2785438272836277133">Hierdie uitbreiding bevat wanware en is onveilig. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="2799223571221894425">Begin weer</translation>
 <translation id="2803971713792056305">Jou Chromium</translation>
-<translation id="2806241689335397269">Chromium sal jou vra of jy vorminligting wil stoor, soos jou geboortedatum, ouderdom en paspoortnommer</translation>
 <translation id="2841525013647267359">Vertaal uit</translation>
 <translation id="2846251086934905009">Installeerfout: Die installeerder is nie voltooi nie. Die installasie is gestaak.</translation>
 <translation id="2847479871509788944">Verwyder uit Chromium …</translation>
@@ -180,7 +178,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3387527074123400161">Chromium-bedryfstelsel</translation>
 <translation id="3406848076815591792">Skakel oor na bestaande Chromium-profiel?</translation>
 <translation id="3412460710772753638">In Wagwoordbestuurder op hierdie toestel</translation>
-<translation id="3451656833730006755">Meld aan by Chromium om jou uitbreidings en meer op al jou rekenaars te kry</translation>
 <translation id="347328004046849135">Chromium sal jou in kennis stel wanneer jy met 'n gekompromitteerde wagwoord aanmeld</translation>
 <translation id="3474745554856756813">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan tussen Chromium-profiele wissel</translation>
@@ -463,7 +460,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="734373864078049451">Jou web, boekmerke en ander Chromium-goed woon hier.</translation>
 <translation id="7349591376906416160">Jou stelseladministrateur het Chromium opgestel om <ph name="ALTERNATIVE_BROWSER_NAME" /> oop te maak om by <ph name="TARGET_URL_HOSTNAME" /> in te gaan.</translation>
 <translation id="7384121030444253939">Hierdie uitbreiding word nie meer gesteun nie. Chromium beveel aan dat jy dit eerder verwyder.</translation>
-<translation id="7389750180956889333">Chromium verstaan vorms beter en kan hulle vir jou vinniger outovul. Kry meer inligting oor <ph name="BEGIN_LINK" />Chrome-outovul<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teks gekopieer</translation>
 <translation id="7451052299415159299">Chromium het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>

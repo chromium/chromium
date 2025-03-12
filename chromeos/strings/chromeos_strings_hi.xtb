@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">स्क्रीन सेवर का ऐनिमेशन</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
 <translation id="1539864135338521185">लैपिस लैज़ूली</translation>
+<translation id="1548555207631326346">कोई थीम चुनें और अपनी दिलचस्पी के हिसाब से एआई इमेज जनरेट करने के लिए, अंडरलाइन किए गए शब्दों को चुनें.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई इमेज के अलग-अलग और यूनीक विकल्प पाने के लिए, "वॉलपेपर के नए आइडिया दें" को चुनें.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई की मदद से वॉलपेपर बनाने पर, Google के एआई के सर्वर के पास प्रॉम्प्ट भेजा जाता है, ताकि इमेज जनरेट की जा सकें और प्रॉडक्ट को बेहतर बनाया जा सके. इस पर <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          जनरेटिव एआई की सुविधा, फ़िलहाल एक्सपेरिमेंट के तौर पर उपलब्ध है. इस पर अभी काम चल रहा है. यह अभी, सभी लोगों के लिए उपलब्ध नहीं है.</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="155865706765934889">टचपैड</translation>
 <translation id="1561927818299383735">बैकलिट का रंग</translation>
@@ -1552,6 +1561,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">समुद्र तट</translation>
 <translation id="819278132617411009">अपनी प्रॉडक्टिविटी बढ़ाने के लिए, Google के एआई का इस्तेमाल करें</translation>
+<translation id="82003371436638355">“अपनी पसंद का वॉलपेपर बनाएं” को चुनें और फिर अपने हिसाब से कोई प्रॉम्प्ट टाइप करें. इसके अलावा, आपके पास “कोई थीम चुनें” को चुनकर कोई थीम इस्तेमाल करने का विकल्प भी होता है. इसके बाद, अपनी दिलचस्पी के हिसाब से एआई से तैयार किया गया वॉलपेपर जनरेट करने के लिए, अंडरलाइन किए गए शब्दों को चुनें.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई इमेज के अलग-अलग और यूनीक विकल्प पाने के लिए, "वॉलपेपर के नए आइडिया दें" को चुनें.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          अपना वॉलपेपर बनाने पर, Google के सर्वर के पास प्रॉम्प्ट भेजा जाता है, ताकि इमेज जनरेट की जा सकें और प्रॉडक्ट को बेहतर बनाया जा सके. इस पर <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की सेवा की शर्तें और निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है. इनपुट में किसी भी तरह की निजी, संवेदनशील या गोपनीय जानकारी शामिल न करें.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ऐसा हो सकता है कि जनरेटिव एआई से मिले जवाब गलत हों. जैसे, यह किसी व्यक्ति के बारे में गलत जानकारी दे सकता है. इसलिए, इसके जवाबों की दोबारा जांच कर लें. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ज़्यादा जानें<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
@@ -1573,6 +1592,7 @@
 <translation id="8312330582793120272">मीडिया चलाएं</translation>
 <translation id="8318753676953949627">कोई इमेज नहीं</translation>
 <translation id="8320910311642849813">जंगल</translation>
+<translation id="8322464149031882595">आगे जाने के लिए क्लिक करें</translation>
 <translation id="8329018942023753850">कैलकुलेटर ऐप्लिकेशन</translation>
 <translation id="8336739000755212683">डिवाइस खाते की इमेज बदलें</translation>
 <translation id="8339024191194156249">अपने-आप लॉन्च होने के बारे में ज़्यादा जानें</translation>
@@ -1719,6 +1739,7 @@
 <translation id="8961025972867871808">पेंगविन</translation>
 <translation id="8968751544471797276">चार्ज होने की दर</translation>
 <translation id="8970109610781093811">फिर से चलाएं</translation>
+<translation id="8972061581514441296">वापस जाने के लिए क्लिक करें</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
 <translation id="89945434909472341">गांव</translation>

@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Mavjud brauzerning ishlashi haqida axborot <ph name="USER_EMAIL" /> manziliga ulanadi. Bu maʼlumotlarni tashkilotingiz koʻrishi mumkin.</translation>
 <translation id="1713777106376424209">Yetkazib beriladi:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> saytiga ishonsangiz, kirish uchun saqlangan parolingizni ishlatishingiz mumkin.</translation>
+<translation id="1718835860248848330">Oxirgi bir soat</translation>
 <translation id="1728549374069268714">Joylash va davom etish</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> bildirishnomalarini yoqish</translation>
 <translation id="1740468249224277719">O‘rnatish uchun ikki marta bosing.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Manzil aniqlanishi yoqilmagan. Sozlamalar orqali qayta yoqish mumkin</translation>
 <translation id="1904580727789512086">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
-<translation id="1923342640370224680">So‘nggi soat</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
 <translation id="1943478190258551035">Menyu → Sozlamalar</translation>
 <translation id="1952728750904661634">Boshqariladigan hisobga kirish</translation>
@@ -1206,6 +1206,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6187302354554850004">Oxirgi sinxronizatsiya: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">O‘qilmagan</translation>
+<translation id="6192388920090306326">Tokiyoga sayohat</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
 <translation id="6196207969502475924">Ovozli qidiruv</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
@@ -1370,6 +1371,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6779455296366983087">Brauzer tarixi tozalanadi</translation>
 <translation id="6790502149545262384">Tez orada yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
 <translation id="6794476726485507147">Bu saytga qayta kirish haqida eslatma olish uchun sana va vaqtni tanlang</translation>
+<translation id="6807287147325542056">Boshqa ilovalardagi parollar</translation>
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bukmark Google hisobingizga ({email}) saqlandi}other{{count} ta bukmark Google hisobingizga ({email}) saqlandi}}</translation>
 <translation id="6830728435402077660">Xavfsiz emas</translation>
@@ -1934,6 +1936,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9106655997975673326">“<ph name="SOURCE_DEVICE" />” qurilmasidan</translation>
 <translation id="9107664647686727385">Oshkor etilgan parollar uchun tekshirish</translation>
 <translation id="9124387962554796433">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>
+<translation id="9124978074365039456">Kamera yoki galereya rasmi bilan mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling</translation>
 <translation id="9130317582644834675">Matn masshtabini berkitish</translation>
 <translation id="913036870884277353">Boshqa ilovalardagi havolalarni oson ochish.</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>

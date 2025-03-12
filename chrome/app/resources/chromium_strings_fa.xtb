@@ -88,7 +88,7 @@
 <translation id="2190166659037789668">خطای بررسی به‌روزرسانی: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">‏برداشتن حساب از Chromium</translation>
 <translation id="2210682093923538346">‏سایت خطرناک. ‫Chromium اعلان‌ها را برداشت.</translation>
-<translation id="2236949375853147973">فعالیت من</translation>
+<translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="2238130810669087193">‏برای دریافت نشانی‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chromium وارد شوید. بعداز اینکه به سیستم وارد شدید، این نشانی در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="2240214816234246077">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت</translation>
 <translation id="2241627712206172106">‏اگر رایانه‌ای را به صورت مشترک استفاده می‌کنید، دوستان و خانواده می‌توانند به صورت جداگانه مرور کنند و Chromium را به صورتی که مایلند تنظیم کنند.</translation>
@@ -128,11 +128,9 @@
 <translation id="2738871930057338499">‏اتصال به اینترنت برقرار نشد. HTTP ۴۰۳ ممنوع است. لطفاً پیکربندی پروکسی‌تان را بررسی کنید.</translation>
 <translation id="2753623023919742414">برای جستجو، کلیک کنید</translation>
 <translation id="2770231113462710648">تغییر مرورگر پیش‌فرض به:</translation>
-<translation id="277338894894732084">‏بعداً Chromium از شما می‌پرسد که آیا می‌خواهید از اطلاعات ذخیره‌شده برای تکمیل خودکار فرم‌ها استفاده کنید</translation>
 <translation id="2785438272836277133">‏این افزونه حاوی بدافزار است و ناامن است. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2803971713792056305">‏‫Chromium شما</translation>
-<translation id="2806241689335397269">‏‫Chromium از شما می‌پرسد که آیا می‌خواهید اطلاعات فرم مثل تاریخ تولد، سن، و شماره گذرنامه‌تان را ذخیره کنید</translation>
 <translation id="2841525013647267359">ترجمه کردن از</translation>
 <translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
@@ -177,7 +175,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏به نمایه Chromium موجود می‌روید؟</translation>
 <translation id="3412460710772753638">در «مدیر گذرواژه» در این دستگاه</translation>
-<translation id="3451656833730006755">‏برای دریافت افزونه‌ها و موارد دیگر در همه رایانه‌هایتان، به سیستم Chromium وارد شوید</translation>
 <translation id="347328004046849135">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد می‌شوید، Chromium شما را مطلع می‌کند</translation>
 <translation id="3474745554856756813">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="3497319089134299931">‏با <ph name="SHORTCUT" /> می‌توانید بین نمایه‌های Chromium جابه‌جا شوید</translation>
@@ -459,7 +456,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="734373864078049451">‏وب، نشانک‌ها و موارد دیگر Chromium شما در اینجا هستند.</translation>
 <translation id="7349591376906416160">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
 <translation id="7384121030444253939">‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن را حذف کنید.</translation>
-<translation id="7389750180956889333">‏‫Chromium فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند. درباره <ph name="BEGIN_LINK" />تکمیل خودکار Chrome<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">نوشتار کپی شد</translation>
 <translation id="7451052299415159299">‏Chromium برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>

@@ -128,6 +128,15 @@
 <translation id="1526389707933164996">স্ক্রিন সেভার অ্যানিমেশন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
 <translation id="1539864135338521185">লাপিস লাজুলি</translation>
+<translation id="1548555207631326346">আপনার AI ছবি পছন্দমতো সেট করতে একটি থিম, তারপর নিচে দাগ দেওয়া শব্দগুলি বেছে নিন।<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ছবি সংক্রান্ত আরও অনন্য ও নানারকম বিকল্প পেতে "আমাকে অনুপ্রাণিত করো" বিকল্প বেছে নিন।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপনি AI ব্যবহার করে কিছু তৈরি করার সময়, ছবি জেনারেট ও প্রোডাক্টের উন্নতি করতে <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী প্রম্পট, Google AI সার্ভারে পাঠানো হয়।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          জেনারেটিভ AI পরীক্ষামূলক, প্রাথমিক পর্যায়ে ও বর্তমানে সীমিতভাবে উপলভ্য।</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="155865706765934889">টাচপ্যাড</translation>
 <translation id="1561927818299383735">ব্যাকলাইটের উজ্জ্বলতা সম্পন্ন কালার</translation>
@@ -1553,6 +1562,16 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">বিচ</translation>
 <translation id="819278132617411009">আরও প্রোডাক্টিভ হয়ে উঠতে Google AI ব্যবহার করুন</translation>
+<translation id="82003371436638355">আপনি “নিজের তৈরি করুন” বিকল্প বেছে নেওয়ার সময় কোনও কাস্টম প্রম্পট লিখুন। অথবা আপনি “কোনও থিম বেছে নিন” বেছে নিতে তারপর নিজের এআই (AI) ওয়ালপেপার পছন্দমতো সাজিয়ে নেওয়ার জন্য আন্ডারলাইন করা শব্দ বেছে নিতে পারবেন।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ছবি সংক্রান্ত আরও অনন্য ও নানারকম বিকল্প পেতে "আমাকে অনুপ্রাণিত করো" বিকল্প বেছে নিন।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপনি নিজের ওয়ালপেপার তৈরি করার সময়, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর পরিষেবার শর্তাবলী ও গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী ছবি জেনারেট ও প্রোডাক্ট উন্নত করতে Google-এ পাঠানো হয়েছে। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          জেনারেটিভ AI ফিচার হল নতুন প্রযুক্তি এবং তা ভুল তথ্য দিতে পারে, এর মধ্যে লোকজন সম্পর্কিত তথ্যও অন্তর্ভুক্ত, তাই উত্তর ডবল-চেক করুন। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />আরও জানুন<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
@@ -1574,6 +1593,7 @@
 <translation id="8312330582793120272">মিডিয়া চালান</translation>
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
 <translation id="8320910311642849813">ফরেস্ট</translation>
+<translation id="8322464149031882595">এগিয়ে যাওয়ার জন্য ক্লিক করুন</translation>
 <translation id="8329018942023753850">Calculator অ্যাপ</translation>
 <translation id="8336739000755212683">ডিভাইস অ্যাকাউন্টের ছবিটি পরিবর্তন করুন</translation>
 <translation id="8339024191194156249">অটো-লঞ্চ সম্পর্কে আরও জানুন</translation>
@@ -1720,6 +1740,7 @@
 <translation id="8961025972867871808">পেঙ্গুইন</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
 <translation id="8970109610781093811">আবার চালান</translation>
+<translation id="8972061581514441296">ফিরে যেতে ক্লিক করুন</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্ক্যান করুন}=1{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}one{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}other{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}}</translation>
 <translation id="89945434909472341">ভিলেজ</translation>

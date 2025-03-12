@@ -66,6 +66,7 @@
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ટૅબના ગ્રૂપના રંગનું આઇકન</translation>
 <translation id="311432875115153175">ટૅબના ગ્રૂપની સૂચિ બંધ કરવામાં આવી</translation>
 <translation id="3194464645767632461">રેટિંગ</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ગ્રૂપમાં ઉમેરો}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}}</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3547352561153509682">આનાથી <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ થઈ જશે</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> નવું ટૅબ}one{<ph name="MANY_ADDED" /> નવું ટૅબ}other{<ph name="MANY_ADDED" /> નવા ટૅબ}}</translation>
@@ -98,6 +99,7 @@
 <translation id="4783638485675352219">ઑપરેટિંગ સિસ્ટમ સાથે આ ડિવાઇસમાંથી ખુલ્લા ટૅબના શીર્ષકો અને URLs શેર કરો</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ)}one{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}}</translation>
 <translation id="4850886885716139402">જુઓ</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ ગ્રૂપમાં ઉમેરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}}</translation>
 <translation id="4861611890274104875">કાર્ડ છોડી દો.</translation>
 <translation id="4861953997778766866">દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબ ગ્રૂપમાં ફેરફાર કરી શકે છે</translation>
 <translation id="4870911314065352661">શું બધી ટૅબ બંધ કરીએ?</translation>
@@ -134,6 +136,7 @@
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6271513594716432922">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="6333260925957816943">આ સ્ટોર વિશેની માહિતી</translation>
 <translation id="6381032505162537930">અહીં તમને તમારા ટૅબના ગ્રૂપ જોવા મળશે</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ અનગ્રૂપ કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}}</translation>
@@ -186,6 +189,7 @@
 <translation id="799469866974412355">તમારા અન્ય ડિવાઇસમાંનું નવું ગ્રૂપ</translation>
 <translation id="8029301326595421733">આ સ્ટોર વિશેની માહિતી સંપૂર્ણ સ્ક્રીન પર ખુલી છે</translation>
 <translation id="8053770993984522566">ટૅબના ગ્રૂપની સૂચિ અડધી ઊંચાઈએ ખોલવામાં આવી</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{ગ્રૂપમાં ટૅબ ઉમેરો}one{ગ્રૂપમાં ટૅબ ઉમેરો}other{ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>

@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Filer, der gemmes af websites, vises her</translation>
 <translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="1317194122196776028">Glem dette website</translation>
+<translation id="1333965224356556482">Tillad ikke, at websites ser din lokation</translation>
 <translation id="1343356790768851700">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites</translation>
 <translation id="1369915414381695676">Websitet <ph name="SITE_NAME" /> blev tilføjet</translation>
 <translation id="1371239764779356792">Tillad, at et website gemmer data på din enhed</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
 <translation id="1415855080660575082">Få Chrome til at dele dine seneste faner med din enhed for at se dem på din enheds appliste og i søgeresultaterne. Du kan slå dette til eller fra i Chrome-indstillingerne.</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
+<translation id="1464044141348608623">Tillad ikke, at websites ved, hvornår du aktivt bruger din enhed</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
 <translation id="1500473259453106018">Skjul kortet Vis prisfald på faner</translation>
+<translation id="1508931164824684991">Websites kan anvende JavaScript</translation>
 <translation id="1510341833810331442">Websites har ikke tilladelse til at gemme data på din enhed</translation>
 <translation id="1538031354170655462">Websites bruger normalt NFC (Near Field Communication) til at fungere med tags eller enheder i nærheden, f.eks. til scanning af badges eller kontaktløs betaling</translation>
 <translation id="1547123415014299762">Tredjepartscookies er tilladt</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="1686785653877010442">Websites sender normalt notifikationer for at informere dig om de seneste nyheder eller chatbeskeder.</translation>
 <translation id="169515064810179024">Bloker adgang til bevægelsessensorer på websites</translation>
+<translation id="1703666494654169921">Tillad ikke, at websites bruger virtual reality-enheder eller -data</translation>
+<translation id="1704230497453185209">Tillad ikke, at websites afspiller lyd</translation>
 <translation id="1717218214683051432">Bevægelsessensorer</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Når denne indstilling er aktiveret, kører Chrome hurtigere, og funktioner, der anvender JavaScript, bør fungere som forventet. Når denne indstilling er deaktiveret, reducerer den ydeevnen, men gør V8 mere modstandsdygtig over for angreb.</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Websites får normalt adgang til filer og mapper på din enhed for at kunne gemme dit arbejde automatisk</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1919950603503897840">Vælg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Websites kan anmode om tilladelse til at oprette forbindelse til USB-enheder</translation>
 <translation id="1979673356880165407">Gør tekst og billeder større eller mindre på alle websites, du besøger</translation>
 <translation id="1984937141057606926">Tilladt, undtagen tredjepartscookies</translation>
 <translation id="1985247341569771101">Når dette er slået til, kan websites anvende din enheds bevægelsessensorer. Når dette er slået fra, kan websites ikke anvende bevægelsessensorer.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
+<translation id="2102396546234652240">Tillad ikke, at websites anvender din mikrofon</translation>
 <translation id="2117655453726830283">Næste dias</translation>
 <translation id="2146263598007866206">Websites kan automatisk downloade relaterede filer sammen for at spare tid</translation>
 <translation id="2148716181193084225">I dag</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
 <translation id="2626708220538466178">Feltet i bunden med standardbrowseren er lukket</translation>
 <translation id="2653659639078652383">Send</translation>
+<translation id="2670403088701171361">Tillad ikke, at websites ser tekst eller billeder fra din udklipsholder</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2682367912565197520">Slet gemt zoomniveau</translation>
 <translation id="2683434792633810741">Vil du slette og gendanne?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Når dette er slået til, kan websites anmode om tilladelse til at registrere din kameraposition og få oplysninger om dine omgivelser. Når dette er slået fra, kan websites ikke registrere din kameraposition eller få oplysninger om dine omgivelser.</translation>
 <translation id="2968755619301702150">Certifikatfremviser</translation>
 <translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
+<translation id="2990583317361835189">Tillad ikke, at websites anvender bevægelsessensorer</translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
+<translation id="3064871050034234884">Websites kan afspille lyd</translation>
 <translation id="3069226013421428034">Tillad tredjepartslogin for et bestemt website.</translation>
 <translation id="310297983047869047">Forrige dias</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="310979712355504754">Slet alle</translation>
+<translation id="311394601889664316">Tillad ikke, at websites redigerer filer og mapper på din enhed</translation>
 <translation id="3114012059975132928">Videoafspiller</translation>
 <translation id="3115898365077584848">Vis info</translation>
 <translation id="3123473560110926937">Blokeret på visse websites</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Slå lyden i videoen fra</translation>
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="3611658447322220736">Nyligt lukkede websites kan gennemføre afsendelse og modtagelse af data</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="3676777756440746804">Websites kan ikke anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3697164069658504920">Når dette er slået til, kan websites anmode om tilladelse til at bruge USB-enheder. Når dette er slået fra, kan websites ikke anvende USB-enheder.</translation>
 <translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
+<translation id="3708684582558000260">Tillad ikke, at lukkede websites kan afslutte afsendingen eller modtagelsen af data</translation>
 <translation id="3709818294139939629">Websitets adgang til filen er fjernet</translation>
 <translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
+<translation id="3776508619697147021">Websites kan anmode om tilladelse til automatisk at downloade flere filer</translation>
 <translation id="3779154269823594982">Skift adgangskoder</translation>
 <translation id="3797520601150691162">Anvend ikke Mørkt tema på et bestemt website</translation>
 <translation id="3803367742635802571">Websites, du besøger, holder muligvis op med at fungere som forventet</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3859306556332390985">Spol fremad</translation>
+<translation id="389521680295183045">Websites kan anmode om at få at vide, hvornår du aktivt bruger din enhed</translation>
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
 <translation id="3905475044299942653">Sæt en stopper for mange notifikationer</translation>
 <translation id="3908288065506437185">Bloker tredjepartscookies i inkognitotilstand</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Åbn Indstillinger på din telefon</translation>
 <translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
 <translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
+<translation id="3955321697524543127">Tillad ikke, at websites opretter forbindelse til USB-enheder</translation>
 <translation id="3965467402665811906">Websites kan anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3981465354637804599">Websites viser normalt annoncer, så de kan levere indhold eller tjenester uden beregning. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="4336566011000459927">Chrome begrænser cookies igen fra i dag</translation>
 <translation id="4338831206024587507">Alle websites på <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Tillad ikke, at websites sender notifikationer</translation>
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4419929467120297501">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> er blokeret, så det ikke kan bruge dine oplysninger på</translation>
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
+<translation id="4972737347717125191">Websites kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5822675474983796325">Feltet i bunden med tilpasning af siden Ny fane er åbnet i fuld højde</translation>
+<translation id="5833899990800318936">Tillad ikke, at websites anvender JavaScript</translation>
+<translation id="583673505367439042">Websites kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="5844448279347999754">Når dette er slået til, kan websites anmode om tilladelse at se tekst og billeder, der er gemt i din udklipsholder. Når dette er slået fra, kan websites ikke se tekst eller billeder, der er gemt i din udklipsholder.</translation>
 <translation id="5853982612236235577">Når dette er slået til, kan websites anmode om at sende notifikationer. Når dette er slået fra, kan websites ikke sende notifikationer.</translation>
 <translation id="5860033963881614850">Fra</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester.\n\nGå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
 <translation id="789180354981963912">Bloker tredjepartscookies i inkognitotilstand:</translation>
+<translation id="789722939441020330">Tillad ikke, at websites automatisk downloader flere filer</translation>
 <translation id="7940722705963108451">Påmind mig</translation>
+<translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er slået til, kan websites anmode om at anvende din mikrofon. Når dette er slået fra, kan websites ikke anvende din mikrofon.</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" er forældet. Geninstaller appen.</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
+<translation id="8492822722330266509">Websites kan sende pop op-vinduer og bruge omdirigeringer</translation>
 <translation id="8499083585497694743">Slå mikrofon til</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
@@ -581,11 +606,13 @@
 <translation id="8926666909099850184">NFC er deaktiveret for denne enhed. Aktivér funktionen i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Bloker websites, så de ikke kan få adgang til og ændre oplysninger på NFC-enheder</translation>
 <translation id="8944485226638699751">Begrænset</translation>
+<translation id="895054485242522631">Websites kan bruge bevægelsessensorer</translation>
 <translation id="8959122750345127698">Navigationen er ikke mulig: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
 <translation id="8993853206419610596">Udvid alle anmodninger</translation>
 <translation id="9002538116239926534">Når dette er slået til, kan websites gemme data på din enhed. Når dette er slået fra, kan websites ikke gemme data på din enhed.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> er tilladt</translation>
+<translation id="9017522656123387064">Markeringstilstand er afsluttet</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>
 <translation id="902236149563113779">Websites registrerer normalt din kameraposition til AR-formål såsom spil eller overlejrede rutevejledninger</translation>
 <translation id="9039697262778250930">Du bliver muligvis logget ud af disse websites</translation>

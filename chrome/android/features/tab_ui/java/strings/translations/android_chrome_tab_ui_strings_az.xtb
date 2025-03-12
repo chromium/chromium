@@ -66,6 +66,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab qrupu rəngi ikonası</translation>
 <translation id="311432875115153175">Tab qrupu siyahısı bağlandı</translation>
 <translation id="3194464645767632461">reytinq</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> tabı qrupa əlavə edin}}</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3547352561153509682">Bu, qrupu <ph name="USER_EMAIL" /> hesabına daxil olmuş bütün cihazlardan siləcək</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni tab}other{<ph name="MANY_ADDED" /> yeni tab}}</translation>
@@ -98,6 +99,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="4783638485675352219">Bu cihazda açıq tabların başlıq və URL-ni əməliyyat sistemi ilə paylaşın</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> rəy)}other{(<ph name="REVIEWS_COUNT_MANY" /> rəy)}}</translation>
 <translation id="4850886885716139402">Görünüş</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qrupa əlavə edin}}</translation>
 <translation id="4861611890274104875">Kartı qapadın.</translation>
 <translation id="4861953997778766866">Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
 <translation id="4870911314065352661">Bütün tablar bağlansın?</translation>
@@ -134,6 +136,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
 <translation id="6271513594716432922">Bütün deaktiv tabları bağlayın</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Yeni qrupa tab əlavə edin}other{Yeni qrupa tablar əlavə edin}}</translation>
 <translation id="6333260925957816943">Bu mağaza haqqında məlumatlar</translation>
 <translation id="6381032505162537930">Tab qruplarınız burada tapa bilərsiniz</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı ayırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı ayırın}}</translation>
@@ -186,6 +189,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="799469866974412355">Digər cihazdan yeni qrup</translation>
 <translation id="8029301326595421733">Bu mağaza haqqında məlumatlar tam hündürlükdə açılıb</translation>
 <translation id="8053770993984522566">Tab qrupu siyahısı, yarım hündürlükdə açıldı</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
 <translation id="8076492880354921740">Tablar</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>

@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Những tệp mà trang web lưu lại sẽ xuất hiện ở đây</translation>
 <translation id="131112695174432497">Dữ liệu có ảnh hưởng đến hoạt động cá nhân hoá quảng cáo sẽ bị xoá</translation>
 <translation id="1317194122196776028">Xóa trang web này</translation>
+<translation id="1333965224356556482">Không cho phép trang web xem thông tin vị trí của bạn</translation>
 <translation id="1343356790768851700">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị</translation>
 <translation id="1369915414381695676">Đã thêm trang web <ph name="SITE_NAME" /></translation>
 <translation id="1371239764779356792">Cho phép một trang web lưu dữ liệu trên thiết bị của bạn</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1415855080660575082">Cho phép Chrome chia sẻ các thẻ gần đây với thiết bị của bạn để xem các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể bật hoặc tắt tính năng này trong phần cài đặt của Chrome.</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
+<translation id="1464044141348608623">Không cho trang web biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
 <translation id="1500473259453106018">Ẩn thẻ thông báo giảm giá trên thẻ</translation>
+<translation id="1508931164824684991">Các trang web có thể dùng JavaScript</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="1538031354170655462">Các trang web thường sử dụng công nghệ giao tiếp phạm vi gần (NFC) để hoạt động với thẻ hoặc thiết bị lân cận, chẳng hạn như quét huy hiệu hoặc thanh toán không tiếp xúc</translation>
 <translation id="1547123415014299762">Cho phép sử dụng cookie của bên thứ ba</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Cookie và dữ liệu trang web khác được dùng để ghi nhớ thông tin của bạn, chẳng hạn như giúp bạn đăng nhập hoặc cá nhân hóa quảng cáo. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="1686785653877010442">Các trang web thường gửi thông báo để cho bạn biết về tin nổi bật hoặc tin nhắn trò chuyện.</translation>
 <translation id="169515064810179024">Chặn không cho các trang web sử dụng cảm biến chuyển động</translation>
+<translation id="1703666494654169921">Không cho phép trang web sử dụng dữ liệu hoặc thiết bị thực tế ảo của bạn</translation>
+<translation id="1704230497453185209">Không cho phép trang web phát âm thanh</translation>
 <translation id="1717218214683051432">Cảm biến chuyển động</translation>
 <translation id="1743802530341753419">Hỏi trước khi cho phép trang web kết nối với một thiết bị (khuyên dùng)</translation>
 <translation id="1779089405699405702">Bộ giải mã hình ảnh</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Khi bạn bật công cụ này, Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến. Khi bạn tắt công cụ này, hiệu suất sẽ giảm nhưng V8 có thể chống lại các cuộc tấn công tốt hơn.</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Các trang web thường truy cập vào tệp và thư mục trên thiết bị của bạn để áp dụng những tính năng như tự động lưu công việc</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1919950603503897840">Chọn mục liên hệ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Các trang web có thể yêu cầu kết nối với thiết bị USB</translation>
 <translation id="1979673356880165407">Tăng hoặc giảm kích thước văn bản và hình ảnh cho tất cả trang web bạn truy cập</translation>
 <translation id="1984937141057606926">Được cho phép, ngoại trừ cookie của bên thứ ba</translation>
 <translation id="1985247341569771101">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cảm biến chuyển động trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cảm biến chuyển động.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
 <translation id="2096716221239095980">Xoá mọi dữ liệu</translation>
+<translation id="2102396546234652240">Không cho phép trang web sử dụng micrô</translation>
 <translation id="2117655453726830283">Trang trình bày tiếp theo</translation>
 <translation id="2146263598007866206">Các trang web có thể tự động tải những tệp liên quan xuống cùng nhau để tiết kiệm thời gian cho bạn</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
 <translation id="2626708220538466178">Bảng dưới cùng của trình duyệt mặc định đã đóng</translation>
 <translation id="2653659639078652383">Gửi</translation>
+<translation id="2670403088701171361">Không cho phép trang web xem văn bản hoặc hình ảnh trên bảng nhớ tạm của bạn</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2682367912565197520">Xoá mức thu phóng đã lưu</translation>
 <translation id="2683434792633810741">Xoá và đặt lại?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi vị trí camera và tìm hiểu về môi trường xung quanh bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi vị trí camera hoặc tìm hiểu về môi trường xung quanh bạn.</translation>
 <translation id="2968755619301702150">Trình xem chứng chỉ</translation>
 <translation id="2979365474350987274">Cookie của bên thứ ba bị hạn chế</translation>
+<translation id="2990583317361835189">Không cho phép trang web sử dụng cảm biến chuyển động</translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
 <translation id="301521992641321250">Tự động bị chặn</translation>
+<translation id="3064871050034234884">Các trang web có thể phát âm thanh</translation>
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
 <translation id="310979712355504754">Xóa tất cả</translation>
+<translation id="311394601889664316">Không cho phép trang web chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
 <translation id="3114012059975132928">Trình phát video</translation>
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
 <translation id="3123473560110926937">Đã chặn trên một số trang web</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Tắt tiếng video</translation>
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3602290021589620013">Xem trước</translation>
+<translation id="3611658447322220736">Các trang web đã đóng gần đây có thể hoàn tất thao tác gửi và nhận dữ liệu</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
+<translation id="3641456520301071208">Các trang web có thể yêu cầu thông tin vị trí của bạn</translation>
 <translation id="3658847490588580244">Bảng dưới cùng của trình duyệt mặc định</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="3676777756440746804">Các trang web không được yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3697164069658504920">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị USB. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị USB.</translation>
 <translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
+<translation id="3708684582558000260">Không cho phép trang web đã đóng hoàn tất quá trình gửi hoặc nhận dữ liệu</translation>
 <translation id="3709818294139939629">Đã xoá quyền truy cập của trang web vào tệp</translation>
 <translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
 <translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
+<translation id="3776508619697147021">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
 <translation id="3779154269823594982">Đổi mật khẩu</translation>
 <translation id="3797520601150691162">Không áp dụng giao diện tối cho một trang web cụ thể</translation>
 <translation id="3803367742635802571">Các trang web bạn truy cập có thể không còn hoạt động như dự kiến</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Hôm nay, Chrome sẽ chặn cookie trở lại</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3859306556332390985">Tìm kiếm tiến</translation>
+<translation id="389521680295183045">Trang web có thể xin phép phát hiện khi bạn đang dùng thiết bị của mình</translation>
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
 <translation id="3905475044299942653">Ngừng nhận nhiều thông báo</translation>
 <translation id="3908288065506437185">Chặn cookie của bên thứ ba ở Chế độ ẩn danh</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Trên điện thoại, hãy mở phần Cài đặt</translation>
 <translation id="3933121352599513978">Thu gọn các yêu cầu không mong muốn (nên dùng)</translation>
 <translation id="3955193568934677022">Cho phép trang web phát nội dung được bảo vệ (được đề xuất)</translation>
+<translation id="3955321697524543127">Không cho phép trang web kết nối với thiết bị USB</translation>
 <translation id="3965467402665811906">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3981465354637804599">Các trang web thường hiện quảng cáo để có thể cung cấp miễn phí nội dung hoặc dịch vụ. Tuy nhiên, một số trang web được xác định là hiện quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="4336566011000459927">Hôm nay, Chrome sẽ hạn chế cookie trở lại</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Không cho phép trang web gửi thông báo</translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4412992751769744546">Cho phép cookie của bên thứ ba</translation>
 <translation id="4419929467120297501">Chrome cấm các trang web sử dụng cookie của bên thứ ba để theo dõi hoạt động duyệt web của bạn. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> không được sử dụng thông tin của bạn</translation>
 <translation id="4953688446973710931">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tự động tải nhiều tệp xuống. Khi bạn tắt tuỳ chọn này, các trang web không thể tự động tải nhiều tệp xuống.</translation>
 <translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>
+<translation id="4972737347717125191">Các trang web có thể yêu cầu sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
 <translation id="4976702386844183910">Lần truy cập gần đây nhất: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Không tìm thấy người liên hệ nào</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109">Đã chặn: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5822675474983796325">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng đã mở trên toàn màn hình</translation>
+<translation id="5833899990800318936">Không cho phép các trang web sử dụng JavaScript</translation>
+<translation id="583673505367439042">Các trang web có thể yêu cầu chỉnh sửa tệp và thư mục trên thiết bị của bạn</translation>
 <translation id="5844448279347999754">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu xem văn bản và hình ảnh đã lưu vào bảng nhớ tạm. Khi bạn tắt tuỳ chọn này, các trang web không thể xem văn bản hoặc hình ảnh đã lưu vào bảng nhớ tạm.</translation>
 <translation id="5853982612236235577">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu gửi thông báo. Khi bạn tắt tuỳ chọn này, các trang web không thể gửi thông báo.</translation>
 <translation id="5860033963881614850">Đang tắt</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba. Tuy nhiên, trang web này được phép sử dụng cookie của bên thứ ba để cung cấp các dịch vụ cơ bản dựa trên loại cookie này.\n\nHãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở Chế độ ẩn danh:</translation>
+<translation id="789722939441020330">Không cho phép trang web tự động tải nhiều tệp xuống</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
+<translation id="7952708427581814389">Các trang web có thể yêu cầu xem văn bản và hình ảnh trên bảng nhớ tạm</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7990211076305263060">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng micrô của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng micrô của bạn.</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" đã lỗi thời. Vui lòng cài đặt lại ứng dụng.</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
+<translation id="8492822722330266509">Các trang web có thể gửi cửa sổ bật lên và sử dụng lệnh chuyển hướng</translation>
 <translation id="8499083585497694743">Bật micrô</translation>
 <translation id="8514955299594277296">Không cho phép các trang web lưu dữ liệu trên thiết bị của bạn (không khuyến nghị)</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
@@ -581,6 +606,7 @@
 <translation id="8926666909099850184">NFC đã tắt đối với thiết bị này. Hãy bật trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Chặn không cho các trang web xem và thay đổi thông tin trên thiết bị NFC</translation>
 <translation id="8944485226638699751">Bị giới hạn</translation>
+<translation id="895054485242522631">Các trang web có thể sử dụng cảm biến chuyển động</translation>
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Bạn sẽ bị đăng xuất khỏi tất cả các trang web</translation>
 <translation id="8993853206419610596">Mở rộng tất cả yêu cầu</translation>

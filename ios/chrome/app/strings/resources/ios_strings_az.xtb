@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Mövcud axtarış məlumatları <ph name="USER_EMAIL" /> e-poçtu ilə əlaqələndiriləcək. Təşkilatınız bu dataya baxa bilər.</translation>
 <translation id="1713777106376424209">Çatdırılıb</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> mənbəyinə etibar edirsinizsə, saxlanmış parolu giriş üçün istifadə edə bilərsiniz.</translation>
+<translation id="1718835860248848330">Son saat</translation>
 <translation id="1728549374069268714">Yerləşdirin və keçin</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> bildirişlərini aktiv edin</translation>
 <translation id="1740468249224277719">Yükləmək üçün iki dəfə tıklayın.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Ünvanın aşkarlanması sönülüdür. Onu Ayarlarda yenidən yandırın.</translation>
 <translation id="1904580727789512086">Ziyarət etdiyiniz keçidlər Google Hesabınızda saxlanılır</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
-<translation id="1923342640370224680">Son Saat</translation>
 <translation id="1941314575388338491">Kopyalamaq üçün iki dəfə tıklayın.</translation>
 <translation id="1943478190258551035">Menyu → Ayarlar</translation>
 <translation id="1952728750904661634">İdarə olunan hesab ilə daxil olun</translation>
@@ -1206,6 +1206,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6187302354554850004">Son sinxronizasiya: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Oxunmamış</translation>
+<translation id="6192388920090306326">Tokioya səfər</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6196207969502475924">Səsli Axtarış</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
@@ -1370,6 +1371,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6779455296366983087">Baxış datası silinəcək</translation>
 <translation id="6790502149545262384">Tezliklə yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="6794476726485507147">Bu səhifəyə yenidən daxil olmaq məqsədilə xatırladıcı bildirişi almaq üçün tarix və vaxt seçin</translation>
+<translation id="6807287147325542056">Digər tətbiqlərdəki parollar</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
 <translation id="6825078212112407882">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{{count} əlfəcin Google Hesabında ({email}) yadda saxlandı.}}</translation>
 <translation id="6830728435402077660">Təhlükəsiz deyil</translation>
@@ -1934,6 +1936,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9106655997975673326">Buradan: "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Oğurlanmış parolların olub-olmadığını yoxlayın</translation>
 <translation id="9124387962554796433">Google Axtarış və digər Google xidmətlərini fərdiləşdirmək üçün tarixçənizi istifadə edə bilər.</translation>
+<translation id="9124978074365039456">Kamera və fotoqalereyadan istifadə edərək gördüklərinizi alın, tərcümə edin və müəyyənləşdirin</translation>
 <translation id="9130317582644834675">"Zum" seçimini gizlədin</translation>
 <translation id="913036870884277353">Keçidləri digər tətbiqlərdə asanlıqla açın.</translation>
 <translation id="9137013805542155359">Originalı göstərin</translation>

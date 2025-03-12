@@ -324,7 +324,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Öppna emojiväljaren</translation>
 <translation id="2088116547584365419">spel</translation>
-<translation id="2092517835716911174">Du måste vara minst 18 år för att använda Hjälp mig läsa och Hjälp mig skriva.</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2107581415810719320">Övrigt-knappen <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabeln har inte stöd för Thunderbolt. Enhetens prestanda kan försämras.</translation>
@@ -1055,6 +1054,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="450584155212756404">Kanal för utvecklare</translation>
 <translation id="4513044611477939680">Snabbdelning</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518096944902121253">Det finns inga fler åtgärder för det här språket</translation>
 <translation id="4518404433291145981">Du måste först låsa upp telefonen om du vill låsa upp Chromebook</translation>
 <translation id="4525887279712865285">Visa inställningar för Snabbdelning</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
@@ -1885,6 +1885,7 @@ Nyligen installerad</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
 <translation id="7198435252016571249">Kameran har fästs i det nedre högra hörnet. Konflikt med systemyta.</translation>
 <translation id="7219573373513695352">Inga enheter har anslutits</translation>
+<translation id="7228968829656641943">Välj för att söka på skärmen. Tryck på Tabb följt av blanksteg för att navigera med tangentbordet.</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7239814253344511868">Båda musknapparna</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % av batteriet återstår. Anslut enheten till en strömkälla.</translation>

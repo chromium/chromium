@@ -128,11 +128,9 @@
 <translation id="2738871930057338499">‏تعذر الاتصال بالإنترنت. بروتوكول HTTP 403 محظور. يُرجى التحقق من إعدادات الخادم الوكيل.</translation>
 <translation id="2753623023919742414">انقر للبحث</translation>
 <translation id="2770231113462710648">تغيير المتصفح التلقائي إلى:</translation>
-<translation id="277338894894732084">‏سيسألك متصفِّح Chromium لاحقًا ما إذا كنت تريد استخدام المعلومات المحفوظة لملء النماذج تلقائيًا</translation>
 <translation id="2785438272836277133">‏هذه الإضافة غير آمنة وتحتوي على برامج ضارة. يُرجى إزالة هذه الإضافة من Chromium كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
 <translation id="2799223571221894425">إعادة تشغيل</translation>
 <translation id="2803971713792056305">‏بياناتك على Chromium</translation>
-<translation id="2806241689335397269">‏سيسألك متصفِّح Chromium ما إذا كنت تريد حفظ معلومات النموذج، مثل تاريخ ميلادك وعمرك ورقم جواز سفرك</translation>
 <translation id="2841525013647267359">ترجمة من</translation>
 <translation id="2846251086934905009">خطأ في التثبيت: لم تكتمل أداة التثبيت. تم إلغاء عملية التثبيت.</translation>
 <translation id="2847479871509788944">‏إزالة من Chromium</translation>
@@ -178,7 +176,6 @@
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
 <translation id="3406848076815591792">‏هل تريد الانتقال إلى الملف الشخصي الحالي على Chromium؟</translation>
 <translation id="3412460710772753638">في "مدير كلمات المرور" على هذا الجهاز</translation>
-<translation id="3451656833730006755">‏يمكنك تسجيل الدخول إلى Chromium للحصول على إضافاتك وغيرها على جميع أجهزة الكمبيوتر الخاصة بك</translation>
 <translation id="347328004046849135">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chromium إشعارًا إليك.</translation>
 <translation id="3474745554856756813">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">‏يعمل الاختصار <ph name="SHORTCUT" /> على التبديل بين الملفات الشخصية على Chromium.</translation>
@@ -461,7 +458,6 @@
 <translation id="734373864078049451">‏الويب والإشارات المرجعية وغيرها من عناصر Chromium توجد هنا.</translation>
 <translation id="7349591376906416160">‏ضَبَط مشرف النظام Chromium لفتح <ph name="ALTERNATIVE_BROWSER_NAME" /> للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7384121030444253939">‏لم تعُد هذه الإضافة متاحة. ينصح متصفّح Chromium بإزالتها.</translation>
-<translation id="7389750180956889333">‏يفهم متصفِّح Chromium النماذج بشكل أفضل ويمكنه ملء بياناتها تلقائيًا بشكل أسرع. مزيد من المعلومات عن <ph name="BEGIN_LINK" />ميزة "الملء التلقائي" في Chrome<ph name="END_LINK" /></translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Chromium</translation>
 <translation id="7450541714075000668">تم نسخ النص.</translation>
 <translation id="7451052299415159299">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>

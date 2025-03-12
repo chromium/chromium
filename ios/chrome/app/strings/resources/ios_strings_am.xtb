@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">ነባር የአሰሳ ውሂብ ከ<ph name="USER_EMAIL" /> ጋር ይገናኛል። ይህ ውሂብ በድርጅትዎ ሊታይ ይችላል።</translation>
 <translation id="1713777106376424209">በሚከተለው የደረሰ</translation>
 <translation id="1715515772563243997"><ph name="SITE" />ን የሚያምኑት ከሆነ ለመግባት የተቀመጠ የይለፍ ቃልን መጠቀም ይችላሉ።</translation>
+<translation id="1718835860248848330">የመጨረሻው ሰዓት</translation>
 <translation id="1728549374069268714">ለጥፍ እና ሂድ</translation>
 <translation id="1732468323901456775">ለ<ph name="MODULE_NAME" /> ማሳወቂያዎችን አጥፋ</translation>
 <translation id="1740468249224277719">ለመጫን ሁለቴ ነካ ያድርጉ።</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">የአድራሻ ማወቂያ ጠፍቷል። በቅንብሮች ውስጥ መልሰው ያብሩት።</translation>
 <translation id="1904580727789512086">የሚጎበኟቸው ዩአርኤሎች በGoogle መለያዎ ላይ ይቀመጣሉ።</translation>
 <translation id="1911619930368729126">ወደ Google Drive ስቀል</translation>
-<translation id="1923342640370224680">የመጨረሻው ሰዓት</translation>
 <translation id="1941314575388338491">ለመቅዳት ሁለቴ መታ ያድርጉ።</translation>
 <translation id="1943478190258551035">ምናሌ → ቅንብሮች</translation>
 <translation id="1952728750904661634">በሚተዳደር መለያ ይግቡ</translation>
@@ -1206,6 +1206,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6187302354554850004">ለመጨረሻ ጊዜ የተመሳሰለው፦ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> ላይ የተፈጠረ</translation>
 <translation id="6189413832092199491">ያልተነበበ</translation>
+<translation id="6192388920090306326">ጉዞ ወደ ቶኪዮ</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6196207969502475924">የድምጽ ፍለጋ</translation>
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
@@ -1370,6 +1371,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6779455296366983087">የአሰሳ ውሂብዎ ይሰረዛል</translation>
 <translation id="6790502149545262384">በቅርቡ አዲስ ትር ሲከፍቱ ከ<ph name="CHANNEL_NAME" /> የመጡ ታሪኮችን ይመለከታሉ።</translation>
 <translation id="6794476726485507147">ይህን ገፅ ዳግም ለመጎብኘት አስታዋሽ ማሳወቂያ እንዲደርስዎ ቀን እና ሰዓት ይምረጡ</translation>
+<translation id="6807287147325542056">በሌሎች መተግበሪያዎች ውስጥ ያሉ የይለፍ ቃላት</translation>
 <translation id="681368974849482173">ንጥል ተፈጥሯል</translation>
 <translation id="6825078212112407882">{count,plural, =1{ዕልባት Google መለያዎ፣ {email} ውስጥ ተቀምጧል}one{{count} ዕልባት Google መለያዎ፣ {email} ውስጥ ተቀምጧል}other{{count} ዕልባቶች Google መለያዎ፣ {email} ውስጥ ተቀምጧል}}</translation>
 <translation id="6830728435402077660">ደህንነቱ አልተጠበቀም</translation>
@@ -1934,6 +1936,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9106655997975673326">ከ«<ph name="SOURCE_DEVICE" />»</translation>
 <translation id="9107664647686727385">የተጠለፉ የይለፍ ቃላትን ይፈትሹ</translation>
 <translation id="9124387962554796433">Google ፍለጋን እና ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ ሲል ታሪክዎን ሊጠቀም ይችላል።</translation>
+<translation id="9124978074365039456">የእርስዎን ካሜራ እና የፎቶ ማዕከለ ሥዕላት ተጠቅመው ያዩትን ይግዙ፣ ይተርጉሙ እና ይለዩ</translation>
 <translation id="9130317582644834675">ጽሁፍ አጉላን ደብቅ</translation>
 <translation id="913036870884277353">በቀላሉ በሌሎች መተግበሪያዎች ውስጥ አገናኞችን ይክፈቱ።</translation>
 <translation id="9137013805542155359">የመጀመሪያውን አሳይ</translation>

@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Filer som nettsteder har lagret, vises her</translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
 <translation id="1317194122196776028">Glem dette nettstedet</translation>
+<translation id="1333965224356556482">Ikke la nettsteder se posisjonen din</translation>
 <translation id="1343356790768851700">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder</translation>
 <translation id="1369915414381695676">Nettstedet <ph name="SITE_NAME" /> er lagt til</translation>
 <translation id="1371239764779356792">La et nettsted lagre data på enheten din</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1415855080660575082">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på applisten og i søkeresultater på enheten. Du kan slå dette på eller av i Chrome-innstillingene.</translation>
 <translation id="1448064542941920355">Zoom ut</translation>
+<translation id="1464044141348608623">Ikke la nettsteder få vite når du bruker enheten aktivt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> nettsted}other{<ph name="SITE_COUNT" /> nettsteder}}</translation>
 <translation id="1500473259453106018">Skjul kortet Avslag på faner</translation>
+<translation id="1508931164824684991">Nettsteder kan bruke JavaScript</translation>
 <translation id="1510341833810331442">Nettsteder har ikke lov til å lagre data på enheten din</translation>
 <translation id="1538031354170655462">Nettsteder bruker vanligvis nærfeltskommunikasjon (NFC) for å fungere med sporingsenheter i nærheten, for eksempel for å skanne merker eller betale kontaktløst</translation>
 <translation id="1547123415014299762">Informasjonskapsler fra tredjeparter tillates</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="1686785653877010442">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
 <translation id="169515064810179024">Blokkér nettsteder fra å få tilgang til bevegelsessensorer</translation>
+<translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
+<translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
 <translation id="1717218214683051432">Bevegelsessensorer</translation>
 <translation id="1743802530341753419">Spør før nettsteder kan koble til en enhet (anbefales)</translation>
 <translation id="1779089405699405702">Bildedekoder</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Når bryteren er på, kjører Chrome raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet. Når bryteren er av, reduseres ytelsen, men V8 blir mer motstandsdyktig mot angrep.</translation>
 <translation id="1818308510395330587">For å la <ph name="APP_NAME" /> bruke AR, slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="1887786770086287077">Posisjonstilgang er slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Nettsteder bruker vanligvis filer og mapper på enheten din for å kunne tilby funksjoner som å lagre arbeidet ditt automatisk</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1919950603503897840">Velg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Nettsteder kan be om å få koble til USB-enheter</translation>
 <translation id="1979673356880165407">Gjør tekst og bilder større eller mindre for alle nettsteder du besøker</translation>
 <translation id="1984937141057606926">Tillatt – unntatt fra tredjeparter.</translation>
 <translation id="1985247341569771101">Når dette er på, kan nettsteder bruke bevegelsessensorene på enheten din. Når dette er av, kan ikke nettsteder bruke bevegelsessensorer.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2096716221239095980">Slett alle data</translation>
+<translation id="2102396546234652240">Ikke la nettsteder bruke mikrofonen</translation>
 <translation id="2117655453726830283">Neste lysbilde</translation>
 <translation id="2146263598007866206">Nettsteder kan automatisk laste ned beslektede filer sammen for å spare tid</translation>
 <translation id="2148716181193084225">I dag</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Tillat JavaScript for et bestemt nettsted.</translation>
 <translation id="2626708220538466178">Feltet nederst for standardnettleser er lukket</translation>
 <translation id="2653659639078652383">Send inn</translation>
+<translation id="2670403088701171361">Ikke la nettsteder se tekst eller bilder på utklippstavlen</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2682367912565197520">Slett det lagrede zoomnivået</translation>
 <translation id="2683434792633810741">Vil du slette og tilbakestille?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Når dette er på, kan nettsteder be om å få spore kameraposisjonen din og finne ut mer om omgivelsene dine. Når dette er av, kan ikke nettsteder spore kameraposisjonen din eller finne ut mer om omgivelsene dine.</translation>
 <translation id="2968755619301702150">Visningsprogram for sertifikater</translation>
 <translation id="2979365474350987274">Informasjonskapsler fra tredjeparter er begrenset</translation>
+<translation id="2990583317361835189">Ikke la nettsteder bruke bevegelsessensorer</translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
 <translation id="301521992641321250">Automatisk blokkert</translation>
+<translation id="3064871050034234884">Nettsteder kan spille av lyd</translation>
 <translation id="3069226013421428034">Tillat tredjepartspålogging for et bestemt nettsted.</translation>
 <translation id="310297983047869047">Forrige lysbilde</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="310979712355504754">Slett alle</translation>
+<translation id="311394601889664316">Ikke la nettsteder redigere filer eller mapper på enheten</translation>
 <translation id="3114012059975132928">Videospiller</translation>
 <translation id="3115898365077584848">Vis informasjon</translation>
 <translation id="3123473560110926937">Blokkert på enkelte nettsteder</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Kutt lyden i videoen</translation>
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="3611658447322220736">Nylig lukkede nettsteder kan fullføre sending og mottak av data</translation>
 <translation id="3628308229821498208">Foreslåtte søk</translation>
+<translation id="3641456520301071208">Nettsteder kan be om posisjonen din</translation>
 <translation id="3658847490588580244">Felt nederst for standardnettleser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> nettsted i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> nettsteder i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}}</translation>
 <translation id="3676777756440746804">Nettsteder blokkeres fra å be deg om å bruke informasjon de har lagret om deg</translation>
 <translation id="3697164069658504920">Når dette er på, kan nettsteder be om å få bruke USB-enheter. Når dette er av, kan ikke nettsteder bruke USB-enheter.</translation>
 <translation id="3707034683772193706">Nettsteder du besøker, kan lagre litt informasjon i Chrome – hovedsakelig for å bekrefte at du ikke er en robot</translation>
+<translation id="3708684582558000260">Ikke la lukkede nettsteder fullføre sending eller mottak av data</translation>
 <translation id="3709818294139939629">Fjernet nettstedets tilgang til filen</translation>
 <translation id="3721953990244350188">Avvis, og vis neste tilgjengelige handling</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
+<translation id="3776508619697147021">Nettsteder kan be om å få laste ned flere filer automatisk</translation>
 <translation id="3779154269823594982">Endre passordene</translation>
 <translation id="3797520601150691162">Ikke bruk mørkt tema for et bestemt nettsted</translation>
 <translation id="3803367742635802571">Nettsteder du besøker, kan slutte å fungere som de skal</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Chrome begynner å blokkere informasjonskapsler igjen i dag</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3859306556332390985">Spol fremover</translation>
+<translation id="389521680295183045">Nettsteder kan be om å få vite når du bruker enheten aktivt</translation>
 <translation id="3895926599014793903">Tving zoom på</translation>
 <translation id="3905475044299942653">Stopp mange varsler</translation>
 <translation id="3908288065506437185">Blokker informasjonskapsler fra tredjeparter i Inkognitomodus</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Åpne Innstillinger på telefonen</translation>
 <translation id="3933121352599513978">Skjul uønskede forespørsler (anbefales)</translation>
 <translation id="3955193568934677022">Gi nettsteder tillatelse til å spille av beskyttet innhold (anbefales)</translation>
+<translation id="3955321697524543127">Ikke la nettsteder koble til USB-enheter</translation>
 <translation id="3965467402665811906">Nettsteder kan be om å få bruke informasjon de har lagret om deg</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3981465354637804599">Nettsteder viser vanligvis annonser for å kunne tilby innhold eller tjenester kostnadsfritt. Men noen nettsteder er kjent for å vise forstyrrende eller villedende annonser.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Utløper i morgen}other{Utløper om # dager}}</translation>
 <translation id="4336566011000459927">Chrome begynner å begrense informasjonskapsler igjen i dag</translation>
 <translation id="4338831206024587507">Alle nettsteder under <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Ikke la nettsteder sende varsler</translation>
 <translation id="4402755511846832236">Blokkér nettsteder fra å vite når du bruker denne enheten aktivt</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
 <translation id="4419929467120297501">Chrome blokkerer nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg når du surfer. Gå til innstillingene for å <ph name="BEGIN_LINK" />administrere tilgang til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059"><ph name="SITE" /> er blokkert fra å bruke informasjonen din på</translation>
 <translation id="4953688446973710931">Når dette er på, kan nettsteder be om å få laste ned flere filer automatisk. Når dette er av, kan ikke nettsteder laste ned flere filer automatisk.</translation>
 <translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>
+<translation id="4972737347717125191">Nettsteder kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
 <translation id="497421865427891073">Gå til neste</translation>
 <translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Fant ingen kontakter</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> er blokkert</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5822675474983796325">Feltet nederst for tilpasning av Ny fane-siden er åpnet i full høyde</translation>
+<translation id="5833899990800318936">Ikke la nettsteder bruke JavaScript</translation>
+<translation id="583673505367439042">Nettsteder kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="5844448279347999754">Når dette er på, kan nettsteder be om å få se tekst og bilder som er lagret på utklippstavlen. Når dette er av, kan ikke nettsteder se tekst eller bilder som er lagret på utklippstavlen.</translation>
 <translation id="5853982612236235577">Når dette er på, kan nettsteder be om å få sende deg varsler. Når dette er av, kan ikke nettsteder sende varsler.</translation>
 <translation id="5860033963881614850">Av</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Chrome begrenser de fleste nettsteder fra å bruke informasjonskapsler fra tredjeparter. Men informasjonskapsler fra tredjeparter er tillatt på dette nettstedet fordi det trenger dem for å kunne levere grunnleggende tjenester.\n\nGå til innstillingene for å <ph name="BEGIN_LINK" />administrere tilgangen til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillat lyd for et bestemt nettsted.</translation>
 <translation id="789180354981963912">Blokker informasjonskapsler fra tredjeparter i Inkognito:</translation>
+<translation id="789722939441020330">Ikke la nettsteder laste ned flere filer automatisk</translation>
 <translation id="7940722705963108451">Minn meg på det senere</translation>
+<translation id="7952708427581814389">Nettsteder kan be om å få se tekst og bilder på utklippstavlen din</translation>
 <translation id="7986741934819883144">Velg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er på, kan nettsteder be om å få bruke mikrofonen din. Når dette er av, kan ikke nettsteder bruke mikrofonen din.</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» er utdatert. Installer appen på nytt.</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="848952951823693243">Be alltid om mobilnettstedet</translation>
+<translation id="8492822722330266509">Nettsteder kan sende forgrunnsvinduer og bruke viderekoblinger</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
 <translation id="8514955299594277296">Ikke la nettsteder lagre data på enheten din (anbefales ikke)</translation>
 <translation id="851751545965956758">Blokkér at nettsteder kobler til enheter</translation>
@@ -581,11 +606,13 @@
 <translation id="8926666909099850184">NFC er av for denne enheten. Slå det på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Blokker nettsteder fra å se og endre informasjon på NFC-enheter</translation>
 <translation id="8944485226638699751">Begrenset</translation>
+<translation id="895054485242522631">Nettsteder kan bruke bevegelsessensorer</translation>
 <translation id="8959122750345127698">Nettadressen er utilgjengelig: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Du blir logget av alle nettsteder</translation>
 <translation id="8993853206419610596">Vis alle forespørsler</translation>
 <translation id="9002538116239926534">Når dette er på, kan nettsteder lagre data på enheten din. Når dette er av, kan ikke nettsteder lagre data på enheten din.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> er tillatt</translation>
+<translation id="9017522656123387064">Valgmodus er avsluttet</translation>
 <translation id="9019902583201351841">Administrert av foreldrene dine</translation>
 <translation id="902236149563113779">Nettsteder sporer vanligvis kameraposisjonen din for å kunne tilby AR-funksjoner, som spill eller heads-up-anvisninger</translation>
 <translation id="9039697262778250930">Du kan være logget av disse nettstedene</translation>

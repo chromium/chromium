@@ -179,6 +179,7 @@
 <translation id="1712341189152602203">Existing browsing data will be linked to <ph name="USER_EMAIL" />. This data may be viewable by your organisation.</translation>
 <translation id="1713777106376424209">Delivered by</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
+<translation id="1718835860248848330">Last hour</translation>
 <translation id="1728549374069268714">Paste and go</translation>
 <translation id="1732468323901456775">Turn on notifications for <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
@@ -231,7 +232,6 @@
 <translation id="1902277226107477495">Address detection off. Turn it back on in Settings.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
-<translation id="1923342640370224680">Last hour</translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1943478190258551035">Menu → Settings</translation>
 <translation id="1952728750904661634">Sign in with managed account</translation>
@@ -1206,6 +1206,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Created on <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Unread</translation>
+<translation id="6192388920090306326">Trip to Tokyo</translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6196207969502475924">Voice search</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
@@ -1370,6 +1371,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
+<translation id="6807287147325542056">Passwords in other apps</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="6830728435402077660">Not secure</translation>
@@ -1934,6 +1936,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9106655997975673326">From "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Check for compromised passwords</translation>
 <translation id="9124387962554796433">Google may use your history to personalise Search and other Google services.</translation>
+<translation id="9124978074365039456">Shop, translate and identify what you see using your camera and photo gallery</translation>
 <translation id="9130317582644834675">Hide zoom text</translation>
 <translation id="913036870884277353">Easily open links in other apps.</translation>
 <translation id="9137013805542155359">Show original</translation>

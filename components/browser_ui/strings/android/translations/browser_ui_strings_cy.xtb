@@ -20,6 +20,7 @@
 <translation id="129382876167171263">Mae ffeiliau a gedwir gan wefannau yn ymddangos yma</translation>
 <translation id="131112695174432497">Dilëwyd data sy'n effeithio ar bersonoli hysbysebion</translation>
 <translation id="1317194122196776028">Anghofio'r wefan hon</translation>
+<translation id="1333965224356556482">Peidio â chaniatáu i wefannau weld eich lleoliad</translation>
 <translation id="1343356790768851700">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yna'n cynnig hysbysebion i wefannau eraill</translation>
 <translation id="1369915414381695676">Mae'r wefan <ph name="SITE_NAME" /> wedi'i hychwanegu</translation>
 <translation id="1371239764779356792">Caniatáu gwefan i gadw data ar eich dyfais</translation>
@@ -30,8 +31,10 @@
 <translation id="1415402041810619267">Mae'r URL wedi'i gwtogi</translation>
 <translation id="1415855080660575082">Gadewch i Chrome rannu'ch tabiau diweddar gyda'ch dyfais i'w gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch droi hwn ymlaen neu ei ddiffodd yng ngosodiadau Chrome.</translation>
 <translation id="1448064542941920355">Pellhau</translation>
+<translation id="1464044141348608623">Peidio â chaniatáu i wefannau wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
 <translation id="1500473259453106018">Cuddio cerdyn gostyngiadau pris ar dabiau</translation>
+<translation id="1508931164824684991">Gall gwefannau ddefnyddio JavaScript</translation>
 <translation id="1510341833810331442">Ni chaniateir i wefannau gadw data ar eich dyfais</translation>
 <translation id="1538031354170655462">Mae gwefannau fel arfer yn defnyddio cyfathrebu agosfaes (NFC) i weithio gyda thagiau neu ddyfeisiau cyfagos, fel sganio bathodynnau neu dapio i dalu</translation>
 <translation id="1547123415014299762">Caniateir cwcis trydydd parti</translation>
@@ -44,6 +47,8 @@
 <translation id="1677097821151855053">Defnyddir cwcis a data gwefan eraill i'ch cofio, er enghraifft i'ch mewngofnodi neu i bersonoleiddio hysbysebion. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="1686785653877010442">Mae gwefannau fel arfer yn anfon hysbysiadau i roi gwybod i chi am newyddion yn torri neu negeseuon sgwrsio.</translation>
 <translation id="169515064810179024">Rhwystro gwefannau rhag cael mynediad at synwyryddion symudiad</translation>
+<translation id="1703666494654169921">Peidio â chaniatáu i wefannau ddefnyddio dyfeisiau neu ddata rhithwirionedd</translation>
+<translation id="1704230497453185209">Peidio â chaniatáu i wefannau chwarae sain</translation>
 <translation id="1717218214683051432">Synwyryddion symudiad</translation>
 <translation id="1743802530341753419">Gofyn cyn caniatáu i wefannau gysylltu â dyfais (argymhellir)</translation>
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
@@ -52,9 +57,11 @@
 <translation id="1816835383954230954">Pan fydd ymlaen, mae Chrome yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd. Pan fydd wedi'i ddiffodd, mae hyn yn lleihau perfformiad ond yn gwneud V8 yn fwy ymwrthol i ymosodiadau.</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="1906181697255754968">Mae gwefannau fel arfer yn cyrchu ffeiliau a ffolderi ar eich dyfais ar gyfer nodweddion megis cadw eich gwaith yn awtomatig</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1919950603503897840">Dewis cysylltiadau</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1954597385941141174">Gall gwefannau ofyn am gysylltu â dyfeisiau USB</translation>
 <translation id="1979673356880165407">Gwnewch destun a lluniau yn fwy neu'n llai ar gyfer pob gwefan rydych yn ymweld â hi</translation>
 <translation id="1984937141057606926">Wedi'i ganiatáu, ac eithrio trydydd parti</translation>
 <translation id="1985247341569771101">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio synwyryddion symud eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio synwyryddion symud.</translation>
@@ -67,6 +74,7 @@
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2091887806945687916">Sain</translation>
 <translation id="2096716221239095980">Dileu'r holl ddata</translation>
+<translation id="2102396546234652240">Peidio â chaniatáu i wefannau ddefnyddio'ch meicroffon</translation>
 <translation id="2117655453726830283">Sleid nesaf</translation>
 <translation id="2146263598007866206">Mae'n bosib y bydd gwefannau yn lawrlwytho ffeiliau cysylltiedig gyda'i gilydd yn awtomatig i arbed amser i chi</translation>
 <translation id="2148716181193084225">Heddiw</translation>
@@ -114,6 +122,7 @@
 <translation id="2621115761605608342">Caniatáu JavaScript ar wefan benodol.</translation>
 <translation id="2626708220538466178">Taflen waelod porwr diofyn wedi'i gau</translation>
 <translation id="2653659639078652383">Danfon</translation>
+<translation id="2670403088701171361">Peidio â chaniatáu i wefannau weld testun neu luniau ar eich clipfwrdd</translation>
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2682367912565197520">Dileu'r lefel chwyddo a gadwyd</translation>
 <translation id="2683434792633810741">Dileu ac ailosod?</translation>
@@ -138,12 +147,15 @@
 <translation id="2939338015096024043">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am olrhain lleoliad eich camera a dysgu am eich amgylchoedd. Pan fydd wedi'i ddiffodd, ni all gwefannau olrhain lleoliad eich camera na dysgu am eich amgylchoedd.</translation>
 <translation id="2968755619301702150">Gwyliwr tystysgrifau</translation>
 <translation id="2979365474350987274">Mae cwcis trydydd parti yn gyfyngedig</translation>
+<translation id="2990583317361835189">Peidio â chaniatáu i wefannau ddefnyddio synwyryddion symudiad</translation>
 <translation id="3008272652534848354">Ailosod caniatadau</translation>
 <translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
+<translation id="3064871050034234884">Gall gwefannau chwarae sain</translation>
 <translation id="3069226013421428034">Caniatáu mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
 <translation id="310297983047869047">Sleid flaenorol</translation>
 <translation id="3109724472072898302">Wedi'i grebachu</translation>
 <translation id="310979712355504754">Dileu pob un</translation>
+<translation id="311394601889664316">Peidio â chaniatáu i wefannau olygu ffeiliau neu ffolderi ar eich dyfais</translation>
 <translation id="3114012059975132928">Chwaraewr fideo</translation>
 <translation id="3115898365077584848">Dangos Gwybodaeth</translation>
 <translation id="3123473560110926937">Wedi'u rhwystro ar rai gwefannau</translation>
@@ -184,16 +196,20 @@
 <translation id="3594780231884063836">Mudo'r fideo</translation>
 <translation id="3600792891314830896">Distewi gwefannau sy'n chwarae sain</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
+<translation id="3611658447322220736">Gall gwefannau sydd wedi'u cau'n ddiweddar orffen anfon a derbyn data</translation>
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
+<translation id="3641456520301071208">Gall gwefannau ofyn am eich lleoliad</translation>
 <translation id="3658847490588580244">Taflen waelod porwr diofyn</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}zero{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}two{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}few{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}many{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}other{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}}</translation>
 <translation id="3676777756440746804">Mae gwefannau'n cael eu rhwystro rhag gofyn i chi ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch chi</translation>
 <translation id="3697164069658504920">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am ddefnyddio dyfeisiau USB. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau USB.</translation>
 <translation id="3707034683772193706">Gall gwefan rydych chi'n ymweld â hi gadw ychydig o wybodaeth gyda Chrome, yn bennaf i gadarnhau nad bot ydych chi</translation>
+<translation id="3708684582558000260">Peidio â chaniatáu i wefannau sydd ar gau orffen anfon neu dderbyn data</translation>
 <translation id="3709818294139939629">Tynnwyd mynediad gwefan at ffeil</translation>
 <translation id="3721953990244350188">Diystyru a dangos y cam nesaf sydd ar gael</translation>
 <translation id="3744111561329211289">Cysoni yn y cefndir</translation>
 <translation id="3763247130972274048">Tapiwch ddwywaith ar ochr chwith neu dde'r i neidio 10 eiliad</translation>
+<translation id="3776508619697147021">Gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="3779154269823594982">Newid cyfrineiriau</translation>
 <translation id="3797520601150691162">Peidio â defnyddio'r thema dywyll ar gyfer gwefan benodol</translation>
 <translation id="3803367742635802571">Mae'n bosib y bydd gwefannau y byddwch yn ymweld â nhw yn peidio â gweithio fel y'u cynlluniwyd</translation>
@@ -204,6 +220,7 @@
 <translation id="3843916486309149084">Bydd Chrome yn rhwystro cwcis eto heddiw</translation>
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3859306556332390985">Chwilio ymlaen</translation>
+<translation id="389521680295183045">Gall gwefannau ofyn am wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
 <translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
 <translation id="3908288065506437185">Rhwystro cwcis trydydd parti yn y modd Anhysbys</translation>
@@ -212,6 +229,7 @@
 <translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
 <translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
+<translation id="3955321697524543127">Peidio â chaniatáu i wefannau gysylltu â dyfeisiau USB</translation>
 <translation id="3965467402665811906">Gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'u cadw amdanoch chi</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3981465354637804599">Mae gwefannau fel arfer yn dangos hysbysebion fel y gallant ddarparu cynnwys neu wasanaethau'n ddi-dâl. Ond, mae'n hysbys bod rhai gwefannau yn dangos hysbysebion ymwthiol neu gamarweiniol.</translation>
@@ -239,6 +257,7 @@
 <translation id="4336219115486912529">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="4336566011000459927">Bydd Chrome yn cyfyngu ar gwcis eto heddiw</translation>
 <translation id="4338831206024587507">Pob gwefan o dan <ph name="DOMAIN" /></translation>
+<translation id="4340799661701629185">Peidio â chaniatáu i wefannau anfon hysbysiadau</translation>
 <translation id="4402755511846832236">Rhwystro gwefannau rhag gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
 <translation id="4412992751769744546">Caniatáu cwcis trydydd parti</translation>
 <translation id="4419929467120297501">Mae Chrome yn rhwystro gwefannau rhag defnyddio cwcis trydydd parti i'ch olrhain wrth i chi bori. Ewch i'r gosodiadau i <ph name="BEGIN_LINK" />reoli mynediad at gwcis trydydd parti<ph name="END_LINK" />.</translation>
@@ -276,6 +295,7 @@
 <translation id="4945443401464700059">Mae <ph name="SITE" /> wedi'i rhwystro rhag defnyddio eich gwybodaeth ar</translation>
 <translation id="4953688446973710931">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig. Pan fydd wedi'i ddiffodd, ni all gwefannau lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
 <translation id="4962975101802056554">Dirymu pob caniatâd ar gyfer y ddyfais</translation>
+<translation id="4972737347717125191">Gall gwefannau ofyn am gael defnyddio dyfeisiau rhithwirionedd a'u data</translation>
 <translation id="497421865427891073">Mynd ymlaen</translation>
 <translation id="4976702386844183910">Ymwelwyd ddiwethaf <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Ni chanfuwyd unrhyw gysylltiadau</translation>
@@ -342,6 +362,8 @@
 <translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5822675474983796325">Dalen waelod addasu eich tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
+<translation id="5833899990800318936">Peidio â chaniatáu i wefannau ddefnyddio JavaScript</translation>
+<translation id="583673505367439042">Gall gwefannau ofyn am olygu ffeiliau a ffolderi ar eich dyfais</translation>
 <translation id="5844448279347999754">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd. Pan fydd wedi'i ddiffodd, ni all gwefannau weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd.</translation>
 <translation id="5853982612236235577">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am anfon hysbysiadau. Pan fydd wedi'i ddiffodd, ni all gwefannau anfon hysbysiadau.</translation>
 <translation id="5860033963881614850">Diffodd</translation>
@@ -493,7 +515,9 @@
 <translation id="7881140103901777395">Mae Chrome yn cyfyngu ar y rhan fwyaf o wefannau rhag defnyddio cwcis trydydd parti. Ond caniateir cwcis trydydd parti ar y wefan hon oherwydd ei bod yn dibynnu arnynt i ddarparu gwasanaethau sylfaenol.\n\nEwch i'r gosodiadau i <ph name="BEGIN_LINK" />reoli mynediad at gwcis trydydd parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Caniatáu sain ar gyfer gwefan benodol.</translation>
 <translation id="789180354981963912">Rhwystro cwcis trydydd parti yn y Modd Anhysbys:</translation>
+<translation id="789722939441020330">Peidio â chaniatáu i wefannau lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="7940722705963108451">Atgoffwch fi</translation>
+<translation id="7952708427581814389">Gall gwefannau ofyn am weld testun a lluniau ar eich clipfwrdd</translation>
 <translation id="7986741934819883144">Dewis cyswllt</translation>
 <translation id="7990211076305263060">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio'ch meicroffon. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio'ch meicroffon.</translation>
 <translation id="8007176423574883786">Wedi'i ddiffodd ar gyfer y ddyfais hon</translation>
@@ -540,6 +564,7 @@
 <translation id="8473055640493819707">Mae '<ph name="APP_NAME" />' yn hen. Ail-osodwch yr ap.</translation>
 <translation id="8487700953926739672">Ar gael all-lein</translation>
 <translation id="848952951823693243">Gofyn am wefan symudol bob amser</translation>
+<translation id="8492822722330266509">Gall gwefannau anfon ffenestri naid a defnyddio ailgyfeiriadau</translation>
 <translation id="8499083585497694743">Dad-ddistewi'r meicroffon</translation>
 <translation id="8514955299594277296">Peidio â chaniatáu i wefannau gadw data ar eich dyfais (nid argymhellir)</translation>
 <translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
@@ -581,11 +606,13 @@
 <translation id="8926666909099850184">Mae NFC wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Rhwystro gwefannau rhag gweld a newid gwybodaeth ar ddyfeisiau NFC</translation>
 <translation id="8944485226638699751">Cyfyngedig</translation>
+<translation id="895054485242522631">Gall gwefannau ddefnyddio synwyryddion symud</translation>
 <translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Byddwch yn cael eich allgofnodi o bob gwefan</translation>
 <translation id="8993853206419610596">Ehangu pob cais</translation>
 <translation id="9002538116239926534">Pan fydd wedi'i droi ymlaen, gall gwefannau gadw data ar eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau gadw data ar eich dyfais.</translation>
 <translation id="9011903857143958461">Caniateir <ph name="SITE_NAME" /></translation>
+<translation id="9017522656123387064">Wedi stopio'r modd dewis</translation>
 <translation id="9019902583201351841">Rheolir gan eich rhieni</translation>
 <translation id="902236149563113779">Mae gwefannau fel arfer yn olrhain safle eich camera ar gyfer nodweddion AR, megis gemau neu gyfarwyddiadau ar y sgrîn</translation>
 <translation id="9039697262778250930">Mae'n bosib eich bod wedi'ch allgofnodi o'r gwefannau hyn</translation>

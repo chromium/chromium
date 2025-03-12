@@ -996,7 +996,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5696597120588531049">Chrome vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga</translation>
 <translation id="5698878456427040674">Provjerite je li odabrani račun podržan.</translation>
 <translation id="570347048394355941">Prebacivanje na karticu</translation>
-<translation id="5709213329446699338">Web-lokacija <ph name="SITE" /> želi se povezati sa serijskim priključkom</translation>
+<translation id="5709213329446699338"><ph name="SITE" /> se želi povezati sa serijskim priključkom</translation>
 <translation id="5715150588940290235">Izbrisati sačuvane sigurnosne kodove?</translation>
 <translation id="571930967925877633">Oznake, historija i drugi podaci Chromea se više neće sinhronizirati s Google računom</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
@@ -1129,7 +1129,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6296366034485697675">Izvezi i izbriši</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6303969859164067831">Odjavite se i isključite sinhronizaciju</translation>
-<translation id="6307241780749477694">Potvrdite svoj identitet da biste mogli pristupiti svim svojim zaporkama na ovom uređaju</translation>
+<translation id="6307241780749477694">Potvrdite identitet da dobijete sve svoje lozinke na ovom uređaju</translation>
 <translation id="6312687380483398334">Web aplikacije (tiho)</translation>
 <translation id="6315386555979018699">Izbriši i nastavi</translation>
 <translation id="6316139424528454185">Verzija Androida nije podržana</translation>
@@ -1391,7 +1391,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7359002509206457351">Pristup načinima plaćanja</translation>
 <translation id="7363349185727752629">Vodič za vaše odabire u vezi s privatnošću</translation>
 <translation id="7364103838544876661">Više opcija za brisanje podataka pregledanja</translation>
-<translation id="7365073365123878797">Da biste počeli spremati i upotrebljavati zaporke putem Google upravitelja zaporki, ažurirajte usluge za Google Play</translation>
+<translation id="7365073365123878797">Da počnete pohranjivati i koristiti lozinke uz Google upravitelja lozinki, ažurirajte Google Play usluge</translation>
 <translation id="7375125077091615385">Vrsta:</translation>
 <translation id="7376560087009844242">Ako obuhvatite više teksta stranice, možda ćete dobiti bolje rezultate prilikom korištenja Pretraživanja dodirom. Uvijek možete posjetiti <ph name="BEGIN_LINK" />postavke<ph name="END_LINK" /> da to promijenite.</translation>
 <translation id="7379900596734708416">Dostupna je tamna tema za web lokacije</translation>
@@ -1470,12 +1470,12 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7686086654630106285">Više o oglasima koje predlažu web lokacije</translation>
 <translation id="7690596512217303514">Otvaranje Chromea na uređaju nije uspjelo. Da riješite problem, preuzmite najnovije ažuriranje Chromea iz trgovine aplikacija.</translation>
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
-<translation id="7692761875510935111">Otvorite brzo u pregledniku. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
+<translation id="7692761875510935111">Brzo otvorite u pregledniku. Dodirnite i zadržite da uredite ovu prečicu.</translation>
 <translation id="7697383401610880082">Ručica za prevlačenje</translation>
 <translation id="7698359219371678927">Kreirajte e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Donja tabela nedavne aktivnosti je otvorena u punoj visini</translation>
 <translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
-<translation id="7708994397325774423">Pristupite svim svojim zaporkama</translation>
+<translation id="7708994397325774423">Dobijte sve svoje lozinke</translation>
 <translation id="7733878270780732638">Na uređaju nema dovoljno prostora.</translation>
 <translation id="7746817319925672889">Google upravitelj lozinki će uskoro prestati funkcionirati na ovom uređaju</translation>
 <translation id="774876555279732384">Uslugama automatskog popunjavanja se upravlja i u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
@@ -1749,7 +1749,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8937772741022875483">Ukloniti aktivnosti Chromea iz Digitalnog blagostanja?</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspjelo. Pokušajte ponovo kasnije.</translation>
-<translation id="8946759102391960088">Zadržite pristup zaporkama</translation>
+<translation id="8946759102391960088">Zadržite pristup lozinkama</translation>
 <translation id="8957528460562961174">Da zadržite pristup lozinkama, izvezite ih sada, a zatim ih uvezite na željeni upravitelj lozinki. Google upravitelj lozinki je prestao funkcionirati jer Google Play usluge nisu dostupne.</translation>
 <translation id="8963117664422609631">Idite u postavke web lokacije</translation>
 <translation id="8965591936373831584">na čekanju</translation>

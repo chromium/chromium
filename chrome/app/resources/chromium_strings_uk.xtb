@@ -128,11 +128,9 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2738871930057338499">Не вдалося підключитися до Інтернету. Помилка "HTTP 403 заборонено". Перевірте конфігурацію свого проксі-сервера.</translation>
 <translation id="2753623023919742414">Натисніть, щоб шукати</translation>
 <translation id="2770231113462710648">Змінити веб-переглядач за умовчанням на:</translation>
-<translation id="277338894894732084">Пізніше Chromium пропонуватиме вам автоматично заповнювати форми за допомогою збереженої інформації</translation>
 <translation id="2785438272836277133">Це розширення містить зловмисне програмне забезпечення і є небезпечним. Вилучіть його з Chromium, щоб розширення більше не могло переглядати й змінювати дані на сайтах, які ви відвідуєте (зокрема вашу особисту інформацію).</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2803971713792056305">Ваш вебпереглядач Chromium</translation>
-<translation id="2806241689335397269">Chromium запропонує вам зберегти інформацію з форми, наприклад дату народження, вік і номер паспорта</translation>
 <translation id="2841525013647267359">Перекласти з такої мови:</translation>
 <translation id="2846251086934905009">Сталася помилка. Не вдалося завершити встановлення. Процес було скасовано.</translation>
 <translation id="2847479871509788944">Видалити з Chromium…</translation>
@@ -178,7 +176,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Перейти в наявний профіль Chromium?</translation>
 <translation id="3412460710772753638">У Менеджері паролів на цьому пристрої</translation>
-<translation id="3451656833730006755">Щоб отримати доступ до своїх розширень і інших даних на всіх комп’ютерах, увійдіть у Chromium</translation>
 <translation id="347328004046849135">Chromium сповістить, коли ви ввійдете в обліковий запис, ввівши зламаний пароль</translation>
 <translation id="3474745554856756813">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Комбінація клавіш <ph name="SHORTCUT" /> перемикає профілі Chromium</translation>
@@ -461,7 +458,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="734373864078049451">Тут містяться ваші веб-сторінки, закладки та інші дані Chromium.</translation>
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7384121030444253939">Це розширення більше не підтримується. Chromium радить вилучити його.</translation>
-<translation id="7389750180956889333">Chromium краще визначає форми й швидше заповнює їх. Докладніше про <ph name="BEGIN_LINK" />автозаповнення в Chrome<ph name="END_LINK" />.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
 <translation id="7450541714075000668">Текст скопійовано</translation>
 <translation id="7451052299415159299">Chromium потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>

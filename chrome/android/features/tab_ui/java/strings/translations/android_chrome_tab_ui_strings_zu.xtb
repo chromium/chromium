@@ -66,6 +66,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="3078350928901129212">Isithonjana sombala wethebhu leqembu esi-<ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Uhlu lweqembu lethebhu luvaliwe</translation>
 <translation id="3194464645767632461">isilinganisela</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Faka ithebhu engu-<ph name="TABS_COUNT_ONE" /> eqenjini}one{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}other{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}}</translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
 <translation id="3547352561153509682">Lokhu kuzosula iqembu kuwo wonke amadivayisi angeniswe ngemvume ku-<ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu entsha engu-<ph name="ONE_ADDED" />}one{Amathebhu amasha angu-<ph name="MANY_ADDED" />}other{Amathebhu amasha angu-<ph name="MANY_ADDED" />}}</translation>
@@ -98,6 +99,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="4783638485675352219">Yabelana ngezihloko nama-URL wamathebhu avuliwe ukusuka kule divayisi ngesistimu yokusebenza</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" />)}one{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}other{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Buka</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Faka ithebhu engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe eqenjini}one{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe eqenjini}other{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe eqenjini}}</translation>
 <translation id="4861611890274104875">Chitha ikhadi.</translation>
 <translation id="4861953997778766866">Wonke umuntu angenza ushintsho emaqenjini ethebhu owabelane ngawo</translation>
 <translation id="4870911314065352661">Vala wonke amathebhu?</translation>
@@ -134,6 +136,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="6193448654517602979">Khetha amathebhu</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6271513594716432922">Vala wonke amathebhu angasebenzi</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Engeza ithebhu eqenjini elisha}one{Engeza amathebhu eqenjini elisha}other{Engeza amathebhu eqenjini elisha}}</translation>
 <translation id="6333260925957816943">Ulwazi olumayelana nalesi sitolo</translation>
 <translation id="6381032505162537930">Uzothola amaqembu wakho amathebhu lapha</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
@@ -186,6 +189,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="799469866974412355">Iqembu elisha ukusuka kwenye idivayisi yakho</translation>
 <translation id="8029301326595421733">Ulwazi olumayelana nalesi sitolo ivulwe ngokuphelele</translation>
 <translation id="8053770993984522566">Uhlu lweqembu lethebhu, luvuleke uhhafu</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Engeza ithebhu eqenjini}one{Engeza amathebhu eqenjini}other{Engeza amathebhu eqenjini}}</translation>
 <translation id="8076492880354921740">Okwamathebhu</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Nweba ithebhu leqembu le-<ph name="TITLE_OF_GROUP" /> ngethebhu ye-<ph name="TABS_COUNT_ONE" />, umbala <ph name="COLOR_NAME" />.}one{Nweba ithebhu leqembu le-<ph name="TITLE_OF_GROUP" /> ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}other{Nweba ithebhu leqembu le-<ph name="TITLE_OF_GROUP" /> ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Yisa ithebhu phezulu</translation>

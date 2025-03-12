@@ -324,7 +324,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Open emoji picker</translation>
 <translation id="2088116547584365419">games</translation>
-<translation id="2092517835716911174">You must be at least 18 years old to use Help me read and Help me write.</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2107581415810719320">Other Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
@@ -1055,6 +1054,7 @@ One device connected.</translation>
 <translation id="450584155212756404">Dev channel</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518096944902121253">No more actions for this language</translation>
 <translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
 <translation id="4525887279712865285">Show Quick Share settings</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
@@ -1885,6 +1885,7 @@ New install</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
 <translation id="7219573373513695352">No devices connected</translation>
+<translation id="7228968829656641943">Select to search my screen. Press Tab then Space for keyboard navigation.</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7239814253344511868">Both mouse buttons</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% battery left. Connect your device to power.</translation>

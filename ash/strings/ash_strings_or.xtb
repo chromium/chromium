@@ -324,7 +324,6 @@
 <translation id="2083190527011054446">ଶୁଭ ରାତ୍ରି <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ଇମୋଜି ପିକର୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="2088116547584365419">ଗେମଗୁଡ଼ିକ</translation>
-<translation id="2092517835716911174">ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର ଏବଂ ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ବୟସ ଅତି କମରେ 18 ବର୍ଷ ହୋଇଥିବା ଆବଶ୍ୟକ।</translation>
 <translation id="209965399369889474">ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୁକ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="2107581415810719320">ଅନ୍ୟ ବଟନ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ଆପଣଙ୍କ USB-C କେବୁଲ Thunderboltକୁ ସମର୍ଥନ କରେ ନାହିଁ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>
@@ -1055,6 +1054,7 @@
 <translation id="450584155212756404">ଡେଭ ଚ୍ୟାନେଲ</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">ମତାମତ</translation>
+<translation id="4518096944902121253">ଏହି ଭାଷା ପାଇଁ ଆଉ କୌଣସି କାର୍ଯ୍ୟ ନାହିଁ</translation>
 <translation id="4518404433291145981">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଫୋନକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4525887279712865285">କୁଇକ ସେୟାରିଂ ସେଟିଂ ଦେଖାନ୍ତୁ</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ପେୟାର୍ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି।</translation>
@@ -1884,6 +1884,7 @@
 <translation id="7189412385142492784">ଶୁକ୍ର ଗ୍ରହ କେତେ ଦୂରରେ ଅବସ୍ଥିତ</translation>
 <translation id="7198435252016571249">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="7219573373513695352">କୌଣସି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇନାହିଁ</translation>
+<translation id="7228968829656641943">ମୋ ସ୍କ୍ରିନ ସର୍ଚ୍ଚ କରିବାକୁ ଚୟନ କରନ୍ତୁ। କୀବୋର୍ଡ ନାଭିଗେସନ ପାଇଁ ଟାବ ଦବାଇ ସ୍ପେସ ଦବାନ୍ତୁ।</translation>
 <translation id="7229029500464092426">ମୋଟ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ମେମୋରୀ</translation>
 <translation id="7239814253344511868">ଉଭୟ ମାଉସ ବଟନ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି। ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାର ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>

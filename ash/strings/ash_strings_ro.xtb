@@ -324,7 +324,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Deschide selectorul de emoji</translation>
 <translation id="2088116547584365419">jocuri</translation>
-<translation id="2092517835716911174">Trebuie să ai cel puțin 18 ani pentru a folosi funcțiile Ajută-mă să citesc și Ajută-mă să scriu.</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2107581415810719320">Alt buton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cablul USB-C nu acceptă Thunderbolt. Este posibil ca performanța dispozitivului să fie limitată.</translation>
@@ -1055,6 +1054,7 @@ Un dispozitiv conectat.</translation>
 <translation id="450584155212756404">Canalul de dezvoltare</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518096944902121253">Nu mai există acțiuni pentru această limbă</translation>
 <translation id="4518404433291145981">Pentru a te conecta la Chromebook, mai întâi deblochează telefonul</translation>
 <translation id="4525887279712865285">Afișează setările Quick Share</translation>
 <translation id="4527045527269911712">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta.</translation>
@@ -1885,6 +1885,7 @@ Instalare nouă</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
 <translation id="7219573373513695352">Niciun dispozitiv conectat</translation>
+<translation id="7228968829656641943">Selectează pentru a căuta pe ecran. Apasă pe tasta Tab, apoi pe bara de spațiu pentru a naviga pe tastatură.</translation>
 <translation id="7229029500464092426">Memorie <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7239814253344511868">Ambele butoane ale mouse-ului</translation>
 <translation id="7244725679040769470">Baterie rămasă: <ph name="PERCENTAGE" /> %. Conectează dispozitivul la o sursă de alimentare.</translation>
