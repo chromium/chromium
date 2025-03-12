@@ -58,9 +58,16 @@ base::LazyInstance<TaskManagerImpl>::Leaky lazy_task_manager_instance =
 TaskId ComputeRootTaskId(const Task* task) {
   CHECK(task);
 
-  // Walk up the tree to find the epoch task.
+  // Walk up the process tree to find the epoch task.
+  // Note: It is not guaranteed that the nodes returned are a tree (acyclic).
+  std::unordered_set<const Task*> visited;
   const Task* curr = task;
-  while (curr->HasParentTask()) {
+  while (curr != nullptr && curr->HasParentTask()) {
+    if (!visited.insert(curr).second) {
+      LOG(ERROR)
+          << "Cycle detected in task hierarchy. Returning original task id.";
+      return task->task_id();
+    }
     curr = curr->GetParentTask().get();
   }
   return curr->task_id();
