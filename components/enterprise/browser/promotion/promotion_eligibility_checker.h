@@ -29,7 +29,9 @@ class PromotionEligibilityChecker {
   explicit PromotionEligibilityChecker(
       const std::string& profile_id,
       policy::CloudPolicyClient* client,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      std::string locale,
+      bool dismissed_banner_pref);
 
   PromotionEligibilityChecker(const PromotionEligibilityChecker&) = delete;
   PromotionEligibilityChecker& operator=(const PromotionEligibilityChecker&) =
