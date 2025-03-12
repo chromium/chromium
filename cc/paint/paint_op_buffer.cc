@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/display_item_list.h"
@@ -276,7 +272,7 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
 void PaintOpBuffer::DestroyOps() {
   if (data_) {
     for (size_t offset = 0; offset < used_;) {
-      auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
+      auto* op = UNSAFE_TODO(reinterpret_cast<PaintOp*>(data_.get() + offset));
       offset += op->AlignedSize();
       op->DestroyThis();
     }
@@ -420,8 +416,8 @@ bool PaintOpBuffer::Deserialize(const volatile void* input,
                                 const PaintOp::DeserializeOptions& options) {
   size_t total_bytes_read = 0u;
   while (total_bytes_read < input_size) {
-    const volatile void* next_op =
-        static_cast<const volatile char*>(input) + total_bytes_read;
+    const volatile void* next_op = UNSAFE_TODO(
+        static_cast<const volatile char*>(input) + total_bytes_read);
     size_t read_bytes = 0;
     if (!PaintOp::DeserializeIntoPaintOpBuffer(next_op,
                                                input_size - total_bytes_read,
@@ -574,7 +570,7 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
   CHECK_LT(offset, used_);
   CHECK_LE(offset + sizeof(PaintOp), used_);
 
-  auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
+  auto* op = UNSAFE_TODO(reinterpret_cast<PaintOp*>(data_.get() + offset));
   switch (op->GetType()) {
     case SaveLayerOp::kType:
       CHECK_LE(offset + sizeof(SaveLayerOp), used_);

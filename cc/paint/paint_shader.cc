@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_shader.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -101,7 +97,7 @@ sk_sp<PaintShader> PaintShader::MakeLinearGradient(
 
   // There are always two points, the start and the end.
   shader->start_point_ = points[0];
-  shader->end_point_ = points[1];
+  shader->end_point_ = UNSAFE_TODO(points[1]);
   shader->SetColorsAndPositions(colors, pos, count);
   shader->SetMatrixAndTiling(local_matrix, mode, mode);
   shader->SetFlagsAndFallback(flags, fallback_color);
@@ -599,9 +595,9 @@ void PaintShader::SetColorsAndPositions(const SkColor4f* colors,
   DCHECK_GE(count, 1);
   DCHECK_LE(count, kMaxShaderColorsSupported);
 #endif
-  colors_.assign(colors, colors + count);
+  colors_.assign(colors, UNSAFE_TODO(colors + count));
   if (positions)
-    positions_.assign(positions, positions + count);
+    positions_.assign(positions, UNSAFE_TODO(positions + count));
 }
 
 void PaintShader::SetMatrixAndTiling(const SkMatrix* matrix,

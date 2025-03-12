@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_PAINT_PAINT_OP_BUFFER_H_
 #define CC_PAINT_PAINT_OP_BUFFER_H_
 
@@ -18,6 +13,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/stack_allocated.h"
@@ -373,7 +369,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     if (used_ + aligned_size > reserved_) {
       return AllocatePaintOpSlowPath(aligned_size);
     } else {
-      void* op = data_.get() + used_;
+      void* op = UNSAFE_TODO(data_.get() + used_);
       used_ += aligned_size;
       op_count_++;
       return op;
