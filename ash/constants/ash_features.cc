@@ -1712,6 +1712,11 @@ BASE_FEATURE(kLobsterDogfood,
              "LobsterDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables lobster dragging support.
+BASE_FEATURE(kLobsterDraggingSupport,
+             "LobsterDraggingSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables lobster feedback form.
 BASE_FEATURE(kLobsterFeedback,
              "LobsterFeedback",
