@@ -28,6 +28,7 @@ class SessionManager:
         self.has_called_refresh = False
         self.scope_specification_items = []
         self.refresh_sends_challenge = True
+        self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
 
     def next_session_id(self):
         return str(len(self.session_to_key_map))
@@ -90,6 +91,10 @@ class SessionManager:
         if refresh_sends_challenge is not None:
             self.refresh_sends_challenge = refresh_sends_challenge
 
+        refresh_url = configuration.get("refreshUrl")
+        if refresh_url is not None:
+            self.refresh_url = refresh_url
+
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
 
@@ -137,7 +142,7 @@ class SessionManager:
 
         response_body = {
             "session_identifier": session_id,
-            "refresh_url": "/device-bound-session-credentials/refresh_session.py",
+            "refresh_url": self.refresh_url,
             "scope": {
                 "origin": scope_origin,
                 "include_site": True,

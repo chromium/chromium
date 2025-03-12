@@ -31,6 +31,14 @@ export function addCookieAndSessionCleanup(test) {
   });
 }
 
+export async function postJson(url, obj) {
+  return await fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(obj),
+  });
+}
+
 export async function configureServer(obj) {
   const response = await fetch('configure_server.py', {
     method: 'POST',
