@@ -2901,7 +2901,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   std::optional<std::string> GetCookieDeprecationLabel() override {
     return std::nullopt;
   }
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedKeyValueServerKey(
       const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,

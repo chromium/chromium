@@ -292,10 +292,10 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
               blink::features::kFledgeTrustedSignalsKVv2Support) &&
                   base::FeatureList::IsEnabled(
                       features::kFledgeUseKVv2SignalsCache)
-              ? std::make_unique<TrustedSignalsCacheImpl>(
-                    base::BindRepeating(&InterestGroupManagerImpl::
-                                            GetBiddingAndAuctionServerKey,
-                                        base::Unretained(this)))
+              ? std::make_unique<TrustedSignalsCacheImpl>(base::BindRepeating(
+                    &InterestGroupManagerImpl::GetTrustedServerKey,
+                    base::Unretained(this),
+                    TrustedServerAPIType::kTrustedKeyValue))
               : nullptr),
       auction_process_manager_(
           base::WrapUnique(process_mode == ProcessMode::kDedicated
@@ -892,12 +892,13 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
   std::move(state.callback).Run(std::move(data));
 }
 
-void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
+void InterestGroupManagerImpl::GetTrustedServerKey(
+    TrustedServerAPIType api,
     const url::Origin& seller,
     const std::optional<url::Origin>& coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
-  ba_key_fetcher_.GetOrFetchKey(seller, coordinator, std::move(callback));
+  ba_key_fetcher_.GetOrFetchKey(api, seller, coordinator, std::move(callback));
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(

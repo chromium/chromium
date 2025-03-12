@@ -292,6 +292,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     PerCoordinatorFetcherState state;
     state.key_url = GURL(key_config.key_url);
     state.version = 1;
+    state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+    state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
     if (!state.key_url.is_valid()) {
       continue;
     }
@@ -317,6 +319,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
           PerCoordinatorFetcherState state;
           state.key_url = GURL(kv.second.GetString());
           state.version = 1;
+          state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+          state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
           if (!state.key_url.is_valid()) {
             fetcher_state_map_.erase(coordinator);
             continue;
@@ -331,6 +335,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
       PerCoordinatorFetcherState state;
       state.key_url = std::move(key_url);
       state.version = 1;
+      state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+      state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
       fetcher_state_map_.insert_or_assign(default_gcp_coordinator_,
                                           std::move(state));
     }
@@ -352,6 +358,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
           PerCoordinatorFetcherState state;
           state.key_url = GURL(kv.second.GetString());
           state.version = 2;
+          state.apis.Put(TrustedServerAPIType::kBiddingAndAuction);
+          state.apis.Put(TrustedServerAPIType::kTrustedKeyValue);
           if (!state.key_url.is_valid()) {
             fetcher_state_map_.erase(coordinator);
             continue;
@@ -382,6 +390,7 @@ void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys() {
 }
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
+    TrustedServerAPIType api,
     const url::Origin& scope_origin,
     const std::optional<url::Origin>& maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
@@ -398,6 +407,11 @@ void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
   if (!state.key_url.is_valid()) {
     std::move(callback).Run(
         base::unexpected<std::string>("Invalid Coordinator"));
+    return;
+  }
+  if (!state.apis.Has(api)) {
+    std::move(callback).Run(
+        base::unexpected<std::string>("API not supported by coordinator"));
     return;
   }
 

@@ -504,7 +504,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Get the public key to use for the auction data. The `callback` may be
   // called synchronously if the key is already available or the coordinator is
   // not recognized.
-  void GetBiddingAndAuctionServerKey(
+  void GetTrustedServerKey(
+      TrustedServerAPIType api,
       const url::Origin& seller,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
