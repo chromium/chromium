@@ -434,6 +434,7 @@
     {
       name: "AriaNotify",
       status: "test",
+      implied_by: ["AriaNotifyV2"],
     },
     {
       name: "AriaNotifyV2",
