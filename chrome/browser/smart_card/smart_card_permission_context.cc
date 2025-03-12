@@ -5,6 +5,7 @@
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 #include "base/check.h"
@@ -148,7 +149,9 @@ SmartCardPermissionContext::SmartCardPermissionContext(Profile* profile)
           HostContentSettingsMapFactory::GetForProfile(profile)),
       reader_observer_(std::make_unique<ReaderObserver>(*this)),
       profile_(*profile),
-      weak_ptr_factory_(this) {}
+      weak_ptr_factory_(this) {
+  permission_observation_.Observe(this);
+}
 
 SmartCardPermissionContext::~SmartCardPermissionContext() = default;
 
@@ -282,7 +285,9 @@ void SmartCardPermissionContext::RevokeEphemeralPermissionsForReader(
   for (auto it = ephemeral_grants_.begin(); it != ephemeral_grants_.end();) {
     std::set<std::string>& reader_set = it->second;
 
-    reader_set.erase(reader_name);
+    if (reader_set.erase(reader_name)) {
+      NotifyPermissionRevoked(it->first);
+    }
 
     if (reader_set.empty()) {
       it = ephemeral_grants_.erase(it);
@@ -303,15 +308,24 @@ void SmartCardPermissionContext::RevokeEphemeralPermissionsForOrigin(
   if (ephemeral_grants_.empty()) {
     StopObserving();
   }
+  NotifyPermissionRevoked(origin);
 }
 
 void SmartCardPermissionContext::RevokeEphemeralPermissions() {
   if (ephemeral_grants_.empty()) {
     return;
   }
+  std::set<url::Origin> revoked_origins;
+
+  std::ranges::transform(ephemeral_grants_,
+                         std::inserter(revoked_origins, revoked_origins.end()),
+                         [](const auto& pair) { return pair.first; });
 
   ephemeral_grants_.clear();
   StopObserving();
+  for (const auto& origin : revoked_origins) {
+    NotifyPermissionRevoked(origin);
+  }
 }
 
 void SmartCardPermissionContext::RevokeAllPermissions() {
@@ -440,4 +454,21 @@ SmartCardPermissionContext::GetGrantedObjects(const url::Origin& origin) {
         content_settings::SettingSource::kPolicy, IsOffTheRecord()));
   }
   return objects;
+}
+
+void SmartCardPermissionContext::OnPermissionRevoked(
+    const url::Origin& origin) {
+  permission_observers_.Notify(
+      &content::SmartCardDelegate::PermissionObserver::OnPermissionRevoked,
+      origin);
+}
+
+void SmartCardPermissionContext::AddObserver(
+    content::SmartCardDelegate::PermissionObserver* observer) {
+  permission_observers_.AddObserver(observer);
+}
+
+void SmartCardPermissionContext::RemoveObserver(
+    content::SmartCardDelegate::PermissionObserver* observer) {
+  permission_observers_.RemoveObserver(observer);
 }
