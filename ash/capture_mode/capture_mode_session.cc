@@ -1620,6 +1620,8 @@ void CaptureModeSession::OnScannerActionsFetched(
       action_button->PerformFadeInAnimation(kScannerActionButtonFadeInDuration);
     }
   }
+
+  focus_cycler_->OnScannerActionsFetched();
 }
 
 void CaptureModeSession::ShowActionContainerError(

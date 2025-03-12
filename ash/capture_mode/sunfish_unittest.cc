@@ -4255,6 +4255,68 @@ TEST_F(ScannerTest, ActionButtonsUpdatedWhenRegionAdjustedWithKeyboard) {
                   ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
 }
 
+// Tests that the user can use keyboard navigation to use the smart actions
+// button.
+TEST_F(ScannerTest, KeyboardNavigationSmartActionsButton) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  // Set up text detection expectations.
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(detect_text_future)));
+  // Set up Scanner action fetching expectations.
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  // Hit space to select a default region.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_SPACE, event_generator);
+  detect_text_future.Take().Run("detected text");
+
+  // Check that smart actions button has appeared.
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetActionButtonByViewId(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
+  ASSERT_EQ(session_test_api.GetActionButtons()[0], smart_actions_button);
+
+  // Use tab and enter to navigate to and select the smart actions button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/4);
+  SendKey(ui::VKEY_RETURN, event_generator);
+
+  // Simulate a single fetched Scanner action.
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event");
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
+
+  // Check for a Scanner action button and a copy text button.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton),
+                  ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
+
+  // Press enter to select the Scanner action button.
+  SendKey(ui::VKEY_RETURN, event_generator);
+
+  EXPECT_TRUE(fetch_action_details_future.Wait());
+}
+
 // Tests that Scanner actions are updated when the user selects or adjusts a
 // capture region with their keyboard in Sunfish mode.
 TEST_F(ScannerTest,
