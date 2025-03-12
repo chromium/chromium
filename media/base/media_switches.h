@@ -171,6 +171,11 @@ namespace media {
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioDucking);
 MEDIA_EXPORT extern const base::FeatureParam<int> kAudioDuckingAttenuation;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioDuckingWin);
+#endif  // BUILDFLAG(IS_WIN)
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusDuckFlash);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioInputConfirmReadsViaShmem);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPictureForVideoPlayback);
