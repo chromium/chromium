@@ -59,27 +59,23 @@ namespace web_app {
 // Bundles (see `content::WebBundleReader`).
 class SignedWebBundleReader {
  public:
-  using Callback = base::OnceCallback<void(
-      base::expected<void, UnusableSwbnFileError> status)>;
+  using Result = base::expected<std::unique_ptr<SignedWebBundleReader>,
+                                UnusableSwbnFileError>;
+  using CreateCallback = base::OnceCallback<void(Result)>;
+
+  SignedWebBundleReader(base::PassKey<SignedWebBundleReader>,
+                        const base::FilePath& web_bundle_path,
+                        const std::optional<GURL>& base_url,
+                        bool verify_signatures);
 
   // Creates a new instance of this class. `base_url` is used inside the
   // `WebBundleParser` to convert relative URLs contained in the Web Bundle into
   // absolute URLs. If `base_url` is `std::nullopt`, then relative URLs inside
   // the Web Bundle will result in an error.
-  static std::unique_ptr<SignedWebBundleReader> Create(
-      const base::FilePath& web_bundle_path,
-      const std::optional<GURL>& base_url,
-      bool verify_signatures = true);
-
-  // Starts reading the Signed Web Bundle. This will invoke
-  // `integrity_block_result_callback` after reading the integrity block, which
-  // must then, based on the public keys contained in the integrity block,
-  // determine whether this class should continue with signature verification
-  // and metadata reading, or abort. In any case,
-  // `read_error_callback` will be called once reading integrity block and
-  // metadata has either succeeded, was aborted, or failed.
-  // Will CHECK if `GetState()` != `kUninitialized`.
-  void Start(Callback callback);
+  static void Create(const base::FilePath& web_bundle_path,
+                     const std::optional<GURL>& base_url,
+                     bool verify_signatures,
+                     CreateCallback callback);
 
   // Closes all the closable resources that the reader is using.
   void Close(base::OnceClosure callback);
@@ -167,9 +163,18 @@ class SignedWebBundleReader {
       web_package::SignedWebBundleSignatureVerifier*);
 
  private:
-  explicit SignedWebBundleReader(const base::FilePath& web_bundle_path,
-                                 const std::optional<GURL>& base_url,
-                                 bool verify_signatures);
+  using Callback =
+      base::OnceCallback<void(base::expected<void, UnusableSwbnFileError>)>;
+
+  // Starts reading the Signed Web Bundle. This will invoke
+  // `integrity_block_result_callback` after reading the integrity block, which
+  // must then, based on the public keys contained in the integrity block,
+  // determine whether this class should continue with signature verification
+  // and metadata reading, or abort. In any case,
+  // `read_error_callback` will be called once reading integrity block and
+  // metadata has either succeeded, was aborted, or failed.
+  // Will CHECK if `GetState()` != `kUninitialized`.
+  void Start(Callback callback);
 
   void OnFileOpened(base::File file);
 
