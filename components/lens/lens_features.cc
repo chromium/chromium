@@ -67,6 +67,14 @@ BASE_FEATURE(kLensOverlayUpdatedClientContext,
              "LensOverlayUpdatedClientContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Lens Overlay omnibox entry point. This is a separate feature from
+// kLensOverlay so that the omnibox entry point can be disabled without a
+// dependency on the rest of the Lens Overlay features. This means if can be
+// experimented with independently.
+BASE_FEATURE(kLensOverlayOmniboxEntryPoint,
+             "LensOverlayOmniboxEntryPoint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -690,7 +698,8 @@ bool UseLensOverlayForVideoFrameSearch() {
 }
 
 bool IsOmniboxEntryPointEnabled() {
-  return kIsOmniboxEntryPointEnabled.Get();
+  return base::FeatureList::IsEnabled(kLensOverlayOmniboxEntryPoint) &&
+         kIsOmniboxEntryPointEnabled.Get();
 }
 
 bool IsOmniboxEntrypointAlwaysVisible() {
