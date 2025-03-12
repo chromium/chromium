@@ -79,18 +79,36 @@ struct ExtensionInfoTestParams {
   const std::string manufacturer;
 };
 
+constexpr char kGoogleExtensionId[] = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
+constexpr char kGoogleAllowedUrl[] =
+    "https://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+    "test-page";
+constexpr char kGoogleAllowedUrlPattern[] =
+    "*://googlechromelabs.github.io/cros-sample-telemetry-extension/test-page/"
+    "*";
+
 const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
     // Make sure the Google extension is allowed for every OEM.
     ExtensionInfoTestParams(
-        /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-        /*app_ui_url=*/"https://googlechromelabs.github.io/",
-        /*matches_origin=*/"*://googlechromelabs.github.io/*",
+        /*extension_id=*/kGoogleExtensionId,
+        /*app_ui_url=*/kGoogleAllowedUrl,
+        /*matches_origin=*/kGoogleAllowedUrlPattern,
         /*manufacturer=*/"HP"),
     ExtensionInfoTestParams(
-        /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-        /*app_ui_url=*/"https://googlechromelabs.github.io/",
-        /*matches_origin=*/"*://googlechromelabs.github.io/*",
+        /*extension_id=*/kGoogleExtensionId,
+        /*app_ui_url=*/kGoogleAllowedUrl,
+        /*matches_origin=*/kGoogleAllowedUrlPattern,
         /*manufacturer=*/"ASUS"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/kGoogleExtensionId,
+        /*app_ui_url=*/kGoogleAllowedUrl,
+        /*matches_origin=*/kGoogleAllowedUrlPattern,
+        /*manufacturer=*/"Acer"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/kGoogleExtensionId,
+        /*app_ui_url=*/kGoogleAllowedUrl,
+        /*matches_origin=*/kGoogleAllowedUrlPattern,
+        /*manufacturer=*/"Lenovo"),
     // Make sure the extensions of each OEM are allowed on their device.
     ExtensionInfoTestParams(
         /*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",

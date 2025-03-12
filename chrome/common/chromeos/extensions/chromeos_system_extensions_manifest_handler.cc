@@ -54,6 +54,14 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
   }
   for (const auto& match : *matches_list) {
     const auto& match_str = match.GetString();
+
+    // TODO(b/391534038): Remove this part after the test is updated.
+    if (extension->id() == "gogonhoemckpdpadfnjnpgbjpbjnodgc" &&
+        match_str == "*://googlechromelabs.github.io/*") {
+      // Skip this match string for backward compatibility.
+      continue;
+    }
+
     if (match_str != extension_info.pwa_origin && match_str != iwa_origin) {
       return false;
     }
