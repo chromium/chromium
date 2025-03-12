@@ -872,6 +872,16 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessType" variants="TileManagerProcessType"/>
 </histogram>
 
+<histogram name="Compositing.TileManager.RasterTasksDuration"
+    units="microseconds" expires_after="2025-08-10">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Total duration (in us) for all raster tasks to execute. Recorded when raster
+    tasks are scheduled, at a downsampled rate.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.TileManager.TileInvalidationArea" units="%"
     expires_after="2025-08-10">
   <owner>petermcneeley@chromium.org</owner>
