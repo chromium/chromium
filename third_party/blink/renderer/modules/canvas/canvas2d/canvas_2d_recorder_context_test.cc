@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 
-#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_canvas.h"
@@ -19,9 +17,7 @@
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/refcounted_buffer.h"
 #include "cc/test/paint_op_matchers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
@@ -29,13 +25,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
-#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
@@ -46,7 +39,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -83,7 +75,6 @@ using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
 using ::cc::ConcatOp;
 using ::cc::DrawColorOp;
-using ::cc::DrawImageOp;
 using ::cc::DrawImageRectOp;
 using ::cc::DrawRectOp;
 using ::cc::DrawVerticesOp;
@@ -103,21 +94,19 @@ using ::cc::TranslateOp;
 using ::cc::UsePaintCache;
 using ::testing::IsEmpty;
 
-// Test version of BaseRenderingContext2D. BaseRenderingContext2D can't be
+// Test version of Canvas2DRecorderContext. Canvas2DRecorderContext can't be
 // tested directly because it's an abstract class. This test class essentially
 // just gives a definition to all pure virtual method, making it instantiable.
-class TestRenderingContext2D final
-    : public GarbageCollected<TestRenderingContext2D>,
-      public BaseRenderingContext2D,
+class Test2DRecordingContext final
+    : public GarbageCollected<Test2DRecordingContext>,
+      public Canvas2DRecorderContext,
       public MemoryManagedPaintRecorder::Client {
  public:
-  explicit TestRenderingContext2D(V8TestingScope& scope)
-      : BaseRenderingContext2D(
-            scheduler::GetSingleThreadTaskRunnerForTesting()),
-        execution_context_(scope.GetExecutionContext()),
+  explicit Test2DRecordingContext(V8TestingScope& scope)
+      : execution_context_(scope.GetExecutionContext()),
         recorder_(gfx::Size(Width(), Height()), this),
         host_canvas_element_(nullptr) {}
-  ~TestRenderingContext2D() override = default;
+  ~Test2DRecordingContext() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
   cc::PaintRecord FlushRecorder() { return recorder_.ReleaseMainRecording(); }
@@ -135,8 +124,6 @@ class TestRenderingContext2D final
   int Width() const override { return 300; }
   int Height() const override { return 300; }
 
-  bool CanCreateCanvas2dResourceProvider() const override { return false; }
-
   RespectImageOrientationEnum RespectImageOrientation() const override {
     return kRespectImageOrientation;
   }
@@ -144,15 +131,10 @@ class TestRenderingContext2D final
   Color GetCurrentColor() const override { return Color::kBlack; }
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() override {
-    // Context child classes uses `GetOrCreatePaintCanvas` to check for context
-    // loss.
-    if (isContextLost()) [[unlikely]] {
-      return nullptr;
-    }
-
     return &recorder_.getRecordingCanvas();
   }
-  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
+  using Canvas2DRecorderContext::GetPaintCanvas;  // Pull the non-const
+                                                  // overload.
   const cc::PaintCanvas* GetPaintCanvas() const override {
     return &recorder_.getRecordingCanvas();
   }
@@ -169,21 +151,16 @@ class TestRenderingContext2D final
 
   bool HasAlpha() const override { return true; }
 
-  void SetContextLost(bool context_lost) { context_lost_ = context_lost; }
-  bool isContextLost() const override { return context_lost_; }
+  bool isContextLost() const override { return false; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(execution_context_);
     visitor->Trace(host_canvas_element_);
-    BaseRenderingContext2D::Trace(visitor);
+    Canvas2DRecorderContext::Trace(visitor);
   }
 
   void SetRestoreMatrixEnabled(bool enabled) {
     restore_matrix_enabled_ = enabled;
-  }
-
-  void SetHostHTMLCanvas(HTMLCanvasElement* host_canvas_element) {
-    host_canvas_element_ = host_canvas_element;
   }
 
  protected:
@@ -211,24 +188,8 @@ class TestRenderingContext2D final
     return &recorder_;
   }
 
-  bool ResolveFont(const String& new_font) override {
-    if (host_canvas_element_ == nullptr) {
-      return false;
-    }
-    auto* style = CSSParser::ParseFont(new_font, execution_context_);
-    if (style == nullptr) {
-      return false;
-    }
-    auto* selector = host_canvas_element_->GetFontSelector();
-    FontDescription font_description =
-        FontStyleResolver::ComputeFont(*style, selector->BaseFontSelector());
-    GetState().SetFont(font_description, selector);
-    return true;
-  }
-
   Member<ExecutionContext> execution_context_;
   bool restore_matrix_enabled_ = true;
-  bool context_lost_ = false;
   MemoryManagedPaintRecorder recorder_;
   Member<HTMLCanvasElement> host_canvas_element_;
 };
@@ -250,10 +211,10 @@ BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,
 }
 
 // Tests a plain fillRect.
-TEST(BaseRenderingContextCompositingTests, FillRect) {
+TEST(Canvas2DRecorderContextCompositingTests, FillRect) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->translate(4, 5);
   context->fillRect(1, 1, 5, 5);
@@ -265,10 +226,10 @@ TEST(BaseRenderingContextCompositingTests, FillRect) {
 }
 
 // Tests a fillRect with a CanvasPattern.
-TEST(BaseRenderingContextCompositingTests, Pattern) {
+TEST(Canvas2DRecorderContextCompositingTests, Pattern) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
@@ -289,10 +250,10 @@ TEST(BaseRenderingContextCompositingTests, Pattern) {
 }
 
 // Tests a plain drawImage.
-TEST(BaseRenderingContextCompositingTests, DrawImage) {
+TEST(Canvas2DRecorderContextCompositingTests, DrawImage) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
@@ -305,10 +266,10 @@ TEST(BaseRenderingContextCompositingTests, DrawImage) {
 }
 
 // Tests drawing with context filter.
-TEST(BaseRenderingContextCompositingTests, Filter) {
+TEST(Canvas2DRecorderContextCompositingTests, Filter) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
   context->fillRect(1, 1, 5, 5);
@@ -342,10 +303,10 @@ TEST(BaseRenderingContextCompositingTests, Filter) {
 }
 
 // Tests drawing with context filter and a transform.
-TEST(BaseRenderingContextCompositingTests, FilterTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, FilterTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
   context->translate(4, 5);
@@ -376,10 +337,10 @@ TEST(BaseRenderingContextCompositingTests, FilterTransform) {
 }
 
 // Tests drawing with a shadow.
-TEST(BaseRenderingContextCompositingTests, Shadow) {
+TEST(Canvas2DRecorderContextCompositingTests, Shadow) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -406,10 +367,10 @@ TEST(BaseRenderingContextCompositingTests, Shadow) {
 
 // Tests the "copy" composite operation, which is handled as a special case
 // clearing the canvas before draw.
-TEST(BaseRenderingContextCompositingTests, CopyOp) {
+TEST(Canvas2DRecorderContextCompositingTests, CopyOp) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setGlobalCompositeOperation("copy");
   context->translate(4, 5);
@@ -431,10 +392,10 @@ TEST(BaseRenderingContextCompositingTests, CopyOp) {
 }
 
 // Tests drawing with a blending operation.
-TEST(BaseRenderingContextCompositingTests, Multiply) {
+TEST(Canvas2DRecorderContextCompositingTests, Multiply) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setGlobalCompositeOperation("multiply");
   context->translate(4, 5);
@@ -450,10 +411,10 @@ TEST(BaseRenderingContextCompositingTests, Multiply) {
 }
 
 // Tests drawing with a composite operation.
-TEST(BaseRenderingContextCompositingTests, DstOut) {
+TEST(Canvas2DRecorderContextCompositingTests, DstOut) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setGlobalCompositeOperation("destination-out");
   context->translate(4, 5);
@@ -470,10 +431,10 @@ TEST(BaseRenderingContextCompositingTests, DstOut) {
 
 // Tests drawing with a composite operation operating on the full surface. These
 // ops impact all pixels, even those outside the drawn shape.
-TEST(BaseRenderingContextCompositingTests, SrcIn) {
+TEST(Canvas2DRecorderContextCompositingTests, SrcIn) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setGlobalCompositeOperation("source-in");
   context->fillRect(1, 1, 5, 5);
@@ -505,10 +466,10 @@ TEST(BaseRenderingContextCompositingTests, SrcIn) {
 
 // Tests composite ops operating on the full surface. These ops impact all
 // pixels, even those outside the drawn shape.
-TEST(BaseRenderingContextCompositingTests, SrcInTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, SrcInTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setGlobalCompositeOperation("source-in");
   context->translate(4, 5);
@@ -544,10 +505,10 @@ TEST(BaseRenderingContextCompositingTests, SrcInTransform) {
 
 // Tests drawing with context filter and a "copy" composite operation. The copy
 // op should clear previous drawing but the filter should be applied as normal.
-TEST(BaseRenderingContextCompositingTests, FilterCopyOp) {
+TEST(Canvas2DRecorderContextCompositingTests, FilterCopyOp) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
   context->setGlobalCompositeOperation("copy");
@@ -586,10 +547,10 @@ TEST(BaseRenderingContextCompositingTests, FilterCopyOp) {
 // Tests drawing with context filter, a shadow and a "copy" composite operation.
 // The copy op should clear previous drawing and the shadow shouldn't be
 // rasterized, but the filter should be applied as normal.
-TEST(BaseRenderingContextCompositingTests, FilterShadowCopyOp) {
+TEST(Canvas2DRecorderContextCompositingTests, FilterShadowCopyOp) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
   context->setShadowBlur(2);
@@ -654,10 +615,10 @@ TEST(BaseRenderingContextCompositingTests, FilterShadowCopyOp) {
 // Tests a shadow with a "copy" composite operation, which is handled as a
 // special case clearing the canvas before draw. Thus, the shadow shouldn't be
 // drawn since the foreground overwrites it.
-TEST(BaseRenderingContextCompositingTests, ShadowCopyOp) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowCopyOp) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -681,10 +642,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowCopyOp) {
 // Tests fillRect with a shadow and a globalCompositeOperator that can't be
 // implemented using a `DropShadowPaintFilter` (it requires separate compositing
 // of the shadow and foreground.
-TEST(BaseRenderingContextCompositingTests, ShadowMultiply) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowMultiply) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -740,10 +701,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowMultiply) {
 // Tests fillRect with a shadow and a globalCompositeOperator that can't be
 // implemented using a `DropShadowPaintFilter` (it requires separate compositing
 // of the shadow and foreground.
-TEST(BaseRenderingContextCompositingTests, ShadowMultiplyTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowMultiplyTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -797,10 +758,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowMultiplyTransform) {
 
 // Tests fillRect with a shadow and a composite op that can be implemented using
 // a `DropShadowPaintFilter`.
-TEST(BaseRenderingContextCompositingTests, ShadowDstOutTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowDstOutTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -829,10 +790,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowDstOutTransform) {
 
 // Tests a fillRect with a shadow and a composite op operating on the full
 // surface. These ops impact all pixels, even those outside the drawn shape.
-TEST(BaseRenderingContextCompositingTests, ShadowSrcIn) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowSrcIn) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -887,10 +848,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowSrcIn) {
 
 // Tests a fillRect with a shadow and a composite op operating on the full
 // surface. These ops impact all pixels, even those outside the drawn shape.
-TEST(BaseRenderingContextCompositingTests, ShadowSrcInTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowSrcInTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -947,10 +908,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowSrcInTransform) {
 }
 
 // Tests a fillRect with a shadow and a CanvasPattern.
-TEST(BaseRenderingContextCompositingTests, ShadowPattern) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowPattern) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
@@ -1009,10 +970,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowPattern) {
 }
 
 // Tests a fillRect with a shadow, a CanvasPattern and a transform.
-TEST(BaseRenderingContextCompositingTests, ShadowPatternTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowPatternTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
       Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
@@ -1071,10 +1032,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowPatternTransform) {
 }
 
 // Tests a drawImage with a shadow.
-TEST(BaseRenderingContextCompositingTests, ShadowDrawImage) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowDrawImage) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
@@ -1110,10 +1071,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowDrawImage) {
 }
 
 // Tests a drawImage with a shadow and a transform.
-TEST(BaseRenderingContextCompositingTests, ShadowDrawImageTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, ShadowDrawImageTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
@@ -1149,10 +1110,10 @@ TEST(BaseRenderingContextCompositingTests, ShadowDrawImageTransform) {
 
 // Tests a drawImage with a shadow and a composite operation requiring an extra
 // layer (requires `CompositedDraw`).
-TEST(BaseRenderingContextCompositingTests, DrawImageShadowSrcIn) {
+TEST(Canvas2DRecorderContextCompositingTests, DrawImageShadowSrcIn) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
@@ -1216,10 +1177,10 @@ TEST(BaseRenderingContextCompositingTests, DrawImageShadowSrcIn) {
 
 // Tests a drawImage with a shadow, a transform and a composite operation
 // requiring an extra layer (requires `CompositedDraw`).
-TEST(BaseRenderingContextCompositingTests, DrawImageShadowSrcInTransform) {
+TEST(Canvas2DRecorderContextCompositingTests, DrawImageShadowSrcInTransform) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
@@ -1283,26 +1244,11 @@ TEST(BaseRenderingContextCompositingTests, DrawImageShadowSrcInTransform) {
                                        0, 0, 0, 1))));
 }
 
-TEST(BaseRenderingContextLayerTests, ContextLost) {
+TEST(Canvas2DRecorderContextLayerTests, ResetsAndRestoresShadowStates) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  NonThrowableExceptionState exception_state;
-
-  context->SetContextLost(true);
-  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
-                      exception_state);
-  context->endLayer(exception_state);
-
-  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
-}
-
-TEST(BaseRenderingContextLayerTests, ResetsAndRestoresShadowStates) {
-  test::TaskEnvironment task_environment;
-  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(1.0);
@@ -1331,11 +1277,11 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresShadowStates) {
   EXPECT_EQ(context->shadowColor(), "#ff0000");
 }
 
-TEST(BaseRenderingContextLayerTests, ResetsAndRestoresCompositeStates) {
+TEST(Canvas2DRecorderContextLayerTests, ResetsAndRestoresCompositeStates) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.7);
@@ -1356,11 +1302,11 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresCompositeStates) {
   EXPECT_EQ(context->globalCompositeOperation(), "xor");
 }
 
-TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
+TEST(Canvas2DRecorderContextLayerTests, ResetsAndRestoresFilterStates) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   V8UnionCanvasFilterOrString* filter = MakeBlurCanvasFilter(20.0f);
@@ -1381,11 +1327,11 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
             filter->GetAsCanvasFilter()->Operations());
 }
 
-TEST(BaseRenderingContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
+TEST(Canvas2DRecorderContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(
       scope.GetScriptState(),
       FilterOption(scope, "({name: 'colorMatrix', values: 'invalid'})"),
@@ -1398,32 +1344,11 @@ TEST(BaseRenderingContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayerTests, putImageDataThrowsInLayer) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, DefaultRenderingStates) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-
-  NonThrowableExceptionState no_exception;
-  ImageData* image =
-      context->createImageData(/*sw=*/10, /*sh=*/10, no_exception);
-  // `putImageData` shouldn't throw on it's own.
-  context->putImageData(image, /*dx=*/0, /*dy=*/0, no_exception);
-  // Make sure the exception isn't caused by calling the function twice.
-  context->putImageData(image, /*dx=*/0, /*dy=*/0, no_exception);
-  // Calling again inside a layer should throw.
-  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
-                      no_exception);
-  context->putImageData(image, /*dx=*/0, /*dy=*/0, scope.GetExceptionState());
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kInvalidStateError);
-}
-
-TEST(BaseRenderingContextLayerGlobalStateTests, DefaultRenderingStates) {
-  test::TaskEnvironment task_environment;
-  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
@@ -1434,11 +1359,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, DefaultRenderingStates) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlpha) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, GlobalAlpha) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
@@ -1451,11 +1376,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlpha) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, BlendingOperation) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, BlendingOperation) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("multiply");
@@ -1471,11 +1396,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BlendingOperation) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, CompositeOperation) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, CompositeOperation) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("source-in");
@@ -1491,11 +1416,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CompositeOperation) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, Shadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, Shadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1513,11 +1438,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, Shadow) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndBlending) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, GlobalAlphaAndBlending) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
@@ -1535,11 +1460,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndBlending) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndComposite) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, GlobalAlphaAndComposite) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
@@ -1558,11 +1483,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndComposite) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, GlobalAlphaAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1584,11 +1509,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndShadow) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaBlendingAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
+     GlobalAlphaBlendingAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1617,11 +1543,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaBlendingAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaCompositeAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
+     GlobalAlphaCompositeAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1649,11 +1576,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaCompositeAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, BlendingAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, BlendingAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1679,11 +1606,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BlendingAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, CompositeAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, CompositeAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1709,11 +1636,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CompositeAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, Filter) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, Filter) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->beginLayer(
@@ -1730,11 +1657,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, Filter) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndGlobalAlpha) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterAndGlobalAlpha) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
@@ -1753,11 +1680,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndGlobalAlpha) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndBlending) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterAndBlending) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("multiply");
@@ -1776,11 +1703,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndBlending) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndComposite) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterAndComposite) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("source-in");
@@ -1804,11 +1731,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndComposite) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -1835,11 +1762,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndShadow) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndBlending) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
+     FilterGlobalAlphaAndBlending) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
@@ -1860,11 +1788,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndBlending) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndComposite) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
+     FilterGlobalAlphaAndComposite) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.3);
@@ -1890,11 +1819,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndComposite) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterGlobalAlphaAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.4);
@@ -1923,12 +1852,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndShadow) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests,
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
      FilterGlobalAlphaBlendingAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.4);
@@ -1963,12 +1892,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests,
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
      FilterGlobalAlphaCompositeAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalAlpha(0.4);
@@ -2003,11 +1932,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterBlendingAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterBlendingAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("multiply");
@@ -2040,11 +1969,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterBlendingAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterCompositeAndShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("source-in");
@@ -2077,11 +2006,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilter) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, ContextFilter) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
@@ -2099,11 +2028,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilter) {
                                     PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilterLayerFilter) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, ContextFilterLayerFilter) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(2.0f));
@@ -2125,11 +2054,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilterLayerFilter) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilterShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, ContextFilterShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -2158,11 +2087,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilterShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, TransformsAlone) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, TransformsAlone) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(4, 5);
@@ -2178,11 +2107,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, TransformsAlone) {
                   PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithShadow) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, TransformsWithShadow) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(4, 5);
@@ -2214,11 +2143,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithShadow) {
                   PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithContextFilter) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
+     TransformsWithContextFilter) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(4, 5);
@@ -2248,12 +2178,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithContextFilter) {
                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests,
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
      TransformsWithShadowAndCompositedDraw) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(4, 5);
@@ -2291,12 +2221,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests,
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
      TransformsWithShadowAndContextFilter) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(4, 5);
@@ -2337,11 +2267,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, NonInvertibleTransform) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, NonInvertibleTransform) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->scale(0, 5);
@@ -2361,11 +2291,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, NonInvertibleTransform) {
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, CopyCompositeOp) {
+TEST(Canvas2DRecorderContextLayerGlobalStateTests, CopyCompositeOp) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setGlobalCompositeOperation("copy");
@@ -2380,12 +2310,12 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CopyCompositeOp) {
           PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests,
+TEST(Canvas2DRecorderContextLayerGlobalStateTests,
      CopyCompositeOpWithOtherStates) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(6, 7);
@@ -2429,10 +2359,10 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
               PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
+TEST(Canvas2DRecorderContextRestoreStackTests, RestoresSaves) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->save();
@@ -2461,10 +2391,10 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
                              PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
-TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
+TEST(Canvas2DRecorderContextRestoreStackTests, RestoresTransforms) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->translate(10.0, 0.0);
@@ -2504,10 +2434,10 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
-TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
+TEST(Canvas2DRecorderContextRestoreStackTests, RestoresClip) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   // Clipping from an empty matrix stack. Clip can be restored without having
@@ -2602,11 +2532,11 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
-TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
+TEST(Canvas2DRecorderContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->save();
@@ -2704,11 +2634,11 @@ TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
-TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
+TEST(Canvas2DRecorderContextResetTest, DiscardsRenderStates) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
 
   context->setShadowBlur(2.0);
@@ -2744,11 +2674,11 @@ TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
                                                    FillFlags())));
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, LoneBeginLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, LoneBeginLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2756,21 +2686,21 @@ TEST(BaseRenderingContextLayersCallOrderTests, LoneBeginLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, LoneRestore) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, LoneRestore) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->restore(scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(context->StateStackDepth(), 0);
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, LoneEndLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, LoneEndLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->endLayer(scope.GetExceptionState());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
             DOMExceptionCode::kInvalidStateError);
@@ -2778,10 +2708,10 @@ TEST(BaseRenderingContextLayersCallOrderTests, LoneEndLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, SaveRestore) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, SaveRestore) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->save();
   context->restore(scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2789,10 +2719,10 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveRestore) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, SaveResetRestore) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, SaveResetRestore) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->save();
   context->reset();
   context->restore(scope.GetExceptionState());
@@ -2801,11 +2731,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveResetRestore) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerEndLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, BeginLayerEndLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2815,11 +2745,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerEndLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerResetEndLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, BeginLayerResetEndLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2831,11 +2761,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerResetEndLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, SaveBeginLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->save();
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
@@ -2844,11 +2774,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, SaveEndLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, SaveEndLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->save();
   context->endLayer(scope.GetExceptionState());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
@@ -2857,11 +2787,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveEndLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSave) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, BeginLayerSave) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2871,11 +2801,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSave) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerRestore) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, BeginLayerRestore) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2886,11 +2816,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerRestore) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayerRestore) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, SaveBeginLayerRestore) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->save();
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
@@ -2902,11 +2832,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayerRestore) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -2918,11 +2848,11 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
   EXPECT_EQ(context->OpenedLayerCount(), 1);
 }
 
-TEST(BaseRenderingContextLayersCallOrderTests, NestedLayers) {
+TEST(Canvas2DRecorderContextLayersCallOrderTests, NestedLayers) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState no_exception;
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       no_exception);
@@ -2945,34 +2875,12 @@ TEST(BaseRenderingContextLayersCallOrderTests, NestedLayers) {
                                     PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayersCSSTests,
-     FilterOperationsWithStyleResolutionHost) {
-  test::TaskEnvironment task_environment;
-  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  context->SetHostHTMLCanvas(
-      MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()));
-  context->setFont("10px sans-serif");
-  NonThrowableExceptionState exception_state;
-  context->beginLayer(scope.GetScriptState(),
-                      FilterOption(scope, "'blur(1em)'"), exception_state);
-  context->endLayer(exception_state);
-
-  cc::PaintFlags flags;
-  flags.setImageFilter(
-      sk_make_sp<BlurPaintFilter>(10.0f, 10.0f, SkTileMode::kDecal, nullptr));
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(flags),
-                                            PaintOpEq<RestoreOp>())));
-}
-
-TEST(BaseRenderingContextLayersCSSTests,
+TEST(Canvas2DRecorderContextLayersCSSTests,
      FilterOperationsWithNoStyleResolutionHost) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
   NonThrowableExceptionState exception_state;
   context->beginLayer(scope.GetScriptState(),
                       FilterOption(scope, "'blur(1em)'"), exception_state);
@@ -2987,7 +2895,7 @@ TEST(BaseRenderingContextLayersCSSTests,
                                             PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextMeshTests, DrawMesh) {
+TEST(Canvas2DRecorderContextMeshTests, DrawMesh) {
   test::TaskEnvironment task_environment;
 
   scoped_refptr<cc::RefCountedBuffer<SkPoint>> vbuf =
@@ -3002,17 +2910,14 @@ TEST(BaseRenderingContextMeshTests, DrawMesh) {
 
   V8TestingScope scope;
   NonThrowableExceptionState no_exception;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
+  auto* bitmap = MakeGarbageCollected<V8CanvasImageSource>(
+      MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()));
 
-  context->drawMesh(
-      MakeGarbageCollected<Mesh2DVertexBuffer>(vbuf),
-      MakeGarbageCollected<Mesh2DUVBuffer>(uvbuf),
-      MakeGarbageCollected<Mesh2DIndexBuffer>(ibuf),
-      MakeGarbageCollected<V8CanvasImageSource>(
-          MakeGarbageCollected<ImageBitmap>(
-              context->createImageData(/*sw=*/10, /*sh=*/10, no_exception),
-              /*crop_rect=*/std::nullopt)),
-      no_exception);
+  context->drawMesh(MakeGarbageCollected<Mesh2DVertexBuffer>(vbuf),
+                    MakeGarbageCollected<Mesh2DUVBuffer>(uvbuf),
+                    MakeGarbageCollected<Mesh2DIndexBuffer>(ibuf), bitmap,
+                    no_exception);
 
   PaintFlags flags = FillFlags();
   SkMatrix local_matrix = SkMatrix::Scale(1.0f / 10, 1.0f / 10);
@@ -3021,74 +2926,6 @@ TEST(BaseRenderingContextMeshTests, DrawMesh) {
   EXPECT_THAT(
       context->FlushRecorder(),
       RecordedOpsAre(PaintOpEq<DrawVerticesOp>(vbuf, uvbuf, ibuf, flags)));
-}
-
-TEST(BaseRenderingContextPlaceElementTests, DrawsPlacedElement) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  NonThrowableExceptionState exception_state;
-
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
-  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  host->appendChild(img);
-
-  context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
-
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(PaintOpIs<DrawImageOp>()));
-}
-
-TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForNonChildNode) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
-  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  // `img` isn't a child of `host`.
-
-  context->placeElement(img, /*x=*/12, /*y=*/34, scope.GetExceptionState());
-
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
-            ESErrorType::kTypeError);
-  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
-}
-
-TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForChildCanvas) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
-  auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  host->appendChild(canvas);
-
-  context->placeElement(canvas, /*x=*/12, /*y=*/34, scope.GetExceptionState());
-
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
-            ESErrorType::kTypeError);
-  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
-}
-
-TEST(BaseRenderingContextPlaceElementTests, PlaceElementAbortsIfContextLost) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  NonThrowableExceptionState exception_state;
-
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
-  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  host->appendChild(img);
-
-  context->SetContextLost(true);
-  context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
-
-  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
 }
 
 }  // namespace
