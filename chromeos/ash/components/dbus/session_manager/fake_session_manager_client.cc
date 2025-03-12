@@ -430,9 +430,9 @@ void FakeSessionManagerClient::StartRemoteDeviceWipe(
   }
 }
 
-void FakeSessionManagerClient::ClearForcedReEnrollmentVpd(
+void FakeSessionManagerClient::ClearBlockDevmodeVpd(
     chromeos::VoidDBusMethodCallback callback) {
-  clear_forced_re_enrollment_vpd_call_count_++;
+  clear_block_devmode_vpd_call_count_++;
   PostReply(FROM_HERE, std::move(callback), true);
 }
 

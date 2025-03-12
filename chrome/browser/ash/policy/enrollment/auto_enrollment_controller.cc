@@ -263,11 +263,11 @@ void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
   // D-Bus services may not be available yet, so we call
   // WaitForServiceToBeAvailable. See https://crbug.com/841627.
   ash::SessionManagerClient::Get()->WaitForServiceToBeAvailable(
-      base::BindOnce(&AutoEnrollmentController::StartClearForcedReEnrollmentVpd,
+      base::BindOnce(&AutoEnrollmentController::StartClearBlockDevmodeVpd,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
+void AutoEnrollmentController::StartClearBlockDevmodeVpd(
     bool service_is_ready) {
   DCHECK(state_ == AutoEnrollmentResult::kNoEnrollment ||
          state_ == AutoEnrollmentResult::kSuggestedEnrollment);
@@ -278,13 +278,14 @@ void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
     return;
   }
 
-  ash::SessionManagerClient::Get()->ClearForcedReEnrollmentVpd(
-      base::BindOnce(&AutoEnrollmentController::OnForcedReEnrollmentVpdCleared,
+  // This clears block_devmode in the VPD.
+  ash::SessionManagerClient::Get()->ClearBlockDevmodeVpd(
+      base::BindOnce(&AutoEnrollmentController::OnBlockDevmodeClearedVpd,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AutoEnrollmentController::OnForcedReEnrollmentVpdCleared(bool reply) {
-  if (!reply) {
+void AutoEnrollmentController::OnBlockDevmodeClearedVpd(bool succeeded) {
+  if (!succeeded) {
     LOG(ERROR) << "Failed to clear forced re-enrollment flags in RW VPD.";
   }
 
