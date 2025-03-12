@@ -624,12 +624,12 @@ int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
   return end_padding;
 }
 
-void IconLabelBubbleView::SetUpForAnimation() {
+void IconLabelBubbleView::SetUpForAnimation(base::TimeDelta duration) {
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetVisible(false);
-  slide_animation_.SetSlideDuration(base::Milliseconds(150));
+  slide_animation_.SetSlideDuration(duration);
   open_state_fraction_ = 1.0;
 }
 

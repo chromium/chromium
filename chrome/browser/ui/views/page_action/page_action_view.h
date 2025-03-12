@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "ui/actions/actions.h"
 #include "ui/events/event.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -65,6 +66,7 @@ class PageActionView : public IconLabelBubbleView,
   void OnThemeChanged() override;
   void OnTouchUiChanged() override;
   void UpdateBorder() override;
+  bool ShouldShowLabelAfterAnimation() const override;
   bool ShouldShowSeparator() const override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void NotifyClick(const ui::Event& event) override;
@@ -75,16 +77,13 @@ class PageActionView : public IconLabelBubbleView,
   actions::ActionId GetActionId() const;
 
   views::View* GetLabelForTesting();
+  gfx::SlideAnimation& GetSlideAnimationForTesting();
 
  private:
   // The image associated with the `action_item_` size may be different from the
   // size needed for the location bar page action icon. Therefore, we should to
   // update the image size if needed.
   void UpdateIconImage();
-
-  // The page action can be in icon mode and suggestion chip mode. This helper
-  // ensures that the correct styling is applied based on the current mode.
-  void UpdateStyle();
 
   // Changes to label visibility indicate that the chip state of this page
   // action changed. This handler ensures the view is updated accordingly.
