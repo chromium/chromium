@@ -127,6 +127,33 @@ bool ModuleSnapshotIOSIntermediateDump::Initialize(
     }
   }
 
+  const IOSIntermediateDumpList* extra_memory_regions_array =
+      image_data->GetAsList(IntermediateDumpKey::kModuleExtraMemoryRegions);
+  if (extra_memory_regions_array) {
+    for (auto& region : *extra_memory_regions_array) {
+      vm_address_t address;
+      const IOSIntermediateDumpData* region_data =
+          region->GetAsData(Key::kModuleExtraMemoryRegionData);
+      if (!region_data)
+        continue;
+      if (GetDataValueFromMap(
+              region.get(), Key::kModuleExtraMemoryRegionAddress, &address)) {
+        const std::vector<uint8_t>& bytes = region_data->bytes();
+        vm_size_t data_size = bytes.size();
+        if (data_size == 0)
+          continue;
+
+        const vm_address_t data =
+            reinterpret_cast<const vm_address_t>(bytes.data());
+
+        auto memory =
+            std::make_unique<internal::MemorySnapshotIOSIntermediateDump>();
+        memory->Initialize(address, data, data_size);
+        extra_memory_.push_back(std::move(memory));
+      }
+    }
+  }
+
   const IOSIntermediateDumpMap* crash_info_dump =
       image_data->GetAsMap(IntermediateDumpKey::kAnnotationsCrashInfo);
   if (crash_info_dump) {
@@ -264,6 +291,15 @@ std::set<CheckedRange<uint64_t>>
 ModuleSnapshotIOSIntermediateDump::ExtraMemoryRanges() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return std::set<CheckedRange<uint64_t>>();
+}
+
+std::vector<const MemorySnapshot*>
+ModuleSnapshotIOSIntermediateDump::ExtraMemory() const {
+  std::vector<const MemorySnapshot*> extra_memory;
+  for (const auto& memory : extra_memory_) {
+    extra_memory.push_back(memory.get());
+  }
+  return extra_memory;
 }
 
 std::vector<const UserMinidumpStream*>

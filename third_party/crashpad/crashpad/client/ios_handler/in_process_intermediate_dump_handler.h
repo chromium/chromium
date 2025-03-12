@@ -152,6 +152,10 @@ class InProcessIntermediateDumpHandler final {
   //! \brief Write Crashpad annotations list.
   static void WriteCrashpadAnnotationsList(IOSIntermediateDumpWriter* writer,
                                            CrashpadInfo* crashpad_info);
+
+  //! \brief Write Crashpad extra memory data.
+  static void WriteCrashpadExtraMemoryRanges(IOSIntermediateDumpWriter* writer,
+                                             CrashpadInfo* crashpad_info);
 };
 
 }  // namespace internal

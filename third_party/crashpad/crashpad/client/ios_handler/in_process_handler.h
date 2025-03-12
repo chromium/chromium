@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef CRASHPAD_CLIENT_IOS_HANDLER_IN_PROCESS_IN_PROCESS_HANDLER_H_
+#define CRASHPAD_CLIENT_IOS_HANDLER_IN_PROCESS_IN_PROCESS_HANDLER_H_
+
 #include <mach/mach.h>
 #include <stdint.h>
 
@@ -26,6 +29,7 @@
 #include "client/ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h"
 #include "client/upload_behavior_ios.h"
 #include "handler/crash_report_upload_thread.h"
+#include "handler/user_stream_data_source.h"
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 #include "util/ios/ios_system_data_collector.h"
@@ -159,17 +163,27 @@ class InProcessHandler {
   //!     minidumps and trigger an upload if possible.
   //!
   //! \param[in] annotations Process annotations to set in each crash report.
+  //! \param[in] user_stream_sources An optional vector containing the
+  //!     extensibility data sources to call on crash. Each time a minidump is
+  //!     created, the sources are called in turn. Any streams returned are
+  //!     added to the minidump.
   void ProcessIntermediateDumps(
-      const std::map<std::string, std::string>& annotations);
+      const std::map<std::string, std::string>& annotations,
+      const UserStreamDataSources* user_stream_sources);
 
   //! \brief Requests that the handler convert a specific intermediate dump into
   //!     a minidump and trigger an upload if possible.
   //!
   //! \param[in] path Path to the specific intermediate dump.
   //! \param[in] annotations Process annotations to set in each crash report.
+  //! \param[in] user_stream_sources An optional vector containing the
+  //!     extensibility data sources to call on crash. Each time a minidump is
+  //!     created, the sources are called in turn. Any streams returned are
+  //!     added to the minidump.
   void ProcessIntermediateDump(
       const base::FilePath& path,
-      const std::map<std::string, std::string>& annotations = {});
+      const std::map<std::string, std::string>& annotations = {},
+      const UserStreamDataSources* user_stream_sources = {});
 
   //! \brief Requests that the handler begin in-process uploading of any
   //!     pending reports.
@@ -239,7 +253,12 @@ class InProcessHandler {
 
   //! \brief Writes a minidump to the Crashpad database from the
   //!     \a process_snapshot, and triggers the upload_thread_ if started.
-  void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot);
+  //! \param[in] user_stream_sources An optional vector containing the
+  //!     extensibility data sources to call on crash. Each time a minidump is
+  //!     created, the sources are called in turn. Any streams returned are
+  //!     added to the minidump.
+  void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot,
+                    const UserStreamDataSources* user_stream_sources = {});
 
   //! \brief Process a maximum of 20 pending intermediate dumps. Dumps named
   //!     with our bundle id get first priority to prevent spamming.
@@ -284,3 +303,5 @@ class InProcessHandler {
 
 }  // namespace internal
 }  // namespace crashpad
+
+#endif  // CRASHPAD_CLIENT_IOS_HANDLER_IN_PROCESS_IN_PROCESS_HANDLER_H_

@@ -304,7 +304,13 @@ std::vector<HandleSnapshot> ProcessSnapshotIOSIntermediateDump::Handles()
 std::vector<const MemorySnapshot*>
 ProcessSnapshotIOSIntermediateDump::ExtraMemory() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return std::vector<const MemorySnapshot*>();
+  std::vector<const MemorySnapshot*> extra_memory;
+  for (const auto& module : modules_) {
+    for (const auto& memory : module->ExtraMemory()) {
+      extra_memory.push_back(memory);
+    }
+  }
+  return extra_memory;
 }
 
 const ProcessMemory* ProcessSnapshotIOSIntermediateDump::Memory() const {

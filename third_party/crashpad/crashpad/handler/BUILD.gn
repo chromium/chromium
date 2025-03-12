@@ -20,8 +20,6 @@ static_library("handler") {
     "handler_main.h",
     "prune_crash_reports_thread.cc",
     "prune_crash_reports_thread.h",
-    "user_stream_data_source.cc",
-    "user_stream_data_source.h",
   ]
 
   if (crashpad_is_mac) {
@@ -98,6 +96,8 @@ static_library("common") {
     "crash_report_upload_thread.h",
     "minidump_to_upload_parameters.cc",
     "minidump_to_upload_parameters.h",
+    "user_stream_data_source.cc",
+    "user_stream_data_source.h",
   ]
   if (crashpad_is_apple) {
     sources += [
@@ -112,6 +112,7 @@ static_library("common") {
   ]
   deps = [
     "../client:common",
+    "../minidump",
     "../snapshot",
     "../util",
     "../util:net",
