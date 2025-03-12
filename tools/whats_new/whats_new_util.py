@@ -85,7 +85,7 @@ def _GetPrimaryAction(action: str) -> int:
         return 2
     if action == 'Chrome Settings':
         return 3
-    if action == 'iOS Password Settings':
+    if action == 'iOS Credential Provider Settings':
         return 4
     if action == 'Lens':
         return 5
