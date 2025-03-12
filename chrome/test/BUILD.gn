@@ -324,21 +324,12 @@ static_library("test_support") {
     sources += [
       "../browser/extensions/api_test_util.cc",
       "../browser/extensions/api_test_util.h",
-      "../browser/extensions/extension_apitest.cc",
-      "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browser_test_util.cc",
       "../browser/extensions/extension_browser_test_util.h",
-      "../browser/extensions/extension_browsertest_platform_delegate.h",
       "../browser/extensions/extension_platform_apitest.h",
       "../browser/extensions/extension_platform_browsertest.cc",
       "../browser/extensions/extension_platform_browsertest.h",
     ]
-
-    if (is_android) {
-      sources += [ "../browser/extensions/extension_browsertest_platform_delegate_android.cc" ]
-    } else {
-      sources += [ "../browser/extensions/extension_browsertest_platform_delegate_non_android.cc" ]
-    }
 
     deps += [ "//chrome/browser/extensions" ]
   }
@@ -383,6 +374,8 @@ static_library("test_support") {
       "../browser/extensions/browsertest_util.h",
       "../browser/extensions/extension_api_unittest.cc",
       "../browser/extensions/extension_api_unittest.h",
+      "../browser/extensions/extension_apitest.cc",
+      "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_browsertest.h",
       "../browser/extensions/extension_service_test_base.cc",

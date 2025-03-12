@@ -15,9 +15,6 @@
 
 namespace extensions {
 
-// TODO(https://crbug.com/401522580): Use ExtensionApiTest in both of these now
-// that it cross-compiles.
-
 #if BUILDFLAG(IS_ANDROID)
 using ExtensionPlatformApiTest = DesktopAndroidExtensionApiTest;
 #else

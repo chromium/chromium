@@ -22,9 +22,17 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/api_test_util.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/extension_registry.h"
@@ -44,14 +52,6 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
-#endif
-
 namespace extensions {
 
 namespace {
@@ -64,14 +64,14 @@ const char kEmbeddedTestServerPort[] = "testServer.port";
 }  // namespace
 
 ExtensionApiTest::ExtensionApiTest(ContextType context_type)
-    : ExtensionApiTestBase(context_type), platform_delegate_(*this) {
+    : ExtensionBrowserTest(context_type) {
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 }
 
 ExtensionApiTest::~ExtensionApiTest() = default;
 
 void ExtensionApiTest::SetUpOnMainThread() {
-  ExtensionApiTestBase::SetUpOnMainThread();
+  ExtensionBrowserTest::SetUpOnMainThread();
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
   test_config_ = std::make_unique<base::Value::Dict>();
   test_config_->Set(kTestDataDirectory,
@@ -88,7 +88,7 @@ void ExtensionApiTest::SetUpOnMainThread() {
 }
 
 void ExtensionApiTest::TearDownOnMainThread() {
-  ExtensionApiTestBase::TearDownOnMainThread();
+  ExtensionBrowserTest::TearDownOnMainThread();
   TestGetConfigFunction::set_test_config_state(nullptr);
   test_config_.reset();
 }
@@ -155,18 +155,14 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
   if (!url_to_open.is_empty()) {
     OpenURL(url_to_open, run_options.open_in_incognito);
   } else if (run_options.launch_as_platform_app) {
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
     apps::AppLaunchParams params(
         extension->id(), apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(
-        run_options.profile ? run_options.profile.get() : profile())
+        run_options.profile ? run_options.profile.get() : browser()->profile())
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(std::move(params));
-#else
-    NOTREACHED();
-#endif
   }
 
   {
@@ -188,7 +184,11 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
 }
 
 void ExtensionApiTest::OpenURL(const GURL& url, bool open_in_incognito) {
-  platform_delegate_.OpenURL(url, open_in_incognito);
+  if (open_in_incognito) {
+    OpenURLOffTheRecord(browser()->profile(), url);
+  } else {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  }
 }
 
 bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
@@ -208,7 +208,8 @@ bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
 
 // Test that exactly one extension is loaded, and return it.
 const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
-  return api_test_util::GetSingleLoadedExtension(profile(), message_);
+  return api_test_util::GetSingleLoadedExtension(browser()->profile(),
+                                                 message_);
 }
 
 bool ExtensionApiTest::StartEmbeddedTestServer() {
@@ -261,7 +262,7 @@ void ExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
 }
 
 void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
-  ExtensionApiTestBase::SetUpCommandLine(command_line);
+  ExtensionBrowserTest::SetUpCommandLine(command_line);
 
   test_data_dir_ = test_data_dir_.AppendASCII("api_test");
 
