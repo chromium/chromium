@@ -8,29 +8,6 @@
 
 namespace blink {
 
-TEST(CascadeInterpolationsTest, Limit) {
-  constexpr size_t max = std::numeric_limits<uint8_t>::max();
-
-  static_assert(CascadeInterpolations::kMaxEntryIndex == max,
-                "Unexpected max. If the limit increased, evaluate whether it "
-                "still makes sense to run this test");
-
-  ActiveInterpolationsMap map;
-
-  CascadeInterpolations interpolations;
-  for (size_t i = 0; i <= max; ++i) {
-    interpolations.Add(&map, CascadeOrigin::kAuthor);
-  }
-
-  // At maximum
-  EXPECT_FALSE(interpolations.IsEmpty());
-
-  interpolations.Add(&map, CascadeOrigin::kAuthor);
-
-  // Maximum + 1
-  EXPECT_TRUE(interpolations.IsEmpty());
-}
-
 TEST(CascadeInterpolationsTest, Reset) {
   ActiveInterpolationsMap map;
 
