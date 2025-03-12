@@ -664,8 +664,7 @@ public class WebsitePermissionsFetcher {
                             buildOwnerToMembersMapFromFetchedSites();
 
                     // For each {@link Website} sets its RelatedWebsiteSet info: the RWS Owner and
-                    // the
-                    // number of members of that RWS.
+                    // the number of members of that RWS.
                     for (Website site : mSites.values()) {
                         String rwsOwnerHostname =
                                 mSiteSettingsDelegate.getRelatedWebsiteSetOwner(
@@ -685,22 +684,26 @@ public class WebsitePermissionsFetcher {
              */
             private Map<String, List<Website>> buildOwnerToMembersMapFromFetchedSites() {
                 // set to avoid equals implementation for Website object
-                Set<String> domainAndRegistryToWebsite = new HashSet<>();
+                Set<String> originToWebsite = new HashSet<>();
                 Map<String, List<Website>> rwsOwnerToMember = new HashMap<>();
-
                 for (Website site : mSites.values()) {
-                    String rwsMemberHostname = site.getAddress().getDomainAndRegistry();
+                    // Use the origin when RWS UI feature is enabled to include
+                    // subdomain variations in the members
+                    String rwsMemberHostname =
+                            mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()
+                                    ? site.getAddress().getOrigin()
+                                    : site.getAddress().getDomainAndRegistry();
                     String rwsOwnerHostname =
                             mSiteSettingsDelegate.getRelatedWebsiteSetOwner(
                                     site.getAddress().getOrigin());
                     if (rwsOwnerHostname == null) continue;
                     List<Website> members = rwsOwnerToMember.get(rwsOwnerHostname);
-                    if (!domainAndRegistryToWebsite.contains(rwsMemberHostname)) {
+                    if (!originToWebsite.contains(rwsMemberHostname)) {
                         if (members == null) {
                             members = new ArrayList<>();
                         }
                         members.add(site);
-                        domainAndRegistryToWebsite.add(rwsMemberHostname);
+                        originToWebsite.add(rwsMemberHostname);
                         rwsOwnerToMember.put(rwsOwnerHostname, members);
                     }
                 }
