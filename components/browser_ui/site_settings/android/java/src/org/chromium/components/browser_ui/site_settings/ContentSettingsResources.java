@@ -49,8 +49,6 @@ public class ContentSettingsResources {
         private final int mEnabledSummary;
         private final int mDisabledSummary;
         private final int mSummaryOverrideForScreenReader;
-        private final int mEnabledPrimaryText;
-        private final int mDisabledPrimaryText;
 
         ResourceItem(
                 int icon,
@@ -60,9 +58,7 @@ public class ContentSettingsResources {
                 int enabledSummary,
                 int disabledSummary,
                 int summaryOverrideForScreenReader,
-                int iconBlocked,
-                int enabledPrimaryText,
-                int disabledPrimaryText) {
+                int iconBlocked) {
             mIcon = icon;
             mIconBlocked = iconBlocked;
             mTitle = title;
@@ -71,8 +67,6 @@ public class ContentSettingsResources {
             mEnabledSummary = enabledSummary;
             mDisabledSummary = disabledSummary;
             mSummaryOverrideForScreenReader = summaryOverrideForScreenReader;
-            mEnabledPrimaryText = enabledPrimaryText;
-            mDisabledPrimaryText = disabledPrimaryText;
         }
 
         private int getIcon() {
@@ -112,24 +106,6 @@ public class ContentSettingsResources {
         private int getSummaryOverrideForScreenReader() {
             return mSummaryOverrideForScreenReader;
         }
-
-        /**
-         * Primary text for enabled radio button in site setting binary radio button groups.
-         *
-         * @return primary text for enabled radio button.
-         */
-        private int getEnabledPrimaryText() {
-            return mEnabledPrimaryText == 0 ? getEnabledSummary() : mEnabledPrimaryText;
-        }
-
-        /**
-         * Primary text for disabled radio button in site setting binary radio button groups.
-         *
-         * @return primary text for disabled radio button.
-         */
-        private int getDisabledPrimaryText() {
-            return mDisabledPrimaryText == 0 ? getDisabledSummary() : mDisabledPrimaryText;
-        }
     }
 
     /** Returns the ResourceItem for a ContentSettingsType. */
@@ -144,9 +120,7 @@ public class ContentSettingsResources {
                         R.string.site_settings_page_intrusive_allowed_sub_label,
                         R.string.site_settings_page_intrusive_blocked_sub_label,
                         R.string.site_settings_page_intrusive_ads_a11y,
-                        R.drawable.ad_off_24px,
-                        R.string.site_settings_page_intrusive_allowed_sub_label,
-                        R.string.site_settings_page_intrusive_blocked_sub_label);
+                        R.drawable.ad_off_24px);
 
             case ContentSettingsType.ANTI_ABUSE:
                 return new ResourceItem(
@@ -156,8 +130,6 @@ public class ContentSettingsResources {
                         ContentSettingValues.BLOCK,
                         R.string.anti_abuse_description,
                         R.string.anti_abuse_description,
-                        0,
-                        0,
                         0,
                         0);
 
@@ -170,9 +142,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_ar_ask,
                         R.string.website_settings_category_ar_blocked,
                         R.string.website_settings_category_ar_a11y,
-                        R.drawable.filled_cardboard_off_24px,
-                        R.string.website_settings_ar_ask,
-                        R.string.website_settings_ar_block);
+                        R.drawable.filled_cardboard_off_24px);
 
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
                 return new ResourceItem(
@@ -183,9 +153,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_ask,
                         0,
                         R.string.website_settings_category_automatic_downloads_a11y,
-                        R.drawable.file_download_off_24px,
-                        R.string.website_settings_automatic_downloads_ask,
-                        R.string.website_settings_automatic_downloads_block);
+                        R.drawable.file_download_off_24px);
 
             case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
                 return new ResourceItem(
@@ -195,8 +163,6 @@ public class ContentSettingsResources {
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_auto_dark_allowed,
                         R.string.website_settings_category_auto_dark_blocked,
-                        0,
-                        0,
                         0,
                         0);
 
@@ -209,9 +175,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_allowed_recommended,
                         0,
                         R.string.website_settings_category_background_sync_a11y,
-                        R.drawable.sync_disabled_24px,
-                        R.string.website_settings_background_sync_allow,
-                        R.string.website_settings_background_sync_block);
+                        R.drawable.sync_disabled_24px);
 
             case ContentSettingsType.BLUETOOTH_CHOOSER_DATA:
                 return new ResourceItem(
@@ -219,8 +183,6 @@ public class ContentSettingsResources {
                         0,
                         ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
-                        0,
-                        0,
                         0,
                         0,
                         0,
@@ -235,8 +197,6 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_bluetooth_ask,
                         R.string.website_settings_category_bluetooth_blocked,
                         R.string.website_settings_category_bluetooth_a11y,
-                        0,
-                        0,
                         0);
 
             case ContentSettingsType.BLUETOOTH_SCANNING:
@@ -248,8 +208,6 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_bluetooth_scanning_ask,
                         0,
                         R.string.website_settings_category_bluetooth_scanning_a11y,
-                        0,
-                        0,
                         0);
 
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
@@ -261,9 +219,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_clipboard_ask,
                         R.string.website_settings_category_clipboard_blocked,
                         R.string.website_settings_category_clipboard_a11y,
-                        R.drawable.content_paste_off_24px,
-                        R.string.website_settings_clipboard_ask,
-                        R.string.website_settings_clipboard_block);
+                        R.drawable.content_paste_off_24px);
 
             case ContentSettingsType.COOKIES:
                 return new ResourceItem(
@@ -274,9 +230,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_site_data_page_toggle_sub_label_allow,
                         R.string.website_settings_site_data_page_toggle_sub_label_block,
                         R.string.website_settings_site_data_page_a11y,
-                        R.drawable.filled_database_off_24px,
-                        R.string.website_settings_site_data_page_add_allow_exception_description,
-                        R.string.website_settings_site_data_page_add_block_exception_description);
+                        R.drawable.filled_database_off_24px);
 
             case ContentSettingsType.FEDERATED_IDENTITY_API:
                 return new ResourceItem(
@@ -287,9 +241,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_federated_identity_allowed,
                         R.string.website_settings_category_federated_identity_blocked,
                         R.string.website_settings_category_federated_identity_a11y,
-                        R.drawable.account_circle_off_24px,
-                        R.string.website_settings_category_federated_identity_allowed,
-                        R.string.website_settings_category_federated_identity_blocked);
+                        R.drawable.account_circle_off_24px);
 
             case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
                 return new ResourceItem(
@@ -300,9 +252,7 @@ public class ContentSettingsResources {
                         0,
                         0,
                         0,
-                        R.drawable.file_save_off_24px,
-                        R.string.website_settings_file_editing_ask,
-                        R.string.website_settings_file_editing_block);
+                        R.drawable.file_save_off_24px);
 
             case ContentSettingsType.GEOLOCATION:
                 return new ResourceItem(
@@ -313,9 +263,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_location_ask,
                         0,
                         R.string.website_settings_category_location_a11y,
-                        R.drawable.filled_location_off_24px,
-                        R.string.website_settings_location_ask,
-                        R.string.website_settings_location_block);
+                        R.drawable.filled_location_off_24px);
 
             case ContentSettingsType.HAND_TRACKING:
                 return new ResourceItem(
@@ -326,8 +274,6 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_hand_tracking_ask,
                         R.string.website_settings_category_hand_tracking_blocked,
                         R.string.website_settings_category_hand_tracking_a11y,
-                        0,
-                        0,
                         0);
 
             case ContentSettingsType.IDLE_DETECTION:
@@ -339,9 +285,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_idle_detection_ask,
                         R.string.website_settings_category_idle_detection_blocked,
                         R.string.website_settings_category_idle_detection_a11y,
-                        R.drawable.devices_off_24px,
-                        R.string.website_settings_idle_detection_ask,
-                        R.string.website_settings_idle_detection_block);
+                        R.drawable.devices_off_24px);
 
             case ContentSettingsType.JAVASCRIPT:
                 return new ResourceItem(
@@ -352,9 +296,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_javascript_allowed,
                         0,
                         R.string.website_settings_category_javascript_a11y,
-                        R.drawable.code_off_24px,
-                        R.string.website_settings_javascript_allow,
-                        R.string.website_settings_javascript_block);
+                        R.drawable.code_off_24px);
 
             case ContentSettingsType.JAVASCRIPT_OPTIMIZER:
                 return new ResourceItem(
@@ -365,9 +307,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_javascript_optimizer_allowed,
                         R.string.website_settings_category_javascript_optimizer_blocked,
                         R.string.website_settings_category_javascript_optimizer_a11y,
-                        0,
-                        R.string.website_settings_category_javascript_optimizer_allowed_list,
-                        R.string.website_settings_category_javascript_optimizer_blocked_list);
+                        0);
 
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(
@@ -378,9 +318,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_camera_ask,
                         0,
                         R.string.website_settings_category_camera_a11y,
-                        R.drawable.filled_videocam_off_24px,
-                        R.string.website_settings_camera_ask,
-                        R.string.website_settings_camera_block);
+                        R.drawable.filled_videocam_off_24px);
 
             case ContentSettingsType.MEDIASTREAM_MIC:
                 return new ResourceItem(
@@ -391,9 +329,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_mic_ask,
                         0,
                         R.string.website_settings_category_mic_a11y,
-                        R.drawable.filled_mic_off_24px,
-                        R.string.website_settings_mic_ask,
-                        R.string.website_settings_mic_block);
+                        R.drawable.filled_mic_off_24px);
 
             case ContentSettingsType.MIDI_SYSEX:
                 return new ResourceItem(
@@ -401,8 +337,6 @@ public class ContentSettingsResources {
                         R.string.midi_sysex_permission_title,
                         null,
                         null,
-                        0,
-                        0,
                         0,
                         0,
                         0,
@@ -417,9 +351,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_nfc_ask,
                         R.string.website_settings_category_nfc_blocked,
                         R.string.website_settings_category_nfc_a11y,
-                        R.drawable.nfc_off_24px,
-                        R.string.website_settings_nfc_ask,
-                        R.string.website_settings_nfc_block);
+                        R.drawable.nfc_off_24px);
 
             case ContentSettingsType.NOTIFICATIONS:
                 return new ResourceItem(
@@ -430,9 +362,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_notifications_ask,
                         0,
                         R.string.website_settings_category_notifications_a11y,
-                        R.drawable.filled_notifications_off_24px,
-                        R.string.website_settings_category_notifications_ask,
-                        R.string.website_settings_notifications_block);
+                        R.drawable.filled_notifications_off_24px);
 
             case ContentSettingsType.POPUPS:
                 return new ResourceItem(
@@ -443,9 +373,7 @@ public class ContentSettingsResources {
                         0,
                         R.string.website_settings_category_popups_redirects_blocked,
                         R.string.website_settings_category_popups_redirects_a11y,
-                        R.drawable.open_in_new_off_24px,
-                        R.string.website_settings_popups_redirects_allow,
-                        R.string.website_settings_popups_redirects_block);
+                        R.drawable.open_in_new_off_24px);
 
                 // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
                 // If 3-state becomes more common we should update localMaps to support it better.
@@ -455,8 +383,6 @@ public class ContentSettingsResources {
                         R.string.protected_content,
                         ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
-                        0,
-                        0,
                         0,
                         0,
                         0,
@@ -471,9 +397,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_desktop_site_allowed,
                         R.string.website_settings_category_desktop_site_blocked,
                         R.string.website_settings_category_desktop_site_a11y,
-                        R.drawable.smartphone_24px,
-                        0,
-                        0);
+                        R.drawable.smartphone_24px);
 
             case ContentSettingsType.SENSORS:
                 int sensorsPermissionTitle = R.string.motion_sensors_permission_title;
@@ -508,9 +432,7 @@ public class ContentSettingsResources {
                         sensorsAllowedDescription,
                         sensorsBlockedDescription,
                         sensorsScreenreaderAnnouncement,
-                        R.drawable.sensors_off_24px,
-                        R.string.website_settings_motion_sensors_allow,
-                        R.string.website_settings_motion_sensors_block);
+                        R.drawable.sensors_off_24px);
 
             case ContentSettingsType.SOUND:
                 return new ResourceItem(
@@ -521,9 +443,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_sound_allowed,
                         R.string.website_settings_category_sound_blocked,
                         R.string.website_settings_category_sound_a11y,
-                        R.drawable.volume_off_24px,
-                        R.string.website_settings_sound_allow,
-                        R.string.website_settings_sound_block);
+                        R.drawable.volume_off_24px);
 
             case ContentSettingsType.STORAGE_ACCESS:
                 return new ResourceItem(
@@ -534,9 +454,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_storage_access_allowed,
                         R.string.website_settings_category_storage_access_blocked,
                         R.string.website_settings_category_storage_access_a11y,
-                        R.drawable.vr180_create2d_off_24px,
-                        0,
-                        0);
+                        R.drawable.vr180_create2d_off_24px);
 
             case ContentSettingsType.USB_CHOOSER_DATA:
                 return new ResourceItem(
@@ -544,8 +462,6 @@ public class ContentSettingsResources {
                         0,
                         ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
-                        0,
-                        0,
                         0,
                         0,
                         0,
@@ -560,9 +476,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_usb_ask,
                         R.string.website_settings_category_usb_blocked,
                         R.string.website_settings_category_usb_a11y,
-                        R.drawable.usb_off_24px,
-                        R.string.website_settings_usb_ask,
-                        R.string.website_settings_usb_block);
+                        R.drawable.usb_off_24px);
 
             case ContentSettingsType.VR:
                 return new ResourceItem(
@@ -573,9 +487,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_vr_ask,
                         R.string.website_settings_category_vr_blocked,
                         R.string.website_settings_category_vr_a11y,
-                        R.drawable.filled_cardboard_off_24px,
-                        R.string.website_settings_vr_ask,
-                        R.string.website_settings_vr_block);
+                        R.drawable.filled_cardboard_off_24px);
         }
         assert false; // NOTREACHED
         return assumeNonNull(null);
@@ -922,16 +834,16 @@ public class ContentSettingsResources {
     }
 
     /**
-     * Returns the resources IDs for descriptions for enabled and disabled states and icons for
-     * Enabled and Disabled states, in that order, on a binary-state setting.
+     * Returns the resources IDs for descriptions for ask and blocked states and icons for Ask and
+     * Blocked states, in that order, on a binary-state setting.
      *
-     * @return An array of 4 resource IDs for descriptions for Enabled and Disabled states and icons
-     *     for Enabled and Disabled states, in that order.
+     * @return An array of 4 resource IDs for descriptions for Ask and Blocked states and icons for
+     *     Ask and Blocked states, in that order.
      */
     public static int[] getBinaryStateSettingResourceIDs(int contentType) {
         int[] descriptionIDs = {
-            getResourceItem(contentType).getEnabledPrimaryText(),
-            getResourceItem(contentType).getDisabledPrimaryText(),
+            getResourceItem(contentType).getEnabledSummary(),
+            getResourceItem(contentType).getDisabledSummary(),
             getResourceItem(contentType).getIcon(),
             getResourceItem(contentType).getIconBlocked()
         };
