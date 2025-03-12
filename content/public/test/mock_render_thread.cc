@@ -238,16 +238,12 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 #endif
 
 // The View expects to be returned a valid route_id different from its own.
-void MockRenderThread::OnCreateWindow(
-    const mojom::CreateNewWindowParams& params,
-    mojom::CreateNewWindowReply* reply) {
-  reply->frame = TestRenderFrame::CreateStubFrameReceiver();
+void MockRenderThread::OnCreateWindow(mojom::CreateNewWindowParams& params,
+                                      mojom::CreateNewWindowReply* reply) {
+  params.associated_interface_provider.EnableUnassociatedUsage();
   reply->main_frame_route_id = GetNextRoutingID();
   frame_token_to_initial_browser_brokers_.emplace(
-      reply->main_frame_token,
-      reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
-  reply->associated_interface_provider =
-      TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
+      reply->main_frame_token, std::move(params.main_frame_interface_broker));
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
 
@@ -275,8 +271,7 @@ void MockRenderThread::OnCreateWindow(
   reply->widget_params = std::move(widget_params);
 
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
-  reply->page_broadcast =
-      page_broadcast.BindNewEndpointAndPassDedicatedReceiver();
+  page_broadcast.Bind(std::move(params.page_broadcast_remote));
   page_broadcasts_.push_back(std::move(page_broadcast));
 }
 
