@@ -27,6 +27,9 @@ class GlicWidget : public views::Widget {
   static std::unique_ptr<GlicWidget> Create(Profile* profile,
                                             const gfx::Rect& initial_bounds);
 
+  // Get the most-overlapping display.
+  display::Display GetDisplay();
+
  private:
   explicit GlicWidget(InitParams params);
 };
