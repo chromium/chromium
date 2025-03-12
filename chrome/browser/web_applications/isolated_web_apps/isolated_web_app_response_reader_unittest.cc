@@ -69,17 +69,7 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
   base::expected<void, UnusableSwbnFileError> ReadIntegrityBlockAndMetadata(
       SignedWebBundleReader& reader) {
     base::test::TestFuture<base::expected<void, UnusableSwbnFileError>> future;
-    reader.ReadIntegrityBlock(base::BindLambdaForTesting(
-        [&](base::expected<web_package::SignedWebBundleIntegrityBlock,
-                           UnusableSwbnFileError> integrity_block) {
-          reader.ProceedWithAction(
-              integrity_block.has_value()
-                  ? SignedWebBundleReader::SignatureVerificationAction::
-                        ContinueAndVerifySignatures()
-                  : SignedWebBundleReader::SignatureVerificationAction::Abort(
-                        integrity_block.error()),
-              future.GetCallback());
-        }));
+    reader.Start(future.GetCallback());
     return future.Take();
   }
 

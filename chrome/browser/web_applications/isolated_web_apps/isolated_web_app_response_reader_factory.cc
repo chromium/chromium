@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -29,6 +30,31 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
+
+namespace {
+
+base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlockAndMetadata(
+    const SignedWebBundleReader& reader,
+    IsolatedWebAppValidator& validator,
+    IsolatedWebAppTrustChecker& trust_checker,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    bool dev_mode) {
+  RETURN_IF_ERROR(
+      validator.ValidateIntegrityBlock(
+          web_bundle_id, reader.GetIntegrityBlock(), dev_mode, trust_checker),
+      [](const auto& error) -> base::expected<void, UnusableSwbnFileError> {
+        return base::unexpected(UnusableSwbnFileError(
+            UnusableSwbnFileError::Error::kIntegrityBlockValidationError,
+            error));
+      });
+
+  RETURN_IF_ERROR(validator.ValidateMetadata(
+      web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries()));
+
+  return base::ok();
+}
+
+}  // namespace
 
 IsolatedWebAppResponseReaderFactory::IsolatedWebAppResponseReaderFactory(
     Profile& profile,
@@ -93,70 +119,18 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     web_bundle_id.id()}));
 
-  std::unique_ptr<SignedWebBundleReader> reader =
-      SignedWebBundleReader::Create(web_bundle_path, std::move(base_url));
+  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
+      web_bundle_path, std::move(base_url),
+      /*verify_signatures=*/!flags.Has(Flag::kSkipSignatureVerification));
 
   SignedWebBundleReader& reader_ref = *reader.get();
-  reader_ref.ReadIntegrityBlock(base::BindOnce(
-      &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead,
+  reader_ref.Start(base::BindOnce(
+      &IsolatedWebAppResponseReaderFactory::OnReaderCreated,
       weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
       web_bundle_id, flags, std::move(callback)));
 }
 
-void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(
-    std::unique_ptr<SignedWebBundleReader> reader,
-    const base::FilePath& web_bundle_path,
-    const web_package::SignedWebBundleId& web_bundle_id,
-    Flags flags,
-    Callback callback,
-    base::expected<web_package::SignedWebBundleIntegrityBlock,
-                   UnusableSwbnFileError> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto* reader_ptr = reader.get();
-  auto proceed_callback = base::BindOnce(
-      &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead,
-      weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
-      web_bundle_id, flags, std::move(callback));
-
-  ASSIGN_OR_RETURN(
-      auto integrity_block, std::move(result),
-      [&](UnusableSwbnFileError error) {
-        // Aborting parsing will trigger a call to
-        // `OnIntegrityBlockAndMetadataRead` with a
-        // `SignedWebBundleReader::AbortedByCaller` error.
-        reader_ptr->ProceedWithAction(
-            SignedWebBundleReader::SignatureVerificationAction::Abort(
-                std::move(error)),
-            std::move(proceed_callback));
-      });
-
-  RETURN_IF_ERROR(
-      validator_->ValidateIntegrityBlock(web_bundle_id, integrity_block,
-                                         flags.Has(Flag::kDevModeBundle),
-                                         trust_checker_),
-      [&](std::string error) {
-        // Aborting parsing will trigger a call to
-        // `OnIntegrityBlockAndMetadataRead` with a
-        // `SignedWebBundleReader::AbortedByCaller` error.
-        reader_ptr->ProceedWithAction(
-            SignedWebBundleReader::SignatureVerificationAction::Abort(
-                UnusableSwbnFileError(UnusableSwbnFileError::Error::
-                                          kIntegrityBlockValidationError,
-                                      std::move(error))),
-            std::move(proceed_callback));
-      });
-
-  reader_ptr->ProceedWithAction(
-      flags.Has(Flag::kSkipSignatureVerification)
-          ? SignedWebBundleReader::SignatureVerificationAction::
-                ContinueAndSkipSignatureVerification()
-          : SignedWebBundleReader::SignatureVerificationAction::
-                ContinueAndVerifySignatures(),
-      std::move(proceed_callback));
-}
-
-void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
+void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
     std::unique_ptr<SignedWebBundleReader> reader,
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
@@ -165,17 +139,39 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
     base::expected<void, UnusableSwbnFileError> status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status.has_value()) {
-    status = base::expected(validator_->ValidateMetadata(
-        web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries()));
-  }
+  RETURN_IF_ERROR(status, [&](const auto& error) {
+    CHECK_EQ(reader->GetState(), SignedWebBundleReader::State::kError);
+    UmaLogExpectedStatus<UnusableSwbnFileError>(
+        "WebApp.Isolated.SwbnFileUsability", base::unexpected(error));
+    std::move(callback).Run(base::unexpected(error));
+  });
 
-  UmaLogExpectedStatus("WebApp.Isolated.SwbnFileUsability", status);
+  CHECK_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  RETURN_IF_ERROR(
+      ValidateIntegrityBlockAndMetadata(*reader, *validator_, trust_checker_,
+                                        web_bundle_id,
+                                        flags.Has(Flag::kDevModeBundle)),
+      [&](const auto& error) {
+        UmaLogExpectedStatus<UnusableSwbnFileError>(
+            "WebApp.Isolated.SwbnFileUsability", base::unexpected(error));
+        // Since `reader` is initialized at this point, it's also necessary to
+        // properly dispose of it before invoking `callback`.
+        auto close_reader = base::BindOnce(
+            [](std::unique_ptr<SignedWebBundleReader> reader,
+               base::OnceClosure callback) {
+              auto* reader_ptr = reader.get();
+              base::OnceClosure reader_keepalive =
+                  base::DoNothingWithBoundArgs(std::move(reader));
+              reader_ptr->Close(
+                  std::move(callback).Then(std::move(reader_keepalive)));
+            },
+            std::move(reader));
+        std::move(close_reader)
+            .Run(base::BindOnce(std::move(callback), base::unexpected(error)));
+      });
 
-  if (!status.has_value()) {
-    std::move(callback).Run(base::unexpected(status.error()));
-    return;
-  }
+  UmaLogExpectedStatus<UnusableSwbnFileError>(
+      "WebApp.Isolated.SwbnFileUsability", base::ok());
 
   std::move(callback).Run(std::make_unique<IsolatedWebAppResponseReaderImpl>(
       std::move(reader),
