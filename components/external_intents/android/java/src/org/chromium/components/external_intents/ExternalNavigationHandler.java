@@ -377,6 +377,7 @@ public class ExternalNavigationHandler {
      * <p>NOTE: NUM_ENTRIES must be added inside the IntDef{} to work around crbug.com/1300585. It
      * should be removed from the IntDef{} if an alternate solution for that bug is found.
      */
+    // LINT.IfChange
     @IntDef({
         OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
         OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB,
@@ -401,6 +402,8 @@ public class ExternalNavigationHandler {
 
         int NUM_ENTRIES = 5;
     }
+
+    // LINT.ThenChange(:printDebugShouldOverrideUrlLoadingResultType)
 
     /** Types of async action that can be taken for a navigation. */
     @IntDef({
@@ -645,6 +648,7 @@ public class ExternalNavigationHandler {
 
     private void printDebugShouldOverrideUrlLoadingResultType(OverrideUrlLoadingResult result) {
         String resultString;
+        // LINT.IfChange(printDebugShouldOverrideUrlLoadingResultType)
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 resultString = "OVERRIDE_WITH_EXTERNAL_INTENT";
@@ -655,11 +659,15 @@ public class ExternalNavigationHandler {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
                 resultString = "OVERRIDE_WITH_ASYNC_ACTION";
                 break;
+            case OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH:
+                resultString = "OVERRIDE_CLOSING_AFTER_AUTH";
+                break;
             case OverrideUrlLoadingResultType.NO_OVERRIDE: // Fall through.
             default:
                 resultString = "NO_OVERRIDE";
                 break;
         }
+        // LINT.ThenChange()
         Log.i(TAG, "shouldOverrideUrlLoading result: " + resultString);
     }
 
