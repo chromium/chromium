@@ -3880,15 +3880,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX" desc="Name of FEDEX Carrier">
-          FEDEX
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_UPS" desc="Name of UPS Carrier">
-          UPS
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_USPS" desc="Name of USPS Carrier">
-          USPS
-      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION" desc="Descripiton for the long-press context menu of the parcel tracking module.">
         Hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>"
       </message>
@@ -3903,30 +3894,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed when a package is already being tracked.">
         Package already tracked
       </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_DELIVERED_BY" desc="Text that prefaces a parcel carrier in the parcel tracking infobar modal.">
-        Delivered by
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_PACKAGE_LABEL" desc="Text that prefaces a tracking number in the parcel tracking infobar modal when there are multiple packages displayed.">
-        Package
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_PACKAGE_NUMBER" desc="Text that prefaces a tracking number in the parcel tracking infobar modal when there is only one package displayed.">
-        Package number
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_TRACK_BUTTON" desc="Text for the button in the parcel tracking infobar modal that tracks the package(s).">
-        {COUNT, plural,
-        =1 {Track this package}
-        other {Track all packages}}
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_UNTRACK_BUTTON" desc="Text for the button in the parcel tracking infobar modal that untracks the package(s).">
-        {COUNT, plural,
-        =1 {Untrack this package}
-        other {Untrack all packages}}
-      </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION" desc="Text for the tertiary action string of the parcel tracking opt-in half-sheet screen.">
         Ask me every time
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_REPORT_AN_ISSUE" desc="Title for the option on the parcel tracking infobar to report an issue">
-        Report an issue
       </message>
       <message name="IDS_IOS_PARENT_MANAGED_POPOVER_TEXT" desc="This text is shown when parental controls are enabled for a supervised user which affects settings.">
       Managed by your parent
@@ -5583,9 +5552,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_SITES_WERE_COPIED_MESSAGE" desc="Confirmation that the sites URL's of a saved credential was copied. This is shown alone in an infobar at the bottom of the screen. [Length: one line]">
         Site addresses copied
-      </message>
-      <message name="IDS_IOS_SETTINGS_SITE_COPY_BUTTON" desc="Button that the user can press to copy the site to clipboard. [Length: 12em]">
-        Copy
       </message>
       <message name="IDS_IOS_SETTINGS_SITE_COPY_MENU_ITEM" desc="Context menu item available on the cell showing the site/URL with a passwords origin, in the detailed view of a stored credential. The user can select it to copy the site to clipboard. [Length: should be one short word, is under 5em in English]">
         Copy
