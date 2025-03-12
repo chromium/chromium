@@ -158,6 +158,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
         'jetstream2.crossbench': 20,
     },
     'linux-perf-fyi': {
@@ -165,6 +166,7 @@ TARGET_DEVICES = {
         'speedometer2-minorms': 4,
         'speedometer3': 4,
         'speedometer3.crossbench': 4,
+        'speedometer3.1.crossbench': 4,
         'jetstream2.crossbench': 4,
         'motionmark1.3.crossbench': 4,
     },
@@ -199,6 +201,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
         'jetstream2.crossbench': 20,
     },
     'win-10_laptop_low_end-perf': {
@@ -213,6 +216,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
     },
     'win-10-perf': {
         'jetstream2': {
@@ -232,6 +236,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
     },
     'win-11-perf': {
         'jetstream2': {
@@ -245,6 +250,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
     },
     'linux-perf-calibration': {
         'jetstream2': {
@@ -270,6 +276,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
     },
     'mac-intel-perf': {
         'jetstream2': {
@@ -283,6 +290,7 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
     },
     'mac-m1_mini_2020-perf': {
         'jetstream2': {
@@ -305,6 +313,7 @@ TARGET_DEVICES = {
             'Speedometer3': 28,
         },
         'speedometer3.crossbench': 20,
+        'speedometer3.1.crossbench': 20,
         'rendering.desktop.notracing': 20,
         'motionmark1.3.crossbench': 20,
     },
@@ -320,6 +329,7 @@ TARGET_DEVICES = {
             'Speedometer3': 7,
         },
         'speedometer3.crossbench': 4,
+        'speedometer3.1.crossbench': 4,
     },
     'mac-m1_mini_2020-no-brp-perf': {
         'speedometer2': {
@@ -333,5 +343,6 @@ TARGET_DEVICES = {
     'mac-m1-pro-perf': {
         'speedometer3': 4,
         'speedometer3.crossbench': 4,
+        'speedometer3.1.crossbench': 4,
     },
 }

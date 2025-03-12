@@ -59,6 +59,16 @@
                 "display_name": "motionmark1.3.crossbench",
                 "arguments": []
             },
+            "speedometer_2.1": {
+                "display_name": "speedometer2.1.crossbench",
+                "arguments": [
+                    "--fileserver"
+                ]
+            },
+            "speedometer_3.1": {
+                "display_name": "speedometer3.1.crossbench",
+                "arguments": []
+            },
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
                 "arguments": []
@@ -66,11 +76,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 178,
-        "predicted_min_shard_time": 3196.0,
+        "num_stories": 181,
+        "predicted_min_shard_time": 2782.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 3196.0,
+        "predicted_max_shard_time": 2782.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 3196.0
+        "shard #0": 2782.0
     }
 }
