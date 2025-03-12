@@ -840,6 +840,9 @@
       <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE_ANDROID" desc="" translateable="false" formatter_data="android_java">
         This site belongs to a group of sites, defined by <ph name="SET_OWNER">%1$s<ex>gannett.com</ex></ph>, that can share your activity across the group to help sites work as expected.
       </message>
+      <message name="IDS_PAGE_INFO_RWS_V2_BUTTON_TOOLTIP" desc="" translateable="false">
+        Manage related sites data in a new tab
+      </message>
 
       <!-- RWS - All Sites -->
       <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
