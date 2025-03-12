@@ -77,10 +77,6 @@ public class BinaryStatePermissionPreference extends Preference
         if (mDescriptionIds != null) {
             mPositive.setPrimaryText(getContext().getText(mDescriptionIds[0]));
             mNegative.setPrimaryText(getContext().getText(mDescriptionIds[1]));
-            if (mDescriptionIds[2] != 0 && mDescriptionIds[3] != 0) {
-                mPositive.setIcon(mDescriptionIds[2]);
-                mNegative.setIcon(mDescriptionIds[3]);
-            }
         }
 
         RadioButtonWithDescription selectedRadioButton = findRadioButton(mSetting);

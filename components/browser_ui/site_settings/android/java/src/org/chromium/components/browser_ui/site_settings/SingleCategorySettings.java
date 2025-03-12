@@ -1566,7 +1566,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         int setting =
                 WebsitePreferenceBridge.getDefaultContentSetting(browserContextHandle, contentType);
         int[] descriptionIds =
-                ContentSettingsResources.getBinaryStateSettingResourceIDs(contentType);
+                ContentSettingsResources.getBinaryStateSettingDescriptionIDs(contentType);
         @ContentSettingValues
         @Nullable Integer defaultEnabledValue =
                 ContentSettingsResources.getDefaultEnabledValue(contentType);
