@@ -70,17 +70,17 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Event {
 
 #pragma pack(push, 1)
   struct PortDescriptor {
-    PortDescriptor();
+    PortDescriptor() = default;
 
-    NodeName peer_node_name;
-    PortName peer_port_name;
-    NodeName referring_node_name;
-    PortName referring_port_name;
-    uint64_t next_sequence_num_to_send;
-    uint64_t next_sequence_num_to_receive;
-    uint64_t last_sequence_num_to_receive;
-    bool peer_closed;
-    char padding[7];
+    NodeName peer_node_name = {};
+    PortName peer_port_name = {};
+    NodeName referring_node_name = {};
+    PortName referring_port_name = {};
+    uint64_t next_sequence_num_to_send = 0;
+    uint64_t next_sequence_num_to_receive = 0;
+    uint64_t last_sequence_num_to_receive = 0;
+    bool peer_closed = false;
+    char padding[7] = {0};
   };
 #pragma pack(pop)
 
