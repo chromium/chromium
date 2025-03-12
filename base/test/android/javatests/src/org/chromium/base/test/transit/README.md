@@ -139,7 +139,17 @@ current state, increasing discoverability of shared code.
 It is recommended to batch Public Transit tests to reduce runtime and save CQ/CI
 resources.
 
-#### How to Batch a Public Transit Test
+#### How to Batch restarting the Activity between tests
+
+1. Add `@Batch(Batch.PER_CLASS)` to the test class.
+2. Get the first station in each test case from a non-batched entry point, e.g.
+   `ChromeTabbedActivityPublicTransitEntryPoints#startOnBlankPageNonBatched()`.
+
+The `BatchedPublicTransitRule` is not necessary. Returning to the home station
+is not necessary. However, this does not run as fast as "reusing the Activity"
+below, especially in Release.
+
+#### How to Batch reusing the Activity between tests
 
 1. Add `@Batch(Batch.PER_CLASS)` to the test class.
 2. Add the [`BatchedPublicTransitRule<>`] specifying the home station. The *home
