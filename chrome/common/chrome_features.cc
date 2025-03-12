@@ -408,6 +408,11 @@ BASE_FEATURE(kGlicDebugWebview,
 
 BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the Glic UI container can be resized by the user
+BASE_FEATURE(kGlicUserResize,
+             "GlicUserResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

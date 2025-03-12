@@ -37,7 +37,13 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
 
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
-GlicWidget::GlicWidget(InitParams params) : views::Widget(std::move(params)) {}
+GlicWidget::GlicWidget(InitParams params) : views::Widget(std::move(params)) {
+  // TODO(402791189): Instead use a flag on Widget::InitParams when it's
+  // available.
+  if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
+    widget_delegate()->SetCanResize(true);
+  }
+}
 
 GlicWidget::~GlicWidget() = default;
 
