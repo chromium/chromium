@@ -720,7 +720,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
     config.trigger = EventConfig("android_tab_declutter_iph_triggered",
                                  Comparator(EQUAL, 0), 7, 7);
     config.event_configs.insert(
