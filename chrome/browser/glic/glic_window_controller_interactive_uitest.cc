@@ -47,8 +47,12 @@
 namespace glic {
 
 namespace {
-const InteractiveBrowserTestApi::DeepQuery kMockGlicClientUnresponsiveButton = {
-    "#busyWork"};
+
+const InteractiveBrowserTestApi::DeepQuery
+    kMockGlicClientStart3sUnresponsiveButton = {"#busyWork3s"};
+const InteractiveBrowserTestApi::DeepQuery
+    kMockGlicClientStart8sUnresponsiveButton = {"#busyWork8s"};
+
 }  // anonymous namespace
 
 class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
@@ -355,13 +359,28 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ClientBecomeUnresponsive) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       ClientUnresponsiveThenResumeResponsive) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),
-      ClickMockGlicElement(kMockGlicClientUnresponsiveButton, true),
+      ClickMockGlicElement(kMockGlicClientStart3sUnresponsiveButton, true),
       ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState,
-                   mojom::WebUiState::kUnresponsive));
+                   mojom::WebUiState::kUnresponsive),
+      // Client should resume responsive if unresponsive less than 5s.
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       ClientUnresponsiveThenError) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      ClickMockGlicElement(kMockGlicClientStart8sUnresponsiveButton, true),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      WaitForState(test::internal::kGlicAppState,
+                   mojom::WebUiState::kUnresponsive),
+      // Client should show error after showing the unresponsive UI for 5s.
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kError));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

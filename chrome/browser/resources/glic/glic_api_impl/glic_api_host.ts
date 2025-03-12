@@ -30,6 +30,7 @@ export enum WebClientState {
   UNINITIALIZED,
   RESPONSIVE,
   UNRESPONSIVE,
+  ERROR,
 }
 
 // Implemented by the embedder of GlicApiHost.
@@ -501,6 +502,46 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 }
 
+class OneShotTimer {
+  private timerId: number|undefined;
+  private promiseReject: ((reason?: any) => void)|undefined;
+
+  constructor(private delayMs: number) {}
+
+  // Cancels any running timer.
+  reset(): void {
+    if (this.timerId !== undefined) {
+      clearTimeout(this.timerId);
+      this.timerId = undefined;
+      if (this.promiseReject) {
+        this.promiseReject(new Error('Timer reset'));
+        this.promiseReject = undefined;
+      }
+    }
+  }
+
+  // Cancels any running timer, starts a new one. Callback is only
+  // run if the timer is not reset first.
+  start(callback: () => void): void {
+    this.startPromise().then(callback);
+  }
+
+  // Cancels any running timer, starts a new one. Resolves when
+  // complete, rejects if canceled.
+  startPromise(): Promise<void> {
+    this.reset();
+    return new Promise<void>((resolve, reject) => {
+      this.promiseReject = reject;
+
+      this.timerId = setTimeout(() => {
+        this.timerId = undefined;
+        resolve();
+        this.promiseReject = undefined;
+      }, this.delayMs);
+    });
+  }
+}
+
 export class GlicApiHost implements PostMessageRequestHandler {
   private senderId = newSenderId();
   private messageHandler: HostMessageHandler;
@@ -510,6 +551,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private embedder: ApiHostEmbedder|undefined;  // Undefined after destroy().
   private bootstrapPingIntervalId: number|undefined;
   private webClientResponsivenessCheckInternalId: number|undefined;
+  private webClientUnresponsiveUiTimer: OneShotTimer;
   private webClientState: WebClientState = WebClientState.UNINITIALIZED;
 
   constructor(
@@ -527,6 +569,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.messageHandler =
         new HostMessageHandler(this.handler, this.sender, embedder, this);
     this.embedder = embedder;
+    this.webClientUnresponsiveUiTimer = new OneShotTimer(
+        loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs'));
 
     this.bootstrapPingIntervalId =
         window.setInterval(this.bootstrapPing.bind(this), 50);
@@ -538,6 +582,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.embedder = undefined;
     window.clearInterval(this.bootstrapPingIntervalId);
     this.stopWebClientResponsivenessCheck();
+    this.stopUnresponsiveUiTimer();
     this.postMessageReceiver.destroy();
     this.messageHandler.destroy();
     this.sender.destroy();
@@ -610,16 +655,14 @@ export class GlicApiHost implements PostMessageRequestHandler {
             if (this.webClientState !== WebClientState.RESPONSIVE) {
               this.webClientState = WebClientState.RESPONSIVE;
               this.embedder?.webClientStateChanged(WebClientState.RESPONSIVE);
+              this.stopUnresponsiveUiTimer();
             }
           } catch (e) {
             console.warn(e);
             if (this.webClientState !== WebClientState.UNRESPONSIVE) {
               this.webClientState = WebClientState.UNRESPONSIVE;
               this.embedder?.webClientStateChanged(WebClientState.UNRESPONSIVE);
-              // TODO(crbug.com/402435079): Start a timer of
-              // loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs')
-              // milliseconds to transit from unresponsive UI to error UI if
-              // still no responses, and stopWebClientResponsivenessCheck.
+              this.startUnresponsiveUiTimer();
             }
           }
         }, loadTimeData.getInteger('clientResponsivenessCheckIntervalMs'));
@@ -630,6 +673,17 @@ export class GlicApiHost implements PostMessageRequestHandler {
       clearInterval(this.webClientResponsivenessCheckInternalId);
       this.webClientResponsivenessCheckInternalId = undefined;
     }
+  }
+
+  async startUnresponsiveUiTimer() {
+    await this.webClientUnresponsiveUiTimer.startPromise();
+    this.webClientState = WebClientState.ERROR;
+    this.embedder?.webClientStateChanged(WebClientState.ERROR);
+    this.stopWebClientResponsivenessCheck();
+  }
+
+  stopUnresponsiveUiTimer() {
+    this.webClientUnresponsiveUiTimer.reset();
   }
 
   async openLinkInNewTab(url: string) {
