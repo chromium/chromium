@@ -188,9 +188,8 @@ class MutableProfileOAuth2TokenServiceDelegate
       MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       ClearBoundTokenOnStartup);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  FRIEND_TEST_ALL_PREFIXES(
-      MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
-      KeepPrimaryAccountTokenOnStartupWithClearOnExit);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           KeepPrimaryAccountTokenOnStartupWithClearOnExit);
 
   // WebDataServiceConsumer implementation:
   void OnWebDataServiceRequestDone(

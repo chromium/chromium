@@ -12,9 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/with_feature_override.h"
 #include "base/uuid.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
@@ -33,7 +31,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webdata/common/web_database_service.h"
@@ -1198,8 +1195,6 @@ TEST_F(AddressDataManagerTest,
 TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
   ResetAddressDataManager(
       /*use_sync_transport_mode=*/true);
-  base::test::ScopedFeatureList feature_list{
-      ::switches::kExplicitBrowserSigninUIOnDesktop};
   const CoreAccountInfo& account = sync_service_.GetAccountInfo();
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
       account.account_id, account.email, account.gaia,

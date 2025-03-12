@@ -202,17 +202,16 @@ class AccountReconcilor
                            HandleSigninDuringReconcile);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DiceReconcileReuseGaiaFirstAccount);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestForSupervisedUsers,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DeleteCookieForNonSyncingSupervisedUsers);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestForSupervisedUsers,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DeleteCookieForSyncingSupervisedUsers);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestWithUnoDesktop,
-                           DeleteCookie);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestWithUnoDesktop,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest, DeleteCookie);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DeleteCookieForSignedInUser);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestWithUnoDesktop,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            DeleteCookieForSyncingUser);
-  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestWithUnoDesktop,
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            PendingStateThenClearPrimaryAccount);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest, TokensNotLoaded);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,

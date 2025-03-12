@@ -673,8 +673,6 @@ TEST_F(AccountsMutatorTest, MoveAccount) {
 
 TEST(ExplicitBrowserSigninAccountsMutatorTest, MoveAccount) {
   base::test::TaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kExplicitBrowserSigninUIOnDesktop};
   IdentityTestEnvironment identity_test_env;
   IdentityManager* identity_manager = identity_test_env.identity_manager();
   AccountsMutator* accounts_mutator = identity_manager->GetAccountsMutator();

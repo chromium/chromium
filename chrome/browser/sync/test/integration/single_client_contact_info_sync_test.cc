@@ -147,10 +147,6 @@ class SingleClientContactInfoSyncTest : public SyncTest {
   autofill::PersonalDataManager* GetPersonalDataManager() const {
     return contact_info_helper::GetPersonalDataManager(GetProfile(0));
   }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
@@ -272,6 +268,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
                   .Wait());
 }
 
+// Transport Mode is only supported on these platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // CONTACT_INFO should be able to run in transport mode and the availability of
 // account profiles should depend on the signed-in state.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
@@ -288,15 +286,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                   UnorderedElementsAre(profile))
                   .Wait());
   // ChromeOS doesn't have the concept of sign-out.
-#if !BUILDFLAG(IS_CHROMEOS)
   GetClient(0)->SignOutPrimaryAccount();
   EXPECT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(), IsEmpty())
                   .Wait());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DeleteAccountDataInErrorState) {
   // Add a profile to account storage.
@@ -427,7 +422,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                    ->address_data_manager()
                    .IsAutofillSyncToggleAvailable());
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Sign out.
   GetClient(0)->SignOutPrimaryAccount();
 
@@ -435,9 +429,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   EXPECT_FALSE(GetPersonalDataManager()
                    ->address_data_manager()
                    .IsAutofillSyncToggleAvailable());
-#endif
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        PreservesUnsupportedFieldsDataOnCommits) {
   // Create an unsupported field with an unused tag.

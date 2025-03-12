@@ -103,8 +103,7 @@ bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
 
 bool DiceAccountReconcilorDelegate::IsCookieBasedConsistencyMode() const {
   CHECK(IsReconcileEnabled());
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(

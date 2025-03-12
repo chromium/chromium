@@ -169,7 +169,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
                             kReplaceSyncPromosWithSignInPromos,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
                             kReadingListEnableSyncTransportModeUponSignIn,
-                            switches::kExplicitBrowserSigninUIOnDesktop,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
                             syncer::kMoveThemePrefsToSpecifics,

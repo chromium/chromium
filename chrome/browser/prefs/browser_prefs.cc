@@ -2595,10 +2595,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kBirchUseSelfShare);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Added 06/2024.
   syncer::SyncPrefs::MaybeMigrateAutofillToPerAccountPref(profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 06/2024
