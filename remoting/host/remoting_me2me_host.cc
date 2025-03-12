@@ -1865,7 +1865,8 @@ void HostProcess::StartHost() {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  desktop_environment_options_.set_enable_remote_webauthn(is_corp_host_);
+  desktop_environment_options_.set_enable_remote_webauthn(is_corp_host_ ||
+                                                          is_cloud_host_);
 #endif
 #if BUILDFLAG(IS_WIN)
   // Set a default value for whether to allow the dxgi capturer. This value can
