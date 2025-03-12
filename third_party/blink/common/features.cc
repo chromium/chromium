@@ -997,6 +997,10 @@ BASE_FEATURE(kFledgeEnforcePermissionPolicyContributeOnEvent,
              "FledgeEnforcePermissionPolicyContributeOnEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFledgeDisableLocalAdsAuctions,
+             "FledgeDisableLocalAdsAuctions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);

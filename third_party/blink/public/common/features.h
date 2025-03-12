@@ -629,6 +629,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeEnforcePermissionPolicyContributeOnEvent);
 
+// Feature flag to disable locally hosted ad auction.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDisableLocalAdsAuctions);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkInversionMethod,
                                                kForceDarkInversionMethodParam);
