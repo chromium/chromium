@@ -110,6 +110,7 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
@@ -2091,6 +2092,10 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+  if (!MayPerformAutofillAiAction(
+          client(), AutofillAiAction::kServerClassificationModel)) {
+    return;
+  }
   for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
     if (!form || !form->may_run_autofill_ai_model()) {
       continue;
