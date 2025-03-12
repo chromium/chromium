@@ -452,4 +452,8 @@ message WebApp {
 
   // The related applications field of the manifest for installed web apps.
   repeated proto.RelatedApplications related_applications = 70;
+
+  // Only used on Mac OS, Set to true if the app was installed via the DIY app
+  // install path by the user and had new icons.
+  optional bool diy_app_icons_masked_on_mac = 71;
 }

@@ -357,6 +357,14 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   ApplyUserDisplayModeSyncMitigations(options, *web_app);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_MAC)
+  // Only set this flag for newly installed DIY apps on Mac
+  if (web_app->is_diy_app() &&
+      (!existing_web_app || options.overwrite_existing_manifest_fields)) {
+    web_app->SetDiyAppIconsMaskedOnMac(true);
+  }
+#endif
+
   // `WebApp::chromeos_data` has a default value already. Only override if the
   // caller provided a new value.
   if (options.chromeos_data.has_value())

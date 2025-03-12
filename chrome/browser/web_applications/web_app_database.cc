@@ -949,6 +949,9 @@ std::unique_ptr<proto::WebApp> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_was_shortcut_app(web_app.was_shortcut_app());
 
+  local_data->set_diy_app_icons_masked_on_mac(
+      web_app.diy_app_icons_masked_on_mac());
+
   for (const auto& related_application : web_app.related_applications()) {
     proto::RelatedApplications* related_application_proto =
         local_data->add_related_applications();
@@ -1826,6 +1829,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   web_app->SetIsDiyApp(local_data.is_diy_app());
 
   web_app->SetWasShortcutApp(local_data.was_shortcut_app());
+
+  web_app->SetDiyAppIconsMaskedOnMac(local_data.diy_app_icons_masked_on_mac());
 
   std::vector<blink::Manifest::RelatedApplication> related_applications;
   for (const auto& related_application_proto :
