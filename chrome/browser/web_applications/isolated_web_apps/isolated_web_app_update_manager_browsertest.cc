@@ -992,8 +992,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                                     /*expected_count=*/0);
 }
 
+// TODO(b/402650079) flaky on mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SucceedsWithServiceWorkerWithFetchHandler \
+  DISABLED_SucceedsWithServiceWorkerWithFetchHandler
+#else
+#define MAYBE_SucceedsWithServiceWorkerWithFetchHandler \
+  SucceedsWithServiceWorkerWithFetchHandler
+#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
-                       SucceedsWithServiceWorkerWithFetchHandler) {
+                       MAYBE_SucceedsWithServiceWorkerWithFetchHandler) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(
