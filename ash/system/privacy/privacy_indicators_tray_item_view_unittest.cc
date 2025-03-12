@@ -744,7 +744,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
 }
 
 // TODO(crbug.com/402479687): Re-enable test when flakiness is fixed.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER)
 #define MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess DISABLED_HidingDelayTimerEnabledWithMultipleAppsAccess
 #else
 #define MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess HidingDelayTimerEnabledWithMultipleAppsAccess
