@@ -307,13 +307,6 @@ void FakeWebState::SetTitle(const std::u16string& title) {
   }
 }
 
-void FakeWebState::SetUnderPageBackgroundColor(UIColor* color) {
-  under_page_background_color_ = color;
-  for (auto& observer : observers_) {
-    observer.UnderPageBackgroundColorChanged(this);
-  }
-}
-
 const std::u16string& FakeWebState::GetTitle() const {
   return title_;
 }
@@ -632,7 +625,7 @@ UIColor* FakeWebState::GetThemeColor() {
 }
 
 UIColor* FakeWebState::GetUnderPageBackgroundColor() {
-  return under_page_background_color_;
+  return nil;
 }
 
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
