@@ -12,7 +12,6 @@ found in the LICENSE file.
     <dimen name="shared_image_tiles_icon_height">28dp</dimen>
     <dimen name="shared_image_tiles_icon_total_height">32dp</dimen>
     <dimen name="small_shared_image_tiles_icon_height">16dp</dimen>
-    <dimen name="small_shared_image_tiles_icon_total_height">20dp</dimen>
     <dimen name="small_shared_image_tiles_text_size">10sp</dimen>
     <dimen name="small_shared_image_tiles_text_padding">4dp</dimen>
     <dimen name="shared_image_tiles_overlap_margin">8dp</dimen>
