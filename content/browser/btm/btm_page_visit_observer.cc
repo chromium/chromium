@@ -84,7 +84,7 @@ class NavigationState
     // `filter_.Filter()` requires that `urls` contain all URLs that `filter_`
     // recorded an access type for.
     urls.push_back(navigation_handle.GetURL());
-    CHECK(filter_.Filter(urls, &accesses));
+    CHECK(filter_.Filter(urls, accesses));
     for (size_t i = 0; i < server_redirect_chain_indices_.size(); ++i) {
       navigation.server_redirects.emplace_back(
           urls[i],
