@@ -30,7 +30,7 @@ import type {SettingsPrefs} from './common.js';
 import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 import type {ColorMenuElement} from './menus/color_menu.js';
 import type {HighlightMenu} from './menus/highlight_menu.js';
-import type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
+import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 import type {MenuStateItem} from './menus/menu_util.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
@@ -44,7 +44,7 @@ export interface ReadAnythingToolbarElement {
     rateMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     colorMenu: ColorMenuElement,
     lineSpacingMenu: LineSpacingMenuElement,
-    letterSpacingMenu: LetterSpacingMenu,
+    letterSpacingMenu: LetterSpacingMenuElement,
     fontMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,

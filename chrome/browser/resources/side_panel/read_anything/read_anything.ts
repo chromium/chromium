@@ -18,7 +18,7 @@ export type {LanguageMenuElement} from './language_menu.js';
 export type {LanguageToastElement} from './language_toast.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {HighlightMenu} from './menus/highlight_menu.js';
-export type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
+export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export {MenuStateItem} from './menus/menu_util.js';
 export type {SimpleActionMenu} from './menus/simple_action_menu.js';
