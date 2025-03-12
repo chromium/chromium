@@ -11,6 +11,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.mojom.LogSource;
 import org.chromium.url.GURL;
 
@@ -19,6 +21,7 @@ import org.chromium.url.GURL;
  * delegated to the native C++ class.
  */
 @JNINamespace("data_sharing")
+@NullMarked
 public class DataSharingServiceImpl implements DataSharingService {
     private long mNativePtr;
 
@@ -139,7 +142,7 @@ public class DataSharingServiceImpl implements DataSharingService {
         return mLogger;
     }
 
-    private static SharedDataPreviewOrFailureOutcome sSharedEntitiesPreviewForTesting;
+    private static @Nullable SharedDataPreviewOrFailureOutcome sSharedEntitiesPreviewForTesting;
 
     /** Sets a test preview data to return for all preview requests. */
     public static void setSharedEntitiesPreviewForTesting(
