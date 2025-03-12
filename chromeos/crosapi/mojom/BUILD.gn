@@ -50,7 +50,6 @@ mojom("mojom") {
     "network_change.mojom",
     "networking_attributes.mojom",
     "networking_private.mojom",
-    "nonclosable_app_toast_service.mojom",
     "nullable_primitives.mojom",
     "parent_access.mojom",
     "policy_namespace.mojom",

@@ -891,7 +891,7 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
                               VerificationStatus::kNoStatus);
   }
   if (options.expiry_date) {
-    attributes.emplace_back(AttributeType(kPassportExpiryDate));
+    attributes.emplace_back(AttributeType(kPassportExpirationDate));
     attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE, options.expiry_date,
                               /*app_locale=*/"",
                               /*format_string=*/u"YYYY-MM-DD",
@@ -921,7 +921,7 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
     attributes.back().FinalizeInfo();
   }
   if (options.region) {
-    attributes.emplace_back(AttributeType(kDriversLicenseRegion));
+    attributes.emplace_back(AttributeType(kDriversLicenseState));
     attributes.back().SetInfo(DRIVERS_LICENSE_REGION, options.region,
                               /*app_locale=*/"en-US",
                               /*format_string=*/u"",

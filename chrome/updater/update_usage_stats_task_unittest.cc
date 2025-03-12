@@ -117,7 +117,8 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
@@ -126,7 +127,8 @@ TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", true);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_TRUE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+    ASSERT_TRUE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+        GetUpdaterScopeForTesting()));
   }
 }
 
@@ -136,7 +138,8 @@ TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", false);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+    ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+        GetUpdaterScopeForTesting()));
   }
 }
 
@@ -147,11 +150,13 @@ TEST_F(UpdateUsageStatsTaskTest,
   }
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", false);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", true);
-  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", true);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
-  ASSERT_TRUE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+  ASSERT_TRUE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -161,7 +166,8 @@ TEST_F(UpdateUsageStatsTaskTest,
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 
 // TODO(crbug.com/40821596): Enable tests once the feature is implemented.
@@ -169,14 +175,16 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);
   SetAppUsageStats("app2", false);
-  ASSERT_TRUE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+  ASSERT_TRUE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 #endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
   SetAppUsageStats("app1", false);
   SetAppUsageStats("app2", false);
-  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(UsageStatsProvider::Create()->AnyAppEnablesUsageStats(
+      GetUpdaterScopeForTesting()));
 }
 #endif
 

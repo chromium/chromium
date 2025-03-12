@@ -42,6 +42,10 @@ PrefetchHandleImpl::~PrefetchHandleImpl() {
   }
 }
 
+bool PrefetchHandleImpl::IsAlive() const {
+  return static_cast<bool>(prefetch_container_);
+}
+
 void PrefetchHandleImpl::SetPrefetchStatusOnReleaseStartedPrefetch(
     PrefetchStatus prefetch_status_on_release_started_prefetch) {
   CHECK(!prefetch_status_on_release_started_prefetch_);

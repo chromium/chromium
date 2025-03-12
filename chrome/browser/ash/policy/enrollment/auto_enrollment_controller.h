@@ -106,8 +106,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Clears everything that needs to be cleared at OOBE if
   // the device gets the response that forced re-enrollment is not required.
   // This currently removes firmware management parameters and sets
-  // block_devmode=0 and check_enrollment=0 in RW_VPD by making asynchronous
-  // calls to the respective D-Bus services.
+  // block_devmode=0 in RW_VPD by making asynchronous calls to the respective
+  // D-Bus services.
   // The notifications have to be sent only after the FWMP and VPD is cleared,
   // because the user might try to switch to devmode. In this case, if
   // block_devmode is in FWMP and the clear operation didn't finish, the switch
@@ -120,8 +120,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // `progress_callbacks_` in case cryptohome does not become available and the
   // timer is still running.
   // `service_is_ready` indicates if the cryptohome D-Bus service is ready.
-  // TODO(crbug.com/400446862) Analyze and (likely) remove this and related
-  // functions.
   void StartRemoveFirmwareManagementParameters(bool service_is_ready);
 
   // Callback for RemoveFirmwareManagementParameters(). If an error is received
@@ -132,20 +130,17 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       std::optional<device_management::RemoveFirmwareManagementParametersReply>
           reply);
 
-  // Makes a D-Bus call to session_manager to set block_devmode=0 and
-  // check_enrollment=0 in RW_VPD. Stops the `safeguard_timer_` and notifies the
-  // `progress_callbacks_` in case session manager does not become available
-  // and the timer is still running.
+  // Makes a D-Bus call to session_manager to set block_devmode=0 in RW_VPD.
+  // Stops the `safeguard_timer_` and notifies the `progress_callbacks_` in case
+  // session manager does not become available and the timer is still running.
   // `service_is_ready` indicates if the session manager D-Bus service is ready.
-  // TODO(crbug.com/400446862) Analyze and (likely) remove this and related
-  // functions.
-  void StartClearForcedReEnrollmentVpd(bool service_is_ready);
+  void StartClearBlockDevmodeVpd(bool service_is_ready);
 
-  // Callback for ClearForcedReEnrollmentVpd(). If an error is received
-  // here, it is logged only, without changing the flow after that.
+  // Callback for `StartClearBlockDevmodeVpd`. If clearing block_devmode did
+  // not succeed, it is logged only, without changing the flow after that.
   // This also notifies the `progress_callbacks_` since the forced re-enrollment
   // cleanup is finished at this point.
-  void OnForcedReEnrollmentVpdCleared(bool reply);
+  void OnBlockDevmodeClearedVpd(bool succeeded);
 
   // Handles timeout of the safeguard timer and stops waiting for a result.
   void Timeout();

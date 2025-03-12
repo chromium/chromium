@@ -132,12 +132,6 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenPaymentsSettings:
       can_execute = true;
       break;
-    case Command::KOpenHistorySearchSettings:
-      can_execute = true;
-      break;
-    case Command::kShowCustomizeChromeToolbar:
-      can_execute = ActiveTabSupportsCustomizeChrome();
-      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -222,13 +216,6 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
                     disposition);
       break;
-    case Command::KOpenHistorySearchSettings:
-      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kHistorySearchSubpage)),
-                    disposition);
-      break;
-    case Command::kShowCustomizeChromeToolbar:
-      ShowCustomizeChromeToolbar();
-      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
   }
@@ -259,18 +246,6 @@ bool BrowserCommandHandler::BrowserSupportsTabGroups() {
   return browser->tab_strip_model()->SupportsTabGroups();
 }
 
-bool BrowserCommandHandler::ActiveTabSupportsCustomizeChrome() {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->GetTabFeatures()) {
-    return false;
-  }
-  customize_chrome::SidePanelController* side_panel_controller =
-      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
-  return side_panel_controller &&
-         side_panel_controller->IsCustomizeChromeEntryAvailable();
-}
-
 void BrowserCommandHandler::StartTabGroupTutorial() {
   auto* tutorial_id = kTabGroupTutorialId;
 
@@ -296,11 +271,6 @@ void BrowserCommandHandler::OpenPasswordManager() {
 void BrowserCommandHandler::OpenAISettings() {
   chrome::ShowSettingsSubPage(chrome::FindBrowserWithProfile(profile_),
                               chrome::kExperimentalAISettingsSubPage);
-}
-
-void BrowserCommandHandler::ShowCustomizeChromeToolbar() {
-  chrome::ExecuteCommand(chrome::FindBrowserWithProfile(profile_),
-                         IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
 }
 
 bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {

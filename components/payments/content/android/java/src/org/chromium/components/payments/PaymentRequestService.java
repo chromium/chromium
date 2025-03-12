@@ -1212,6 +1212,13 @@ public class PaymentRequestService
         return mBrowserPaymentRequest.getAndroidIntentLauncher();
     }
 
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public boolean isFullDelegationRequired() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.isFullDelegationRequired();
+    }
+
     /**
      * @param methodDataList A list of PaymentMethodData.
      * @return The validated method data, a mapping of method names to its PaymentMethodData(s);

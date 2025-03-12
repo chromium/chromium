@@ -151,3 +151,27 @@ absl_cc_test(
     absl::compare
     GTest::gmock_main
 )
+
+# Deprecated empty library.
+# Clients should remove this dependency.
+absl_cc_library(
+  NAME
+    bad_any_cast
+  PUBLIC
+)
+
+# Deprecated empty library.
+# Clients should remove this dependency.
+absl_cc_library(
+  NAME
+    bad_optional_access
+  PUBLIC
+)
+
+# Deprecated empty library.
+# Clients should remove this dependency.
+absl_cc_library(
+  NAME
+    bad_variant_access
+  PUBLIC
+)

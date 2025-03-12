@@ -620,6 +620,9 @@
                     },
                     "enable_features": [
                         "AndroidWarmUpSpareRendererWithTimeout"
+                    ],
+                    "disable_features": [
+                        "OverrideAndroidOmniboxSpareRendererDelay"
                     ]
                 }
             ]
@@ -13076,25 +13079,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InputScenarioPriorityBoostDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InputScenarioPriorityBoost"
                     ]
                 }
             ]

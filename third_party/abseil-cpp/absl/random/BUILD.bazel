@@ -447,6 +447,7 @@ cc_test(
     deps = [
         ":bit_gen_ref",
         ":random",
+        "//absl/base:config",
         "//absl/base:fast_type_id",
         "//absl/random/internal:sequence_urbg",
         "@googletest//:gtest",

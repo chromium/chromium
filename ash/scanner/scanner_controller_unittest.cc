@@ -1208,9 +1208,7 @@ TEST_F(ScannerControllerTest,
             original_account);
   AccountId new_account =
       AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("fakegaia"));
-  GetSessionControllerClient()->AddUserSession({new_account.GetUserEmail()},
-                                               new_account);
-  GetSessionControllerClient()->SwitchActiveUser(new_account);
+  SimulateUserLogin(new_account);
   ASSERT_NE(Shell::Get()->session_controller()->GetActiveAccountId(),
             original_account);
   std::move(send_feedback_callback)

@@ -358,6 +358,12 @@ void WindowAndroid::ReleasePointerLock(ViewAndroid& view_android) {
                                                view_android.GetContainerView());
 }
 
+void WindowAndroid::OnWindowPointerLockRelease(JNIEnv* env) {
+  DCHECK(pointer_locking_view_);
+  pointer_locking_view_->OnPointerLockRelease();
+  pointer_locking_view_ = nullptr;
+}
+
 void WindowAndroid::SetTestHooks(TestHooks* hooks) {
   test_hooks_ = hooks;
   if (!test_hooks_)

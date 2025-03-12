@@ -21,6 +21,7 @@ namespace {
 
 struct SameSizeAsConstraintSpace {
   LogicalSize available_size;
+  LogicalSize percentage_size;
   BfcOffset bfc_offset;
   ExclusionSpace exclusion_space;
   Member<void*> rare_data;

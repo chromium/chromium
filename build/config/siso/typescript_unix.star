@@ -1,7 +1,10 @@
 # -*- bazel-starlark -*-
-load("@builtin//lib/gn.star", "gn")
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Siso configuration for typescript on Unix."""
+
 load("@builtin//struct.star", "module")
-load("./config.star", "config")
 load("./typescript_all.star", "typescript_all")
 
 __handlers = {}

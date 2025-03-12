@@ -548,18 +548,28 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*elu_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(8)},
        /*expand_input=*/
        {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(8)},
-       /*gather_input=*/kFloat16To32AndInt8To64AndUint8,
+       /*gather_input=*/
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(8)},
        /*gather_indices=*/
-       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
-       /*gather_elements_input=*/kFloat16To32AndInt8To64AndUint8,
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+        SupportedRanks::UpTo(8)},
+       // Scalar is not supported:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/gather_nd.cc
+       /*gather_elements_input=*/
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::NonScalarUpTo(8)},
        /*gather_elements_indices=*/
-       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
-       /*gather_nd_input=*/kFloat16To32AndInt8To64AndUint8,
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+        SupportedRanks::NonScalarUpTo(8)},
+       /*gather_nd_input=*/
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::NonScalarUpTo(8)},
        /*gather_nd_indices=*/
-       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+        SupportedRanks::NonScalarUpTo(8)},
        /*gelu_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
-       /*gemm_input=*/DataTypeConstraint::kFloat16To32,
+       /*gemm_a=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gemm_c=*/{DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(2)},
        /*gru_input=*/DataTypeConstraint::kFloat16To32,
        /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
        // Polyfilled with ADD and MUL.
@@ -2764,8 +2774,10 @@ int32_t GraphBuilderTflite::CastGatherIndices(
 
 auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
-      GetOperand(gather.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gather_input.Supports(
+      GetOperand(gather.input_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.gather_indices.Supports(
+      GetOperand(gather.indices_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
                    SerializeInputTensorInfo(gather.indices_operand_id));
   const int32_t indices_tensor_index = CastGatherIndices(indices_tensor_info);
@@ -2900,12 +2912,12 @@ auto GraphBuilderTflite::SerializeElementsCoordinates(
 auto GraphBuilderTflite::SerializeGatherElements(
     const mojom::GatherElements& gather_elements)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.gather_elements_input.Has(
-      GetOperand(gather_elements.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gather_elements_input.Supports(
+      GetOperand(gather_elements.input_operand_id).descriptor));
   const mojom::Operand& indices_operand =
       GetOperand(gather_elements.indices_operand_id);
-  CHECK(context_properties_.data_type_limits.gather_elements_indices.Has(
-      indices_operand.descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gather_elements_indices.Supports(
+      indices_operand.descriptor));
   if (indices_operand.kind != mojom::Operand::Kind::kConstant) {
     // TODO(crbug.com/377615324): Support user input indices.
     return base::unexpected("gatherElements only supports constant indices.");
@@ -2928,10 +2940,10 @@ auto GraphBuilderTflite::SerializeGatherElements(
 
 auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.gather_nd_input.Has(
-      GetOperand(gather_nd.input_operand_id).descriptor.data_type()));
-  CHECK(context_properties_.data_type_limits.gather_nd_indices.Has(
-      GetOperand(gather_nd.indices_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gather_nd_input.Supports(
+      GetOperand(gather_nd.input_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.gather_nd_indices.Supports(
+      GetOperand(gather_nd.indices_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
                    SerializeInputTensorInfo(gather_nd.indices_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
@@ -2973,12 +2985,12 @@ auto GraphBuilderTflite::SerializeGelu(const mojom::Gelu& gelu)
 auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
     -> base::expected<OperatorOffset, std::string> {
   // Check for unsupported inputs.
-  CHECK(context_properties_.data_type_limits.gemm_input.Has(
-      GetOperand(gemm.output_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gemm_a.SupportsAll(
+      {GetOperand(gemm.a_operand_id).descriptor,
+       GetOperand(gemm.b_operand_id).descriptor}));
 
   ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
                    SerializeInputTensorInfo(gemm.a_operand_id));
-  CHECK_EQ(a_tensor_info.dimensions.size(), 2u);
   int32_t a_tensor_index = a_tensor_info.index;
   // The permutation transpose first or second 2-D tensor.
   static constexpr std::array<uint32_t, 2> permutation = {1u, 0u};
@@ -3007,7 +3019,6 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   // Gemm When bTranspose option is false.
   ASSIGN_OR_RETURN(const TensorInfo& b_tensor_info,
                    SerializeInputTensorInfo(gemm.b_operand_id));
-  CHECK_EQ(b_tensor_info.dimensions.size(), 2u);
   int32_t b_tensor_index = b_tensor_info.index;
   if (!gemm.b_transpose) {
     b_tensor_index = InsertTransposeOperation(b_tensor_info, permutation);
@@ -3020,9 +3031,10 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   CHECK_EQ(output_tensor_info.dimensions.size(), 2u);
   std::optional<int32_t> c_tensor_index;
   if (gemm.c_operand_id && gemm.beta != 0.0f) {
+    CHECK(context_properties_.data_type_limits.gemm_c.Supports(
+        GetOperand(gemm.c_operand_id.value()).descriptor));
     ASSIGN_OR_RETURN(const TensorInfo& c_tensor_info,
                      SerializeInputTensorInfo(*gemm.c_operand_id));
-    CHECK_LE(c_tensor_info.dimensions.size(), 2u);
     c_tensor_index = c_tensor_info.index;
     if (gemm.beta != 1.0f) {
       const int32_t beta_tensor_index = SerializeTensorWithBuffer<float>(

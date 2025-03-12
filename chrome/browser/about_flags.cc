@@ -5008,14 +5008,6 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(media::kMediaFoundationD3D11VideoCapture),
     },
 #endif  // BUILDFLAG(IS_WIN)
-    {"username-first-flow-with-intermediate-values-predictions",
-     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesPredictionsName,
-     flag_descriptions::
-         kUsernameFirstFlowWithIntermediateValuesPredictionsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::
-             kUsernameFirstFlowWithIntermediateValuesPredictions)},
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,
@@ -7284,10 +7276,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMostVisitedTilesReselect,
                                     kMostVisitedTilesReselectVariations,
                                     "kMostVisitedTilesReselect")},
-
-    {"toolbar-phone-cleanup", flag_descriptions::kToolbarPhoneCleanupName,
-     flag_descriptions::kToolbarPhoneCleanupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kToolbarPhoneCleanup)},
 
     {"hide-tablet-toolbar-download-button",
      flag_descriptions::kHideTabletToolbarDownloadButtonName,
@@ -9570,6 +9558,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBackgroundResourceFetchName,
      flag_descriptions::kBackgroundResourceFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kBackgroundResourceFetch)},
+
+    {"renderer-side-content-decoding",
+     flag_descriptions::kRendererSideContentDecodingName,
+     flag_descriptions::kRendererSideContentDecodingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kRendererSideContentDecoding)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"external-navigation-debug-logs",

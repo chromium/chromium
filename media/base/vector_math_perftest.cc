@@ -215,8 +215,16 @@ TEST_F(VectorMathPerfTest, FCLAMP_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
 #if defined(ARCH_CPU_X86_FAMILY)
-  RunClampingBenchmark(vector_math::FCLAMP_SSE, true, "_fclamp",
-                       "optimized_aligned");
+  base::CPU cpu;
+  if (cpu.has_avx()) {
+    RunClampingBenchmark(vector_math::FCLAMP_AVX, true, "_fclamp",
+                         "optimized_aligned");
+  } else {
+    RunClampingBenchmark(vector_math::FCLAMP_SSE, true, "_fclamp",
+                         "optimized_aligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, true, "_fclamp", "optimized_aligned");
 #endif
 }
 
@@ -226,8 +234,16 @@ TEST_F(VectorMathPerfTest, FCLAMP_optimized_unaligned) {
       (kVectorSize - 1) % (vector_math::kRequiredAlignment / sizeof(float)),
       0U);
 #if defined(ARCH_CPU_X86_FAMILY)
-  RunClampingBenchmark(vector_math::FCLAMP_SSE, false, "_fclamp",
-                       "optimized_unaligned");
+  base::CPU cpu;
+  if (cpu.has_avx()) {
+    RunClampingBenchmark(vector_math::FCLAMP_AVX, false, "_fclamp",
+                         "optimized_unaligned");
+  } else {
+    RunClampingBenchmark(vector_math::FCLAMP_SSE, false, "_fclamp",
+                         "optimized_unaligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, false, "_fclamp", "optimized_unaligned");
 #endif
 }
 

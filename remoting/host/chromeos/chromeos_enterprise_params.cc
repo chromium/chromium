@@ -5,6 +5,7 @@
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 
 #include "base/json/values_util.h"
+#include "base/time/time.h"
 
 namespace remoting {
 
@@ -19,6 +20,7 @@ constexpr char kAllowReconnections[] = "allowReconnections";
 constexpr char kAllowFileTransfer[] = "allowFileTransfer";
 constexpr char kConnectionDialogRequired[] = "connectionDialogRequired";
 constexpr char kConnectionAutoAcceptTimeout[] = "connectionAutoAcceptTimeout";
+constexpr char kMaximumSessionDuration[] = "maximumSessionDuration";
 }  // namespace
 
 ChromeOsEnterpriseParams::ChromeOsEnterpriseParams() = default;
@@ -42,6 +44,9 @@ ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
       dict.FindBool(kTerminateUponInput).value_or(false);
   params.curtain_local_user_session =
       dict.FindBool(kCurtainLocalUserSession).value_or(false);
+  params.maximum_session_duration =
+      base::ValueToTimeDelta(dict.Find(kMaximumSessionDuration))
+          .value_or(base::TimeDelta());
   params.show_troubleshooting_tools =
       dict.FindBool(kShowTroubleshootingTools).value_or(false);
   params.allow_troubleshooting_tools =
@@ -64,6 +69,8 @@ base::Value::Dict ChromeOsEnterpriseParams::ToDict() const {
       .Set(kSuppressNotifications, suppress_notifications)
       .Set(kTerminateUponInput, terminate_upon_input)
       .Set(kCurtainLocalUserSession, curtain_local_user_session)
+      .Set(kMaximumSessionDuration,
+           base::TimeDeltaToValue(maximum_session_duration))
       .Set(kShowTroubleshootingTools, show_troubleshooting_tools)
       .Set(kAllowTroubleshootingTools, allow_troubleshooting_tools)
       .Set(kAllowReconnections, allow_reconnections)

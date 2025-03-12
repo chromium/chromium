@@ -61,6 +61,7 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/filter/filter_source_stream.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -87,6 +88,7 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/loading_params.h"
@@ -831,6 +833,7 @@ URLLoader::URLLoader(
       request.referrer_policy,
       /*upgrade_if_insecure=*/request.upgrade_if_insecure,
       /*is_ad_tagged=*/request.is_ad_tagged,
+      request.client_side_content_decoding_enabled,
       /*isolation_info=*/
       GetIsolationInfo(factory_params_->isolation_info,
                        factory_params_->automatically_assign_isolation_info,
@@ -892,6 +895,7 @@ void URLLoader::ConfigureRequest(
     net::ReferrerPolicy referrer_policy,
     bool upgrade_if_insecure,
     bool is_ad_tagged,
+    bool client_side_content_decoding_enabled,
     std::optional<net::IsolationInfo> isolation_info,
     bool force_main_frame_for_same_site_cookies,
     net::SecureDnsPolicy secure_dns_policy,
@@ -917,6 +921,8 @@ void URLLoader::ConfigureRequest(
   url_request_->set_referrer_policy(referrer_policy);
   url_request_->set_upgrade_if_insecure(upgrade_if_insecure);
   url_request_->set_ad_tagged(is_ad_tagged);
+  url_request_->set_client_side_content_decoding_enabled(
+      client_side_content_decoding_enabled);
 
   if (isolation_info) {
     url_request_->set_isolation_info(std::move(isolation_info).value());
@@ -1697,6 +1703,12 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
       private_network_access_checker_.ClientAddressSpace();
 
   response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
+  if (url_request_->client_side_content_decoding_enabled() &&
+      response->headers) {
+    response->client_side_content_decoding_types =
+        net::FilterSourceStream::GetContentEncodingTypes(
+            url_request_->accepted_stream_types(), *response->headers);
+  }
 
   return response;
 }
@@ -2237,6 +2249,9 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
       response_->mime_type.assign("text/plain");
     }
   }
+  // TODO(crbug.com/402337002): When client side content decoding is enabled,
+  // we need to run MIME sniffing after decoding the first 1024 bytes of the
+  // body.
 
   StartReading();
 }

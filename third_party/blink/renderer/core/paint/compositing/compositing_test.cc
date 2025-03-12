@@ -654,6 +654,8 @@ TEST_P(CompositingTest,
 }
 
 TEST_P(CompositingTest, HitTestOpaqueness) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div id="transparent1" style="pointer-events: none; will-change: transform;
                                   width: 100px; height: 50px">
@@ -3185,6 +3187,8 @@ TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; background: white;
@@ -3202,6 +3206,8 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; background: white;
@@ -3218,6 +3224,8 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; padding: 10px">

@@ -34,13 +34,13 @@ var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 var ENTITY_INSTANCE = {
   type: {
-    typeName: 1,
-    typeNameAsString: 'Car',
-    addEntityTypeString: 'Add car',
-    editEntityTypeString: 'Edit car',
+    typeName: 2,
+    typeNameAsString: 'Vehicle',
+    addEntityTypeString: 'Add vehicle',
+    editEntityTypeString: 'Edit vehicle',
   },
   attributeInstances: [
-    {type: {typeName: 6, typeNameAsString: 'License plate'}, value: 'ABCDE'},
+    {type: {typeName: 14, typeNameAsString: 'License plate'}, value: 'ABCDE'},
   ],
   guid: GUID,
   nickname: 'Personal car',
@@ -959,15 +959,15 @@ var availableTests = [
       },
       {
         typeName: 1,
-        typeNameAsString: 'Car',
-        addEntityTypeString: 'Add car',
-        editEntityTypeString: 'Edit car'
-      },
-      {
-        typeName: 2,
         typeNameAsString: 'Driver\'s license',
         addEntityTypeString: 'Add driver\'s license',
         editEntityTypeString: 'Edit driver\'s license'
+      },
+      {
+        typeName: 2,
+        typeNameAsString: 'Vehicle',
+        addEntityTypeString: 'Add vehicle',
+        editEntityTypeString: 'Edit vehicle'
       },
     ];
     for (const index in expectedEntityTypesList) {
@@ -980,13 +980,13 @@ var availableTests = [
   async function getAllAttributeTypesForEntityTypeName() {
     const attributeTypesList =
         await chrome.autofillPrivate.getAllAttributeTypesForEntityTypeName(
-            /*entityTypeName=*/ 2);
+            /*entityTypeName=*/ 1);
     const expectedAttributeTypesList = [
-      {typeName: 10, typeNameAsString: 'Name'},
-      {typeName: 11, typeNameAsString: 'Region'},
-      {typeName: 12, typeNameAsString: 'Number'},
-      {typeName: 13, typeNameAsString: 'Expiration date'},
-      {typeName: 14, typeNameAsString: 'Issue date'},
+      {typeName: 5, typeNameAsString: 'Name'},
+      {typeName: 6, typeNameAsString: 'State'},
+      {typeName: 7, typeNameAsString: 'Number'},
+      {typeName: 8, typeNameAsString: 'Issue date'},
+      {typeName: 9, typeNameAsString: 'Expiration date'},
     ];
     chrome.test.assertEq(expectedAttributeTypesList, attributeTypesList);
     chrome.test.succeed();

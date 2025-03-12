@@ -23,10 +23,6 @@ class TabStrip;
 class TabStripRegionView;
 class WebAppFrameToolbarView;
 
-namespace gfx {
-class Point;
-}  // namespace gfx
-
 namespace views {
 class View;
 class Label;
@@ -106,12 +102,6 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // Returns the view against which the dialog is positioned and parented.
   gfx::NativeView GetHostView();
-
-  // Tests to see if the specified |point| (in nonclient view's coordinates)
-  // is within the views managed by the laymanager. Returns one of
-  // HitTestCompat enum defined in ui/base/hit_test.h.
-  // See also ClientView::NonClientHitTest.
-  int NonClientHitTest(const gfx::Point& point);
 
   // views::LayoutManager overrides:
   void Layout(views::View* host) override;

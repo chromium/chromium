@@ -244,6 +244,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
   std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
+  bool client_side_content_decoding_enabled = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;
 

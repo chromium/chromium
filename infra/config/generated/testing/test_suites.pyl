@@ -2051,14 +2051,13 @@
     },
 
     'translatekit_script_tests': {
-      'blink_wpt_tests': {
+      'chrome_wpt_tests': {
         'test_common': {
           'mixins': [
             'has_native_resultdb_integration',
-            'blink_tests_write_run_histories',
           ],
           'args': [
-            '--num-retries=3',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
           ],
           'merge': {
             'script': '//third_party/blink/tools/merge_web_test_results.py',

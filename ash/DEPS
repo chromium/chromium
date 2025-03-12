@@ -143,6 +143,11 @@ include_rules = [
   "+chromeos/ui",
   "+chromeos/utils",
 
+  # ash/ should not depend on chromeos/ash/experiences, because ash is
+  # expected to provide basic UI functions to implement OS specific features
+  # (in chromeos/ash/experiences).
+  "-chromeos/ash/experiences",
+
   # ui/base/idle depends on SessionManagerClient so disallow it.
   "-ui/base/idle",
 

@@ -1075,6 +1075,11 @@ bool AutocompleteController::ShouldRunProvider(
         (keyword_turl->starter_pack_id() > 0 ||
          keyword_turl->policy_origin() ==
              TemplateURLData::PolicyOrigin::kSearchAggregator)) {
+      if (keyword_turl->starter_pack_id() ==
+          TemplateURLStarterPackData::kPage) {
+        return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
+               provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
+      }
       switch (provider->type()) {
         // Keyword provider creates the suggestion attached to the keyword chip
         // and search provider creates the SEARCH_OTHER_ENGINE suggestion

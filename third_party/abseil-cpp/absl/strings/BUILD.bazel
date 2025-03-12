@@ -605,9 +605,7 @@ cc_library(
     hdrs = ["internal/cordz_handle.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = [
-        "//absl:__subpackages__",
-    ],
+    visibility = ["//absl:__subpackages__"],
     deps = [
         "//absl/base:config",
         "//absl/base:no_destructor",
@@ -648,9 +646,7 @@ cc_library(
     hdrs = ["internal/cordz_update_scope.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = [
-        "//absl:__subpackages__",
-    ],
+    visibility = ["//absl:__subpackages__"],
     deps = [
         ":cord_internal",
         ":cordz_info",

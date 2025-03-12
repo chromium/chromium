@@ -1366,6 +1366,17 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     GetDocument().GetStyleEngine().SetUsesLineHeightUnits(true);
   }
 
+  if (state.StyleBuilder().HasSiblingFunctions()) {
+    Element& tree_counting_element =
+        state.GetUltimateOriginatingElementOrSelf();
+    if (ContainerNode* parent =
+            tree_counting_element.ParentElementOrDocumentFragment()) {
+      parent->SetChildrenAffectedByForwardPositionalRules();
+      parent->SetChildrenAffectedByBackwardPositionalRules();
+      GetDocument().GetStyleEngine().SetUsesTreeCountingFunctions();
+    }
+  }
+
   state.LoadPendingResources();
 
   // Now return the style.

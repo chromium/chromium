@@ -1000,6 +1000,9 @@ class BrowserView : public BrowserWindow,
   // removed.
   void UpdateUIForContents(content::WebContents* contents);
 
+  // Returns the y coordinate of the client area.
+  int GetClientAreaTop();
+
   // Invoked to prepare the transition of fullscreen state.
   // If features::kAsyncFullscreenWindowState is disabled, this is invoked
   // synchronously when requesting platform window state changes.

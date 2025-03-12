@@ -5,6 +5,9 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +37,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using base::test::RunOnceCallback;
 using base::test::TestFuture;
@@ -58,6 +63,7 @@ using testing::HasSubstr;
 using testing::InSequence;
 using testing::MatchesRegex;
 using testing::Return;
+using testing::SaveArg;
 using testing::StrictMock;
 using testing::WithArg;
 using testing::WithArgs;
@@ -174,10 +180,26 @@ class FakeSmartCardDelegate : public SmartCardDelegate {
               (content::RenderFrameHost & render_frame_host),
               (override));
 
+  MOCK_METHOD(void,
+              AddObserver,
+              (content::RenderFrameHost & render_frame_host,
+               PermissionObserver* observer),
+              (override));
+
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (content::RenderFrameHost & render_frame_host,
+               PermissionObserver* observer),
+              (override));
+
   void ExpectHasReaderPermission(const std::string& reader_name) {
     EXPECT_CALL(*this, HasReaderPermission(_, reader_name))
         .WillOnce(Return(true));
   }
+
+  void ExpectAddObserver() { EXPECT_CALL(*this, AddObserver); }
+
+  void ExpectRemoveObserver() { EXPECT_CALL(*this, RemoveObserver); }
 
   MockSmartCardContextFactory mock_context_factory;
 };
@@ -237,10 +259,13 @@ class SmartCardTest : public ContentBrowserTest {
     {
       InSequence s;
 
-      GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+      auto& delegate = GetFakeSmartCardDelegate();
+      delegate.ExpectAddObserver();
+      delegate.ExpectHasReaderPermission(kFakeReader);
       mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
       mock_connection.ExpectBeginTransaction(transaction_receiver);
       mock_transaction.ExpectEndTransaction(SmartCardDisposition::kReset);
+      delegate.ExpectRemoveObserver();
     }
 
     std::string js_snippet = base::StringPrintf(R"(
@@ -1969,6 +1994,67 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EstablishContextDenied) {
       }
       return "ok";
      })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, WatcherClosedWhenPermissionExpired) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  MockSmartCardConnection mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+  mojo::Remote<device::mojom::SmartCardConnectionWatcher> watcher;
+  raw_ptr<content::SmartCardDelegate::PermissionObserver> observer_store =
+      nullptr;
+
+  {
+    InSequence s;
+
+    auto& delegate = GetFakeSmartCardDelegate();
+
+    EXPECT_CALL(delegate, AddObserver).WillOnce(SaveArg<1>(&observer_store));
+    delegate.ExpectHasReaderPermission(kFakeReader);
+    EXPECT_CALL(mock_context_factory,
+                Connect("Fake reader", SmartCardShareMode::kShared, _, _, _))
+        .WillOnce(WithArgs<3, 4>(
+            [&connection_receiver, &watcher](
+                mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+                    connection_watcher,
+                SmartCardContext::ConnectCallback callback) {
+              watcher.Bind(std::move(connection_watcher));
+
+              auto success = device::mojom::SmartCardConnectSuccess::New(
+                  connection_receiver.BindNewPipeAndPassRemote(),
+                  SmartCardProtocol::kT1);
+
+              std::move(callback).Run(
+                  device::mojom::SmartCardConnectResult::NewSuccess(
+                      std::move(success)));
+            }));
+    EXPECT_CALL(delegate, HasReaderPermission(_, "Fake reader"))
+        .WillOnce(Return(false));
+  }
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection =
+        (await context.connect("Fake reader", "shared",
+          {preferredProtocols: ["t1"]})).connection;
+    })())"));
+
+  TestFuture<void> watcher_closed;
+  ASSERT_TRUE(watcher.is_connected());
+  watcher.set_disconnect_handler(base::BindOnce(
+      [](TestFuture<void>* watcher_closed) { watcher_closed->SetValue(); },
+      &watcher_closed));
+  ASSERT_TRUE(observer_store);
+  auto& observer = CHECK_DEREF(observer_store.get());
+
+  observer.OnPermissionRevoked(url::Origin::Create(GetIsolatedContextUrl()));
+  EXPECT_TRUE(watcher_closed.Wait());
+  ASSERT_FALSE(watcher.is_connected());
 }
 
 }  // namespace content

@@ -46,7 +46,6 @@
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
-#include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
@@ -172,8 +171,6 @@ CrosapiAsh::CrosapiAsh()
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
-      nonclosable_app_toast_service_ash_(
-          std::make_unique<NonclosableAppToastServiceAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
@@ -468,11 +465,6 @@ void CrosapiAsh::BindPaymentAppInstance(
 void CrosapiAsh::BindPolicyService(
     mojo::PendingReceiver<mojom::PolicyService> receiver) {
   policy_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindNonclosableAppToastService(
-    mojo::PendingReceiver<mojom::NonclosableAppToastService> receiver) {
-  nonclosable_app_toast_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPrintPreviewCrosDelegate(

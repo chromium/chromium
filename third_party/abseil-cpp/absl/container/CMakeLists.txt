@@ -812,6 +812,7 @@ absl_cc_test(
     absl::hash_policy_testing
     absl::hashtable_debug
     absl::hashtablez_sampler
+    absl::int128
     absl::log
     absl::memory
     absl::node_hash_set

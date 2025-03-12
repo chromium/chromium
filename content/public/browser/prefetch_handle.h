@@ -20,6 +20,9 @@ class PrefetchHandle {
   PrefetchHandle& operator=(const PrefetchHandle& other) = delete;
   PrefetchHandle(PrefetchHandle&& other) = default;
   PrefetchHandle& operator=(PrefetchHandle&& other) = default;
+
+  // Returns true if the underlying `PrefetchContainer` is alive.
+  virtual bool IsAlive() const = 0;
 };
 
 }  // namespace content

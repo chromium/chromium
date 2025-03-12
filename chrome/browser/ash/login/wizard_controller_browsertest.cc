@@ -1144,8 +1144,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_EQ(1,
             FakeInstallAttributesClient::Get()
                 ->remove_firmware_management_parameters_from_tpm_call_count());
-  EXPECT_EQ(1, FakeSessionManagerClient::Get()
-                   ->clear_forced_re_enrollment_vpd_call_count());
+  EXPECT_EQ(
+      1, FakeSessionManagerClient::Get()->clear_block_devmode_vpd_call_count());
 }
 
 class WizardControllerUnifiedEnrollmentTest

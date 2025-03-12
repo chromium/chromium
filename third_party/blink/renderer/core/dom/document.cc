@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_visibility_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -4541,6 +4542,64 @@ void Document::writeln(v8::Isolate* isolate,
                        TrustedHTML* text,
                        ExceptionState& exception_state) {
   writeln(text->toString(), EnteredDOMWindow(isolate), exception_state);
+}
+
+void Document::write(v8::Isolate* isolate,
+                     TrustedHTML* first_text,
+                     HeapVector<Member<V8UnionStringOrTrustedHTML>> other_texts,
+                     ExceptionState& exception_state) {
+  Write(isolate, first_text, other_texts, /*line_feed*/ false, "write",
+        exception_state);
+}
+
+void Document::writeln(
+    v8::Isolate* isolate,
+    TrustedHTML* first_text,
+    HeapVector<Member<V8UnionStringOrTrustedHTML>> other_texts,
+    ExceptionState& exception_state) {
+  Write(isolate, first_text, other_texts, /*line_feed*/ true, "writeln",
+        exception_state);
+}
+
+void Document::Write(v8::Isolate* isolate,
+                     TrustedHTML* first_text,
+                     HeapVector<Member<V8UnionStringOrTrustedHTML>> other_texts,
+                     bool line_feed,
+                     const char* sink,
+                     ExceptionState& exception_state) {
+  // https://html.spec.whatwg.org/#document.write(), steps 1-3:
+  StringBuilder builder;
+  builder.Append(first_text->toString());
+  bool is_trusted = true;
+  for (const auto& text_or_trusted : other_texts) {
+    if (text_or_trusted->IsString()) {
+      builder.Append(text_or_trusted->GetAsString());
+      is_trusted = false;
+    } else {
+      builder.Append(text_or_trusted->GetAsTrustedHTML()->toString());
+    }
+  }
+  // Step 4: If isTrusted is false, set string to [... Get Trusted Type ...]
+  String string =
+      is_trusted ? builder.ReleaseString()
+                 : TrustedTypesCheckForHTML(builder.ReleaseString(),
+                                            GetExecutionContext(), "Document",
+                                            sink, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // Step 5: If lineFeed is true, append U+000A LINE FEED to string.
+  // The order of steps 4 + 5 is observable through the default policy, so we
+  // can't just do this in the original StringBuilder.
+  if (line_feed) {
+    StringBuilder line_feed_builder;
+    line_feed_builder.Append(string);
+    line_feed_builder.Append("\n");
+    string = line_feed_builder.ReleaseString();
+  }
+  // For steps 6+, delegate to String-only write:
+  write(string, EnteredDOMWindow(isolate), exception_state);
 }
 
 KURL Document::urlForBinding() const {

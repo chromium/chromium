@@ -59,29 +59,6 @@ class TabStripModel;
 class WindowFinder;
 class TabStripScrollSession;
 
-class TabDragWithScrollManager {
- public:
-  virtual ~TabDragWithScrollManager() = default;
-  // Check if the current DragState is `kDraggingTabs`.
-  virtual bool IsDraggingTabState() = 0;
-  // Handles dragging tabs while the tabs are attached. `just_attached` should
-  // be true iff this is the first call to MoveAttached after attaching. This
-  // also starts a scroll session if needed.
-  // TODO(crbug.com/40875136): Make this an observer of the scroll_session
-  // class.
-  virtual void MoveAttached(const gfx::Point& point_in_screen,
-                            bool just_attached) = 0;
-  // Returns a rect starting from the origin of the first dragged tab
-  // to the end of the last dragged tab.
-  virtual gfx::Rect GetEnclosingRectForDraggedTabs() = 0;
-  // Returns the point in screen when the last drag occurred.
-  virtual gfx::Point GetLastPointInScreen() = 0;
-  // Returns the `attached_context_`.
-  virtual views::View* GetAttachedContext() = 0;
-  // Get Scroll View from the `attached_context_`.
-  virtual views::ScrollView* GetScrollView() = 0;
-};
-
 // TabDragController is responsible for managing the tab dragging session. When
 // the user presses the mouse on a tab a new TabDragController is created and
 // Drag() is invoked as the mouse is dragged. If the mouse is dragged far enough
@@ -169,12 +146,6 @@ class TabDragController : public views::WidgetObserver,
 
   // Returns the pointer of |source_context_|.
   static TabDragContext* GetSourceContext();
-
-  enum class ScrollWithDragStrategy {
-    kConstantSpeed = 1,
-    kVariableSpeed = 2,
-    kDisabled = 3
-  };
 
   ui::mojom::DragEventSource event_source() const { return event_source_; }
 
@@ -318,10 +289,8 @@ class TabDragController : public views::WidgetObserver,
   gfx::Point GetLastPointInScreen() override;
   views::View* GetAttachedContext() override;
   views::ScrollView* GetScrollView() override;
-  bool IsDraggingTabState() override;
   gfx::Rect GetEnclosingRectForDraggedTabs() override;
-  void MoveAttached(const gfx::Point& point_in_screen,
-                    bool just_attached) override;
+  void MoveAttached(gfx::Point point_in_screen, bool just_attached) override;
 
   void UpdateDockInfo(const gfx::Point& point_in_screen);
 
@@ -563,6 +532,8 @@ class TabDragController : public views::WidgetObserver,
   void MaybePauseTrackingSavedTabGroup();
   void MaybeResumeTrackingSavedTabGroup();
 
+  void MaybeStartScrollSession();
+
 #if defined(USE_AURA)
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
@@ -723,8 +694,6 @@ class TabDragController : public views::WidgetObserver,
   // or not they destroy `this` might depend on platform behavior or other
   // external factors. Destruction while this is true will DCHECK.
   bool expect_stay_alive_ = false;
-  ScrollWithDragStrategy drag_with_scroll_mode_ =
-      ScrollWithDragStrategy::kDisabled;
 
   // the scrolling session that handles scrolling when the tabs are dragged
   // to the scrollable regions of the tab_strip.

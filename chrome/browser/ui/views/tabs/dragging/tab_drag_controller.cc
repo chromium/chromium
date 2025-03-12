@@ -477,32 +477,6 @@ TabDragController::Liveness TabDragController::Init(
 
   ref->window_finder_ = std::make_unique<WindowFinder>();
 
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
-      base::FeatureList::IsEnabled(tabs::kScrollableTabStripWithDragging)) {
-    const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
-        tabs::kScrollableTabStripWithDragging,
-        tabs::kTabScrollingWithDraggingModeName, 1);
-
-    switch (drag_with_scroll_mode) {
-      case static_cast<int>(ScrollWithDragStrategy::kConstantSpeed):
-        ref->drag_with_scroll_mode_ = ScrollWithDragStrategy::kConstantSpeed;
-        ref->tab_strip_scroll_session_ =
-            std::make_unique<TabStripScrollSessionWithTimer>(
-                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
-                           kConstantTimer);
-        break;
-      case static_cast<int>(ScrollWithDragStrategy::kVariableSpeed):
-        ref->drag_with_scroll_mode_ = ScrollWithDragStrategy::kVariableSpeed;
-        ref->tab_strip_scroll_session_ =
-            std::make_unique<TabStripScrollSessionWithTimer>(
-                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
-                           kVariableTimer);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
   // Start listening for tabs to be closed or replaced in `source_context_`, in
   // case this happens before the mouse is moved enough to fully start the drag.
   // See crbug/1445776.
@@ -704,9 +678,7 @@ void TabDragController::EndDrag(EndDragReason reason) {
     return;
   }
 
-  if (tab_strip_scroll_session_) {
-    tab_strip_scroll_session_->Stop();
-  }
+  tab_strip_scroll_session_ = nullptr;
 
   // Some drags need to react to the model being mutated before the model can
   // change its state.
@@ -890,6 +862,8 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
     const gfx::Point& point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::DragBrowserToNewTabStrip",
                "point_in_screen", point_in_screen.ToString());
+
+  tab_strip_scroll_session_ = nullptr;
 
   if (!target_context) {
     return DetachIntoNewBrowserAndRunMoveLoop(point_in_screen);
@@ -1160,10 +1134,6 @@ gfx::Point TabDragController::GetLastPointInScreen() {
   return last_point_in_screen_;
 }
 
-bool TabDragController::IsDraggingTabState() {
-  return current_state_ == DragState::kDraggingTabs;
-}
-
 views::View* TabDragController::GetAttachedContext() {
   return attached_context_;
 }
@@ -1172,7 +1142,7 @@ views::ScrollView* TabDragController::GetScrollView() {
   return attached_context_->GetScrollView();
 }
 
-void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
+void TabDragController::MoveAttached(gfx::Point point_in_screen,
                                      bool just_attached) {
   DCHECK(attached_context_);
   DCHECK(current_state_ == DragState::kDraggingTabs ||
@@ -1261,10 +1231,7 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
     }
   }
 
-  // Let stop be handled by the callback of `tab_strip_scroll_session_`
-  if (tab_strip_scroll_session_) {
-    tab_strip_scroll_session_->MaybeStart();
-  }
+  MaybeStartScrollSession();
 
   if (!did_layout) {
     attached_context_->LayoutDraggedViewsAt(
@@ -1856,6 +1823,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
 
 void TabDragController::RevertDrag() {
   CHECK(attached_context_);
+  tab_strip_scroll_session_ = nullptr;
   // If we're dragging a saved tab group, suspend tracking during the revert.
   // Otherwise, the group will get emptied out as we revert all the tabs.
   MaybePauseTrackingSavedTabGroup();
@@ -2814,6 +2782,39 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
   }
 
   observation_pauser_.reset();
+}
+
+void TabDragController::MaybeStartScrollSession() {
+  if (!tab_strip_scroll_session_ &&
+      base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
+      base::FeatureList::IsEnabled(tabs::kScrollableTabStripWithDragging)) {
+    const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
+        tabs::kScrollableTabStripWithDragging,
+        tabs::kTabScrollingWithDraggingModeName, 1);
+
+    switch (drag_with_scroll_mode) {
+      case static_cast<int>(
+          TabStripScrollSession::ScrollWithDragStrategy::kConstantSpeed):
+        tab_strip_scroll_session_ =
+            std::make_unique<TabStripScrollSessionWithTimer>(
+                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
+                           kConstantTimer);
+        break;
+      case static_cast<int>(
+          TabStripScrollSession::ScrollWithDragStrategy::kVariableSpeed):
+        tab_strip_scroll_session_ =
+            std::make_unique<TabStripScrollSessionWithTimer>(
+                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
+                           kVariableTimer);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  if (tab_strip_scroll_session_) {
+    tab_strip_scroll_session_->MaybeStart();
+  }
 }
 
 #if defined(USE_AURA)

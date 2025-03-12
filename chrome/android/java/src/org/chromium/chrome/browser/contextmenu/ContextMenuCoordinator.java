@@ -219,7 +219,14 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
-                getItemList(activity, items, onItemClicked, !params.getOpenedFromHighlight());
+                getItemList(
+                        activity,
+                        items,
+                        onItemClicked,
+                        // Resource header is shown for link-type resources so that users can
+                        // preview the page before initiating any actions. This is not needed for
+                        // actions performed on the current page.
+                        /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage());
 
         ModelListAdapter adapter =
                 new ModelListAdapter(listItems) {

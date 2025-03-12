@@ -115,6 +115,18 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   source->AddBoolean("enableScrollTo",
                      base::FeatureList::IsEnabled(features::kGlicScrollTo));
+
+  // Set up for periodic web client responsiveness check and its interval,
+  // timeout, and max unresponsive ui time.
+  source->AddBoolean(
+      "isClientResponsivenessCheckEnabled",
+      base::FeatureList::IsEnabled(features::kGlicClientResponsivenessCheck));
+  source->AddInteger("clientResponsivenessCheckIntervalMs",
+                     features::kGlicClientResponsivenessCheckIntervalMs.Get());
+  source->AddInteger("clientResponsivenessCheckTimeoutMs",
+                     features::kGlicClientResponsivenessCheckTimeoutMs.Get());
+  source->AddInteger("clientUnresponsiveUiMaxTimeMs",
+                     features::kGlicClientUnresponsiveUiMaxTimeMs.Get());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

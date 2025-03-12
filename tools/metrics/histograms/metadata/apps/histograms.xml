@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
     enum="AppInstallResult" expires_after="2025-11-01">
-  <owner>tsergeant@chromium.org</owner>
+  <owner>alancutter@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     Records the result of a request to install an app via AppInstallService for
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppInstallService.ArcAppInstaller.InstallResult{AppInstallSurface}"
     enum="ArcAppInstallResultCode" expires_after="2025-11-01">
-  <owner>tsergeant@chromium.org</owner>
+  <owner>alancutter@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     The overall result of installing an arc app through the App Install Service
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.CommandResultCode{AppInstallSurface}"
     enum="WebAppInstallResultCode" expires_after="2025-11-01">
-  <owner>tsergeant@chromium.org</owner>
+  <owner>alancutter@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     The result code of the web app install command used to install a web app
@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
     enum="WebAppInstallResultCode" expires_after="2025-11-01">
-  <owner>tsergeant@chromium.org</owner>
+  <owner>alancutter@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     The overall result of installing a web app through the App Install Service

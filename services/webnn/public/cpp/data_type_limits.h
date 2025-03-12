@@ -65,14 +65,15 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors tan_input,
                  SupportedTensors elu_input,
                  SupportedTensors expand_input,
-                 SupportedDataTypes gather_input,
-                 SupportedDataTypes gather_indices,
-                 SupportedDataTypes gather_elements_input,
-                 SupportedDataTypes gather_elements_indices,
-                 SupportedDataTypes gather_nd_input,
-                 SupportedDataTypes gather_nd_indices,
+                 SupportedTensors gather_input,
+                 SupportedTensors gather_indices,
+                 SupportedTensors gather_elements_input,
+                 SupportedTensors gather_elements_indices,
+                 SupportedTensors gather_nd_input,
+                 SupportedTensors gather_nd_indices,
                  SupportedTensors gelu_input,
-                 SupportedDataTypes gemm_input,
+                 SupportedTensors gemm_a,
+                 SupportedTensors gemm_c,
                  SupportedDataTypes gru_input,
                  SupportedDataTypes gru_cell_input,
                  SupportedTensors hard_sigmoid_input,
@@ -185,14 +186,15 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors tan_input;
   SupportedTensors elu_input;
   SupportedTensors expand_input;
-  SupportedDataTypes gather_input;
-  SupportedDataTypes gather_indices;
-  SupportedDataTypes gather_elements_input;
-  SupportedDataTypes gather_elements_indices;
-  SupportedDataTypes gather_nd_input;
-  SupportedDataTypes gather_nd_indices;
+  SupportedTensors gather_input;
+  SupportedTensors gather_indices;
+  SupportedTensors gather_elements_input;
+  SupportedTensors gather_elements_indices;
+  SupportedTensors gather_nd_input;
+  SupportedTensors gather_nd_indices;
   SupportedTensors gelu_input;
-  SupportedDataTypes gemm_input;
+  SupportedTensors gemm_a;
+  SupportedTensors gemm_c;
   SupportedDataTypes gru_input;
   SupportedDataTypes gru_cell_input;
   SupportedTensors hard_sigmoid_input;
@@ -305,7 +307,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gather_nd_input == rhs.gather_nd_input &&
          lhs.gather_nd_indices == rhs.gather_nd_indices &&
          lhs.gelu_input == rhs.gelu_input &&
-         lhs.gemm_input == rhs.gemm_input &&
+         lhs.gemm_a == rhs.gemm_a &&
+         lhs.gemm_c == rhs.gemm_c &&
          lhs.gru_input == rhs.gru_input &&
          lhs.gru_cell_input == rhs.gru_cell_input &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&

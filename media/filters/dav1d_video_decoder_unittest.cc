@@ -275,6 +275,19 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
   EXPECT_EQ("32115092dc00fbe86823b0b714a0f63e", GetVideoFrameHash(*frame));
 }
 
+TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {
+  Initialize();
+
+  // Simulate decoding a single frame.
+  EXPECT_TRUE(
+      DecodeSingleFrame(ReadTestDataFile("av1-I-frame-320x240-agtm")).is_ok());
+  ASSERT_EQ(1U, output_frames_.size());
+
+  const auto& frame = output_frames_.front();
+  ASSERT_TRUE(frame->hdr_metadata().has_value());
+  EXPECT_TRUE(frame->hdr_metadata()->agtm.has_value());
+}
+
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_LargerWidth) {

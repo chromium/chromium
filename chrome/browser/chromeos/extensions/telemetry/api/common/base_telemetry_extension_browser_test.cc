@@ -122,11 +122,13 @@ std::string BaseTelemetryExtensionBrowserTest::public_key() const {
 }
 
 std::string BaseTelemetryExtensionBrowserTest::pwa_page_url() const {
-  return "https://googlechromelabs.github.io";
+  return "https://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+         "test-page";
 }
 
 std::string BaseTelemetryExtensionBrowserTest::matches_origin() const {
-  return "*://googlechromelabs.github.io/*";
+  return "*://googlechromelabs.github.io/cros-sample-telemetry-extension/"
+         "test-page/*";
 }
 
 }  // namespace chromeos

@@ -2374,6 +2374,10 @@ void RenderWidgetHostViewAndroid::UnlockPointer() {
   host_->LostPointerLock();
 }
 
+void RenderWidgetHostViewAndroid::OnPointerLockRelease() {
+  host_->LostPointerLock();
+}
+
 // Methods called from the host to the render
 
 void RenderWidgetHostViewAndroid::SendKeyEvent(

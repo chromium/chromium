@@ -4,12 +4,41 @@
 
 assert(is_chromeos)
 
+static_library("mako_bubble") {
+  sources = [
+    "draggable_bubble_dialog_view.cc",
+    "draggable_bubble_dialog_view.h",
+    "mako_bubble_event_handler.cc",
+    "mako_bubble_event_handler.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//skia:skia_core_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_core",
+    "//ui/base/cursor",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx/geometry",
+  ]
+}
+
 static_library("mako") {
   sources = [
     "mako_bubble_coordinator.cc",
     "mako_bubble_coordinator.h",
-    "mako_bubble_event_handler.cc",
-    "mako_bubble_event_handler.h",
     "mako_consent_view.cc",
     "mako_consent_view.h",
     "mako_rewrite_view.cc",
@@ -22,7 +51,6 @@ static_library("mako") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ui/webui/top_chrome",
     "//chromeos/components/magic_boost/public/cpp",
     "//skia:skia_core_public_headers",
     "//third_party/abseil-cpp:absl",
@@ -30,13 +58,11 @@ static_library("mako") {
     "//ui/base/metadata",
     "//ui/events",
     "//ui/gfx/geometry",
-    "//ui/views",
-    "//ui/views/controls/webview",
-    "//ui/webui",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
   ]
 
   deps = [
+    ":mako_bubble",
     "//ash",
     "//ash/constants",
     "//chrome/app:generated_resources",
@@ -45,7 +71,6 @@ static_library("mako") {
     "//chrome/browser/ash/lobster",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/mako:resources",
-    "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui/ash/lobster:lobster",
     "//chrome/common:mojo_bindings",
     "//chromeos/ash/services/orca/public/mojom",
@@ -54,8 +79,6 @@ static_library("mako") {
     "//content/public/browser",
     "//content/public/common",
     "//net",
-    "//third_party/blink/public/common:headers",
-    "//third_party/blink/public/mojom:mojom_core",
     "//ui/aura",
     "//ui/base/ime/ash",
     "//ui/display",
@@ -78,6 +101,7 @@ source_set("unit_tests") {
 
   deps = [
     ":mako",
+    ":mako_bubble",
     "//ash/constants",
     "//base",
     "//base/test:test_support",

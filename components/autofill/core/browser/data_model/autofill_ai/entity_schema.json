@@ -1,39 +1,37 @@
 [
   {
     "name": "Passport",
-    "attributes": [ "Name", "Number", "Country", "Expiry date", "Issue date" ],
+    "attributes": [ "Name", "Country", "Number", "Issue date", "Expiration date" ],
     "obfuscated attributes": [ "Number" ],
     "import constraints": [
-      [ "Number", "Name" ],
-      [ "Number", "Country" ],
-      [ "Number", "Expiry date" ]
+      [ "Number" ]
     ],
-    "merge constraints": [
-      [ "Number", "Expiry date" ]
-    ],
+    "merge constraints": "import constraints",
     "strike keys": [
       [ "Number" ]
     ],
-    "disambiguation order": [ "Name", "Country", "Expiry date" ],
-    "syncable": false
-  },
-  {
-    "name": "Vehicle",
-    "attributes": [ "Owner", "License plate", "VIN", "Make", "Model" ],
-    "import constraints": [
-      [ "Owner", "License plate" ]
-    ],
-    "merge constraints": "import constraints",
+    "disambiguation order": [ "Name", "Country" ],
     "syncable": false
   },
   {
     "name": "Driver's license",
-    "attributes":
-      [ "Name", "Region", "Number", "Expiration date", "Issue date" ],
+    "attributes": [ "Name", "State", "Number", "Issue date", "Expiration date" ],
     "import constraints": [
-      [ "Name", "Number" ]
+      [ "Number" ]
     ],
     "merge constraints": "import constraints",
+    "disambiguation order": [ "Name", "State" ],
+    "syncable": false
+  },
+  {
+    "name": "Vehicle",
+    "attributes": [ "Make", "Model", "Year", "Owner", "Plate number", "Plate state", "VIN" ],
+    "import constraints": [
+      [ "Plate number" ],
+      [ "VIN" ]
+    ],
+    "merge constraints": "import constraints",
+    "disambiguation order": [ "Make", "Model", "Year", "Owner" ],
     "syncable": false
   }
 ]

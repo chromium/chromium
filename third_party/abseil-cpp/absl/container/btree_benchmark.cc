@@ -735,7 +735,7 @@ double ContainerInfo(const btree_map<int, BigTypePtr<Size>>& b) {
 
 BIG_TYPE_PTR_BENCHMARKS(32);
 
-void BM_BtreeSet_IteratorSubtraction(benchmark::State& state) {
+void BM_BtreeSet_IteratorDifference(benchmark::State& state) {
   absl::InsecureBitGen bitgen;
   std::vector<int> vec;
   // Randomize the set's insertion order so the nodes aren't all full.
@@ -752,6 +752,52 @@ void BM_BtreeSet_IteratorSubtraction(benchmark::State& state) {
     size_t begin = end - distance;
     benchmark::DoNotOptimize(set.find(static_cast<int>(end)) -
                              set.find(static_cast<int>(begin)));
+    distance = absl::Uniform(bitgen, 0u, set.size());
+  }
+}
+
+BENCHMARK(BM_BtreeSet_IteratorDifference)->Range(1 << 10, 1 << 20);
+
+void BM_BtreeSet_IteratorAddition(benchmark::State& state) {
+  absl::InsecureBitGen bitgen;
+  std::vector<int> vec;
+  // Randomize the set's insertion order so the nodes aren't all full.
+  vec.reserve(static_cast<size_t>(state.range(0)));
+  for (int i = 0; i < state.range(0); ++i) vec.push_back(i);
+  absl::c_shuffle(vec, bitgen);
+
+  absl::btree_set<int> set;
+  for (int i : vec) set.insert(i);
+
+  size_t distance = absl::Uniform(bitgen, 0u, set.size());
+  while (state.KeepRunningBatch(distance)) {
+    // Let the increment go all the way to the `end` iterator.
+    const size_t begin =
+        absl::Uniform(absl::IntervalClosed, bitgen, 0u, set.size() - distance);
+    auto it = set.find(static_cast<int>(begin));
+    benchmark::DoNotOptimize(it += static_cast<int>(distance));
+    distance = absl::Uniform(bitgen, 0u, set.size());
+  }
+}
+
+BENCHMARK(BM_BtreeSet_IteratorAddition)->Range(1 << 10, 1 << 20);
+
+void BM_BtreeSet_IteratorSubtraction(benchmark::State& state) {
+  absl::InsecureBitGen bitgen;
+  std::vector<int> vec;
+  // Randomize the set's insertion order so the nodes aren't all full.
+  vec.reserve(static_cast<size_t>(state.range(0)));
+  for (int i = 0; i < state.range(0); ++i) vec.push_back(i);
+  absl::c_shuffle(vec, bitgen);
+
+  absl::btree_set<int> set;
+  for (int i : vec) set.insert(i);
+
+  size_t distance = absl::Uniform(bitgen, 0u, set.size());
+  while (state.KeepRunningBatch(distance)) {
+    size_t end = absl::Uniform(bitgen, distance, set.size());
+    auto it = set.find(static_cast<int>(end));
+    benchmark::DoNotOptimize(it -= static_cast<int>(distance));
     distance = absl::Uniform(bitgen, 0u, set.size());
   }
 }

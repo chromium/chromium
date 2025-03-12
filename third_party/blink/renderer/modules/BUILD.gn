@@ -421,6 +421,7 @@ source_set("unit_tests") {
     "broadcastchannel/broadcast_channel_unittest.cc",
     "cache_storage/cache_test.cc",
     "canvas/canvas2d/base_rendering_context_2d_test.cc",
+    "canvas/canvas2d/canvas_2d_recorder_context_test.cc",
     "canvas/canvas2d/canvas_filter_operation_resolver_test.cc",
     "canvas/canvas2d/canvas_filter_test.cc",
     "canvas/canvas2d/canvas_filter_test_utils.cc",

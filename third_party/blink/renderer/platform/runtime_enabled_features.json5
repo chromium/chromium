@@ -2943,6 +2943,7 @@
       status: {
         "Win": "test",
         "Mac": "test",
+        "Linux": "test",
         "default": ""
       }
     },
@@ -3310,6 +3311,7 @@
     {
       // crbug.com/389726691.
       name: "PlainTextPainter",
+      status: "experimental",
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
@@ -4522,6 +4524,12 @@
       name: "TrustedTypesFromLiteral",
       status: "experimental",
       base_feature: "none",
+    },
+    {
+      // Adapt Trusted Types to its new spec, as part of HTML.
+      // Tracking bug: 330516530
+      name: "TrustedTypesHTML",
+      status: "test",
     },
     {
       name: "TrustedTypesUseCodeLike",

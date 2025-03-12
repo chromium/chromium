@@ -173,10 +173,6 @@ inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
-// Enables new prediction that is based on votes from Username First Flow with
-// Intermediate Values.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
-
 // Enables async implementation of OSCrypt inside LoginDatabase (Stage 1).
 BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);
 

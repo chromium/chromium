@@ -7,8 +7,8 @@
 # TODO(crbug.com/394567614): Remove this target once model files have been moved.
 source_set("ui_bundled_interface") {
   sources = [
-    "autocomplete_match_wrapper.h",
-    "autocomplete_match_wrapper_delegate.h",
+    "autocomplete_result_wrapper.h",
+    "autocomplete_result_wrapper_delegate.h",
     "omnibox_autocomplete_controller.h",
     "omnibox_controller.h",
     "omnibox_popup_controller.h",
@@ -21,7 +21,7 @@ source_set("ui_bundled_interface") {
 
 source_set("model") {
   sources = [
-    "autocomplete_match_wrapper.mm",
+    "autocomplete_result_wrapper.mm",
     "omnibox_autocomplete_controller.mm",
     "omnibox_controller.mm",
     "omnibox_popup_controller.mm",
@@ -51,7 +51,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "autocomplete_match_wrapper_unittest.mm",
+    "autocomplete_result_wrapper_unittest.mm",
     "omnibox_autocomplete_controller_unittest.mm",
   ]
   deps = [

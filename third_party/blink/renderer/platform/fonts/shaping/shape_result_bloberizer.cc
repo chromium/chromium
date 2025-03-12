@@ -440,47 +440,43 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
 
   DVLOG(4) << "FillGlyphs slow path";
 
-  float advance = 0;
   auto results = result_buffer.results_;
 
+  StringView text = run_info.run.ToStringView();
+  const unsigned from = run_info.from;
+  const unsigned to = run_info.to;
   if (type_ == Type::kEmitText) [[unlikely]] {
     unsigned word_offset = 0;
     ClusterStarts cluster_starts;
     for (const auto& word_result : results) {
-      word_result->ForEachGlyph(advance, run_info.from, run_info.to,
-                                word_offset, ClusterStarts::Accumulate,
+      word_result->ForEachGlyph(0, from, to, word_offset,
+                                ClusterStarts::Accumulate,
                                 static_cast<void*>(&cluster_starts));
       word_offset += word_result->NumCharacters();
     }
-    cluster_starts.Finish(run_info.from, run_info.to);
-    SetText(run_info.run.ToStringView(), run_info.from, run_info.to,
-            cluster_starts.Data());
+    cluster_starts.Finish(from, to);
+    SetText(text, from, to, cluster_starts.Data());
   }
 
+  float advance = 0;
   if (run_info.run.Rtl()) {
     unsigned word_offset = run_info.run.length();
-    for (unsigned j = 0; j < results.size(); j++) {
-      unsigned resolved_index = results.size() - 1 - j;
-      const Member<const ShapeResult>& word_result = results[resolved_index];
+    for (const auto& word_result : base::Reversed(results)) {
       unsigned word_characters = word_result->NumCharacters();
       word_offset -= word_characters;
-      DVLOG(4) << " FillGlyphs RTL run from: " << run_info.from
-               << " to: " << run_info.to << " offset: " << word_offset
-               << " length: " << word_characters;
-      advance =
-          FillGlyphsForResult(word_result.Get(), run_info.run.ToStringView(),
-                              run_info.from, run_info.to, advance, word_offset);
+      DVLOG(4) << " FillGlyphs RTL run from: " << from << " to: " << to
+               << " offset: " << word_offset << " length: " << word_characters;
+      advance = FillGlyphsForResult(word_result.Get(), text, from, to, advance,
+                                    word_offset);
     }
   } else {
     unsigned word_offset = 0;
     for (const auto& word_result : results) {
       unsigned word_characters = word_result->NumCharacters();
-      DVLOG(4) << " FillGlyphs LTR run from: " << run_info.from
-               << " to: " << run_info.to << " offset: " << word_offset
-               << " length: " << word_characters;
-      advance =
-          FillGlyphsForResult(word_result.Get(), run_info.run.ToStringView(),
-                              run_info.from, run_info.to, advance, word_offset);
+      DVLOG(4) << " FillGlyphs LTR run from: " << from << " to: " << to
+               << " offset: " << word_offset << " length: " << word_characters;
+      advance = FillGlyphsForResult(word_result.Get(), text, from, to, advance,
+                                    word_offset);
       word_offset += word_characters;
     }
   }

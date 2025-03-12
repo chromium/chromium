@@ -3019,6 +3019,9 @@
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_NEW_MEXICO_ALBUM_TITLE" desc="Title for the new mexico video in the ambient section of the hub.">
           Earth Flow
         </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_JUPITER_ALBUM_TITLE" desc="Title for the jupiter video in the ambient section of the hub.">
+          Jupiter
+        </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
           Exclusive to <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
         </message>

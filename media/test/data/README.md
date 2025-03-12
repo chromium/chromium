@@ -847,6 +847,9 @@ Same as av1-I-frame-320x240 but using bear-1280x720.webm as input.
 #### av1-monochrome-I-frame-320x240-[8,10,12]bpp
 Same as av1-I-frame-320x240 with --monochrome and -b=[8,10,12] aomenc options.
 
+#### av1-I-frame-320x240-agtm
+Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
+
 #### bear-av1-cenc.mp4
 Encrypted version of bear-av1.mp4. Encrypted by [Shaka Packager] built locally
 at commit 53aa775ea488c0ffd3a2e1cb78ad000154e414e1 using key ID [1] and key [2].

@@ -168,11 +168,15 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         draggedView.setOffsetY(draggedView.getHeight());
     }
 
+    private void bringViewOntoStripAndOffset(StripLayoutView draggedView) {
+        bringViewOntoStrip(draggedView);
+        draggedView.setOffsetX(mLastOffsetX);
+        mLastOffsetX = 0f;
+    }
+
     private void bringViewOntoStrip(StripLayoutView draggedView) {
         draggedView.setIsDraggedOffStrip(false);
-        draggedView.setOffsetX(mLastOffsetX);
         draggedView.setOffsetY(0);
-        mLastOffsetX = 0f;
     }
 
     private boolean shouldShowUserPrompt(StripLayoutTab draggedTab) {
@@ -280,7 +284,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             // 2. Bring dragged view onto strip, resize strip views accordingly.
             StripLayoutTab draggedTab = (StripLayoutTab) interactingView;
             mAnimationHost.finishAnimationsAndPushTabUpdates();
-            bringViewOntoStrip(draggedTab);
+            bringViewOntoStripAndOffset(draggedTab);
             mStripUpdateDelegate.resizeTabStrip(
                     /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
 
@@ -361,7 +365,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     private class GroupReorderSubStrategy extends ReorderSubStrategy {
         List<StripLayoutView> mViewsBeingDragged = new ArrayList<>();
 
-        // TODO(crbug.com/384969886): Implement.
         GroupReorderSubStrategy(ReorderStrategy groupReorderStrategy) {
             super(groupReorderStrategy);
         }
@@ -378,7 +381,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             // 2. Bring dragged views onto strip, resize strip accordingly.
             mAnimationHost.finishAnimationsAndPushTabUpdates();
             for (StripLayoutView view : mViewsBeingDragged) {
-                bringViewOntoStrip(view);
+                bringViewOntoStripAndOffset(view);
             }
             mStripUpdateDelegate.resizeTabStrip(
                     /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
@@ -425,6 +428,21 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
         @Override
         void onStopViewDragAction(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+            // If the dragged group was re-parented, it will no longer be present in model.
+            // If this is not the case, attempt to restore the group to its original position.
+            StripLayoutGroupTitle draggedGroupTitle = (StripLayoutGroupTitle) mViewBeingDragged;
+            if (draggedGroupTitle != null
+                    && mTabGroupModelFilter.tabGroupExists(draggedGroupTitle.getTabGroupId())
+                    && draggedGroupTitle.isDraggedOffStrip()) {
+                mAnimationHost.finishAnimationsAndPushTabUpdates();
+                for (StripLayoutView view : mViewsBeingDragged) {
+                    bringViewOntoStrip(view);
+                }
+                mStripUpdateDelegate.resizeTabStrip(
+                        /* animate= */ false,
+                        /* tabToAnimate= */ null,
+                        /* animateTabAdded= */ false);
+            }
             mViewsBeingDragged.clear();
             super.onStopViewDragAction(groupTitles, stripTabs);
         }

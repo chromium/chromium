@@ -39,6 +39,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -85,6 +87,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -170,6 +173,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
     @Mock TabModelOrchestrator mTabModelOrchestrator;
+    @Mock TabPersistentStore mTabPersistentStore;
     @Mock ActivityManager mActivityManager;
     @Mock ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock ModalDialogManager mModalDialogManager;
@@ -205,6 +209,8 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock ChromeTabbedActivity mTabbedActivityTask64;
     @Mock ChromeTabbedActivity mTabbedActivityTask65;
     @Mock ChromeTabbedActivity mTabbedActivityTask66;
+
+    @Captor private ArgumentCaptor<Runnable> mOnSaveTabListRunnableCaptor;
 
     Activity mCurrentActivity;
     Activity[] mActivityPool;
@@ -376,6 +382,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         when(mActivityManager.getAppTasks()).thenReturn(new ArrayList());
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        when(mTabModelOrchestrator.getTabPersistentStore()).thenReturn(mTabPersistentStore);
 
         mProfileProviderSupplier.set(mProfileProvider);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -1260,6 +1267,24 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
         XrUtils.resetXrDeviceForTesting();
+    }
+
+    @Test
+    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
+    public void testReparentGroupToRunningActivity_PausesPersistentStore() {
+        // Trigger a group reparent.
+        mMultiInstanceManager.reparentTabGroupToRunningActivity(
+                mTabbedActivityTask62, /* tabGroupMetadata= */ null, /* tabAtIndex= */ 0);
+
+        // Verify we pause the TabPersistentStore.
+        verify(mTabPersistentStore).pauseSaveTabList();
+        verify(mTabPersistentStore).resumeSaveTabList(mOnSaveTabListRunnableCaptor.capture());
+
+        // Verify we only send the reparent intent after the Runnable runs.
+        verify(mTabbedActivityTask62, never()).onNewIntent(any());
+        mOnSaveTabListRunnableCaptor.getValue().run();
+        verify(mTabbedActivityTask62).onNewIntent(any());
     }
 
     @Test

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "remoting/base/session_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 
@@ -51,6 +52,9 @@ class DesktopEnvironmentOptions final {
   bool capture_video_on_dedicated_thread() const;
   void set_capture_video_on_dedicated_thread(bool use_dedicated_thread);
 
+  base::TimeDelta maximum_session_duration() const;
+  void set_maximum_session_duration(base::TimeDelta duration);
+
   // Reads configurations from a SessionOptions instance.
   void ApplySessionOptions(const SessionOptions& options);
 
@@ -76,6 +80,9 @@ class DesktopEnvironmentOptions final {
 
   // True if the video capturer should be run on a dedicated thread.
   bool capture_video_on_dedicated_thread_ = false;
+
+  // Maximum session duration after which session will be terminated.
+  base::TimeDelta maximum_session_duration_;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   webrtc::DesktopCaptureOptions desktop_capture_options_;

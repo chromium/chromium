@@ -62,9 +62,24 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
             const gfx::ColorSpace& color_space);
     virtual ~Backing();
 
+    // Creates a SharedImage with the given `usage`. After invocation,
+    // `shared_image()` is guaranteed to be non-null.
     void CreateSharedImage(gpu::SharedImageInterface* sii,
                            const gpu::SharedImageUsageSet& usage,
                            std::string_view debug_label);
+
+    // Creates a software SharedImage with the given `usage`. After invocation,
+    // `shared_image()` is guaranteed to be non-null.
+    void CreateSharedImageForSoftwareCompositor(gpu::SharedImageInterface* sii,
+                                                std::string_view debug_label);
+
+    // Creates a mappable SharedImage with the given `usage` and `buffer_usage`.
+    // Returns whether creation succeeded. After invocation, `shared_image()`
+    // will be non-null if creation succeeded.
+    bool CreateSharedImage(gpu::SharedImageInterface* sii,
+                           const gpu::SharedImageUsageSet& usage,
+                           std::string_view debug_label,
+                           gfx::BufferUsage buffer_usage);
 
     void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
       shared_image_ = std::move(si);

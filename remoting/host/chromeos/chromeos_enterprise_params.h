@@ -30,6 +30,7 @@ struct ChromeOsEnterpriseParams {
   bool suppress_notifications = false;
   bool terminate_upon_input = false;
   bool curtain_local_user_session = false;
+  base::TimeDelta maximum_session_duration;
 
   // Remote machine configuration.
   bool show_troubleshooting_tools = false;

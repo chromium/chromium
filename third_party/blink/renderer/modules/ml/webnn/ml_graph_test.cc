@@ -632,16 +632,16 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*expand_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
-         /*gather_input=*/webnn::SupportedDataTypes::All(),
-         /*gather_indices=*/webnn::SupportedDataTypes::All(),
-         /*gather_elements_input=*/webnn::SupportedDataTypes::All(),
-         /*gather_elements_indices=*/webnn::SupportedDataTypes::All(),
-         /*gather_nd_input=*/webnn::SupportedDataTypes::All(),
-         /*gather_nd_indices=*/
-         webnn::SupportedDataTypes::All(),
-         /*gelu_input=*/
+         /*gather_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_indices=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_elements_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_elements_indices=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
-         /*gemm_input=*/webnn::SupportedDataTypes::All(),
+         /*gather_nd_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gather_nd_indices=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gelu_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gemm_a=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gemm_c=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gru_input=*/webnn::SupportedDataTypes::All(),
          /*gru_cell_input=*/webnn::SupportedDataTypes::All(),
          /*hard_sigmoid_input=*/

@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +27,7 @@ TEST(HttpsRecordRdataTest, ParsesAlias) {
       "\010chromium\003org\000";
 
   std::unique_ptr<HttpsRecordRdata> rdata =
-      HttpsRecordRdata::Parse(std::string_view(kRdata, sizeof(kRdata) - 1));
+      HttpsRecordRdata::Parse(base::byte_span_from_cstring(kRdata));
   ASSERT_TRUE(rdata);
 
   AliasFormHttpsRecordRdata expected("chromium.org");
@@ -46,7 +47,7 @@ TEST(HttpsRecordRdataTest, ParseAliasWithEmptyName) {
       "\000";
 
   std::unique_ptr<HttpsRecordRdata> rdata =
-      HttpsRecordRdata::Parse(std::string_view(kRdata, sizeof(kRdata) - 1));
+      HttpsRecordRdata::Parse(base::byte_span_from_cstring(kRdata));
   ASSERT_TRUE(rdata);
 
   AliasFormHttpsRecordRdata expected("");
@@ -68,7 +69,7 @@ TEST(HttpsRecordRdataTest, IgnoreAliasParams) {
       "\000\002\000\000";
 
   std::unique_ptr<HttpsRecordRdata> rdata =
-      HttpsRecordRdata::Parse(std::string_view(kRdata, sizeof(kRdata) - 1));
+      HttpsRecordRdata::Parse(base::byte_span_from_cstring(kRdata));
   ASSERT_TRUE(rdata);
 
   AliasFormHttpsRecordRdata expected("chromium.org");
@@ -105,7 +106,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
       "\000\007\000\003foo";
 
   std::unique_ptr<HttpsRecordRdata> rdata =
-      HttpsRecordRdata::Parse(std::string_view(kRdata, sizeof(kRdata) - 1));
+      HttpsRecordRdata::Parse(base::byte_span_from_cstring(kRdata));
   ASSERT_TRUE(rdata);
 
   IPAddress expected_ipv6;
@@ -149,7 +150,7 @@ TEST(HttpsRecordRdataTest, RejectCorruptRdata) {
       "\000\001\000\005hi";
 
   std::unique_ptr<HttpsRecordRdata> rdata =
-      HttpsRecordRdata::Parse(std::string_view(kRdata, sizeof(kRdata) - 1));
+      HttpsRecordRdata::Parse(base::byte_span_from_cstring(kRdata));
   EXPECT_FALSE(rdata);
 }
 

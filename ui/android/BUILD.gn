@@ -675,6 +675,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/base/EventOffsetHandlerTest.java",
     "junit/src/org/chromium/ui/base/LocalizationUtilsTest.java",
     "junit/src/org/chromium/ui/base/MimeTypeUtilsTest.java",
+    "junit/src/org/chromium/ui/base/PointerLockTest.java",
     "junit/src/org/chromium/ui/base/SelectFileDialogTest.java",
     "junit/src/org/chromium/ui/display/DisplayAndroidTest.java",
     "junit/src/org/chromium/ui/display/DisplayUtilTest.java",

@@ -580,6 +580,12 @@ struct URLRequest {
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
 
+  // If true, disables content decoding (e.g., gzip, brotli) within the network
+  // service for this request. The client becomes responsible for decoding the
+  // response body and setting `decoded_body_length` of
+  // `URLLoaderCompletionStatus`.
+  bool client_side_content_decoding_enabled = false;
+
   // The socket tag to associate this request with. This is typically set by the
   // embedder.
   SocketTag socket_tag;

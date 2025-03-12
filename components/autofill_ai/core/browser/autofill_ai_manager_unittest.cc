@@ -117,7 +117,7 @@ auto PassportWithNumber(std::u16string number) {
 
 auto VehicleWithLicensePlate(std::u16string license_plate) {
   return HasAttributeWithValue(
-      AttributeType(AttributeTypeName::kVehicleLicensePlate),
+      AttributeType(AttributeTypeName::kVehiclePlateNumber),
       std::move(license_plate), /*app_locale=*/"");
 }
 
@@ -766,7 +766,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
                 /*app_locale=*/""),
             u"2016-02-01");
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportExpiryDate,
+                saved_entity, AttributeTypeName::kPassportExpirationDate,
                 /*app_locale=*/""),
             u"2020-02-01");
 }

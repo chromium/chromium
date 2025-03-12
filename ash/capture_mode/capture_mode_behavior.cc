@@ -19,6 +19,7 @@
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_controller.h"
@@ -36,6 +37,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -383,6 +385,17 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool ShouldPaintSunfishCaptureRegion() const override { return true; }
   bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
+  bool ShouldAnnounceCaptureModeOpenOnInit() const override {
+    // Announce the capture mode open alert as long as the Scanner disclaimer
+    // doesn't need to be shown, i.e. return true if Scanner is disabled or the
+    // disclaimer has already been accepted.
+    return !ScannerController::CanShowUiForShell() ||
+           capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+               prefs::kSunfishConsentDisclaimerAccepted);
+  }
+  bool ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed() const override {
+    return true;
+  }
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
   }
@@ -579,6 +592,15 @@ bool CaptureModeBehavior::ShouldEndSessionOnShowingSearchResults() const {
 }
 
 bool CaptureModeBehavior::ShouldEndSessionOnSearchResultClicked() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldAnnounceCaptureModeOpenOnInit() const {
+  return true;
+}
+
+bool CaptureModeBehavior::ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()
+    const {
   return false;
 }
 

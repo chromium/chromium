@@ -311,7 +311,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     debug_mojom->is_url_in_local_database = IsUrlInLocalDatabase(entry);
     debug_mojom->visit_count = entry.visit_count;
     debug_mojom->typed_count = entry.typed_count;
-    result_mojom->debug_info = std::move(debug_mojom);
+    result_mojom->debug = std::move(debug_mojom);
   }
 
   return result_mojom;

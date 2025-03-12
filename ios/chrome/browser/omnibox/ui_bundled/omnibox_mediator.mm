@@ -155,7 +155,7 @@ using base::UserMetricsAction;
   base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
   // Update the UI.
   [self.consumer setThumbnailImage:nil];
-  [self.omniboxTextController onThumbnailRemovedDuringEdit];
+  [self.omniboxTextController onUserRemoveThumbnail];
 }
 
 - (void)removeAdditionalText {

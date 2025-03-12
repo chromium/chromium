@@ -7620,6 +7620,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "renderer-side-content-decoding",
+    "owners": ["horo@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
       "name": "replace-sync-promos-with-sign-in-promos",
       "owners": [ "myuu@google.com", "bsazonov@chromium.org", "chrome-signin-team@google.com" ],
       "expiry_milestone": 136
@@ -8668,11 +8673,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "toolbar-phone-cleanup",
-    "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name" : "toolbar-pinning",
     "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
     "expiry_milestone" : 135
@@ -9030,11 +9030,6 @@
     "name": "user-education-experience-v2",
     "owners": [ "dfried@chromium.org", "mickeyburks@chromium.org", "kayceh@chromium.org", "estalin@chromium.org" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "username-first-flow-with-intermediate-values-predictions",
-    "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 135
   },
   {
     "name": "vc-background-replace",

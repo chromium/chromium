@@ -59,6 +59,7 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::config
     absl::random_bit_gen_ref
     absl::random_random
     absl::random_internal_sequence_urbg

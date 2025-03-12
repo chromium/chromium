@@ -48,7 +48,6 @@ external/wpt/compat/webkit-box-clamp-bottom-border.html
 external/wpt/compat/webkit-box-horizontal-rtl-variants.html
 external/wpt/compat/webkit-box-rtl-flex.html
 external/wpt/console/console-log-large-array.any.html
-external/wpt/content-security-policy/reporting-api/*
 external/wpt/content-security-policy/report-hash/*
 external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html
 external/wpt/cookies/attributes/attributes-ctl.sub.html
@@ -325,6 +324,7 @@ external/wpt/css/css-page/margin-boxes/dimensions-014-print.html
 external/wpt/css/css-page/margin-boxes/inapplicable-properties-print.html
 external/wpt/css/css-page/margin-boxes/paint-order-001-print.html
 external/wpt/css/css-page/margin-boxes/paint-order-002-print.html
+external/wpt/css/css-page/margin-boxes/paint-order-003-print.html
 external/wpt/css/css-page/monolithic-overflow-024-print.html
 external/wpt/css/css-page/monolithic-overflow-025-print.html
 external/wpt/css/css-page/page-background-003-print.html
@@ -663,7 +663,6 @@ external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.t
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transferrable.w.html
 external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html
 external/wpt/html/cross-origin-embedder-policy/reflection-require-corp.tentative.https.any.*
-external/wpt/html/cross-origin-embedder-policy/reporting-to-document-reporting-endpoint.https.window.html
 external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html
 external/wpt/html/cross-origin-opener-policy/coop-coep-sandbox.https.html
 external/wpt/html/cross-origin-opener-policy/header-parsing-non-ascii.https.html
@@ -808,7 +807,11 @@ external/wpt/payment-request/onpaymentmethodchange-attribute.https.html
 external/wpt/payment-request/show-consume-activation.https.html
 external/wpt/performance-timeline/not-restored-reasons/abort-block-bfcache.window.html
 external/wpt/permissions-policy/bluetooth-*
-external/wpt/permissions-policy/reporting/*
+external/wpt/permissions-policy/reporting/bluetooth-*
+external/wpt/permissions-policy/reporting/report-only-and-enforce.https.sub.html
+external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html
+external/wpt/permissions-policy/reporting/report-to-multiple-endpoints.https.sub.html
+external/wpt/permissions-policy/reporting/report-to-single-endpoint.https.sub.html
 external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html*
 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html*
 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html
@@ -821,7 +824,6 @@ external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.htm
 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html
 external/wpt/preload/link-header-preload-non-html.html
 external/wpt/preload/preconnect-onerror-event.html
-external/wpt/reporting/*
 external/wpt/resize-observer/callback-cross-realm-report-exception.html
 external/wpt/resize-observer/scrollbars.html
 external/wpt/resize-observer/svg.html
@@ -954,15 +956,25 @@ external/wpt/workers/postMessage_block.https.html
 # See crbug.com/397880053 and crbug.com/339041663.
 external/wpt/css/css-anchor-position/anchor-position-005-print.html
 external/wpt/css/css-break/abspos-in-clipped-overflow-print.html
+external/wpt/css/css-break/abspos-overflow-hidden-001-print.html
 external/wpt/css/css-break/break-inside-avoid-multicol-iframe-crash-print.html
+external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081a-print.html
+external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081b-print.html
+external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081c-print.html
+external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082d-print.html
 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-066-print.html
 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069d-print.html
 external/wpt/css/css-break/grid/monolithic-overflow-print.html
 external/wpt/css/css-break/table/repeated-section/fixedpos-in-footer-forced-break-print.html
 external/wpt/css/css-break/table/table-fragmentation-002a-print.html
+external/wpt/css/css-break/table/table-fragmentation-002b-print.html
+external/wpt/css/css-break/transform-022-print.html
 external/wpt/css/css-break/transform-023-print.html
 external/wpt/css/css-break/transform-024-print.html
+external/wpt/css/css-break/underflow-from-next-page-print.html
 external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html
+external/wpt/css/css-multicol/auto-fill-auto-size-001-print.html
+external/wpt/css/css-multicol/auto-fill-auto-size-002-print.html
 external/wpt/css/css-multicol/multicol-height-002-print.xht
 external/wpt/css/css-overflow/keyboard-scroll.html
 external/wpt/css/css-page/cssom/dynamic-001-print.html
@@ -983,10 +995,14 @@ external/wpt/css/css-page/margin-boxes/auto-margins-001-print.html
 external/wpt/css/css-page/margin-boxes/auto-margins-002-print.html
 external/wpt/css/css-page/margin-boxes/auto-margins-003-print.html
 external/wpt/css/css-page/margin-boxes/content-002-print.html
+external/wpt/css/css-page/margin-boxes/dimensions-001-print.html
+external/wpt/css/css-page/margin-boxes/dimensions-002-print.html
 external/wpt/css/css-page/margin-boxes/dimensions-015-print.tentative.html
 external/wpt/css/css-page/margin-boxes/overconstrained-001-print.html
+external/wpt/css/css-page/media-queries-001-print.html
 external/wpt/css/css-page/media-queries-002-print.html
 external/wpt/css/css-page/media-queries-003-print.html
+external/wpt/css/css-page/monolithic-overflow-001-print.html
 external/wpt/css/css-page/monolithic-overflow-023-print.html
 external/wpt/css/css-page/monolithic-overflow-028-print.html
 external/wpt/css/css-page/monolithic-overflow-030-print.html
@@ -1006,13 +1022,20 @@ external/wpt/css/css-page/page-size-014-print.html
 external/wpt/css/css-page/page-size-016-print.tentative.html
 external/wpt/css/css-page/page-size-017-print.tentative.html
 external/wpt/css/css-position/sticky/position-sticky-offset-print.html
+external/wpt/css/css-values/viewport-units-001-print.html
 external/wpt/css/printing/animations-print.html
 external/wpt/css/printing/animations-shadow-print.html
+external/wpt/css/printing/existing-transition-in-media-print.tentative.html
+external/wpt/css/printing/paused-animations-print.html
 external/wpt/css/printing/pseudo-animations-print.html
 external/wpt/html/rendering/non-replaced-elements/tables/table-row-pagination-002-print.html
 external/wpt/html/semantics/embedded-content/the-object-element/object-image-display-none-loading-for-print.html
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html
 virtual/scalefactor200/external/wpt/css/printing/animations-print.html
+virtual/scalefactor200/external/wpt/css/printing/animations-shadow-print.html
+virtual/scalefactor200/external/wpt/css/printing/existing-transition-in-media-print.tentative.html
+virtual/scalefactor200/external/wpt/css/printing/paused-animations-print.html
+virtual/scalefactor200/external/wpt/css/printing/pseudo-animations-print.html
 virtual/scalefactor200/external/wpt/css/printing/zero-size-002-print.tentative.html
 virtual/scalefactor200/external/wpt/css/printing/zero-size-003-print.tentative.html
 

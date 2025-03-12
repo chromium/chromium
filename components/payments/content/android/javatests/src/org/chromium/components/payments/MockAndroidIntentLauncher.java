@@ -81,7 +81,7 @@ public class MockAndroidIntentLauncher implements AndroidIntentLauncher {
 
         if (app.getHandlesContactInformation()) {
             extras.putString("payerName", "John Smith");
-            extras.putString("payerEmail", "John,Smith@gmail.com");
+            extras.putString("payerEmail", "John.Smith@gmail.com");
             extras.putString("payerPhone", "+15555555555");
         }
 

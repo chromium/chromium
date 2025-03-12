@@ -118,7 +118,8 @@ void ContextualCueingHelper::DidFinishNavigation(
 
 void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
   auto* glic_nudge_controller = GetGlicNudgeController();
-  if (!glic_nudge_controller) {
+  if (!glic_nudge_controller ||
+      !web_contents()->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
     return;
   }
   // Determine if server data indicates a nudge should be shown.

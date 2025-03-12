@@ -54,6 +54,21 @@ void SetNetworkPrinterInfo(metrics::PrinterEventProto* event,
   }
 }
 
+// Add information to the `event` that only IPP printers have.
+void SetIppPrinterInfo(metrics::PrinterEventProto* event,
+                       const chromeos::IppPrinterInfo& info) {
+  if (!info.document_formats.empty()) {
+    event->mutable_document_format_supported()->Assign(
+        info.document_formats.begin(), info.document_formats.end());
+  }
+  if (!info.document_format_preferred.empty()) {
+    event->set_document_format_preferred(info.document_format_preferred);
+  }
+  if (!info.document_format_default.empty()) {
+    event->set_document_format_default(info.document_format_default);
+  }
+}
+
 }  // namespace
 
 PrinterEventTracker::PrinterEventTracker() = default;
@@ -81,7 +96,8 @@ void PrinterEventTracker::RecordUsbPrinterInstalled(
 
 void PrinterEventTracker::RecordIppPrinterInstalled(
     const chromeos::Printer& printer,
-    SetupMode mode) {
+    SetupMode mode,
+    const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info) {
   base::AutoLock l(lock_);
   if (!logging_) {
     return;
@@ -91,6 +107,9 @@ void PrinterEventTracker::RecordIppPrinterInstalled(
   SetEventType(&event, mode);
   SetPpdInfo(&event, printer.ppd_reference());
   SetNetworkPrinterInfo(&event, printer);
+  if (ipp_printer_info.has_value()) {
+    SetIppPrinterInfo(&event, ipp_printer_info.value());
+  }
   events_.push_back(event);
 }
 

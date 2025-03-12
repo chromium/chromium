@@ -475,6 +475,26 @@ enum class BackForwardNavigationType {
     return;
   }
 
+  if (item && navigationURL.SchemeIsFile() &&
+      web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
+    // file:// URL navigations are allowed for app-specific URLs, which
+    // already have elevated privileges.
+    self.securityScopedResourceURL = request.URL;
+    [request.URL startAccessingSecurityScopedResource];
+    if (!item->GetSecurityScopedFileResource()) {
+      NSError* error = nil;
+      NSData* data =
+          [request.URL bookmarkDataWithOptions:
+                           NSURLBookmarkCreationSuitableForBookmarkFile
+                includingResourceValuesForKeys:nil
+                                 relativeToURL:nil
+                                         error:&error];
+      if (!error) {
+        item->SetSecurityScopedFileResource(data);
+      }
+    }
+  }
+
   // Set `item` to nullptr here to avoid any use-after-free issues, as it can
   // be cleared by the call to -registerLoadRequestForURL below.
   item = nullptr;
@@ -493,10 +513,6 @@ enum class BackForwardNavigationType {
 
   if (navigationURL.SchemeIsFile() &&
       web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
-    // file:// URL navigations are allowed for app-specific URLs, which
-    // already have elevated privileges.
-    self.securityScopedResourceURL = request.URL;
-    [request.URL startAccessingSecurityScopedResource];
     navigation = [self.webView loadFileRequest:request
                        allowingReadAccessToURL:request.URL];
   } else {

@@ -65,7 +65,7 @@
       setHasThumbnail:hasThumbnail];
 }
 
-- (void)onThumbnailRemovedDuringEdit {
+- (void)onUserRemoveThumbnail {
   // Update the client state.
   if (_omniboxController && _omniboxController->client()) {
     _omniboxController->client()->OnThumbnailRemoved();
