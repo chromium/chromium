@@ -80,7 +80,7 @@ enum class AnimationOrInteractionType {
 
 void RecordFrameTypes(bool is_handling_interaction,
                       bool is_handling_animation,
-                      int num_pending_frames) {
+                      bool has_prev_pending_frame) {
   AnimationOrInteractionType type;
   if (is_handling_interaction && is_handling_animation) {
     type = AnimationOrInteractionType::kAnimationAndInteraction;
@@ -103,7 +103,7 @@ void RecordFrameTypes(bool is_handling_interaction,
   if (type == AnimationOrInteractionType::kNone) {
     UMA_HISTOGRAM_BOOLEAN(
         "GPU.Presentation.NonAnimatedOrInteractiveFrameWithPendingFrame",
-        !!num_pending_frames);
+        has_prev_pending_frame);
   }
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -234,8 +234,14 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
 
   if (features::IsVSyncAlignedPresentEnabled() &&
       base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames)) {
+    // This is recorded after calling ca_layer_tree_coordinator_->Present(). The
+    // current frame has been added to
+    // ca_layer_tree_coordinator_->NumPendingSwaps(). Check NumPendingSwaps() >
+    // 1 to see whether there is any previous pending frame.
+    bool has_prev_pending_frame =
+        ca_layer_tree_coordinator_->NumPendingSwaps() > 1;
     RecordFrameTypes(data.is_handling_interaction, data.is_handling_animation,
-                     ca_layer_tree_coordinator_->NumPendingSwaps());
+                     has_prev_pending_frame);
   }
 
   if (vsync_callback_mac_) {
