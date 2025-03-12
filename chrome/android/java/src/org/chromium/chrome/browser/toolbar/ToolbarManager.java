@@ -907,6 +907,8 @@ public class ToolbarManager
                         profileSupplier,
                         mIsCustomTab,
                         mOmniboxFocusStateSupplier,
+                        mActivityLifecycleDispatcher,
+                        mWindowAndroid,
                         () -> getUrlBarTextWithoutAutocomplete(),
                         () -> getUrlBarViewRectProvider());
         OnLongClickListener onLongClickListener =
@@ -2115,6 +2117,7 @@ public class ToolbarManager
         mTabStripHeightSupplier = null;
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
+        mToolbarLongPressMenuHandler.destroy();
 
         mIncognitoStateProvider.destroy();
 
