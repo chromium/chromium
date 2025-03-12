@@ -587,7 +587,8 @@ bool DnsResponse::WriteRecord(base::SpanWriter<uint8_t>* writer,
   }
 
   if (validate_record &&
-      !RecordRdata::HasValidSize(record.owned_rdata, record.type)) {
+      !RecordRdata::HasValidSize(base::as_byte_span(record.owned_rdata),
+                                 record.type)) {
     VLOG(1) << "Invalid RDATA size for a record.";
     return false;
   }

@@ -15,6 +15,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
@@ -32,7 +33,8 @@ class NET_EXPORT_PRIVATE HttpsRecordRdata : public RecordRdata {
   static const uint16_t kType = dns_protocol::kTypeHttps;
 
   // Returns `nullptr` on malformed input.
-  static std::unique_ptr<HttpsRecordRdata> Parse(std::string_view data);
+  static std::unique_ptr<HttpsRecordRdata> Parse(
+      base::span<const uint8_t> data);
 
   HttpsRecordRdata(const HttpsRecordRdata& rdata) = delete;
   HttpsRecordRdata& operator=(const HttpsRecordRdata& rdata) = delete;
@@ -57,7 +59,7 @@ class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {
  public:
   explicit AliasFormHttpsRecordRdata(std::string alias_name);
   static std::unique_ptr<AliasFormHttpsRecordRdata> Parse(
-      std::string_view data);
+      base::span<const uint8_t> data);
 
   bool IsEqual(const HttpsRecordRdata* other) const override;
   bool IsAlias() const override;
@@ -92,7 +94,7 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
                               std::vector<IPAddress> ipv6_hint,
                               std::map<uint16_t, std::string> unparsed_params);
   static std::unique_ptr<ServiceFormHttpsRecordRdata> Parse(
-      std::string_view data);
+      base::span<const uint8_t> data);
 
   ~ServiceFormHttpsRecordRdata() override;
 
