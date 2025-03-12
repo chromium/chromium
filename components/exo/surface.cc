@@ -43,7 +43,6 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "media/media_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1825,6 +1824,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       }
 
       if (force_rgbx_for_opaque) {
+        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.ForceRGBAForOpaque", true);
         texture_quad->set_force_rgbx();
       }
 
@@ -1839,6 +1839,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       if (state_.basic_state.only_visible_on_secure_output &&
           state_.buffer.has_value() && state_.buffer->buffer() &&
           state_.buffer->buffer()->NeedsHardwareProtection()) {
+        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.ProtectedVideoType", true);
         texture_quad->protected_video_type =
             gfx::ProtectedVideoType::kHardwareProtected;
       }

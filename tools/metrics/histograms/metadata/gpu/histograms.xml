@@ -29,10 +29,11 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ExoSurfaceCodePaths">
   <variant name="AppendContentsToFrame"/>
+  <variant name="ForceRGBAForOpaque"/>
   <variant name="Occluded"/>
+  <variant name="ProtectedVideoType"/>
   <variant name="SolidColorDrawQuad"/>
   <variant name="TextureDrawQuad"/>
-  <variant name="TileDrawQuad"/>
 </variants>
 
 <variants name="GPUProtectedVideoType">
