@@ -490,6 +490,11 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
   box = HandleItemResults(line_info, *ruby_column.base_line.MutableResults(),
                           &line_box,
                           /* main_line_helper */ nullptr, box);
+  if (start_index == line_box.size() && node_.IsBidiEnabled()) {
+    // If the base is empty, we need to add a placeholder so that a ruby column
+    // can track the corresponding base position after BiDi reorder.
+    line_box.AddChild(item_result.item->BidiLevel());
+  }
   wtf_size_t column_base_size = line_box.size() - start_index;
 
   for (wtf_size_t i = 0; i < ruby_column.annotation_line_list.size(); ++i) {
