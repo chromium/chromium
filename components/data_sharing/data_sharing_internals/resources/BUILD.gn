@@ -15,12 +15,12 @@ build_webui("build") {
     "data_sharing_internals_browser_proxy.ts",
   ]
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings_ts__generator",
+    "//components/data_sharing/data_sharing_internals/webui:mojo_bindings_ts__generator",
     "//components/data_sharing/public:logger_interfaces_ts__generator",
     "//components/data_sharing/public/protocol:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals.mojom-webui.ts",
+    "$root_gen_dir/components/data_sharing/data_sharing_internals/webui/data_sharing_internals.mojom-webui.ts",
     "$root_gen_dir/components/data_sharing/public/logger_common.mojom-webui.ts",
     "$root_gen_dir/components/data_sharing/public/protocol/group_data.mojom-webui.ts",
   ]
@@ -30,4 +30,5 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   webui_context_type = "trusted"
+  grit_output_dir = "$root_gen_dir/components"
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
+#include "components/data_sharing/data_sharing_internals/webui/data_sharing_internals_page_handler_impl.h"
 
 #include "base/task/sequenced_task_runner.h"
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_PAGE_HANDLER_IMPL_H_
-#define CHROME_BROWSER_UI_WEBUI_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_PAGE_HANDLER_IMPL_H_
+#ifndef COMPONENTS_DATA_SHARING_DATA_SHARING_INTERNALS_WEBUI_DATA_SHARING_INTERNALS_PAGE_HANDLER_IMPL_H_
+#define COMPONENTS_DATA_SHARING_DATA_SHARING_INTERNALS_WEBUI_DATA_SHARING_INTERNALS_PAGE_HANDLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals.mojom.h"
+#include "components/data_sharing/data_sharing_internals/webui/data_sharing_internals.mojom.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/logger.h"
 #include "components/data_sharing/public/protocol/group_data.mojom.h"
@@ -48,4 +48,4 @@ class DataSharingInternalsPageHandlerImpl
       this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_PAGE_HANDLER_IMPL_H_
+#endif  // COMPONENTS_DATA_SHARING_DATA_SHARING_INTERNALS_WEBUI_DATA_SHARING_INTERNALS_PAGE_HANDLER_IMPL_H_

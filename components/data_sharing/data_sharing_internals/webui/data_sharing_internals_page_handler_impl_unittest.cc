@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
+#include "components/data_sharing/data_sharing_internals/webui/data_sharing_internals_page_handler_impl.h"
 
 #include <set>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
-#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/data_sharing_network_loader.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"

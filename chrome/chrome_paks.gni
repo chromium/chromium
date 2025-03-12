@@ -111,7 +111,6 @@ template("chrome_extra_paks") {
       "$root_gen_dir/chrome/browser_resources.pak",
       "$root_gen_dir/chrome/chrome_unscaled_resources.pak",
       "$root_gen_dir/chrome/common_resources.pak",
-      "$root_gen_dir/chrome/data_sharing_internals_resources.pak",
       "$root_gen_dir/chrome/saved_tab_groups_unsupported_resources.pak",
       "$root_gen_dir/chrome/segmentation_internals_resources.pak",
       "$root_gen_dir/components/autofill/core/browser/geo/autofill_address_rewriter_resources.pak",
