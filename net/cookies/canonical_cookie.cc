@@ -57,7 +57,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -198,52 +197,60 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
     }
   }
 
-  // Try the Expires attribute.
-  if (pc.HasExpires() && !pc.Expires().empty()) {
-    // Adjust for clock skew between server and host.
-    Time parsed_expiry = cookie_util::ParseCookieExpirationTime(pc.Expires());
-    if (!parsed_expiry.is_null()) {
-      // Record metrics related to prevalence of clock skew.
-      base::TimeDelta clock_skew = (current - server_time);
-      // Record the magnitude (absolute value) of the skew in minutes.
-      int clock_skew_magnitude = clock_skew.magnitude().InMinutes();
-      // Determine the new expiry with clock skew factored in.
-      Time adjusted_expiry = parsed_expiry + (current - server_time);
-      if (clock_skew.is_positive() || clock_skew.is_zero()) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes",
-                                    clock_skew_magnitude, 1,
-                                    kMinutesInTwelveHours, 100);
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes12To24Hours",
-                                    clock_skew_magnitude, kMinutesInTwelveHours,
-                                    kMinutesInTwentyFourHours, 100);
-        // Also record the range of minutes added that allowed the cookie to
-        // avoid expiring immediately.
-        if (parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now()) {
-          UMA_HISTOGRAM_CUSTOM_COUNTS(
-              "Cookie.ClockSkew.WithoutAddMinutesExpires", clock_skew_magnitude,
-              1, kMinutesInTwentyFourHours, 100);
-        }
-      } else if (clock_skew.is_negative()) {
-        // These histograms only support positive numbers, so negative skews
-        // will be converted to positive (via magnitude) before recording.
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.SubtractMinutes",
-                                    clock_skew_magnitude, 1,
-                                    kMinutesInTwelveHours, 100);
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Cookie.ClockSkew.SubtractMinutes12To24Hours", clock_skew_magnitude,
-            kMinutesInTwelveHours, kMinutesInTwentyFourHours, 100);
-      }
-      // Record if we were going to expire the cookie before we added the clock
-      // skew.
-      UMA_HISTOGRAM_BOOLEAN(
-          "Cookie.ClockSkew.ExpiredWithoutSkew",
-          parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now());
-      return adjusted_expiry;
-    }
+  if (!pc.HasExpires() || pc.Expires().empty()) {
+    // No expiration.
+    return Time();
   }
 
-  // Invalid or no expiration, session cookie.
-  return Time();
+  // Adjust for clock skew between server and host.
+  Time parsed_expiry = cookie_util::ParseCookieExpirationTime(pc.Expires());
+  if (parsed_expiry.is_null()) {
+    // Invalid expiration.
+    return Time();
+  }
+  Time adjusted_expiry = parsed_expiry + (current - server_time);
+
+  static base::MetricsSubSampler metrics_subsampler;
+  if (metrics_subsampler.ShouldSample(kHistogramSampleProbability)) {
+    // Record metrics related to prevalence of clock skew.
+    base::TimeDelta clock_skew = (current - server_time);
+    // Record the magnitude (absolute value) of the skew in minutes.
+    int clock_skew_magnitude = clock_skew.magnitude().InMinutes();
+    // Determine the new expiry with clock skew factored in.
+    if (clock_skew.is_positive() || clock_skew.is_zero()) {
+      base::UmaHistogramCustomCounts("Cookie.ClockSkew.AddMinutes.Subsampled",
+                                     clock_skew_magnitude, 1,
+                                     kMinutesInTwelveHours, 100);
+      base::UmaHistogramCustomCounts(
+          "Cookie.ClockSkew.AddMinutes12To24Hours.Subsampled",
+          clock_skew_magnitude, kMinutesInTwelveHours,
+          kMinutesInTwentyFourHours, 100);
+      // Also record the range of minutes added that allowed the cookie to
+      // avoid expiring immediately.
+      if (parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now()) {
+        base::UmaHistogramCustomCounts(
+            "Cookie.ClockSkew.WithoutAddMinutesExpires.Subsampled",
+            clock_skew_magnitude, 1, kMinutesInTwentyFourHours, 100);
+      }
+    } else if (clock_skew.is_negative()) {
+      // These histograms only support positive numbers, so negative skews
+      // will be converted to positive (via magnitude) before recording.
+      base::UmaHistogramCustomCounts(
+          "Cookie.ClockSkew.SubtractMinutes.Subsampled", clock_skew_magnitude,
+          1, kMinutesInTwelveHours, 100);
+      base::UmaHistogramCustomCounts(
+          "Cookie.ClockSkew.SubtractMinutes12To24Hours.Subsampled",
+          clock_skew_magnitude, kMinutesInTwelveHours,
+          kMinutesInTwentyFourHours, 100);
+    }
+    // Record if we were going to expire the cookie before we added the clock
+    // skew.
+    base::UmaHistogramBoolean(
+        "Cookie.ClockSkew.ExpiredWithoutSkew.Subsampled",
+        parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now());
+  }
+
+  return adjusted_expiry;
 }
 
 // static
@@ -305,10 +312,16 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   ParsedCookie parsed_cookie(cookie_line, status);
 
-  // We record this metric before checking validity because the presence of an
-  // HTAB will invalidate the ParsedCookie.
-  UMA_HISTOGRAM_BOOLEAN("Cookie.NameOrValueHtab",
-                        parsed_cookie.HasInternalHtab());
+  static base::MetricsSubSampler metrics_subsampler;
+  bool collect_metrics =
+      metrics_subsampler.ShouldSample(kHistogramSampleProbability);
+
+  if (collect_metrics) {
+    // We record this metric before checking validity because the presence of an
+    // HTAB will invalidate the ParsedCookie.
+    base::UmaHistogramBoolean("Cookie.NameOrValueHtab.Subsampled",
+                              parsed_cookie.HasInternalHtab());
+  }
 
   if (!parsed_cookie.IsValid()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
@@ -320,11 +333,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
-  // Record warning for non-ASCII octecs in the Domain attribute.
-  // This should lead to rejection of the cookie in the future.
-  UMA_HISTOGRAM_BOOLEAN("Cookie.DomainHasNonASCII",
-                        parsed_cookie.HasDomain() &&
-                            !base::IsStringASCII(parsed_cookie.Domain()));
+  if (collect_metrics) {
+    // Record warning for non-ASCII octecs in the Domain attribute.
+    // This should lead to rejection of the cookie in the future.
+    base::UmaHistogramBoolean("Cookie.DomainHasNonASCII.Subsampled",
+                              parsed_cookie.HasDomain() &&
+                                  !base::IsStringASCII(parsed_cookie.Domain()));
+  }
 
   std::optional<std::string> cookie_domain =
       cookie_util::GetCookieDomainWithString(
@@ -351,7 +366,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   bool is_cookie_prefix_valid =
       cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie);
 
-  RecordCookiePrefixMetrics(prefix);
+  if (collect_metrics) {
+    base::UmaHistogramEnumeration("Cookie.CookiePrefix.Subsampled", prefix,
+                                  COOKIE_PREFIX_LAST);
+  }
 
   if (parsed_cookie.Name() == "") {
     is_cookie_prefix_valid = !HasHiddenPrefixName(parsed_cookie.Value());
@@ -375,8 +393,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Collect metrics on whether usage of the Partitioned attribute is correct.
   // Do not include implicit nonce-based partitioned cookies in these metrics.
   if (parsed_cookie.IsPartitioned()) {
-    if (!partition_has_nonce)
-      UMA_HISTOGRAM_BOOLEAN("Cookie.IsPartitionedValid", is_partitioned_valid);
+    if (!partition_has_nonce && collect_metrics) {
+      base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
+                                is_partitioned_valid);
+    }
   } else if (!partition_has_nonce) {
     cookie_partition_key = std::nullopt;
   }
@@ -457,19 +477,22 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
-  // These metrics capture whether or not a cookie has a Non-ASCII character in
-  // it, except if kDisallowNonAsciiCookies is enabled.
-  UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Name",
-                        !base::IsStringASCII(cc->Name()));
-  UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Value",
-                        !base::IsStringASCII(cc->Value()));
+  if (collect_metrics) {
+    // These metrics capture whether or not a cookie has a Non-ASCII character
+    // in it, except if kDisallowNonAsciiCookies is enabled.
+    base::UmaHistogramBoolean("Cookie.HasNonASCII.Name.Subsampled",
+                              !base::IsStringASCII(cc->Name()));
+    base::UmaHistogramBoolean("Cookie.HasNonASCII.Value.Subsampled",
+                              !base::IsStringASCII(cc->Value()));
 
-  // Check for "__" prefixed names, excluding the cookie prefixes.
-  bool name_prefixed_with_underscores =
-      (prefix == COOKIE_PREFIX_NONE) && parsed_cookie.Name().starts_with("__");
+    // Check for "__" prefixed names, excluding the cookie prefixes.
+    bool name_prefixed_with_underscores =
+        (prefix == COOKIE_PREFIX_NONE) &&
+        parsed_cookie.Name().starts_with("__");
 
-  UMA_HISTOGRAM_BOOLEAN("Cookie.DoubleUnderscorePrefixedName",
-                        name_prefixed_with_underscores);
+    base::UmaHistogramBoolean("Cookie.DoubleUnderscorePrefixedName.Subsampled",
+                              name_prefixed_with_underscores);
+  }
 
   return cc;
 }
@@ -713,8 +736,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     // not have a valid name+value size length
     bool valid_cookie_name_value_pair =
         ParsedCookie::IsValidCookieNameValuePair(cc->Name(), cc->Value());
-    UMA_HISTOGRAM_BOOLEAN("Cookie.FromStorageWithValidLength",
-                          valid_cookie_name_value_pair);
+    base::UmaHistogramBoolean("Cookie.FromStorageWithValidLength",
+                              valid_cookie_name_value_pair);
   } else {
     return nullptr;
   }
@@ -802,54 +825,18 @@ void CanonicalCookie::PostIncludeForRequestURL(
     const CookieOptions& options_used,
     CookieOptions::SameSiteCookieContext::ContextType
         cookie_inclusion_context_used) const {
-  if (metrics_subsampler_.ShouldSample(0.001)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.RequestSameSiteContext", cookie_inclusion_context_used,
-        CookieOptions::SameSiteCookieContext::ContextType::COUNT);
-
-    if (access_result.status.IsInclude()) {
-      UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedRequestEffectiveSameSite",
-                                access_result.effective_same_site,
-                                CookieEffectiveSameSite::COUNT);
-    }
-
-    using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
-        ContextMetadata::ContextRedirectTypeBug1221316;
-
-    ContextRedirectTypeBug1221316 redirect_type_for_metrics =
-        options_used.same_site_cookie_context()
-            .GetMetadataForCurrentSchemefulMode()
-            .redirect_type_bug_1221316;
-    if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
-      UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Read",
-                                redirect_type_for_metrics);
-    }
+  if (!metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    return;
   }
 
-  // For the metric, we only want to consider first party partitioned cookies.
-  if (IsFirstPartyPartitioned()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Cookie.FirstPartyPartitioned.HasCrossSiteAncestor",
-        cookie_inclusion_context_used ==
-            CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE);
-  }
+  base::UmaHistogramEnumeration(
+      "Cookie.RequestSameSiteContext", cookie_inclusion_context_used,
+      CookieOptions::SameSiteCookieContext::ContextType::COUNT);
 
-  if (access_result.status.HasWarningReason(
-          CookieInclusionStatus::WarningReason::
-              WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
-        CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
-  }
-}
-
-void CanonicalCookie::PostIsSetPermittedInContext(
-    const CookieAccessResult& access_result,
-    const CookieOptions& options_used) const {
   if (access_result.status.IsInclude()) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedResponseEffectiveSameSite",
-                              access_result.effective_same_site,
-                              CookieEffectiveSameSite::COUNT);
+    base::UmaHistogramEnumeration(
+        "Cookie.IncludedRequestEffectiveSameSite.Subsampled",
+        access_result.effective_same_site, CookieEffectiveSameSite::COUNT);
   }
 
   using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
@@ -860,15 +847,51 @@ void CanonicalCookie::PostIsSetPermittedInContext(
           .GetMetadataForCurrentSchemefulMode()
           .redirect_type_bug_1221316;
   if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Write",
-                              redirect_type_for_metrics);
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectType.Read.Subsampled",
+        redirect_type_for_metrics);
   }
 
   if (access_result.status.HasWarningReason(
           CookieInclusionStatus::WarningReason::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write",
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
+        CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
+  }
+}
+
+void CanonicalCookie::PostIsSetPermittedInContext(
+    const CookieAccessResult& access_result,
+    const CookieOptions& options_used) const {
+  if (!metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    return;
+  }
+
+  if (access_result.status.IsInclude()) {
+    base::UmaHistogramEnumeration(
+        "Cookie.IncludedResponseEffectiveSameSite.Subsampled",
+        access_result.effective_same_site, CookieEffectiveSameSite::COUNT);
+  }
+
+  using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
+      ContextMetadata::ContextRedirectTypeBug1221316;
+
+  ContextRedirectTypeBug1221316 redirect_type_for_metrics =
+      options_used.same_site_cookie_context()
+          .GetMetadataForCurrentSchemefulMode()
+          .redirect_type_bug_1221316;
+  if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectType.Write.Subsampled",
+        redirect_type_for_metrics);
+  }
+
+  if (access_result.status.HasWarningReason(
+          CookieInclusionStatus::WarningReason::
+              WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
+    base::UmaHistogramEnumeration(
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write.Subsampled",
         CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
   }
 }
@@ -1056,12 +1079,6 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
       break;
   }
   return cookie_line;
-}
-
-// static
-void CanonicalCookie::RecordCookiePrefixMetrics(CookiePrefix prefix) {
-  const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
-  UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix, COOKIE_PREFIX_LAST);
 }
 
 // static

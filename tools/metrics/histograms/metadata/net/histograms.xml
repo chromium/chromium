@@ -5557,7 +5557,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
+<histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK.Subsampled"
     enum="Boolean" expires_after="2025-08-10">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
@@ -5587,17 +5587,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.PartitionedCookiesInScript"
+<histogram
+    name="Net.RestrictedCookieManager.GetCookiesString.Duration.Subsampled"
+    units="microseconds" expires_after="2025-07-30">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the time spent executing RestrictedCookieManager::GetCookiesString,
+    plus its callback if the callback is invoked synchronously.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+
+    Not reported for clients with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.RestrictedCookieManager.PartitionedCookiesInScript.Subsampled"
     units="cookies" expires_after="2025-07-27">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Logs the number of partitioned cookies accessed by a script. Logged only
     when partitioned cookies are enabled.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.SetPartitionedCookie"
+<histogram
+    name="Net.RestrictedCookieManager.SetCookieFromString.Duration.Subsampled"
+    units="microseconds" expires_after="2025-07-30">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the time spent executing
+    RestrictedCookieManager::SetCookieFromString, plus its callback.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+
+    Not reported for clients with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Net.RestrictedCookieManager.SetPartitionedCookie.Subsampled"
     enum="Boolean" expires_after="2025-06-01">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
@@ -5611,7 +5647,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.SiteForCookiesOK"
+<histogram name="Net.RestrictedCookieManager.SiteForCookiesOK.Subsampled"
     enum="BooleanMatched" expires_after="2025-03-09">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
@@ -5624,7 +5660,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.TopFrameOriginOK"
+<histogram name="Net.RestrictedCookieManager.TopFrameOriginOK.Subsampled"
     enum="BooleanMatched" expires_after="2025-01-26">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>

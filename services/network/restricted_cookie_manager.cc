@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -143,13 +142,14 @@ void HistogramScriptCookieExpiration(const net::CanonicalCookie& cookie) {
   const int script_cookie_expiration_in_hours =
       (cookie.ExpiryDate() - base::Time::Now()).InHours();
   if (script_cookie_expiration_in_hours > kHoursInOneWeek) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ScriptExpirationInHoursGTOneWeek",
-                                script_cookie_expiration_in_hours,
-                                kHoursInOneWeek + 1, kHoursInOneYear, 100);
+    base::UmaHistogramCustomCounts(
+        "Cookie.ScriptExpirationInHoursGTOneWeek.Subsampled",
+        script_cookie_expiration_in_hours, kHoursInOneWeek + 1, kHoursInOneYear,
+        100);
   } else {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ScriptExpirationInHoursLTEOneWeek",
-                                script_cookie_expiration_in_hours, 1,
-                                kHoursInOneWeek + 1, 100);
+    base::UmaHistogramCustomCounts(
+        "Cookie.ScriptExpirationInHoursLTEOneWeek.Subsampled",
+        script_cookie_expiration_in_hours, 1, kHoursInOneWeek + 1, 100);
   }
 }
 
@@ -583,9 +583,10 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     }
   }
 
-  if (!result.empty() && IsPartitionedCookiesEnabled()) {
-    UMA_HISTOGRAM_COUNTS_100(
-        "Net.RestrictedCookieManager.PartitionedCookiesInScript",
+  if (!result.empty() && IsPartitionedCookiesEnabled() &&
+      metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
+    base::UmaHistogramCounts100(
+        "Net.RestrictedCookieManager.PartitionedCookiesInScript.Subsampled",
         std::ranges::count_if(result, [](const net::CookieWithAccessResult& c) {
           return c.cookie.IsPartitioned();
         }));
@@ -783,8 +784,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
           cookie_partition_key->from_script() ||
           cookie_partition_key.value() == cookie_partition_key_.value();
       if (collect_metrics) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Net.RestrictedCookieManager.CookiePartitionKeyOK",
+        base::UmaHistogramBoolean(
+            "Net.RestrictedCookieManager.CookiePartitionKeyOK.Subsampled",
             cookie_partition_key_ok);
       }
       if (!cookie_partition_key_ok) {
@@ -800,8 +801,9 @@ void RestrictedCookieManager::SetCanonicalCookie(
   }
 
   if (IsPartitionedCookiesEnabled() && collect_metrics) {
-    UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SetPartitionedCookie",
-                          cookie_partition_key.has_value());
+    base::UmaHistogramBoolean(
+        "Net.RestrictedCookieManager.SetPartitionedCookie.Subsampled",
+        cookie_partition_key.has_value());
   }
 
   std::unique_ptr<net::CanonicalCookie> sanitized_cookie =
@@ -909,8 +911,6 @@ void RestrictedCookieManager::SetCookieFromString(
   TRACE_EVENT("net", "RestrictedCookieManager::SetCookieFromString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ElapsedTimer timer;
-  const bool collect_metrics =
-      metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability);
 
   // The cookie is about to be set. Proactively increment the version so it's
   // instantly reflected. This ensures that changes a reflected before the
@@ -946,7 +946,7 @@ void RestrictedCookieManager::SetCookieFromString(
     }
     return;
   }
-  if (collect_metrics) {
+  if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
     HistogramScriptCookieExpiration(*parsed_cookie);
   }
 
@@ -955,10 +955,10 @@ void RestrictedCookieManager::SetCookieFromString(
   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
                      storage_access_api_status, status,
                      apply_devtools_overrides, base::DoNothing());
-  if (collect_metrics) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Cookie.SetCookieFromString.Duration", timer.Elapsed(),
-        base::Microseconds(1), base::Milliseconds(128), 100);
+  if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Net.RestrictedCookieManager.SetCookieFromString.Duration.Subsampled",
+        timer.Elapsed(), base::Microseconds(1), base::Milliseconds(128), 100);
   }
 }
 
@@ -1027,9 +1027,9 @@ void RestrictedCookieManager::GetCookiesString(
                }).Then(std::move(bound_callback)));
 
   if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Cookie.GetCookiesString.Duration", timer.Elapsed(),
-        base::Microseconds(1), base::Milliseconds(128), 100);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Net.RestrictedCookieManager.GetCookiesString.Duration.Subsampled",
+        timer.Elapsed(), base::Microseconds(1), base::Milliseconds(128), 100);
   }
 }
 
@@ -1090,10 +1090,12 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
       << "' from browser='" << BoundTopFrameOrigin() << "';";
 
   if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
-    UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SiteForCookiesOK",
-                          site_for_cookies_ok);
-    UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.TopFrameOriginOK",
-                          top_frame_origin_ok);
+    base::UmaHistogramBoolean(
+        "Net.RestrictedCookieManager.SiteForCookiesOK.Subsampled",
+        site_for_cookies_ok);
+    base::UmaHistogramBoolean(
+        "Net.RestrictedCookieManager.TopFrameOriginOK.Subsampled",
+        top_frame_origin_ok);
   }
 
   // Don't allow setting cookies on other domains. See crbug.com/996786.

@@ -209,11 +209,12 @@ void LogStoredCookieToUMA(const net::CanonicalCookie& cc,
   type_sample |= cc.IsHttpOnly() ? 1 << COOKIE_TYPE_HTTPONLY : 0;
   type_sample |= cc.SecureAttribute() ? 1 << COOKIE_TYPE_SECURE : 0;
   type_sample |= cc.IsPersistent() ? 1 << COOKIE_TYPE_PERSISTENT : 0;
-  UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type2", type_sample,
-                             (1 << COOKIE_TYPE_LAST_ENTRY));
+  base::UmaHistogramExactLinear("Cookie.Type2.Subsampled", type_sample,
+                                (1 << COOKIE_TYPE_LAST_ENTRY));
 
   // Cookie.SourceType collects the CookieSourceType of the stored cookie.
-  UMA_HISTOGRAM_ENUMERATION("Cookie.SourceType", cc.SourceType());
+  base::UmaHistogramEnumeration("Cookie.SourceType.Subsampled",
+                                cc.SourceType());
 }
 
 }  // namespace
@@ -453,25 +454,26 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
   int expiration_duration_minutes =
       (cookie.ExpiryDate() - creation_time).InMinutes();
   if (cookie.SecureAttribute()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDurationMinutesSecure",
-                                expiration_duration_minutes, 1,
-                                kMinutesInTenYears, 50);
+    base::UmaHistogramCustomCounts(
+        "Cookie.ExpirationDurationMinutesSecure.Subsampled",
+        expiration_duration_minutes, 1, kMinutesInTenYears, 50);
   } else {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDurationMinutesNonSecure",
-                                expiration_duration_minutes, 1,
-                                kMinutesInTenYears, 50);
+    base::UmaHistogramCustomCounts(
+        "Cookie.ExpirationDurationMinutesNonSecure.Subsampled",
+        expiration_duration_minutes, 1, kMinutesInTenYears, 50);
   }
   // The proposed rfc6265bis sets an upper limit on Expires/Max-Age attribute
   // values of 400 days. We need to study the impact this change would have:
   // https://httpwg.org/http-extensions/draft-ietf-httpbis-rfc6265bis.html
   int expiration_duration_days = (cookie.ExpiryDate() - creation_time).InDays();
   if (expiration_duration_days > 400) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDuration400DaysGT",
-                                expiration_duration_days, 401, kDaysInTenYears,
-                                100);
+    base::UmaHistogramCustomCounts(
+        "Cookie.ExpirationDuration400DaysGT.Subsampled",
+        expiration_duration_days, 401, kDaysInTenYears, 100);
   } else {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDuration400DaysLTE",
-                                expiration_duration_days, 1, 400, 50);
+    base::UmaHistogramCustomCounts(
+        "Cookie.ExpirationDuration400DaysLTE.Subsampled",
+        expiration_duration_days, 1, 400, 50);
   }
 }
 
@@ -827,8 +829,8 @@ void CookieMonster::GetCookieListWithOptions(
                          std::move(excluded_cookies));
 
   if (timer) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Cookie.GetCookieListWithOptions.Duration", timer->Elapsed(),
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Cookie.GetCookieListWithOptions.Duration.Subsampled", timer->Elapsed(),
         base::Microseconds(1), base::Milliseconds(128), 100);
   }
 }
@@ -1409,25 +1411,25 @@ void CookieMonster::FilterCookiesWithOptions(
 
       if (IsLocalhost(url)) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.Read.Localhost",
+            "Cookie.Port.Read.Localhost.Subsampled",
             ReducePortRangeForCookieHistogram(destination_port));
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.ReadDiffersFromSet.Localhost",
+            "Cookie.Port.ReadDiffersFromSet.Localhost.Subsampled",
             IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                             cookie_ptr->SourceScheme()));
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.Read.RemoteHost",
+            "Cookie.Port.Read.RemoteHost.Subsampled",
             ReducePortRangeForCookieHistogram(destination_port));
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.ReadDiffersFromSet.RemoteHost",
+            "Cookie.Port.ReadDiffersFromSet.RemoteHost.Subsampled",
             IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                             cookie_ptr->SourceScheme()));
       }
 
       if (cookie_ptr->IsDomainCookie()) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.ReadDiffersFromSet.DomainSet",
+            "Cookie.Port.ReadDiffersFromSet.DomainSet.Subsampled",
             IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                             cookie_ptr->SourceScheme()));
       }
@@ -1790,13 +1792,15 @@ void CookieMonster::SetCanonicalCookie(
 
     if (cc->IsEffectivelySameSiteNone() && collect_metrics) {
       size_t cookie_size = NameValueSizeBytes(*cc);
-      UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes", cookie_size);
+      base::UmaHistogramCounts10000("Cookie.SameSiteNoneSizeBytes.Subsampled",
+                                    cookie_size);
       if (cc->IsPartitioned()) {
-        UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes.Partitioned",
-                                   cookie_size);
+        base::UmaHistogramCounts10000(
+            "Cookie.SameSiteNoneSizeBytes.Partitioned.Subsampled", cookie_size);
       } else {
-        UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes.Unpartitioned",
-                                   cookie_size);
+        base::UmaHistogramCounts10000(
+            "Cookie.SameSiteNoneSizeBytes.Unpartitioned.Subsampled",
+            cookie_size);
       }
     }
 
@@ -1809,7 +1813,8 @@ void CookieMonster::SetCanonicalCookie(
       if (collect_metrics) {
         HistogramExpirationDuration(*cc, creation_date);
 
-        UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
+        base::UmaHistogramBoolean("Cookie.DomainSet.Subsampled",
+                                  cc->IsDomainCookie());
       }
 
       if (!creation_date_to_inherit.is_null()) {
@@ -1841,17 +1846,17 @@ void CookieMonster::SetCanonicalCookie(
 
     if (collect_metrics) {
       if (IsLocalhost(source_url)) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.Set.Localhost",
+        base::UmaHistogramEnumeration(
+            "Cookie.Port.Set.Localhost.Subsampled",
             ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
       } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.Set.RemoteHost",
+        base::UmaHistogramEnumeration(
+            "Cookie.Port.Set.RemoteHost.Subsampled",
             ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
       }
 
-      UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceSchemeName",
-                                GetSchemeNameEnum(source_url));
+      base::UmaHistogramEnumeration("Cookie.CookieSourceSchemeName.Subsampled",
+                                    GetSchemeNameEnum(source_url));
     }
   } else {
     // If the cookie would be excluded, don't bother warning about the 3p cookie
@@ -1881,7 +1886,9 @@ void CookieMonster::SetAllCookies(CookieList list,
     if (cookie.IsExpired(creation_time))
       continue;
 
-    HistogramExpirationDuration(cookie, creation_time);
+    if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+      HistogramExpirationDuration(cookie, creation_time);
+    }
 
     CookieAccessResult access_result;
     access_result.access_semantics = GetAccessSemanticsForCookie(cookie);
