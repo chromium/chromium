@@ -16,11 +16,27 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @NullMarked
 public class ReloadButtonCoordinator {
+    /** An interface that allows parent components to control tab reload logic. */
+    public interface Delegate {
+        /**
+         * Controls how tab is going to be reloaded.
+         *
+         * @param ignoreCache controls whether should force reload or not
+         */
+        void stopOrReloadCurrentTab(boolean ignoreCache);
+    }
+
     private final ReloadButtonMediator mMediator;
 
-    public ReloadButtonCoordinator(ImageButton view) {
-        final var model = new PropertyModel.Builder().build();
-        mMediator = new ReloadButtonMediator(model);
+    /**
+     * Creates an instance of {@link ReloadButtonCoordinator}
+     *
+     * @param view reload button android view.
+     * @param delegate that contains reload logic for reload button.
+     */
+    public ReloadButtonCoordinator(ImageButton view, ReloadButtonCoordinator.Delegate delegate) {
+        final var model = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
+        mMediator = new ReloadButtonMediator(model, delegate);
         PropertyModelChangeProcessor.create(model, view, ReloadButtonViewBinder::bind);
     }
 
