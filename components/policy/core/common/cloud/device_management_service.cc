@@ -298,11 +298,13 @@ JobConfigurationBase::JobConfigurationBase(
     JobType type,
     DMAuth auth_data,
     std::optional<std::string> oauth_token,
+    bool use_cookies,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : type_(type),
       factory_(factory),
       auth_data_(std::move(auth_data)),
-      oauth_token_(std::move(oauth_token)) {
+      oauth_token_(std::move(oauth_token)),
+      use_cookies_(use_cookies) {
   CHECK(!auth_data_.has_oauth_token()) << "Use |oauth_token| instead";
 
 #if !BUILDFLAG(IS_IOS)
@@ -368,7 +370,8 @@ JobConfigurationBase::GetTrafficAnnotationTag() {
       destination: GOOGLE_OWNED_SERVICE
     }
     policy {
-      cookies_allowed: NO
+      cookies_allowed: YES
+      cookies_store: "user"
       setting:
         "This feature cannot be controlled by Chrome settings, but users "
         "can sign out of Chrome to disable it."
@@ -396,7 +399,14 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   rr->method = "POST";
   rr->load_flags =
       net::LOAD_DISABLE_CACHE | (bypass_proxy ? net::LOAD_BYPASS_PROXY : 0);
-  rr->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  if (use_cookies_) {
+    rr->credentials_mode = network::mojom::CredentialsMode::kInclude;
+    rr->site_for_cookies = net::SiteForCookies::FromUrl(rr->url);
+  } else {
+    rr->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
+
   // Disable secure DNS for requests related to device management to allow for
   // recovery in the event of a misconfigured secure DNS policy.
   rr->trusted_params = network::ResourceRequest::TrustedParams();

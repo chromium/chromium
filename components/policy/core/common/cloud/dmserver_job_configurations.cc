@@ -182,6 +182,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(CreateParams params)
     : JobConfigurationBase(params.type,
                            std::move(params.auth_data),
                            std::move(params.oauth_token),
+                           params.use_cookies,
                            params.factory),
       server_url_(params.service->configuration()->GetDMServerUrl()),
       callback_(std::move(params.callback)) {
