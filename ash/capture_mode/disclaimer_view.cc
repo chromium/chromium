@@ -98,24 +98,6 @@ std::u16string GetTextDeclineButton() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetBodyTextParagraphOne() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE);
-#else
-  return u"This is the disclaimer view for a capture mode feature.";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-std::u16string GetBodyTextParagraphTwo() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO);
-#else
-  return u"Read the terms and conditions.";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
 views::Builder<views::StyledLabel> GetTextBodyBuilder() {
   // There are various issues with using `ash::TypographyToken::kCrosBody1`:
   //
@@ -150,6 +132,25 @@ views::Builder<views::StyledLabel> GetTextBodyBuilder() {
       .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false);
+}
+
+views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return GetTextBodyBuilder().SetText(l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE));
+#else
+  return GetTextBodyBuilder().SetText(
+      u"This is the disclaimer view for a capture mode feature.");
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return GetTextBodyBuilder().SetText(l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO));
+#else
+  return GetTextBodyBuilder().SetText(u"Read the terms and conditions.");
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace
@@ -195,8 +196,7 @@ DisclaimerView::DisclaimerView(
                           .SetText(GetTextTitle())
                           .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
-                      GetTextBodyBuilder().SetText(GetBodyTextParagraphOne()),
-                      GetTextBodyBuilder().SetText(GetBodyTextParagraphTwo())))
+                      GetParagraphOneBuilder(), GetParagraphTwoBuilder()))
           .Build());
 
   AddChildView(
