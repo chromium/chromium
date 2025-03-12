@@ -445,6 +445,33 @@ void GotManifest(std::optional<std::string> manifest_id,
       std::move(parsed), manifest.Build());
 }
 
+std::string GetFrameStartedNavigatingNavigationTypeString(
+    const blink::mojom::NavigationType& navigation_type) {
+  switch (navigation_type) {
+    case blink::mojom::NavigationType::RELOAD:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::Reload;
+    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          ReloadBypassingCache;
+    case blink::mojom::NavigationType::RESTORE:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::Restore;
+    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::RestoreWithPost;
+    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          HistorySameDocument;
+    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          HistoryDifferentDocument;
+    case blink::mojom::NavigationType::SAME_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::SameDocument;
+    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+      return Page::FrameStartedNavigating::NavigationTypeEnum::
+          DifferentDocument;
+    default:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 struct PageHandler::PendingScreenshotRequest {
@@ -462,6 +489,22 @@ struct PageHandler::PendingScreenshotRequest {
   std::optional<blink::web_pref::WebPreferences> original_web_prefs;
   gfx::Size original_view_size;
   gfx::Size requested_image_size;
+};
+
+struct PageHandler::PendingNavigation {
+  PendingNavigation(const std::string& frame_id,
+                    const std::string& url,
+                    const std::string& loader_id,
+                    const std::string& navigation_type)
+      : frame_id(frame_id),
+        url(url),
+        loader_id(loader_id),
+        navigation_type(navigation_type) {}
+
+  std::string frame_id;
+  std::string url;
+  std::string loader_id;
+  std::string navigation_type;
 };
 
 PageHandler::PageHandler(
@@ -616,6 +659,13 @@ void PageHandler::DidCloseJavaScriptDialog(bool success,
 
 Response PageHandler::Enable(
     std::optional<bool> enable_file_chooser_opened_event) {
+  if (this->pending_navigation_) {
+    // Pending navigation was created while Page Handler was disabled. Emit the
+    // event.
+    EmitFrameStartedNavigatingEvent(*this->pending_navigation_);
+    this->pending_navigation_.reset();
+  }
+
   enabled_ = true;
   return Response::FallThrough();
 }
@@ -932,50 +982,28 @@ void PageHandler::DidStartNavigating(
     const GURL& url,
     const base::UnguessableToken& loader_id,
     const blink::mojom::NavigationType& navigation_type) {
+  std::unique_ptr<const PendingNavigation> pending_navigation =
+      std::make_unique<const PendingNavigation>(
+          ftn.current_frame_host()->devtools_frame_token().ToString(),
+          url.spec(), loader_id.ToString(),
+          GetFrameStartedNavigatingNavigationTypeString(navigation_type));
+
   if (!enabled_) {
+    // If Page Handler is disabled, cache the pending navigation.
+    this->pending_navigation_ = std::move(pending_navigation);
     return;
   }
-  std::string navigation_type_str;
-  switch (navigation_type) {
-    case blink::mojom::NavigationType::RELOAD:
-      navigation_type_str =
-          Page::FrameStartedNavigating::NavigationTypeEnum::Reload;
-      break;
-    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
-      navigation_type_str = Page::FrameStartedNavigating::NavigationTypeEnum::
-          ReloadBypassingCache;
-      break;
-    case blink::mojom::NavigationType::RESTORE:
-      navigation_type_str =
-          Page::FrameStartedNavigating::NavigationTypeEnum::Restore;
-      break;
-    case blink::mojom::NavigationType::RESTORE_WITH_POST:
-      navigation_type_str =
-          Page::FrameStartedNavigating::NavigationTypeEnum::RestoreWithPost;
-      break;
-    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
-      navigation_type_str =
-          Page::FrameStartedNavigating::NavigationTypeEnum::HistorySameDocument;
-      break;
-    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
-      navigation_type_str = Page::FrameStartedNavigating::NavigationTypeEnum::
-          HistoryDifferentDocument;
-      break;
-    case blink::mojom::NavigationType::SAME_DOCUMENT:
-      navigation_type_str =
-          Page::FrameStartedNavigating::NavigationTypeEnum::SameDocument;
-      break;
-    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
-      navigation_type_str =
-          Page::FrameStartedNavigating::NavigationTypeEnum::DifferentDocument;
-      break;
-    default:
-      NOTREACHED();
-  }
 
+  // Remove pending navigation if any.
+  this->pending_navigation_.reset();
+  EmitFrameStartedNavigatingEvent(*pending_navigation);
+}
+
+void PageHandler::EmitFrameStartedNavigatingEvent(
+    const PendingNavigation& pending_navigation) {
   frontend_->FrameStartedNavigating(
-      ftn.current_frame_host()->devtools_frame_token().ToString(), url.spec(),
-      loader_id.ToString(), navigation_type_str);
+      pending_navigation.frame_id, pending_navigation.url,
+      pending_navigation.loader_id, pending_navigation.navigation_type);
 }
 
 void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {
