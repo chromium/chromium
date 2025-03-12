@@ -1132,16 +1132,27 @@ void GlicWindowController::MovePositionToBrowserGlicButton(
 
   GlicButton* glic_button = GetGlicButton(browser);
   CHECK(glic_button);
-  gfx::Point top_right = GetTopRightPositionForAttachedGlicWindow(glic_button);
-  gfx::Point target_position(
-      top_right.x() - GetGlicWidget()->GetWindowBoundsInScreen().width(),
-      top_right.y());
+  gfx::Point window_target_top_left;
+  if (AlwaysDetached()) {
+    gfx::Point button_bottom_left =
+        glic_button->GetBoundsWithInset().bottom_left();
+    window_target_top_left =
+        gfx::Point(button_bottom_left.x() -
+                       GetGlicWidget()->GetWindowBoundsInScreen().width(),
+                   button_bottom_left.y());
+  } else {
+    gfx::Point top_right =
+        GetTopRightPositionForAttachedGlicWindow(glic_button);
+    window_target_top_left = gfx::Point(
+        top_right.x() - GetGlicWidget()->GetWindowBoundsInScreen().width(),
+        top_right.y());
+  }
 
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
   base::TimeDelta duration =
       animate ? kAnimationDuration : base::Milliseconds(0);
-  glic_window_animator_->AnimatePosition(target_position, duration,
+  glic_window_animator_->AnimatePosition(window_target_top_left, duration,
                                          base::DoNothing());
   NotifyIfPanelStateChanged();
 }
