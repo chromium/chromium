@@ -23,12 +23,11 @@ export function expireCookie(cookieAndAttributes) {
       cookieAndAttributes + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
 }
 
-export function addCookieAndSessionCleanup(test, cookieAndAttributes) {
+export function addCookieAndSessionCleanup(test) {
   // Clean up any set cookies once the test completes.
   test.add_cleanup(async () => {
     const response = await fetch('end_session_via_clear_site_data.py');
     assert_equals(response.status, 200);
-    expireCookie(cookieAndAttributes);
   });
 }
 

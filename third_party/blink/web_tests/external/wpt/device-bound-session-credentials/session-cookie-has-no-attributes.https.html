@@ -12,7 +12,7 @@
   promise_test(async t => {
     await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
-    addCookieAndSessionCleanup(t, expectedCookieAndValue);
+    addCookieAndSessionCleanup(t);
 
     // Configure server to set up a session with a cookie that has no attributes.
     configureServer({ cookieAttributes: "" });

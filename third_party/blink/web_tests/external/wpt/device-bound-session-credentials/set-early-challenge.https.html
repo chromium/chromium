@@ -14,7 +14,7 @@
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
     const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
     const earlyChallengeString = "early_challenge";
-    addCookieAndSessionCleanup(t, expectedCookieAndAttributes);
+    addCookieAndSessionCleanup(t);
 
     // Configure server for sending back a challenge early on refresh.
     configureServer({ earlyChallengeForNextRegisteredSession: earlyChallengeString });
@@ -42,11 +42,10 @@
     const expectedCookieAndValue1 = "auth_cookie=abcdef0123";
     const expectedCookieAndAttributes1 = `${expectedCookieAndValue1};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
     const earlyChallenge1 = "early_challenge1";
-    addCookieAndSessionCleanup(t, expectedCookieAndAttributes1);
     const expectedCookieAndValue2 = "other_cookie=ghijkl4567";
     const expectedCookieAndAttributes2 = `${expectedCookieAndValue2};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
     const earlyChallenge2 = "early_challenge2";
-    addCookieAndSessionCleanup(t, expectedCookieAndAttributes2);
+    addCookieAndSessionCleanup(t);
 
     // Configure server for sending back a challenge early. Also configure the session's cookie
     // for test clarity (not strictly needed).
