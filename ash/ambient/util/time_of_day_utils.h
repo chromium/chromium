@@ -55,9 +55,13 @@ ASH_EXPORT void InstallAmbientVideoDlcInBackground();
 // this default for the user when the video theme is active.
 ASH_EXPORT AmbientVideo GetDefaultAmbientVideo();
 
+// Checks whether jupiter video can be shown as a screen saver option.
+ASH_EXPORT bool ShouldShowJupiterVideo();
+
 // TimeOfDay video file names.
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayCloudsVideo[];
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayNewMexicoVideo[];
+ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayJupiterVideo[];
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayVideoHtmlSubPath[];
 
 }  // namespace ash
