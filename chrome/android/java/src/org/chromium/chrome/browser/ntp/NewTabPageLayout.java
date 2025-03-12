@@ -134,7 +134,6 @@ public class NewTabPageLayout extends LinearLayout {
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
     private boolean mIsLogoPolishEnabled;
-    private @LogoSizeForLogoPolish int mLogoSizeForLogoPolish;
     private View mFakeSearchBoxLayout;
     private Callback<Logo> mOnLogoAvailableCallback;
 
@@ -212,7 +211,6 @@ public class NewTabPageLayout extends LinearLayout {
         mIsLogoPolishEnabled =
                 LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
                         mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo);
-        mLogoSizeForLogoPolish = LogoUtils.getLogoSizeForLogoPolish();
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
 
@@ -381,7 +379,7 @@ public class NewTabPageLayout extends LinearLayout {
         mLogoCoordinator.setLogoSizeForLogoPolish(
                 mIsInMultiWindowModeOnTablet
                         ? LogoSizeForLogoPolish.SMALL
-                        : mLogoSizeForLogoPolish);
+                        : LogoSizeForLogoPolish.MEDIUM);
         mLogoCoordinator.initWithNative(mProfile);
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
         setSearchProviderTopMargin();
@@ -962,16 +960,15 @@ public class NewTabPageLayout extends LinearLayout {
                 MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
 
         // According to the design of Logo Polish, the small logo size is used in split screens on
-        // tablets. Thus, if the default logo size is small, we don't need to adjust the logo size
-        // while the tablet transitions to or from a multi-screen layout.
+        // tablets. Thus, we need to adjust the logo size while the tablet transitions to or from a
+        // multi-screen layout.
         if (mIsLogoPolishEnabled
-                && mLogoSizeForLogoPolish != LogoSizeForLogoPolish.SMALL
                 && mLogoView != null
                 && isInMultiWindowModeOnTabletPreviousValue != mIsInMultiWindowModeOnTablet) {
             int realLogoSizeForLogoPolish =
                     mIsInMultiWindowModeOnTablet
                             ? LogoSizeForLogoPolish.SMALL
-                            : mLogoSizeForLogoPolish;
+                            : LogoSizeForLogoPolish.MEDIUM;
             mLogoCoordinator.setLogoSizeForLogoPolish(realLogoSizeForLogoPolish);
             LogoUtils.setLogoViewLayoutParams(
                     mLogoView, getResources(), mIsLogoPolishEnabled, realLogoSizeForLogoPolish);

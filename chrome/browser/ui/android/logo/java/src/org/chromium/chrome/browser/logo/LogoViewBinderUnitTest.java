@@ -235,8 +235,6 @@ public class LogoViewBinderUnitTest {
         assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
         mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.MEDIUM);
         assertEquals(LogoSizeForLogoPolish.MEDIUM, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.LARGE);
-        assertEquals(LogoSizeForLogoPolish.LARGE, mLogoView.getLogoSizeForLogoPolishForTesting());
         mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.SMALL);
         assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
     }

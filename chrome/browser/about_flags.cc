@@ -2273,27 +2273,6 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLogoPolish_large[] = {
-    {"polish_logo_size_large", "true"},
-    {"polish_logo_size_medium", "false"}};
-
-const FeatureEntry::FeatureParam kLogoPolish_medium[] = {
-    {"polish_logo_size_large", "false"},
-    {"polish_logo_size_medium", "true"}};
-
-const FeatureEntry::FeatureParam kLogoPolish_small[] = {
-    {"polish_logo_size_large", "false"},
-    {"polish_logo_size_medium", "false"}};
-
-const FeatureEntry::FeatureVariation kLogoPolishVariations[] = {
-    {"Logo height is large", kLogoPolish_large, std::size(kLogoPolish_large),
-     nullptr},
-    {"Logo height is medium", kLogoPolish_medium, std::size(kLogoPolish_medium),
-     nullptr},
-    {"Logo height is small", kLogoPolish_small, std::size(kLogoPolish_small),
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kSearchResumption_use_new_service[] = {
     {"use_new_service", "true"}};
 const FeatureEntry::FeatureVariation
@@ -7261,9 +7240,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-logo-polish", flag_descriptions::kLogoPolishName,
      flag_descriptions::kLogoPolishDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLogoPolish,
-                                    kLogoPolishVariations,
-                                    "LogoPolish")},
+     FEATURE_VALUE_TYPE(chrome::android::kLogoPolish)},
 
     {"search-in-cct", flag_descriptions::kSearchInCCTName,
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
