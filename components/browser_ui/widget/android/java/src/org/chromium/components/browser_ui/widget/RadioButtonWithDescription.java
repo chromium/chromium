@@ -179,7 +179,15 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
         return (ChromeImageView) findViewById(R.id.icon);
     }
 
-    /** @return TextView displayed as primary inside this {@link RadioButtonWithDescription}. */
+    /** Set the icon in the front of the primary texts {@link RadioButtonWithDescription}. */
+    public void setIcon(int resId) {
+        mIcon.setImageResource(resId);
+        mIcon.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * @return TextView displayed as primary inside this {@link RadioButtonWithDescription}.
+     */
     protected TextView getPrimaryTextView() {
         return (TextView) findViewById(R.id.primary);
     }
