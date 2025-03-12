@@ -108,22 +108,6 @@ public class HomeScreenViewBinder {
         return builder.toString();
     }
 
-    private static int getAddressHomeAndWorkIconId(FastCheckoutAutofillProfile profile) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
-            return R.drawable.location_on_logo;
-        }
-
-        @RecordType int recordType = profile.getRecordType();
-        if (recordType == RecordType.ACCOUNT_HOME) {
-            return R.drawable.home_logo;
-        }
-        if (recordType == RecordType.ACCOUNT_WORK) {
-            return R.drawable.work_logo;
-        }
-        return R.drawable.location_on_logo;
-    }
-
     private static void updateProfile(PropertyModel model, ViewHolder view) {
         FastCheckoutAutofillProfile profile = model.get(SELECTED_PROFILE);
 
@@ -142,7 +126,7 @@ public class HomeScreenViewBinder {
         view.mStreetAddressTextView.setText(getFullStreetAddress(profile));
         view.mEmailAddressTextView.setText(profile.getEmailAddress());
         view.mPhoneNumberTextView.setText(profile.getPhoneNumber());
-        view.mAddressImageView.setImageResource(getAddressHomeAndWorkIconId(profile));
+        view.mAddressImageView.setImageResource(profile.getAddressHomeAndWorkIconId());
 
         hideIfEmpty(view.mRecordTypeTextView);
         hideIfEmpty(view.mFullNameTextView);

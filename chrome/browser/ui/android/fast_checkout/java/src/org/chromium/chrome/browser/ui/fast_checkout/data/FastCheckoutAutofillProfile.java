@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.fast_checkout.data;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.components.autofill.RecordType;
 
 /** A profile, similar to the one used by the PersonalDataManager. */
@@ -133,5 +135,22 @@ public class FastCheckoutAutofillProfile {
 
     public @RecordType int getRecordType() {
         return mRecordType;
+    }
+
+    public int getAddressHomeAndWorkIconId() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
+            return R.drawable.location_on_logo;
+        }
+
+        @RecordType int recordType = getRecordType();
+        switch (recordType) {
+            case RecordType.ACCOUNT_HOME:
+                return R.drawable.home_logo;
+            case RecordType.ACCOUNT_WORK:
+                return R.drawable.work_logo;
+            default:
+                return R.drawable.location_on_logo;
+        }
     }
 }
