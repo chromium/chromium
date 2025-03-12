@@ -165,6 +165,10 @@ bool BabelOrcaManager::IsCaptioningAvailable() {
 
 void BabelOrcaManager::SigninToTachyonAndRespond(
     base::OnceCallback<void(bool)> on_response_cb) {
+  if (registrar_.GetTachyonToken()) {
+    std::move(on_response_cb).Run(true);
+    return;
+  }
   registrar_.Register(client_uuid_, base::BindOnce(std::move(on_response_cb)));
 }
 
