@@ -38,6 +38,7 @@ class CreditCardRiskBasedAuthenticator;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PaymentsDataManager;
+class SaveCardBottomSheetModel;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 class VirtualCardEnrollUiModel;
@@ -185,6 +186,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       card_expiration_date_fix_flow_controller_;
 
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
+
+  base::WeakPtr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
 };
 
 }  // namespace payments

@@ -16,6 +16,7 @@ source_set("bottom_sheet") {
   ]
   deps = [
     ":bottom_sheet_ts",
+    ":save_card_bottom_sheet_model",
     ":virtual_card_enrollment_callbacks",
     "//base",
     "//components/autofill/core/browser",
@@ -48,13 +49,16 @@ source_set("unit_tests") {
   ]
   deps = [
     ":bottom_sheet",
+    ":save_card_bottom_sheet_model_unittest",
     "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common:test_support",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util",
     "//components/infobars/core",
     "//components/password_manager/core/browser/features:password_features",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -76,6 +80,27 @@ optimize_ts("bottom_sheet_ts") {
   deps = [
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+source_set("save_card_bottom_sheet_model") {
+  sources = [
+    "save_card_bottom_sheet_model.h",
+    "save_card_bottom_sheet_model.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
+}
+
+source_set("save_card_bottom_sheet_model_unittest") {
+  testonly = true
+  sources = [ "save_card_bottom_sheet_model_unittest.mm" ]
+  deps = [
+    "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//testing/gtest",
   ]
 }
 
