@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/linux/gvariant_ref.h"
 
 #include <glib.h>
+#include <glibconfig.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -20,10 +17,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/span.h"
-#include "base/logging.h"
+#include "base/compiler_specific.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "remoting/host/linux/gvariant_type.h"
 
 namespace remoting::gvariant {
 
@@ -117,8 +114,8 @@ GVariantBase::~GVariantBase() {
   }
 }
 
-bool GVariantBase::operator==(const GVariantBase& other) const {
-  return g_variant_equal(raw(), other.raw());
+bool operator==(const GVariantBase& lhs, const GVariantBase& rhs) {
+  return g_variant_equal(lhs.raw(), rhs.raw());
 }
 
 // GVariantRef implementation
@@ -151,37 +148,85 @@ GVariantRef<C> GVariantRef<C>::RefSink(GVariant* variant)
 template GVariantRef<Type("*")> GVariantRef<Type("*")>::RefSink(
     GVariant* variant);
 
+// Wrapper implementations
+
+ObjectPathCStr::ObjectPathCStr(const ObjectPath& path LIFETIME_BOUND)
+    : path_(path.c_str()) {}
+
 // static
-base::expected<ObjectPath, std::string> ObjectPath::TryFrom(std::string path) {
-  if (g_variant_is_object_path(path.c_str())) {
-    return base::ok(ObjectPath(std::move(path)));
+base::expected<ObjectPathCStr, std::string> ObjectPathCStr::TryFrom(
+    const char* path LIFETIME_BOUND) {
+  if (g_variant_is_object_path(path)) {
+    return base::ok(ObjectPathCStr(path, Checked()));
   } else {
     return base::unexpected(
         base::StrCat({"String is not a valid object path: ", path}));
   }
 }
 
-// Wrapper implementations
+ObjectPathCStr::ObjectPathCStr(const char* path LIFETIME_BOUND, Checked)
+    : path_(path) {}
+
+ObjectPath::ObjectPath() : path_("/") {}
+
+ObjectPath::ObjectPath(ObjectPathCStr path) : path_(path.c_str()) {}
+
+// static
+base::expected<ObjectPath, std::string> ObjectPath::TryFrom(std::string path) {
+  return ObjectPathCStr::TryFrom(path.c_str()).transform([&](ObjectPathCStr) {
+    return ObjectPath(std::move(path));
+  });
+}
 
 const std::string& ObjectPath::value() const {
   return path_;
 }
 
+const char* ObjectPath::c_str() const {
+  return path_.c_str();
+}
+
 ObjectPath::ObjectPath(std::string path) : path_(path) {}
 
+TypeSignatureCStr::TypeSignatureCStr(
+    const TypeSignature& signature LIFETIME_BOUND)
+    : signature_(signature.c_str()) {}
+
 // static
-base::expected<TypeSignature, std::string> TypeSignature::TryFrom(
-    std::string signature) {
-  if (g_variant_is_signature(signature.c_str())) {
-    return base::ok(TypeSignature(std::move(signature)));
+base::expected<TypeSignatureCStr, std::string> TypeSignatureCStr::TryFrom(
+    const char* signature LIFETIME_BOUND) {
+  if (g_variant_is_signature(signature)) {
+    return base::ok(TypeSignatureCStr(signature, Checked()));
   } else {
     return base::unexpected(
         base::StrCat({"String is not a valid type signature: ", signature}));
   }
 }
 
+TypeSignatureCStr::TypeSignatureCStr(const char* signature LIFETIME_BOUND,
+                                     Checked)
+    : signature_(signature) {}
+
+TypeSignature::TypeSignature() = default;
+
+TypeSignature::TypeSignature(TypeSignatureCStr signature)
+    : signature_(signature.c_str()) {}
+
+// static
+base::expected<TypeSignature, std::string> TypeSignature::TryFrom(
+    std::string signature) {
+  return TypeSignatureCStr::TryFrom(signature.c_str())
+      .transform([&](TypeSignatureCStr) {
+        return TypeSignature(std::move(signature));
+      });
+}
+
 const std::string& TypeSignature::value() const {
   return signature_;
+}
+
+const char* TypeSignature::c_str() const {
+  return signature_.c_str();
 }
 
 TypeSignature::TypeSignature(std::string path) : signature_(path) {}
@@ -278,16 +323,36 @@ double Mapping<double>::Into(const GVariantRef<kType>& variant) {
   return g_variant_get_double(variant.raw());
 }
 
+// Creates a GVariantRef of a string-like type ("s", "o", or "g") from a
+// string_view that has already been verified to be of the correct form for the
+// type.
 template <Type C>
-static GVariantRef<C> CreateStringVariant(std::string_view value) {
+  requires(C == Type("s") || C == Type("o") || C == Type("g"))
+static GVariantRef<C> CreateStringVariantUnchecked(std::string_view value) {
+  // g_variant_new_string() can't be used directly because it requires a null-
+  // terminated string, which |value| might not be. To avoid making two copies
+  // of |value| (one to add a null byte and another to construct the GVariant),
+  // we instead create a new backing buffer ourselves for the GVariant to use.
+
+  // The serialized form of a string GVariant is just the string contents
+  // followed by a null byte.
   char* data = static_cast<char*>(g_malloc(value.size() + 1));
   std::copy(value.begin(), value.end(), data);
-  data[value.size()] = '\0';
+  // SAFETY: We allocate |data| earlier in this function to have a size of
+  // value.size() + 1.
+  UNSAFE_BUFFERS(data[value.size()] = '\0');
+
+  // GVariant holds the buffer as a reference-counted GBytes object. The GBytes
+  // object takes ownership of |data|, and will call g_free on it when the last
+  // reference is dropped.
   GBytes* bytes = g_bytes_new_take(data, value.size() + 1);
+
+  // g_variant_new_from_bytes() creates a new GVariant using |bytes| as its
+  // backing buffer without making a copy.
   GVariantRef<C> variant = GVariantRef<C>::TakeUnchecked(
       g_variant_new_from_bytes(C.gvariant_type(), bytes, true));
 
-  // g_variant_new_from_bytes takes its own ref to bytes.
+  // g_variant_new_from_bytes() takes its own ref to |bytes|.
   g_bytes_unref(bytes);
 
   return variant;
@@ -327,7 +392,7 @@ auto Mapping<std::string_view>::TryFrom(std::string_view value)
     return base::unexpected("String is not valid UTF-8");
   }
 
-  return base::ok(CreateStringVariant<kType>(value));
+  return base::ok(CreateStringVariantUnchecked<kType>(value));
 }
 
 // static
@@ -353,8 +418,14 @@ decltype(std::ignore) Mapping<decltype(std::ignore)>::Into(
 }
 
 // static
+auto Mapping<ObjectPathCStr>::From(const ObjectPathCStr& value)
+    -> GVariantRef<kType> {
+  return CreateStringVariantUnchecked<kType>(value.c_str());
+}
+
+// static
 auto Mapping<ObjectPath>::From(const ObjectPath& value) -> GVariantRef<kType> {
-  return CreateStringVariant<kType>(value.value());
+  return CreateStringVariantUnchecked<kType>(value.value());
 }
 
 // static
@@ -367,9 +438,15 @@ ObjectPath Mapping<ObjectPath>::Into(const GVariantRef<kType>& variant) {
 }
 
 // static
+auto Mapping<TypeSignatureCStr>::From(const TypeSignatureCStr& value)
+    -> GVariantRef<kType> {
+  return CreateStringVariantUnchecked<kType>(value.c_str());
+}
+
+// static
 auto Mapping<TypeSignature>::From(const TypeSignature& value)
     -> GVariantRef<kType> {
-  return CreateStringVariant<kType>(value.value());
+  return CreateStringVariantUnchecked<kType>(value.value());
 }
 
 // static

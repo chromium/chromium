@@ -4,14 +4,8 @@
 #ifndef REMOTING_HOST_LINUX_GVARIANT_TYPE_H_
 #define REMOTING_HOST_LINUX_GVARIANT_TYPE_H_
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <glib.h>
 
-#include <algorithm>
 #include <array>
 #include <concepts>
 #include <cstddef>
@@ -27,6 +21,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 
@@ -57,11 +52,6 @@ class TypeBase {
   explicit constexpr operator std::string_view() const;
   explicit operator const GVariantType*() const;
   explicit constexpr operator Type<>() const;
-
-  // Iteration
-  constexpr const char* begin() const;
-  constexpr const char* end() const;
-  constexpr std::size_t size() const;
 
   // Comparison
   constexpr bool operator==(const TypeBase& other) const;
@@ -130,13 +120,15 @@ class TypeBase {
 
   // Helpers
 
-  // string must be a view within a null-terminated string.
+  // Verifies that |string| is a valid type string representing a single,
+  // complete type.
   static constexpr bool Validate(std::string_view string);
   static constexpr bool IsBasicType(char code);
-  // Given the pointer to the start of a type in a type string, returns a
-  // pointer to the position immediately following it. E.g., given "a{sv}i",
-  // returns a pointer to "i".
-  static constexpr const char* SkipType(const char* start);
+  // Given a view within a type string, returns the length of the first single
+  // complete type. E.g. given "a{sv}i)", returns 5 (the length of "a{sv}"). If
+  // |view| does not begin with a valid complete type, the returned length is
+  // unspecified, but will be no greater than view.length().
+  static constexpr size_t TypeLength(std::string_view view);
 
   // Converts a dynamic Type<> to a fixed Type<N>. get_dynamic must provide a
   // constexpr operator() that returns the Type<>. It will be called exactly
@@ -169,11 +161,14 @@ class Type final : public TypeBase {
   // GVariantRef<gvariant::Type("s")>.
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr Type(const char (&string_lit)[N + 1])
-      : Type(string_lit, std::integral_constant<std::size_t, N>()) {}
+      : Type(base::span(string_lit).template first<N>()) {
+    CHECK(string_lit[N] == '\0')
+        << "This constructor expects a null-terminated string";
+  }
 
   // Construct from possibly non-null-terminated string of the proper length.
-  constexpr Type(const char* string, std::integral_constant<std::size_t, N>) {
-    std::copy(string, string + N, type_string_.begin());
+  explicit constexpr Type(base::span<const char, N> string) {
+    base::span(type_string_).template first<N>().copy_from(string);
     type_string_[N] = '\0';
   }
 
@@ -188,15 +183,15 @@ class Type final : public TypeBase {
     requires(N == (... + decltype(gvariant::Type(
                              std::forward<Pieces>(pieces)))::fixed_size))
   {
-    auto position = type_string_.begin();
+    base::span<char> remaining = type_string_;
     // "Loop" through the passed values by invoking a lambda for each argument.
     (
         [&]<std::size_t M>(const Type<M>& type) {
-          std::copy(type.begin(), type.end(), position);
-          position += type.size();
+          remaining.take_first(type.string_view().size())
+              .copy_from(type.string_view());
         }(gvariant::Type(std::forward<Pieces>(pieces))),
         ...);
-    *position = '\0';
+    remaining.front() = '\0';
   }
 
   // Copyable
@@ -293,8 +288,8 @@ constexpr const char* TypeBase::c_string() const {
 }
 
 constexpr std::string_view TypeBase::string_view() const {
-  auto contents = this->contents();
-  return std::string_view(contents.first, contents.second);
+  auto [string, length] = this->contents();
+  return std::string_view(string, length);
 }
 
 constexpr TypeBase::operator const char*() const {
@@ -309,19 +304,6 @@ constexpr TypeBase::operator Type<>() const {
   return Type<>(string_view());
 }
 
-constexpr const char* TypeBase::begin() const {
-  return contents().first;
-}
-
-constexpr const char* TypeBase::end() const {
-  auto contents = this->contents();
-  return contents.first + contents.second;
-}
-
-constexpr std::size_t TypeBase::size() const {
-  return contents().second;
-}
-
 constexpr bool TypeBase::operator==(const TypeBase& other) const {
   return string_view() == other.string_view();
 }
@@ -331,23 +313,25 @@ constexpr bool TypeBase::IsSubtypeOf(const TypeBase& supertype) const {
     return false;
   }
 
-  const char* sub_iter = c_string();
-  const char* super_iter = supertype.c_string();
+  std::string_view sub_view = string_view();
+  std::string_view super_view = supertype.string_view();
 
-  while (*super_iter != '\0') {
-    if (*super_iter == *sub_iter ||
-        (*super_iter == '?' && IsBasicType(*sub_iter))) {
-      ++sub_iter, ++super_iter;
-    } else if (*sub_iter == ')' || *sub_iter == '}' || *sub_iter == '\0') {
+  while (!sub_view.empty() && !super_view.empty()) {
+    if (super_view.front() == sub_view.front() ||
+        (super_view.front() == '?' && IsBasicType(sub_view.front()))) {
+      sub_view.remove_prefix(1);
+      super_view.remove_prefix(1);
+    } else if (sub_view.front() == ')' || sub_view.front() == '}') {
       return false;
-    } else if (*super_iter == '*' || (*super_iter == 'r' && *sub_iter == '(')) {
-      sub_iter = SkipType(sub_iter);
-      ++super_iter;
+    } else if (super_view.front() == '*' ||
+               (super_view.front() == 'r' && sub_view.front() == '(')) {
+      sub_view.remove_prefix(TypeLength(sub_view));
+      super_view.remove_prefix(1);
     } else {
       return false;
     }
   }
-  return *sub_iter == '\0';
+  return sub_view.empty() && super_view.empty();
 }
 
 constexpr bool TypeBase::HasCommonTypeWith(const TypeBase& other) const {
@@ -356,27 +340,31 @@ constexpr bool TypeBase::HasCommonTypeWith(const TypeBase& other) const {
   }
 
   // This is like IsSubtypeOf, but symmetrical.
-  const char* iter1 = c_string();
-  const char* iter2 = other.c_string();
+  std::string_view view1 = string_view();
+  std::string_view view2 = other.string_view();
 
-  while (*iter1 != '\0' && *iter2 != '\0') {
-    if (*iter1 == *iter2 || (*iter1 == '?' && IsBasicType(*iter2)) ||
-        (*iter2 == '?' && IsBasicType(*iter1))) {
-      ++iter1, ++iter2;
-    } else if (*iter1 == ')' || *iter1 == '}' || *iter2 == ')' ||
-               *iter2 == '}') {
+  while (!view1.empty() && !view2.empty()) {
+    if (view1.front() == view2.front() ||
+        (view1.front() == '?' && IsBasicType(view2.front())) ||
+        (view2.front() == '?' && IsBasicType(view1.front()))) {
+      view1.remove_prefix(1);
+      view2.remove_prefix(1);
+    } else if (view1.front() == ')' || view1.front() == '}' ||
+               view2.front() == ')' || view2.front() == '}') {
       return false;
-    } else if (*iter1 == '*' || (*iter1 == 'r' && *iter2 == '(')) {
-      iter2 = SkipType(iter2);
-      ++iter1;
-    } else if (*iter2 == '*' || (*iter2 == 'r' && *iter1 == '(')) {
-      iter1 = SkipType(iter1);
-      ++iter2;
+    } else if (view1.front() == '*' ||
+               (view1.front() == 'r' && view2.front() == '(')) {
+      view1.remove_prefix(1);
+      view2.remove_prefix(TypeLength(view2));
+    } else if (view2.front() == '*' ||
+               (view2.front() == 'r' && view1.front() == '(')) {
+      view1.remove_prefix(TypeLength(view1));
+      view2.remove_prefix(1);
     } else {
       return false;
     }
   }
-  return *iter1 == *iter2;
+  return view1.empty() && view2.empty();
 }
 
 constexpr bool TypeBase::IsValid() const {
@@ -387,7 +375,7 @@ constexpr bool TypeBase::IsDefinite() const {
   if (!IsValid()) {
     return false;
   }
-  for (char c : *this) {
+  for (char c : this->string_view()) {
     // These characters indicate, respectively, any type, any basic type, and
     // any tuple, and the presence of any of them makes a type indefinite.
     if (c == '*' || c == '?' || c == 'r') {
@@ -398,19 +386,19 @@ constexpr bool TypeBase::IsDefinite() const {
 }
 
 constexpr bool TypeBase::IsBasic() const {
-  if (size() != 1) {
+  if (string_view().size() != 1) {
     return false;
   }
 
-  return IsBasicType(*begin());
+  return IsBasicType(string_view().front());
 }
 
 constexpr bool TypeBase::IsStringType() const {
-  if (size() != 1) {
+  if (string_view().size() != 1) {
     return false;
   }
 
-  switch (*begin()) {
+  switch (string_view().front()) {
     case 's':
     case 'o':
     case 'g':
@@ -425,7 +413,7 @@ constexpr bool TypeBase::IsContainer() const {
     return false;
   }
 
-  switch (*begin()) {
+  switch (string_view().front()) {
     case 'v':
     case 'a':
     case 'm':
@@ -443,7 +431,7 @@ constexpr bool TypeBase::IsFixedSizeContainer() const {
     return false;
   }
 
-  switch (*begin()) {
+  switch (string_view().front()) {
     case 'v':
     case '(':
     case '{':
@@ -458,16 +446,17 @@ constexpr std::optional<std::vector<Type<>>> TypeBase::Unpack() const {
     return std::nullopt;
   }
 
+  std::string_view view = string_view();
   std::vector<Type<>> result;
 
-  if (string_view() == "v") {
+  if (view == "v") {
     result.emplace_back("*");
   } else {
-    const char* position = begin() + 1;  // Skip opening '(' or '{'
-    while (*position != ')' && *position != '}') {
-      const char* next = SkipType(position);
-      result.emplace_back(std::string_view(position, next));
-      position = next;
+    view.remove_prefix(1);  // Skip opening '(' or '{'
+    while (view.front() != ')' && view.front() != '}') {
+      std::size_t type_length = TypeLength(view);
+      result.emplace_back(view.substr(0, type_length));
+      view.remove_prefix(type_length);
     }
   }
   return result;
@@ -490,13 +479,15 @@ constexpr Type<> TypeBase::CommonSuperTypeWith(const TypeBase& other) const {
     return Type<>(*this);
   } else if (IsBasic() && other.IsBasic()) {
     return Type<>("?");
-  } else if ((*begin() == 'r' && *other.begin() == '(') ||
-             (*begin() == '(' && *other.begin() == 'r')) {
+  } else if ((string_view().front() == 'r' &&
+              other.string_view().front() == '(') ||
+             (string_view().front() == '(' &&
+              other.string_view().front() == 'r')) {
     return Type<>("r");
-  } else if (*begin() == *other.begin()) {
+  } else if (string_view().front() == other.string_view().front()) {
     // Containers of the same type. (Only way first char can be equal but not
     // the rest.)
-    const char container_char = *begin();
+    const char container_char = string_view().front();
     if (container_char == 'a' || container_char == 'm') {
       return Type<>(std::string_view(&container_char, 1),
                     ContainedType().value().CommonSuperTypeWith(
@@ -507,17 +498,20 @@ constexpr Type<> TypeBase::CommonSuperTypeWith(const TypeBase& other) const {
     std::vector<Type<>> other_types = other.Unpack().value();
 
     if (my_types.size() != other_types.size()) {
+      // Dict entries always have two entries, so they must be tuples.
       return Type<>("r");
     }
 
     std::string super_types;
-    super_types.reserve(size() - 2);
+    // A supertype is no longer than either subtype.
+    super_types.reserve(string_view().size());
+    super_types += container_char;
     for (std::size_t i = 0; i < my_types.size(); ++i) {
       super_types +=
           my_types[i].CommonSuperTypeWith(other_types[i]).string_view();
     }
-    return Type<>(std::string_view(&container_char, 1), super_types,
-                  container_char == '(' ? ")" : "}");
+    super_types += container_char == '(' ? ")" : "}";
+    return Type<>(super_types);
   } else {
     return Type<>("*");
   }
@@ -556,8 +550,8 @@ constexpr std::optional<Type<>> TypeBase::ContainedType() const {
   }
   if (*this == Type("v") || *this == Type("r")) {
     return Type<>("*");
-  } else if (*begin() == 'a' || *begin() == 'm') {
-    return Type<>(begin() + 1);
+  } else if (string_view().front() == 'a' || string_view().front() == 'm') {
+    return Type<>(string_view().substr(1));
   } else {
     // Tuple or dict entry
     std::vector<Type<>> inner_types = Unpack().value();
@@ -612,9 +606,8 @@ constexpr bool TypeBase::Validate(std::string_view string) {
       }
       std::string_view remaining = string.substr(1, string.size() - 2);
       while (remaining.size() != 0) {
-        std::size_t type_length = SkipType(remaining.data()) - remaining.data();
-        if (type_length > remaining.size() ||
-            !Validate(remaining.substr(0, type_length))) {
+        std::size_t type_length = TypeLength(remaining);
+        if (!Validate(remaining.substr(0, type_length))) {
           return false;
         }
         remaining.remove_prefix(type_length);
@@ -651,28 +644,23 @@ constexpr bool TypeBase::IsBasicType(char code) {
 }
 
 // static
-constexpr const char* TypeBase::SkipType(const char* start) {
-  // SkipType is used by Validate, and thus shouldn't assume start points to a
-  // valid type string. In the event of an invalid type string, SkipType needn't
-  // do anything particularly sensible, but it should ensure that (1) it never
-  // skips past the terminating null byte and (2) if start isn't already
-  // pointing to a null byte, it skips at least one character (to avoid infinite
-  // loops).
-  while (*start == 'a' || *start == 'm') {
-    ++start;
+constexpr size_t TypeBase::TypeLength(std::string_view view) {
+  std::size_t initial_length = view.length();
+  while (!view.empty() && (view.front() == 'a' || view.front() == 'm')) {
+    view.remove_prefix(1);
   }
   std::size_t depth = 0;
   do {
-    if (*start == '\0') {
+    if (view.empty()) {
       break;
-    } else if (*start == '(' || *start == '{') {
+    } else if (view.front() == '(' || view.front() == '{') {
       ++depth;
-    } else if (*start == ')' || *start == '}') {
+    } else if (view.front() == ')' || view.front() == '}') {
       --depth;
     }
-    ++start;
+    view.remove_prefix(1);
   } while (depth != 0);
-  return start;
+  return initial_length - view.length();
 }
 
 // static
@@ -700,13 +688,15 @@ consteval /* Type<N> */ auto TypeBase::ToFixed(Callable get_dynamic) {
 
   constexpr IntermediateResult intermediate_result = [](Type<> type) {
     IntermediateResult intermediate_result{};
-    intermediate_result.size = type.size();
-    std::copy(type.begin(), type.end(), intermediate_result.data.begin());
+    intermediate_result.size = type.string_view().size();
+    base::span(intermediate_result.data)
+        .first(type.string_view().size())
+        .copy_from(type.string_view());
     return intermediate_result;
   }(get_dynamic());
 
-  return Type(intermediate_result.data.data(),
-              std::integral_constant<std::size_t, intermediate_result.size>());
+  return Type(base::span(intermediate_result.data)
+                  .template first<intermediate_result.size>());
 #endif
 }
 
@@ -714,8 +704,8 @@ consteval /* Type<N> */ auto TypeBase::ToFixed(Callable get_dynamic) {
 template <typename Callable>
 consteval /* std::tuple<Type<N>...> */ auto TypeBase::ToFixedTuple(
     Callable get_dynamic_vector) {
-  // Like with ToFixed(), this function copies the result into an almost-sure
-  // to-be-big-enough fixed-size arrays that are allowed to be stored in a
+  // Like with ToFixed(), this function copies the result into almost-sure-to-
+  // be-big-enough fixed-size arrays that are allowed to be stored in a
   // constexpr variable to avoid calling get_dynamic_vector() multiple times.
 
   struct IntermediateResult {
@@ -729,25 +719,20 @@ consteval /* std::tuple<Type<N>...> */ auto TypeBase::ToFixedTuple(
       [](std::vector<Type<>> types) {
         IntermediateResult intermediate_result{};
         intermediate_result.count = types.size();
-        std::size_t offset = 0;
+        base::span<char> data_span = intermediate_result.data;
         for (std::size_t i = 0; i < types.size(); ++i) {
-          intermediate_result.sizes[i] = types[i].size();
-          std::copy(types[i].begin(), types[i].end(),
-                    intermediate_result.data.begin() + offset);
-          offset += types[i].size();
+          intermediate_result.sizes[i] = types[i].string_view().size();
+          data_span.take_first(types[i].string_view().size())
+              .copy_from(types[i].string_view());
         }
         return intermediate_result;
       }(get_dynamic_vector());
 
   return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-    std::size_t offset = 0;
+    base::span<const char> data_span = intermediate_result.data;
     // Uses brace initialization to guarantee in-order evaluation of arguments.
-    return std::tuple{[&]() {
-      const char* data = intermediate_result.data.data() + offset;
-      constexpr std::size_t size = intermediate_result.sizes[Is];
-      offset += size;
-      return Type(data, std::integral_constant<std::size_t, size>());
-    }()...};
+    return std::tuple{
+        Type(data_span.take_first<intermediate_result.sizes[Is]>())...};
   }(std::make_index_sequence<intermediate_result.count>());
 }
 
