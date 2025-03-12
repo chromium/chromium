@@ -21,6 +21,9 @@ class PrefetchHandleImpl final : public PrefetchHandle {
                      base::WeakPtr<PrefetchContainer> prefetch_container);
   ~PrefetchHandleImpl() override;
 
+  // `PrefetchHandle` implementations
+  bool IsAlive() const override;
+
   // TODO(crbug.com/390329781): The following methods are tentative interface
   // for incrementally migrating `//content/` internal code to `PrefetchHandle`.
   // Revisit the semantics when exposing for the public API.
@@ -30,9 +33,6 @@ class PrefetchHandleImpl final : public PrefetchHandle {
   // `kStarted` at that time.
   void SetPrefetchStatusOnReleaseStartedPrefetch(
       PrefetchStatus prefetch_status_on_release_started_prefetch);
-
-  // Returns true if the underlying `PrefetchContainer` is alive.
-  bool IsAlive() const { return !!prefetch_container_; }
 
  private:
   base::WeakPtr<PrefetchService> prefetch_service_;
