@@ -5135,6 +5135,12 @@ const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
 
+const char kNtpDriveModuleNoSyncRequirementName[] =
+    "NTP Drive Module No Sync Requirement";
+const char kNtpDriveModuleNoSyncRequirementDescription[] =
+    "Removes the requirement for Sync to be enabled for the Drive module on "
+    "the New Tab Page.";
+
 const char kNtpDriveModuleSegmentationName[] = "NTP Drive Module Segmentation";
 const char kNtpDriveModuleSegmentationDescription[] =
     "Uses segmentation data to decide whether to show the Drive module on the "

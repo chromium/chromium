@@ -12604,6 +12604,7 @@ from previous Chrome versions.
   <int value="-577443556" label="kTearOffWebAppTabOpensWebAppWindow:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
   <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
+  <int value="-575139778" label="NtpDriveModuleNoSyncRequirement:enabled"/>
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
   <int value="-574965003" label="LauncherLacrosIntegration:disabled"/>
@@ -14672,6 +14673,7 @@ from previous Chrome versions.
   <int value="239330938" label="LauncherAppSort:enabled"/>
   <int value="240371107"
       label="FriendlierSafeBrowsingSettingsStandardProtection:disabled"/>
+  <int value="240718033" label="NtpDriveModuleNoSyncRequirement:disabled"/>
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>
   <int value="242181887" label="NotificationOneTapUnsubscribe:disabled"/>

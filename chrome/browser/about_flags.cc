@@ -6909,6 +6909,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpDriveModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-drive-module-no-sync-requirement",
+     flag_descriptions::kNtpDriveModuleNoSyncRequirementName,
+     flag_descriptions::kNtpDriveModuleNoSyncRequirementDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpDriveModuleNoSyncRequirement)},
+
     {"ntp-drive-module-segmentation",
      flag_descriptions::kNtpDriveModuleSegmentationName,
      flag_descriptions::kNtpDriveModuleSegmentationDescription, kOsDesktop,

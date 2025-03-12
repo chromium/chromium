@@ -6217,6 +6217,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ntp-drive-module-no-sync-requirement",
+    "owners": [ "rtatum@google.com", "tiborg@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-drive-module-segmentation",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 125

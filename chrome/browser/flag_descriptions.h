@@ -3010,6 +3010,9 @@ extern const char kNtpChromeCartModuleDescription[];
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 
+extern const char kNtpDriveModuleNoSyncRequirementName[];
+extern const char kNtpDriveModuleNoSyncRequirementDescription[];
+
 extern const char kNtpDriveModuleSegmentationName[];
 extern const char kNtpDriveModuleSegmentationDescription[];
 
