@@ -10512,6 +10512,7 @@ from previous Chrome versions.
   <int value="-1408370474" label="AssistantRoutines:enabled"/>
   <int value="-1408292942" label="WebAppEnableAppTitle:enabled"/>
   <int value="-1408288176" label="enable-account-consistency"/>
+  <int value="-1408162587" label="SearchAggregatorProvider:enabled"/>
   <int value="-1407904527"
       label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
   <int value="-1407251816" label="AutofillContentEditables:enabled"/>
@@ -11511,7 +11512,6 @@ from previous Chrome versions.
   <int value="-1014936248" label="SyncUSSBookmarks:enabled"/>
   <int value="-1014649471" label="committed-interstitials"/>
   <int value="-1013986101" label="FirstScrollLatencyMeasurement:disabled"/>
-  <int value="-1013412506" label="EnableSearchAggregatorPolicy:disabled"/>
   <int value="-1012816526"
       label="FileSystemAccessGetCloudIdentifiers:disabled"/>
   <int value="-1012657256" label="WebAuthenticationConditionalUI:enabled"/>
@@ -12245,6 +12245,7 @@ from previous Chrome versions.
   <int value="-719819631" label="TranslateUI:disabled"/>
   <int value="-719698123" label="LegacyTLSWarnings:enabled"/>
   <int value="-719147284" label="ExperimentalProductivityFeatures:disabled"/>
+  <int value="-719062737" label="SearchAggregatorProvider:disabled"/>
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
   <int value="-718626298" label="SysInternals:enabled"/>
   <int value="-718485659" label="OmniboxGroupingFrameworkForNonZPS:enabled"/>
@@ -17573,7 +17574,6 @@ from previous Chrome versions.
   <int value="1369649674" label="ChromeShareScreenshot:enabled"/>
   <int value="1369663360"
       label="MayLaunchUrlUsesSeparateStoragePartition:enabled"/>
-  <int value="1369705872" label="EnableSearchAggregatorPolicy:enabled"/>
   <int value="1370104897" label="NtpFooter:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
   <int value="1370921804" label="ToolbarPhoneCleanup:enabled"/>

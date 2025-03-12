@@ -2202,15 +2202,6 @@ const char kContextualPageActionsShareModelName[] =
 const char kContextualPageActionsShareModelDescription[] =
     "Enables share model data collection.";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-const char kEnableSearchAggregatorPolicyName[] =
-    "Enable EnterpriseSearchAggregatorSettings policy";
-const char kEnableSearchAggregatorPolicyDescription[] =
-    "Enable the policy that allows organizations to set a Search Aggregator "
-    "engine that can be used in the Omnibox";
-#endif
-
 const char kHappyEyeballsV3Name[] = "Happy Eyeballs Version 3";
 const char kHappyEyeballsV3Description[] =
     "Enables the Happy Eyeballs Version 3 algorithm. See "
@@ -2755,6 +2746,11 @@ const char kOmniboxStarterPackIPHName[] =
 const char kOmniboxStarterPackIPHDescription[] =
     "Enables an informational IPH message for the  Site search starter pack "
     "feature";
+
+const char kOmniboxSearchAggregatorName[] =
+    "Omnibox search aggregator";
+const char kOmniboxSearchAggregatorDescription[] =
+    "Enables omnibox suggestions from the search aggregator provider";
 
 const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
     "Omnibox on-focus suggestions on web and SRP";
