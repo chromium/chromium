@@ -2286,6 +2286,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="256517381556987641">"Sinkronizimi i skedarëve" gjeti <ph name="ITEMS_FOUND" /> skedarë deri më tani dhe është ende duke kontrolluar hapësirën ruajtëse. Provo të aktivizosh përsëri "Sinkronizimin e skedarëve" pas pak minutash.</translation>
 <translation id="2565214867520763227">Aktivizo lexuesin e ekranit</translation>
 <translation id="2566146433999774844">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUM_OTHER_MEMBERS" /> të tjerë</translation>
+<translation id="256726287944589768">Shfaq fundin e faqes në faqen e skedës së re</translation>
 <translation id="2568694057933302218">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="2568774940984945469">Mbajtësi i shiritit të informacionit</translation>
 <translation id="2569972178052279830">Emri i shitësit me pakicë</translation>
@@ -2794,6 +2795,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2921081876747860777">Krijo një fjalëkalimin për të mbrojtur të dhënat e tua lokale.</translation>
 <translation id="2923006468155067296">Pajisja jote <ph name="DEVICE_TYPE" /> do të kyçet tani.
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> detyra të tjera në të njëjtin grup detyrash: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Hiqe këtë llogari</translation>
 <translation id="2923644930701689793">Qasu te filmi i kamerës i telefonit tënd</translation>
 <translation id="292371311537977079">Cilësimet e Chrome</translation>

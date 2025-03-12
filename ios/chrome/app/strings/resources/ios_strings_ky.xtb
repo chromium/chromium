@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Киргизүүчү ачкыч</translation>
 <translation id="1030376737535466765">Сырсөз башкаргычын ачыңыз</translation>
 <translation id="1035980983510608210">Бардык өтмөктөр жабылса, кадалган өтмөктөр да жабылат.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1041322626941363065">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Кукилер, сайттагы нерселерди</translation>
 <translation id="1312721752506309252">Күчөтүлгөн коргоо күйүк</translation>
 <translation id="1317821187353201763">Өтмөктү жабуу</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Бул таңгакка көз салуу}other{Бардык таңгактарга көз салуу}}</translation>
 <translation id="1321993286294231467">Сүрөттү сактоодо ката кетти.</translation>
 <translation id="1322735045095424339">Уюмуңуз жашыруун режимди колдонууну талап кылат</translation>
 <translation id="1323735185997015385">Жок кылуу</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> тандалды</translation>
 <translation id="1709916727352927457">Мүмкүндүк алуу ачкычын өчүрүү</translation>
 <translation id="1712341189152602203">Учурдагы серептөө дайындары <ph name="USER_EMAIL" /> менен байланыштырылат. Бул маалымат уюмуңузга көрүнүшү мүмкүн.</translation>
-<translation id="1713777106376424209">Жеткирген:</translation>
 <translation id="1715515772563243997">Эгер <ph name="SITE" /> сайтына ишенсеңиз, кирүү үчүн сакталган сырсөзүңүздү колдоно бериңиз.</translation>
 <translation id="1718835860248848330">Акыркы бир саат</translation>
 <translation id="1728549374069268714">Чаптоо жана өтүү</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Бааларга көз салуу жана статистика</translation>
 <translation id="1820195936249950412">Жарактуу аккаунтуңуз менен кириңиз</translation>
 <translation id="1820259098641718022">Окуу тизмесине кошулду</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Башка түзмөктөрдөгү өтмөктөрдү алганда эскертилет.</translation>
 <translation id="1827529786398596735">Башкы экранды коё бербей басып туруңуз</translation>
 <translation id="1832848789136765277">Шайкештирилген маалыматыңызга каалаган убакта кирүү үчүн өзүңүздү ырастаңыз</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Бирдик тандагыч</translation>
 <translation id="2330607597130465898">Коопсуздук корголгон жок</translation>
 <translation id="233375395665273385">Өчүрүү жана аккаунттан чыгуу</translation>
-<translation id="2348630484974447747">Таңгак</translation>
 <translation id="2351097562818989364">Которуу параметрлериңиз баштапкы абалга келтирилди.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} үчүн сырсөзүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}=2{{DOMAIN_ONE} жана {DOMAIN_TWO} үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} жана дагы {OTHER_DOMAINS_COUNT} домен үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}other{{DOMAIN_ONE}, {DOMAIN_TWO} жана дагы {OTHER_DOMAINS_COUNT} домен үчүн сырсөздөрүңүздү Google аккаунтуңузга ({EMAIL}) сактай аласыз.}}</translation>
 <translation id="2353953000228441783">Сайттын демейки көрүнүшү</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Топтолбосун</translation>
 <translation id="446314443268698477">Камераңыз же сүрөттөрүңүз аркылуу соода кылып, тексттерди которуп жана көргөн нерсеңизди аныктаңыз.</translation>
 <translation id="4469324811108161144">Эскертүүлөр <ph name="CHARACTER_LIMIT" /> символго чейин сактай алат.</translation>
-<translation id="4469834037720363704">Таңгак номери</translation>
 <translation id="4471472356135655769">Сырсөздөр экспорттолбой жатат</translation>
 <translation id="4473608001744970767">"Баага көз салуу" параметрин жашыруу</translation>
 <translation id="4474142134969976028">Эч нерсе табылган жок</translation>
@@ -1289,7 +1283,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="647867789226964031">Сырсөздөрүңүздү өзгөртүңүз</translation>
 <translation id="6494931198667773526">Качан бүтөт</translation>
 <translation id="6495521251906266731">Бул түзмөктөгү сырсөздөр, таржымал сыяктуу жана башка серептөө дайындарын эмне кылуу керек экенин тандаңыз.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Бул таңгакка көз салууну токтотуу}other{Бардык таңгактарга көз салууну токтотуу}}</translation>
 <translation id="6503077044568424649">Көп көрүлгөн</translation>
 <translation id="6503763061813913607">Коопсуздукту текшерүү функциясынын билдирмелери</translation>
 <translation id="6505334220040167806">Өтмөктөр тобун жыйыштыруу.</translation>
@@ -1761,7 +1754,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8481184073299279701">"Таржымалды сактап баштоо" баскычын басып, JavaScript консолунун бардык өтмөктөрүндөгү мындан кийинки таржымалдарды жана каталарды топтоңуз. Таржымалдар ушул барак жабылып же "Таржымалды сактоону токтотуу" баскычы басылмайынча топтолот (жана эстутумда гана сакталат).</translation>
 <translation id="8487667956631253959">Күйүк</translation>
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Шилтеме түзүлгөн жок</translation>
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8505361906966222822">Сактоо…</translation>

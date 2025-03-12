@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abrir Gestor de Palavras-passe</translation>
 <translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1041322626941363065">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, dados de sites</translation>
 <translation id="1312721752506309252">A proteção melhorada está ativada</translation>
 <translation id="1317821187353201763">Fechar separador</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Acompanhar esta embalagem}other{Acompanhar todas as embalagens}}</translation>
 <translation id="1321993286294231467">Erro ao guardar a imagem.</translation>
 <translation id="1322735045095424339">A sua entidade requer o Modo de navegação anónima</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1709916727352927457">Elimine o token de acesso</translation>
 <translation id="1712341189152602203">Os dados de navegação existentes vão ser associados a <ph name="USER_EMAIL" />. Estes dados podem ser visualizados pela sua organização.</translation>
-<translation id="1713777106376424209">Entregue até</translation>
 <translation id="1715515772563243997">Se confiar em <ph name="SITE" />, pode usar uma palavra-passe guardada para iniciar sessão.</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Acompanhamento de preço e estatísticas</translation>
 <translation id="1820195936249950412">Inicie sessão com uma conta válida</translation>
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Alerta quando recebe separadores de outros dispositivos.</translation>
 <translation id="1827529786398596735">Toque sem soltar no ecrã principal</translation>
 <translation id="1832848789136765277">Para se certificar de que pode sempre aceder aos seus dados de sincronização, valide a sua identidade</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Seletor de unidades</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
-<translation id="2348630484974447747">Embalagem</translation>
 <translation id="2351097562818989364">As definições de tradução foram repostas.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Pode guardar a palavra-passe do domínio {DOMAIN_ONE} na sua Conta Google, {EMAIL}.}=2{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta Google, {EMAIL}.}=3{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}other{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Vista do site predefinida</translation>
@@ -797,7 +792,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compre, traduza e identifique o que vê com a câmara ou as fotos.</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
-<translation id="4469834037720363704">Número da encomenda</translation>
 <translation id="4471472356135655769">Não é possível exportar palavras-passe</translation>
 <translation id="4473608001744970767">Ocultar Acompanhar preço</translation>
 <translation id="4474142134969976028">Sem resultados</translation>
@@ -1289,7 +1283,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="647867789226964031">Altere as suas palavras-passe</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6495521251906266731">Escolha o que fazer com os dados de navegação existentes neste dispositivo, como palavras-passe, histórico e muito mais.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Desativar acompanhamento desta embalagem}other{Desativar acompanhamento de todas as embalagens}}</translation>
 <translation id="6503077044568424649">Mais visitadas</translation>
 <translation id="6503763061813913607">Notificações da verificação de segurança</translation>
 <translation id="6505334220040167806">Reduzir grupo de separadores.</translation>
@@ -1761,7 +1754,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8481184073299279701">Toque no botão "Iniciar o registo" para recolher futuros registos da consola de JavaScript e erros de todos os separadores. Os registos serão recolhidos (e armazenados apenas na memória) até fechar esta página ou tocar em "Parar o registo".</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Não é possível criar o link</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8505361906966222822">Guardar em…</translation>

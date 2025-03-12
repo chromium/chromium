@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abra o Gerenciador de senhas</translation>
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1041322626941363065">Avisar se as suas senhas forem expostas em uma violação de dados</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, dados do site</translation>
 <translation id="1312721752506309252">A Proteção reforçada está ativa</translation>
 <translation id="1317821187353201763">Fechar guia</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Rastrear pacote}one{Rastrear todos os pacotes}other{Rastrear todos os pacotes}}</translation>
 <translation id="1321993286294231467">Erro ao salvar a imagem.</translation>
 <translation id="1322735045095424339">Sua organização requer o uso do modo de navegação anônima</translation>
 <translation id="1323735185997015385">Excluir</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1709916727352927457">Excluir chave de acesso</translation>
 <translation id="1712341189152602203">Os dados de navegação atuais serão vinculados a <ph name="USER_EMAIL" />. Esses dados podem estar visíveis para sua organização.</translation>
-<translation id="1713777106376424209">Enviado por</translation>
 <translation id="1715515772563243997">Se você confia no site <ph name="SITE" />, pode usar uma senha salva para fazer login.</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Monitoramento e informações sobre preços</translation>
 <translation id="1820195936249950412">Faça login com uma conta válida</translation>
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Veja alertas quando você receber guias de outros dispositivos.</translation>
 <translation id="1827529786398596735">Toque na tela inicial e mantenha-a pressionada.</translation>
 <translation id="1832848789136765277">Para garantir o acesso aos seus dados sincronizados, confirme sua identidade</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Seletor de unidade de medida</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Excluir e sair</translation>
-<translation id="2348630484974447747">Pacote</translation>
 <translation id="2351097562818989364">As configurações de tradução foram redefinidas.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Você pode salvar a senha de {DOMAIN_ONE} na sua Conta do Google {EMAIL}.}=2{Você pode salvar as senhas de {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta do Google {EMAIL}.}=3{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} site na sua Conta do Google {EMAIL}.}one{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} sites na sua Conta do Google {EMAIL}.}other{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} sites na sua Conta do Google {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Visualização padrão do site</translation>
@@ -797,7 +792,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compre, traduza e identifique o que está ao seu redor usando a câmera ou suas fotos.</translation>
 <translation id="4469324811108161144">Observações podem ter até <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
-<translation id="4469834037720363704">Número do pacote</translation>
 <translation id="4471472356135655769">Não é possível exportar senhas</translation>
 <translation id="4473608001744970767">Ocultar o recurso "Monitorar preço"</translation>
 <translation id="4474142134969976028">Nenhum resultado correspondente</translation>
@@ -1289,7 +1283,6 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="647867789226964031">Mudar suas senhas</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6495521251906266731">Escolha o que fazer com os dados de navegação neste dispositivo, como senhas, histórico e muito mais.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Cancelar rastreamento deste pacote}one{Cancelar rastreamento de todos os pacotes}other{Cancelar rastreamento de todos os pacotes}}</translation>
 <translation id="6503077044568424649">Mais visitados</translation>
 <translation id="6503763061813913607">Notificações da Confirmação de segurança</translation>
 <translation id="6505334220040167806">Fechar grupo de guias.</translation>
@@ -1761,7 +1754,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8481184073299279701">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Não foi possível criar o link</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8505361906966222822">Salvar em…</translation>

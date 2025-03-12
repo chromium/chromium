@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Нэвтрэх түлхүүр</translation>
 <translation id="1030376737535466765">Нууц үгний менежерийг нээх</translation>
 <translation id="1035980983510608210">Бүх табыг хааснаар бэхэлсэн табуудыг мөн хаана.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1041322626941363065">Таны нууц үгнүүд өгөгдлийн зөрчилд задруулсан тохиолдолд танд сануулах</translation>
 <translation id="1044891598689252897">Сайтууд хэвийн ажиллана</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies ба сайтын мэдээлэл</translation>
 <translation id="1312721752506309252">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="1317821187353201763">Табыг хаах</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Энэ илгээмжийг хянах}other{Бүх илгээмжийг хянах}}</translation>
 <translation id="1321993286294231467">Зургийг хадгалахад алдаа гарлаа.</translation>
 <translation id="1322735045095424339">Танай байгууллага Нууцлалын горимыг шаардаж байна</translation>
 <translation id="1323735185997015385">Устгах</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> сонгогдсон</translation>
 <translation id="1709916727352927457">Passkey-г устгах</translation>
 <translation id="1712341189152602203">Одоо байгаа интернэтээр үзсэн өгөгдлийг <ph name="USER_EMAIL" />-д холбоно. Энэ өгөгдлийг танай байгууллагаас үзэх боломжтой байж магадгүй.</translation>
-<translation id="1713777106376424209">Дараахаар хүргэсэн</translation>
 <translation id="1715515772563243997">Та <ph name="SITE" />-д итгэдэг бол нэвтрэхдээ хадгалсан нууц үгээ ашиглах боломжтой.</translation>
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
 <translation id="1728549374069268714">Буулгаж, очих</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Үнэ мөшгөх, статистик</translation>
 <translation id="1820195936249950412">Хүчинтэй бүртгэлээр нэвтэрнэ үү</translation>
 <translation id="1820259098641718022">Унших жагсаалтад нэмсэн</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Таныг бусад төхөөрөмжөөсөө таб хүлээн авахад мэдэгдэнэ.</translation>
 <translation id="1827529786398596735">Үндсэн нүүрэнд хүрээд удаан дарна уу</translation>
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Нэгж сонгогч</translation>
 <translation id="2330607597130465898">Хамгаалалтгүй</translation>
 <translation id="233375395665273385">Устгаад, гарах</translation>
-<translation id="2348630484974447747">Илгээмж</translation>
 <translation id="2351097562818989364">Таны орчуулгын тохиргоо дахин шинэчлэгдсэн байна.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Та {DOMAIN_ONE}-н нууц үгээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}=2{Та {DOMAIN_ONE} болон {DOMAIN_TWO}-н нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}=3{Та {DOMAIN_ONE}, {DOMAIN_TWO} болон бусад {OTHER_DOMAINS_COUNT} домэйний нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}other{Та {DOMAIN_ONE}, {DOMAIN_TWO} болон бусад {OTHER_DOMAINS_COUNT} домэйний нууц үгнүүдээ {EMAIL} Google Бүртгэлдээ хадгалах боломжтой.}}</translation>
 <translation id="2353953000228441783">Сайтын өгөгдмөл харагдах байдал</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="446314443268698477">Камер эсвэл зургаараа харж буй зүйлээ худалдан авч, орчуулж, тодорхойлоорой.</translation>
 <translation id="4469324811108161144">Тэмдэглэл нь <ph name="CHARACTER_LIMIT" /> хүртэлх тэмдэгт хадгалах боломжтой.</translation>
-<translation id="4469834037720363704">Илгээмжийн дугаар</translation>
 <translation id="4471472356135655769">Нууц үгнүүдийг экспортлох боломжгүй</translation>
 <translation id="4473608001744970767">Үнэ мөшгөхийг нуух</translation>
 <translation id="4474142134969976028">Таарах ямар ч илэрц байхгүй</translation>
@@ -1289,7 +1283,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="647867789226964031">Нууц үгнүүдээ өөрчлөх</translation>
 <translation id="6494931198667773526">Дуусна</translation>
 <translation id="6495521251906266731">Нууц үг, түүх болон энэ төхөөрөмж дээр байгаа интернэтээр үзсэн бусад өгөгдлийг хэрхэхийг сонгоно уу.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Энэ илгээмжийг хянахаа болих}other{Бүх илгээмжийг хянахаа болих}}</translation>
 <translation id="6503077044568424649">Хамгийн олон хандалт авсан</translation>
 <translation id="6503763061813913607">Аюулгүй байдлын шалгалтын мэдэгдэл</translation>
 <translation id="6505334220040167806">Табын бүлгийг хураана уу.</translation>
@@ -1761,7 +1754,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8481184073299279701">Бүх табаас JavaScript консолын цаашдын лог болон алдааг цуглуулахын тулд "Лог хийж эхлэх" товчийг товшино уу. Хуудсыг хаах эсвэл "Лог хийхийг зогсоох" дээр товших хүртэл логийг цуглуулна (мөн зөвхөн санах ойд хадгална).</translation>
 <translation id="8487667956631253959">Асаах</translation>
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Холбоос үүсгэх боломжгүй</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8505361906966222822">Дараахад хадгалах…</translation>

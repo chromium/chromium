@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Ключ доступа</translation>
 <translation id="1030376737535466765">Открыть Менеджер паролей</translation>
 <translation id="1035980983510608210">Будут также закрыты закрепленные вкладки.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1041322626941363065">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="1044891598689252897">Сайты будут работать в нормальном режиме</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Файлы cookie и данные сайтов</translation>
 <translation id="1312721752506309252">Улучшенная защита включена</translation>
 <translation id="1317821187353201763">Закрыть вкладку</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Отслеживать эту посылку}one{Отслеживать все посылки}few{Отслеживать все посылки}many{Отслеживать все посылки}other{Отслеживать все посылки}}</translation>
 <translation id="1321993286294231467">При сохранении изображения возникла ошибка.</translation>
 <translation id="1322735045095424339">В вашей организации обязательно использовать режим инкогнито.</translation>
 <translation id="1323735185997015385">Удалить</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Удаление ключа доступа</translation>
 <translation id="1712341189152602203">Данные о работе в браузере будут связаны с адресом <ph name="USER_EMAIL" />. Ваша организация может просматривать эти сведения.</translation>
-<translation id="1713777106376424209">Служба доставки</translation>
 <translation id="1715515772563243997">Если вы доверяете сайту <ph name="SITE" />, то можете использовать для входа сохраненный пароль.</translation>
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1728549374069268714">Вставить и перейти</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Отслеживание цен и рекомендации</translation>
 <translation id="1820195936249950412">Войдите с действительным аккаунтом</translation>
 <translation id="1820259098641718022">Добавлено в список чтения</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">Вам будут приходить оповещения при получении вкладок с других устройств</translation>
 <translation id="1827529786398596735">Нажмите на главный экран и удерживайте.</translation>
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Список выбора единиц измерения</translation>
 <translation id="2330607597130465898">Защита отключена</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
-<translation id="2348630484974447747">Посылка</translation>
 <translation id="2351097562818989364">Настройки перевода сброшены</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Вы можете сохранить пароль для домена {DOMAIN_ONE} в своем аккаунте Google ({EMAIL}).}=2{Вы можете сохранить пароли для доменов {DOMAIN_ONE} и {DOMAIN_TWO} в своем аккаунте Google ({EMAIL}).}=3{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}one{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}few{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} доменов в своем аккаунте Google ({EMAIL}).}many{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} доменов в своем аккаунте Google ({EMAIL}).}other{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Режим просмотра сайтов по умолчанию</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Разгруппировать</translation>
 <translation id="446314443268698477">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру или фото.</translation>
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Номер заказа</translation>
 <translation id="4471472356135655769">Не удалось экспортировать пароли</translation>
 <translation id="4473608001744970767">Скрыть раздел "Отслеживание цен"</translation>
 <translation id="4474142134969976028">Ничего не найдено</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">Измените пароли</translation>
 <translation id="6494931198667773526">Окончание</translation>
 <translation id="6495521251906266731">Выберите, что делать с уже имеющимися на устройстве данными о работе в браузере, например паролями, историей и т. д.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Перестать отслеживать эту посылку}one{Перестать отслеживать все посылки}few{Перестать отслеживать все посылки}many{Перестать отслеживать все посылки}other{Перестать отслеживать все посылки}}</translation>
 <translation id="6503077044568424649">Сайты</translation>
 <translation id="6503763061813913607">Уведомления проверки безопасности</translation>
 <translation id="6505334220040167806">Свернуть группу вкладок.</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">Чтобы фиксировать журналы консоли JavaScript и ошибки на всех вкладках, нажмите кнопку "Начать запись журнала". Журналы будут записываться и храниться в памяти, пока вы не закроете страницу или не нажмете кнопку "Остановить запись журнала".</translation>
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Не удалось создать ссылку</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8505361906966222822">Место сохранения</translation>

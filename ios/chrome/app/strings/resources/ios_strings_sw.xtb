@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Ufunguo wa siri</translation>
 <translation id="1030376737535466765">Fungua Kidhibiti cha Manenosiri</translation>
 <translation id="1035980983510608210">Kufunga vichupo vyote kutafunga vichupo vilivyobandikwa pia.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Zima</translation>
 <translation id="1041322626941363065">Nitahadharishe ikiwa manenosiri Yamefichuliwa katika tukio la Ufichuzi Haramu wa data</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Vidakuzi na data ya tovuti</translation>
 <translation id="1312721752506309252">Kipengele cha ulinzi ulioboreshwa kimewashwa</translation>
 <translation id="1317821187353201763">Funga kichupo</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Fuatilia kifurushi hiki}other{Fuatilia vifurushi vyote}}</translation>
 <translation id="1321993286294231467">Hitilafu imetokea wakati wa kuhifadhi picha.</translation>
 <translation id="1322735045095424339">Shirika lako linahitaji utumie hali Fiche</translation>
 <translation id="1323735185997015385">Futa</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimechaguliwa</translation>
 <translation id="1709916727352927457">Futa ufunguo wa siri</translation>
 <translation id="1712341189152602203">Data iliyopo ya kuvinjari itaunganishwa kwenye <ph name="USER_EMAIL" />. Huenda data hii ikaonekana kwenye shirika lako.</translation>
-<translation id="1713777106376424209">Unaletewa na</translation>
 <translation id="1715515772563243997">Ikiwa unaiamini tovuti ya <ph name="SITE" />, unaweza kutumia nenosiri ulilohifadhi ili uingie katika akaunti.</translation>
 <translation id="1718835860248848330">Saa iliyopita</translation>
 <translation id="1728549374069268714">Bandika na utafute</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Ufuatiliaji wa bei na maarifa</translation>
 <translation id="1820195936249950412">Ingia ukitumia akaunti sahihi</translation>
 <translation id="1820259098641718022">Imeongezwa kwenye Orodha ya Kusoma</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Hukutumia arifa unapopokea vichupo kutoka kwa vifaa vyako vingine.</translation>
 <translation id="1827529786398596735">Gusa na ushikilie skrini ya kwanza</translation>
 <translation id="1832848789136765277">Ili uhakikishe kwamba unaweza kufikia data yako inayosawazishwa wakati wowote, thibitisha kwamba ni wewe</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Kiteuzi cha vipimo</translation>
 <translation id="2330607597130465898">Hakuna ulinzi</translation>
 <translation id="233375395665273385">Futa na uondoke kwenye akaunti</translation>
-<translation id="2348630484974447747">Kifurushi</translation>
 <translation id="2351097562818989364">Mipangilio yako ya kutafsiri imewekwa upya.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Unaweza kuhifadhi nenosiri lako la {DOMAIN_ONE} kwenye Akaunti yako ya Google, {EMAIL}.}=2{Unaweza kuhifadhi manenosiri yako ya {DOMAIN_ONE} na {DOMAIN_TWO} kwenye Akaunti yako ya Google, {EMAIL}.}=3{Unaweza kuhifadhi manenosiri yako ya {DOMAIN_ONE}, {DOMAIN_TWO} na kikoa kingine {OTHER_DOMAINS_COUNT} kwenye Akaunti yako ya Google, {EMAIL}.}other{Unaweza kuhifadhi manenosiri yako ya {DOMAIN_ONE}, {DOMAIN_TWO} na vikoa vingine {OTHER_DOMAINS_COUNT} kwenye Akaunti yako ya Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Mwonekano chaguomsingi wa tovuti</translation>
@@ -797,7 +792,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4460014764210899310">Ondoa kwenye kundi</translation>
 <translation id="446314443268698477">Nunua, tafsiri na utambue unachokiona kwenye kamera au picha zako.</translation>
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Namba ya kifurushi</translation>
 <translation id="4471472356135655769">Imeshindwa kuhamisha manenosiri</translation>
 <translation id="4473608001744970767">Ficha Kipengele cha Kufuatilia Bei</translation>
 <translation id="4474142134969976028">Hakuna matokeo yanayolingana</translation>
@@ -1289,7 +1283,6 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="647867789226964031">Badilisha manenosiri yako</translation>
 <translation id="6494931198667773526">Utaisha</translation>
 <translation id="6495521251906266731">Chagua hatua za kuchukua kuhusu data iliyopo ya kuvinjari kwenye kifaa hiki, kama vile manenosiri, historia na mengineyo.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Acha kufuatilia kifurushi hiki}other{Acha kufuatilia vifurushi vyote}}</translation>
 <translation id="6503077044568424649">Zinazotembelewa zaidi</translation>
 <translation id="6503763061813913607">Arifa za Kipengele cha Ukaguzi wa Usalama</translation>
 <translation id="6505334220040167806">Kunja kikundi cha vichupo.</translation>
@@ -1761,7 +1754,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8481184073299279701">Gusa kitufe cha "Anza kuweka kumbukumbu" ili ukusanye data ya siku zijazo ya kumbukumbu na hitilafu za kidhibiti cha JavaScript kwenye vichupo vyote. Data ya kumbukumbu itakusanywa (na kuhifadhiwa katika hifadhi pekee) hadi wakati ukurasa huu utafungwa au kitufe cha "Acha kuweka kumbukumbu" kinapoguswa.</translation>
 <translation id="8487667956631253959">Imewashwa</translation>
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Imeshindwa kubuni kiungo</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="8505361906966222822">Hifadhi kwenye…</translation>

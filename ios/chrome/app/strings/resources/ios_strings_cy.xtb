@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Cod pas</translation>
 <translation id="1030376737535466765">Agor Rheolwr Cyfrineiriau</translation>
 <translation id="1035980983510608210">Bydd cau pob tab yn cau tabiau sydd wedi'u pinio hefyd.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1041322626941363065">Yn eich rhybuddio os yw cyfrineiriau'n cael eu Datgelu mewn Tor data</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cwcis, data gwefan</translation>
 <translation id="1312721752506309252">Mae gwell amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="1317821187353201763">Cau tab</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Olrhain y pecyn hwn}zero{Olrhain pob pecyn}two{Olrhain pob pecyn}few{Olrhain pob pecyn}many{Olrhain pob pecyn}other{Olrhain pob pecyn}}</translation>
 <translation id="1321993286294231467">Bu gwall wrth gadw'r llun.</translation>
 <translation id="1322735045095424339">Mae eich sefydliad yn gofyn am y Modd Anhysbys</translation>
 <translation id="1323735185997015385">Dileu</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> wedi'i ddewis</translation>
 <translation id="1709916727352927457">Dileu cod pas</translation>
 <translation id="1712341189152602203">Bydd data pori presennol yn cael eu cysylltu â <ph name="USER_EMAIL" />. Mae'n bosib y bydd eich sefydliad yn gallu gweld y data hwn.</translation>
-<translation id="1713777106376424209">Yn cyrraedd erbyn</translation>
 <translation id="1715515772563243997">Os ydych yn ymddiried yn <ph name="SITE" />, gallwch ddefnyddio cyfrinair a gadwyd i fewngofnodi.</translation>
 <translation id="1718835860248848330">Awr ddiwethaf</translation>
 <translation id="1728549374069268714">Gludo a mynd</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Olrhain prisiau a mewnwelediadau</translation>
 <translation id="1820195936249950412">Mewngofnodi gyda chyfrif dilys</translation>
 <translation id="1820259098641718022">Ychwanegwyd at y Rhestr Ddarllen</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Rhybuddion pan fyddwch yn derbyn tabiau o'ch dyfeisiau eraill.</translation>
 <translation id="1827529786398596735">Pwyswch a daliwch y sgrîn hafan</translation>
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Dewisydd uned</translation>
 <translation id="2330607597130465898">Dim amddiffyniad</translation>
 <translation id="233375395665273385">Dileu ac allgofnodi</translation>
-<translation id="2348630484974447747">Pecyn</translation>
 <translation id="2351097562818989364">Mae eich gosodiadau cyfieithu wedi'u hailosod.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Gallwch gadw eich cyfrinair ar gyfer {DOMAIN_ONE} yn eich Cyfrif Google, {EMAIL}.}=2{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE} a {DOMAIN_TWO} yn eich Cyfrif Google, {EMAIL}.}=3{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}zero{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}many{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}other{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Gwedd gwefan ddiofyn</translation>
@@ -797,7 +792,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4460014764210899310">Dadgrwpio</translation>
 <translation id="446314443268698477">Siopa, cyfieithu, a nodi'r hyn a welwch gyda'ch camera neu'ch lluniau.</translation>
 <translation id="4469324811108161144">Gall nodiadau gadw hyd at <ph name="CHARACTER_LIMIT" /> nod.</translation>
-<translation id="4469834037720363704">Rhif pecyn</translation>
 <translation id="4471472356135655769">Methu ag allforio cyfrineiriau</translation>
 <translation id="4473608001744970767">Cuddio Olrhain Pris</translation>
 <translation id="4474142134969976028">Dim canlyniadau cyfatebol</translation>
@@ -1289,7 +1283,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="647867789226964031">Newid eich cyfrineiriau</translation>
 <translation id="6494931198667773526">Yn gorffen</translation>
 <translation id="6495521251906266731">Dewiswch beth i'w wneud gyda'r data pori presennol ar y ddyfais hon, megis cyfrineiriau, hanes a rhagor.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Dadolrhain y pecyn hwn}zero{Dadolrhain pob pecyn}two{Dadolrhain pob pecyn}few{Dadolrhain pob pecyn}many{Dadolrhain pob pecyn}other{Dadolrhain pob pecyn}}</translation>
 <translation id="6503077044568424649">Yr ymwelwyd â nhw y mwyaf</translation>
 <translation id="6503763061813913607">Hysbysiadau Gwiriad Diogelwch</translation>
 <translation id="6505334220040167806">Crebachu'r grŵp tab.</translation>
@@ -1761,7 +1754,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8481184073299279701">Tapiwch y botwm "Dechrau cofnodi" i gasglu cofnodion a gwallau panel JavaScript yn y dyfodol ar bob tab. Bydd y cofnodion yn cael eu casglu (a'u cadw yn y cof yn unig) tan i chi gau'r dudalen hon neu tan i chi dapio'r botwm "Stopio cofnodi".</translation>
 <translation id="8487667956631253959">Ymlaen</translation>
 <translation id="8487700953926739672">Ar gael all-lein</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Methu â chreu dolen</translation>
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8505361906966222822">Cadw yn…</translation>

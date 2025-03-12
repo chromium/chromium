@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030376737535466765">Ouvrir le Gestionnaire de mots de passe</translation>
 <translation id="1035980983510608210">En fermant tous les onglets, vous fermez aussi les onglets épinglés.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1041322626941363065">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies et données du site</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1317821187353201763">Fermer l'onglet</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre ces colis}}</translation>
 <translation id="1321993286294231467">Erreur lors de l'enregistrement de l'image.</translation>
 <translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> favoris sélectionnés.</translation>
 <translation id="1709916727352927457">Supprimer la clé d'accès</translation>
 <translation id="1712341189152602203">Les données de navigation existantes seront associées à <ph name="USER_EMAIL" />. Ces données peuvent être visibles par votre organisation.</translation>
-<translation id="1713777106376424209">Livré par</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1728549374069268714">Coller et rechercher</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Suivi des prix et infos</translation>
 <translation id="1820195936249950412">Connectez-vous avec un compte valide</translation>
 <translation id="1820259098641718022">Page ajoutée à la liste de lecture</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Alertes lorsque vous recevez des onglets depuis vos autres appareils.</translation>
 <translation id="1827529786398596735">Appuyez de manière prolongée sur l'écran d'accueil</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Sélecteur d'unité</translation>
 <translation id="2330607597130465898">Aucune protection</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
-<translation id="2348630484974447747">Colis</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Vous pouvez enregistrer votre mot de passe pour {DOMAIN_ONE} dans votre compte Google ({EMAIL}).}=2{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE} et {DOMAIN_TWO} dans votre compte Google ({EMAIL}).}=3{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autre domaine dans votre compte Google ({EMAIL}).}one{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autre domaine dans votre compte Google ({EMAIL}).}other{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autres domaines dans votre compte Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Affichage par défaut du site</translation>
@@ -797,7 +792,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="446314443268698477">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo ou de vos photos.</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
-<translation id="4469834037720363704">Numéro de colis</translation>
 <translation id="4471472356135655769">Impossible d'exporter les mots de passe</translation>
 <translation id="4473608001744970767">Masquer "Suivre le prix"</translation>
 <translation id="4474142134969976028">Aucun résultat</translation>
@@ -1289,7 +1283,6 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="647867789226964031">Modifier vos mots de passe</translation>
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6495521251906266731">Choisissez ce que vous souhaitez faire des données de navigation existantes sur cet appareil, telles que les mots de passe, l'historique, etc.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Annuler le suivi de ce colis}one{Annuler le suivi de ce colis}other{Annuler le suivi de ces colis}}</translation>
 <translation id="6503077044568424649">Les + visités</translation>
 <translation id="6503763061813913607">Notifications du contrôle de sécurité</translation>
 <translation id="6505334220040167806">Réduire le groupe d'onglets.</translation>
@@ -1761,7 +1754,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8481184073299279701">Appuyez sur le bouton "Débuter la journalisation" pour recueillir les prochains journaux de la console JavaScript et les erreurs à partir de tous les onglets. Les journaux sont recueillis (et stockés uniquement en mémoire) jusqu'à ce que cette page soit fermée ou que vous appuyiez sur "Débuter la journalisation".</translation>
 <translation id="8487667956631253959">Allumée</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Impossible de créer le lien</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8505361906966222822">Enregistrer dans…</translation>

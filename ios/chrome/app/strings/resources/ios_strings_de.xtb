@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Passwortmanager öffnen</translation>
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1041322626941363065">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben wurden</translation>
 <translation id="1044891598689252897">Websites funktionieren normal</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, Websitedaten</translation>
 <translation id="1312721752506309252">Erweiterter Schutz ist aktiviert</translation>
 <translation id="1317821187353201763">Tab schließen</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Dieses Paket verfolgen}other{Alle Pakete verfolgen}}</translation>
 <translation id="1321993286294231467">Beim Speichern des Bilds ist ein Fehler aufgetreten.</translation>
 <translation id="1322735045095424339">Deine Organisation verlangt, dass du den Inkognitomodus verwendest</translation>
 <translation id="1323735185997015385">Löschen</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ausgewählt</translation>
 <translation id="1709916727352927457">Passkey löschen</translation>
 <translation id="1712341189152602203">Vorhandene Browserdaten werden mit <ph name="USER_EMAIL" /> verknüpft. Diese Daten können möglicherweise von deiner Organisation eingesehen werden.</translation>
-<translation id="1713777106376424209">Geliefert von</translation>
 <translation id="1715515772563243997">Wenn du <ph name="SITE" /> vertraust, kannst du ein gespeichertes Passwort zur Anmeldung verwenden.</translation>
 <translation id="1718835860248848330">Letzte Stunde</translation>
 <translation id="1728549374069268714">Einfügen und los</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Preis-Tracking und Preisinformationen</translation>
 <translation id="1820195936249950412">Mit gültigem Konto anmelden</translation>
 <translation id="1820259098641718022">Zur Leseliste hinzugefügt</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">Du wirst benachrichtigt, wenn Tabs von deinen anderen Geräten übertragen werden.</translation>
 <translation id="1827529786398596735">Halte den Startbildschirm gedrückt</translation>
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Auswahl der Einheit</translation>
 <translation id="2330607597130465898">Kein Safe Browsing</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
-<translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Übersetzungseinstellungen zurückgesetzt</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kannst dein Passwort für {DOMAIN_ONE} in deinem Google-Konto ({EMAIL}) speichern.}=2{Du kannst deine Passwörter für {DOMAIN_ONE} und {DOMAIN_TWO} in deinem Google-Konto ({EMAIL}) speichern.}=3{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domain in deinem Google-Konto {EMAIL} speichern.}other{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domains in deinem Google-Konto ({EMAIL}) speichern}}</translation>
 <translation id="2353953000228441783">Standardansicht für Websites</translation>
@@ -797,7 +792,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
 <translation id="446314443268698477">Du kannst ganz einfach einkaufen, übersetzen und identifizieren, was du mit deiner Kamera oder in Fotos siehst.</translation>
 <translation id="4469324811108161144">Notizen können bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
-<translation id="4469834037720363704">Sendungsnummer</translation>
 <translation id="4471472356135655769">Passwörter können nicht exportiert werden</translation>
 <translation id="4473608001744970767">„Preis beobachten“ ausblenden</translation>
 <translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
@@ -1289,7 +1283,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="647867789226964031">Passwörter ändern</translation>
 <translation id="6494931198667773526">Ende</translation>
 <translation id="6495521251906266731">Wähle aus, was mit den Browserdaten auf diesem Gerät – wie deinen Passwörtern und dem Verlauf – geschehen soll.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Paket nicht mehr verfolgen}other{Keine Pakete mehr verfolgen}}</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
 <translation id="6503763061813913607">Sicherheitscheck-Benachrichtigungen</translation>
 <translation id="6505334220040167806">Tabgruppe minimieren.</translation>
@@ -1761,7 +1754,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8481184073299279701">Tippe auf die Schaltfläche „Protokollierung starten“, um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder auf „Protokoll anhalten“ getippt wird.</translation>
 <translation id="8487667956631253959">An</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Link kann nicht erstellt werden</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8505361906966222822">Speichern unter…</translation>

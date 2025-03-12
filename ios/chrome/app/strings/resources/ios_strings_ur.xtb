@@ -10,7 +10,6 @@
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1030376737535466765">پاس ورڈ مینیجر کھولیں</translation>
 <translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1041322626941363065">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">کوکیز، سائٹ ڈیٹا</translation>
 <translation id="1312721752506309252">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="1317821187353201763">ٹیب بند کریں</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{اس پیکیج کو ٹریک کریں}other{تمام پیکیجز کو ٹریک کریں}}</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
 <translation id="1322735045095424339">آپ کی تنظیم پوشیدگی وضع چاہتی ہے</translation>
 <translation id="1323735185997015385">حذف کریں</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> کو منتخب کیا گیا</translation>
 <translation id="1709916727352927457">پاس کی حذف کریں</translation>
 <translation id="1712341189152602203">موجودہ براؤزنگ ڈیٹا <ph name="USER_EMAIL" /> سے لنک کیا جائے گا۔ اس ڈیٹا کو ہو سکتا ہے آپ کی تنظیم دیکھ سکے۔</translation>
-<translation id="1713777106376424209">ڈیلیور کردہ منجانب</translation>
 <translation id="1715515772563243997">اگر آپ کو <ph name="SITE" /> پر اعتماد ہے تو آپ سائن ان کرنے کے لیے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں۔</translation>
 <translation id="1718835860248848330">پچھلے گھنٹے</translation>
 <translation id="1728549374069268714">پیسٹ کریں اور جائیں</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">قیمت کی ٹریکنگ اور بصیرتیں</translation>
 <translation id="1820195936249950412">ایک درست اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">آپ کو اپنے دیگر آلات سے ٹیبز موصول ہونے پر الرٹ کرتا ہے۔</translation>
 <translation id="1827529786398596735">ہوم اسکرین کو ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">یونٹ کا منتخب کنندہ</translation>
 <translation id="2330607597130465898">کوئی تحفظ نہیں</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
-<translation id="2348630484974447747">پیکیج</translation>
 <translation id="2351097562818989364">ترجمہ کی آپ کی ترتیبات دوبارہ ترتیب دی گئیں ہیں۔</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} کے لیے اپنا پاس ورڈ محفوظ کر سکتے ہیں۔}=2{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} اور {DOMAIN_TWO} کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}=3{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}other{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}}</translation>
 <translation id="2353953000228441783">ڈیفالٹ سائٹ منظر</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
 <translation id="446314443268698477">نظر آنے والی چیزوں کو اپنے کیمرا یا تصاویر کے ساتھ انہیں خریدیں، ان کا ترجمہ کریں اور ان کی شناخت کریں۔</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
-<translation id="4469834037720363704">پیکیج نمبر</translation>
 <translation id="4471472356135655769">پاس ورڈز برآمد نہیں ہو سکتے</translation>
 <translation id="4473608001744970767">'قیمت کو ٹریک کریں' کو چھپائیں</translation>
 <translation id="4474142134969976028">کوئی مماثل نتیجہ نہیں ہے</translation>
@@ -1289,7 +1283,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="647867789226964031">اپنے پاس ورڈز تبدیل کریں</translation>
 <translation id="6494931198667773526">وقت اختتام</translation>
 <translation id="6495521251906266731">منتخب کریں کہ اس آلے پر موجود براؤزنگ ڈیٹا جیسے پاس ورڈز، سرگزشت وغیرہ کا کیا کرنا ہے۔</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{اس پیکیج کو ٹریک کرنا بند کریں}other{تمام پیکیجز کو ٹریک کرنا بند کریں}}</translation>
 <translation id="6503077044568424649">سب سے زیادہ ملاحظہ کردہ</translation>
 <translation id="6503763061813913607">سیفٹی چیک کی اطلاعات</translation>
 <translation id="6505334220040167806">ٹیب گروپ کو سکیڑیں۔</translation>
@@ -1761,7 +1754,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8481184073299279701">‏تمام ٹیبز سے مستقبل کے JavaScript کونسول لاگز اور خرابیاں جمع کرنے کیلئے، "لاگنگ شروع کریں" بٹن پر تھپتھپائیں۔ لاگز اس وقت تک جمع (اور صرف میموری میں اسٹور) کئے جائیں گے جب تک یہ صفحہ بند نہ ہو جائے یا "لاگنگ بند کریں" پر نہ تھپتھپایا جائے۔</translation>
 <translation id="8487667956631253959">آن ہے</translation>
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">لنک تخلیق کرنے سے قاصر</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8505361906966222822">اس میں محفوظ کریں…</translation>

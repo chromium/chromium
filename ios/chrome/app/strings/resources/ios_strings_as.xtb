@@ -10,7 +10,6 @@
 <translation id="102916930470544692">পাছকী</translation>
 <translation id="1030376737535466765">Password Manager খোলক</translation>
 <translation id="1035980983510608210">আটাইবোৰ টেব বন্ধ কৰিলে পিন কৰি থোৱা টেবসমূহো বন্ধ হ’ব।</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1041322626941363065">ডেটা উলংঘনৰ ফলত পাছৱৰ্ড ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="1044891598689252897">ছাইটসমূহে স্বাভাৱিকভাৱে কাম কৰিব</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">কুকি, ছাইটৰ ডেটা</translation>
 <translation id="1312721752506309252">বৰ্ধিত সুৰক্ষা অন আছে</translation>
 <translation id="1317821187353201763">টেব বন্ধ কৰক</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{এই পেকেজটো ট্ৰেক কৰক}one{আটাইবোৰ পেকেজটো ট্ৰেক কৰক}other{আটাইবোৰ পেকেজটো ট্ৰেক কৰক}}</translation>
 <translation id="1321993286294231467">প্ৰতিচ্ছবি ছেভ কৰোঁতে আঁসোৱাহ হৈছে।</translation>
 <translation id="1322735045095424339">আপোনাৰ প্ৰতিষ্ঠানক ইনক’গনিট’ ম’ডৰ আৱশ্যক</translation>
 <translation id="1323735185997015385">মচক</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
 <translation id="1709916727352927457">পাছকী মচক</translation>
 <translation id="1712341189152602203">ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা <ph name="USER_EMAIL" />ৰ সৈতে লিংক কৰা হ’ব। আপোনাৰ প্ৰতিষ্ঠানে এই ডেটা চাব পৰা হ’ব পাৰে।</translation>
-<translation id="1713777106376424209">পাৰ্চেলৰ বাহক</translation>
 <translation id="1715515772563243997">আপুনি যদি <ph name="SITE" />ক বিশ্বাস কৰে, ছাইন ইন কৰিবলৈ আপুনি এটা ছেভ হৈ থকা পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="1718835860248848330">যোৱা ১ ঘণ্টাৰ</translation>
 <translation id="1728549374069268714">পে’ষ্ট কৰক আৰু তালৈ যাওক</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">মূল্য ট্ৰেকিং আৰু অন্তৰ্দৃষ্টি</translation>
 <translation id="1820195936249950412">এটা মান্য একাউণ্টেৰে ছাইন ইন কৰক</translation>
 <translation id="1820259098641718022">পঢ়িবলগীয়া তালিকাত যোগ কৰা হ'ল</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">আপোনাৰ অন্য ডিভাইচৰ পৰা টেব পালে আপোনাক সতৰ্কবাণী দিয়ে।</translation>
 <translation id="1827529786398596735">গৃহ স্ক্ৰীনখন স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">ইউনিট বাছনিকৰ্তা</translation>
 <translation id="2330607597130465898">কোনো সুৰক্ষা নাই</translation>
 <translation id="233375395665273385">মচক আৰু ছাইন আউট কৰক</translation>
-<translation id="2348630484974447747">পেকেজ</translation>
 <translation id="2351097562818989364">আপোনাৰ অনুবাদ ছেটিংসমূহ ৰিছেট কৰা হৈছে।</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{আপুনি আপোনাৰ {DOMAIN_ONE}ৰ পাছৱৰ্ডটো আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}=2{আপুনি আপোনাৰ {DOMAIN_ONE} আৰু {DOMAIN_TWO}ৰ পাছৱৰ্ডসমূহ আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে}=3{আপুনি আপোনাৰ {DOMAIN_ONE}, {DOMAIN_TWO}ৰ আৰু অন্য {OTHER_DOMAINS_COUNT} টা পাছৱৰ্ড আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}one{আপুনি আপোনাৰ {DOMAIN_ONE}, {DOMAIN_TWO}ৰ আৰু অন্য {OTHER_DOMAINS_COUNT} টা পাছৱৰ্ড আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}other{আপুনি আপোনাৰ {DOMAIN_ONE}, {DOMAIN_TWO}ৰ আৰু অন্য {OTHER_DOMAINS_COUNT} টা পাছৱৰ্ড আপোনাৰ Google একাউণ্ট, {EMAIL}ত ছেভ কৰিব পাৰে।}}</translation>
 <translation id="2353953000228441783">ডিফ’ল্ট ছাইটৰ ভিউ</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">গোট ভংগ কৰক</translation>
 <translation id="446314443268698477">আপোনাৰ কেমেৰা বা ফট’ৰ জৰিয়তে দেখা পোৱা বস্তুবোৰ কিনক, অনুবাদ কৰক আৰু চিনাক্ত কৰক।</translation>
 <translation id="4469324811108161144">টোকায়ে <ph name="CHARACTER_LIMIT" /> টা পৰ্যন্ত বৰ্ণ ছেভ কৰিব পাৰে।</translation>
-<translation id="4469834037720363704">পেকেজৰ নম্বৰ</translation>
 <translation id="4471472356135655769">পাছৱৰ্ড ৰপ্তানি কৰিব নোৱাৰি</translation>
 <translation id="4473608001744970767">মূল্য ট্ৰেক কৰাৰ সুবিধা লুকুৱাওক</translation>
 <translation id="4474142134969976028">মিল থকা কোনো ফলাফল নাই</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">আপোনাৰ পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="6494931198667773526">সমাপ্তিৰ সময়</translation>
 <translation id="6495521251906266731">পাছৱৰ্ড, ইতিহাস আৰু বহুতোৰ দৰে এই ডিভাইচত পূৰ্বৰে পৰা থকা ব্ৰাউজিঙৰ ডেটা কি কৰিব লাগে সেয়া বাছনি কৰক।</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{এই পেকেজটো ট্ৰেক কৰা বন্ধ কৰক}one{আটাইবোৰ পেকেজ ট্ৰেক কৰা বন্ধ কৰক}other{আটাইবোৰ পেকেজ ট্ৰেক কৰা বন্ধ কৰক}}</translation>
 <translation id="6503077044568424649">সকলোতকৈ বেছিকৈ চোৱা</translation>
 <translation id="6503763061813913607">সুৰক্ষা পৰীক্ষা সম্পৰ্কীয় জাননী</translation>
 <translation id="6505334220040167806">টেবৰ গোট সংকোচন কৰক।</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">আটাইবোৰ টেবৰ পৰা ভৱিষ্যতৰ JavaScriptৰ কনছ’লৰ লগ আৰু আসোঁৱাহ সংগ্ৰহ কৰিবলৈ "লগ কৰা আৰম্ভ কৰক" বুটামটো টিপক। এই পৃষ্ঠাখন বন্ধ নকৰা বা "লগ কৰা বন্ধ কৰক" বুটামটো নিটিপা পৰ্যন্ত লগ সংগ্ৰহ কৰা হ’ব (আৰু কেৱল মেম’ৰীত ষ্ট’ৰ কৰা হ’ব)।</translation>
 <translation id="8487667956631253959">অন আছে</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">লিংক সৃষ্টি কৰিব পৰা নগ’ল</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8505361906966222822">ইয়াত ছেভ কৰক…</translation>

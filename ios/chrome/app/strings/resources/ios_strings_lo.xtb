@@ -10,7 +10,6 @@
 <translation id="102916930470544692">ກະແຈຜ່ານ</translation>
 <translation id="1030376737535466765">ເປີດຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="1035980983510608210">ການປິດແຖບທັງໝົດຈະເປັນການປິດແຖບທີ່ປັກໝຸດແລ້ວນຳເຊັ່ນກັນ.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1041322626941363065">ເຕືອນທ່ານໃນກໍລະນີທີ່ລະຫັດຜ່ານຮົ່ວໄຫຼຈາກການລະເມີດຂໍ້ມູນ</translation>
 <translation id="1044891598689252897">ເວັບໄຊຈະເຮັດວຽກໄດ້ປົກກະຕິ</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">ຄຸກກີ້, ຂໍ້ມູນເວັບໄຊທ໌</translation>
 <translation id="1312721752506309252">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="1317821187353201763">ປິດແຖບ</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{ຕິດຕາມພັດສະດຸນີ້}other{ຕິດຕາມພັດສະດຸທັງໝົດ}}</translation>
 <translation id="1321993286294231467">ຜິດພາດໃນການບັນທຶກຮູບພາບ.</translation>
 <translation id="1322735045095424339">ອົງການຂອງທ່ານກຳນົດໃຫ້ໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1323735185997015385">ລຶບ</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
 <translation id="1709916727352927457">ລຶບກະແຈຜ່ານອອກ</translation>
 <translation id="1712341189152602203">ລະບົບຈະລິ້ງຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ກັບ <ph name="USER_EMAIL" />. ອົງກອນຂອງທ່ານອາດເບິ່ງຂໍ້ມູນນີ້ໄດ້.</translation>
-<translation id="1713777106376424209">ຈັດສົ່ງແລ້ວໂດຍ</translation>
 <translation id="1715515772563243997">ຫາກທ່ານເຊື່ອຖື <ph name="SITE" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ເພື່ອເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="1718835860248848330">ຊົ່ວໂມງຜ່ານມາ</translation>
 <translation id="1728549374069268714">ວາງ ແລະ ຊອກຫາ</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">ການຕິດຕາມລາຄາ ແລະ ຂໍ້ມູນເຈາະເລິກ</translation>
 <translation id="1820195936249950412">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຕ້ອງ</translation>
 <translation id="1820259098641718022">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">ແຈ້ງເຕືອນເມື່ອທ່ານໄດ້ຮັບແຖບຈາກອຸປະກອນເຄື່ອງອື່ນໆຂອງທ່ານ.</translation>
 <translation id="1827529786398596735">ແຕະໂຮມສະກຣີນຄ້າງໄວ້</translation>
 <translation id="1832848789136765277">ເພື່ອກວດສອບວ່າທ່ານຈະສາມາດເຂົ້າເຖິງການຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້ກ່ອນ</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">ຕົວເລືອກຫົວໜ່ວຍ</translation>
 <translation id="2330607597130465898">ບໍ່ມີການປົກປ້ອງ</translation>
 <translation id="233375395665273385">ລຶບ ແລະ ອອກຈາກລະບົບ</translation>
-<translation id="2348630484974447747">ພັດສະດຸ</translation>
 <translation id="2351097562818989364">ການ​ຕັ້ງຄ່າ​ແປ​ພາ​ສາ​ຂອງ​ທ່ານ​ໄດ້​ຖືກຕັ້ງໃໝ່​ແລ້ວ.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE} ໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}=2{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE} ແລະ {DOMAIN_TWO} ໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}=3{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE}, {DOMAIN_TWO} ແລະ {OTHER_DOMAINS_COUNT} ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}other{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE}, {DOMAIN_TWO} ແລະ {OTHER_DOMAINS_COUNT} ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">ມຸມມອງເລີ່ມຕົ້ນຂອງເວັບໄຊ</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">ຍົກເລີກການຈັດກຸ່ມ</translation>
 <translation id="446314443268698477">ຊື້, ແປພາສາ ແລະ ລະບຸສິ່ງທີ່ທ່ານເຫັນດ້ວຍກ້ອງຖ່າຍຮູບ ຫຼື ຮູບພາບຂອງທ່ານ.</translation>
 <translation id="4469324811108161144">ບັນທຶກສາມາດຈັດເກັບໄດ້ສູງສຸດ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
-<translation id="4469834037720363704">ໝາຍເລກພັດສະດຸ</translation>
 <translation id="4471472356135655769">ບໍ່ສາມາດສົ່ງອອກລະຫັດຜ່ານໄດ້</translation>
 <translation id="4473608001744970767">ເຊື່ອງ ຕິດຕາມລາຄາ</translation>
 <translation id="4474142134969976028">ບໍ່ພົບຜົນການຊອກຫາທີ່ກົງກັນ</translation>
@@ -1289,7 +1283,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="647867789226964031">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6494931198667773526">ສິ້ນສຸດ</translation>
 <translation id="6495521251906266731">ເລືອກວ່າຈະເຮັດແນວໃດກັບຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ໃນອຸປະກອນນີ້ ເຊັ່ນ: ລະຫັດຜ່ານ, ປະຫວັດ ແລະ ອື່ນໆ.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{ເຊົາຕິດຕາມພັດສະດຸນີ້}other{ເຊົາຕິດຕາມພັດສະດຸທັງໝົດ}}</translation>
 <translation id="6503077044568424649">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
 <translation id="6503763061813913607">ການແຈ້ງເຕືອນການກວດສອບຄວາມປອດໄພ</translation>
 <translation id="6505334220040167806">ຫຍໍ້ກຸ່ມແຖບລົງ.</translation>
@@ -1761,7 +1754,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8481184073299279701">ແຕະປຸ່ມ "ເລີ່ມບັນທຶກ" ເພື່ອຮວບຮວມບັນທຶກ ແລະ ຂໍ້ຜິດພາດຂອງ JavaScript console ໃນອະນາຄົດຈາກແຖບທັງໝົດ. ລະບົບຈະຮວບຮວມບັນທຶກ (ແລະ ເກັບໄວ້ໃນໜ່ວຍຄວາມຈຳເທົ່ານັ້ນ) ຈົນກວ່າວ່າຈະປິດໜ້ານີ້ ຫຼື ມີການແຕະ "ຢຸດບັນທຶກ".</translation>
 <translation id="8487667956631253959">ເປີດ</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">ບໍ່ສາມາດສ້າງລິ້ງໄດ້</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8505361906966222822">ບັນທຶກໃນ…</translation>

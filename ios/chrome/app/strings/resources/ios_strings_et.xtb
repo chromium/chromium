@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Pääsuvõti</translation>
 <translation id="1030376737535466765">Avage teenus Paroolihaldur</translation>
 <translation id="1035980983510608210">Kui sulete kõik vahelehed, suletakse ja kinnitatud vahelehed.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1041322626941363065">Hoiata mind, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Küpsised, saidi andmed</translation>
 <translation id="1312721752506309252">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="1317821187353201763">Sulge vaheleht</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Jälgi seda saadetist}other{Jälgi kõiki saadetisi}}</translation>
 <translation id="1321993286294231467">Viga pildi salvestamisel.</translation>
 <translation id="1322735045095424339">Teie organisatsioon nõuab inkognito režiimi kasutamist</translation>
 <translation id="1323735185997015385">Kustuta</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valitud</translation>
 <translation id="1709916727352927457">Pääsuvõtme kustutamine</translation>
 <translation id="1712341189152602203">Olemasolevad sirvimisandmed lingitakse e-posti aadressiga <ph name="USER_EMAIL" />. Teie organisatsioon võib neid andmeid vaadata.</translation>
-<translation id="1713777106376424209">Tarnija:</translation>
 <translation id="1715515772563243997">Kui usaldate saiti <ph name="SITE" />, saate sisselogimiseks kasutada salvestatud parooli.</translation>
 <translation id="1718835860248848330">Viimase tunni jooksul</translation>
 <translation id="1728549374069268714">Kleebi ja mine</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Hinnajälgimine ja statistika</translation>
 <translation id="1820195936249950412">Logige sisse kehtiva kontoga</translation>
 <translation id="1820259098641718022">Lisati lugemisloendisse</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Märguannete saamine, kui teile saadetakse teie teistest seadmetest vahelehti.</translation>
 <translation id="1827529786398596735">Puudutage pikalt avakuva</translation>
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Ühikuvalija</translation>
 <translation id="2330607597130465898">Kaitse puudub</translation>
 <translation id="233375395665273385">Kustuta ja logi välja</translation>
-<translation id="2348630484974447747">Saadetis</translation>
 <translation id="2351097562818989364">Teie tõlkeseaded on lähtestatud.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Saate salvestada domeeni {DOMAIN_ONE} parooli oma Google’i kontole {EMAIL}.}=2{Saate salvestada domeenide {DOMAIN_ONE} ja {DOMAIN_TWO} paroolid oma Google’i kontole {EMAIL}.}=3{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}.}other{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Saidi vaikevaade</translation>
@@ -797,7 +792,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
 <translation id="446314443268698477">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat või fotosid.</translation>
 <translation id="4469324811108161144">Märkmetesse saab salvestada kuni <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
-<translation id="4469834037720363704">Saadetise jälgimisnumber</translation>
 <translation id="4471472356135655769">Paroole ei saa eksportida</translation>
 <translation id="4473608001744970767">Peida valik „Jälgi hinda“</translation>
 <translation id="4474142134969976028">Sobivaid tulemusi pole</translation>
@@ -1289,7 +1283,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="647867789226964031">Muutke oma paroole</translation>
 <translation id="6494931198667773526">Lõpp</translation>
 <translation id="6495521251906266731">Valige, mida teha selles seadmes olevate sirvimisandmetega, nagu paroolid, ajalugu ja muu.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Peata selle saadetise jälgimine}other{Peata kõigi saadetiste jälgimine}}</translation>
 <translation id="6503077044568424649">Populaarsed</translation>
 <translation id="6503763061813913607">Ohutuskontrolli märguanded</translation>
 <translation id="6505334220040167806">Vahelehegrupi ahendamine.</translation>
@@ -1761,7 +1754,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8481184073299279701">Puudutage nuppu „Alusta logimist”, et koguda edaspidi JavaScripti konsooli logisid ja vigu kõikidelt vahelehtedelt. Logisid kogutakse (need salvestatakse ainult mällu) seni, kuni see leht suletakse või puudutate nuppu „Lõpeta logimine”.</translation>
 <translation id="8487667956631253959">Sees</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Linki ei õnnestu luua</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8505361906966222822">Salvestamine kohta …</translation>

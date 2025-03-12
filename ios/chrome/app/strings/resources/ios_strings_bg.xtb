@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Ключ за достъп</translation>
 <translation id="1030376737535466765">Отваряне на Мениджър на пароли</translation>
 <translation id="1035980983510608210">Ако затворите всички раздели, ще бъдат затворени и фиксираните.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1041322626941363065">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">„Бисквитки“ и данни за сайтове</translation>
 <translation id="1312721752506309252">Режимът за подобрена защита е включен</translation>
 <translation id="1317821187353201763">Затваряне на раздела</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Проследяване на тази пратка}other{Проследяване на всички пратки}}</translation>
 <translation id="1321993286294231467">При запазване на изображението възникна грешка.</translation>
 <translation id="1322735045095424339">Организацията ви изисква да сърфирате в режим „инкогнито“</translation>
 <translation id="1323735185997015385">Изтриване</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Избрахте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Изтриване на кода за достъп</translation>
 <translation id="1712341189152602203">Съществуващите данни за сърфирането ще бъдат свързани с(ъс) <ph name="USER_EMAIL" />. Те може да са видими за организацията ви.</translation>
-<translation id="1713777106376424209">Доставено от</translation>
 <translation id="1715515772563243997">Ако имате доверие на <ph name="SITE" />, можете да използвате запазена парола за влизане в профила.</translation>
 <translation id="1718835860248848330">Последния час</translation>
 <translation id="1728549374069268714">Поставяне и старт</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Проследяване на цени и статистика</translation>
 <translation id="1820195936249950412">Влезте с валиден профил</translation>
 <translation id="1820259098641718022">Добавихте към списъка за четене</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Изпраща сигнали, когато получавате раздели от другите си устройства.</translation>
 <translation id="1827529786398596735">Докоснете и задръжте началния екран.</translation>
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Инструмент за избор на мерна единица</translation>
 <translation id="2330607597130465898">Без защита</translation>
 <translation id="233375395665273385">Изтриване и излизане от профила</translation>
-<translation id="2348630484974447747">Пратка</translation>
 <translation id="2351097562818989364">Настройките ви за превод са нулирани.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Можете да запазите паролата си за {DOMAIN_ONE} в профила си в Google ({EMAIL}).}=2{Можете да запазите паролите си за {DOMAIN_ONE} и {DOMAIN_TWO} в профила си в Google ({EMAIL}).}=3{Можете да запазите паролите си за {DOMAIN_ONE}, {DOMAIN_TWO} и още {OTHER_DOMAINS_COUNT} сайт в профила си в Google ({EMAIL}).}other{Можете да запазите паролата си за {DOMAIN_ONE}, {DOMAIN_TWO} и още {OTHER_DOMAINS_COUNT} сайта в профила си в Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Основна версия на сайта</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="446314443268698477">Пазарувайте, превеждайте и идентифицирайте това, което виждате с камерата или в снимките си.</translation>
 <translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
-<translation id="4469834037720363704">Номер на пратката</translation>
 <translation id="4471472356135655769">Паролите не могат да се експортират</translation>
 <translation id="4473608001744970767">Скриване на „Проследяване на цената“</translation>
 <translation id="4474142134969976028">Няма съответстващи резултати</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">Промяна на паролите ви</translation>
 <translation id="6494931198667773526">Край</translation>
 <translation id="6495521251906266731">Изберете какво да се направи със съществуващите данни за сърфирането на това устройство, като например паролите, историята и др.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Спиране на проследяването на тази пратка}other{Спиране на проследяването на всички пратки}}</translation>
 <translation id="6503077044568424649">Ползвани</translation>
 <translation id="6503763061813913607">Известия от „Проверка на безопасността“</translation>
 <translation id="6505334220040167806">Свиване на групата раздели.</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">Докоснете бутона „Стартиране на регистрирането“, ако искате да се събират бъдещите регистрационни файлове от конзолата на JavaScript и грешките от всички раздели. Регистрационните файлове ще се събират (и съхраняват само в паметта), докато затворите съответната страница или докоснете бутона „Спиране на регистрирането“.</translation>
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Не може да се създаде връзка</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8505361906966222822">Запазване във…</translation>

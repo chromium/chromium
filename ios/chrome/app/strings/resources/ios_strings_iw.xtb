@@ -10,7 +10,6 @@
 <translation id="102916930470544692">מפתח גישה</translation>
 <translation id="1030376737535466765">פתיחה של מנהל הסיסמאות</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1041322626941363065">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת המידע</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">‏קובצי cookie, נתוני אתרים</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
 <translation id="1317821187353201763">סגירת הכרטיסייה</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{מעקב אחרי החבילה הזו}one{מעקב אחר כל החבילות}two{מעקב אחר כל החבילות}other{מעקב אחר כל החבילות}}</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
 <translation id="1322735045095424339">מצב אנונימי נדרש על ידי הארגון שלך</translation>
 <translation id="1323735185997015385">מחיקה</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
 <translation id="1709916727352927457">מחיקת מפתח הגישה</translation>
 <translation id="1712341189152602203">נתוני הגלישה הקיימים יקושרו אל <ph name="USER_EMAIL" />. יכול להיות שהארגון שלך יוכל לראות את הנתונים האלה.</translation>
-<translation id="1713777106376424209">החבילה תימסר על ידי</translation>
 <translation id="1715515772563243997">אם הכתובת <ph name="SITE" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה כדי להיכנס לחשבון.</translation>
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1728549374069268714">הדבקה והמשך</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">מעקב אחר מחירים ותובנות</translation>
 <translation id="1820195936249950412">עליך להיכנס באמצעות חשבון תקין</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">התראות כשמקבלים כרטיסיות מהמכשירים האחרים.</translation>
 <translation id="1827529786398596735">לוחצים לחיצה ארוכה על מסך הבית</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">בורר היחידות</translation>
 <translation id="2330607597130465898">ללא הגנה</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
-<translation id="2348630484974447747">חבילה</translation>
 <translation id="2351097562818989364">הגדרות התרגום שלך אופסו.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏אפשר לשמור את הסיסמה בשביל {DOMAIN_ONE} בחשבון Google שלך, {EMAIL}.}=2{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE} וגם {DOMAIN_TWO} בחשבון Google שלך, {EMAIL}.}=3{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}one{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}other{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">תצוגת האתר שמוגדרת כברירת מחדל</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
 <translation id="446314443268698477">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה או התמונות.</translation>
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
-<translation id="4469834037720363704">מספר החבילה</translation>
 <translation id="4471472356135655769">אי אפשר לייצא סיסמאות</translation>
 <translation id="4473608001744970767">הסתרת האפשרות 'מעקב אחר מחירים'</translation>
 <translation id="4474142134969976028">אין תוצאות מתאימות</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">שינוי הסיסמאות</translation>
 <translation id="6494931198667773526">מסתיים</translation>
 <translation id="6495521251906266731">יש לך אפשרות לבחור מה לעשות עם נתוני הגלישה הקיימים במכשיר הזה, כמו הסיסמאות, ההיסטוריה ועוד.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{ביטול המעקב אחר החבילה הזו}one{ביטול המעקב אחר כל החבילות}two{ביטול המעקב אחר כל החבילות}other{ביטול המעקב אחר כל החבילות}}</translation>
 <translation id="6503077044568424649">הכי פופולריים</translation>
 <translation id="6503763061813913607">התראות של הטיימר לדיווח על מצב מסוכן</translation>
 <translation id="6505334220040167806">כיווץ של קבוצת הכרטיסיות.</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">‏אפשר ללחוץ על הכפתור 'התחלת הרישום ביומן' כדי לאסוף רשומות יומן ושגיאות של לוח JavaScript מכל הכרטיסיות. רשומות היומן ייאספו (ויישמרו רק בזיכרון) עד לסגירת הדף הזה, או ללחיצה על 'הפסקת הרישום ביומן'.</translation>
 <translation id="8487667956631253959">מופעל</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">לא ניתן ליצור את הקישור</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8505361906966222822">שמירה במיקום…</translation>

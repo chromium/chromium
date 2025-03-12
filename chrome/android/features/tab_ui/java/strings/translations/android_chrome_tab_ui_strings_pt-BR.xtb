@@ -66,6 +66,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="3078350928901129212">Ícone <ph name="COLOR_NAME" /> do grupo de guias</translation>
 <translation id="311432875115153175">Lista de grupos de guias fechada</translation>
 <translation id="3194464645767632461">nota</translation>
+<translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia ao grupo}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias ao grupo}}</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="3547352561153509682">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova guia}one{<ph name="MANY_ADDED" /> nova guia}other{<ph name="MANY_ADDED" /> novas guias}}</translation>
@@ -98,6 +99,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="4783638485675352219">Compartilhar títulos e URLs de guias abertas neste dispositivo com o sistema operacional</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avaliação)}one{(<ph name="REVIEWS_COUNT_MANY" /> avaliação)}other{(<ph name="REVIEWS_COUNT_MANY" /> avaliações)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4852605713297257667">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia selecionada ao grupo}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia selecionada ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias selecionadas ao grupo}}</translation>
 <translation id="4861611890274104875">Dispensar o card.</translation>
 <translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
 <translation id="4870911314065352661">Fechar todas as guias?</translation>
@@ -134,6 +136,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="6193448654517602979">Selecionar guias</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
 <translation id="6271513594716432922">Fechar todas as guias inativas</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="6333260925957816943">Informações sobre a loja</translation>
 <translation id="6381032505162537930">Seus grupos de guias vão aparecer aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Desagrupar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
@@ -186,6 +189,7 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="799469866974412355">Novo grupo do seu outro dispositivo</translation>
 <translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>
 <translation id="8053770993984522566">Lista de grupos de guias aberta na metade da altura</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Mover guia para cima</translation>

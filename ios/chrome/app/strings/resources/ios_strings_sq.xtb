@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1030376737535466765">Hap "Menaxherin e fjalëkalimeve"</translation>
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1041322626941363065">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Kukit, të dhënat e sajtit</translation>
 <translation id="1312721752506309252">Mbrojtja e përmirësuar është aktive</translation>
 <translation id="1317821187353201763">Mbyll skedën</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Gjurmo këtë pako}other{Gjurmo të gjitha pakot}}</translation>
 <translation id="1321993286294231467">Gabim në ruajtjen e imazhit.</translation>
 <translation id="1322735045095424339">Organizata jote kërkon modalitetin "e fshehtë"</translation>
 <translation id="1323735185997015385">Fshi</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> u zgjodhën</translation>
 <translation id="1709916727352927457">Fshi çelësin e kalimit</translation>
 <translation id="1712341189152602203">Të dhënat ekzistuese të shfletimit do të lidhen me <ph name="USER_EMAIL" />. Këto të dhëna mund të shikohen nga organizata jote.</translation>
-<translation id="1713777106376424209">Dorëzuar nga</translation>
 <translation id="1715515772563243997">Nëse ke besim te <ph name="SITE" />, mund të përdorësh një fjalëkalim të ruajtur për t'u identifikuar.</translation>
 <translation id="1718835860248848330">Ora e fundit</translation>
 <translation id="1728549374069268714">Ngjit dhe vazhdo</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Monitorimi dhe statistikat e çmimeve</translation>
 <translation id="1820195936249950412">Identifikohu me një llogari të vlefshme</translation>
 <translation id="1820259098641718022">U shtua te lista e leximit</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Sinjalizimet kur ti merr skeda nga pajisjet e tjera.</translation>
 <translation id="1827529786398596735">Prek dhe mbaj shtypur ekranin bazë</translation>
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Përzgjedhësi i njësisë</translation>
 <translation id="2330607597130465898">Nuk ka mbrojtje</translation>
 <translation id="233375395665273385">Fshi dhe dil</translation>
-<translation id="2348630484974447747">Pako</translation>
 <translation id="2351097562818989364">Cilësimet e tua të përkthimit janë rivendosur.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Mund ta ruash fjalëkalimin tënd për {DOMAIN_ONE} në "Llogarinë tënde të Google", {EMAIL}.}=2{Mund t'i ruash fjalëkalimet e tua për {DOMAIN_ONE} dhe {DOMAIN_TWO} në "Llogarinë tënde të Google", {EMAIL}.}=3{Mund t'i ruash fjalëkalimet e tua për {DOMAIN_ONE}, {DOMAIN_TWO} dhe {OTHER_DOMAINS_COUNT} tjetër në "Llogarinë tënde të Google", {EMAIL}.}other{Mund t'i ruash fjalëkalimet e tua për {DOMAIN_ONE}, {DOMAIN_TWO} dhe {OTHER_DOMAINS_COUNT} të tjerë në "Llogarinë tënde të Google", {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Pamja e parazgjedhur e sajtit</translation>
@@ -797,7 +792,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="446314443268698477">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde ose fotografitë e tua.</translation>
 <translation id="4469324811108161144">Shënimet mund të ruajnë deri në <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
-<translation id="4469834037720363704">Numri i pakos</translation>
 <translation id="4471472356135655769">Fjalëkalimet nuk mund të eksportohen</translation>
 <translation id="4473608001744970767">Fshih "Monitoro çmimin"</translation>
 <translation id="4474142134969976028">Nuk përputhet asnjë rezultat</translation>
@@ -1289,7 +1283,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="647867789226964031">Ndrysho fjalëkalimet e tua</translation>
 <translation id="6494931198667773526">Mbaron</translation>
 <translation id="6495521251906266731">Zgjidh se çfarë do të bësh me të dhënat ekzistuese të shfletimit në këtë pajisje, si p.sh. fjalëkalimet, historiku etj.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Anulo gjurmimin e kësaj pakoje}other{Anulo gjurmimin e të gjitha pakove}}</translation>
 <translation id="6503077044568424649">Më të vizituara</translation>
 <translation id="6503763061813913607">Njoftimet e "Kontrollit të sigurisë"</translation>
 <translation id="6505334220040167806">Palos grupin e skedave.</translation>
@@ -1761,7 +1754,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8481184073299279701">Trokit butonin "Nis regjistrimin" për të mbledhur evidenca dhe gabime të ardhshme të panelit të JavaScript nga të gjitha skedat. Evidencat do të mblidhen (dhe ruhen vetëm në memorie) derisa kjo faqe të mbyllet ose të trokitet mbi "Ndalo regjistrimin".</translation>
 <translation id="8487667956631253959">Aktivizo</translation>
 <translation id="8487700953926739672">Mundësohet offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Lidhja nuk mund të krijohet</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8505361906966222822">Ruaj në…</translation>
