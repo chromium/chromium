@@ -41,7 +41,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
+#else
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
@@ -214,6 +216,11 @@ void CheckClientDownloadRequest::NotifySendRequest(
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.DownloadAttribution",
       request->referrer_chain().size());
+#if BUILDFLAG(IS_ANDROID)
+  DownloadProtectionMetricsData::SetOutcome(
+      item_, DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome::
+                 kClientDownloadRequestSent);
+#endif
 }
 
 void CheckClientDownloadRequest::SetDownloadProtectionData(
@@ -324,6 +331,10 @@ void CheckClientDownloadRequest::NotifyRequestFinished(
 
   DVLOG(2) << "SafeBrowsing download verdict for: " << item_->DebugString(true)
            << " verdict:" << reason << " result:" << static_cast<int>(result);
+
+#if BUILDFLAG(IS_ANDROID)
+  DownloadProtectionMetricsData::GetOrCreate(item_)->LogToHistogram();
+#endif
 
   item_->RemoveObserver(this);
 }

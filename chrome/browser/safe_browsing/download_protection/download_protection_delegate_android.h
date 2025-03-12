@@ -29,7 +29,7 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   // DownloadProtectionDelegate:
   bool ShouldCheckDownloadUrl(download::DownloadItem* item) const override;
   bool ShouldCheckClientDownload(download::DownloadItem* item) const override;
-  bool IsSupportedDownload(const download::DownloadItem& item,
+  bool IsSupportedDownload(download::DownloadItem& item,
                            const base::FilePath& target_path) const override;
   const GURL& GetDownloadRequestUrl() const override;
   net::NetworkTrafficAnnotationTag

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
@@ -21,6 +22,8 @@
 
 namespace safe_browsing {
 namespace {
+
+using Outcome = DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome;
 
 // Default URL for download check server.
 const char kDownloadRequestDefaultUrl[] =
@@ -48,8 +51,28 @@ bool IsAndroidDownloadProtectionEnabledForDownloadProfile(
   // enabled.
   enabled = enabled && IsSafeBrowsingEnabled(*profile->GetPrefs());
 
-  // TODO(chlily): Log metrics.
+  if (!enabled) {
+    DownloadProtectionMetricsData::SetOutcome(
+        item, Outcome::kDownloadProtectionDisabled);
+  }
   return enabled;
+}
+
+Outcome ConvertDownloadCheckResultReason(DownloadCheckResultReason reason) {
+  switch (reason) {
+    case DownloadCheckResultReason::REASON_EMPTY_URL_CHAIN:
+      return Outcome::kEmptyUrlChain;
+    case DownloadCheckResultReason::REASON_INVALID_URL:
+      return Outcome::kInvalidUrl;
+    case DownloadCheckResultReason::REASON_UNSUPPORTED_URL_SCHEME:
+      return Outcome::kUnsupportedUrlScheme;
+    case DownloadCheckResultReason::REASON_REMOTE_FILE:
+      return Outcome::kRemoteFile;
+    case DownloadCheckResultReason::REASON_LOCAL_FILE:
+      return Outcome::kLocalFile;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -71,7 +94,7 @@ bool DownloadProtectionDelegateAndroid::ShouldCheckClientDownload(
 }
 
 bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
-    const download::DownloadItem& item,
+    download::DownloadItem& item,
     const base::FilePath& target_path) const {
   // On Android, the target path is likely a content-URI. Therefore, use the
   // display name instead. This assumes the DownloadItem's display name has
@@ -81,12 +104,16 @@ bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
   DownloadCheckResultReason reason = REASON_MAX;
   if (!CheckClientDownloadRequest::IsSupportedDownload(item, file_name,
                                                        &reason)) {
+    DownloadProtectionMetricsData::SetOutcome(
+        &item, ConvertDownloadCheckResultReason(reason));
     return false;
   }
 
   // For Android download protection, only check APK files (as defined by having
   // a filename ending in a ".apk" extension).
   if (!file_name.MatchesExtension(kApkSuffix)) {
+    DownloadProtectionMetricsData::SetOutcome(
+        &item, Outcome::kDownloadNotSupportedType);
     return false;
   }
 

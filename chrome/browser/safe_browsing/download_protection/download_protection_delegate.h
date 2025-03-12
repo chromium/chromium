@@ -42,7 +42,8 @@ class DownloadProtectionDelegate {
 
   // Returns whether the download item should be checked by
   // CheckClientDownload() based on whether the file supports the check.
-  virtual bool IsSupportedDownload(const download::DownloadItem& item,
+  // May modify the DownloadItem with a SupportsUserData::Data.
+  virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const = 0;
 
   // Returns the URL that will be contacted for download protection requests.

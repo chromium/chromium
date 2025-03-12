@@ -318,7 +318,7 @@ void DownloadProtectionService::CheckDownloadUrl(
 }
 
 bool DownloadProtectionService::IsSupportedDownload(
-    const download::DownloadItem& item,
+    download::DownloadItem& item,
     const base::FilePath& target_path) const {
   return delegate_->IsSupportedDownload(item, target_path);
 }

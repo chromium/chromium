@@ -64,7 +64,7 @@ bool DownloadProtectionDelegateDesktop::ShouldCheckClientDownload(
 }
 
 bool DownloadProtectionDelegateDesktop::IsSupportedDownload(
-    const download::DownloadItem& item,
+    download::DownloadItem& item,
     const base::FilePath& target_path) const {
   DownloadCheckResultReason ignored_reason = REASON_MAX;
   // TODO(nparker): Remove the CRX check here once can support
