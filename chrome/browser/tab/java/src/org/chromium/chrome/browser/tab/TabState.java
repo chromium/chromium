@@ -6,14 +6,15 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Color;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.ColorUtils;
 
 import java.io.File;
 
 /** Object that contains the state of a tab, including its navigation history. */
+@NullMarked
 public class TabState {
     /** Special value for timestamp related attributes. */
     public static final long TIMESTAMP_NOT_SET = -1;
@@ -22,7 +23,7 @@ public class TabState {
     public static final int UNSPECIFIED_THEME_COLOR = Color.TRANSPARENT;
 
     /** Navigation history of the WebContents. */
-    public WebContentsState contentsState;
+    public @Nullable WebContentsState contentsState;
 
     public int parentId = Tab.INVALID_TAB_ID;
 
@@ -38,7 +39,7 @@ public class TabState {
     public @Nullable Token tabGroupId;
 
     public long timestampMillis = TIMESTAMP_NOT_SET;
-    public String openerAppId;
+    public @Nullable String openerAppId;
 
     /**
      * The tab's brand theme color. Set this to {@link #UNSPECIFIED_THEME_COLOR} for an unspecified
@@ -65,7 +66,7 @@ public class TabState {
     // Temporary field indicating which legacy TabState file to delete (if
     // applicable). Legacy TabState file should be deleted if the Tab has
     // been migrated onto the new FlatBuffer format.
-    public File legacyFileToDelete;
+    public @Nullable File legacyFileToDelete;
 
     public boolean isIncognito() {
         return isIncognito;

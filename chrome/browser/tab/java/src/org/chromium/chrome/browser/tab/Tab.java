@@ -9,12 +9,12 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * network but also other types of content such as NTP, navigation history, etc) and presents it to
  * users who perceive it as one of the 'pages' managed by Chrome.
  */
+@NullMarked
 public interface Tab extends TabLifecycle {
     @TabId int INVALID_TAB_ID = -1;
     long INVALID_TIMESTAMP = -1;
@@ -82,21 +83,18 @@ public interface Tab extends TabLifecycle {
     UserDataHost getUserDataHost();
 
     /** Returns the Profile this tab is associated with. */
-    @NonNull
     Profile getProfile();
 
     /**
      * @return The web contents associated with this tab.
      */
-    @Nullable
-    WebContents getWebContents();
+    @Nullable WebContents getWebContents();
 
     /**
      * @return The {@link Activity} {@link Context} if this {@link Tab} is attached to an
      *         {@link Activity}, otherwise the themed application context (e.g. hidden tab or
      *         browser action tab).
      */
-    @NonNull
     Context getContext();
 
     /**
@@ -375,8 +373,7 @@ public interface Tab extends TabLifecycle {
      * Returns the tab group ID of the {@link Tab} or null if not part of a group. Note that during
      * migration from root ID the TabGroupId may be null until tab state is initialized.
      */
-    @Nullable
-    Token getTabGroupId();
+    @Nullable Token getTabGroupId();
 
     /**
      * Sets the tab group ID of the {@link Tab}.
