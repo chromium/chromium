@@ -587,7 +587,8 @@ void ChromeAutocompleteProviderClient::OpenLensOverlay() {
     browser->GetActiveTabInterface()
         ->GetTabFeatures()
         ->lens_overlay_controller()
-        ->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
+        ->ShowUI(lens::LensOverlayInvocationSource::kOmnibox,
+                 /*should_start_focused=*/false);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
