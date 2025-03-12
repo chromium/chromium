@@ -2367,8 +2367,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestShortcut) {
                                      1);
 }
 
-// TODO(crbug.com/399906707): Add test for kWebAppManifestTranslations and
-// kWebAppManifestTabStrip.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithUseCounterFields) {
   constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
 
