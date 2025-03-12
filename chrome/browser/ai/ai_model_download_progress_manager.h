@@ -63,6 +63,7 @@ class AIModelDownloadProgressManager {
    private:
     void OnRemoteDisconnect();
     void ProcessEvent(const component_updater::CrxUpdateItem& item);
+    int64_t GetDownloadedBytes();
 
     // `manager_` owns `this`.
     base::raw_ref<AIModelDownloadProgressManager> manager_;
@@ -82,6 +83,9 @@ class AIModelDownloadProgressManager {
 
     // Sum of all observed components' total_bytes.
     int64_t components_total_bytes_ = 0;
+
+    // The bytes already downloaded before we determined the `total_bytes_`.
+    int64_t already_downloaded_bytes_ = 0;
 
     // True if we know the total bytes of the components we'll be watching.
     // Meaning we can start reporting.

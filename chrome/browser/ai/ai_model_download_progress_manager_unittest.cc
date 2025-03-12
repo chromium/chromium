@@ -213,7 +213,7 @@ TEST_F(AIModelDownloadProgressManagerTest, ProgressIsNormalized) {
                       monitor.BindNewPipeAndPassRemote(), {component.id()});
 
   // Should receive the first update.
-  SendUpdate(component, ComponentState::kDownloading, 10);
+  SendUpdate(component, ComponentState::kDownloading, 0);
   monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
 
   // Wait more than 50ms so we can receive the next event.
@@ -224,6 +224,36 @@ TEST_F(AIModelDownloadProgressManagerTest, ProgressIsNormalized) {
   uint64_t normalized_downloaded_bytes =
       AIUtils::NormalizeModelDownloadProgress(downloaded_bytes,
                                               component.total_bytes());
+
+  SendUpdate(component, ComponentState::kDownloading, downloaded_bytes);
+  monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       AlreadyDownloadedBytesArentIncludedInProgress) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component("component_id", 100);
+
+  int64_t already_downloaded_bytes = 10;
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(), {component.id()});
+
+  // Send the first update with the already downloaded bytes for `component`.
+  SendUpdate(component, ComponentState::kDownloading, already_downloaded_bytes);
+  monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // The second update shouldn't include any already downloaded bytes.
+  uint64_t downloaded_bytes = already_downloaded_bytes + 5;
+  uint64_t normalized_downloaded_bytes =
+      AIUtils::NormalizeModelDownloadProgress(
+          downloaded_bytes - already_downloaded_bytes,
+          component.total_bytes() - already_downloaded_bytes);
 
   SendUpdate(component, ComponentState::kDownloading, downloaded_bytes);
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
@@ -371,7 +401,7 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesEvery50ms) {
                       monitor.BindNewPipeAndPassRemote(), {component.id()});
 
   // Should receive the first update.
-  SendUpdate(component, ComponentState::kDownloading, 10);
+  SendUpdate(component, ComponentState::kDownloading, 0);
   monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
 
   // Shouldn't receive this update since it hasn't been 50ms since the last
@@ -398,7 +428,7 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
                       monitor.BindNewPipeAndPassRemote(), {component.id()});
 
   // Should receive the first update as zero.
-  SendUpdate(component, ComponentState::kDownloading, 10);
+  SendUpdate(component, ComponentState::kDownloading, 0);
   monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
 
   // Wait more than 50ms so we can receive the next event.
@@ -483,10 +513,10 @@ TEST_F(AIModelDownloadProgressManagerTest,
                       {component1.id(), component2.id()});
 
   // Trigger the first event by sending updates for components 1 and 2.
-  uint64_t component1_downloaded_bytes = 10;
+  uint64_t component1_downloaded_bytes = 0;
   SendUpdate(component1, ComponentState::kDownloading,
              component1_downloaded_bytes);
-  uint64_t component2_downloaded_bytes = 20;
+  uint64_t component2_downloaded_bytes = 0;
   SendUpdate(component2, ComponentState::kDownloading,
              component2_downloaded_bytes);
   monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
@@ -506,6 +536,60 @@ TEST_F(AIModelDownloadProgressManagerTest,
   uint64_t total_bytes = component1.total_bytes() + component2.total_bytes();
   uint64_t normalized_downloaded_bytes =
       AIUtils::NormalizeModelDownloadProgress(downloaded_bytes, total_bytes);
+
+  monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
+                               AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       AlreadyDownloadedBytesArentIncludedInProgressForMultipleComponents) {
+  AIModelDownloadProgressManager manager;
+  FakeMonitor monitor;
+  FakeComponent component1("component_id1", 100);
+  FakeComponent component2("component_id2", 1000);
+  int64_t already_downloaded_bytes = 0;
+
+  manager.AddObserver(&component_update_service_,
+                      monitor.BindNewPipeAndPassRemote(),
+                      {component1.id(), component2.id()});
+
+  // Send an update for component 1.
+  uint64_t component1_downloaded_bytes = 5;
+  already_downloaded_bytes += 5;
+  SendUpdate(component1, ComponentState::kDownloading,
+             component1_downloaded_bytes);
+
+  // Send a second update for component 1. This increases the already downloaded
+  // bytes that shouldn't be included in the progress.
+  component1_downloaded_bytes += 5;
+  already_downloaded_bytes += 5;
+  SendUpdate(component1, ComponentState::kDownloading,
+             component1_downloaded_bytes);
+
+  // Send an update for component 2 triggering the zero event. This increases
+  // the already downloaded bytes that shouldn't be included in the progress.
+  uint64_t component2_downloaded_bytes = 10;
+  already_downloaded_bytes += 10;
+  SendUpdate(component2, ComponentState::kDownloading,
+             component2_downloaded_bytes);
+  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+
+  // Wait more than 50ms so we can receive the next event.
+  FastForwardBy(base::Milliseconds(51));
+
+  // Component 2 receives another 5 bytes.
+  component2_downloaded_bytes += 5;
+  SendUpdate(component2, ComponentState::kDownloading,
+             component2_downloaded_bytes);
+
+  // The progress we receive shouldn't include the `already_downloaded_bytes`.
+  uint64_t downloaded_bytes =
+      component1_downloaded_bytes + component2_downloaded_bytes;
+  uint64_t total_bytes = component1.total_bytes() + component2.total_bytes();
+  uint64_t normalized_downloaded_bytes =
+      AIUtils::NormalizeModelDownloadProgress(
+          downloaded_bytes - already_downloaded_bytes,
+          total_bytes - already_downloaded_bytes);
 
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
                                AIUtils::kNormalizedDownloadProgressMax);
