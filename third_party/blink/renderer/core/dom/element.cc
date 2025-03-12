@@ -3108,7 +3108,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       StyleAttributeChanged(params.new_value, params.reason);
     } else if (IsPresentationAttribute(name)) {
       if (name == html_names::kHiddenAttr) {
-        if (params.new_value == "until-found") {
+        if (params.new_value == keywords::kUntilFound) {
           EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
         } else if (DisplayLockContext* context = GetDisplayLockContext()) {
           context->SetIsHiddenUntilFoundElement(false);
