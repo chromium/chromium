@@ -161,7 +161,7 @@ class AutocompleteInput {
   // updates `input`'s text and cursor position.
   // `model` must be non-null.
   static const TemplateURL* GetSubstitutingTemplateURLForInput(
-      TemplateURLService* model,
+      const TemplateURLService* model,
       AutocompleteInput* input);
 
   // Extracts the keyword from |input| into |keyword|. Any remaining characters
