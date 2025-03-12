@@ -44,7 +44,8 @@ class FedCmCUJTest : public InteractiveBrowserTest {
           blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
       accounts_ = {base::MakeRefCounted<Account>(
-          "id", "email", "name", "given_name", GURL(),
+          "id", "display_identifier", "display_name", "email", "name",
+          "given_name", GURL(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>())};

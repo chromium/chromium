@@ -187,7 +187,7 @@ gfx::ImageSkia ComputeAccountCircleCroppedPicture(
     std::optional<gfx::ImageSkia> idp_image) {
   gfx::ImageSkia avatar;
   if (account.decoded_picture.IsEmpty()) {
-    std::u16string letter = GetInitialLetterAsUppercase(account.name);
+    std::u16string letter = GetInitialLetterAsUppercase(account.display_name);
     avatar = gfx::CanvasImageSource::MakeImageSkia<
         LetterCircleCroppedImageSkiaSource>(letter, avatar_size);
   } else {
