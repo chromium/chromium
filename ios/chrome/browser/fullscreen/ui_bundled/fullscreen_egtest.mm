@@ -36,12 +36,12 @@ using chrome_test_util::WebStateScrollViewMatcher;
 namespace {
 
 // The page height of test pages. This must be big enough to triger fullscreen.
-const int kPageHeightEM = 200;
+const int kPageHeightEM = 400;
 
 // Hides the toolbar by scrolling down.
 void HideToolbarUsingUI() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
 }
 
 // Asserts that the current URL is the `expectedURL` one.

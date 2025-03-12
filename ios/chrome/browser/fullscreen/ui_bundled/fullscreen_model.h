@@ -322,6 +322,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   CGFloat scrolling_delay_delta_shift_down_to_up_ = 0.0;
   CGFloat scrolling_delay_progress_shift_up_to_down_ = 1.0;
   CGFloat scrolling_delay_delta_shift_up_to_down_ = 0.0;
+  // Time when scrolling started.
+  std::optional<base::TimeTicks> start_scrolling_time_ = std::nullopt;
+  // True is the scrolling time have been recorded.
+  bool is_scrolling_time_recorded_ = false;
 
   friend class FullscreenModelTest;
 };

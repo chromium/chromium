@@ -8,6 +8,8 @@
 
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_constants.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
@@ -76,6 +78,8 @@ void FullscreenModel::ResetForNavigation() {
   }
   progress_ = 1.0;
   scrolling_ = false;
+  start_scrolling_time_ = std::nullopt;
+  is_scrolling_time_recorded_ = false;
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     base_offset_ = NAN;
   }
@@ -195,12 +199,27 @@ void FullscreenModel::SetScrollViewIsScrolling(bool scrolling) {
   }
   scrolling_ = scrolling;
   if (scrolling_) {
+    // Record the start time when the first scroll happened in the current
+    // navigation.
+    if (!start_scrolling_time_.has_value() && can_collapse_toolbar()) {
+      is_scrolling_time_recorded_ = false;
+      start_scrolling_time_ = base::TimeTicks::Now();
+    }
     // Notify observers that the scroll event has begun.
     ScopedIncrementer scroll_started_incrementer(&observer_callback_count_);
     for (auto& observer : observers_) {
       observer.FullscreenModelScrollEventStarted(this);
     }
   } else {
+    if (is_scrolled_to_bottom() && !is_scrolling_time_recorded_ &&
+        start_scrolling_time_.has_value()) {
+      // Record the time spent scrolling to the bottom of the page.
+      base::UmaHistogramLongTimes(
+          kFullscreenScrollToTheBottomTime,
+          base::TimeTicks::Now() - start_scrolling_time_.value());
+      // Avoid recording multiple time in the same page.
+      is_scrolling_time_recorded_ = true;
+    }
     // Stop ignoring the current scroll.
     ignoring_current_scroll_ = false;
     // Notify observers that the scroll event has ended.
