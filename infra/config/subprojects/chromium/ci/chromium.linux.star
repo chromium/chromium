@@ -823,7 +823,7 @@ ci.builder(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 args = [
-                    "--enable-feature=OriginKeyedProcessesByDefault",
+                    "--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 swarming = targets.swarming(
                     shards = 33,
@@ -831,13 +831,13 @@ ci.builder(
             ),
             "unit_tests": targets.mixin(
                 args = [
-                    "--enable-feature=OriginKeyedProcessesByDefault",
+                    "--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 # Default shards = 1 should be ok here.
             ),
             "content_browsertests": targets.mixin(
                 args = [
-                    "--enable-feature=OriginKeyedProcessesByDefault",
+                    "--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 swarming = targets.swarming(
                     shards = 8,
@@ -845,13 +845,13 @@ ci.builder(
             ),
             "content_unittests": targets.mixin(
                 args = [
-                    "--enable-feature=OriginKeyedProcessesByDefault",
+                    "--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 # Default shards = 1 should be ok here.
             ),
             "blink_web_tests": targets.mixin(
                 args = [
-                    "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
+                    "--additional-driver-flag=--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 swarming = targets.swarming(
                     shards = 9,
@@ -859,7 +859,7 @@ ci.builder(
             ),
             "blink_wpt_tests": targets.mixin(
                 args = [
-                    "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
+                    "--additional-driver-flag=--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 swarming = targets.swarming(
                     shards = 2,
@@ -867,12 +867,15 @@ ci.builder(
             ),
             "chrome_wpt_tests": targets.mixin(
                 args = [
-                    "--additional-driver-flag=--enable-feature=OriginKeyedProcessesByDefault",
+                    "--additional-driver-flag=--enable-features=OriginKeyedProcessesByDefault",
                 ],
                 # Default shards = 1 should be ok here.
             ),
         },
     ),
+    # Remove the following two lines once the bot is running and green.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "OriginIsolation",
         short_name = "oi",
