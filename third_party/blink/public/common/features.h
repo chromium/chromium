@@ -672,6 +672,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // of https://crbug.com/1441243.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHiddenSelectionBounds);
 
+// Adds support for the experimental `interesttarget`
+// attributes, as specified in the open-ui "Interest Invokers" explainer.
+// https://open-ui.org/components/interest-invokers.explainer/
+// This corresponds to the RuntimeEnabledFeature of the same name.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHTMLInterestTargetAttribute);
+
 // When enabled all input arriving will be ignored, and the dispatcher will be
 // notified that the event was not consumed. With the exception of when there
 // is an attached Dev Tools session, during which input will be dispatched even
