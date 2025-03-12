@@ -235,7 +235,7 @@ class DownloadProtectionService {
                                 download::DownloadDangerType danger_type);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Uploads `item` to Safe Browsing for deep scanning, using the upload
+  // Uploads `metadata` to Safe Browsing for deep scanning, using the upload
   // service attached to the profile `item` was downloaded in. This is
   // non-blocking, and the result we be provided through `callback`. `trigger`
   // is used to identify the reason for deep scanning, aka enterprise policy or
@@ -245,7 +245,7 @@ class DownloadProtectionService {
   // whether to block/allow large files, etc). This must be called on the UI
   // thread.
   void UploadForDeepScanning(
-      download::DownloadItem* item,
+      std::unique_ptr<DeepScanningMetadata> metadata,
       CheckDownloadRepeatingCallback callback,
       DownloadItemWarningData::DeepScanTrigger trigger,
       DownloadCheckResult download_check_result,

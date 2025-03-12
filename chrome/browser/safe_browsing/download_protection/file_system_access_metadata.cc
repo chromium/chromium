@@ -118,4 +118,26 @@ FileSystemAccessMetadata::GetDownloadObservation(
   return nullptr;
 }
 
+void FileSystemAccessMetadata::SetCallback(CheckDownloadCallback callback) {
+  callback_ = std::move(callback);
+}
+
+void FileSystemAccessMetadata::ProcessScanResult(
+    DownloadCheckResultReason reason,
+    DownloadCheckResult deep_scan_result) {
+  if (deep_scan_result == DownloadCheckResult::ASYNC_SCANNING ||
+      deep_scan_result == DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING) {
+    return;
+  }
+
+  // Callback should only be run once, ignore any subsequent scan results.
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(MaybeOverrideScanResult(reason, deep_scan_result));
+  }
+}
+
+base::WeakPtr<FileSystemAccessMetadata> FileSystemAccessMetadata::GetWeakPtr() {
+  return weakptr_factory_.GetWeakPtr();
+}
+
 }  // namespace safe_browsing

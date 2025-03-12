@@ -39,6 +39,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/file_system_access_metadata.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -58,7 +59,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "crypto/sha2.h"
+#include "net/base/mime_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -129,6 +133,9 @@ const std::set<std::string>* TxtMimeTypes() {
 constexpr char kScanId[] = "scan_id";
 
 }  // namespace
+
+// Enum to select item type used for deep scanning metadata.
+enum class MetadataSourceType { kDownloadItem, kFileSystemAccessWriteItem };
 
 class FakeBinaryUploadService : public BinaryUploadService {
  public:
@@ -286,10 +293,20 @@ class DeepScanningRequestTest : public testing::Test {
     DownloadCoreServiceFactory::GetForBrowserContext(profile_)
         ->SetDownloadManagerDelegateForTesting(
             std::make_unique<ChromeDownloadManagerDelegate>(profile_));
+
+    // Default source type for `DownloadItem` only tests.
+    metadata_source_type_ = MetadataSourceType::kDownloadItem;
+
+    // Create test web contents for setting FSA tab url.
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    content::WebContentsTester::For(web_contents_.get())
+        ->SetLastCommittedURL(tab_url_);
   }
 
   void TearDown() override {
     SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
+    web_contents_.reset();
   }
 
   void AddUrlToProfilePrefList(const char* pref_name, const GURL& url) {
@@ -343,7 +360,29 @@ class DeepScanningRequestTest : public testing::Test {
   }
 
   std::unique_ptr<DeepScanningMetadata> CreateMetadata() {
-    return std::make_unique<DownloadItemMetadata>(&item_);
+    switch (metadata_source_type_) {
+      case MetadataSourceType::kDownloadItem:
+        return std::make_unique<DownloadItemMetadata>(&item_);
+      case MetadataSourceType::kFileSystemAccessWriteItem:
+        auto write_item =
+            std::make_unique<content::FileSystemAccessWriteItem>();
+        write_item->target_file_path = download_path_;
+        write_item->full_path = download_path_;
+        write_item->frame_url = download_url_;
+        write_item->browser_context = profile_;
+        write_item->web_contents = web_contents_.get();
+        write_item->size = item_.GetTotalBytes();
+        write_item->sha256_hash = download_hash_;
+        write_item->has_user_gesture = false;
+
+        return std::make_unique<FileSystemAccessMetadata>(
+            std::move(write_item));
+    }
+    return nullptr;
+  }
+
+  void SetMetadataSourceType(MetadataSourceType type) {
+    metadata_source_type_ = type;
   }
 
   TestingProfile* profile() { return profile_; }
@@ -367,12 +406,26 @@ class DeepScanningRequestTest : public testing::Test {
   std::string download_hash_;
 
   DownloadCheckResult last_result_;
+
+  MetadataSourceType metadata_source_type_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  content::RenderViewHostTestEnabler enabler_;
 };
 
-class DeepScanningRequestFeaturesEnabledTest : public DeepScanningRequestTest {
+class DeepScanningRequestSourceTypeTest
+    : public DeepScanningRequestTest,
+      public testing::WithParamInterface<MetadataSourceType> {
+ public:
+  void SetUp() override {
+    DeepScanningRequestTest::SetUp();
+    SetMetadataSourceType(GetParam());
+  }
 };
 
-TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
+class DeepScanningRequestFeaturesEnabledTest
+    : public DeepScanningRequestSourceTypeTest {};
+
+TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
       kScanForDlpAndMalware);
@@ -429,7 +482,7 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   }
 }
 
-TEST_F(DeepScanningRequestFeaturesEnabledTest, VerifyBlockingSet) {
+TEST_P(DeepScanningRequestFeaturesEnabledTest, VerifyBlockingSet) {
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
       kScanForDlpAndMalware);
@@ -463,15 +516,24 @@ TEST_F(DeepScanningRequestFeaturesEnabledTest, VerifyBlockingSet) {
                    .blocking());
 }
 
-class DeepScanningRequestAllFeaturesEnabledTest
-    : public DeepScanningRequestTest {};
+INSTANTIATE_TEST_SUITE_P(
+    FeaturesEnabled,
+    DeepScanningRequestFeaturesEnabledTest,
+    testing::Values(MetadataSourceType::kDownloadItem,
+                    MetadataSourceType::kFileSystemAccessWriteItem));
 
-TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
+class DeepScanningRequestAllFeaturesEnabledTest
+    : public DeepScanningRequestSourceTypeTest {};
+
+TEST_P(DeepScanningRequestAllFeaturesEnabledTest,
        GeneratesCorrectRequestFromPolicy) {
   {
     enterprise_connectors::test::SetAnalysisConnector(
         profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
         kScanForDlpAndMalware);
+    // Override mime type to platform-independent value for testing.
+    net::ScopedOverrideGetMimeTypeForTesting override_mime_type(
+        "application/octet-stream");
     base::RunLoop run_loop;
     DeepScanningRequest request(
         CreateMetadata(),
@@ -711,7 +773,19 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 #endif
 };
 
-TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
+class DeepScanningReportingSourceTypeTest
+    : public DeepScanningReportingTest,
+      public testing::WithParamInterface<MetadataSourceType> {
+ public:
+  void SetUp() override {
+    DeepScanningReportingTest::SetUp();
+    SetMetadataSourceType(GetParam());
+  }
+
+  MetadataSourceType GetMetadataSourceType() { return GetParam(); }
+};
+
+TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
   {
     base::RunLoop run_loop;
     DeepScanningRequest request(
@@ -1226,9 +1300,14 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
-            enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
+            GetMetadataSourceType() == MetadataSourceType::kDownloadItem
+                ? enterprise_connectors::ContentAnalysisAcknowledgement::WARN
+                : enterprise_connectors::ContentAnalysisAcknowledgement::
+                      ALLOW);  // for fsa item scans, the pre-scan result is
+                               // always ALLOW
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
@@ -1247,7 +1326,11 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         /*result*/
         enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
+            GetMetadataSourceType() == MetadataSourceType::kDownloadItem
+                ? enterprise_connectors::EventResult::WARNED
+                : enterprise_connectors::EventResult::
+                      ALLOWED),  // for fsa item scans, the pre-scan result is
+                                 // always ALLOW
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*content_transfer_reason*/ std::nullopt);
@@ -1389,7 +1472,7 @@ TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 }
 
-TEST_F(DeepScanningReportingTest, MultipleFiles) {
+TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
   {
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -1404,10 +1487,12 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     base::flat_map<base::FilePath, base::FilePath> current_paths_to_final_paths;
-    current_paths_to_final_paths[item_.GetFullPath()] =
-        item_.GetTargetFilePath();
+
+    auto metadata = CreateMetadata();
+    current_paths_to_final_paths[metadata->GetFullPath()] =
+        metadata->GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
+        metadata->GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
@@ -1426,7 +1511,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        CreateMetadata(), DownloadCheckResult::SAFE,
+        std::move(metadata), DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1468,10 +1553,12 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     base::flat_map<base::FilePath, base::FilePath> current_paths_to_final_paths;
-    current_paths_to_final_paths[item_.GetFullPath()] =
-        item_.GetTargetFilePath();
+
+    auto metadata = CreateMetadata();
+    current_paths_to_final_paths[metadata->GetFullPath()] =
+        metadata->GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
+        metadata->GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
@@ -1495,7 +1582,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        CreateMetadata(), DownloadCheckResult::SAFE,
+        std::move(metadata), DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1556,10 +1643,12 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     dlp_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
     base::flat_map<base::FilePath, base::FilePath> current_paths_to_final_paths;
-    current_paths_to_final_paths[item_.GetFullPath()] =
-        item_.GetTargetFilePath();
+
+    auto metadata = CreateMetadata();
+    current_paths_to_final_paths[metadata->GetFullPath()] =
+        metadata->GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
+        metadata->GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
     std::vector<enterprise_connectors::ContentAnalysisResponse::Result>
         expected_dlp_verdicts;
@@ -1593,7 +1682,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        CreateMetadata(), DownloadCheckResult::SAFE,
+        std::move(metadata), DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1657,7 +1746,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
   }
 }
 
-TEST_F(DeepScanningReportingTest, Timeout) {
+TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
   base::RunLoop run_loop;
   DeepScanningRequest request(
       CreateMetadata(),
@@ -1707,6 +1796,12 @@ TEST_F(DeepScanningReportingTest, Timeout) {
 
   EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    Reporting,
+    DeepScanningReportingSourceTypeTest,
+    testing::Values(MetadataSourceType::kDownloadItem,
+                    MetadataSourceType::kFileSystemAccessWriteItem));
 
 class DeepScanningDownloadFailClosedTest
     : public DeepScanningRequestTest,
@@ -1796,7 +1891,7 @@ class DeepScanningDownloadRestrictionsTest
   }
 
   policy::DownloadRestriction download_restriction() const {
-    return GetParam();
+    return testing::WithParamInterface<policy::DownloadRestriction>::GetParam();
   }
 
   enterprise_connectors::EventResult expected_event_result_for_malware() const {
@@ -2169,10 +2264,14 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
   EXPECT_FALSE(settings().has_value());
 }
 
-TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
+TEST_P(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
       kScanForDlpAndMalware);
+
+  // Override mime type to platform-independent value for testing.
+  net::ScopedOverrideGetMimeTypeForTesting override_mime_type(
+      "application/octet-stream");
 
   base::RunLoop run_loop;
   DeepScanningRequest request(
@@ -2213,5 +2312,11 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
                 .tab_url(),
             GURL("https://example.com"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AllFeaturesEnabled,
+    DeepScanningRequestAllFeaturesEnabledTest,
+    testing::Values(MetadataSourceType::kDownloadItem,
+                    MetadataSourceType::kFileSystemAccessWriteItem));
 
 }  // namespace safe_browsing
