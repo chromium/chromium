@@ -576,7 +576,12 @@ ios_builder(
     mirrors = [
         "ci/ios-device",
     ],
-    gn_args = "ci/ios-device",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-device",
+            "ios_disable_code_signing",
+        ],
+    ),
     cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )

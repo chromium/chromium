@@ -1,11 +1,11 @@
 {
   "gn_args": {
     "dcheck_always_on": false,
-    "ios_code_signing_identity_description": "Apple Development",
+    "enable_run_ios_unittests_with_xctest": true,
     "ios_enable_code_signing": false,
     "is_component_build": false,
     "is_debug": false,
-    "symbol_level": 0,
+    "symbol_level": 1,
     "target_cpu": "arm64",
     "target_environment": "device",
     "target_os": "ios",
