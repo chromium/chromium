@@ -123,6 +123,18 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
                      const std::optional<url::Origin>& maybe_coordinator,
                      BiddingAndAuctionServerKeyFetcherCallback callback);
 
+  // Adds a non-database-persistent testing override to key configuration for
+  // given `coordinator`. Invokes the callback with an error string if there is
+  // a problem, such as if a configuration for a given coordinator already
+  // exists. `callback` is called with nullopt on success. Either success or
+  // failure may be synchronous or asynchronous.
+  using DebugOverrideCallback =
+      base::OnceCallback<void(std::optional<std::string>)>;
+  void AddKeysDebugOverride(TrustedServerAPIType api,
+                            const url::Origin& coordinator,
+                            std::string serialized_keys,
+                            DebugOverrideCallback callback);
+
  private:
   struct CallbackQueueItem {
     CallbackQueueItem(BiddingAndAuctionServerKeyFetcherCallback callback,
@@ -149,6 +161,15 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
                   TrustedServerAPIType::kInvalid,
                   TrustedServerAPIType::kMaxValue>
         apis;
+
+    // If this is set, this is a temporary configuration applied via
+    // SetBiddingAndAuctionServerKeysDebugOverride(), and so should not
+    // use the DB, and doesn't expire.
+    bool debug_override = false;
+
+    // Callback for debug override of config getting parsed. Unlike the
+    // normal callbacks in `queue` these are not scoped to origin.
+    DebugOverrideCallback debug_override_callback;
 
     // queue_ contains callbacks waiting for a key to be fetched over the
     // network.

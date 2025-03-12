@@ -1,3 +1,18 @@
+const publicKeyConfig = `{
+  "originScopedKeys": {
+    "https://a.test:8443": {
+      "keys":[{
+        "id":"14345678-9abc-def0-1234-56789abcdef0",
+        "key":"oV9AZYb6xHuZWXDxhdnYkcdNzx65Gn1QpYsBaD5gBS0="}]
+    }
+  }
+}`;
+
+// 32 random'ish bits in hex.
+function rand32() {
+  return Math.abs((Math.random() * 0x100000000) & 0xFFFFFFFF).toString(16)
+}
+
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const base = 'https://a.test:8443/inspector-protocol/resources/'
 
@@ -11,26 +26,27 @@
 
     let coordinator;
     if (useCoordinator) {
-      // This is a special origin currently configured via a virtual test suite.
-      // When not configured by the test suite, the current behavior is to
-      // ignore the unrecognized value, and use KVv1 instead of KVv2.
-      //
-      // The signals files themselves are in version 1 JSON. Providing a
-      // coordinator means the responses will be expected to be in the
-      // version 2 encrypted CBOR format, but since these tests only make
-      // sure the network requests are logged to devtools, it doesn't matter
-      // if the Content-Type check fails, since the scripts in this test
-      // ignore any received signals.
-      coordinator = "https://a.test";
+      // We generate a random coordinator hostname to isolate tests.
+      coordinator = "https://cd" + rand32() + rand32() + rand32() + rand32() +
+                    ".test";
     }
 
     const { session, dp } = await testRunner.startBlank(
       `Verifying the events that go through the auction network event handler are accurate with coordinator: ${useCoordinator}.\n` +
       `Note: There are two bidding requests because we reload the bidding worklet when we are reporting.`,
-      { url: base + `fledge_join.html?count=1&useTrustedBiddingSignals=true&useCoordinator=${useCoordinator}` });
+      { url: base + `fledge_join.html?count=1&useTrustedBiddingSignals=true` +
+          (useCoordinator ? `&coordinator=${coordinator}` : '') });
 
     await dp.Network.enable();
     await dp.Network.setCacheDisabled({ cacheDisabled: true });
+
+    if (useCoordinator) {
+      await dp.Browser.addPrivacySandboxCoordinatorKeyConfig({
+        api: 'TrustedKeyValue',
+        coordinatorOrigin: coordinator,
+        keyConfig: publicKeyConfig
+      });
+    }
 
     await dp.Emulation.setUserAgentOverride({ userAgent: 'Vending Machine', acceptLanguage: 'ar' });
 

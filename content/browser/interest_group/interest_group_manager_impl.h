@@ -384,6 +384,19 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                                       std::string serialized_keys,
                                       base::Time expiration);
 
+  // Add a debugging override for B&A keys. Unlike with
+  // `SetBiddingAndAuctionServerKeys` the keys set will not affect the state of
+  // the database, but will affect `GetTrustedServerKey` while the current
+  // process is running. The callback will be invoked with nullopt on
+  // success, an error string on failure. Failures include being called when
+  // a configuration for `coordinator` already exists, including from a previous
+  // code to this method.
+  void AddTrustedServerKeysDebugOverride(
+      TrustedServerAPIType api,
+      const url::Origin& coordinator,
+      std::string serialized_keys,
+      base::OnceCallback<void(std::optional<std::string>)> callback);
+
   // Load stored B&A server keys for a coordinator along with the keys'
   // expiration.
   void GetBiddingAndAuctionServerKeys(

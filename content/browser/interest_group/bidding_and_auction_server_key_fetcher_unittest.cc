@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -67,6 +68,11 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
                        base::Time expiration) {
     manager_->SetBiddingAndAuctionServerKeys(coordinator, serialized_keys,
                                              expiration);
+  }
+
+  void ExpectNoDBStoredKeys(const url::Origin& coordinator) {
+    auto [time, val] = GetDBStoredKeysWithExpiration(coordinator);
+    EXPECT_EQ(val, "") << coordinator;
   }
 
   content::BiddingAndAuctionServerKeyFetcher CreateFetcher() {
@@ -1248,6 +1254,132 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
   EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
   EXPECT_EQ(std::string(32, '\0'), key.key);
   EXPECT_EQ(1u, url_loader_factory_.total_requests());
+}
+
+TEST_F(BiddingAndAuctionServerKeyFetcherTest, DebugOverride) {
+  std::string key_config = R"({
+    "originScopedKeys": {
+      "https://scope.origin.test/": {
+        "keys": [{
+          "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+          "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]
+      }
+    }
+  })";
+
+  std::string key_config2 = R"({
+    "originScopedKeys": {
+      "https://scope.origin.test/": {
+        "keys": [{
+          "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+          "id": "22345678-9abc-def0-1234-56789abcdef0"
+        }]
+      }
+    }
+  })";
+
+  url::Origin origin_a = url::Origin::Create(GURL("https://a.test"));
+  url::Origin origin_b = url::Origin::Create(GURL("https://b.test"));
+  url::Origin origin_c = url::Origin::Create(GURL("https://c.test"));
+
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+  {
+    base::test::TestFuture<std::optional<std::string>> future_1;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kBiddingAndAuction,
+                                 origin_a, key_config, future_1.GetCallback());
+    EXPECT_EQ(std::nullopt, future_1.Get());
+    ExpectNoDBStoredKeys(origin_a);
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_a, future_get.GetCallback());
+    ASSERT_TRUE(future_get.Get().has_value());
+    auto& key = *future_get.Get();
+    EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+
+    // Not available as a different API.
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get2;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kTrustedKeyValue,
+                          kTestScopeOrigin, origin_a,
+                          future_get2.GetCallback());
+    ASSERT_FALSE(future_get2.Get().has_value());
+    EXPECT_EQ("API not supported by coordinator", future_get2.Get().error());
+  }
+
+  // Re-configuring the same should fail, but old config is still around.
+  {
+    base::test::TestFuture<std::optional<std::string>> future_2;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kBiddingAndAuction,
+                                 origin_a, key_config, future_2.GetCallback());
+    EXPECT_EQ(
+        "Can't add debug override because coordinator with origin "
+        "already exists",
+        future_2.Get());
+    ExpectNoDBStoredKeys(origin_a);
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_a, future_get.GetCallback());
+    ASSERT_TRUE(future_get.Get().has_value());
+    auto& key = *future_get.Get();
+    EXPECT_EQ("12345678-9abc-def0-1234-56789abcdef0", key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+  }
+
+  // Errors in config are reported.
+  {
+    std::string broken_config = key_config;
+    broken_config[0] = '!';
+    base::test::TestFuture<std::optional<std::string>> future_3;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kBiddingAndAuction,
+                                 origin_b, broken_config,
+                                 future_3.GetCallback());
+    EXPECT_EQ("Key config decoding failed", future_3.Get());
+    ExpectNoDBStoredKeys(origin_b);
+
+    // Get afterwards should fail.
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_b, future_get.GetCallback());
+    ASSERT_FALSE(future_get.Get().has_value());
+    EXPECT_EQ("Invalid Coordinator", future_get.Get().error());
+  }
+
+  // Different domain & API can be configured.
+  {
+    base::test::TestFuture<std::optional<std::string>> future_4;
+    fetcher.AddKeysDebugOverride(TrustedServerAPIType::kTrustedKeyValue,
+                                 origin_c, key_config2, future_4.GetCallback());
+    EXPECT_EQ(std::nullopt, future_4.Get());
+    ExpectNoDBStoredKeys(origin_c);
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kTrustedKeyValue,
+                          kTestScopeOrigin, origin_c, future_get.GetCallback());
+    ASSERT_TRUE(future_get.Get().has_value());
+    auto& key = *future_get.Get();
+    EXPECT_EQ("22345678-9abc-def0-1234-56789abcdef0", key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+
+    // Not available as a different API.
+    base::test::TestFuture<
+        base::expected<BiddingAndAuctionServerKey, std::string>>
+        future_get2;
+    fetcher.GetOrFetchKey(TrustedServerAPIType::kBiddingAndAuction,
+                          kTestScopeOrigin, origin_c,
+                          future_get2.GetCallback());
+    ASSERT_FALSE(future_get2.Get().has_value());
+    EXPECT_EQ("API not supported by coordinator", future_get2.Get().error());
+  }
 }
 
 class BiddingAndAuctionServerKeyFetcherCoordinatorTest

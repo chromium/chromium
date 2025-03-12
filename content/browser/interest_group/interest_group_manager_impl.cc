@@ -735,6 +735,16 @@ void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
   caching_storage_.SetBiddingAndAuctionServerKeys(
       coordinator, std::move(serialized_keys), expiration);
 }
+
+void InterestGroupManagerImpl::AddTrustedServerKeysDebugOverride(
+    TrustedServerAPIType api,
+    const url::Origin& coordinator,
+    std::string serialized_keys,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  ba_key_fetcher_.AddKeysDebugOverride(
+      api, coordinator, std::move(serialized_keys), std::move(callback));
+}
+
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
     base::OnceCallback<void(std::pair<base::Time, std::string>)> callback) {
