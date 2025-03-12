@@ -270,8 +270,11 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 }
 
 - (UIView*)configureSharedTextView {
-  // TODO(crbug.com/396326361): Add text sharing ui configuration.
-  return nil;
+  UILabel* sharedTextLabel = [[UILabel alloc] init];
+  sharedTextLabel.text = self.sharedText;
+  sharedTextLabel.numberOfLines = 0;
+
+  return sharedTextLabel;
 }
 
 - (UIImageView*)configureSnapshotView {

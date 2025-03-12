@@ -279,7 +279,14 @@ const CGFloat kShareSheetCornerRadius = 20;
 - (void)handleText:(id)idText
            forItem:(NSExtensionItem*)item
          withError:(NSError*)error {
-  // TODO(crbug.com/396326361): Handle shared text.
+  self.shareText = [[item attributedContentText] string];
+  self.shareItem = item;
+
+  if (self.shareText) {
+    [self displayShareSheet];
+  } else {
+    [self displayErrorView];
+  }
 }
 
 - (void)loadElementsFromContext {
