@@ -79,8 +79,6 @@ inline constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting =
     5;
 
 const int64_t kDownloadRequestTimeoutMs = 7000;
-// We sample 1% of allowlisted downloads to still send out download pings.
-const double kAllowlistDownloadSampleRate = 0.01;
 
 bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
@@ -145,7 +143,6 @@ DownloadProtectionService::DownloadProtectionService(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT})
               .get())),
 #endif
-      allowlist_sample_rate_(kAllowlistDownloadSampleRate),
       weak_ptr_factory_(this) {
   CHECK(delegate_);
   if (sb_service) {
@@ -443,6 +440,11 @@ void DownloadProtectionService::ShowDetailsForDownload(
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false),
       /*navigation_handle_callback=*/{});
+}
+
+double DownloadProtectionService::allowlist_sample_rate() const {
+  return allowlist_sample_rate_.value_or(
+      delegate()->GetAllowlistedDownloadSampleRate());
 }
 
 // static

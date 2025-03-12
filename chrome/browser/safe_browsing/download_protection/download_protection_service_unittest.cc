@@ -539,6 +539,8 @@ class DownloadProtectionServiceTestBase
     download_service_->allowlist_sample_rate_ = target_rate;
   }
 
+  // Note: This only works for desktop platforms where the sampling rate depends
+  // upon FileTypePolicies.
   void SetBinarySamplingProbability(double target_rate) {
     std::unique_ptr<DownloadFileTypeConfig> config =
         policies_.DuplicateConfig();

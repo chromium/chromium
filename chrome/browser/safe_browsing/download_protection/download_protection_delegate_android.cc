@@ -134,4 +134,17 @@ net::NetworkTrafficAnnotationTag DownloadProtectionDelegateAndroid::
           })");
 }
 
+float DownloadProtectionDelegateAndroid::GetAllowlistedDownloadSampleRate()
+    const {
+  // TODO(chlily): The allowlist is not implemented yet for Android download
+  // protection.
+  return 0.0;
+}
+
+float DownloadProtectionDelegateAndroid::GetUnsupportedFileSampleRate(
+    const base::FilePath& filename) const {
+  // "Light" pings for a sample of unsupported files is disabled on Android.
+  return 0.0;
+}
+
 }  // namespace safe_browsing

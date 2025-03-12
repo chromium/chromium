@@ -34,6 +34,9 @@ class DownloadProtectionDelegateDesktop : public DownloadProtectionDelegate {
   CompleteClientDownloadRequestTrafficAnnotation(
       const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
       const override;
+  float GetAllowlistedDownloadSampleRate() const override;
+  float GetUnsupportedFileSampleRate(
+      const base::FilePath& filename) const override;
 
  private:
   const GURL download_request_url_;

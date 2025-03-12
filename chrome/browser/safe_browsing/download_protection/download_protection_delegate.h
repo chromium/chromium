@@ -48,6 +48,15 @@ class DownloadProtectionDelegate {
   // Returns the URL that will be contacted for download protection requests.
   virtual const GURL& GetDownloadRequestUrl() const = 0;
 
+  // Sampling rate for when an allowlisted download may generate a sampled ping,
+  // if other requirements are met.
+  virtual float GetAllowlistedDownloadSampleRate() const = 0;
+
+  // Sampling rate for when an unsupported download may generate a sampled ping,
+  // if other requirements are met.
+  virtual float GetUnsupportedFileSampleRate(
+      const base::FilePath& filename) const = 0;
+
   // Completes the network traffic annotation for CheckClientDownloadRequest.
   virtual net::NetworkTrafficAnnotationTag
   CompleteClientDownloadRequestTrafficAnnotation(
