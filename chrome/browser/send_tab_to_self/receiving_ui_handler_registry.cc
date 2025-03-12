@@ -40,6 +40,10 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 #if BUILDFLAG(IS_ANDROID)
   applicable_handlers_.push_back(
       std::make_unique<AndroidNotificationHandler>(profile));
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  applicable_handlers_.push_back(
+      std::make_unique<SendTabToSelfToolbarIconController>(profile));
 #endif
 }
 
@@ -56,12 +60,7 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
       return button_controller;
     }
   }
-
-  applicable_handlers_.push_back(
-      std::make_unique<SendTabToSelfToolbarIconController>(profile));
-  auto* button_controller = static_cast<SendTabToSelfToolbarIconController*>(
-      applicable_handlers_.back().get());
-  return button_controller;
+  return nullptr;
 #elif BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
