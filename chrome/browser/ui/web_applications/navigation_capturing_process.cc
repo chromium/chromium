@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/navigation_capturing_settings.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -1061,6 +1062,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
           LaunchHandler::ClientMode::kNavigateExisting ||
       result.effective_client_mode ==
           LaunchHandler::ClientMode::kFocusExisting) {
+    bool for_focus_existing = result.effective_client_mode ==
+                              LaunchHandler::ClientMode::kFocusExisting;
     // For navigate and focus existing find an existing tab for this app,
     // depending on the display mode requested.
     std::optional<AppBrowserController::BrowserAndTabIndex> existing_app_host;
@@ -1071,7 +1074,7 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
         // has a tab for the target app.
         existing_app_host =
             AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                *profile_, app_id, Browser::TYPE_NORMAL);
+                *profile_, app_id, Browser::TYPE_NORMAL, for_focus_existing);
         break;
       case blink::mojom::DisplayMode::kMinimalUi:
       case blink::mojom::DisplayMode::kStandalone:
@@ -1088,9 +1091,14 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
           // TODO(crbug.com/396612316): Add support for app tabbed display mode,
           // where we'll need home tab matching logic to determine the correct
           // tab to use (if any).
-          existing_app_host = {.browser = navigation_params_browser_,
-                               .tab_index = 0};
-          break;
+          std::optional<int> tab_index =
+              AppBrowserController::FindTabIndexForApp(
+                  navigation_params_browser_, app_id, for_focus_existing);
+          if (tab_index.has_value()) {
+            existing_app_host = {.browser = navigation_params_browser_,
+                                 .tab_index = *tab_index};
+            break;
+          }
         }
 
         using HomeTabScope = AppBrowserController::HomeTabScope;
@@ -1104,13 +1112,14 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
         }
         existing_app_host =
             AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                *profile_, app_id, Browser::TYPE_APP, home_tab_scope);
+                *profile_, app_id, Browser::TYPE_APP, for_focus_existing,
+                home_tab_scope);
         // If no app tab was found, fall back to looking for a regular browser
         // tab.
         if (!existing_app_host) {
           existing_app_host =
               AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                  *profile_, app_id, Browser::TYPE_NORMAL);
+                  *profile_, app_id, Browser::TYPE_NORMAL, for_focus_existing);
         }
         break;
       }
