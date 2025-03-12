@@ -700,4 +700,8 @@ BASE_FEATURE(kSelfSignedLocalNetworkInterstitial,
              "SelfSignedLocalNetworkInterstitial",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+BASE_FEATURE(kVerifyQWACs, "VerifyQWACs", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
 }  // namespace net::features
