@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
@@ -157,14 +157,14 @@
   annotator.quickDeleteHandler =
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
-  AutocompleteMatchWrapper* autocompleteMatchWrapper =
-      [[AutocompleteMatchWrapper alloc] init];
-  autocompleteMatchWrapper.pedalAnnotator = annotator;
-  autocompleteMatchWrapper.templateURLService = templateURLService;
-  autocompleteMatchWrapper.isIncognito = isIncognito;
-  autocompleteMatchWrapper.delegate = self.mediator;
+  AutocompleteResultWrapper* autocompleteResultWrapper =
+      [[AutocompleteResultWrapper alloc] init];
+  autocompleteResultWrapper.pedalAnnotator = annotator;
+  autocompleteResultWrapper.templateURLService = templateURLService;
+  autocompleteResultWrapper.isIncognito = isIncognito;
+  autocompleteResultWrapper.delegate = self.mediator;
 
-  self.mediator.autocompleteMatchWrapper = autocompleteMatchWrapper;
+  self.mediator.autocompleteResultWrapper = autocompleteResultWrapper;
 
   self.mediator.applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);

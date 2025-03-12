@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 
 #import "components/omnibox/browser/actions/omnibox_pedal.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -11,7 +11,7 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
@@ -20,33 +20,33 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-@interface FakeAutocompleteMatchWrapperDelegate
-    : NSObject <AutocompleteMatchWrapperDelegate>
+@interface FakeAutocompleteResultWrapperDelegate
+    : NSObject <AutocompleteResultWrapperDelegate>
 
 @property(nonatomic, assign) BOOL isStarred;
 
 @end
 
-@implementation FakeAutocompleteMatchWrapperDelegate
+@implementation FakeAutocompleteResultWrapperDelegate
 
 - (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
   return self.isStarred;
 }
 
-- (void)autocompleteMatchWrapper:(AutocompleteMatchWrapper*)wrapper
-             didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
-                                     nonPedalSuggestionsGroups {
+- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
+              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                      nonPedalSuggestionsGroups {
   // NO-OP
 }
 
 @end
 
-class AutocompleteMatchWrapperTest : public PlatformTest {
+class AutocompleteResultWrapperTest : public PlatformTest {
  public:
-  AutocompleteMatchWrapperTest() {
+  AutocompleteResultWrapperTest() {
     _fake_autocomplete_wrapper_delegate =
-        [[FakeAutocompleteMatchWrapperDelegate alloc] init];
-    wrapper_ = [[AutocompleteMatchWrapper alloc] init];
+        [[FakeAutocompleteResultWrapperDelegate alloc] init];
+    wrapper_ = [[AutocompleteResultWrapper alloc] init];
     wrapper_.isIncognito = NO;
     wrapper_.templateURLService =
         search_engines_test_environment_.template_url_service();
@@ -61,20 +61,18 @@ class AutocompleteMatchWrapperTest : public PlatformTest {
     profile_ = std::move(builder).Build();
   }
 
-  ~AutocompleteMatchWrapperTest() override {
-    [wrapper_ disconnect];
-  }
+  ~AutocompleteResultWrapperTest() override { [wrapper_ disconnect]; }
 
   base::test::TaskEnvironment task_environment_;
 
-  AutocompleteMatchWrapper* wrapper_;
+  AutocompleteResultWrapper* wrapper_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  FakeAutocompleteMatchWrapperDelegate* _fake_autocomplete_wrapper_delegate;
+  FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
 };
 
 // Tests wrapping an autocomplete result with 2 non-pedal starred matches.
-TEST_F(AutocompleteMatchWrapperTest,
+TEST_F(AutocompleteResultWrapperTest,
        testWrapMatchesFromResultWithStarredMatch) {
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
       u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
@@ -131,7 +129,7 @@ TEST_F(AutocompleteMatchWrapperTest,
 
 // Tests wrapping an autocomplete result after changing the default search
 // engine.
-TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
+TEST_F(AutocompleteResultWrapperTest, testChangeSearchEngine) {
   AutocompleteResult result;
 
   AutocompleteMatch match1 = CreateActionInSuggestMatch(
@@ -199,7 +197,7 @@ TEST_F(AutocompleteMatchWrapperTest, testChangeSearchEngine) {
 }
 
 /// Tests Wrapping a result that contains a pedal match.
-TEST_F(AutocompleteMatchWrapperTest, testWrapPedalMatch) {
+TEST_F(AutocompleteResultWrapperTest, testWrapPedalMatch) {
   AutocompleteResult result;
 
   AutocompleteMatch match;

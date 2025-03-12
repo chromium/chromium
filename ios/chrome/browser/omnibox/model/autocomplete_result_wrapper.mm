@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_match_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
@@ -19,11 +19,11 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 
-@interface AutocompleteMatchWrapper () <PedalSectionExtractorDelegate,
-                                        SearchEngineObserving>
+@interface AutocompleteResultWrapper () <PedalSectionExtractorDelegate,
+                                         SearchEngineObserving>
 @end
 
-@implementation AutocompleteMatchWrapper {
+@implementation AutocompleteResultWrapper {
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Whether the default search engine is Google.
@@ -91,8 +91,8 @@
 
 - (void)invalidatePedals {
   if (_nonPedalSuggestionsGroups) {
-    [self.delegate autocompleteMatchWrapper:self
-                        didInvalidatePedals:_nonPedalSuggestionsGroups];
+    [self.delegate autocompleteResultWrapper:self
+                         didInvalidatePedals:_nonPedalSuggestionsGroups];
   }
 }
 

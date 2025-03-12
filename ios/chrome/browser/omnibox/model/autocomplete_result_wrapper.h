@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_MATCH_WRAPPER_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_MATCH_WRAPPER_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_RESULT_WRAPPER_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_RESULT_WRAPPER_H_
 
 #import <UIKit/UIKit.h>
 
-@protocol AutocompleteMatchWrapperDelegate;
+@protocol AutocompleteResultWrapperDelegate;
 @protocol AutocompleteSuggestion;
 @protocol AutocompleteSuggestionGroup;
 @class AutocompleteMatchFormatter;
 class AutocompleteResult;
-struct AutocompleteMatch;
 @class OmniboxPedalAnnotator;
 class TemplateURLService;
 
 // The autocomplete match wrapper. This class is responsible for wrapping
-// AutocompleteMatch and AutocompleteResult.
-@interface AutocompleteMatchWrapper : NSObject
+// AutocompleteResult.
+@interface AutocompleteResultWrapper : NSObject
 
 /// The autocomplete match wrapper delegate.
-@property(nonatomic, weak) id<AutocompleteMatchWrapperDelegate> delegate;
+@property(nonatomic, weak) id<AutocompleteResultWrapperDelegate> delegate;
 
 /// The annotator to create pedals for ths mediator.
 @property(nonatomic, strong) OmniboxPedalAnnotator* pedalAnnotator;
@@ -44,4 +43,4 @@ class TemplateURLService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_MATCH_WRAPPER_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_RESULT_WRAPPER_H_
