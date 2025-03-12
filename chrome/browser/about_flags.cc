@@ -5008,14 +5008,6 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(media::kMediaFoundationD3D11VideoCapture),
     },
 #endif  // BUILDFLAG(IS_WIN)
-    {"username-first-flow-with-intermediate-values-predictions",
-     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesPredictionsName,
-     flag_descriptions::
-         kUsernameFirstFlowWithIntermediateValuesPredictionsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::
-             kUsernameFirstFlowWithIntermediateValuesPredictions)},
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,

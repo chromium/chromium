@@ -1451,10 +1451,6 @@ extern const char kMostVisitedTilesNewScoringDescription[];
 extern const char kMostVisitedTilesReselectName[];
 extern const char kMostVisitedTilesReselectDescription[];
 
-extern const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[];
-extern const char
-    kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[];
-
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 

@@ -3830,12 +3830,6 @@ const char kTrackingProtection3pcdDescription[] =
 const char kRwsV2UiName[] = "RWS V2 UI";
 const char kRwsV2UiDescription[] = "Updated RWS UI";
 
-const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
-    "Predictions on Username first flow with intermediate values";
-const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =
-    "New single username predictions based on voting from Username First Flow "
-    "with intermediate values.";
-
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
 const char kUseSearchClickForRightClickDescription[] =

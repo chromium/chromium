@@ -9032,11 +9032,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "username-first-flow-with-intermediate-values-predictions",
-    "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "vc-background-replace",
     "owners": [ "skyostil@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
     "expiry_milestone": 126
