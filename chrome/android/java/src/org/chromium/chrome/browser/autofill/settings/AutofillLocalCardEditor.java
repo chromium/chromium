@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -149,7 +148,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
             mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
         } else {
-            RelativeLayout creditCardExpirationAndCvcLayout =
+            LinearLayout creditCardExpirationAndCvcLayout =
                     v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
             creditCardExpirationAndCvcLayout.setVisibility(View.GONE);
 
