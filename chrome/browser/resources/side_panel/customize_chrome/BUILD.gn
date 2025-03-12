@@ -65,6 +65,7 @@ build_webui("build") {
     "shortcuts.css",
     "theme_snapshot.css",
     "themes.css",
+    "toggle_container_shared.css",
     "wallpaper_search/combobox/customize_chrome_combobox.css",
     "wallpaper_search/wallpaper_search.css",
     "wallpaper_search/wallpaper_search_tile.css",
