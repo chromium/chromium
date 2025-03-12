@@ -116,8 +116,7 @@ std::u16string GetBodyTextParagraphTwo() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-views::Builder<views::StyledLabel> GetTextBodyBuilder(
-    const std::u16string& text) {
+views::Builder<views::StyledLabel> GetTextBodyBuilder() {
   // There are various issues with using `ash::TypographyToken::kCrosBody1`:
   //
   // - It is using Google Sans, not Google Sans Text, which is not suitable for
@@ -147,7 +146,6 @@ views::Builder<views::StyledLabel> GetTextBodyBuilder(
   // which is the same as `kColorSysOnSurface`:
   // https://crsrc.org/s?q=%22mixer%5BkColorPrimaryForeground%5D%22%20f:material
   return views::Builder<views::StyledLabel>()
-      .SetText(text)
       .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_2)
       .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -197,8 +195,8 @@ DisclaimerView::DisclaimerView(
                           .SetText(GetTextTitle())
                           .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
-                      GetTextBodyBuilder(GetBodyTextParagraphOne()),
-                      GetTextBodyBuilder(GetBodyTextParagraphTwo())))
+                      GetTextBodyBuilder().SetText(GetBodyTextParagraphOne()),
+                      GetTextBodyBuilder().SetText(GetBodyTextParagraphTwo())))
           .Build());
 
   AddChildView(
