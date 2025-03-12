@@ -2693,6 +2693,7 @@ Called by update_net_error_codes.py.-->
   <int value="132" label="Are suspicious notifications allowlisted by user"/>
   <int value="133" label="Controlled Frame"/>
   <int value="134" label="Revoked disruptive notification permissions"/>
+  <int value="135" label="Local network access"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
@@ -21586,6 +21587,7 @@ Called by update_net_error_codes.py.-->
   <int value="32" label="PERMISSION_FILE_HANDLING__REMOVED_IN_M98"/>
   <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="34" label="PERMISSION_WEB_APP_INSTALLATION"/>
+  <int value="35" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
 </enum>
 
 <enum name="PIIType">

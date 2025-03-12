@@ -207,6 +207,8 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::AUTOMATIC_FULLSCREEN;
   } else if (name == "web-app-installation") {
     *permission_type = PermissionType::WEB_APP_INSTALLATION;
+  } else if (name == "local-network-access") {
+    *permission_type = PermissionType::LOCAL_NETWORK_ACCESS;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -300,6 +302,9 @@ Response FromProtocolPermissionType(
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::WebAppInstallation) {
     *out_type = PermissionType::WEB_APP_INSTALLATION;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::LocalNetworkAccess) {
+    *out_type = PermissionType::LOCAL_NETWORK_ACCESS;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }

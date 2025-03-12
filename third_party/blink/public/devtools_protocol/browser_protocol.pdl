@@ -1481,6 +1481,7 @@ domain Browser
       idleDetection
       keyboardLock
       localFonts
+      localNetworkAccess
       midi
       midiSysex
       nfc
