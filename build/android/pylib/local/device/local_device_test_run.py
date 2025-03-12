@@ -33,6 +33,9 @@ _SIGTERM_TEST_LOG = (
   '  Suite execution terminated, probably due to swarming timeout.\n'
   '  Your test may not have run.')
 
+# If the percentage of failed test exceeds this max value, the script
+# will try to recover devices before next try.
+FAILED_TEST_PCT_MAX = 90
 
 class TestsTerminated(Exception):
   pass
@@ -139,6 +142,7 @@ class LocalDeviceTestRun(test_run.TestRun):
   #override
   def RunTests(self, results, raw_logs_fh=None):
     tests = self._GetTests()
+    total_test_count = len(tests)
 
     exit_now = threading.Event()
 
@@ -156,18 +160,18 @@ class LocalDeviceTestRun(test_run.TestRun):
           grouped_tests = self._GroupTestsAfterSharding(tests)
           logging.info('STARTING TRY #%d/%d', tries + 1, self._env.max_tries)
           if tries > 0 and self._env.recover_devices:
-            if any(d.build_version_sdk == version_codes.LOLLIPOP_MR1
-                   for d in self._env.devices):
+            # The variable "tests" is reused to store the failed tests.
+            failed_test_pct = 100 * len(tests) // total_test_count
+            if failed_test_pct > FAILED_TEST_PCT_MAX:
               logging.info(
-                  'Attempting to recover devices due to known issue on L MR1. '
-                  'See crbug.com/787056 for details.')
-              self._env.parallel_devices.pMap(
-                  device_recovery.RecoverDevice, None)
+                  'Attempting to recover devices as the percentage of failed '
+                  'tests (%d%%) exceeds the threshold %d%%.', failed_test_pct,
+                  FAILED_TEST_PCT_MAX)
+              self._RecoverDevices()
             elif tries + 1 == self._env.max_tries:
               logging.info(
                   'Attempting to recover devices prior to last test attempt.')
-              self._env.parallel_devices.pMap(
-                  device_recovery.RecoverDevice, None)
+              self._RecoverDevices()
           logging.info(
               'Will run %d tests, grouped into %d groups, on %d devices: %s',
               len(tests), len(grouped_tests), len(self._env.devices),
@@ -218,6 +222,9 @@ class LocalDeviceTestRun(test_run.TestRun):
             logging.info('All tests completed.')
     except TestsTerminated:
       pass
+
+  def _RecoverDevices(self):
+    self._env.parallel_devices.pMap(device_recovery.RecoverDevice, None)
 
   def _GetTestsToRetry(self, tests, try_results):
 
