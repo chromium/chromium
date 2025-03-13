@@ -3395,7 +3395,6 @@ crbug.com/626703 external/wpt/jpegxl/3x3_srgb_lossy.html [ Failure ]
 crbug.com/626703 external/wpt/jpegxl/3x3a_srgb_lossless.html [ Failure ]
 crbug.com/626703 external/wpt/jpegxl/3x3a_srgb_lossy.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/performance-timeline/back-forward-cache-restoration.tentative.html [ Timeout ]
-crbug.com/358041221 [ Mac12 ] virtual/prefetch-no-vary-search/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?3-3 [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-on-g.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-006.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/non-spacing-accent-1.xhtml [ Failure ]
@@ -7382,10 +7381,6 @@ crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile
 
 # To allow devtools-frontend CL crrev.com/c/4678759 to land.
 crbug.com/1464206 http/tests/devtools/a11y-axe-core/performance/timeline-overview-container-a11y-test.js [ Failure Pass ]
-
-# Gardener 2023-07-20
-crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html* [ Pass Timeout ]
-
 
 # Gardener 2023-07-21
 crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
