@@ -207,10 +207,16 @@ class CONTENT_EXPORT ServiceWorkerClientOwner final {
   // Used to create a ServiceWorkerClient for a window during a
   // navigation. |are_ancestors_secure| should be true for main frames.
   // Otherwise it is true iff all ancestor frames of this frame have a secure
-  // origin. |frame_tree_node_id| is FrameTreeNode id.
+  // origin. |ongoing_navigation_frame_tree_node_id| is FrameTreeNode id of the
+  // to-be-committed Window/Document.
   ScopedServiceWorkerClient CreateServiceWorkerClientForWindow(
       bool are_ancestors_secure,
-      FrameTreeNodeId frame_tree_node_id);
+      FrameTreeNodeId ongoing_navigation_frame_tree_node_id);
+
+  // Used to create a ServiceWorkerClient for prefetch. This is still a
+  // navigation request's reserved client, but doesn't have associated
+  // `ongoing_navigation_frame_tree_node_id`.
+  ScopedServiceWorkerClient CreateServiceWorkerClientForPrefetch();
 
   // Used for starting a web worker (dedicated worker or shared worker). Returns
   // a service worker client for the worker.
