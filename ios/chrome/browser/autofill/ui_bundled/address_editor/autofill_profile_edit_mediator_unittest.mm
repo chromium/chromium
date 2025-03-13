@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
@@ -13,6 +14,7 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
@@ -128,8 +130,12 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
   }
 
   const autofill::CountryComboboxModel::CountryVector& CountriesList() {
+    const variations::VariationsService* variations_service =
+        GetApplicationContext()->GetVariationsService();
     country_model_.SetCountries(
-        personal_data_manager()->address_data_manager(),
+        GeoIpCountryCode(variations_service
+                             ? variations_service->GetLatestCountry()
+                             : std::string()),
         base::RepeatingCallback<bool(const std::string&)>(),
         GetApplicationContext()->GetApplicationLocale());
     return country_model_.countries();

@@ -10,12 +10,14 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_combobox.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
@@ -32,6 +34,7 @@
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_profile_comparator.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/variations/service/variations_service.h"
 #include "third_party/libaddressinput/messages.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
@@ -140,8 +143,12 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
   switch (type) {
     case autofill::ADDRESS_HOME_COUNTRY: {
       auto model = std::make_unique<autofill::CountryComboboxModel>();
+      const variations::VariationsService* variations_service =
+          g_browser_process->variations_service();
       model->SetCountries(
-          state()->GetPersonalDataManager()->address_data_manager(),
+          GeoIpCountryCode(variations_service
+                               ? variations_service->GetLatestCountry()
+                               : std::string()),
           base::RepeatingCallback<bool(const std::string&)>(),
           state()->GetApplicationLocale());
       if (model->countries().size() != countries_.size()) {
@@ -393,8 +400,12 @@ void ShippingAddressEditorViewController::UpdateCountries(
     autofill::CountryComboboxModel* model) {
   autofill::CountryComboboxModel local_model;
   if (!model) {
+    const variations::VariationsService* variations_service =
+        g_browser_process->variations_service();
     local_model.SetCountries(
-        state()->GetPersonalDataManager()->address_data_manager(),
+        GeoIpCountryCode(variations_service
+                             ? variations_service->GetLatestCountry()
+                             : std::string()),
         base::RepeatingCallback<bool(const std::string&)>(),
         state()->GetApplicationLocale());
     model = &local_model;

@@ -349,10 +349,8 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
 
 AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()
     const {
-  std::string country = variation_country_code_->empty()
-                            ? AutofillCountry::CountryCodeForLocale(app_locale_)
-                            : variation_country_code_.value();
-  return AddressCountryCode(country);
+  return AutofillCountry::GetDefaultCountryCodeForNewAddress(
+      variation_country_code_, app_locale_);
 }
 
 bool AddressDataManager::IsProfileMigrationBlocked(

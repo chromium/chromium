@@ -91,6 +91,15 @@ const std::string AutofillCountry::CountryCodeForLocale(
   return country_code;
 }
 
+// static
+const AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
+    const GeoIpCountryCode& geo_ip_country_code,
+    const std::string& locale) {
+  return AddressCountryCode(geo_ip_country_code.value().empty()
+                                ? AutofillCountry::CountryCodeForLocale(locale)
+                                : geo_ip_country_code.value());
+}
+
 AutofillCountry::AutofillCountry(const std::string& country_code,
                                  const std::u16string& name,
                                  const std::u16string& postal_code_label,

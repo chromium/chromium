@@ -16,12 +16,14 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -42,6 +44,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/variations/service/variations_service.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -222,8 +225,14 @@ AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm) {
 CountryEntryList GenerateCountryList(const autofill::AddressDataManager& adm,
                                      bool for_account_address_profile) {
   autofill::CountryComboboxModel model;
-  model.SetCountries(adm, base::RepeatingCallback<bool(const std::string&)>(),
-                     ExtensionsBrowserClient::Get()->GetApplicationLocale());
+  const variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  model.SetCountries(
+      GeoIpCountryCode(variations_service
+                           ? variations_service->GetLatestCountry()
+                           : std::string()),
+      base::RepeatingCallback<bool(const std::string&)>(),
+      ExtensionsBrowserClient::Get()->GetApplicationLocale());
   const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
       model.countries();
 
