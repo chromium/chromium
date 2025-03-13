@@ -474,6 +474,30 @@ TEST_F(CollaborationControllerTest, PreviewDataUrlInvalidFailure) {
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 }
 
+TEST_F(CollaborationControllerTest, PreviewDataGroupFullFailure) {
+  // Start Join flow.
+  InitializeJoinController(base::DoNothing());
+
+  base::OnceCallback<void(const data_sharing::DataSharingService::
+                              SharedDataPreviewOrFailureOutcome&)>
+      preview_callback;
+  EXPECT_CALL(*data_sharing_service_,
+              GetSharedEntitiesPreview(
+                  GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
+                  IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&preview_callback));
+  controller_->SetStateForTesting(StateId::kAddingUserToGroup);
+  base::OnceCallback<void(Outcome)> error_ui_callback;
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGroupFull),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
+
+  std::move(preview_callback)
+      .Run(base::unexpected(data_sharing::DataSharingService::
+                                DataPreviewActionFailure::kGroupFull));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
+}
+
 TEST_F(CollaborationControllerTest, AuthenticationCanceledBeforeSignIn) {
   base::HistogramTester histogram_tester;
 

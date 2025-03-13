@@ -32,6 +32,8 @@ class CollaborationControllerDelegate {
       kSigninDisabledByPolicy = 3,
       // Show the error when Entreprise disabled sync.
       kSyncDisabledByPolicy = 4,
+      // Show the group full error dialog.
+      kGroupFull = 5,
     };
 
     explicit ErrorInfo(Type type) : type_(type) { GetStringForErrorType(); }
@@ -56,12 +58,20 @@ class CollaborationControllerDelegate {
           return "Sync Disabled By Policy";
         case Type::kSigninDisabledByPolicy:
           return "Signin Disabled By Policy";
+        case Type::kGroupFull:
+          return "Group Is Full";
       }
     }
 
    private:
     void GetStringForErrorType() {
       switch (type_) {
+        case Type::kInvalidUrl:
+          error_header =
+              l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_HEADER);
+          error_body =
+              l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_BODY);
+          break;
         case Type::kSyncDisabledByPolicy:
           error_header = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_HEADER);
@@ -74,11 +84,11 @@ class CollaborationControllerDelegate {
           error_body = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY);
           break;
-        case Type::kInvalidUrl:
-          error_header =
-              l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_HEADER);
-          error_body =
-              l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_BODY);
+        case Type::kGroupFull:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_BODY);
           break;
         case Type::kGenericError:
         case Type::kUnknown:
