@@ -23059,25 +23059,6 @@
             ]
         }
     ],
-    "SplitCacheByNavigationInitiatorSite": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "CrossSiteMainFrameNavigationBoolean_CANARY_DEV_20240916",
-                    "enable_features": [
-                        "SplitCacheByCrossSiteMainFrameNavigationBoolean"
-                    ]
-                }
-            ]
-        }
-    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
