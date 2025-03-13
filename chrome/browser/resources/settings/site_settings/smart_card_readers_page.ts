@@ -8,11 +8,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrDialogElement, SmartCardReaderGrants} from 'lazy_load.js';
 
 import {routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
@@ -20,6 +20,7 @@ import type {Route} from '../router.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
+import type {SmartCardReaderGrants} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './smart_card_readers_page.html.js';
 
 export interface SettingsSmartCardReadersPageElement {
