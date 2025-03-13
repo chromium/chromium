@@ -743,9 +743,17 @@ BASE_FEATURE(kChangeUnfocusedPriority,
 #endif
 );
 
+// Enable by default for desktop platforms, pending a tablet rollout using the
+// same flag.
+// TODO(crbug.com/368058472): Remove when tablet rollout is complete.
 BASE_FEATURE(kDisableInstanceLimit,
              "DisableInstanceLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",
