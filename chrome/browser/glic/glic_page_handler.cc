@@ -352,6 +352,20 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run();
   }
 
+  void ShouldAllowMediaPermissionRequest(
+      ShouldAllowMediaPermissionRequestCallback callback) override {
+    std::move(callback).Run(
+        pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled) &&
+        glic_service_->window_controller().IsShowing());
+  }
+
+  void ShouldAllowGeolocationPermissionRequest(
+      ShouldAllowGeolocationPermissionRequestCallback callback) override {
+    std::move(callback).Run(
+        pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled) &&
+        glic_service_->window_controller().IsShowing());
+  }
+
   void SetContextAccessIndicator(bool enabled) override {
     glic_service_->SetContextAccessIndicator(enabled);
   }

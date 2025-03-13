@@ -104,10 +104,35 @@ export class WebviewController {
     this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
   }
 
-  private onPermissionRequest(e: any): void {
-    if (e.permission === 'media' || e.permission === 'geolocation') {
-      e.request.allow();
+  private async onPermissionRequest(e: any): Promise<void> {
+    e.preventDefault();
+    if (!this.host) {
+      e.request.deny();
+      return;
     }
+    switch (e.permission) {
+      case 'media': {
+        const isMediaAllowed =
+            await this.host.shouldAllowMediaPermissionRequest();
+        if (isMediaAllowed) {
+          e.request.allow();
+        } else {
+          e.request.deny();
+        }
+        return;
+      }
+      case 'geolocation': {
+        const isGeolocationAllowed =
+            await this.host.shouldAllowGeolocationPermissionRequest();
+        if (isGeolocationAllowed) {
+          e.request.allow();
+        } else {
+          e.request.deny();
+        }
+        return;
+      }
+    }
+    e.request.deny();
   }
 
   private onUnresponsive(): void {

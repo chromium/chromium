@@ -334,6 +334,14 @@ interface WebClientHandler {
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
 
+  // Returns whether a media permission request from the guest should be granted
+  // or denied.
+  ShouldAllowMediaPermissionRequest() => (bool is_allowed);
+
+  // Returns whether a geolocation permission request from the guest should be
+  // granted or denied.
+  ShouldAllowGeolocationPermissionRequest() => (bool is_allowed);
+
   // Set the state of the context access indicator UI effect on the focused tab.
   SetContextAccessIndicator(bool enabled);
 

@@ -231,7 +231,8 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
 void GlicKeyedService::GetContextFromFocusedTab(
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
+      !window_controller_->IsShowing()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
         mojom::GetTabContextErrorReason::kPermissionDenied));
     return;

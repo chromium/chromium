@@ -690,6 +690,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
     await this.handler.createTab(urlFromClient(url), false, null);
   }
 
+  async shouldAllowMediaPermissionRequest(): Promise<boolean> {
+    return (await this.handler.shouldAllowMediaPermissionRequest()).isAllowed;
+  }
+
+  async shouldAllowGeolocationPermissionRequest(): Promise<boolean> {
+    return (await this.handler.shouldAllowGeolocationPermissionRequest())
+        .isAllowed;
+  }
+
   // PostMessageRequestHandler implementation.
   async handleRawRequest(type: string, payload: any, extras: ResponseExtras):
       Promise<{payload: any}|undefined> {
