@@ -220,6 +220,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   };
 
   LoadState load_state_{LoadState::kStarted};
+  LoadState load_state() const { return load_state_; }
 
   // Used for UMA recording.
   // TODO(crbug.com/40064891): we might want to adapt these flags and UMA
