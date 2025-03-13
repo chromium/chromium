@@ -279,6 +279,7 @@ try:
                 f.write(str(e.stdout))
             continue
 
+        run("git cl format")
 
         # Commit changes
         run("git add -u", "Failed to add changes.")
