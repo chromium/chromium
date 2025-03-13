@@ -6,6 +6,7 @@ from datetime import datetime
 import json
 import logging
 import os
+import time
 
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
@@ -68,6 +69,9 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     # Run test on client which triggers enrollment, policy fetch, and a report
     output = self.RunWebDriverTest(self.win_config['client'],
                                    os.path.join(local_dir, '../cbcm_enroll.py'))
+    # Wait some more in case the report takes time to propagate through DM
+    # server.
+    time.sleep(10)
 
     # Get the device id of the browser
     index = output.find('DEVICE_ID=')
