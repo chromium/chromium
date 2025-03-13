@@ -256,6 +256,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/test:test_support",

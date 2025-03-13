@@ -133,7 +133,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)disconnect {
-  [self.autocompleteResultWrapper disconnect];
+  [self.popupController disconnect];
   if (_remoteSuggestionsServiceObserverBridge) {
     self.remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());
@@ -195,9 +195,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)popupController:(OmniboxPopupController*)popupController
-         didSortResults:(const AutocompleteResult&)result {
-  _suggestionGroups =
-      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:result];
+    didUpdateSuggestionsGroups:
+        (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups {
+  _suggestionGroups = suggestionGroups;
 
   // Preselect the verbatim match. It's the top match, unless we inserted pedals
   // and pushed it one section down.
@@ -225,7 +225,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)popupController:(OmniboxPopupController*)popupController
     didUpdateHasThumbnail:(BOOL)hasThumbnail {
   self.hasThumbnail = hasThumbnail;
-  self.autocompleteResultWrapper.hasThumbnail = hasThumbnail;
+}
+
+- (void)popupController:(OmniboxPopupController*)popupController
+    didInvalidatePedals:
+        (NSArray<id<AutocompleteSuggestionGroup>>*)nonPedalSuggestionsGroups {
+  [self.consumer updateMatches:nonPedalSuggestionsGroups
+      preselectedMatchGroupIndex:0];
 }
 
 #pragma mark - AutocompleteResultDataSource
@@ -456,19 +462,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           completion(attributes.faviconImage);
         }
       });
-}
-
-#pragma mark - AutocompleteResultWrapperDelegate
-
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
-  return [self.popupController isStarredMatch:match];
-}
-
-- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
-              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
-                                      nonPedalSuggestionsGroups {
-  [self.consumer updateMatches:nonPedalSuggestionsGroups
-      preselectedMatchGroupIndex:0];
 }
 
 #pragma mark - Private methods
