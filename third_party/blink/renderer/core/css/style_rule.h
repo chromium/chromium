@@ -286,15 +286,18 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  const HeapVector<Member<StyleRuleBase>>* ChildRules() const {
+  const GCedHeapVector<Member<StyleRuleBase>>* ChildRules() const {
     return child_rules_.Get();
   }
-  HeapVector<Member<StyleRuleBase>>* ChildRules() { return child_rules_.Get(); }
+  GCedHeapVector<Member<StyleRuleBase>>* ChildRules() {
+    return child_rules_.Get();
+  }
   void EnsureChildRules() {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).
     if (child_rules_ == nullptr) {
-      child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
+      child_rules_ =
+          MakeGarbageCollected<GCedHeapVector<Member<StyleRuleBase>>>();
     }
   }
   void AddChildRule(StyleRuleBase* child) {
@@ -325,7 +328,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   mutable Member<CSSPropertyValueSet> properties_;
   mutable Member<CSSLazyPropertyParser> lazy_property_parser_;
-  Member<HeapVector<Member<StyleRuleBase>>> child_rules_;
+  Member<GCedHeapVector<Member<StyleRuleBase>>> child_rules_;
 };
 
 class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {

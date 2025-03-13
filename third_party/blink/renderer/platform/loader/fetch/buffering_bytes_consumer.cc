@@ -94,7 +94,7 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(
       return has_seen_end_of_data_ ? Result::kDone : Result::kShouldWait;
   }
 
-  HeapVector<char>* first_chunk = buffer_[0];
+  GCedHeapVector<char>* first_chunk = buffer_[0];
   DCHECK_LT(offset_for_first_chunk_, first_chunk->size());
   buffer = base::span(*first_chunk).subspan(offset_for_first_chunk_);
   return Result::kOk;
@@ -109,7 +109,7 @@ BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
     return Result::kError;
   }
 
-  HeapVector<char>* first_chunk = buffer_[0];
+  GCedHeapVector<char>* first_chunk = buffer_[0];
 
   DCHECK_LE(offset_for_first_chunk_ + read_size, first_chunk->size());
   offset_for_first_chunk_ += read_size;
@@ -228,7 +228,7 @@ void BufferingBytesConsumer::BufferData() {
     if (result == Result::kShouldWait)
       return;
     if (result == Result::kOk) {
-      auto* chunk = MakeGarbageCollected<HeapVector<char>>();
+      auto* chunk = MakeGarbageCollected<GCedHeapVector<char>>();
       chunk->AppendSpan(p);
       buffer_.push_back(chunk);
       total_buffer_size_ += chunk->size();

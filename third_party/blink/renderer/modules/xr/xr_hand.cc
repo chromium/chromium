@@ -14,7 +14,7 @@
 
 namespace blink {
 
-using XRJointVector = HeapVector<Member<XRJointSpace>>;
+using XRJointVector = GCedHeapVector<Member<XRJointSpace>>;
 
 class XRHandIterationSource final
     : public PairSyncIterable<XRHand>::IterationSource {

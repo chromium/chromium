@@ -150,7 +150,7 @@ ExtendableMessageEvent::ExtendableMessageEvent(
     }
   }
   if (initializer->hasPorts())
-    ports_ = MakeGarbageCollected<MessagePortArray>(initializer->ports());
+    ports_ = MakeGarbageCollected<GCedMessagePortArray>(initializer->ports());
 }
 
 ExtendableMessageEvent::ExtendableMessageEvent(

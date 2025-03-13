@@ -1017,7 +1017,7 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
 // Fire event listeners, creates a copy of EventListenerVector on being called.
 bool EventTarget::FireEventListeners(Event& event,
                                      EventTargetData* d,
-                                     EventListenerVector entry) {
+                                     EventListenerVectorSnapshot entry) {
   // Fire all listeners registered for this event. Don't fire listeners removed
   // during event dispatch. Also, don't fire event listeners added during event
   // dispatch. Conveniently, all new event listeners will be added after or at

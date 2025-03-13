@@ -138,6 +138,13 @@ constexpr HeapVector<T, inlineCapacity>::TypeConstraints::TypeConstraints() {
 
 ASSERT_SIZE(Vector<int>, HeapVector<int>);
 
+// TODO(392817527): This alias is temporary. It will be replaced with actually
+// GCed type that is not DISALLOW_NEW, similar to e.g. HeapHashMap and
+// GCedHeapHashMap. The alias only exists to allow incrementally converting
+// areas of the codebase.
+template <typename T, wtf_size_t inlineCapacity = 0>
+using GCedHeapVector = HeapVector<T, inlineCapacity>;
+
 }  // namespace blink
 
 namespace WTF {

@@ -114,12 +114,12 @@ class CORE_EXPORT MessageEvent final : public Event {
   MessageEvent(const String& origin,
                const String& last_event_id,
                EventTarget* source,
-               MessagePortArray*);
+               GCedMessagePortArray*);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
                const String& origin,
                const String& last_event_id,
                EventTarget* source,
-               MessagePortArray*,
+               GCedMessagePortArray*,
                UserActivation* user_activation);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
                const String& origin,
@@ -232,7 +232,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   // ports_ are the MessagePorts in an entangled state, and channels_ are
   // the MessageChannels in a disentangled state. Only one of them can be
   // non-empty at a time. EntangleMessagePorts() moves between the states.
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
   bool is_ports_dirty_ = true;
   Vector<MessagePortChannel> channels_;
   Member<UserActivation> user_activation_;
