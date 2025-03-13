@@ -198,7 +198,6 @@ public class TracingController {
     public void startRecording() {
         assert mState == State.IDLE;
         assert mNativeController == null;
-        assert TracingNotificationManager.browserNotificationsEnabled();
 
         mNativeController = TracingControllerAndroid.create(ContextUtils.getApplicationContext());
 

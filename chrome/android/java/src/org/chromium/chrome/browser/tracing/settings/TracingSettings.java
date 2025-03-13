@@ -250,11 +250,17 @@ public class TracingSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
+        TracingNotificationManager.browserNotificationsEnabled(
+                (notificationsEnabled) -> {
+                    updatePreferences(notificationsEnabled);
+                });
+    }
+
+    private void updatePreferences(boolean notificationsEnabled) {
         @TracingController.State int state = TracingController.getInstance().getState();
         boolean initialized = state != TracingController.State.INITIALIZING;
         boolean idle = state == TracingController.State.IDLE || !initialized;
         boolean hasTrace = state == TracingController.State.STOPPED;
-        boolean notificationsEnabled = TracingNotificationManager.browserNotificationsEnabled();
 
         mPrefDefaultCategories.setEnabled(initialized);
         mPrefNondefaultCategories.setEnabled(initialized);

@@ -596,6 +596,7 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Webapk Install Failed"/>
   <int value="39" label="Data Sharing"/>
   <int value="40" label="Unified password manager access loss warning"/>
+  <int value="41" label="Tracing"/>
 </enum>
 
 </enums>
