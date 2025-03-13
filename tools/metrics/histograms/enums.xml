@@ -22632,6 +22632,19 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionBehavior) -->
 
+<!-- LINT.IfChange(PrivacySandboxNoticeEvent) -->
+
+<enum name="PrivacySandboxNoticeEvent">
+  <int value="0" label="Ack"/>
+  <int value="1" label="Closed"/>
+  <int value="2" label="OptIn"/>
+  <int value="3" label="OptOut"/>
+  <int value="4" label="Settings"/>
+  <int value="5" label="Shown"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeEvent) -->
+
 <!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
 
 <enum name="PrivacySandboxNoticeStartupState">

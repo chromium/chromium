@@ -70,6 +70,7 @@ enum class NoticeActionTaken {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeAction)
 
+// LINT.IfChange(NoticeEvent)
 enum class NoticeEvent {
   // ACK'ed the notice using 'GotIt' or some other form of acknowledgement.
   kAck = 0,
@@ -87,6 +88,7 @@ enum class NoticeEvent {
   kShown = 5,
   kMaxValue = kShown,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeEvent)
 
 // Different notice action outcomes. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused.
