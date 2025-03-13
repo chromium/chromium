@@ -133,8 +133,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // The callbacks are called in-order for each of
   // `serving_url_loader_clients_`, regardless of whether events are added
   // before or after clients are added.
-  void AddEventToQueue(
-      base::RepeatingCallback<void(ServingUrlLoaderClientId)> callback);
+  using EventCallback = base::RepeatingCallback<void(ServingUrlLoaderClientId)>;
+  void AddEventToQueue(EventCallback callback);
   // Sends all stored events in `event_queue_` to the client.
   // Called when a new client (identified by `client_id_`) is added.
   void RunEventQueue(ServingUrlLoaderClientId client_id);
@@ -172,8 +172,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   const bool is_reusable_;
 
   // All URLLoader events are queued up here.
-  std::vector<base::RepeatingCallback<void(ServingUrlLoaderClientId)>>
-      event_queue_;
+  std::vector<EventCallback> event_queue_;
 
   // The status of the event queue.
   enum class EventQueueStatus {

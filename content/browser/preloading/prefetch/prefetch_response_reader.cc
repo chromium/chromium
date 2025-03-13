@@ -272,8 +272,7 @@ void PrefetchResponseReader::BindAndStart(
   forward_body_.reset();
 }
 
-void PrefetchResponseReader::AddEventToQueue(
-    base::RepeatingCallback<void(ServingUrlLoaderClientId)> callback) {
+void PrefetchResponseReader::AddEventToQueue(EventCallback callback) {
   // To avoid complexity and bugs, `AddEventToQueue()` and `RunEventQueue()` are
   // assumed non-reentrant. This should be OK because `callback` is just calling
   // URLLoaderClient mojo methods which are assumed to work asynchronously.
