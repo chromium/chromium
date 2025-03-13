@@ -1971,12 +1971,6 @@ void MainThreadSchedulerImpl::PostDelayedIdleTask(
   IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
 }
 
-void MainThreadSchedulerImpl::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
-}
-
 void MainThreadSchedulerImpl::RemoveCancelledIdleTasks() {
   idle_helper_.RemoveCancelledIdleTasks();
 }

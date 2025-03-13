@@ -418,7 +418,7 @@ No modifications.
         List<Future> downloadTasks = []
         List<ChromiumDepGraph.DependencyDescription> mergeLicensesDeps = []
         graph.dependencies.values().each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
+            if (excludeDependency(dependency) || dependency.extension == 'group') {
                 return
             }
 
@@ -520,12 +520,12 @@ No modifications.
     void appendBuildTarget(ChromiumDepGraph.DependencyDescription dependency,
                            Map<String, ChromiumDepGraph.DependencyDescription> allDependencies,
                            StringBuilder sb) {
-        if (excludeDependency(dependency) || !dependency.generateTarget) {
+        if (excludeDependency(dependency)) {
             return
         }
 
         String targetName = translateTargetName(dependency.id) + '_java'
-        List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
+        List<String> javaDeps = dependency.children
         Set<String> addedDeps = new HashSet<String>();
 
         String depsStr = ''
@@ -664,7 +664,7 @@ No modifications.
     }
 
     boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency) {
-        if (dependency.exclude || EXISTING_LIBS.get(dependency.id)) {
+        if (dependency.exclude || EXISTING_LIBS.containsKey(dependency.id)) {
             return true
         }
         return isInDifferentRepo(dependency)
@@ -686,15 +686,6 @@ No modifications.
             }
             return dependency.isAutorolled != isAutorolledRepository
         }
-    }
-
-    /** If |dependency| should be a java_group(), returns target to forward to. Returns null otherwise. */
-    List<String> computeJavaGroupForwardingTargets(ChromiumDepGraph.DependencyDescription dependency) {
-        String targetName = translateTargetName(dependency.id) + '_java'
-        if (dependency.extension == 'group') {
-            return dependency.children
-        }
-        return []
     }
 
     private static String reducedDepencencyId(String dependencyId) {
@@ -980,7 +971,7 @@ No modifications.
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
+            if (excludeDependency(dependency) || dependency.extension == 'group') {
                 return
             }
             if (!dependency.artifact) {

@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -61,7 +60,7 @@ class GlicKeyedService : public KeyedService {
   // to that view's Browser.
   void ToggleUI(BrowserWindowInterface* bwi,
                 bool prevent_close,
-                InvocationSource source);
+                mojom::InvocationSource source);
 
   GlicEnabling& enabling() { return *enabling_.get(); }
   GlicMetrics* metrics() { return metrics_.get(); }

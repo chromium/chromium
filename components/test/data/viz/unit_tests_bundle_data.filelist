@@ -15,6 +15,7 @@
 //components/test/data/viz/axis_aligned.png
 //components/test/data/viz/backdrop_filter.png
 //components/test/data/viz/backdrop_filter_blur_off_axis_skia_gl.png
+//components/test/data/viz/backdrop_filter_blur_off_axis_skia_graphite.png
 //components/test/data/viz/backdrop_filter_blur_off_axis_skia_vk.png
 //components/test/data/viz/backdrop_filter_blur_outsets.png
 //components/test/data/viz/backdrop_filter_blur_radius_skia_gl.png

@@ -50,11 +50,11 @@ OfflinePageItem MakeOfflinePageItem(sql::Statement& statement) {
   item.system_download_id = statement.ColumnInt64(5);
   item.file_missing_time = statement.ColumnTime(6);
   item.client_id = OfflinePageClientId(statement);
-  item.url = GURL(statement.ColumnString(9));
+  item.url = GURL(statement.ColumnStringView(9));
   item.file_path = base::FilePath(
       store_utils::FromDatabaseFilePath(statement.ColumnString(10)));
   item.title = statement.ColumnString16(11);
-  item.original_url_if_different = GURL(statement.ColumnString(12));
+  item.original_url_if_different = GURL(statement.ColumnStringView(12));
   item.request_origin = statement.ColumnString(13);
   item.digest = statement.ColumnString(14);
   item.snippet = statement.ColumnString(15);

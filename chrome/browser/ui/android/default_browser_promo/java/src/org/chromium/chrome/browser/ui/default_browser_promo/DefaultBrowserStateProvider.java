@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
-import android.app.role.RoleManager;
 import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
@@ -12,12 +11,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
 /**
  * A utility class providing information regarding the default browser states of the system to
- * facilitate testing and interacting with external states by {@link PackageManagerUtils} and {@link
- * RoleManager}.
+ * facilitate testing and interacting with external states by {@link PackageManagerUtils}
  */
 @NullMarked
 public class DefaultBrowserStateProvider {

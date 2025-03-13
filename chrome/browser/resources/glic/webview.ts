@@ -18,7 +18,7 @@ export type PageType =
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
   // Called when there is an error during page load.
-  webviewError(): void;
+  webviewError(reason: string): void;
   // Called when the embedded web page is unresponsive.
   webviewUnresponsive(): void;
   // Called when a page commits inside the webview.
@@ -104,10 +104,35 @@ export class WebviewController {
     this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
   }
 
-  private onPermissionRequest(e: any): void {
-    if (e.permission === 'media' || e.permission === 'geolocation') {
-      e.request.allow();
+  private async onPermissionRequest(e: any): Promise<void> {
+    e.preventDefault();
+    if (!this.host) {
+      e.request.deny();
+      return;
     }
+    switch (e.permission) {
+      case 'media': {
+        const isMediaAllowed =
+            await this.host.shouldAllowMediaPermissionRequest();
+        if (isMediaAllowed) {
+          e.request.allow();
+        } else {
+          e.request.deny();
+        }
+        return;
+      }
+      case 'geolocation': {
+        const isGeolocationAllowed =
+            await this.host.shouldAllowGeolocationPermissionRequest();
+        if (isGeolocationAllowed) {
+          e.request.allow();
+        } else {
+          e.request.deny();
+        }
+        return;
+      }
+    }
+    e.request.deny();
   }
 
   private onUnresponsive(): void {
@@ -116,7 +141,7 @@ export class WebviewController {
 
   private onExit(e: any): void {
     if (e.reason !== 'normal') {
-      this.delegate.webviewError();
+      this.delegate.webviewError(e.reason);
     }
   }
 

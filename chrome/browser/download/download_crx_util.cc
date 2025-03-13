@@ -20,7 +20,6 @@
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/user_script.h"
 
@@ -84,14 +83,9 @@ void SetMockInstallPromptForTesting(
 scoped_refptr<extensions::CrxInstaller> CreateCrxInstaller(
     Profile* profile,
     const download::DownloadItem& download_item) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  CHECK(service);
-
   scoped_refptr<extensions::CrxInstaller> installer(
       extensions::CrxInstaller::Create(
-          service,
-          CreateExtensionInstallPrompt(profile, download_item),
+          profile, CreateExtensionInstallPrompt(profile, download_item),
           WebstoreInstaller::GetAssociatedApproval(download_item)));
 
   installer->set_error_on_unsupported_requirements(true);

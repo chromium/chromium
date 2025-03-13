@@ -4,6 +4,7 @@
 
 #include <array>
 
+#include "base/test/bind.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -18,6 +19,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 
 // This file contains back/forward-cache tests that test basic functionality,
@@ -188,6 +190,56 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_FALSE(delete_observer_rfh_b.deleted());
 
+  ExpectRestored(FROM_HERE);
+}
+
+// Navigate from A to B, go back and forward.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, StartAndStopLoading) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  int start_loading_count = 0;
+  int stop_loading_a_count = 0;
+  int stop_loading_b_count = 0;
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Add LoadingStartObserver to check the the DidStartLoading in step 3) and 4)
+  // will be fired.
+  LoadingStartObserver start_observer(
+      shell()->web_contents(),
+      base::BindLambdaForTesting([&]() { start_loading_count++; }));
+
+  // Add LoadingStopObserver to check the the DidStopLoading in step 3) and 4)
+  // will be fired. The loading URL can be captured at this point to validate
+  // url_a loading or url_b loading.
+  LoadingStopObserver stop_observer(
+      shell()->web_contents(), base::BindLambdaForTesting([&]() {
+        GURL url = shell()->web_contents()->GetLastCommittedURL();
+        if (url == url_a) {
+          stop_loading_a_count++;
+        } else if (url == url_b) {
+          stop_loading_b_count++;
+        }
+      }));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(start_loading_count, 1);
+  EXPECT_EQ(stop_loading_a_count, 1);
+  EXPECT_EQ(stop_loading_b_count, 0);
+  ExpectRestored(FROM_HERE);
+
+  // 4) Go forward to B.
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
+  EXPECT_EQ(start_loading_count, 2);
+  EXPECT_EQ(stop_loading_a_count, 1);
+  EXPECT_EQ(stop_loading_b_count, 1);
   ExpectRestored(FROM_HERE);
 }
 

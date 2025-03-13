@@ -132,19 +132,18 @@ void ScrollMarkerPseudoElement::SetSelected(bool value,
       // Update the alignment if the group is a snap container and the marker is
       // a snap area.
       if (apply_snap_alignment && !group_snap_type.is_none) {
-        LayoutBox* marker_box = GetLayoutBox();
         const auto marker_snap_align =
-            marker_box->Style()->GetScrollSnapAlign();
+            marker_object->Style()->GetScrollSnapAlign();
 
         if (ShouldSnapToAreaHorizontally(group_box, group_snap_type,
                                          marker_snap_align)) {
           align_x = scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
-              *marker_box, kHorizontalScroll);
+              *marker_object, kHorizontalScroll);
         }
         if (ShouldSnapToAreaVertically(group_box, group_snap_type,
                                        marker_snap_align)) {
           align_y = scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
-              *marker_box, kVerticalScroll);
+              *marker_object, kVerticalScroll);
         }
       }
       mojom::blink::ScrollIntoViewParamsPtr params =

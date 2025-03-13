@@ -964,6 +964,19 @@ bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
   return HasExternalKeyboardConnected();
 }
 
+bool KeyboardCapability::HasCameraAccessKey(
+    const KeyboardDevice& keyboard) const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasCameraAccessKeyOnAnyKeyboard() const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
+}
+
 const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
     const KeyboardDevice& keyboard) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);

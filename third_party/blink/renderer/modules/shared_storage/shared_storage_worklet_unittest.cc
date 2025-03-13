@@ -1921,7 +1921,11 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
       blink::mojom::BiddingBrowserSignals::New(
           /*join_count=*/1,
           /*bid_count=*/2, std::move(prev_wins),
-          /*for_debugging_only_in_cooldown_or_lockout=*/false);
+          /*for_debugging_only_in_cooldown_or_lockout=*/false,
+          /*click_and_view_counts=*/
+          blink::mojom::ViewAndClickCounts::New(
+              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+              /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
 
   blink::InterestGroup ig;
   ig.expiry = now + base::Seconds(3000);

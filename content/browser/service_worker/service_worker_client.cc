@@ -124,7 +124,7 @@ class ServiceWorkerClient::ServiceWorkerRunningStatusObserver final
 ServiceWorkerClient::ServiceWorkerClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool is_parent_frame_secure,
-    FrameTreeNodeId frame_tree_node_id)
+    FrameTreeNodeId ongoing_navigation_frame_tree_node_id)
     : context_(std::move(context)),
       owner_(context_->service_worker_client_owner()),
       create_time_(base::TimeTicks::Now()),
@@ -132,7 +132,8 @@ ServiceWorkerClient::ServiceWorkerClient(
       is_parent_frame_secure_(is_parent_frame_secure),
       client_info_(ServiceWorkerClientInfo()),
       process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
-      ongoing_navigation_frame_tree_node_id_(frame_tree_node_id) {
+      ongoing_navigation_frame_tree_node_id_(
+          ongoing_navigation_frame_tree_node_id) {
   DCHECK(context_);
 }
 
@@ -617,6 +618,12 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
             // We use `ongoing_navigation_frame_tree_node_id_` instead of
             // `render_frame_host_id` because this method is called before
             // response commit.
+            //
+            // TODO(https://crbug.com/40947546): For clients for prefetch where
+            // `ongoing_navigation_frame_tree_node_id` is null, this returns
+            // `nullptr` and thus falls back to the
+            // `CreateFromOriginAndIsolationInfo()` case below. Check if this is
+            // correct or fix this.
             return GetStorageKeyFromRenderFrameHost(
                 ongoing_navigation_frame_tree_node_id_, origin,
                 base::OptionalToPtr(isolation_info_from_handle.nonce()));
@@ -772,8 +779,17 @@ int ServiceWorkerClient::GetProcessId() const {
 NavigationRequest* ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit(
     base::PassKey<StoragePartitionImpl>) const {
   DCHECK(IsContainerForWindowClient());
-  DCHECK(ongoing_navigation_frame_tree_node_id_);
   DCHECK(!GetRenderFrameHostId());
+
+  if (!ongoing_navigation_frame_tree_node_id_) {
+    // For Window clients for prefetch, `ongoing_navigation_frame_tree_node_id_`
+    // is null and tentatively return `nullptr`.
+    //
+    // TODO(https://crbug.com/40947546): Check if this works. Maybe the callers
+    // have to check if the request is prefetch and suppress cert dialogs, just
+    // as prerendering.
+    return nullptr;
+  }
 
   // It is safe to use `ongoing_navigation_frame_tree_node_id_` to obtain the
   // corresponding navigation request without being concerned about the case
@@ -793,6 +809,9 @@ NavigationRequest* ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit(
 std::string ServiceWorkerClient::GetFrameTreeNodeTypeStringBeforeCommit()
     const {
   CHECK(!is_response_committed());
+  // TODO(https://crbug.com/40947546): If needed, assign a proper metrics name
+  // for clients for prefetch where `ongoing_navigation_frame_tree_node_id` is
+  // null.
   if (FrameTreeNode* frame_tree_node = FrameTreeNode::GloballyFindByID(
           ongoing_navigation_frame_tree_node_id_)) {
     CHECK(IsContainerForWindowClient());
@@ -1223,6 +1242,11 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
     // The navigation was cancelled. Just drop the request. Otherwise, we might
     // go to network without consulting the embedder first, which would break
     // guarantees.
+    //
+    // TODO(https://crbug.com/40947546): Clients for prefetch (where
+    // `ongoing_navigation_frame_tree_node_id` is null) also fall into this case
+    // and thus don't support navigationPreload and race network requests. Fix
+    // this.
     mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory;
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
         std::move(network_factory));

@@ -228,6 +228,21 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
   raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
 };
 
+TEST_F(ClipboardHostImplWriteTest, NoSourceWithoutDataWrite) {
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+  EXPECT_EQ(u"", future.Take());
+
+  ClipboardEndpoint source_endpoint =
+      GetSourceClipboardEndpoint(nullptr, ui::ClipboardBuffer::kCopyPaste);
+  EXPECT_FALSE(source_endpoint.data_transfer_endpoint());
+  EXPECT_FALSE(source_endpoint.web_contents());
+  EXPECT_FALSE(source_endpoint.browser_context());
+}
+
 TEST_F(ClipboardHostImplWriteTest, MainFrameURL) {
   GURL gurl1("https://example.com");
   GURL gurl2("http://test.org");

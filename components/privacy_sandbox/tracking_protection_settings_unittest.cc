@@ -56,7 +56,7 @@ class TrackingProtectionSettingsTest : public testing::Test {
         /*restore_session=*/false,
         /*should_record_metrics=*/false);
     feature_list_.InitWithFeatures(
-        {privacy_sandbox::kIpProtectionV1,
+        {privacy_sandbox::kIpProtectionUx,
          privacy_sandbox::kFingerprintingProtectionUx},
         {});
     tracking_protection_settings_ =

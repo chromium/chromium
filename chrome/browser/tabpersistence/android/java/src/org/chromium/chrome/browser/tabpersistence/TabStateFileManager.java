@@ -118,6 +118,27 @@ public class TabStateFileManager {
         int NUM_ENTRIES = 3;
     }
 
+    @IntDef({
+        TabStateMigrationStatus.FLATBUFFER,
+        TabStateMigrationStatus.LEGACY_HAND_WRITTEN,
+        TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN,
+        TabStateMigrationStatus.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public @interface TabStateMigrationStatus {
+        /** TabState has been migrated to FlatBuffer and legacy TabState file removed. */
+        int FLATBUFFER = 0;
+
+        /** Tab hasn't been migrated to FlatBuffer yet. */
+        int LEGACY_HAND_WRITTEN = 1;
+
+        /** Tab is migrated to FlatBuffer and legacy HandWritten file hasn't been removed yet. */
+        int FLATBUFFER_AND_LEGACY_HAND_WRITTEN = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * @param stateFolder folder {@link TabState} files are stored in
      * @param id {@link Tab} identifier
@@ -125,6 +146,7 @@ public class TabStateFileManager {
      * @return {@link TabState} corresponding to Tab with id
      */
     public static TabState restoreTabState(File stateFolder, int id, CipherFactory cipherFactory) {
+        recordTabStateMigrationStatus(stateFolder, id);
         // If the FlatBuffer schema is enabled, try to restore using that. There are no guarantees,
         // however - for example if the flag was just turned on there won't have been the
         // opportunity to save any FlatBuffer based {@link TabState} files yet. So we
@@ -160,6 +182,33 @@ public class TabStateFileManager {
                     TabStateRestoreMethod.NUM_ENTRIES);
         }
         return tabState;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void recordTabStateMigrationStatus(File stateFolder, int id) {
+        for (boolean encrypted : new boolean[] {false, true}) {
+            boolean legacyFileExists =
+                    getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false).exists();
+            boolean flatBufferFileExists =
+                    getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ true).exists();
+
+            if (legacyFileExists && flatBufferFileExists) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN,
+                        TabStateMigrationStatus.NUM_ENTRIES);
+            } else if (legacyFileExists) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.LEGACY_HAND_WRITTEN,
+                        TabStateMigrationStatus.NUM_ENTRIES);
+            } else if (flatBufferFileExists) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.FLATBUFFER,
+                        TabStateMigrationStatus.NUM_ENTRIES);
+            }
+        }
     }
 
     /**

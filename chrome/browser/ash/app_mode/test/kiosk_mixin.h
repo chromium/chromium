@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_MIXIN_H_
 #define CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_MIXIN_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
@@ -161,6 +163,11 @@ class KioskMixin : public InProcessBrowserTestMixin {
     std::vector<Option> options;
   };
 
+  // Helper alias to create `ScopedUserPolicyUpdate` instances for `Configure`.
+  using UserPolicyUpdateCallback =
+      base::RepeatingCallback<std::unique_ptr<ScopedUserPolicyUpdate>(
+          std::string_view)>;
+
   // Returns the gtest parameter name for this `Config`.
   static std::string ConfigName(const testing::TestParamInfo<Config>& info);
 
@@ -202,12 +209,20 @@ class KioskMixin : public InProcessBrowserTestMixin {
 
   ~KioskMixin() override;
 
-  // Sets up Kiosk policies corresponding to the `config` in the given
-  // `scoped_update`.
+  // Sets up Kiosk device policies corresponding to `config` in the given
+  // `device_policy_update`, and sets device local account policies
+  // for each account in `config` via the updates returned by
+  // `user_policy_update_callback`.
   //
   // This can be used to simulate a policy change mid test, for example when
   // combined with a `policy::DevicePolicyCrosTestHelper`.
-  void Configure(ScopedDevicePolicyUpdate& scoped_update, const Config& config);
+  void Configure(ScopedDevicePolicyUpdate& device_policy_update,
+                 UserPolicyUpdateCallback user_policy_update_callback,
+                 const Config& config);
+  // Similar to above but defaults to a `user_policy_update_callback` that sets
+  // policies using `DeviceStateMixin`.
+  void Configure(ScopedDevicePolicyUpdate& device_policy_update,
+                 const Config& config);
 
   // Launches the given `app`, simulating a manual launch from the login screen.
   // Returns true if the launch started.

@@ -1,0 +1,35 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "ZeroStateSuggestionsProto";
+
+message ZeroStateSuggestionsAiData {
+  // The feature request.
+  ZeroStateSuggestionsRequest request = 1;
+
+  // The feature response.
+  ZeroStateSuggestionsResponse response = 2;
+}
+
+message Suggestion {
+  string label = 1;
+}
+
+message ZeroStateSuggestionsRequest {
+  // The context of the page to generate suggestions for.
+  PageContext page_context = 1;
+}
+
+message ZeroStateSuggestionsResponse {
+  repeated Suggestion suggestions = 1;
+}

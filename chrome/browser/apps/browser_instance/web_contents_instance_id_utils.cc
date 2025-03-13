@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -20,8 +19,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/launch_util.h"
 #include "extensions/common/extension.h"
 
@@ -32,9 +31,9 @@ namespace {
 const extensions::Extension* GetExtensionForWebContents(
     Profile* profile,
     content::WebContents* tab) {
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  if (!extension_service || !extension_service->extensions_enabled()) {
+  extensions::ExtensionRegistrar* extension_registrar =
+      extensions::ExtensionRegistrar::Get(profile);
+  if (!extension_registrar || !extension_registrar->extensions_enabled()) {
     return nullptr;
   }
 

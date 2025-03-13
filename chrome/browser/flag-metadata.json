@@ -3459,11 +3459,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-logo-polish",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-mac-a11y-api-migration",
     "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
     "expiry_milestone": 142
@@ -5652,6 +5647,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-fetch-srp-api-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-filters-ablation-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135
@@ -7017,7 +7017,7 @@
   {
     "name": "policy-promotion-banner-flag",
     "owners": ["austinzzr@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "pompano",
@@ -8596,6 +8596,10 @@
   {
     "name": "tab-switcher-color-blend-animate",
     "owners": [ "skym@chromium.org", "mfiaz@google.com" ],
+    "expiry_milestone": 140
+  },
+  { "name": "tab-switcher-context-menu-android",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140
   },
   {

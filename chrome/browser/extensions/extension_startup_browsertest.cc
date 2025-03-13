@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
@@ -36,6 +35,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -55,8 +55,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
-using extensions::FeatureSwitch;
+using extensions::ExtensionRegistrar;
 using extensions::ExtensionRegistry;
+using extensions::FeatureSwitch;
 
 // This file contains high-level startup tests for the extensions system. We've
 // had many silly bugs where command line flags did not get propagated correctly
@@ -182,6 +183,10 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     return found_extensions;
   }
 
+  ExtensionRegistrar* GetExtensionRegistrar() {
+    return ExtensionRegistrar::Get(browser()->profile());
+  }
+
   void WaitForServicesToStart(int num_expected_extensions,
                               bool expect_extensions_enabled) {
     extensions::ExtensionSystem* extension_system =
@@ -197,7 +202,7 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
               GetNonComponentEnabledExtensionCount(browser()->profile()));
 
     ASSERT_EQ(expect_extensions_enabled,
-              extension_system->extension_service()->extensions_enabled());
+              GetExtensionRegistrar()->extensions_enabled());
 
     if (num_expected_extensions == 0)
       return;
@@ -407,6 +412,10 @@ class DeprecatedLoadComponentExtensionSwitchBrowserTest
   ExtensionRegistry* GetExtensionRegistry() {
     return ExtensionRegistry::Get(browser()->profile());
   }
+
+  ExtensionRegistrar* GetExtensionRegistrar() {
+    return ExtensionRegistrar::Get(browser()->profile());
+  }
 };
 
 void DeprecatedLoadComponentExtensionSwitchBrowserTest::SetUpCommandLine(
@@ -423,7 +432,7 @@ void DeprecatedLoadComponentExtensionSwitchBrowserTest::SetUpCommandLine(
 // Tests that the --load-component-extension flag is not supported.
 IN_PROC_BROWSER_TEST_F(DeprecatedLoadComponentExtensionSwitchBrowserTest,
                        DefunctLoadComponentExtensionFlag) {
-  EXPECT_TRUE(extension_service()->extensions_enabled());
+  EXPECT_TRUE(GetExtensionRegistrar()->extensions_enabled());
 
   // Checks that the extensions loaded with the --load-component-extension flag
   // are not installed.
@@ -454,6 +463,10 @@ class DisableExtensionsExceptBrowserTest
   ExtensionRegistry* GetExtensionRegistry() {
     return ExtensionRegistry::Get(browser()->profile());
   }
+
+  ExtensionRegistrar* GetExtensionRegistrar() {
+    return ExtensionRegistrar::Get(browser()->profile());
+  }
 };
 
 void DisableExtensionsExceptBrowserTest::SetUpCommandLine(
@@ -473,7 +486,7 @@ void DisableExtensionsExceptBrowserTest::SetUpCommandLine(
 // (--disable-extensions-except).
 IN_PROC_BROWSER_TEST_F(DisableExtensionsExceptBrowserTest,
                        DisableExtensionsExceptFlag) {
-  EXPECT_FALSE(extension_service()->extensions_enabled());
+  EXPECT_FALSE(GetExtensionRegistrar()->extensions_enabled());
 
   // Checks that the extensions loaded with the --disable-extensions-except flag
   // are enabled.

@@ -235,7 +235,7 @@ using signin_metrics::PromoAction;
 - (void)continueAddAccountFlowWithSigninResult:
             (SigninCoordinatorResult)signinResult
                                       identity:(id<SystemIdentity>)identity {
-  // TODO(crbug.com/375605482): Handle the case where the identity is assigned
+  // TODO(crbug.com/400902218): Handle the case where the identity is assigned
   // to a different profile. (For kAddAccount this shouldn't matter, and for
   // kPrimaryAccountReauth it should be impossible, but for kResignin it needs
   // to be handled, probably by switching to the other profile and continuing

@@ -326,6 +326,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasMediaKeys(const KeyboardDevice& keyboard) const;
   bool HasMediaKeysOnAnyKeyboard() const;
 
+  // Check if the given keyboard has a key to toggle access to the camera.
+  bool HasCameraAccessKey(const KeyboardDevice& keyboard) const;
+  bool HasCameraAccessKeyOnAnyKeyboard() const;
+
   // Check if the assistant key exists on the given keyboard.
   bool HasAssistantKey(const KeyboardDevice& keyboard) const;
   bool HasAssistantKey(int device_id) const;

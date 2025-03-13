@@ -1150,6 +1150,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
 
   if (update->local_surface_id_from_parent) {
+    layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
+    host_impl_->UpdateChildLocalSurfaceId();
+    // TODO(zmo): Remove calling SetTargetLocalSurfaceId().
     host_impl_->SetTargetLocalSurfaceId(*update->local_surface_id_from_parent);
   }
 

@@ -74,7 +74,8 @@ PermissionPromptBubbleTwoOriginsView::PermissionPromptBubbleTwoOriginsView(
     CreateExtraTextLabel(extra_text.value());
   }
 
-  CreatePermissionButtons(GetAllowAlwaysText(delegate->Requests()));
+  const auto& requests = delegate->Requests();
+  CreatePermissionButtons(GetAllowAlwaysText(requests), GetBlockText(requests));
 
   // Only requests for Storage Access should use this prompt.
   CHECK(delegate);

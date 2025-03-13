@@ -104,8 +104,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns true if the tracking of incompatible applications is enabled. Can
-  // be called on any thread. Notably does not check the
-  // ThirdPartyBlockingEnabled group policy.
+  // be called on any thread.
   static bool IsWarningEnabled();
 
   // Returns true if the cache contains at least one incompatible application.

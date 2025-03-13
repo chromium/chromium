@@ -257,7 +257,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
                     new CacheThumbnailTask(contentId, bitmap, iconSizePx)
                             .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
-        mDelegate.onThumbnailRetrieved(contentId, bitmap);
+        mDelegate.onThumbnailRetrieved(contentId, bitmap, iconSizePx);
     }
 
     /**

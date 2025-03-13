@@ -54,6 +54,7 @@ static_library("debug") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics_services_manager",
     "//components/variations",

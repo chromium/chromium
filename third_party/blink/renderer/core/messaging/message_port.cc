@@ -301,19 +301,20 @@ Vector<MessagePortChannel> MessagePort::DisentanglePorts(
   return channels;
 }
 
-MessagePortArray* MessagePort::EntanglePorts(
+GCedMessagePortArray* MessagePort::EntanglePorts(
     ExecutionContext& context,
     Vector<MessagePortChannel> channels) {
   return EntanglePorts(context, base::ToVector(std::move(channels)));
 }
 
-MessagePortArray* MessagePort::EntanglePorts(
+GCedMessagePortArray* MessagePort::EntanglePorts(
     ExecutionContext& context,
     std::vector<MessagePortChannel> channels) {
   // https://html.spec.whatwg.org/C/#message-ports
   // |ports| should be an empty array, not null even when there is no ports.
   wtf_size_t count = base::checked_cast<wtf_size_t>(channels.size());
-  MessagePortArray* port_array = MakeGarbageCollected<MessagePortArray>(count);
+  GCedMessagePortArray* port_array =
+      MakeGarbageCollected<GCedMessagePortArray>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     auto* port = MakeGarbageCollected<MessagePort>(context);
     port->Entangle(std::move(channels[i]));

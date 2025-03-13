@@ -1454,7 +1454,7 @@ TEST_F(ExtensionServiceTest, UninstallExternalExtensionAndReinstallAsUser) {
   EXPECT_TRUE(prefs()->IsExternalExtensionUninstalled(good_crx));
 
   // Reinstall the extension as a user-space extension. This should succeed.
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   base::RunLoop run_loop;
   installer->AddInstallerCallback(base::BindOnce(
@@ -1497,7 +1497,7 @@ TEST_F(ExtensionServiceTest,
 
   // Reinstall the extension as a user-space extension with a lower version.
   // This should succeed.
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   base::RunLoop run_loop;
   installer->AddInstallerCallback(base::BindOnce(
@@ -1613,7 +1613,7 @@ TEST_F(ExtensionServiceTest, InstallUserScript) {
   base::FilePath path = data_dir().AppendASCII("user_script_basic.user.js");
 
   ASSERT_TRUE(base::PathExists(path));
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   installer->InstallUserScript(
       path,
@@ -1636,7 +1636,7 @@ TEST_F(ExtensionServiceTest, InstallExtensionDuringShutdown) {
   InitializeEmptyExtensionService();
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   // Simulate shutdown.
   installer->set_browser_terminating_for_test(true);
   installer->set_allow_silent_install(true);
@@ -6780,7 +6780,9 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_TRUE(service->extensions_enabled());
+    // TODO(crbug.com/403283690): Move the logic that parses the command line to
+    // ExtensionRegistrar and move this test to extension_registrar_unittest.cc.
+    EXPECT_TRUE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
@@ -6800,7 +6802,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_FALSE(service->extensions_enabled());
+    // NOTE: See ExtensionRegistrar comment above.
+    EXPECT_FALSE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
@@ -6820,7 +6823,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_FALSE(service->extensions_enabled());
+    // NOTE: See ExtensionRegistrar comment above.
+    EXPECT_FALSE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
@@ -6842,7 +6846,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_FALSE(service->extensions_enabled());
+    // NOTE: See ExtensionRegistrar comment above.
+    EXPECT_FALSE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);

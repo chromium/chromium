@@ -22,6 +22,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="OsSettingsChangeType">
+  <variant name=".FirstChange"
+      summary="First setting change since the user has focused the page (may
+               include gaps of under one minute during which the page is not
+               focused)."/>
+  <variant name=".SubsequentChange"
+      summary="Subsequent setting changeafter the user has already changed a
+               setting on the page."/>
+</variants>
+
 <histogram
     name="ChromeOS.Settings.Accessibility.AccessibilityMagnifierFollowsSts"
     enum="BooleanToggled" expires_after="2025-09-23">
@@ -568,16 +578,22 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.Settings.Languages.Toggle"
+<histogram
+    name="ChromeOS.Settings.Languages.Toggle{SettingsLanguagesPageToggle}"
     enum="BooleanToggled" expires_after="2024-02-25">
-<!-- Name completed by histogram_suffixes name="SettingsLanguagesPageToggle" -->
-
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     Records when users interact with a toggle in the Chrome OS's Languages OS
-    settings page.
+    settings page. {SettingsLanguagesPageToggle}
   </summary>
+  <token key="SettingsLanguagesPageToggle">
+    <variant name=".ShowInputOptionsOnShelf"
+        summary="Show input options in the shelf"/>
+    <variant name=".SpellCheck" summary="Spell check"/>
+    <variant name=".Translate"
+        summary="Offer to translate pages in a language you don't read"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
@@ -663,34 +679,36 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
+<histogram name="ChromeOS.Settings.NumClicksUntilChange{OsSettingsChangeType}"
     units="clicks" expires_after="2025-09-07">
-<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
-
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
-  <summary>The number of clicks before changing a setting.</summary>
+  <summary>
+    The number of clicks before changing a setting. {OsSettingsChangeType}
+  </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
+<histogram
+    name="ChromeOS.Settings.NumNavigationsUntilChange{OsSettingsChangeType}"
     units="navigations" expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
-
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
-  <summary>The number of navigations before changing a setting.</summary>
+  <summary>
+    The number of navigations before changing a setting. {OsSettingsChangeType}
+  </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.Settings.NumSearchesUntilChange"
+<histogram
+    name="ChromeOS.Settings.NumSearchesUntilChange{OsSettingsChangeType}"
     units="searches" expires_after="2025-07-13">
-<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
-
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
-  <summary>The number of searches before changing a setting.</summary>
+  <summary>
+    The number of searches before changing a setting. {OsSettingsChangeType}
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
@@ -948,15 +966,14 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
-    expires_after="2025-07-27">
-<!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
-
+<histogram name="ChromeOS.Settings.TimeUntilChange{OsSettingsChangeType}"
+    units="ms" expires_after="2025-07-27">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
     The time spent on the settings page before changing a setting.
+    {OsSettingsChangeType}
   </summary>
 </histogram>
 

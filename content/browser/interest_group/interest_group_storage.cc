@@ -46,6 +46,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/ad_auction/event_record.h"
 #include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -69,7 +70,19 @@ namespace {
 using PassKey = base::PassKey<InterestGroupStorage>;
 using blink::mojom::BiddingBrowserSignalsPtr;
 using blink::mojom::PreviousWinPtr;
+using blink::mojom::ViewAndClickCountsPtr;
+using blink::mojom::ViewOrClickCountsPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
+using network::AdAuctionEventRecord;
+
+// The raw view and click data for a given (provider_origin, eligible_origin)
+// tuple.
+struct ViewClickCountsForProviderAndEligible {
+  ListOfTimestamps uncompacted_view_events;
+  ListOfTimestampAndCounts compacted_view_events;
+  ListOfTimestamps uncompacted_click_events;
+  ListOfTimestampAndCounts compacted_click_events;
+};
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
@@ -107,6 +120,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 31 - 2025/01 - crrev.com/c/6084483
 // Version 32 - 2025/02 - crrev.com/c/6239846
 // Version 33 - 2025/02 - crrev.com/c/6248184
+// Version 34 - 2025/02 - crrev.com/c/6256880
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -151,8 +165,9 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 32 adds duration column to the debug report lockout table, and
 //  renames its last_report_sent_time column to starting_time.
 // Version 33 adds view_and_click_counts_providers interest_groups field.
+// Version 34 adds view_and_click_events table.
 
-const int kCurrentVersionNumber = 33;
+const int kCurrentVersionNumber = 34;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
@@ -1169,12 +1184,56 @@ bool CreateCurrentSchema(sql::Database& db) {
   if (!db.Execute(kBAKeysTableSql)) {
     return false;
   }
+
+  DCHECK(!db.DoesTableExist("view_and_click_events"));
+  static const char kViewAndClickEventsSql[] =
+      // clang-format off
+      "CREATE TABLE view_and_click_events("
+        "provider_origin TEXT NOT NULL,"
+        "eligible_origin TEXT NOT NULL,"
+        "uncompacted_view_events BLOB NOT NULL,"
+        "compacted_view_events BLOB NOT NULL,"
+        "uncompacted_click_events BLOB NOT NULL,"
+        "compacted_click_events BLOB NOT NULL,"
+      "PRIMARY KEY(provider_origin, eligible_origin))";
+  // clang-format on
+  if (!db.Execute(kViewAndClickEventsSql)) {
+    DLOG(ERROR)
+        << "view_and_click_events CREATE SQL statement did not compile: "
+        << db.GetErrorMessage();
+    return false;
+  }
+
   return true;
 }
 
 bool VacuumDB(sql::Database& db) {
   static const char kVacuum[] = "VACUUM";
   return db.Execute(kVacuum);
+}
+
+bool UpgradeV33SchemaToV34(sql::Database& db, sql::MetaTable& meta_table) {
+  // Make `view_and_click_events` table.
+  DCHECK(!db.DoesTableExist("view_and_click_events"));
+  static const char kViewAndClickEventsSql[] =
+      // clang-format off
+      "CREATE TABLE view_and_click_events("
+        "provider_origin TEXT NOT NULL,"
+        "eligible_origin TEXT NOT NULL,"
+        "uncompacted_view_events BLOB NOT NULL,"
+        "compacted_view_events BLOB NOT NULL,"
+        "uncompacted_click_events BLOB NOT NULL,"
+        "compacted_click_events BLOB NOT NULL,"
+      "PRIMARY KEY(provider_origin, eligible_origin))";
+  // clang-format on
+  if (!db.Execute(kViewAndClickEventsSql)) {
+    DLOG(ERROR) << "view_and_click_counts_providers upgrade CREATE SQL "
+                   "statement did not compile: "
+                << db.GetErrorMessage();
+    return false;
+  }
+
+  return true;
 }
 
 bool UpgradeV32SchemaToV33(sql::Database& db, sql::MetaTable& meta_table) {
@@ -3200,6 +3259,11 @@ bool UpgradeDB(sql::Database& db,
       if (!UpgradeV32SchemaToV33(db, meta_table)) {
         return false;
       }
+      [[fallthrough]];
+    case 33:
+      if (!UpgradeV33SchemaToV34(db, meta_table)) {
+        return false;
+      }
       if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
         return false;
       }
@@ -4487,6 +4551,304 @@ void DoUpdateLastKAnonymityReported(sql::Database& db,
   transaction.Commit();
 }
 
+// Loads the view and click data for `provider_origin`, `eligible_origin`.
+// Returns std::nullopt on failure, and an empty
+// `ViewClickCountsForProviderAndEligible` if no counts are stored for the given
+// (`provider_origin`, `eligible_origin`) tuple.
+std::optional<ViewClickCountsForProviderAndEligible>
+DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
+                                           const url::Origin& provider_origin,
+                                           const url::Origin& eligible_origin) {
+  ViewClickCountsForProviderAndEligible result;
+  sql::Statement get_counts(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT uncompacted_view_events,"
+                            "compacted_view_events,"
+                            "uncompacted_click_events,"
+                            "compacted_click_events "
+                            "FROM view_and_click_events "
+                            "WHERE provider_origin=? AND eligible_origin=?"));
+  if (!get_counts.is_valid()) {
+    DLOG(ERROR) << "GetViewClickCountsForProviderAndEligible SQL statement did "
+                   "not compile: "
+                << db.GetErrorMessage();
+    return std::nullopt;
+  }
+  get_counts.Reset(true);
+  get_counts.BindString(0, provider_origin.Serialize());
+  get_counts.BindString(1, eligible_origin.Serialize());
+  if (!get_counts.Step()) {
+    // No counts stored, return empty counts lists.
+    return result;
+  }
+  if (!get_counts.Succeeded()) {
+    return std::nullopt;
+  }
+  if (!result.uncompacted_view_events.ParseFromString(
+          get_counts.ColumnString(0)) ||
+      !result.compacted_view_events.ParseFromString(
+          get_counts.ColumnString(1)) ||
+      !result.uncompacted_click_events.ParseFromString(
+          get_counts.ColumnString(2)) ||
+      !result.compacted_click_events.ParseFromString(
+          get_counts.ColumnString(3))) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    return std::nullopt;
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  }
+  return result;
+}
+
+void DoIncrementViewClickCounts(base::Time now,
+                                ViewOrClickCountsPtr& view_or_click_counts,
+                                base::TimeDelta max_window,
+                                int64_t int_timestamp,
+                                int32_t count) {
+  base::TimeDelta event_age = now - base::Time::FromDeltaSinceWindowsEpoch(
+                                        base::Microseconds(int_timestamp));
+
+  if (max_window >= base::Hours(1) && event_age <= base::Hours(1)) {
+    view_or_click_counts->past_hour += count;
+  }
+  if (max_window >= base::Days(1) && event_age <= base::Days(1)) {
+    view_or_click_counts->past_day += count;
+  }
+  if (max_window >= base::Days(7) && event_age <= base::Days(7)) {
+    view_or_click_counts->past_week += count;
+  }
+  if (max_window >= base::Days(30) && event_age <= base::Days(30)) {
+    view_or_click_counts->past_30_days += count;
+  }
+  if (max_window >= base::Days(90) && event_age <= base::Days(90)) {
+    view_or_click_counts->past_90_days += count;
+  }
+  // Older expired events may exist -- maintenance will eventually remove them.
+  // TODO(crbug.com/394108643): Implement click / view removal logic.
+}
+
+// Mutates `group`'s browser signals, filling in loaded view and click counts.
+// Returns true on success, and false on failure.
+[[nodiscard]] bool DoGetViewAndClickCountsForGroup(
+    sql::Database& db,
+    base::Time now,
+    StorageInterestGroup& group) {
+  ViewAndClickCountsPtr& view_and_click_counts =
+      group.bidding_browser_signals->view_and_click_counts;
+  view_and_click_counts = blink::mojom::ViewAndClickCounts::New(
+      /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+      /*click_counts=*/blink::mojom::ViewOrClickCounts::New());
+
+  if (!group.interest_group.view_and_click_counts_providers) {
+    return true;
+  }
+
+  const base::TimeDelta max_window = blink::MaxInterestGroupLifetime();
+
+  for (const url::Origin& provider_origin :
+       *group.interest_group.view_and_click_counts_providers) {
+    std::optional<ViewClickCountsForProviderAndEligible> partial_counts =
+        DoGetViewClickCountsForProviderAndEligible(
+            /*db=*/db,
+            /*provider_origin=*/provider_origin,
+            /*eligible_origin=*/group.interest_group.owner);
+    if (!partial_counts) {
+      return false;
+    }
+
+    for (int64_t timestamp :
+         partial_counts->uncompacted_view_events.timestamps()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->view_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp, /*count=*/1);
+    }
+    for (ListOfTimestampAndCounts_Entry timestamp_and_count :
+         partial_counts->compacted_view_events.timestamp_and_counts()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->view_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp_and_count.timestamp(),
+          /*count=*/timestamp_and_count.count());
+    }
+    for (int64_t timestamp :
+         partial_counts->uncompacted_click_events.timestamps()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->click_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp, /*count=*/1);
+    }
+    for (ListOfTimestampAndCounts_Entry timestamp_and_count :
+         partial_counts->compacted_click_events.timestamp_and_counts()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->click_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp_and_count.timestamp(),
+          /*count=*/timestamp_and_count.count());
+    }
+  }
+  return true;
+}
+
+void DoRecordViewClick(sql::Database& db,
+                       const network::AdAuctionEventRecord& record,
+                       base::Time now) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return;
+  }
+
+  const std::vector<url::Origin>* eligible_origins = nullptr;
+  std::vector<url::Origin> default_eligible_origin;
+  if (record.eligible_origins.empty()) {
+    default_eligible_origin.emplace_back(record.providing_origin);
+    eligible_origins = &default_eligible_origin;
+  } else {
+    eligible_origins = &record.eligible_origins;
+  }
+
+  for (const url::Origin& eligible_origin : *eligible_origins) {
+    sql::Statement get_counts(
+        db.GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT uncompacted_view_events,"
+                              "uncompacted_click_events "
+                              "FROM view_and_click_events "
+                              "WHERE provider_origin=? AND eligible_origin=?"));
+    if (!get_counts.is_valid()) {
+      DLOG(ERROR) << "DoRecordViewClick SELECT SQL statement did not compile: "
+                  << db.GetErrorMessage();
+      return;
+    }
+    get_counts.Reset(true);
+    get_counts.BindString(0, record.providing_origin.Serialize());
+    get_counts.BindString(1, eligible_origin.Serialize());
+
+    bool row_exists = false;
+    ListOfTimestamps uncompacted_view_events;
+    ListOfTimestamps uncompacted_click_events;
+    if (get_counts.Step()) {
+      row_exists = true;
+      if (!uncompacted_view_events.ParseFromString(
+              get_counts.ColumnString(0)) ||
+          !uncompacted_click_events.ParseFromString(
+              get_counts.ColumnString(1))) {
+        // TODO(crbug.com/355010821): Consider bubbling out the failure.
+        base::UmaHistogramEnumeration(
+            "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+            InterestGroupStorageProtoSerializationResult::kFailed);
+        return;
+      } else {
+        base::UmaHistogramEnumeration(
+            "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+            InterestGroupStorageProtoSerializationResult::kSucceeded);
+      }
+    } else if (!get_counts.Succeeded()) {
+      return;
+    }
+
+    // TODO(crbug.com/394108643): enforce rate limit.
+
+    const int64_t int_now = now.ToDeltaSinceWindowsEpoch().InMicroseconds();
+    switch (record.type) {
+      case AdAuctionEventRecord::Type::kUninitialized:
+        NOTREACHED();
+      case AdAuctionEventRecord::Type::kView:
+        uncompacted_view_events.add_timestamps(int_now);
+        break;
+      case AdAuctionEventRecord::Type::kClick:
+        uncompacted_click_events.add_timestamps(int_now);
+        break;
+    }
+
+    std::string uncompacted_view_events_str;
+    std::string uncompacted_click_events_str;
+    if (!uncompacted_view_events.SerializeToString(
+            &uncompacted_view_events_str) ||
+        !uncompacted_click_events.SerializeToString(
+            &uncompacted_click_events_str)) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoSerializationResult.ListOfTimestamps",
+          InterestGroupStorageProtoSerializationResult::kFailed);
+      // TODO(crbug.com/355010821): Consider bubbling out the failure.
+      return;
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoSerializationResult.ListOfTimestamps",
+          InterestGroupStorageProtoSerializationResult::kSucceeded);
+    }
+
+    if (!row_exists) {
+      // clang-format off
+      sql::Statement insert_counts(
+        db.GetCachedStatement(SQL_FROM_HERE,
+          "INSERT INTO view_and_click_events("
+          "provider_origin,"
+          "eligible_origin,"
+          "uncompacted_view_events,"
+          "compacted_view_events,"
+          "uncompacted_click_events,"
+          "compacted_click_events) "
+          "VALUES(?,?,?,?,?,?)"));
+      // clang-format on
+
+      if (!insert_counts.is_valid()) {
+        DLOG(ERROR)
+            << "DoRecordViewClick INSERT SQL statement did not compile: "
+            << db.GetErrorMessage();
+        return;
+      }
+
+      insert_counts.Reset(true);
+      insert_counts.BindString(0, record.providing_origin.Serialize());
+      insert_counts.BindString(1, eligible_origin.Serialize());
+      insert_counts.BindString(2, uncompacted_view_events_str);
+      insert_counts.BindString(3, "");
+      insert_counts.BindString(4, uncompacted_click_events_str);
+      insert_counts.BindString(5, "");
+
+      if (!insert_counts.Run()) {
+        return;
+      }
+    } else {
+      // clang-format off
+      sql::Statement update_counts(
+        db.GetCachedStatement(SQL_FROM_HERE,
+          "UPDATE view_and_click_events "
+          "SET uncompacted_view_events=?,"
+          "uncompacted_click_events=? "
+          "WHERE provider_origin=? AND eligible_origin=?"));
+      // clang-format on
+
+      if (!update_counts.is_valid()) {
+        DLOG(ERROR)
+            << "DoRecordViewClick UPDATE SQL statement did not compile: "
+            << db.GetErrorMessage();
+        return;
+      }
+
+      update_counts.Reset(true);
+      update_counts.BindString(0, uncompacted_view_events_str);
+      update_counts.BindString(1, uncompacted_click_events_str);
+      update_counts.BindString(2, record.providing_origin.Serialize());
+      update_counts.BindString(3, eligible_origin.Serialize());
+
+      if (!update_counts.Run()) {
+        return;
+      }
+    }
+  }
+
+  transaction.Commit();
+}
+
 std::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     sql::Database& db,
     base::Time expiring_after) {
@@ -4896,9 +5258,15 @@ bool DoGetStoredInterestGroup(sql::Database& db,
                    db_interest_group.bidding_browser_signals)) {
     return false;
   }
-  return GetPreviousWins(db, group_key,
-                         now - blink::MaxInterestGroupLifetimeForMetadata(),
-                         db_interest_group.bidding_browser_signals);
+  if (!GetPreviousWins(db, group_key,
+                       now - blink::MaxInterestGroupLifetimeForMetadata(),
+                       db_interest_group.bidding_browser_signals)) {
+    return false;
+  }
+  if (!DoGetViewAndClickCountsForGroup(db, now, db_interest_group)) {
+    return false;
+  }
+  return true;
 }
 
 std::optional<std::vector<InterestGroupUpdateParameter>>
@@ -5103,6 +5471,20 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
 
     if (!prev_wins.Succeeded()) {
       return std::nullopt;
+    }
+  }
+  {
+    TRACE_EVENT("fledge", "load_from_clicks_views_table");
+    // TODO(crbug.com/394108643): For performance, consider loading all of the
+    // view_and_click_counts for a given providing_origin/eligible_origin pair,
+    // and then aggregating across all of the providing_origins for each
+    // interest group with a matching eligible_origin. This prevents having to
+    // load the same records again and again for each interest group of a given
+    // IG owner.
+    for (auto& [unused_name, storage_group] : interest_group_by_name) {
+      if (!DoGetViewAndClickCountsForGroup(db, now, storage_group)) {
+        return std::nullopt;
+      }
     }
   }
   if (!transaction.Commit()) {
@@ -6126,6 +6508,16 @@ void InterestGroupStorage::UpdateLastKAnonymityReported(
   }
 
   DoUpdateLastKAnonymityReported(*db_, hashed_key, base::Time::Now());
+}
+
+void InterestGroupStorage::RecordViewClick(
+    const network::AdAuctionEventRecord& record) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  DoRecordViewClick(*db_, record, base::Time::Now());
 }
 
 std::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(

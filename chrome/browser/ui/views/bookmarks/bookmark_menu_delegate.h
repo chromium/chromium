@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
@@ -23,6 +24,7 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/view.h"
 
+class BookmarkMergedSurfaceService;
 class Browser;
 class Profile;
 

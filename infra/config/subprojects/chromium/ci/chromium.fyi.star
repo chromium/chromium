@@ -1254,6 +1254,11 @@ ci.builder(
                     shards = 7,
                 ),
             ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
         },
     ),
     builderless = False,

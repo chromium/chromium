@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
@@ -150,8 +151,12 @@ public abstract class PageInfoControllerDelegate {
     /** Show Tracking Protection settings. */
     public abstract void showTrackingProtectionSettings();
 
-    /** Show RWS (related website sets) sites in all site settings filtered by {@param rwsOwner}. */
-    public abstract void showAllSettingsForRws(String rwsOwner);
+    /**
+     * Show site settings for the current page.
+     *
+     * @param currentSite Website containing data about the site the PageInfo bubble is shown for.
+     */
+    public abstract void showSiteSettings(Website currentSite);
 
     /**
      * Shows cookie feedback UI.

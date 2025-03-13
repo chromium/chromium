@@ -2002,6 +2002,22 @@ ci.thin_tester(
             "mac_mini_intel_gpu_stable",
         ],
         per_test_modifications = {
+            "trace_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/402826437): Remove if this has no
+                        # effect on stability. Otherwisde, update this comment.
+                        "--jobs=2",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "webgl2_conformance_metal_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/1270755",
             ),
@@ -3165,11 +3181,20 @@ ci.thin_tester(
                     },
                 ),
             ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "Graphite on ARM is currently not supported.",
+            ),
             "gl_unittests": targets.mixin(
                 args = [
                     # crbug.com/1523061
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.gl_unittests.filter",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "Graphite on ARM is currently not supported.",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "Graphite on ARM is currently not supported.",
             ),
             "services_webnn_unittests": targets.mixin(
                 args = [

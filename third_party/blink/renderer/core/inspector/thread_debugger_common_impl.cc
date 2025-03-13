@@ -1017,9 +1017,17 @@ void ThreadDebuggerCommonImpl::consoleTimeEnd(v8::Isolate* isolate,
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(v8::Isolate* isolate,
                                                 v8::Local<v8::String> label) {
+  v8::LocalVector<v8::Value> empty_args(isolate);
+  consoleTimeStampWithArgs(isolate, label, empty_args);
+}
+
+void ThreadDebuggerCommonImpl::consoleTimeStampWithArgs(
+    v8::Isolate* isolate,
+    v8::Local<v8::String> label,
+    const v8::LocalVector<v8::Value>& args) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "TimeStamp", inspector_time_stamp_event::Data,
-      CurrentExecutionContext(isolate_), ToCoreString(isolate, label));
+      CurrentExecutionContext(isolate_), ToCoreString(isolate, label), args);
   probe::ConsoleTimeStamp(isolate_, label);
 }
 

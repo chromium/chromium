@@ -443,6 +443,11 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffIcon
                                 : &vector_icons::kInstallDesktopIcon;
       break;
+    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
+      // TODO(crbug.com/400455013): Replace with final icons.
+      icon = show_blocked_badge ? &vector_icons::kDevicesOffIcon
+                                : &vector_icons::kDevicesIcon;
+      break;
     default:
       break;
   }

@@ -183,10 +183,10 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   if (!reader || !(request_handler = reader.CreateRequestHandler())) {
     // Do not intercept the request.
     redirect_reader_ = PrefetchContainer::Reader();
-    std::move(loader_callback_).Run(std::nullopt);
     if (GetPrefetchCompleteCallbackForTesting()) {
       GetPrefetchCompleteCallbackForTesting().Run(nullptr);  // IN-TEST
     }
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
@@ -214,6 +214,10 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
   bool bypass_redirect_checks = false;
 
+  if (GetPrefetchCompleteCallbackForTesting()) {
+    GetPrefetchCompleteCallbackForTesting().Run(prefetch_container);  // IN-TEST
+  }
+
   // TODO (https://crbug.com/1369766): Investigate if
   // `HeaderClientOption::kAllowed` should be used for `TerminalParams`, and
   // then how to utilize it.
@@ -234,10 +238,6 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
                   &bypass_redirect_checks,
                   navigation_request->GetNavigationId())),
           /*subresource_loader_params=*/{}));
-
-  if (GetPrefetchCompleteCallbackForTesting()) {
-    GetPrefetchCompleteCallbackForTesting().Run(prefetch_container);  // IN-TEST
-  }
 }
 
 }  // namespace content

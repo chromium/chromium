@@ -85,6 +85,18 @@ mojom::PanelState CreatePanelState(bool widget_visible,
   return panel_state;
 }
 
+mojom::PanelOpeningDataPtr CreatePanelOpeningData(
+    bool widget_visible,
+    Browser* attached_browser,
+    mojom::InvocationSource source) {
+  mojom::PanelOpeningDataPtr panel_opening_data =
+      mojom::PanelOpeningData::New();
+  panel_opening_data->panel_state =
+      CreatePanelState(widget_visible, attached_browser).Clone();
+  panel_opening_data->invocation_source = source;
+  return panel_opening_data;
+}
+
 GlicButton* GetGlicButton(const Browser& browser) {
   return browser.window()
       ->AsBrowserView()
@@ -328,7 +340,7 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 
 void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
                                   bool prevent_close,
-                                  InvocationSource source) {
+                                  mojom::InvocationSource source) {
   // If `bwi` is non-null, the glic button was clicked on a specific window and
   // glic should be attached to that window. Otherwise glic was invoked from the
   // hotkey or other OS-level entrypoint.
@@ -452,7 +464,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
 
 void GlicWindowController::ShowDetachedForTesting() {
   glic::GlicProfileManager::GetInstance()->SetActiveGlic(glic_service_);
-  Show(nullptr, InvocationSource::kOsHotkey);
+  Show(nullptr, mojom::InvocationSource::kOsHotkey);
 }
 
 void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
@@ -503,11 +515,13 @@ void GlicWindowController::AddAccelerators() {
       ui::Accelerator(ui::VKEY_A, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN, ));
 }
 
-void GlicWindowController::Show(Browser* browser, InvocationSource source) {
+void GlicWindowController::Show(Browser* browser,
+                                mojom::InvocationSource source) {
   // At this point State must be kClosed, and all glic window state must be
   // unset.
   CHECK(!attached_browser_);
   state_ = State::kOpenAnimation;
+  opening_source_ = source;
   glic_service_->metrics()->OnGlicWindowOpen(/*attached=*/browser, source);
 
   show_start_time_ = base::TimeTicks::Now();
@@ -633,6 +647,10 @@ void GlicWindowController::OpenDetached() {
   // simplified to just setting the z-order.
   if (AlwaysDetached()) {
     GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#if BUILDFLAG(IS_MAC)
+    GetGlicWidget()->SetActivationIndependence(true);
+    GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
+#endif
   } else {
     // Be sure to reparent the widget and set its state first before showing it.
     MaybeCreateHolderWindowAndReparent();
@@ -648,10 +666,14 @@ void GlicWindowController::OpenDetached() {
 // widget.
 void GlicWindowController::WaitForGlicToLoad() {
   DCHECK(web_client_);
+  mojom::InvocationSource source = opening_source_
+                                       ? *opening_source_
+                                       : mojom::InvocationSource::kUnsupported;
+  opening_source_.reset();
   // Notify the web client that the panel will open, and wait for the response
   // to actually show the window.
   web_client_->PanelWillOpen(
-      CreatePanelState(true, attached_browser_),
+      CreatePanelOpeningData(true, attached_browser_, source),
       base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
 }
 
@@ -685,6 +707,7 @@ void GlicWindowController::OpenAnimationFinished() {
 
 void GlicWindowController::ShowFinish() {
   login_page_committed_ = false;
+  opening_source_.reset();
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
   }
@@ -893,11 +916,17 @@ void GlicWindowController::SetDraggableAreas(
 }
 
 void GlicWindowController::Close() {
+  GlicWindowController::CloseInternal(std::nullopt);
+}
+
+void GlicWindowController::CloseInternal(
+    std::optional<mojom::InvocationSource> reopen_detached_source) {
   if (state_ == State::kCloseAnimation || state_ == State::kClosed) {
     return;
   }
 
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
+  DCHECK(!reopen_detached || reopen_detached_source.has_value());
 
   // The webview should be faded out instead.
   if (GetGlicView()) {
@@ -910,15 +939,15 @@ void GlicWindowController::Close() {
     glic_window_animator_->RunCloseAnimation(
         glic_button,
         base::BindOnce(&GlicWindowController::CloseFinish, GetWeakPtr(),
-                       reopen_detached, closing_to_reopen_detached_source_));
+                       reopen_detached, reopen_detached_source));
   } else {
-    CloseFinish(reopen_detached, closing_to_reopen_detached_source_);
+    CloseFinish(reopen_detached, reopen_detached_source);
   }
 }
 
 void GlicWindowController::CloseFinish(
     bool reopen_detached,
-    std::optional<InvocationSource> reopen_detached_source) {
+    std::optional<mojom::InvocationSource> reopen_detached_source) {
   if (state_ == State::kClosed) {
     return;
   }
@@ -952,14 +981,14 @@ void GlicWindowController::ForceClose() {
               /*reopen_detached_source=*/std::nullopt);
 }
 
-void GlicWindowController::CloseAndReopenDetached(InvocationSource source) {
+void GlicWindowController::CloseAndReopenDetached(
+    mojom::InvocationSource source) {
   if (state_ != State::kOpen) {
     return;
   }
 
   state_ = State::kClosingToReopenDetached;
-  closing_to_reopen_detached_source_ = source;
-  Close();
+  CloseInternal(source);
 }
 
 void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
@@ -1224,16 +1253,9 @@ void GlicWindowController::NotifyIfPanelStateChanged() {
 }
 
 mojom::PanelState GlicWindowController::ComputePanelState() const {
-  mojom::PanelState panel_state;
-  if (state_ == State::kClosed || state_ == State::kCloseAnimation) {
-    panel_state.kind = mojom::PanelState_Kind::kHidden;
-  } else if (attached_browser_) {
-    panel_state.kind = mojom::PanelState_Kind::kAttached;
-    panel_state.window_id = attached_browser_->session_id().id();
-  } else {
-    panel_state.kind = mojom::PanelState_Kind::kDetached;
-  }
-  return panel_state;
+  bool widget_visible =
+      state_ != State::kClosed && state_ != State::kCloseAnimation;
+  return CreatePanelState(widget_visible, attached_browser_);
 }
 
 bool GlicWindowController::IsActive() {

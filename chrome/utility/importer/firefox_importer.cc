@@ -202,7 +202,7 @@ void FirefoxImporter::ImportHistory() {
 
   std::vector<ImporterURLRow> rows;
   while (s.Step() && !cancelled()) {
-    GURL url(s.ColumnString(0));
+    GURL url(s.ColumnStringView(0));
 
     // Filter out unwanted URLs.
     if (!CanImportURL(url))
@@ -539,7 +539,7 @@ void FirefoxImporter::GetWholeBookmarkFolder(sql::Database* db,
     std::unique_ptr<BookmarkItem> item = std::make_unique<BookmarkItem>();
     item->parent = static_cast<int>(position);
     item->id = s.ColumnInt(0);
-    item->url = GURL(s.ColumnString(1));
+    item->url = GURL(s.ColumnStringView(1));
     item->title = s.ColumnString16(2);
     item->type = static_cast<BookmarkItemType>(s.ColumnInt(3));
     item->keyword = s.ColumnString(4);

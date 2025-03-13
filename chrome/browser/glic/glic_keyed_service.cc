@@ -88,7 +88,7 @@ void GlicKeyedService::Shutdown() {
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
-                                InvocationSource source) {
+                                mojom::InvocationSource source) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
@@ -231,7 +231,8 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
 void GlicKeyedService::GetContextFromFocusedTab(
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
+      !window_controller_->IsShowing()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
         mojom::GetTabContextErrorReason::kPermissionDenied));
     return;

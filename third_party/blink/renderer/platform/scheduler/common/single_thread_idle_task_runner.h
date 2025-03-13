@@ -76,9 +76,6 @@ class SingleThreadIdleTaskRunner
                                    const base::TimeDelta delay,
                                    IdleTask idle_task);
 
-  virtual void PostNonNestableIdleTask(const base::Location& from_here,
-                                       IdleTask idle_task);
-
   bool RunsTasksInCurrentSequence() const;
 
  protected:

@@ -93,11 +93,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidDefaultBrowserState) -->
+
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
   <int value="0" label="No Default"/>
   <int value="1" label="Other Default"/>
   <int value="2" label="Chrome Default"/>
+  <int value="3" label="Other Chrome Default"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/DefaultBrowserInfo.java:AndroidDefaultBrowserState)-->
 
 <enum name="AndroidDefaultBrowserPromoType">
   <int value="0" label="No Default"/>

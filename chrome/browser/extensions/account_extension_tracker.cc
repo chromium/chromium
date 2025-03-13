@@ -322,9 +322,10 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
 
 void AccountExtensionTracker::OnAccountUploadInitiatedForExtension(
     const ExtensionId& extension_id) {
-  // The extension likely originated from the current device.
+  // Upload the extension and change its "owner" from the current device to the
+  // user's account.
   PromoteLocalToAccountExtension(
-      extension_id, AccountExtensionType::kAccountInstalledLocally);
+      extension_id, AccountExtensionType::kAccountInstalledSignedIn);
 
   // The "local state" of the uploaded extension will be pushed to sync soon,
   // so set NeedsSync to false.

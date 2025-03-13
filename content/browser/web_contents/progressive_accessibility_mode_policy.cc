@@ -4,9 +4,25 @@
 
 #include "content/browser/web_contents/progressive_accessibility_mode_policy.h"
 
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/visibility.h"
 
 namespace content {
+
+namespace {
+
+// Returns true if the current known assistive tech interacting with the browser
+// is a screen reader.
+bool ScreenReaderInUse() {
+  auto assistive_tech =
+      BrowserAccessibilityState::GetInstance()->ActiveKnownAssistiveTech();
+  // kNone -- some software not known to be a screen reader.
+  // kZoomText -- not a screen reader.
+  return assistive_tech != BrowserAccessibilityState::kNone &&
+         assistive_tech != BrowserAccessibilityState::kZoomText;
+}
+
+}  // namespace
 
 ProgressiveAccessibilityModePolicy::ProgressiveAccessibilityModePolicy(
     WebContentsImpl& web_contents,
@@ -35,9 +51,11 @@ void ProgressiveAccessibilityModePolicy::OnVisibilityChanged(
     return;
   }
 
-  if (visibility == Visibility::HIDDEN && !disable_on_hide_) {
+  if (visibility == Visibility::HIDDEN &&
+      (!disable_on_hide_ || ScreenReaderInUse())) {
     // Do nothing if the WebContents has been hidden and the policy is not
-    // configured to disable accessibility upon hide.
+    // configured to disable accessibility upon hide or if a known screen reader
+    // is in use.
     return;
   }
 

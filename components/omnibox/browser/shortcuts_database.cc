@@ -269,16 +269,16 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
         ui::PageTransitionFromInt(page_transition_integer);
 
     Shortcut::MatchCore match_core =
-        Shortcut::MatchCore(s.ColumnString16(2),      // fill_into_edit
-                            GURL(s.ColumnString(3)),  // destination_url
-                            document_type,            // document_type
-                            s.ColumnString16(5),      // contents
-                            s.ColumnString(6),        // contents_class
-                            s.ColumnString16(7),      // description
-                            s.ColumnString(8),        // description_class
-                            transition,               // transition
-                            type,                     // type
-                            s.ColumnString16(11));    // keyword
+        Shortcut::MatchCore(s.ColumnString16(2),          // fill_into_edit
+                            GURL(s.ColumnStringView(3)),  // destination_url
+                            document_type,                // document_type
+                            s.ColumnString16(5),          // contents
+                            s.ColumnString(6),            // contents_class
+                            s.ColumnString16(7),          // description
+                            s.ColumnString(8),            // description_class
+                            transition,                   // transition
+                            type,                         // type
+                            s.ColumnString16(11));        // keyword
 
     std::stringstream debug_stream;
     debug_stream << "Contents: " << match_core.contents;

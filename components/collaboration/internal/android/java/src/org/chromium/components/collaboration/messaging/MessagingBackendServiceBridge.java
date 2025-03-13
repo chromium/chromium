@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_group_sync.EitherId;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
@@ -20,8 +22,9 @@ import java.util.Optional;
 
 /** Implementation of {@link MessagingBackendService} that connects to the native counterpart. */
 @JNINamespace("collaboration::messaging::android")
+@NullMarked
 /*package*/ class MessagingBackendServiceBridge implements MessagingBackendService {
-    private static String getSyncId(EitherId id) {
+    private static @Nullable String getSyncId(@Nullable EitherId id) {
         if (id == null || !id.isSyncId()) {
             return null;
         }
@@ -32,7 +35,7 @@ import java.util.Optional;
             new ObserverList<>();
 
     private long mNativeMessagingBackendServiceBridge;
-    private InstantMessageDelegate mInstantMessageDelegate;
+    private @Nullable InstantMessageDelegate mInstantMessageDelegate;
 
     private MessagingBackendServiceBridge(long nativeMessagingBackendServiceBridge) {
         mNativeMessagingBackendServiceBridge = nativeMessagingBackendServiceBridge;
@@ -61,8 +64,10 @@ import java.util.Optional;
     }
 
     @Override
+    @SuppressWarnings("NullableOptional")
     public List<PersistentMessage> getMessagesForTab(
-            EitherTabId tabId, Optional</* @PersistentNotificationType */ Integer> type) {
+            @Nullable EitherTabId tabId,
+            @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
             return new ArrayList<PersistentMessage>();
         }
@@ -92,8 +97,10 @@ import java.util.Optional;
     }
 
     @Override
+    @SuppressWarnings("NullableOptional")
     public List<PersistentMessage> getMessagesForGroup(
-            EitherGroupId groupId, Optional</* @PersistentNotificationType */ Integer> type) {
+            @Nullable EitherGroupId groupId,
+            @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
             return new ArrayList<PersistentMessage>();
         }
@@ -123,8 +130,9 @@ import java.util.Optional;
     }
 
     @Override
+    @SuppressWarnings("NullableOptional")
     public List<PersistentMessage> getMessages(
-            Optional</* @PersistentNotificationType */ Integer> type) {
+            @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
             return new ArrayList<PersistentMessage>();
         }
@@ -162,8 +170,9 @@ import java.util.Optional;
     }
 
     @Override
+    @SuppressWarnings("NullableOptional")
     public void clearPersistentMessage(
-            String messageId, Optional</* @PersistentNotificationType */ Integer> type) {
+            String messageId, @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
         Integer type_int;
         if (type == null || !type.isPresent()) {
             type_int = PersistentNotificationType.UNDEFINED;
@@ -238,14 +247,14 @@ import java.util.Optional;
                 long nativeMessagingBackendServiceBridge,
                 MessagingBackendServiceBridge caller,
                 int localTabId,
-                String syncTabId,
+                @Nullable String syncTabId,
                 @PersistentNotificationType int type);
 
         List<PersistentMessage> getMessagesForGroup(
                 long nativeMessagingBackendServiceBridge,
                 MessagingBackendServiceBridge caller,
-                LocalTabGroupId localGroupId,
-                String syncGroupId,
+                @Nullable LocalTabGroupId localGroupId,
+                @Nullable String syncGroupId,
                 @PersistentNotificationType int type);
 
         List<PersistentMessage> getMessages(

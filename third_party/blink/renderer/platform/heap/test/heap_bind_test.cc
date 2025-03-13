@@ -37,7 +37,9 @@ class MockReceiver : public GarbageCollected<MockReceiver> {
   MOCK_METHOD(void, Method1VecVal, (std::vector<char>));
   MOCK_METHOD(void, Method1VecRef, (std::vector<char>&));
   MOCK_METHOD(void, Method1VecRValRef, (std::vector<char>&&));
-  MOCK_METHOD(void, Method1HeapVec, (const HeapVector<Member<MockReceiver>>*));
+  MOCK_METHOD(void,
+              Method1HeapVec,
+              (const GCedHeapVector<Member<MockReceiver>>*));
 };
 
 TEST(HeapBindTest, Empty) {
@@ -157,7 +159,7 @@ TEST(HeapBindTest, HeapVector) {
   base::test::TaskEnvironment task_environment;
 
   auto* receiver = MakeGarbageCollected<MockReceiver>();
-  auto* vec = MakeGarbageCollected<HeapVector<Member<MockReceiver>>>();
+  auto* vec = MakeGarbageCollected<GCedHeapVector<Member<MockReceiver>>>();
   vec->push_back(MakeGarbageCollected<MockReceiver>());
   vec->push_back(MakeGarbageCollected<MockReceiver>());
 

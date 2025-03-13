@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 
 namespace ui {
 

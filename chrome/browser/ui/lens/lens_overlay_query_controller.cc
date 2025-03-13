@@ -1774,7 +1774,13 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
   if (lens::features::IsSimplifiedSelectionEnabled() &&
       server_response.interaction_response().has_text()) {
     interaction_response_callback_.Run(CreateTextMojomFromInteractionResponse(
-        server_response.interaction_response(), resized_bitmap_size_));
+        server_response.interaction_response(),
+        latest_interaction_request_data_.get()
+            ->request_->interaction_request()
+            .image_crop()
+            .zoomed_crop()
+            .crop(),
+        resized_bitmap_size_));
   }
 
   RunSuggestInputsCallback();

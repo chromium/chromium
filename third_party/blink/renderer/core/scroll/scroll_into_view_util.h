@@ -18,7 +18,6 @@ class RectF;
 
 namespace blink {
 
-class LayoutBox;
 class LayoutObject;
 class LayoutView;
 struct PhysicalRect;
@@ -87,7 +86,7 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const ComputedStyle& computed_style);
 
 mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
-    const LayoutBox& box,
+    const LayoutObject&,
     ScrollOrientation axis);
 
 }  // namespace scroll_into_view_util

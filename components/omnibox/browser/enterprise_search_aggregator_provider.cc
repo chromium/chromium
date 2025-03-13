@@ -723,10 +723,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
         result.FindStringByDottedPath("document.derivedStructData.link"));
   }
 
-  std::string path = suggestion_type == SuggestionType::QUERY
-                         ? "suggestion"
-                         : "document.derivedStructData.name.userName";
-  std::string query = ptr_to_string(result.FindStringByDottedPath(path));
+  std::string query = ptr_to_string(result.FindString("suggestion"));
   if (query.empty()) {
     return "";
   }
@@ -751,11 +748,9 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
 std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
-  if (suggestion_type == SuggestionType::QUERY) {
+  if (suggestion_type == SuggestionType::QUERY ||
+      suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindString("suggestion"));
-  } else if (suggestion_type == SuggestionType::PEOPLE) {
-    return ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.name.userName"));
   } else if (suggestion_type == SuggestionType::CONTENT) {
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");

@@ -385,6 +385,12 @@ void OnDeviceModelService::LoadModel(
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
+void OnDeviceModelService::GetCapabilities(ModelAssets assets,
+                                           GetCapabilitiesCallback callback) {
+  std::move(callback).Run(ml::OnDeviceModelExecutor::GetCapabilities(
+      *chrome_ml_, std::move(assets)));
+}
+
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
   base::ElapsedTimer timer;

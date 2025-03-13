@@ -34,14 +34,10 @@
 #include <cmath>
 
 #include "base/numerics/safe_conversions.h"
-#include "build/build_config.h"
-#include "cc/paint/paint_flags.h"
 #include "partition_alloc/partition_alloc.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
-#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -164,34 +160,6 @@ bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
   src_color_space->toProfile(&src_profile);
   dst_color_space->toProfile(&dst_profile);
   return skcms_ApproximatelyEqualProfiles(&src_profile, &dst_profile);
-}
-
-static cc::PaintFlags PaintFlagsForFocusRing(SkColor4f color, float width) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setColor(color);
-  flags.setStrokeWidth(width);
-  return flags;
-}
-
-void DrawPlatformFocusRing(const SkRRect& rrect,
-                           cc::PaintCanvas* canvas,
-                           SkColor4f color,
-                           float width) {
-  canvas->drawRRect(rrect, PaintFlagsForFocusRing(color, width));
-}
-
-void DrawPlatformFocusRing(const SkPath& path,
-                           cc::PaintCanvas* canvas,
-                           SkColor4f color,
-                           float width,
-                           float corner_radius) {
-  cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
-  if (corner_radius) {
-    path_flags.setPathEffect(cc::PathEffect::MakeCorner(corner_radius));
-  }
-  canvas->drawPath(path, path_flags);
 }
 
 sk_sp<SkData> TryAllocateSkData(size_t size) {

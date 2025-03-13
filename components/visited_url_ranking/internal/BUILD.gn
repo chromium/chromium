@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 static_library("internal") {
   visibility = [
     ":*",
@@ -73,6 +79,15 @@ static_library("internal_url_grouping") {
     "//components/segmentation_platform/public",
     "//components/visited_url_ranking/public",
   ]
+
+  if (is_android) {
+    sources += [
+      "url_grouping/android/group_suggestions_service_android.cc",
+      "url_grouping/android/group_suggestions_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
 }
 
 source_set("test_support") {
@@ -137,4 +152,29 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  android_library("internal_java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/tab:java",
+      "//components/visited_url_ranking/public:public_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java" ]
+  }
 }

@@ -103,10 +103,6 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
                            Thread::IdleTask) override {
     NOTIMPLEMENTED();
   }
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override {
-    NOTIMPLEMENTED();
-  }
   void RemoveCancelledIdleTasks() override {
     std::erase_if(idle_tasks_, [](const Thread::IdleTask& task) {
       return task.IsCancelled();

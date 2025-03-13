@@ -1734,7 +1734,7 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       features::kGlic,
       // TODO(crbug.com/391699323): fill in launch milestone
-      user_education::Metadata(132, "agale@chromium.org",
+      user_education::Metadata(136, "agale@chromium.org",
                                "Shown in the glic settings page when the user "
                                "wants to change the toggle value.")));
 
@@ -1743,7 +1743,7 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       features::kGlicKeyboardShortcutNewBadge,
       // TODO(crbug.com/391699323): fill in launch milestone
-      user_education::Metadata(132, "agale@chromium.org",
+      user_education::Metadata(136, "agale@chromium.org",
                                "Shown in the glic settings page when the user "
                                "wants to change the keyboard shortcut.")));
 #endif  // BUILDFLAG(ENABLE_GLIC)

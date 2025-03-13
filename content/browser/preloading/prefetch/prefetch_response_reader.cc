@@ -42,7 +42,7 @@ GetStatusForRecordingFromErrorOnResponseReceived(
 
 bool PrefetchResponseReader::Servable(
     base::TimeDelta cacheable_duration) const {
-  switch (load_state_) {
+  switch (load_state()) {
     case LoadState::kResponseReceived:
       // If the response hasn't been completed yet, we can still serve the
       // prefetch (depending on |head_|).
@@ -60,7 +60,7 @@ bool PrefetchResponseReader::Servable(
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailedRedirect:
       CHECK(!response_complete_time_)
-          << "LoadState: " << static_cast<int>(load_state_);
+          << "LoadState: " << static_cast<int>(load_state());
       return false;
 
     case LoadState::kFailed:
@@ -70,7 +70,7 @@ bool PrefetchResponseReader::Servable(
 }
 
 bool PrefetchResponseReader::IsWaitingForResponse() const {
-  switch (load_state_) {
+  switch (load_state()) {
     case LoadState::kStarted:
       return true;
 
@@ -148,10 +148,10 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
 
   // Returns a null handler if some checks fail here.
   // This is a subset of the checks in `BindAndStart()`, but not identical,
-  // because `load_state_` can be transitioned between the two methods. Still
-  // the CHECKs in `BindAndStart()` should pass even when `load_state_` is
+  // because `load_state()` can be transitioned between the two methods. Still
+  // the CHECKs in `BindAndStart()` should pass even when `load_state()` is
   // transitioned.
-  switch (load_state_) {
+  switch (load_state()) {
     case LoadState::kResponseReceived:
     case LoadState::kCompleted:
     case LoadState::kFailed:
@@ -209,7 +209,7 @@ void PrefetchResponseReader::BindAndStart(
     self_pointer_ = base::WrapRefCounted(this);
   }
 
-  if (load_state_ == LoadState::kCompleted) {
+  if (load_state() == LoadState::kCompleted) {
     served_after_completion_ = true;
   } else {
     served_before_completion_ = true;
@@ -217,7 +217,7 @@ void PrefetchResponseReader::BindAndStart(
 
   forward_body_ = std::move(body);
 
-  switch (load_state_) {
+  switch (load_state()) {
     case LoadState::kResponseReceived:
       // In these cases, `ForwardResponse()` is expected to be called always
       // inside `RunEventQueue()` below, because `CreateRequestHandler()` was
@@ -234,7 +234,7 @@ void PrefetchResponseReader::BindAndStart(
       // TODO(crbug.com/40064891): we might want to revisit this behavior.
 
       // TODO(crbug.com/40072532): The code below is duplicated to investigate
-      // the `load_state_` value on CHECK failure. Remove the duplicated code.
+      // the `load_state()` value on CHECK failure. Remove the duplicated code.
       CHECK(GetHead());
       CHECK(forward_body_);
       break;
@@ -272,8 +272,7 @@ void PrefetchResponseReader::BindAndStart(
   forward_body_.reset();
 }
 
-void PrefetchResponseReader::AddEventToQueue(
-    base::RepeatingCallback<void(ServingUrlLoaderClientId)> callback) {
+void PrefetchResponseReader::AddEventToQueue(EventCallback callback) {
   // To avoid complexity and bugs, `AddEventToQueue()` and `RunEventQueue()` are
   // assumed non-reentrant. This should be OK because `callback` is just calling
   // URLLoaderClient mojo methods which are assumed to work asynchronously.
@@ -329,10 +328,10 @@ void PrefetchResponseReader::RunEventQueue(ServingUrlLoaderClientId client_id) {
 void PrefetchResponseReader::OnComplete(
     network::URLLoaderCompletionStatus completion_status) {
   // TODO(crbug.com/40072670): Remove this alias.
-  auto load_state = load_state_;
-  base::debug::Alias(&load_state);
+  auto old_load_state = load_state();
+  base::debug::Alias(&old_load_state);
 
-  switch (load_state_) {
+  switch (load_state()) {
     case LoadState::kStarted:
       CHECK_NE(completion_status.error_code, net::OK);
       load_state_ = LoadState::kFailed;
@@ -369,9 +368,9 @@ void PrefetchResponseReader::OnComplete(
 
 void PrefetchResponseReader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  CHECK(load_state_ == LoadState::kStarted ||
-        load_state_ == LoadState::kResponseReceived ||
-        load_state_ == LoadState::kFailedResponseReceived);
+  CHECK(load_state() == LoadState::kStarted ||
+        load_state() == LoadState::kResponseReceived ||
+        load_state() == LoadState::kFailedResponseReceived);
 
   AddEventToQueue(
       base::BindRepeating(&PrefetchResponseReader::ForwardEarlyHints,
@@ -379,9 +378,9 @@ void PrefetchResponseReader::OnReceiveEarlyHints(
 }
 
 void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
-  CHECK(load_state_ == LoadState::kStarted ||
-        load_state_ == LoadState::kResponseReceived ||
-        load_state_ == LoadState::kFailedResponseReceived);
+  CHECK(load_state() == LoadState::kStarted ||
+        load_state() == LoadState::kResponseReceived ||
+        load_state() == LoadState::kFailedResponseReceived);
 
   AddEventToQueue(
       base::BindRepeating(&PrefetchResponseReader::ForwardTransferSizeUpdate,
@@ -392,7 +391,7 @@ void PrefetchResponseReader::HandleRedirect(
     PrefetchRedirectStatus redirect_status,
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head) {
-  CHECK_EQ(load_state_, LoadState::kStarted);
+  CHECK_EQ(load_state(), LoadState::kStarted);
 
   switch (redirect_status) {
     case PrefetchRedirectStatus::kFollow:
@@ -426,7 +425,7 @@ void PrefetchResponseReader::OnReceiveResponse(
     std::optional<PrefetchErrorOnResponseReceived> error,
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
-  CHECK_EQ(load_state_, LoadState::kStarted);
+  CHECK_EQ(load_state(), LoadState::kStarted);
   CHECK(!head_);
   CHECK(head);
   CHECK(!body_);
@@ -532,7 +531,7 @@ void PrefetchResponseReader::SetPriority(net::RequestPriority priority,
 
 PrefetchStreamingURLLoaderStatus PrefetchResponseReader::GetStatusForRecording()
     const {
-  switch (load_state_) {
+  switch (load_state()) {
     case LoadState::kStarted:
       return PrefetchStreamingURLLoaderStatus::kWaitingOnHead;
 

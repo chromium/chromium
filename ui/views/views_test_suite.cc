@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/discardable_memory_allocator.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -69,6 +70,8 @@ void ViewsTestSuite::Initialize() {
 #if defined(USE_AURA)
   InitializeEnv();
 #endif
+
+  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
 }
 
 void ViewsTestSuite::Shutdown() {

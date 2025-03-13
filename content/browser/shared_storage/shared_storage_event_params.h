@@ -36,15 +36,22 @@ class CONTENT_EXPORT SharedStorageEventParams {
   };
 
   static SharedStorageEventParams CreateForAddModule(
-      const GURL& script_source_url);
+      const GURL& script_source_url,
+      int worklet_id);
 
   static SharedStorageEventParams CreateForRun(
       const std::string& operation_name,
-      const blink::CloneableMessage& serialized_data);
+      const blink::CloneableMessage& serialized_data,
+      int worklet_id);
   static SharedStorageEventParams CreateForSelectURL(
       const std::string& operation_name,
       const blink::CloneableMessage& serialized_data,
-      std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata);
+      std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
+      int worklet_id);
+
+  // TODO(crbug.com/401011862): Add `std::optional<int> worklet_id as a
+  // parameter to static creators for other event types that can happen in the
+  // worklet as well as in other scope(s).
   static SharedStorageEventParams CreateForSet(const std::string& key,
                                                const std::string& value,
                                                bool ignore_if_present);
@@ -65,6 +72,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
   std::optional<std::string> key;
   std::optional<std::string> value;
   std::optional<bool> ignore_if_present;
+  std::optional<int> worklet_id;
 
  private:
   SharedStorageEventParams();
@@ -76,7 +84,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
           urls_with_metadata,
       std::optional<std::string> key,
       std::optional<std::string> value,
-      std::optional<bool> ignore_if_present);
+      std::optional<bool> ignore_if_present,
+      std::optional<int> worklet_id);
 };
 
 CONTENT_EXPORT bool operator==(const SharedStorageEventParams& lhs,

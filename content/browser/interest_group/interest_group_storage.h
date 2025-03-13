@@ -30,6 +30,9 @@
 namespace blink {
 struct InterestGroup;
 }
+namespace network {
+struct AdAuctionEventRecord;
+}
 
 namespace content {
 // InterestGroupStorage controls access to the Interest Group Database. All
@@ -149,6 +152,10 @@ class CONTENT_EXPORT InterestGroupStorage {
       const std::string& hashed_key);
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& hashed_key);
+
+  // Stores the view or click data in `record` so that it may be later included
+  // in view / click counts loaded for generateBid() browser signals.
+  void RecordViewClick(const network::AdAuctionEventRecord& record);
 
   // Gets a single interest group.
   std::optional<StorageInterestGroup> GetInterestGroup(

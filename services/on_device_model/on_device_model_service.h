@@ -71,6 +71,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   void LoadModel(mojom::LoadModelParamsPtr params,
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
+  void GetCapabilities(ModelAssets assets,
+                       GetCapabilitiesCallback callback) override;
   void LoadTextSafetyModel(
       mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<mojom::TextSafetyModel> model) override;

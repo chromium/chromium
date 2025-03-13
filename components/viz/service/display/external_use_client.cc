@@ -16,13 +16,15 @@ ExternalUseClient::ImageContext::ImageContext(
     const gfx::Size& size,
     SharedImageFormat format,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space)
+    sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin)
     : mailbox_(mailbox),
       sync_token_(sync_token),
       texture_target_(texture_target),
       size_(size),
       format_(format),
       color_space_(std::move(color_space)),
+      origin_(origin),
       ycbcr_info_(ycbcr_info) {}
 
 ExternalUseClient::ImageContext::~ImageContext() = default;

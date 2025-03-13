@@ -171,12 +171,10 @@ void DelayedRecordProcessorMetrics() {
 
 // Initializes the ModuleDatabase on its owning sequence. Also starts the
 // enumeration of registered modules in the Windows Registry.
-void InitializeModuleDatabase(
-    bool is_third_party_blocking_policy_enabled) {
+void InitializeModuleDatabase() {
   DCHECK(ModuleDatabase::GetTaskRunner()->RunsTasksInCurrentSequence());
 
-  ModuleDatabase::SetInstance(
-      std::make_unique<ModuleDatabase>(is_third_party_blocking_policy_enabled));
+  ModuleDatabase::SetInstance(std::make_unique<ModuleDatabase>());
 
   auto* module_database = ModuleDatabase::GetInstance();
   module_database->StartDrainingModuleLoadAttemptsLog();
@@ -936,26 +934,18 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
   // What truly controls if the blocking is enabled is the presence of the
   // module blocklist cache file. This means that to disable the feature, the
   // cache must be deleted and the browser relaunched.
-  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled() ||
-      !ModuleBlocklistCacheUpdater::IsBlockingEnabled())
+  if (!ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
     ThirdPartyConflictsManager::DisableThirdPartyModuleBlocking(
         base::ThreadPool::CreateTaskRunner(
             {base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
              base::MayBlock()})
             .get());
-#endif
-
-  bool third_party_blocking_policy_enabled =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      ModuleDatabase::IsThirdPartyBlockingPolicyEnabled();
-#else
-      false;
+  }
 #endif
 
   ModuleDatabase::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&InitializeModuleDatabase,
-                                third_party_blocking_policy_enabled));
+      FROM_HERE, base::BindOnce(&InitializeModuleDatabase));
 
   *module_watcher = ModuleWatcher::Create(base::BindRepeating(
       &ChromeBrowserMainPartsWin::OnModuleEvent, base::Unretained(this)));

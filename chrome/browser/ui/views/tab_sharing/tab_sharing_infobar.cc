@@ -31,70 +31,6 @@ using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
 constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
     gfx::Insets::VH(4, 8);
-
-std::u16string GetMessageTextCastingNoSinkName(
-    bool shared_tab,
-    const std::u16string& shared_tab_name) {
-  if (shared_tab) {
-    return l10n_util::GetStringUTF16(
-        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL);
-  }
-  return shared_tab_name.empty()
-             ? l10n_util::GetStringUTF16(
-                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_NO_DEVICE_NAME_LABEL)
-             : l10n_util::GetStringFUTF16(
-                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_NO_DEVICE_NAME_LABEL,
-                   shared_tab_name);
-}
-
-std::u16string GetMessageTextCasting(bool shared_tab,
-                                     const std::u16string& shared_tab_name,
-                                     const std::u16string& sink_name) {
-  if (sink_name.empty()) {
-    return GetMessageTextCastingNoSinkName(shared_tab, shared_tab_name);
-  }
-
-  if (shared_tab) {
-    return l10n_util::GetStringFUTF16(
-        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, sink_name);
-  }
-  return shared_tab_name.empty()
-             ? l10n_util::GetStringFUTF16(
-                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL,
-                   sink_name)
-             : l10n_util::GetStringFUTF16(
-                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL,
-                   shared_tab_name, sink_name);
-}
-
-std::u16string GetMessageTextCapturing(bool shared_tab,
-                                       const std::u16string& shared_tab_name,
-                                       const std::u16string& app_name) {
-  if (shared_tab) {
-    return l10n_util::GetStringFUTF16(
-        IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, app_name);
-  }
-  return !shared_tab_name.empty()
-             ? l10n_util::GetStringFUTF16(
-                   IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
-                   shared_tab_name, app_name)
-             : l10n_util::GetStringFUTF16(
-                   IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
-                   app_name);
-}
-
-bool IsCapturedTab(TabRole role) {
-  switch (role) {
-    case TabRole::kCapturingTab:
-    case TabRole::kOtherTab:
-      return false;
-    case TabRole::kCapturedTab:
-    case TabRole::kSelfCapturingTab:
-      return true;
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 TabSharingInfoBar::TabSharingInfoBar(
@@ -103,13 +39,10 @@ TabSharingInfoBar::TabSharingInfoBar(
     const std::u16string& capturer_name,
     TabSharingInfoBarDelegate::TabRole role,
     TabSharingInfoBarDelegate::TabShareType capture_type)
-    : InfoBarView(std::move(delegate)),
-      shared_tab_name_(std::move(shared_tab_name)),
-      capturer_name_(std::move(capturer_name)),
-      role_(role),
-      capture_type_(capture_type) {
+    : InfoBarView(std::move(delegate)) {
   auto* delegate_ptr = GetDelegate();
-  label_ = AddChildView(CreateLabel(GetMessageText()));
+  label_ = AddChildView(CreateLabel(TabSharingStatusMessageView::GetMessageText(
+      shared_tab_name, capturer_name, role, capture_type)));
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
 
   const int buttons = delegate_ptr->GetButtons();
@@ -273,18 +206,6 @@ void TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed() {
 
 TabSharingInfoBarDelegate* TabSharingInfoBar::GetDelegate() {
   return static_cast<TabSharingInfoBarDelegate*>(delegate());
-}
-
-std::u16string TabSharingInfoBar::GetMessageText() const {
-  switch (capture_type_) {
-    case TabSharingInfoBarDelegate::TabShareType::CAST:
-      return GetMessageTextCasting(IsCapturedTab(role_), shared_tab_name_,
-                                   capturer_name_);
-    case TabSharingInfoBarDelegate::TabShareType::CAPTURE:
-      return GetMessageTextCapturing(IsCapturedTab(role_), shared_tab_name_,
-                                     capturer_name_);
-  }
-  NOTREACHED();
 }
 
 int TabSharingInfoBar::GetContentMinimumWidth() const {

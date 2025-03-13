@@ -668,6 +668,11 @@ BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
 BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
              "IPH_iOSReminderNotificationsOverflowMenuNewBadgeFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Note: This IPH will only be triggered if `kIdentityDiscAccountMenu` is
+// enabled.
+BASE_FEATURE(kIPHiOSSettingsInOverflowMenuBubbleFeature,
+             "IPH_iOSSettingsInOverflowMenuBubbleFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

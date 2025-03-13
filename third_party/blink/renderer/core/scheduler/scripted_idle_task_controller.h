@@ -80,6 +80,8 @@ class CORE_EXPORT ScriptedIdleTaskController
 
     DecrementOnDelete(DecrementOnDelete&&);
     DecrementOnDelete& operator=(DecrementOnDelete&&);
+    DecrementOnDelete(const DecrementOnDelete&) = delete;
+    DecrementOnDelete& operator=(const DecrementOnDelete&) = delete;
 
     void DecrementNow();
 

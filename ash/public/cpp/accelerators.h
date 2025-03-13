@@ -448,7 +448,7 @@ ASH_PUBLIC_EXPORT inline constexpr auto kTilingWindowResizeAcceleratorData =
 
 ASH_PUBLIC_EXPORT inline constexpr AcceleratorData kGeminiAcceleratorData[] = {
     {true, ui::VKEY_F23, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kToggleGeminiApp},
+     AcceleratorAction::kToggleGeminiApp, /*accelerator_locked=*/true},
 };
 ASH_PUBLIC_EXPORT inline constexpr size_t kGeminiAcceleratorDataLength =
     std::size(kGeminiAcceleratorData);

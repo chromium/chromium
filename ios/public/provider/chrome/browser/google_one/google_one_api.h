@@ -9,6 +9,29 @@
 
 #import "ios/chrome/browser/google_one/shared/google_one_entry_point.h"
 
+/** The possible outcomes of the Google One flow. */
+enum class GoogleOneOutcome {
+  // There was no error (and so the user purchased a plan).
+  kGoogleOneEntryOutcomeNoError = 0,
+  // There was an unknown error, probably not directly related to the purchase.
+  kGoogleOneEntryOutcomeUnknownError = 1,
+  // There was an unknown error, probably related to the purchase.
+  kGoogleOneEntryOutcomeErrorUnspecified = 2,
+  // The purchase flow was cancelled (by the user or the app).
+  kGoogleOneEntryOutcomePurchaseCancelled = 3,
+  // The purchase flow was already presented (and so could not be started
+  // again).
+  kGoogleOneEntryOutcomeAlreadyPresented = 4,
+  // The made a purchase and it failed.
+  kGoogleOneEntryOutcomePurchaseFailed = 5,
+  // The flow will continue in another app.
+  kGoogleOneEntryOutcomeWillLeaveApp = 6,
+  // The flow failed to launch due to an error.
+  kGoogleOneEntryOutcomeLaunchFailed = 7,
+  // The flow failed to launch due to invalid parameters.
+  kGoogleOneEntryOutcomeInvalidParameters = 8,
+};
+
 @protocol SystemIdentity;
 
 // The configuration for the GoogleOneController.
@@ -24,7 +47,8 @@
 @property(nonatomic, strong) void (^openURLCallback)(NSURL*);
 
 // A callback that will is called at the end of the Google One flow.
-@property(nonatomic, strong) void (^flowDidEndWithErrorCallback)(NSError*);
+@property(nonatomic, strong) void (^flowDidEndWithErrorCallback)
+    (GoogleOneOutcome, NSError*);
 
 @end
 

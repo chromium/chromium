@@ -38,6 +38,16 @@ std::string PieceToString(const ml::InputPiece& piece) {
   NOTREACHED();
 }
 
+std::string ReadFile(PlatformFile api_file) {
+  base::File file(static_cast<base::PlatformFile>(api_file));
+  std::vector<uint8_t> contents;
+  contents.resize(file.GetLength());
+  if (!file.ReadAndCheck(0, contents)) {
+    return std::string();
+  }
+  return std::string(contents.begin(), contents.end());
+}
+
 }  // namespace
 
 void InitDawnProcs(const DawnProcTable& procs) {}
@@ -56,6 +66,13 @@ bool QueryGPUAdapter(void (*adapter_callback_fn)(WGPUAdapter adapter,
                                                  void* userdata),
                      void* userdata) {
   return false;
+}
+
+bool GetCapabilities(PlatformFile file, ChromeMLCapabilities& capabilities) {
+  std::string contents = ReadFile(file);
+  capabilities.image_input = contents.find("image") != std::string::npos;
+  capabilities.audio_input = contents.find("audio") != std::string::npos;
+  return true;
 }
 
 struct FakeModelInstance {
@@ -80,16 +97,6 @@ struct FakeTsModelInstance {
 struct FakeCancelInstance {
   bool cancelled = false;
 };
-
-std::string ReadFile(PlatformFile api_file) {
-  base::File file(static_cast<base::PlatformFile>(api_file));
-  std::vector<uint8_t> contents;
-  contents.resize(file.GetLength());
-  if (!file.ReadAndCheck(0, contents)) {
-    return std::string();
-  }
-  return std::string(contents.begin(), contents.end());
-}
 
 ChromeMLModel SessionCreateModel(const ChromeMLModelDescriptor* descriptor,
                                  uintptr_t context,
@@ -301,6 +308,7 @@ const ChromeMLAPI g_api = {
     .DestroyModel = &DestroyModel,
     .GetEstimatedPerformance = &GetEstimatedPerformance,
     .QueryGPUAdapter = &QueryGPUAdapter,
+    .GetCapabilities = &GetCapabilities,
     .SetFatalErrorNonGpuFn = &SetFatalErrorNonGpuFn,
 
     .SessionCreateModel = &SessionCreateModel,

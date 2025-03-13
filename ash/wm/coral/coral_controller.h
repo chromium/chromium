@@ -157,7 +157,7 @@ class ASH_EXPORT CoralController {
   // directly if a group has no apps in it. If `desk_template` is nullptr, then
   // we create one if `tab_urls` is not empty, otherwise this function does
   // nothing.
-  void OnTemplateCreated(const std::vector<GURL>& tab_urls,
+  void OnTemplateCreated(std::vector<coral::mojom::EntityPtr> tab_app_entities,
                          std::unique_ptr<aura::WindowTracker> window_tracker,
                          std::unique_ptr<DeskTemplate> desk_template);
 

@@ -144,8 +144,9 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ActivatesInactiveView) {
       Check([&]() { return tab_strip_model()->active_index() == 1; }));
 }
 
-// TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng and
+// chromium/ci/Linux Chromium OS ASan LSan Tests (1).
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ResizesViaKeyboard DISABLED_ResizesViaKeyboard
 #else
 #define MAYBE_ResizesViaKeyboard ResizesViaKeyboard

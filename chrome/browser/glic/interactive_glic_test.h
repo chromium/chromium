@@ -34,9 +34,9 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/events/test/event_generator.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
-
 
 namespace glic::test {
 
@@ -282,6 +282,22 @@ class InteractiveGlicTestT : public T {
         Api::WaitForHide(kGlicViewElementId)));
     Api::AddDescriptionPrefix(steps, "CloseGlicWindow");
     return steps;
+  }
+
+  auto SimulateAcceleratorPress(const ui::Accelerator& accelerator) {
+    return Api::Do([this, accelerator] {
+      gfx::NativeWindow target_window =
+          window_controller().GetGlicWidget()->GetNativeWindow();
+#if (USE_AURA)
+      ui::test::EventGenerator event_generator(target_window->GetRootWindow(),
+                                               target_window);
+#else
+      ui::test::EventGenerator event_generator(target_window);
+#endif
+      event_generator.set_target(ui::test::EventGenerator::Target::WINDOW);
+      event_generator.PressAndReleaseKeyAndModifierKeys(
+          accelerator.key_code(), accelerator.modifiers());
+    });
   }
 
   auto CheckControllerHasWidget(bool expect_widget) {

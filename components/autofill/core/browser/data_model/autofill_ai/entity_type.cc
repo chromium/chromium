@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"

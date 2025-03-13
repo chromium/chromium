@@ -375,7 +375,7 @@ VirtualCardUsageData GetVirtualCardUsageDataFromStatement(sql::Statement& s) {
   int index = 0;
   std::string id = s.ColumnString(index++);
   int64_t instrument_id = s.ColumnInt64(index++);
-  std::string merchant_domain = s.ColumnString(index++);
+  std::string_view merchant_domain = s.ColumnStringView(index++);
   std::u16string last_four = s.ColumnString16(index++);
 
   return {VirtualCardUsageData::UsageDataId(id),
@@ -964,9 +964,9 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_virtual_card_enrollment_type(
         static_cast<CreditCard::VirtualCardEnrollmentType>(
             s.ColumnInt(index++)));
-    card->set_card_art_url(GURL(s.ColumnString(index++)));
+    card->set_card_art_url(GURL(s.ColumnStringView(index++)));
     card->set_product_description(s.ColumnString16(index++));
-    card->set_product_terms_url(GURL(s.ColumnString(index++)));
+    card->set_product_terms_url(GURL(s.ColumnStringView(index++)));
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardInfoRuntimeRetrieval)) {
       card->set_card_info_retrieval_enrollment_state(
@@ -1463,7 +1463,7 @@ bool PaymentsAutofillTable::GetAutofillOffers(
     std::string offer_reward_amount = s.ColumnString(index++);
     base::Time expiry = base::Time::FromDeltaSinceWindowsEpoch(
         base::Milliseconds(s.ColumnInt64(index++)));
-    GURL offer_details_url = GURL(s.ColumnString(index++));
+    GURL offer_details_url = GURL(s.ColumnStringView(index++));
     std::string promo_code = s.ColumnString(index++);
     std::string value_prop_text = s.ColumnString(index++);
     std::string see_details_text = s.ColumnString(index++);
@@ -2221,7 +2221,7 @@ PaymentsAutofillTable::GetMerchantDomainsForBenefitId(
                 "WHERE benefit_id = ?");
   s.BindString(0, *benefit_id);
   while (s.Step()) {
-    merchant_domains.insert(url::Origin::Create(GURL(s.ColumnString(0))));
+    merchant_domains.insert(url::Origin::Create(GURL(s.ColumnStringView(0))));
   }
   return merchant_domains;
 }

@@ -4,8 +4,11 @@
 
 #include "components/metrics/debug/metrics_internals_utils.h"
 
+#include <string>
 #include <string_view>
 
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
@@ -95,6 +98,20 @@ std::string FormFactorToString(variations::Study::FormFactor form_factor) {
   NOTREACHED();
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+std::string GoogleGroupsToString(
+    const base::flat_set<uint64_t>& google_groups) {
+  std::string result;
+  for (const uint64_t google_group : google_groups) {
+    if (!result.empty()) {
+      result += ",";
+    }
+    result += base::NumberToString(google_group);
+  }
+  return result;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 std::string BoolToString(bool val) {
   return val ? "Yes" : "No";
 }
@@ -150,6 +167,10 @@ base::Value::List GetVariationsSummary(
   list.Append(CreateKeyValueDict("Locale", state->locale));
   list.Append(
       CreateKeyValueDict("Enterprise", BoolToString(state->IsEnterprise())));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  list.Append(CreateKeyValueDict("Google Groups",
+                                 GoogleGroupsToString(state->GoogleGroups())));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return list;
 }
 

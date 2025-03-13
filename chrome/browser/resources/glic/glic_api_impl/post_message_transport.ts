@@ -121,14 +121,16 @@ export class PostMessageRequestSender {
       if (response.exception !== undefined) {
         if (this.loggingEnabled) {
           console.info(
-              `${this.logPrefix} received ${requestType} with exception:`,
+              `${this.logPrefix} received ${requestType} with exception: ${
+                  toDebugJson(response.exception)}`,
               response.exception);
         }
         reject(exceptionFromTransferable(response.exception));
       } else {
         if (this.loggingEnabled) {
           console.info(
-              `${this.logPrefix} received ${requestType} with payload:`,
+              `${this.logPrefix} received ${requestType} with payload: ${
+                  toDebugJson(response.responsePayload)}`,
               response.responsePayload);
         }
         resolve(response.responsePayload as RequestResponseType<T>);
@@ -137,7 +139,9 @@ export class PostMessageRequestSender {
 
     if (this.loggingEnabled) {
       console.info(
-          `${this.logPrefix} sending ${requestType} with payload:`, request);
+          `${this.logPrefix} sending ${requestType} with payload: ${
+              toDebugJson(request)}`,
+          request);
     }
     const message: RequestMessage = {
       senderId: this.senderId,
@@ -161,9 +165,11 @@ export class PostMessageRequestSender {
       type: requestType,
       requestPayload: request,
     };
-    if (this.loggingEnabled) {
+    if (this.loggingEnabled && requestType !== 'glicWebClientCheckResponsive') {
       console.info(
-          `${this.logPrefix} sending ${requestType} with payload:`, request);
+          `${this.logPrefix} sending ${requestType} with payload: ${
+              toDebugJson(request)}`,
+          request);
     }
     this.messageSender.postMessage(message, this.remoteOrigin, transfer);
   }
@@ -234,9 +240,10 @@ export class PostMessageRequestReceiver {
     let exception: TransferableException|undefined;
     const extras = new ResponseExtras();
     this.handler.onRequestReceived(type);
-    if (this.loggingEnabled) {
+    if (this.loggingEnabled && type !== 'glicWebClientCheckResponsive') {
       console.info(
-          `${this.logPrefix} processing request ${type} with payload:`,
+          `${this.logPrefix} processing request ${type} with payload: ${
+              toDebugJson(requestPayload)}`,
           requestPayload);
     }
     try {
@@ -261,9 +268,10 @@ export class PostMessageRequestReceiver {
     if (!requestId) {
       return;
     }
-    if (this.loggingEnabled) {
+    if (this.loggingEnabled && type !== 'glicWebClientCheckResponsive') {
       console.info(
-          `${this.logPrefix} sending response ${type} with payload:`,
+          `${this.logPrefix} sending response ${type} with payload: ${
+              toDebugJson(response?.payload)}`,
           response?.payload);
     }
     const responseMessage: ResponseMessage = {
@@ -281,4 +289,15 @@ export class PostMessageRequestReceiver {
         extras.transfers,
     );
   }
+}
+
+// Converts a value to JSON for debug logging.
+function toDebugJson(v: any): string {
+  return JSON.stringify(v, (_key, value) => {
+    // stringify throws on bigint, so convert it.
+    if (typeof value === 'bigint') {
+      return value.toString();
+    }
+    return value;
+  });
 }

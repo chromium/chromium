@@ -337,6 +337,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSSavedTabGroupClosed"
       summary="showing the IPH when closing a saved tab group for the first
                time"/>
+  <variant name="IPH_iOSSettingsInOverflowMenuBubbleFeature"
+      summary="settings in the overflow menu"/>
   <variant name="IPH_iOSSharedTabGroupForeground"
       summary="showing the IPH when the user is returning to an opened shared
                tab group"/>

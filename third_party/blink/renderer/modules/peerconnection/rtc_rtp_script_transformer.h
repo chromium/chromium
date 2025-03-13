@@ -69,7 +69,7 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
   const scoped_refptr<base::SequencedTaskRunner> rtp_transform_task_runner_;
   Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
   V8ExternalMemoryAccounter serialized_data_memory_accounter_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 
   Member<ReadableStream> readable_;
   Member<WritableStream> writable_;

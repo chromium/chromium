@@ -15,10 +15,16 @@
     {
       "name": "LayoutBlockFlow (positioned, children-inline) DIV class='item'",
       "position": [15, 35],
-      "bounds": [100, 210],
-      "contentsOpaqueForText": true,
+      "bounds": [100, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='item1' class='item'",
+      "position": [15, 115],
+      "bounds": [100, 130],
       "invalidations": [
-        [0, 80, 38, 40]
+        [0, 0, 38, 40]
       ]
     }
   ],
@@ -51,11 +57,17 @@
     {
       "name": "LayoutBlockFlow (positioned, children-inline) DIV class='item'",
       "position": [15, 35],
-      "bounds": [100, 210],
-      "contentsOpaqueForText": true,
+      "bounds": [100, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='item1' class='item'",
+      "position": [15, 115],
+      "bounds": [100, 130],
       "invalidations": [
-        [0, 160, 38, 40],
-        [0, 80, 38, 40]
+        [0, 80, 38, 40],
+        [0, 0, 38, 40]
       ]
     }
   ],

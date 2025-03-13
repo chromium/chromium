@@ -160,6 +160,7 @@ public class FeedSurfaceCoordinator
 
     // Used to handle padding adjustment when edge to edge is enabled.
     private @Nullable EdgeToEdgePadAdjuster mEdgePadAdjuster;
+    private final boolean mIsNewTabPageCustomizationEnabled;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -430,6 +431,7 @@ public class FeedSurfaceCoordinator
         mToolbarHeight = toolbarHeight;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
 
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
@@ -1105,7 +1107,9 @@ public class FeedSurfaceCoordinator
             mScrollableContainerDelegate = new ScrollableContainerDelegateImpl();
         }
 
-        createHeaderIphScrollListener();
+        if (!mIsNewTabPageCustomizationEnabled) {
+            createHeaderIphScrollListener();
+        }
         createRefreshIphScrollListener();
     }
 

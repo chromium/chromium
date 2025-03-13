@@ -11,7 +11,7 @@ source_set("glic") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/glic:enum",
+    "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//components/prefs",
     "//ui/base",
