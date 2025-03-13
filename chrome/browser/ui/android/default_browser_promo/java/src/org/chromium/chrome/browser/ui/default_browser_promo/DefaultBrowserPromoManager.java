@@ -11,7 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**

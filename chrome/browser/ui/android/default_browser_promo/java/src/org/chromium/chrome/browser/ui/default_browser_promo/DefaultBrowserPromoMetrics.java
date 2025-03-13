@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
 /** Helper class to record histograms related to the default browser promo. */
 @NullMarked
