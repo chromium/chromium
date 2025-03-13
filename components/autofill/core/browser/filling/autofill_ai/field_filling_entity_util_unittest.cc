@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 
+#include "base/containers/to_vector.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -365,66 +366,293 @@ TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
   }
 }
 
+// Test fixture for date tests.
+class GetFillValueForEntityTest_Date : public GetFillValueForEntityTest {
+ public:
+  GetFillValueForEntityTest_Date() = default;
+
+  EntityInstance passport() const {
+    return test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
+  }
+
+  AutofillField CreateInput(FormControlType form_control_type) {
+    AutofillField field = AutofillField(
+        test::CreateTestFormField(/*label=*/"",
+                                  /*name=*/"",
+                                  /*value=*/"", form_control_type));
+    AddPrediction(field);
+    return field;
+  }
+
+  AutofillField CreateSelect(const std::vector<std::string>& values,
+                             const std::vector<std::string>& texts) {
+    AutofillField field = AutofillField(test::CreateTestSelectField(
+        /*label=*/"", /*name=*/"", /*value=*/"",
+        /*autocomplete=*/"",
+        /*values=*/base::ToVector(values, &std::string::c_str),
+        /*contents=*/base::ToVector(texts, &std::string::c_str)));
+    AddPrediction(field);
+    return field;
+  }
+
+ private:
+  void AddPrediction(AutofillField& field) {
+    FieldPrediction prediction;
+    prediction.set_type(PASSPORT_ISSUE_DATE);
+    prediction.set_source(
+        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+            FieldPrediction::SOURCE_AUTOFILL_AI);
+    field.set_server_predictions({prediction});
+  }
+};
+
 // Tests that a date is filled into an input according to the format string.
-TEST_F(GetFillValueForEntityTest, FillingDateValueIntoTextInput) {
-  EntityInstance drivers_license =
-      test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
-  AutofillField field;
-  FieldPrediction prediction;
-  prediction.set_type(PASSPORT_ISSUE_DATE);
-  prediction.set_source(
-      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-          FieldPrediction::SOURCE_AUTOFILL_AI);
-  field.set_server_predictions({prediction});
-  field.set_form_control_type(FormControlType::kInputText);
+TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoTextInput) {
+  AutofillField field = CreateInput(FormControlType::kInputText);
   field.set_format_string_unless_overruled(
       u"DD/MM/YYYY", AutofillField::FormatStringSource::kServer);
-
-  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
-                                  mojom::ActionPersistence::kFill,
-                                  /*app_locale=*/"",
-                                  /*address_normalizer=*/nullptr),
-            u"16/12/2022");
+  EXPECT_EQ(
+      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
+                            /*app_locale=*/"",
+                            /*address_normalizer=*/nullptr),
+      u"16/12/2022");
 }
 
 // Tests that a date is filled into an input according to the format string.
-TEST_F(GetFillValueForEntityTest, FillingDateValueIntoDateInput) {
-  EntityInstance drivers_license =
-      test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
-  AutofillField field;
-  FieldPrediction prediction;
-  prediction.set_type(PASSPORT_ISSUE_DATE);
-  prediction.set_source(
-      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-          FieldPrediction::SOURCE_AUTOFILL_AI);
-  field.set_server_predictions({prediction});
-  field.set_form_control_type(FormControlType::kInputDate);
-
-  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
-                                  mojom::ActionPersistence::kFill,
-                                  /*app_locale=*/"",
-                                  /*address_normalizer=*/nullptr),
-            u"2022-12-16");
+TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoDateInput) {
+  AutofillField field = CreateInput(FormControlType::kInputDate);
+  EXPECT_EQ(
+      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
+                            /*app_locale=*/"",
+                            /*address_normalizer=*/nullptr),
+      u"2022-12-16");
 }
 
 // Tests that a date is filled into an input according to the format string.
-TEST_F(GetFillValueForEntityTest, FillingDateValueIntoMonthInput) {
-  EntityInstance drivers_license =
-      test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
-  AutofillField field;
-  FieldPrediction prediction;
-  prediction.set_type(PASSPORT_ISSUE_DATE);
-  prediction.set_source(
-      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-          FieldPrediction::SOURCE_AUTOFILL_AI);
-  field.set_server_predictions({prediction});
-  field.set_form_control_type(FormControlType::kInputMonth);
+TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoMonthInput) {
+  AutofillField field = CreateInput(FormControlType::kInputMonth);
+  EXPECT_EQ(
+      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
+                            /*app_locale=*/"",
+                            /*address_normalizer=*/nullptr),
+      u"2022-12");
+}
 
-  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+// Describes number-based options of a <select> field.
+struct DateRangeParam {
+  // Generates the values or texts of the <select> field.
+  std::vector<std::string> Create() const {
+    std::vector<int> nums;
+    nums.reserve(max - min);
+    for (int i = min; i <= max; ++i) {
+      nums.push_back(i);
+    }
+
+    std::vector<std::string> range = base::ToVector(nums, [&](int value) {
+      return base::StrCat({prefix, base::NumberToString(value), suffix});
+    });
+
+    if (header) {
+      range.insert(range.begin(), header);
+    }
+    if (footer) {
+      range.push_back(footer);
+    }
+    return range;
+  }
+
+  // Replaces digits with their written out representation.
+  static std::string Obfuscate(std::string_view number) {
+    std::string str;
+    while (!number.empty()) {
+      if (base::IsAsciiDigit(number.front())) {
+        constexpr auto kDigits = std::to_array<std::string_view>(
+            {"zero", "one", "two", "three", "four", "five", "six", "seven",
+             "eight", "nine"});
+        str += kDigits[number.front() - '0'];
+      } else {
+        str += number.front();
+      }
+      number = number.substr(1);
+    }
+    return str;
+  }
+
+  std::string_view expectation = "";  // Expected filled value.
+  int min = 0;                        // Smallest number (inclusive).
+  int max = -1;                       // Largest number (inclusive).
+  std::string_view prefix = "";       // Prefix added to each option.
+  std::string_view suffix = "";       // Suffix added to each option.
+  const char* header = nullptr;       // First option (if any).
+  const char* footer = nullptr;       // Last option (if any).
+  enum {
+    kValuesAndTexts,  // Have equal value and text in each option.
+    kValuesOnly,      // Keep the values; obfuscate the texts.
+    kTextsOnly        // Keep the texts; obfuscate the values.
+  } meaningful = kValuesAndTexts;
+};
+
+class GetFillValueForEntityTest_Date_Select_Integral
+    : public GetFillValueForEntityTest_Date,
+      public testing::WithParamInterface<DateRangeParam> {};
+
+// Test case for filling a date into a <select> whose values and/or texts
+// contain numbers.
+TEST_P(GetFillValueForEntityTest_Date_Select_Integral, GetFillValueForEntity) {
+  const DateRangeParam& p = GetParam();
+  std::vector<std::string> values = p.Create();
+  std::vector<std::string> texts = p.Create();
+
+  if (p.meaningful == DateRangeParam::kTextsOnly) {
+    values = base::ToVector(values, DateRangeParam::Obfuscate);
+  }
+  if (p.meaningful == DateRangeParam::kValuesOnly) {
+    texts = base::ToVector(texts, DateRangeParam::Obfuscate);
+  }
+
+  SCOPED_TRACE(testing::Message()
+               << "values: " << base::JoinString(values, ", ")
+               << " / texts = " << base::JoinString(texts, ", "));
+  EXPECT_EQ(GetFillValueForEntity(passport(),
+                                  CreateSelect(
+                                      /*values=*/values,
+                                      /*texts=*/texts),
                                   mojom::ActionPersistence::kFill,
                                   /*app_locale=*/"",
                                   /*address_normalizer=*/nullptr),
-            u"2022-12");
+            base::UTF8ToUTF16(p.expectation));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetFillValueForEntityTest_Date_Select_Integral,
+    testing::Values(
+        // Day: positive cases.
+        DateRangeParam{.expectation = "16", .min = 1, .max = 28},
+        DateRangeParam{.expectation = "16", .min = 1, .max = 31},
+        DateRangeParam{.expectation = "15",
+                       .min = 0,
+                       .max = 30,
+                       .meaningful = DateRangeParam::kValuesOnly},
+        DateRangeParam{.expectation = "foo-16",
+                       .min = 1,
+                       .max = 31,
+                       .prefix = "foo-"},
+        DateRangeParam{.expectation = "16-bar",
+                       .min = 1,
+                       .max = 31,
+                       .suffix = "-bar"},
+        DateRangeParam{.expectation = "foo-16-bar",
+                       .min = 1,
+                       .max = 31,
+                       .prefix = "foo-",
+                       .suffix = "-bar"},
+        DateRangeParam{.expectation = "16",
+                       .min = 1,
+                       .max = 31,
+                       .header = "Select day"},
+        DateRangeParam{.expectation = "16",
+                       .min = 1,
+                       .max = 31,
+                       .footer = "Select day"},
+        DateRangeParam{.expectation = "16",
+                       .min = 1,
+                       .max = 31,
+                       .header = "Select ...",
+                       .footer = "... day"},
+
+        // Day: negative cases.
+        DateRangeParam{.expectation = "", .min = 1, .max = 10},
+        DateRangeParam{.expectation = "",
+                       .min = 0,
+                       .max = 30,
+                       .meaningful = DateRangeParam::kTextsOnly},
+        // If there are fewer or more days than a
+        // month has, it happens to fall back to the
+        // year.
+        DateRangeParam{.expectation = "22", .min = 1, .max = 27},
+        DateRangeParam{.expectation = "22", .min = 1, .max = 32},
+
+        // Month: positive cases.
+        DateRangeParam{.expectation = "12", .min = 1, .max = 12},
+        DateRangeParam{.expectation = "12", .min = 1, .max = 12},
+        DateRangeParam{.expectation = "11",
+                       .min = 0,
+                       .max = 11,
+                       .meaningful = DateRangeParam::kValuesOnly},
+        DateRangeParam{.expectation = "foo-12",
+                       .min = 1,
+                       .max = 12,
+                       .prefix = "foo-"},
+        DateRangeParam{.expectation = "12-bar",
+                       .min = 1,
+                       .max = 12,
+                       .suffix = "-bar"},
+        DateRangeParam{.expectation = "foo-12-bar",
+                       .min = 1,
+                       .max = 12,
+                       .prefix = "foo-",
+                       .suffix = "-bar"},
+        DateRangeParam{.expectation = "12",
+                       .min = 1,
+                       .max = 12,
+                       .header = "Select month"},
+        DateRangeParam{.expectation = "12",
+                       .min = 1,
+                       .max = 12,
+                       .footer = "Select month"},
+        DateRangeParam{.expectation = "12",
+                       .min = 1,
+                       .max = 12,
+                       .header = "Select ...",
+                       .footer = "... month"},
+
+        // Month: negative cases.
+        DateRangeParam{.expectation = "",
+                       .min = 0,
+                       .max = 11,
+                       .meaningful = DateRangeParam::kTextsOnly},
+        DateRangeParam{.expectation = "", .min = 1, .max = 11},
+        DateRangeParam{.expectation = "", .min = 1, .max = 13},
+
+        // Year: positive cases.
+        DateRangeParam{.expectation = "2022", .min = 2020, .max = 2099},
+        DateRangeParam{.expectation = "2022", .min = 2020, .max = 2032},
+        DateRangeParam{.expectation = "22", .min = 20, .max = 32},
+        DateRangeParam{.expectation = "Year 2022",
+                       .min = 2000,
+                       .max = 2099,
+                       .prefix = "Year "},
+        DateRangeParam{.expectation = "2022 n. Chr.",
+                       .min = 2000,
+                       .max = 2099,
+                       .suffix = " n. Chr."}));
+
+// Tests that a date is filled into a select element that seems to contain
+// months.
+TEST_F(GetFillValueForEntityTest_Date, MonthString) {
+  std::vector<std::string> months = {
+      "January", "February", "March",     "April",   "May",      "June",
+      "July",    "August",   "September", "October", "November", "December"};
+  AutofillField field = CreateSelect(months, months);
+  EXPECT_EQ(
+      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
+                            /*app_locale=*/"",
+                            /*address_normalizer=*/nullptr),
+      u"December");
+}
+
+// Tests that a date is filled into a select element that seems to contain
+// months.
+TEST_F(GetFillValueForEntityTest_Date, MonthStringAbbreviations) {
+  std::vector<std::string> months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  AutofillField field = CreateSelect(months, months);
+  EXPECT_EQ(
+      GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
+                            /*app_locale=*/"",
+                            /*address_normalizer=*/nullptr),
+      u"Dec");
 }
 
 }  // namespace
