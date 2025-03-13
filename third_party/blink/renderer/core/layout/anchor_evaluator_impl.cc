@@ -171,7 +171,7 @@ const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
       const LayoutObject* layout_object = result->GetLayoutObject();
       // TODO(crbug.com/384523570): If the layout object has been detached, we
       // really shouldn't be here.
-      if (layout_object &&
+      if (layout_object && layout_object != &query_box &&
           (!result->is_out_of_flow ||
            layout_object->IsBeforeInPreOrder(query_box)) &&
           InSameAnchorScope(key, query_box, *layout_object)) {
