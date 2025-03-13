@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/privacy_sandbox_notice_eea_dropdown_v3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_eea_notice_dropdown_title_1_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/privacy_sandbox_m1_eea_notice_dropdown_title_1_v3"
+        style="@style/TextAppearance.TextMediumThick.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_eea_notice_dropdown_description_1_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_eea_notice_dropdown_description_1_v3"
+        app:leading="@dimen/text_size_small_leading"
+        style="@style/TextAppearance.TextSmall.Secondary" />
+
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+        style="@style/MaterialCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:id="@+id/privacy_sandbox_eea_notice_dropdown_card">
+
+        <LinearLayout
+            android:id="@+id/privacy_sandbox_notice_eea_dropdown_card_content_v3"
+            android:padding="@dimen/privacy_sandbox_card_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                android:text="@string/privacy_sandbox_m1_eea_notice_dropdown_card_content_v3"
+                style="@style/TextAppearance.TextSmall.Secondary" />
+
+      </LinearLayout>
+
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_eea_notice_dropdown_title_2_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/privacy_sandbox_m1_eea_notice_dropdown_title_2_v3"
+        style="@style/TextAppearance.TextMediumThick.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_eea_notice_dropdown_description_2_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_eea_notice_dropdown_description_2_v3"
+        app:leading="@dimen/text_size_small_leading"
+        style="@style/TextAppearance.TextSmall.Secondary" />
+
+</LinearLayout>
+
