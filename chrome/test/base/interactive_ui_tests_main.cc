@@ -5,8 +5,11 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/discardable_memory_allocator.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/base/chrome_test_suite.h"
@@ -71,6 +74,9 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     // Force the HTTPS-Upgrades timeout to zero.
     HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::TimeDelta());
 #endif
+
+    base::DiscardableMemoryAllocator::SetInstance(
+        &discardable_memory_allocator_);
   }
 
   void Shutdown() override {
@@ -83,6 +89,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 
 class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {

@@ -150,7 +150,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 // Temporarily enable new strike cache pinning logic, for staging.
 #define SK_STRIKE_CACHE_DOESNT_AUTO_CHECK_PINNERS
 
-#define SK_IGNORE_BLURRED_RRECT_OPT
 #define SK_USE_DISCARDABLE_SCALEDIMAGECACHE
 
 #define SK_ATTR_DEPRECATED          SK_NOTHING_ARG1
