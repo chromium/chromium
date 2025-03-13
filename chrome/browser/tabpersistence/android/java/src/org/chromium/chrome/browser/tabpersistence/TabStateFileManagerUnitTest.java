@@ -169,7 +169,7 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                29,
+                30,
                 TabLaunchTypeAtCreation.names.length);
     }
 
@@ -180,7 +180,7 @@ public class TabStateFileManagerUnitTest {
                         + " FlatBufferTabStateSerializer#getLaunchTypeFromFlatBuffer,"
                         + " FlatBufferTabStateSerializer#getLaunchTypeToFlatBuffer"
                         + " and this test file.",
-                27,
+                28,
                 TabLaunchType.SIZE);
     }
 
