@@ -6170,6 +6170,7 @@ crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/se
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-rendering.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-option-with-label.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-picker-select-border.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-disabled.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-switching-invalidation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-lr.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-focus-visible-with-mouse.tentative.html [ Failure ]

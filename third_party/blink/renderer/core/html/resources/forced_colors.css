@@ -255,7 +255,12 @@
      * another stylesheet. TODO(crbug.com/378869807): Replace this with at-rules to
      * ensure correct specificity. */
     select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]) {
-        background-color: -internal-auto-base(Canvas, color-mix(in lab, currentColor 10%, transparent));
+      background-color: -internal-auto-base(Canvas, color-mix(in lab, currentColor 10%, transparent));
+    }
+
+    /* Undoes opacity: -internal-auto-base(0.7, unset) from html.css */
+    select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]):disabled {
+      opacity: 1;
     }
   }
 }
