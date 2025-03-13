@@ -269,6 +269,24 @@ TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
   }
 }
 
+TEST_F(GetFillValueForEntityTest, DifferentEntities) {
+  AutofillField field;
+  {
+    FieldPrediction prediction;
+    prediction.set_type(VEHICLE_LICENSE_PLATE);
+    prediction.set_source(
+        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+            FieldPrediction::SOURCE_AUTOFILL_AI);
+    field.set_server_predictions({prediction});
+  }
+
+  EntityInstance drivers_license = test::GetDriversLicenseEntityInstance();
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
+                                  mojom::ActionPersistence::kPreview,
+                                  kAppLocaleUS, /*address_normalizer=*/nullptr),
+            u"");
+}
+
 class GetFillValueForEntityStateTest : public GetFillValueForEntityTest {
  public:
   GetFillValueForEntityStateTest() {

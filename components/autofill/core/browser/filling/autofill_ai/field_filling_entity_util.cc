@@ -345,9 +345,10 @@ std::u16string GetFillValueForEntity(
   }
   std::optional<AttributeType> attribute_type =
       AttributeType::FromFieldType(*field_type);
-  if (!attribute_type) {
+  if (!attribute_type || attribute_type->entity_type() != entity.type()) {
     return u"";
   }
+
   base::optional_ref<const AttributeInstance> attribute =
       entity.attribute(*attribute_type);
   if (!attribute) {
