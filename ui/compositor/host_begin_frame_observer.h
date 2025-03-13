@@ -55,6 +55,7 @@ class COMPOSITOR_EXPORT HostBeginFrameObserver
 
   bool pending_coalesce_callback_ = false;
   viz::BeginFrameArgs begin_frame_args_;
+  uint64_t coalesce_flow_id_ = ~0ull;
 
   mojo::Receiver<viz::mojom::BeginFrameObserver> receiver_{this};
   base::WeakPtrFactory<HostBeginFrameObserver> weak_factory_{this};
