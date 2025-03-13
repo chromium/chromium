@@ -275,7 +275,8 @@ class ThemeSyncableServiceTest : public testing::Test,
     extensions::ExtensionService* service =
         test_ext_system->CreateExtensionService(
             &command_line, base::FilePath(kExtensionFilePath), false);
-    EXPECT_TRUE(service->extensions_enabled());
+    auto* registrar = extensions::ExtensionRegistrar::Get(profile_.get());
+    EXPECT_TRUE(registrar->extensions_enabled());
     service->Init();
     base::RunLoop().RunUntilIdle();
 

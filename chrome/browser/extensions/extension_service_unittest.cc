@@ -6780,7 +6780,9 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_TRUE(service->extensions_enabled());
+    // TODO(crbug.com/403283690): Move the logic that parses the command line to
+    // ExtensionRegistrar and move this test to extension_registrar_unittest.cc.
+    EXPECT_TRUE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
@@ -6800,7 +6802,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_FALSE(service->extensions_enabled());
+    // NOTE: See ExtensionRegistrar comment above.
+    EXPECT_FALSE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
@@ -6820,7 +6823,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_FALSE(service->extensions_enabled());
+    // NOTE: See ExtensionRegistrar comment above.
+    EXPECT_FALSE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
@@ -6842,7 +6846,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
-    EXPECT_FALSE(service->extensions_enabled());
+    // NOTE: See ExtensionRegistrar comment above.
+    EXPECT_FALSE(ExtensionRegistrar::Get(profile.get())->extensions_enabled());
     service->Init();
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(ready);
