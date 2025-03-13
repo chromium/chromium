@@ -28,7 +28,8 @@ promise_test(async t => {
   controller.abort();
 
   const detector = await ai.languageDetector.create();
-  const detectPromise = await detector.detect('this string is in English');
+  const detectPromise =
+      detector.detect('this string is in English', {signal: controller.signal});
 
   await promise_rejects_dom(t, 'AbortError', detectPromise);
 }, 'AILanguageDetector.detect() call with an aborted signal.');
