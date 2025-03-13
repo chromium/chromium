@@ -295968,6 +295968,35 @@
           }
          ]
         ],
+        "select-appearance-disabled.tentative.html": [
+         "a20fb4e0904d7dac72b4266978306bd7a5147eb0",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-disabled-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               41
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
         "select-appearance-fallback-bottom-left-scroller.tentative.html": [
          "77f97efab212c0ae76ec33f39e5d508c1abd6b27",
          [
@@ -357024,7 +357053,11 @@
        []
       ],
       "replaced-element-043-expected.txt": [
-       "65d4622534796d524522238040bfae695c5f884f",
+       "5a468d713402ead85be55893a6392b88ec2bf302",
+       []
+      ],
+      "replaced-element-044-expected.txt": [
+       "deb02b35fae4a385e6d7af12e8c4b4523c39fd4e",
        []
       ],
       "select-element-001-ref.html": [
@@ -357351,7 +357384,7 @@
       []
      ],
      "keyword-sizes-on-replaced-element-expected.txt": [
-      "f3be98becb951cbd793f2d49dce15d8429e8cac6",
+      "99354b3ed45625789da8522dd878dea46235a3ba",
       []
      ],
      "max-content-input-001-ref.html": [
@@ -396173,6 +396206,10 @@
        "video-aspect-ratio-expected.txt": [
         "76fe81a9a006565441d57d28db0bd60b76914cfc",
         []
+       ],
+       "video-intrinsic-width-height-expected.txt": [
+        "c67465b3c1e392467370be8dc84d7b03fd21fd15",
+        []
        ]
       },
       "embedded-content": {
@@ -398659,7 +398696,7 @@
           []
          ],
          "customizable-select-styles.css": [
-          "9cac1c5899cc6fffc01e2a2c7344d366a2496780",
+          "13a500a6197955a4bceebf0382ddc41feaf09b46",
           []
          ],
          "customizable-select-utils.js": [
@@ -398701,6 +398738,10 @@
         ],
         "select-appearance-disabled-option-ref.html": [
          "0b59f2839b5cd2983a7279827b93788c50527cae",
+         []
+        ],
+        "select-appearance-disabled-ref.html": [
+         "cee0175b715b6c6d72976b9217eac1ef429d4694",
          []
         ],
         "select-appearance-fallback-bottom-left-ref.html": [
@@ -510658,14 +510699,14 @@
        ]
       ],
       "replaced-element-043.html": [
-       "9ad35c1a316dfdd5163e63f671f58f3c85892100",
+       "01b23ffbf20afacddd12825b0c655b5fabf3e2be",
        [
         null,
         {}
        ]
       ],
-      "replaced-element-044.tentative.html": [
-       "58a4b9b76ff32010a82c49d1e5d42090d794a081",
+      "replaced-element-044.html": [
+       "10bbf297d47028f1660c3b2345a32895e92b6cb7",
        [
         null,
         {}
@@ -511015,7 +511056,7 @@
       ]
      ],
      "keyword-sizes-on-replaced-element.html": [
-      "497f87ca5fca68e6423c6aba94a34d3de938c1b1",
+      "39b2e591d5396587377dbdcd3ff78529157e0de0",
       [
        null,
        {}
@@ -528676,7 +528717,7 @@
       ]
      ],
      "form-reset-callback.html": [
-      "8b8497f8b6c4268a0fcd10baeb39bda15a09ac0e",
+      "5bfd93b951341698bc8942db6802e78af3b1b88e",
       [
        null,
        {}
@@ -632053,7 +632094,7 @@
         ]
        ],
        "video-intrinsic-width-height.html": [
-        "c66a79344cd9deafe42772b05ee2e6c6cc3392d2",
+        "047c832da35246278ce58a255037c64bb1d8b723",
         [
          null,
          {}
