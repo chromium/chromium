@@ -4,6 +4,7 @@
 
 use crate::config;
 use crate::crates::Epoch;
+use crate::deps;
 use crate::inherit::{
     find_inherited_privilege_group, find_inherited_security_critical_flag,
     find_inherited_shipped_flag,
@@ -12,8 +13,8 @@ use crate::metadata_util::{metadata_nodes, metadata_packages};
 use crate::paths;
 use crate::readme;
 use crate::util::{
-    create_dirs_if_needed, init_handlebars, remove_checksums_from_lock, run_cargo_metadata,
-    run_command, without_cargo_config_toml,
+    create_dirs_if_needed, get_guppy_package_graph, init_handlebars, remove_checksums_from_lock,
+    run_cargo_metadata, run_command, without_cargo_config_toml,
 };
 use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
@@ -49,6 +50,13 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     let packages: HashMap<_, _> = metadata_packages(&metadata)?;
     let nodes: HashMap<_, _> = metadata_nodes(&metadata);
     let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
+
+    let guppy_resolved_package_ids = get_guppy_resolved_package_ids(&config, paths)?;
+    let is_removed = |cargo_package_id: &cargo_metadata::PackageId| -> bool {
+        let p = packages[cargo_package_id];
+        config.resolve.remove_crates.contains(&p.name)
+            || !guppy_resolved_package_ids.contains(&p.into())
+    };
 
     // Running cargo commands against actual crates.io will put checksum into
     // the Cargo.lock file, but we don't generate checksums when we download
@@ -86,23 +94,23 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         .collect();
     for p in packages.values() {
         let crate_dir = format!("{}-{}", p.name, p.version);
-        if config.resolve.remove_crates.contains(&p.name) {
-            println!("Generating placeholder for removed crate {}-{}", p.name, p.version);
+        if is_removed(&p.id) {
+            println!("Generating placeholder for removed crate {}", &crate_dir);
             placeholder_crate(p, &nodes, paths, &config)?;
         } else if !dirs.contains(&crate_dir) {
-            println!("Downloading {}-{}", p.name, p.version);
+            println!("Downloading {}", &crate_dir);
             download_crate(&p.name, &p.version, paths)?;
             let skip_patches = match &args.no_patches {
                 Some(v) => v.is_empty() || v.contains(&p.name),
                 None => false,
             };
             if skip_patches {
-                log::warn!("Skipped applying patches for {}-{}", p.name, p.version);
+                log::warn!("Skipped applying patches for {}", &crate_dir);
             } else {
                 apply_patches(&p.name, &p.version, paths)?
             }
         }
-        dirs.remove(&format!("{}-{}", p.name, p.version));
+        dirs.remove(&crate_dir);
     }
     for d in &dirs {
         println!("Deleting {}", d);
@@ -119,8 +127,8 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         readme::readme_files_from_packages(
             packages
                 .values()
-                // Don't generate README files for packages skipped by `remove_crates`.
-                .filter(|p| config.resolve.remove_crates.iter().all(|r| *r != p.name))
+                // Don't generate README files for removed packages.
+                .filter(|p| !is_removed(&p.id))
                 .copied(),
             paths,
             &config,
@@ -149,16 +157,16 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
 
             let metadata = epoch_dir.metadata()?;
             if metadata.is_dir() && is_epoch_name(&epoch_dir.file_name().to_string_lossy()) {
-                log::warn!(
-                    "No vendored sources for '{}', it should be removed.",
-                    epoch_dir.path().display()
-                );
+                let path = epoch_dir.path();
+                println!("Deleting {}", path.display());
+                std::fs::remove_dir_all(&path)
+                    .with_context(|| format!("removing {}", path.display()))?
             }
         }
     }
 
     let vet_config_toml =
-        create_vet_config(packages.values().copied(), &config, find_group, find_shipped)?;
+        create_vet_config(packages.values().copied(), is_removed, find_group, find_shipped)?;
 
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
@@ -208,6 +216,25 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
             .with_context(|| format!("{}", file_path.to_string_lossy()))?;
     }
     Ok(())
+}
+
+fn get_guppy_resolved_package_ids(
+    config: &config::BuildConfig,
+    paths: &paths::ChromiumPaths,
+) -> Result<HashSet<deps::PackageId>> {
+    // `gnrt vendor` (unlike `gnrt gen`) doesn't need to pass `--offline` nor
+    // `--locked` to `cargo`.
+    let cargo_extra_options = vec![];
+    let dependencies = deps::collect_dependencies(
+        &get_guppy_package_graph(
+            paths.third_party_cargo_root.into(),
+            cargo_extra_options,
+            HashMap::new(),
+        )?,
+        &config.resolve.root,
+        config,
+    )?;
+    Ok(dependencies.iter().map(|p| p.into()).collect())
 }
 
 fn download_crate(
@@ -347,7 +374,7 @@ fn placeholder_crate(
     #[derive(serde::Serialize)]
     struct PlaceholderDependency<'a> {
         name: &'a str,
-        version: &'a str,
+        version: String,
         default_features: bool,
         features: Vec<&'a str>,
     }
@@ -389,7 +416,7 @@ fn placeholder_crate(
                 .expect("dependency not in list");
             PlaceholderDependency {
                 name: &d.name,
-                version: "*",
+                version: feature_dep_info.req.to_string(),
                 default_features: feature_dep_info.uses_default_features,
                 features: feature_dep_info.features.iter().map(String::as_str).collect(),
             }
