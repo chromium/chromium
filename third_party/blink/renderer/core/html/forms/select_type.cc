@@ -327,6 +327,8 @@ class MenuListSelectType final : public SelectType {
   Member<HTMLSelectElement::SelectAutofillPreviewElement> autofill_popover_;
   Member<HTMLDivElement> autofill_popover_text_;
   Member<HTMLSlotElement> popover_options_slot_;
+  // TODO(40146374): The option_slot_ can be removed when the CustomizableSelect
+  // flag is removed.
   Member<HTMLSlotElement> option_slot_;
   Member<MenuListInnerElement> inner_element_;
   int ax_menulist_last_active_index_ = -1;
@@ -593,16 +595,6 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   inner_element_->appendChild(Text::Create(doc, g_empty_string));
   root.AppendChild(inner_element_);
 
-  // Even in MenuList mode, slotting <option>s is necessary to have
-  // ComputedStyles for <option>s. LayoutFlexibleBox::IsChildAllowed() rejects
-  // all of LayoutObject children except for MenuListInnerElement's.
-  // This slot does not have anything slotted into it in the CustomizableSelect
-  // mode because the UA popover containing all the <option>s is slotted in
-  // instead.
-  option_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-  option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
-  root.appendChild(option_slot_);
-
   if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
@@ -631,6 +623,10 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     autofill_popover_text_->SetShadowPseudoId(
         shadow_element_names::kSelectAutofillPreviewText);
     autofill_popover_->appendChild(autofill_popover_text_);
+  } else {
+    option_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
+    option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
+    root.appendChild(option_slot_);
   }
 }
 
@@ -658,12 +654,12 @@ void MenuListSelectType::ManuallyAssignSlots() {
     }
   }
 
-  CHECK(option_slot_);
   if (HTMLSelectElement::CustomizableSelectEnabled(select_)) {
     CHECK(button_slot_);
     button_slot_->Assign(first_button);
     popover_options_slot_->Assign(all_children_except_first_button);
   } else {
+    CHECK(option_slot_);
     option_slot_->Assign(option_nodes);
   }
 }
