@@ -1338,35 +1338,6 @@ chromium-metrics-reviews@google.com.
       name="PasswordManager.LeakDetection.DialogDismissalReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="LevelDBBFEMethods" separator=".">
-  <owner>cmumford@chromium.org</owner>
-  <suffix name="CreateDir" label="ChromiumEnv::CreateDir"/>
-  <suffix name="GetChildren" label="ChromiumEnv::GetChildren"/>
-  <suffix name="GetFileSize" label="ChromiumEnv::GetFileSize"/>
-  <suffix name="GetTestDirectory" label="ChromiumEnv::GetTestDirectory"/>
-  <suffix name="LockFile" label="ChromiumEnv::LockFile"/>
-  <suffix name="NewAppendableFile" label="ChromiumEnv::NewAppendableFile"/>
-  <suffix name="NewLogger" label="ChromiumEnv::NewLogger"/>
-  <suffix name="NewRandomAccessFile" label="ChromiumEnv::NewRandomAccessFile"/>
-  <suffix name="NewSequentialFile" label="ChromiumEnv::NewSequentialFile"/>
-  <suffix name="NewWritableFile" label="ChromiumEnv::NewWritableFile"/>
-  <suffix name="RandomAccessFileRead" label="ChromiumRandomAccessFile::Read"/>
-  <suffix name="RemoveDir" label="ChromiumEnv::RemoveDir"/>
-  <suffix name="RemoveFile" label="ChromiumEnv::RemoveFile"/>
-  <suffix name="RenameFile" label="ChromiumEnv::RenameFile"/>
-  <suffix name="SequentialFileRead" label="ChromiumSequentialFile::Read"/>
-  <suffix name="SequentialFileSkip" label="ChromiumSequentialFile::Skip"/>
-  <suffix name="SyncParent" label="ChromiumWritableFile::SyncParent"/>
-  <suffix name="UnlockFile" label="ChromiumEnv::UnlockFile"/>
-  <suffix name="WritableFileAppend" label="ChromiumWritableFile::Append"/>
-  <suffix name="WritableFileClose" label="ChromiumWritableFile::Close"/>
-  <suffix name="WritableFileFlush" label="ChromiumWritableFile::Flush"/>
-  <suffix name="WritableFileSync" label="ChromiumWritableFile::Sync"/>
-  <affected-histogram name="WebCore.IndexedDB.LevelDBOpenErrors.BFE"/>
-  <affected-histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE"/>
-  <affected-histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="LevelDBEnvTypes" separator="." ordering="prefix">
   <suffix name="IDB" label="Restricted to IndexedDB LevelDB environments"/>
   <suffix name="ServiceWorker"
@@ -4152,30 +4123,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="UncompressedChromeArchive"
       label="uncompressed archive: chrome.7z holding install dir (big)."/>
   <affected-histogram name="Setup.Install.LzmaUnPackStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="V8SpecialApps" separator=".">
-  <suffix name="calendar" label="Custom histogram for Calendar"/>
-  <suffix name="docs" label="Custom histogram for Google Docs and Drive"/>
-  <suffix name="gmail" label="Custom histogram for GMail"/>
-  <suffix name="inbox" label="Custom histogram for Inbox"/>
-  <suffix name="plus" label="Custom histogram for Google+"/>
-  <suffix name="top10"
-      label="Custom histogram for Alexa's Top10 non-Google sites"/>
-  <suffix name="youtube" label="Custom histogram for Youtube"/>
-  <affected-histogram name="V8.MemoryHeapSampleTotalCommitted"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="V8WasmSeparateAsmAndWasm" separator=".">
-  <suffix name="asm" label="This histogram contains results for asm.js."/>
-  <suffix name="wasm"
-      label="This histogram contains results for wasm modules."/>
-  <affected-histogram name="V8.WasmCompileFunctionMicroSeconds"/>
-  <affected-histogram name="V8.WasmCompileModuleMicroSeconds"/>
-  <affected-histogram name="V8.WasmFunctionsPerModule"/>
-  <affected-histogram name="V8.WasmHugeFunctionSizeBytes"/>
-  <affected-histogram name="V8.WasmInstantiateModuleMicroSeconds"/>
-  <affected-histogram name="V8.WasmModuleSizeBytes"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="VideoFrameRateRange" separator=".">
