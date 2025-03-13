@@ -20,16 +20,17 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -410,9 +411,10 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
   if (BleedAvoidanceIsClipping(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
-    FloatRoundedRect border =
-        RoundedBorderGeometry::PixelSnappedRoundedBorder(style, paint_rect);
-    paint_info.context.ClipRoundedRect(border);
+
+    ContouredRect border =
+        ContouredBorderGeometry::PixelSnappedContouredBorder(style, paint_rect);
+    paint_info.context.ClipContouredRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
         kBackgroundBleedClipLayer) {

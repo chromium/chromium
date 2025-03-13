@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -38,21 +39,21 @@ FloatRoundedRect::Radii CalcRadiiFor(const ComputedStyle& style,
 }
 
 float EffectiveCurvature(Superellipse superellipse, const gfx::SizeF& radius) {
-  return radius.IsEmpty() ? FloatRoundedRect::CornerCurvature::kRound
+  return radius.IsEmpty() ? ContouredRect::CornerCurvature::kRound
                           : superellipse.Exponent();
 }
 
-FloatRoundedRect::CornerCurvature CalcCurvatureFor(
+ContouredRect::CornerCurvature CalcCurvatureFor(
     const ComputedStyle& style,
     const FloatRoundedRect::Radii& radii) {
-  return FloatRoundedRect::CornerCurvature(
+  return ContouredRect::CornerCurvature(
       EffectiveCurvature(style.CornerTopLeftShape(), radii.TopLeft()),
       EffectiveCurvature(style.CornerTopRightShape(), radii.TopRight()),
       EffectiveCurvature(style.CornerBottomRightShape(), radii.BottomRight()),
       EffectiveCurvature(style.CornerBottomLeftShape(), radii.BottomLeft()));
 }
 
-FloatRoundedRect PixelSnappedRoundedBorderInternal(
+ContouredRect PixelSnappedContouredBorderInternal(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
@@ -62,15 +63,19 @@ FloatRoundedRect PixelSnappedRoundedBorderInternal(
     rounded_rect.SetRadii(
         CalcRadiiFor(style, gfx::SizeF(border_rect.size), sides_to_include));
     rounded_rect.ConstrainRadii();
-    rounded_rect.SetCornerCurvature(
+  }
+
+  ContouredRect contoured_rect(rounded_rect);
+  if (rounded_rect.IsRounded()) {
+    contoured_rect.SetCornerCurvature(
         CalcCurvatureFor(style, rounded_rect.GetRadii()));
   }
-  return rounded_rect;
+  return contoured_rect;
 }
 
 }  // anonymous namespace
 
-FloatRoundedRect RoundedBorderGeometry::RoundedBorder(
+ContouredRect ContouredBorderGeometry::ContouredBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect) {
   FloatRoundedRect rounded_rect((gfx::RectF(border_rect)));
@@ -78,10 +83,13 @@ FloatRoundedRect RoundedBorderGeometry::RoundedBorder(
     rounded_rect.SetRadii(
         CalcRadiiFor(style, gfx::SizeF(border_rect.size), PhysicalBoxSides()));
     rounded_rect.ConstrainRadii();
-    rounded_rect.SetCornerCurvature(
+  }
+  ContouredRect contoured_rect(rounded_rect);
+  if (rounded_rect.IsRounded()) {
+    contoured_rect.SetCornerCurvature(
         CalcCurvatureFor(style, rounded_rect.GetRadii()));
   }
-  return rounded_rect;
+  return contoured_rect;
 }
 
 // Each corner is rendered independently and its rendering should remain within
@@ -114,12 +122,12 @@ gfx::SizeF InsetOuterCornerSizeForCurvature(const gfx::SizeF& corner_size,
                     horizontal_border_width * offset_from_outer_edge);
 }
 
-FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
+ContouredRect ContouredBorderGeometry::PixelSnappedContouredBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
-  FloatRoundedRect rounded_rect =
-      PixelSnappedRoundedBorderInternal(style, border_rect, sides_to_include);
+  ContouredRect rounded_rect =
+      PixelSnappedContouredBorderInternal(style, border_rect, sides_to_include);
   const auto& curvature = rounded_rect.GetCornerCurvature();
 
   FloatRoundedRect::Radii radii = rounded_rect.GetRadii();
@@ -158,10 +166,10 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
   return rounded_rect;
 }
 
-FloatRoundedRect RoundedBorderGeometry::RoundedInnerBorder(
+ContouredRect ContouredBorderGeometry::ContouredInnerBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect) {
-  FloatRoundedRect rounded_border = RoundedBorder(style, border_rect);
+  ContouredRect rounded_border = ContouredBorder(style, border_rect);
   rounded_border.Inset(gfx::InsetsF()
                            .set_top(style.BorderTopWidth())
                            .set_right(style.BorderRightWidth())
@@ -170,18 +178,18 @@ FloatRoundedRect RoundedBorderGeometry::RoundedInnerBorder(
   return rounded_border;
 }
 
-FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+ContouredRect ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
-  return PixelSnappedRoundedBorderWithOutsets(
+  return PixelSnappedContouredBorderWithOutsets(
       style, border_rect,
       PhysicalBoxStrut(-style.BorderTopWidth(), -style.BorderRightWidth(),
                        -style.BorderBottomWidth(), -style.BorderLeftWidth()),
       sides_to_include);
 }
 
-FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+ContouredRect ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     const PhysicalBoxStrut& outsets,
@@ -200,22 +208,23 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
   // preventing an inner border for a very thin element from snapping to
   // zero size as occurs when a unit width border is applied to a sub-pixel
   // sized element. So round without forcing non-near-zero sizes to one.
-  FloatRoundedRect rounded_rect(gfx::Rect(
+  ContouredRect contoured_rect(FloatRoundedRect(gfx::Rect(
       ToRoundedPoint(rect_with_outsets.offset),
       gfx::Size(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
                                             rect_with_outsets.X()),
                 SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
-                                            rect_with_outsets.Y()))));
+                                            rect_with_outsets.Y())))));
 
   if (style.HasBorderRadius()) {
-    FloatRoundedRect pixel_snapped_rounded_border =
-        PixelSnappedRoundedBorderInternal(style, border_rect, sides_to_include);
+    ContouredRect pixel_snapped_rounded_border =
+        PixelSnappedContouredBorderInternal(style, border_rect,
+                                            sides_to_include);
     pixel_snapped_rounded_border.Outset(gfx::OutsetsF(adjusted_outsets));
-    rounded_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
-    rounded_rect.SetCornerCurvature(
+    contoured_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
+    contoured_rect.SetCornerCurvature(
         pixel_snapped_rounded_border.GetCornerCurvature());
   }
-  return rounded_rect;
+  return contoured_rect;
 }
 
 }  // namespace blink

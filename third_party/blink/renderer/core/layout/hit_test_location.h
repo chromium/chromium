@@ -32,7 +32,7 @@
 
 namespace blink {
 
-class FloatRoundedRect;
+class ContouredRect;
 class Path;
 
 class CORE_EXPORT HitTestLocation {
@@ -91,7 +91,7 @@ class CORE_EXPORT HitTestLocation {
   // Uses floating-point intersection, which uses inclusive intersection
   // (see PhysicalRect::InclusiveIntersect for a definition)
   bool Intersects(const gfx::RectF&) const;
-  bool Intersects(const FloatRoundedRect&) const;
+  bool Intersects(const ContouredRect&) const;
   bool Intersects(const gfx::QuadF&) const;
   bool ContainsPoint(const gfx::PointF&) const;
 
