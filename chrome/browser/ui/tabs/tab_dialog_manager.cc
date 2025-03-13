@@ -245,8 +245,6 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
 }
 
 void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
-  CHECK(tab_interface_->CanShowModalUI());
-  CHECK(!widget_);
   widget_ = widget;
   auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
   ConfigureDesiredBoundsDelegate(widget_.get(), browser_window_interface);
