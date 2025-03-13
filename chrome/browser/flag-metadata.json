@@ -7630,7 +7630,7 @@
   {
       "name": "replace-sync-promos-with-sign-in-promos",
       "owners": [ "myuu@google.com", "bsazonov@chromium.org", "chrome-signin-team@google.com" ],
-      "expiry_milestone": 136
+      "expiry_milestone": 137
   },
   {
     "name": "reset-audio-selection-improvement-pref",
