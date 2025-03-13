@@ -23,32 +23,20 @@
 namespace autofill {
 
 AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
-  switch (type.name()) {
-    case AttributeTypeName::kPassportName:
-    case AttributeTypeName::kDriversLicenseName:
+  switch (type.data_type()) {
+    case AttributeType::DataType::kName:
       info_ = NameInfo();
       break;
-    case AttributeTypeName::kPassportCountry:
+    case AttributeType::DataType::kCountry:
       info_ = CountryInfo();
       break;
-    case AttributeTypeName::kPassportExpirationDate:
-    case AttributeTypeName::kPassportIssueDate:
-    case AttributeTypeName::kDriversLicenseExpirationDate:
-    case AttributeTypeName::kDriversLicenseIssueDate:
+    case AttributeType::DataType::kDate:
       info_ = DateInfo();
       break;
-    case AttributeTypeName::kVehiclePlateState:
-    case AttributeTypeName::kDriversLicenseState:
+    case AttributeType::DataType::kState:
       info_ = StateInfo();
       break;
-    case AttributeTypeName::kPassportNumber:
-    case AttributeTypeName::kVehicleOwner:
-    case AttributeTypeName::kVehiclePlateNumber:
-    case AttributeTypeName::kVehicleVin:
-    case AttributeTypeName::kVehicleMake:
-    case AttributeTypeName::kVehicleModel:
-    case AttributeTypeName::kVehicleYear:
-    case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeType::DataType::kString:
       info_ = u"";
       break;
   }

@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -37,6 +38,16 @@ class AttributeType;
 // merely a thin wrapper with member functions.
 class AttributeType final {
  public:
+  // The underlying representation of the data stored in this attribute.
+  enum class DataType {
+    kCountry,
+    kDate,
+    kName,
+    kState,
+    kString,
+    kMaxValue = kString,
+  };
+
   // Comparator that ranks types by their priority for disambiguating different
   // instances of the same entity type, as specified in the schema.
   // `DisambiguationOrder(x, y) == true` means `x` has higher priority than `y`.
@@ -61,6 +72,8 @@ class AttributeType final {
   constexpr AttributeTypeName name() const { return name_; }
 
   EntityType entity_type() const;
+
+  constexpr DataType data_type() const;
 
   // Maps this AttributeType to the corresponding Autofill AI `FieldType`.
   constexpr FieldType field_type() const;
@@ -87,6 +100,34 @@ class AttributeType final {
  private:
   AttributeTypeName name_{};
 };
+
+constexpr AttributeType::DataType AttributeType::data_type() const {
+  switch (name_) {
+    case AttributeTypeName::kPassportName:
+    case AttributeTypeName::kDriversLicenseName:
+      return DataType::kName;
+    case AttributeTypeName::kPassportCountry:
+      return DataType::kCountry;
+    case AttributeTypeName::kPassportExpirationDate:
+    case AttributeTypeName::kPassportIssueDate:
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      return DataType::kDate;
+    case AttributeTypeName::kVehiclePlateState:
+    case AttributeTypeName::kDriversLicenseState:
+      return DataType::kState;
+    case AttributeTypeName::kPassportNumber:
+    case AttributeTypeName::kVehicleOwner:
+    case AttributeTypeName::kVehiclePlateNumber:
+    case AttributeTypeName::kVehicleVin:
+    case AttributeTypeName::kVehicleMake:
+    case AttributeTypeName::kVehicleModel:
+    case AttributeTypeName::kVehicleYear:
+    case AttributeTypeName::kDriversLicenseNumber:
+      return DataType::kString;
+  }
+  NOTREACHED();
+}
 
 constexpr FieldType AttributeType::field_type() const {
   switch (name_) {
