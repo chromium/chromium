@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.N
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -205,17 +206,11 @@ import java.util.function.Function;
 
             @Override
             protected void onPostExecute(@Nullable T result) {
-                // TODO(crbug.com/388114708): currently the callback is not called on failure to
-                // match the behavior of NotificationManangerproxyImpl. But this should be changed
-                // to always call the callback as it might cause undesirable consequences.
-                @NotificationEvent int event;
-                if (result != null) {
-                    callback.onResult(result);
-                    event = NotificationEvent.HAS_CALLBACK_SUCCESS;
-                } else {
-                    event = NotificationEvent.HAS_CALLBACK_FAILED;
-                }
-                NotificationProxyUtils.recordNotificationEventHistogram(event);
+                NotificationProxyUtils.recordNotificationEventHistogram(
+                        result == null
+                                ? NotificationEvent.HAS_CALLBACK_FAILED
+                                : NotificationEvent.HAS_CALLBACK_SUCCESS);
+                callback.onResult(Objects.requireNonNullElse(result, null));
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
