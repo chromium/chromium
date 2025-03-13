@@ -29,11 +29,6 @@ namespace {
 
 bool g_disable_auto_retry_for_testing = false;
 
-bool IsEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kWebAppSyncGeneratedIconBackgroundFix);
-}
-
 }  // namespace
 
 // static
@@ -51,10 +46,6 @@ void GeneratedIconFixManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void GeneratedIconFixManager::Start() {
-  if (!IsEnabled()) {
-    return;
-  }
-
   provider_->scheduler().ScheduleCallback(
       "GeneratedIconFixManager::Start", AllAppsLockDescription(),
       base::BindOnce(&GeneratedIconFixManager::ScheduleFixes,
@@ -94,8 +85,6 @@ void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
 bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
                                                WithAppResources& resources,
                                                base::Value::Dict& debug_value) {
-  CHECK(IsEnabled());
-
   const WebApp* app = resources.registrar().GetAppById(app_id);
   GeneratedIconFixScheduleDecision decision = MakeScheduleDecision(app);
 

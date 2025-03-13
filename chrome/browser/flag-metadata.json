@@ -9247,21 +9247,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "web-app-sync-generated-icon-background-fix",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "web-app-sync-generated-icon-retroactive-fix",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "web-app-sync-generated-icon-update-fix",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "web-app-user-display-mode-sync-browser-mitigation",
     "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132

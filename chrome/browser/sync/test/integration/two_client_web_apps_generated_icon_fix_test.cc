@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
@@ -176,9 +175,6 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
   base::flat_map<raw_ptr<Profile>, raw_ptr<FakeWebAppProvider>> fake_providers_;
 
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kWebAppSyncGeneratedIconBackgroundFix};
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {

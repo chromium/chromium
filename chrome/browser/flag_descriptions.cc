@@ -5309,26 +5309,6 @@ const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
 
-const char kWebAppSyncGeneratedIconBackgroundFixName[] =
-    "Web App Sync Generated Icon Background Fix";
-const char kWebAppSyncGeneratedIconBackgroundFixDescription[] =
-    "Schedules attempts to fix generated icons for sync installed web apps in "
-    "the background with exponential backoff within their permitted fix time "
-    "window.";
-
-const char kWebAppSyncGeneratedIconRetroactiveFixName[] =
-    "Web App Sync Generated Icon Retroactive Fix";
-const char kWebAppSyncGeneratedIconRetroactiveFixDescription[] =
-    "Starts a time window for existing sync installed web apps with generated "
-    "icons for background/update events to attempt fixes.";
-
-const char kWebAppSyncGeneratedIconUpdateFixName[] =
-    "Web App Sync Generated Icon Update Fix";
-const char kWebAppSyncGeneratedIconUpdateFixDescription[] =
-    "Allows web apps installed via sync to update their icons without prompting"
-    "during a manifest update if the icons were generated, indicative of"
-    "network errors during the sync install.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kTranslateOpenSettingsName[] = "Translate Open Settings";
 const char kTranslateOpenSettingsDescription[] =

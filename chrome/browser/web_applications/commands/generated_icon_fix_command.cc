@@ -40,8 +40,6 @@ GeneratedIconFixCommand::GeneratedIconFixCommand(
           GeneratedIconFixResult::kShutdown),
       app_id_(std::move(app_id)),
       source_(source) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kWebAppSyncGeneratedIconBackgroundFix));
   GetMutableDebugValue().Set("app_id", app_id_);
   GetMutableDebugValue().Set("source", base::ToString(source_));
   GetMutableDebugValue().Set("stop_location", stop_location_.ToString());

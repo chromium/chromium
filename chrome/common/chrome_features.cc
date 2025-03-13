@@ -1529,18 +1529,6 @@ BASE_FEATURE(kWebAppDontAddExistingAppsToSync,
 BASE_FEATURE(kWebAppManifestIconUpdating,
              "WebAppManifestIconUpdating",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAppSyncGeneratedIconBackgroundFix,
-             "WebAppSyncGeneratedIconBackgroundFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAppSyncGeneratedIconRetroactiveFix,
-             "WebAppSyncGeneratedIconRetroactiveFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAppSyncGeneratedIconUpdateFix,
-             "WebAppSyncGeneratedIconUpdateFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
