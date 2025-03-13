@@ -39,7 +39,9 @@ void DisconnectWindowAura::Start(
     const base::WeakPtr<ClientSessionControl>& client_session_control) {
   ash::Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
       base::BindRepeating(&ClientSessionControl::DisconnectSession,
-                          client_session_control, ErrorCode::OK));
+                          client_session_control, ErrorCode::OK,
+                          "Remote screen share stopped by the user.",
+                          FROM_HERE));
 }
 
 }  // namespace

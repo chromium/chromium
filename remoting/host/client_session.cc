@@ -25,6 +25,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -563,9 +564,12 @@ void ClientSession::OnConnectionAuthenticated(
       event_handler_->OnSessionPoliciesReceived(effective_policies_);
 
   if (validation_result.has_value()) {
-    LOG(ERROR) << "Session policies disallowed by validator. Error code: "
-               << static_cast<int>(*validation_result);
-    DisconnectSession(*validation_result);
+    // TODO: crbug.com/382334458 - Include error details and location in the
+    // validation result.
+    std::string error_details = base::StringPrintf(
+        "Session policies disallowed by validator. Error code: %d",
+        static_cast<int>(*validation_result));
+    DisconnectSession(*validation_result, error_details, FROM_HERE);
     return;
   }
 
@@ -575,7 +579,9 @@ void ClientSession::OnConnectionAuthenticated(
     max_duration_timer_.Start(
         FROM_HERE, max_duration,
         base::BindOnce(&ClientSession::DisconnectSession,
-                       base::Unretained(this), ErrorCode::MAX_SESSION_LENGTH));
+                       base::Unretained(this), ErrorCode::MAX_SESSION_LENGTH,
+                       "Maximum session duration has been reached.",
+                       FROM_HERE));
   }
 
   // Notify EventHandler.
@@ -823,7 +829,9 @@ const std::string& ClientSession::client_jid() const {
   return client_jid_;
 }
 
-void ClientSession::DisconnectSession(protocol::ErrorCode error) {
+void ClientSession::DisconnectSession(ErrorCode error,
+                                      std::string_view error_details,
+                                      const base::Location& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection_.get());
 
@@ -831,16 +839,17 @@ void ClientSession::DisconnectSession(protocol::ErrorCode error) {
 
   // This triggers OnConnectionClosed(), and the session may be destroyed
   // as the result, so this call must be the last in this method.
-  connection_->Disconnect(error);
+  connection_->Disconnect(error, error_details, error_location);
 }
 
 void ClientSession::OnLocalKeyPressed(std::uint32_t usb_keycode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_local = remote_input_filter_.LocalKeyPressed(usb_keycode);
   if (is_local && desktop_environment_options_.terminate_upon_input()) {
-    LOG(WARNING)
-        << "Disconnecting CRD session because local input was detected.";
-    DisconnectSession(ErrorCode::OK);
+    DisconnectSession(
+        ErrorCode::OK,
+        "Disconnecting CRD session because local keyboard input was detected.",
+        FROM_HERE);
   }
 }
 
@@ -850,9 +859,10 @@ void ClientSession::OnLocalPointerMoved(const webrtc::DesktopVector& position,
   bool is_local = remote_input_filter_.LocalPointerMoved(position, type);
   if (is_local) {
     if (desktop_environment_options_.terminate_upon_input()) {
-      LOG(WARNING)
-          << "Disconnecting CRD session because local input was detected.";
-      DisconnectSession(ErrorCode::OK);
+      DisconnectSession(
+          ErrorCode::OK,
+          "Disconnecting CRD session because local mouse input was detected.",
+          FROM_HERE);
     } else {
       desktop_and_cursor_composer_notifier_.OnLocalInput();
     }
@@ -1027,7 +1037,8 @@ void ClientSession::OnDesktopEnvironmentCreated(
   // Drop the connection if it could not be created for any reason (for instance
   // the curtain could not initialize).
   if (!desktop_environment) {
-    DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR);
+    DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                      "Failed to create desktop environment.", FROM_HERE);
     return;
   }
   desktop_environment_ = std::move(desktop_environment);
@@ -1095,8 +1106,9 @@ void ClientSession::OnDesktopEnvironmentCreated(
 void ClientSession::OnLocalSessionPoliciesChanged(
     const SessionPolicies& new_policies) {
   DCHECK(local_session_policy_update_subscription_);
-  HOST_LOG << "Effective policies have changed. Terminating session.";
-  DisconnectSession(ErrorCode::SESSION_POLICIES_CHANGED);
+  DisconnectSession(ErrorCode::SESSION_POLICIES_CHANGED,
+                    "Effective policies have changed. Terminating session.",
+                    FROM_HERE);
 }
 
 void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,

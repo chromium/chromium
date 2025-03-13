@@ -19,11 +19,11 @@
 
   promise_test(async() => {
 
-    function onMessageWithTimeout() {
+    function onMessageWithTimeout(name) {
       return new Promise((resolve, reject) => {
 
       const timeoutID = step_timeout(() => {
-        reject(new Error("Timeout: Didn't receive message"));
+        reject(new Error("Timeout: Didn't receive message for " + name));
         onmessage = null;
       }, 3000);
 
@@ -34,9 +34,10 @@
     });
     };
 
-    const iframeLoadable = document.createElement('iframe');
-    const iframeLoadablePromise = onMessageWithTimeout();
     // Step 0.
+    const iframeLoadable = document.createElement('iframe');
+    const iframeLoadablePromise = onMessageWithTimeout("Step 0");
+
     iframeLoadable.src = "http://{{hosts[][]}}:{{ports[http][0]}}/hsts/resources/hsts.html";
     document.body.appendChild(iframeLoadable);
     await iframeLoadablePromise;
@@ -45,21 +46,23 @@
     // Add HSTS pin for domain.
     await fetch("https://{{hosts[alt][]}}:{{ports[https][0]}}/hsts/resources/hsts.html?as-fetch");
 
+    // Step 2.
     // Note: HTTP, not HTTPS:
     const hstsIframe = document.createElement('iframe');
-    const hstsIframePromise = onMessageWithTimeout()
+    const hstsIframePromise = onMessageWithTimeout("Step 2")
     .then(resolve => assert_false(true, "HSTS iframe unexpectedly loaded"),
                                   reject => {/*frame didn't load, as expected */});
-    // Step 2.
+
     hstsIframe.src = "http://{{hosts[alt][]}}:{{ports[https][0]}}/hsts/resources/hsts.html";
     document.body.appendChild(hstsIframe);
     await hstsIframePromise;
 
-    const hstsWindowPromise = onMessageWithTimeout()
+    // Step 3.
+    const hstsWindowPromise = onMessageWithTimeout("Step 3")
     .then((event) =>
       assert_equals(event.data.origin,
                     "https://{{hosts[alt][]}}:{{ports[https][0]}}"));
-    // Step 3.
+
     const w = window.open("http://{{hosts[alt][]}}:{{ports[https][0]}}/hsts/resources/post-origin-to-opener.html", "_blank");
     if(!w) {
       assert_false(true, "Window didn't open. Is there a popup blocker?");

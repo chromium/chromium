@@ -278,6 +278,7 @@ class RenderViewContextMenu
       bool is_full_page_translation) const;
 
   bool IsInProgressiveWebApp() const;
+  bool IsLinkToIsolatedWebApp() const;
 
   void AppendDeveloperItems();
   void AppendDevtoolsForUnpackedExtensions();

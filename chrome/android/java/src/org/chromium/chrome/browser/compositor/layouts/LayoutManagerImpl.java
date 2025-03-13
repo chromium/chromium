@@ -205,6 +205,7 @@ public class LayoutManagerImpl
             // Open the new tab
             if (type == TabLaunchType.FROM_RESTORE
                     || type == TabLaunchType.FROM_REPARENTING
+                    || type == TabLaunchType.FROM_REPARENTING_BACKGROUND
                     || type == TabLaunchType.FROM_EXTERNAL_APP
                     || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
                     || type == TabLaunchType.FROM_STARTUP

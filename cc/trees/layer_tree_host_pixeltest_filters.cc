@@ -386,8 +386,10 @@ INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     LayerTreeHostBlurFiltersPixelTestGPULayerList);
 
+// TODO(michaelludwig): Re-enable after Skia roll and update expected images.
+// See skbug.com/9545
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
-       BackdropFilterBlurOffAxis) {
+       DISABLED_BackdropFilterBlurOffAxis) {
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN)
   // Windows has 116 pixels off by at most 2: crbug.com/225027

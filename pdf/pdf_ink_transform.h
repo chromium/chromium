@@ -131,13 +131,17 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
 
 // Returns a transform that converts from canonical coordinates (which has a
 // top-left origin and a different DPI), to PDF coordinates (which has a
-// bottom-left origin).
+// bottom-left origin).  The translation accounts for any difference from the
+// defined physical page size to the cropped, visible portion of the PDF page.
 //
 // `page_height` is in points. It must not be negative.
+// `translate` is in points.
 //
 // Note that callers can call gfx::AxisTransform2d::Invert() to get a transform
 // that does conversions in the opposite direction.
-gfx::AxisTransform2d GetCanonicalToPdfTransform(float page_height);
+gfx::AxisTransform2d GetCanonicalToPdfTransform(
+    float page_height,
+    const gfx::Vector2dF& translate);
 
 }  // namespace chrome_pdf
 

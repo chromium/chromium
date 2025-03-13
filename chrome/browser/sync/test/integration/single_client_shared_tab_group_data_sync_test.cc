@@ -305,8 +305,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
   }
 }
 
+// Flaky: crbug.com/403333571
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
-                       ShouldTransitionSavedToSharedTabGroup) {
+                       DISABLED_ShouldTransitionSavedToSharedTabGroup) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
   ASSERT_TRUE(SetupSync());
 
@@ -381,8 +382,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
             saved_group_specifics.guid());
 }
 
+// Flaky: crbug.com/403333571
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
-                       ShouldTransitionSavedToSharedGroupRemotely) {
+                       DISABLED_ShouldTransitionSavedToSharedGroupRemotely) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
   const std::string kCollaborationId = "collaboration";
 

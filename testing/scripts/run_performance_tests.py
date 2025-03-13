@@ -729,6 +729,7 @@ class CrossbenchTest(object):
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
   BENCHMARK_FILESERVERS = {
+      'speedometer_3.1': 'third_party/speedometer/v3.1',
       'speedometer_3.0': 'third_party/speedometer/v3.0',
       'speedometer_2.1': 'third_party/speedometer/v2.1',
       'speedometer_2.0': 'third_party/speedometer/v2.0'

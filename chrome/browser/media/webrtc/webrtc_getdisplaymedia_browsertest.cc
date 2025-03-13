@@ -1051,7 +1051,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {
   // The HiDPI scale change only occurs once the capture has actually started
   // and the size information was propagated back to the browser process.
   // Waiting for the video to start playing helps ensure that this is the case.
-  StartDetectingVideo(Tab(), "local-view");
+  StartDetectingVideo(Tab(), "video");
   WaitForVideoToPlay(Tab());
 
   // If the video size is higher resolution than the browser window
@@ -1689,6 +1689,14 @@ class CaptureSessionDetails {
         "send-wheel-resolved");
   }
 
+  // Forwards from the target element, or stops forwarding if target is "null".
+  void ForwardWheel(const std::string& target) {
+    EXPECT_EQ(content::EvalJs(
+                  capturing_tab_->GetPrimaryMainFrame(),
+                  base::StringPrintf("forwardWheel(%s);", target.c_str())),
+              "forward-wheel-resolved");
+  }
+
   void UpdateZoomLevel(const std::string& action, bool expect_success = true) {
     const std::string command =
         base::StringPrintf("updateZoomLevel(\"%s\");", action);
@@ -1787,12 +1795,14 @@ class CaptureSessionDetails {
   raw_ptr<MockCapturedSurfaceController> mock_captured_surface_controller_;
 };
 
-class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
+class CapturedSurfaceControlTest : public WebRtcTestBase {
  public:
   enum class Action {
     // TODO(crbug.com/40276312): Migrate from sendWheel() to either
     // forwardWheel() or forwardGestures(), whichever the case may be.
     kSendWheel,
+    kForwardWheel,      // forwardWheel(validElement)
+    kForwardWheelNull,  // forwardWheel(null)
     kIncreaseZoomLevel,
     kDecreaseZoomLevel,
     kResetZoomLevel,
@@ -1809,6 +1819,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
       case Action::kResetZoomLevel:
         return "reset";
       case Action::kSendWheel:
+      case Action::kForwardWheel:
+      case Action::kForwardWheelNull:
       case Action::kGetZoomLevel:
       case Action::kGetSupportedZoomLevels:
         break;
@@ -1816,15 +1828,17 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     NOTREACHED() << "Not a ZoomLevelAction.";
   }
 
-  static bool IsWriteAccessAction(Action action) {
+  static bool ShouldTriggerCscIndicator(Action action) {
     switch (action) {
       case Action::kSendWheel:
+      case Action::kForwardWheel:
       case Action::kIncreaseZoomLevel:
       case Action::kDecreaseZoomLevel:
       case Action::kResetZoomLevel:
         return true;
       case Action::kGetZoomLevel:
       case Action::kGetSupportedZoomLevels:
+      case Action::kForwardWheelNull:
         return false;
     }
     NOTREACHED();
@@ -1835,6 +1849,12 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     switch (action) {
       case Action::kSendWheel:
         capture_session.SendWheel();
+        return;
+      case Action::kForwardWheel:
+        capture_session.ForwardWheel("video");
+        return;
+      case Action::kForwardWheelNull:
+        capture_session.ForwardWheel("null");
         return;
       case Action::kIncreaseZoomLevel:
       case Action::kDecreaseZoomLevel:
@@ -1851,8 +1871,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     NOTREACHED();
   }
 
-  GetDisplayMediaCapturedSurfaceControlTest() = default;
-  ~GetDisplayMediaCapturedSurfaceControlTest() override = default;
+  CapturedSurfaceControlTest() = default;
+  ~CapturedSurfaceControlTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
@@ -1909,9 +1929,9 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-using CscAction = GetDisplayMediaCapturedSurfaceControlTest::Action;
+using CscAction = CapturedSurfaceControlTest::Action;
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        UnboundCaptureControllerReportNullZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1922,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(capture_session.GetZoomLevel(), std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        CorrectlyReportDefaultCapturedSurfaceZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1935,7 +1955,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        CorrectlyReportNonDefaultCapturedSurfaceZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1956,7 +1976,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 50);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        GetSupportedZoomLevelsFailsOnUnboundCaptureController) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1970,7 +1990,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        GetSupportedZoomLevelsSucceedsIfCapturingTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1981,7 +2001,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_TRUE(capture_session.GetSupportedZoomLevels().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        GetSupportedZoomLevelsMonotonouslyIncreasing) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1999,7 +2019,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        GetSupportedZoomLevelsFailsIfTracksStopped) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2018,7 +2038,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    GetDisplayMediaCapturedSurfaceControlTest,
+    CapturedSurfaceControlTest,
     NoZoomLevelChangeEventFiredWhenCaptureStartsWithDefaultZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2031,7 +2051,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    GetDisplayMediaCapturedSurfaceControlTest,
+    CapturedSurfaceControlTest,
     NoZoomLevelChangeEventFiredWhenCaptureStartsWithNonDefaultZoomLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2050,7 +2070,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        IncreaseZoomLevelSucceedsBelowMaxValue) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2069,7 +2089,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        IncreaseZoomLevelFailsAtMaxValue) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2090,7 +2110,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        IncreaseZoomLevelIssuesEvent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2102,7 +2122,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        DecreaseZoomLevelSucceedsAboveMinValue) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2121,7 +2141,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        DecreaseZoomLevelFailsAtMinValue) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2142,7 +2162,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        DecreaseZoomLevelIssuesEvent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2156,7 +2176,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
 
 // The "expected" case of resetZoomLevel() - changing *back* to
 // the default value.
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ResetZoomLevelSucceedsIfNonDefaultLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2184,7 +2204,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
 
 // The less "expected" case of resetZoomLevel() - calling reset...()
 // when already at the default value. Should be no-op but succeed.
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ResetZoomLevelSucceedsIfDefaultLevel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2203,9 +2223,9 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(capture_session.GetZoomLevel(), 100);
 }
 
-void GetDisplayMediaCapturedSurfaceControlTest::
-    RunChangingCapturedTabZoomChangeEventTest(double zoom_level_first_tab,
-                                              double zoom_level_second_tab) {
+void CapturedSurfaceControlTest::RunChangingCapturedTabZoomChangeEventTest(
+    double zoom_level_first_tab,
+    double zoom_level_second_tab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   CaptureSessionDetails capture_session =
@@ -2236,19 +2256,19 @@ void GetDisplayMediaCapturedSurfaceControlTest::
             expected_event_count);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangingCapturedTabIssuesEventIfDifferentZoomLevels) {
   SCOPED_TRACE("ChangingCapturedTabIssuesEventIfDifferentZoomLevels");
   RunChangingCapturedTabZoomChangeEventTest(0.5, 0.75);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels) {
   SCOPED_TRACE("ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels");
   RunChangingCapturedTabZoomChangeEventTest(0.5, 0.5);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ResetZoomLevelOnlyIssuesEventsWhenZoomLevelChanges) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2282,7 +2302,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 2);
 }
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangeSourceTriggersUpdateCaptureTarget) {
   SCOPED_TRACE("ChangeSourceTriggersUpdateCaptureTarget");
 
@@ -2305,9 +2325,8 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   capture_session.VerifyAndClearExpectations();
 }
 
-void GetDisplayMediaCapturedSurfaceControlTest::
-    RunChangeSourceWorksOnCorrectCaptureSession(
-        size_t session_experiencing_change) {
+void CapturedSurfaceControlTest::RunChangeSourceWorksOnCorrectCaptureSession(
+    size_t session_experiencing_change) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   CaptureSessionDetails capture_session_0 =
@@ -2341,28 +2360,28 @@ void GetDisplayMediaCapturedSurfaceControlTest::
 }
 
 // Test when the first of two capture sessions experiences the source-change.
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangeSourceWorksOnCorrectCaptureSession0) {
   SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession0");
   RunChangeSourceWorksOnCorrectCaptureSession(0);
 }
 
 // Test when the second of two capture sessions experiences the source-change.
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangeSourceWorksOnCorrectCaptureSession1) {
   SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession1");
   RunChangeSourceWorksOnCorrectCaptureSession(1);
 }
 
-class GetDisplayMediaCapturedSurfaceControlIndicatorTest
-    : public GetDisplayMediaCapturedSurfaceControlTest,
+class CapturedSurfaceControlIndicatorTest
+    : public CapturedSurfaceControlTest,
       public testing::WithParamInterface<CscAction> {
  public:
-  GetDisplayMediaCapturedSurfaceControlIndicatorTest() : action_(GetParam()) {}
-  ~GetDisplayMediaCapturedSurfaceControlIndicatorTest() override = default;
+  CapturedSurfaceControlIndicatorTest() : action_(GetParam()) {}
+  ~CapturedSurfaceControlIndicatorTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    GetDisplayMediaCapturedSurfaceControlTest::SetUpCommandLine(command_line);
+    CapturedSurfaceControlTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kAutoGrantCapturedSurfaceControlPrompt);
   }
@@ -2372,15 +2391,17 @@ class GetDisplayMediaCapturedSurfaceControlIndicatorTest
 };
 
 INSTANTIATE_TEST_SUITE_P(,
-                         GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+                         CapturedSurfaceControlIndicatorTest,
                          Values(CscAction::kSendWheel,
+                                CscAction::kForwardWheel,
+                                CscAction::kForwardWheelNull,
                                 CscAction::kIncreaseZoomLevel,
                                 CscAction::kDecreaseZoomLevel,
                                 CscAction::kResetZoomLevel,
                                 CscAction::kGetZoomLevel,
                                 CscAction::kGetSupportedZoomLevels));
 
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+IN_PROC_BROWSER_TEST_P(CapturedSurfaceControlIndicatorTest,
                        IndicatorNotShownBeforeApiInvocation) {
   SCOPED_TRACE("IndicatorNotShownBeforeApiInvocation");
 
@@ -2397,7 +2418,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
   EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
 }
 
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+IN_PROC_BROWSER_TEST_P(CapturedSurfaceControlIndicatorTest,
                        IndicatorShownAfterWriteAccessApiInvocation) {
   SCOPED_TRACE("IndicatorShownAfterWriteAccessApiInvocation");
 
@@ -2413,7 +2434,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
   // The capturing tab's infobar shows the CSC indicator, but only
   // if the action was a write-access action.
   EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
-            IsWriteAccessAction(action_));
+            ShouldTriggerCscIndicator(action_));
 
   // The CSC indicator is not shown on any other infobar.
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
@@ -2421,7 +2442,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+    CapturedSurfaceControlIndicatorTest,
     IndicatorStateRetainedAfterShareThisTabInsteadNoCscBefore) {
   SCOPED_TRACE("IndicatorStateRetainedAfterShareThisTabInsteadNoCscBefore");
 
@@ -2445,7 +2466,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+    CapturedSurfaceControlIndicatorTest,
     IndicatorStateRetainedAfterShareThisTabInsteadAfterCscAction) {
   SCOPED_TRACE("IndicatorStateRetainedAfterShareThisTabInsteadAfterCscAction");
 
@@ -2462,7 +2483,7 @@ IN_PROC_BROWSER_TEST_P(
   // The capturing tab's infobar show the CSC indicator if the action
   // was a write-access action.
   EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
-            IsWriteAccessAction(action_));
+            ShouldTriggerCscIndicator(action_));
 
   // The CSC indicator is not shown on any other infobar.
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
