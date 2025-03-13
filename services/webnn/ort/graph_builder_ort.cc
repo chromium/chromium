@@ -1926,10 +1926,10 @@ GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
 
   std::vector<int64_t> axes_value(reduce.axes.begin(), reduce.axes.end());
   std::string axes;
-  if (!axes.empty()) {
+  if (!axes_value.empty()) {
     // axes is an operand with data type int64, not an attribute.
     std::vector<uint32_t> axes_dims = {
-        base::checked_cast<uint32_t>(axes.size())};
+        base::checked_cast<uint32_t>(axes_value.size())};
     ASSIGN_OR_RETURN(axes, CreateInitializer<int64_t>(axes_dims, axes_value));
     inputs.push_back(axes.c_str());
   }
