@@ -11,6 +11,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -64,13 +65,14 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
     // TODO: Actually implement the hotkey when we know what it is.
     return Do([this]() {
       glic_service()->ToggleUI(nullptr, /*prevent_close=*/false,
-                               InvocationSource::kOsHotkey);
+                               mojom::InvocationSource::kOsHotkey);
     });
   }
 
   auto SimulateOpenMenuItem() {
-    return Do(
-        [this]() { glic_controller_->Show(InvocationSource::kOsButtonMenu); });
+    return Do([this]() {
+      glic_controller_->Show(mojom::InvocationSource::kOsButtonMenu);
+    });
   }
 
  private:

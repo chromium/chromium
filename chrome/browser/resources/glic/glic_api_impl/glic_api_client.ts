@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -62,12 +62,14 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     }
   }
 
-  async glicWebClientNotifyPanelWillOpen(payload: {panelState: PanelState}):
-      Promise<{openPanelInfo?: OpenPanelInfo}> {
+  async glicWebClientNotifyPanelWillOpen(payload: {
+    panelOpeningData: PanelOpeningData,
+  }): Promise<{openPanelInfo?: OpenPanelInfo}> {
     let openPanelInfo: OpenPanelInfo|undefined;
     try {
-      const result =
-          await this.webClient.notifyPanelWillOpen?.(payload.panelState);
+      const mergedArgument: PanelOpeningData&PanelState = Object.assign(
+          {}, payload.panelOpeningData, payload.panelOpeningData.panelState);
+      const result = await this.webClient.notifyPanelWillOpen?.(mergedArgument);
       if (result) {
         openPanelInfo = result;
       }

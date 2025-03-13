@@ -474,7 +474,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
                                     ->controller()
                                     ->GetBrowserWindowInterface();
   GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_)
-      ->ToggleUI(bwi, /*prevent_close=*/false, InvocationSource::kOsButton);
+      ->ToggleUI(bwi, /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
 
   ASSERT_TRUE(service->window_controller().IsShowing());
 

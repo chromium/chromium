@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/fre_util.h"
-#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -155,7 +155,8 @@ void GlicFreController::AcceptFre() {
   if (Browser* new_attached_browser =
           chrome::FindLastActiveWithProfile(profile_)) {
     glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
-        new_attached_browser, /*prevent_close=*/true, InvocationSource::kFre);
+        new_attached_browser, /*prevent_close=*/true,
+        mojom::InvocationSource::kFre);
   }
 }
 

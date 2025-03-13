@@ -88,7 +88,7 @@ void GlicKeyedService::Shutdown() {
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
-                                InvocationSource source) {
+                                mojom::InvocationSource source) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.

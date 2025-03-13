@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {PanelStateKind} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicWebClient, Observable, PanelState} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 
@@ -43,7 +43,8 @@ class WebClient implements GlicWebClient {
     this.host = glicBrowserHost;
   }
 
-  async notifyPanelWillOpen(_panelState: PanelState): Promise<void> {
+  async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
+      Promise<void> {
     this.firstOpened.resolve();
   }
 }

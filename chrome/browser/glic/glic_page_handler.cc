@@ -255,9 +255,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     // signal.
     if (page_handler_->guest_contents() !=
         glic_service_->window_controller().GetWebContents()) {
-      const auto& panel_state =
-          glic_service_->window_controller().GetPanelState();
-      web_client_->NotifyPanelWillOpen(panel_state.Clone(), base::DoNothing());
+      mojom::PanelOpeningDataPtr panel_opening_data =
+          mojom::PanelOpeningData::New();
+      panel_opening_data->panel_state =
+          glic_service_->window_controller().GetPanelState().Clone();
+      // Defaulting invocation source to OS button.
+      panel_opening_data->invocation_source =
+          mojom::InvocationSource::kUnsupported;
+      web_client_->NotifyPanelWillOpen(std::move(panel_opening_data),
+                                       base::DoNothing());
     }
   }
 
@@ -427,10 +433,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   // GlicWebClientAccess implementation.
 
-  void PanelWillOpen(const glic::mojom::PanelState& panel_state,
+  void PanelWillOpen(glic::mojom::PanelOpeningDataPtr panel_opening_data,
                      PanelWillOpenCallback done) override {
     web_client_->NotifyPanelWillOpen(
-        panel_state.Clone(),
+        std::move(panel_opening_data),
         base::BindOnce(
             [](PanelWillOpenCallback done, glic::mojom::OpenPanelInfoPtr info) {
               base::UmaHistogramEnumeration("Glic.Api.NotifyPanelWillOpen",

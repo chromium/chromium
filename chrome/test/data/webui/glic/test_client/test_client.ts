@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
 import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
@@ -96,7 +96,14 @@ const $: PageElementTypes = new Proxy({}, {
 });
 
 function logMessage(message: string) {
-  $.status.append(message.slice(0, 100000), document.createElement('br'));
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const ss = String(d.getSeconds()).padStart(2, '0');
+  const ms = String(d.getMilliseconds()).padStart(3, '0');
+  const timeStamp = `${hh}:${mm}:${ss}.${ms}: `;
+  $.status.append(
+      timeStamp, message.slice(0, 100000), document.createElement('br'));
 }
 
 class TestInitFailure extends Error implements WebClientInitializeError {
@@ -150,9 +157,12 @@ class WebClient implements GlicWebClient {
     });
   }
 
-  async notifyPanelWillOpen(panelState: PanelState):
+  async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):
       Promise<void|OpenPanelInfo> {
-    logMessage(`notifyPanelWillOpen(${JSON.stringify(panelState)})`);
+    // Deleting backwards-compatible members coming from PanelState.
+    delete (panelOpeningData as Partial<PanelState>).kind;
+    delete (panelOpeningData as Partial<PanelState>).windowId;
+    logMessage(`notifyPanelWillOpen(${JSON.stringify(panelOpeningData)})`);
     return {
       startingMode: WebClientMode.TEXT,
       resizeParams: {

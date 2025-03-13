@@ -27,7 +27,7 @@ namespace {
 
 ResponseSegmentation GetResponseSegmentation(bool attached,
                                              mojom::WebClientMode mode,
-                                             InvocationSource source) {
+                                             mojom::InvocationSource source) {
   if (mode == mojom::WebClientMode::kUnknown) {
     return ResponseSegmentation::kUnknown;
   }
@@ -42,28 +42,31 @@ ResponseSegmentation GetResponseSegmentation(bool attached,
     entry += 2;
   }
   switch (source) {
-    case InvocationSource::kOsButton:
+    case mojom::InvocationSource::kOsButton:
       break;
-    case InvocationSource::kOsButtonMenu:
+    case mojom::InvocationSource::kOsButtonMenu:
       entry += 4;
       break;
-    case InvocationSource::kOsHotkey:
+    case mojom::InvocationSource::kOsHotkey:
       entry += 8;
       break;
-    case InvocationSource::kTopChromeButton:
+    case mojom::InvocationSource::kTopChromeButton:
       entry += 12;
       break;
-    case InvocationSource::kFre:
+    case mojom::InvocationSource::kFre:
       entry += 16;
       break;
-    case InvocationSource::kProfilePicker:
+    case mojom::InvocationSource::kProfilePicker:
       entry += 20;
       break;
-    case InvocationSource::kNudge:
+    case mojom::InvocationSource::kNudge:
       entry += 24;
       break;
-    case InvocationSource::kChroMenu:
+    case mojom::InvocationSource::kThreeDotsMenu:
       entry += 28;
+      break;
+    case mojom::InvocationSource::kUnsupported:
+      entry += 32;
       break;
   }
   return static_cast<ResponseSegmentation>(entry);
@@ -199,7 +202,8 @@ void GlicMetrics::OnResponseRated(bool positive) {
   base::UmaHistogramBoolean("Glic.Response.Rated", positive);
 }
 
-void GlicMetrics::OnGlicWindowOpen(bool attached, InvocationSource source) {
+void GlicMetrics::OnGlicWindowOpen(bool attached,
+                                   mojom::InvocationSource source) {
   base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
   session_start_time_ = base::TimeTicks::Now();
   invocation_source_ = source;
