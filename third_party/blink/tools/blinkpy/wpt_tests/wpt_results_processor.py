@@ -212,7 +212,7 @@ class WPTResult(Result):
                 self.actual = ResultType.Failure
         # When run with --no-expectations, all results are expected
         if self.no_expectations:
-            self.expected = self.actual
+            self.expected = [self.actual]
         self.unexpected = self.actual not in self.expected
         self.is_regression = self.actual != ResultType.Pass and self.unexpected
 
