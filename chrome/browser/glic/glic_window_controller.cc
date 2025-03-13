@@ -71,6 +71,14 @@ constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 constexpr char kHistogramGlicPanelPresentationTime[] =
     "Glic.PanelPresentationTime";
 
+#if BUILDFLAG(IS_MAC)
+constexpr int kFocusToggleAcceleratorModifiers =
+    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN;
+#else
+constexpr int kFocusToggleAcceleratorModifiers =
+    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
+#endif
+
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
   mojom::PanelState panel_state;
@@ -483,8 +491,8 @@ bool GlicWindowController::AcceleratorPressed(
     Close();
     return true;
   }
-  if (accelerator.key_code() == ui::VKEY_A && accelerator.IsAltDown() &&
-      accelerator.IsShiftDown()) {
+  if (accelerator.key_code() == ui::VKEY_A &&
+      accelerator.modifiers() == kFocusToggleAcceleratorModifiers) {
     // Transfer focus back to the browser.
     if (IsAttached()) {
       attached_browser_->window()->Activate();
@@ -512,7 +520,7 @@ void GlicWindowController::AddAccelerators() {
 
   glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   glic_view->AddAccelerator(
-      ui::Accelerator(ui::VKEY_A, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN, ));
+      ui::Accelerator(ui::VKEY_A, kFocusToggleAcceleratorModifiers));
 }
 
 void GlicWindowController::Show(Browser* browser,

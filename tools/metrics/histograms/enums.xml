@@ -657,8 +657,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="10" label="Component lost top-level auction"/>
   <int value="11" label="(obsolete) Winning component seller worklet crashed"/>
   <int value="12" label="Invalid server response"/>
-  <int value="13" label="Abort signal"/>
-  <int value="14" label="Document destruction"/>
+  <int value="13" label="Invalid auction nonce"/>
+  <int value="14" label="Abort signal"/>
+  <int value="15" label="Document destruction"/>
 </enum>
 
 <enum name="AuctionState">

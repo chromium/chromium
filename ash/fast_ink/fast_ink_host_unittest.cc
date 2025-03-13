@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/fast_ink/fast_ink_host_test_api.h"
 #include "ash/frame_sink/frame_sink_holder.h"
 #include "ash/frame_sink/test/frame_sink_host_test_base.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
@@ -124,16 +125,18 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
 }
 
 TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
+  FastInkHostTestApi fast_ink_host_test(frame_sink_host());
+
   // Buffer is not initialized when there is no begin frame received.
-  ASSERT_FALSE(frame_sink_host()->client_si_for_test());
+  ASSERT_FALSE(fast_ink_host_test.client_shared_image());
 
   // Request the first frame. It will call
   // `FrameSinkHost::OnFirstFrameRequested()` initializing the GPU buffer.
   OnBeginFrame();
 
   // MappableSI should be initialized after receiving the first begin frame.
-  ASSERT_TRUE(frame_sink_host()->client_si_for_test());
-  auto sync_token = frame_sink_host()->sync_token_for_test();
+  ASSERT_TRUE(fast_ink_host_test.client_shared_image());
+  auto sync_token = fast_ink_host_test.sync_token();
 
   // A new frame-sink will be created. FastInkHost should also create a new
   // shared image.
@@ -141,8 +144,8 @@ TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
       ->frame_sink_holder_for_testing()
       ->DidLoseLayerTreeFrameSink();
 
-  EXPECT_NE(sync_token, frame_sink_host()->sync_token_for_test());
-  sync_token = frame_sink_host()->sync_token_for_test();
+  EXPECT_NE(sync_token, fast_ink_host_test.sync_token());
+  sync_token = fast_ink_host_test.sync_token();
 
   // This will be the first OnBeginFrame for the new frame sink, therefore
   // `FrameSinkHost::OnFirstFrameRequested()` will be called again.
@@ -150,13 +153,15 @@ TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
 
   // Ensure we do not recreate a shared image on
   // `FrameSinkHost::OnFirstFrameRequested()`.
-  EXPECT_EQ(sync_token, frame_sink_host()->sync_token_for_test());
+  EXPECT_EQ(sync_token, fast_ink_host_test.sync_token());
 }
 
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
+  FastInkHostTestApi fast_ink_host_test(frame_sink_host());
+
   // Buffer is not initialized when there is no begin frame received.
-  ASSERT_FALSE(frame_sink_host()->client_si_for_test());
-  EXPECT_EQ(frame_sink_host()->get_pending_bitmaps_size_for_test(), 0);
+  ASSERT_FALSE(fast_ink_host_test.client_shared_image());
+  EXPECT_EQ(fast_ink_host_test.pending_bitmaps_size(), 0);
 
   int pending_bitmaps_size = 0;
   for (SkColor color : {SK_ColorRED, SK_ColorYELLOW, SK_ColorGREEN}) {
@@ -169,19 +174,18 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
     // The bitmap is waiting to be drawn because no gpu memory buffer is
     // initialized.
     ++pending_bitmaps_size;
-    EXPECT_EQ(frame_sink_host()->get_pending_bitmaps_size_for_test(),
-              pending_bitmaps_size);
+    EXPECT_EQ(fast_ink_host_test.pending_bitmaps_size(), pending_bitmaps_size);
   }
 
   // Request the first frame.
   OnBeginFrame();
 
   // MappableSI should be initialized after receiving the first begin frame.
-  ASSERT_TRUE(frame_sink_host()->client_si_for_test());
+  ASSERT_TRUE(fast_ink_host_test.client_shared_image());
   // Pending bitmaps should be drawn and cleared.
-  EXPECT_EQ(frame_sink_host()->get_pending_bitmaps_size_for_test(), 0);
+  EXPECT_EQ(fast_ink_host_test.pending_bitmaps_size(), 0);
 
-  auto mapping = frame_sink_host()->client_si_for_test()->Map();
+  auto mapping = fast_ink_host_test.client_shared_image()->Map();
   ASSERT_TRUE(mapping);
   // Pending bitmaps should be correctly copied to the MappableSI's buffer.
   EXPECT_EQ(*reinterpret_cast<SkColor*>(mapping->GetMemoryForPlane(0).data()),

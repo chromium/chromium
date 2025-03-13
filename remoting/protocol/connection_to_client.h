@@ -88,7 +88,9 @@ class ConnectionToClient {
   virtual Session* session() = 0;
 
   // Disconnect the client connection.
-  virtual void Disconnect(ErrorCode error) = 0;
+  virtual void Disconnect(ErrorCode error,
+                          std::string_view error_details,
+                          const base::Location& error_location) = 0;
 
   // Start video stream that sends screen content from |desktop_capturer| to the
   // client. |screen_id| should be webrtc::kFullDesktopScreenId for

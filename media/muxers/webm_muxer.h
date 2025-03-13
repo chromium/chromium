@@ -90,6 +90,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
 
  private:
   friend class WebmMuxerTest;
+  friend class WebmMuxerTestUnparametrized;
 
   // Methods for creating and adding video and audio tracks, called upon
   // receiving the first frame of a given Track.
@@ -98,7 +99,8 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // frame size.
   void AddVideoTrack(const gfx::Size& frame_size,
                      double frame_rate,
-                     const std::optional<gfx::ColorSpace>& color_space);
+                     std::optional<gfx::ColorSpace> color_space,
+                     std::optional<VideoTransformation> transformation);
   void AddAudioTrack(const AudioParameters& params);
   bool WriteWebmFrame(EncodedFrame frame, base::TimeDelta relative_timestamp);
 

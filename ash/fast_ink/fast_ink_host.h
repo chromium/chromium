@@ -26,6 +26,7 @@ class ClientSharedImage;
 }  // namespace gpu
 
 namespace ash {
+class FastInkHostTestApi;
 
 // FastInkHost is used to support low-latency rendering. It supports
 // 'auto-refresh' mode which provide minimum latency updates for the
@@ -68,16 +69,6 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     return window_to_buffer_transform_;
   }
 
-  gpu::ClientSharedImage* client_si_for_test() const {
-    return client_shared_image_.get();
-  }
-
-  int get_pending_bitmaps_size_for_test() const {
-    return pending_bitmaps_.size();
-  }
-
-  const gpu::SyncToken& sync_token_for_test() const { return sync_token_; }
-
   // FrameSinkHost:
   void Init(aura::Window* host_window) override;
   void InitForTesting(aura::Window* host_window,
@@ -95,6 +86,8 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
   void OnFrameSinkLost() override;
 
  private:
+  friend FastInkHostTestApi;
+
   void InitBufferMetadata(aura::Window* host_window);
   void InitializeFastInkBuffer(aura::Window* host_window);
   gfx::Rect BufferRectFromWindowRect(const gfx::Rect& rect_in_window) const;

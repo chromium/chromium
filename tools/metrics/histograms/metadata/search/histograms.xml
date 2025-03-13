@@ -40,9 +40,28 @@ chromium-metrics-reviews@google.com.
   <variant name="Tabs" summary="Tabs"/>
 </variants>
 
+<variants name="ContextualSearchQuickActionCategory">
+  <variant name=".Address" summary=""/>
+  <variant name=".Email" summary=""/>
+  <variant name=".Event" summary=""/>
+  <variant name=".None" summary=""/>
+  <variant name=".Phone" summary=""/>
+  <variant name=".Website" summary=""/>
+</variants>
+
 <variants name="ExternalAppType">
   <variant name="PixelLauncher" summary="Pixel launcher app"/>
   <variant name="ThirdPartyLauncher" summary="Third party launcher app"/>
+</variants>
+
+<variants name="SearchEnginePromoDeviceType">
+  <variant name=".ExistingDevice" summary=""/>
+  <variant name=".NewDevice" summary=""/>
+</variants>
+
+<variants name="TileUiSurface">
+  <variant name="NTP." summary="Query tiles section on the new tab page"/>
+  <variant name="Omnibox." summary="Query tiles suggestion on omnibox"/>
 </variants>
 
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
@@ -743,7 +762,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.Clicked"
+<histogram
+    name="Search.ContextualSearchQuickActions.Clicked{ContextualSearchQuickActionCategory}"
     enum="BooleanClicked" expires_after="never">
 <!-- expires-never: indicates completion of a user journey. -->
 
@@ -753,11 +773,16 @@ chromium-metrics-reviews@google.com.
     Whether a quick action in the Contextual Search bar was clicked, which
     activates the associated intent. Recorded when Contextual Search is
     dismissed due to a click on a QuickAction in the Bar. Implemented for
-    Android.
+    Android. {ContextualSearchQuickActionCategory}
   </summary>
+  <token key="ContextualSearchQuickActionCategory"
+      variants="ContextualSearchQuickActionCategory">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.IntentResolution"
+<histogram
+    name="Search.ContextualSearchQuickActions.IntentResolution{ContextualSearchQuickActionCategory}"
     enum="ContextualSearchQuickActionIntentResolution"
     expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
@@ -766,10 +791,16 @@ chromium-metrics-reviews@google.com.
     Whether a Contextual Search quick action intent resolved to zero, one, or
     many apps. Recorded when the quick action intent URI is resolved.
     Implemented for Android. (Expired in M81. Revived in M120.)
+    {ContextualSearchQuickActionCategory}
   </summary>
+  <token key="ContextualSearchQuickActionCategory"
+      variants="ContextualSearchQuickActionCategory">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.ResultsSeen"
+<histogram
+    name="Search.ContextualSearchQuickActions.ResultsSeen{ContextualSearchQuickActionCategory}"
     enum="ContextualSearchResultsSeen" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
@@ -777,7 +808,12 @@ chromium-metrics-reviews@google.com.
     Whether search results were seen as part of a Contextual Search when a quick
     action was shown. Recorded when Contextual Search is dismissed. Implemented
     for Android. (Expired in M81. Revived in M120.)
+    {ContextualSearchQuickActionCategory}
   </summary>
+  <token key="ContextualSearchQuickActionCategory"
+      variants="ContextualSearchQuickActionCategory">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Search.ContextualSearchResultsSeen"
@@ -1054,30 +1090,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Search.QueryTiles.Bitmap.Available"
-    enum="BooleanAvailable" expires_after="2022-10-31">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Indicates whether or not a bitmap could be shown for a tile.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.Bitmap.FetchDuration" units="ms"
-    expires_after="2022-04-01">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the time taken to fetch a bitmap for a tile when a bitmap could be
-    found. It includes the time starting from the UI layer requesting the
-    backend till the backend returns the associated bitmap.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.Fetcher.FirstFlowDuration" units="hours"
     expires_after="2023-01-01">
   <owner>qinmin@chromium.org</owner>
@@ -1137,19 +1149,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Search.QueryTiles.NoBitmap.FetchDuration"
-    units="ms" expires_after="2022-04-01">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the time taken by the bitmap request for a tile when no bitmap could
-    be found. It includes the time starting from the UI layer requesting the
-    backend till the backend returns the associated bitmap.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.RequestStatus"
     enum="QueryTilesRequestStatus" expires_after="2023-04-16">
   <owner>qinmin@chromium.org</owner>
@@ -1160,39 +1159,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Search.QueryTiles.Tile.Clicked" units="index"
-    expires_after="2023-08-31">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the index of the tile that was clicked. The index refers to the
-    position of the tile in the carousel.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.Tile.Clicked.IsTopLevel"
-    enum="BooleanIsTopLevel" expires_after="2022-04-01">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>Indicates whether the tile clicked was a top level tile.</summary>
-</histogram>
-
-<histogram base="true" name="Search.QueryTiles.TileCount" units="tiles"
-    expires_after="2023-08-31">
-<!-- Name completed by histogram_suffixes name="TileUiSurface" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Indicates the number of tiles displayed in the UI after the backend was
-    loaded.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
     expires_after="2024-09-22">
   <owner>qinmin@chromium.org</owner>
@@ -1200,6 +1166,66 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records events related to trending tiles, including display, removal and
     click, after the events occur.
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Bitmap.Available"
+    enum="BooleanAvailable" expires_after="2022-10-31">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Indicates whether or not a bitmap could be shown for a tile. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Bitmap.FetchDuration"
+    units="ms" expires_after="2022-04-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the time taken to fetch a bitmap for a tile when a bitmap could be
+    found. It includes the time starting from the UI layer requesting the
+    backend till the backend returns the associated bitmap. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}NoBitmap.FetchDuration"
+    units="ms" expires_after="2022-04-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the time taken by the bitmap request for a tile when no bitmap could
+    be found. It includes the time starting from the UI layer requesting the
+    backend till the backend returns the associated bitmap. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Tile.Clicked" units="index"
+    expires_after="2023-08-31">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records the index of the tile that was clicked. The index refers to the
+    position of the tile in the carousel. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}Tile.Clicked.IsTopLevel"
+    enum="BooleanIsTopLevel" expires_after="2022-04-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Indicates whether the tile clicked was a top level tile. {TileUiSurface}
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.{TileUiSurface}TileCount" units="tiles"
+    expires_after="2023-08-31">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Indicates the number of tiles displayed in the UI after the backend was
+    loaded. {TileUiSurface}
   </summary>
 </histogram>
 
@@ -1433,10 +1459,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.SearchEngineListedInPromoDialog"
+<histogram
+    name="Search.SearchEngineListedInPromoDialog{SearchEnginePromoDeviceType}"
     enum="OmniboxSearchEngineType" expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->
-
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1446,13 +1471,17 @@ chromium-metrics-reviews@google.com.
     introduced.
 
     Warning: this histogram was expired from M81 to M124; data may be missing.
+    {SearchEnginePromoDeviceType}
   </summary>
+  <token key="SearchEnginePromoDeviceType"
+      variants="SearchEnginePromoDeviceType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Search.SearchEngineSelectionInPromoDialog"
+<histogram
+    name="Search.SearchEngineSelectionInPromoDialog{SearchEnginePromoDeviceType}"
     enum="OmniboxSearchEngineType" expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="SearchEnginePromoDeviceType" -->
-
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1462,7 +1491,12 @@ chromium-metrics-reviews@google.com.
     introduced.
 
     Warning: this histogram was expired from M81 to M124; data may be missing.
+    {SearchEnginePromoDeviceType}
   </summary>
+  <token key="SearchEnginePromoDeviceType"
+      variants="SearchEnginePromoDeviceType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"

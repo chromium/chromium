@@ -4,11 +4,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {moreOptionsClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 // TODO: b/40275871 - Add more tests.
@@ -77,6 +79,20 @@ suite('ToolbarOverflow', () => {
           toolbar.$.moreOptionsMenu.get()
               .querySelectorAll<HTMLElement>(moreOptionsClass)
               .length);
+    });
+
+    test('click from overflow opens correct menu', async () => {
+      stubAnimationFrame();
+      const numOverflow = 3;
+      await overflow(numOverflow);
+
+      const letterSpacingButton =
+          toolbar.$.moreOptionsMenu.get().querySelector<CrIconButtonElement>(
+              '#letter-spacing');
+      assertTrue(!!letterSpacingButton);
+      letterSpacingButton.click();
+
+      assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
     });
   });
 });

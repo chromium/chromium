@@ -57,6 +57,17 @@ chromium-metrics-reviews@google.com.
                navigation."/>
 </variants>
 
+<variants name="ServiceWorker_StartSituation2">
+  <variant name=".DuringStartup"
+      summary="The worker started up during browser startup."/>
+  <variant name=".ExistingReadyProcess"
+      summary="An existing ready process was used for the worker."/>
+  <variant name=".ExistingUnreadyProcess"
+      summary="An existing unready process was used for the worker."/>
+  <variant name=".NewProcess"
+      summary="A new process was created for the worker."/>
+</variants>
+
 <variants name="ServiceWorkerCacheClientType">
   <variant name="Cache" summary="Collected from a CacheStorageCache instance"/>
   <variant name="CacheStorage"
@@ -159,7 +170,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.ActivateEventStatus"
+<histogram
+    name="ServiceWorker.ActivateEventStatus{ServiceWorker_ShutdownStatus}"
     enum="ServiceWorkerStatusCode" expires_after="2025-07-27">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -169,8 +181,13 @@ chromium-metrics-reviews@google.com.
     ServiceWorker.ActivateEventStatus_InShutdown
     ServiceWorker.ActivateEventStatus_NotInShutdown is appropriate. (InShutdown
     means the context was null or ServiceWorkerProcessManger::Shutdown was
-    called.)
+    called.) {ServiceWorker_ShutdownStatus}
   </summary>
+  <token key="ServiceWorker_ShutdownStatus">
+    <variant name=""/>
+    <variant name="_InShutdown" summary="Browser shutdown started."/>
+    <variant name="_NotInShutdown" summary="Browser shutdown has not started."/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.AddNonWindowClient.SharedWorkerScript.IsBlob"
@@ -1422,7 +1439,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.StartTiming.ClockConsistency"
+<histogram
+    name="ServiceWorker.StartTiming.ClockConsistency{ServiceWorker_StartSituation2}"
     enum="CrossProcessTimeDelta" expires_after="2025-10-13">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1438,11 +1456,17 @@ chromium-metrics-reviews@google.com.
     metrics (other than this one) are not recorded.
 
     This histogram was expired between roughly 2021-07-30 and 2021-09-31.
+    {ServiceWorker_StartSituation2}
   </summary>
+  <token key="ServiceWorker_StartSituation2"
+      variants="ServiceWorker_StartSituation2">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="ServiceWorker.StartTiming.Duration" units="ms"
-    expires_after="2025-08-31">
+<histogram
+    name="ServiceWorker.StartTiming.Duration{ServiceWorker_StartSituation2}"
+    units="ms" expires_after="2025-08-31">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1454,7 +1478,12 @@ chromium-metrics-reviews@google.com.
     before asking it to start, if that occurred.
 
     This histogram was expired between roughly 2021-07-30 and 2021-09-31.
+    {ServiceWorker_StartSituation2}
   </summary>
+  <token key="ServiceWorker_StartSituation2"
+      variants="ServiceWorker_StartSituation2">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -1592,20 +1621,6 @@ chromium-metrics-reviews@google.com.
   <token key="ServiceWorkerEventType" variants="ServiceWorkerEventType"/>
 </histogram>
 
-<histogram name="ServiceWorker.StartWorker.Time" units="ms"
-    expires_after="2025-08-10">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>chikamune@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The time taken to start a Service Worker that is already installed, from
-    process allocation to ACK of started from the renderer (which occurs after
-    script execution). The metric is not recorded if DevTools was ever attached
-    to the Service Worker during startup. See also
-    ServiceWorker.StartNewWorker.Time for new workers.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.StartWorker.Timeout.StartPurpose"
     enum="ServiceWorkerMetrics.EventType" expires_after="2025-10-08">
   <owner>chikamune@chromium.org</owner>
@@ -1627,6 +1642,34 @@ chromium-metrics-reviews@google.com.
 
     This histogram was expired between approximately Feb through Sep 2021.
   </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.StartWorker.Time{ServiceWorker_StartSituationDoNotUse}"
+    units="ms" expires_after="2025-08-10">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken to start a Service Worker that is already installed, from
+    process allocation to ACK of started from the renderer (which occurs after
+    script execution). The metric is not recorded if DevTools was ever attached
+    to the Service Worker during startup. See also
+    ServiceWorker.StartNewWorker.Time for new workers.
+    {ServiceWorker_StartSituationDoNotUse}
+  </summary>
+  <token key="ServiceWorker_StartSituationDoNotUse">
+    <variant name=""/>
+    <variant name="_Any" summary="Includes any start situations."/>
+    <variant name="_DuringStartup"
+        summary="The worker started up during browser startup."/>
+    <variant name="_ExistingReadyProcess"
+        summary="An existing ready process was used for the worker."/>
+    <variant name="_ExistingUnreadyProcess"
+        summary="An existing unready process was used for the worker."/>
+    <variant name="_NewProcess"
+        summary="A new process was created for the worker."/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.StaticRouter.{Resource}.CacheLookupDuration"

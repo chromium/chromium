@@ -85,7 +85,8 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
     ui_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ClientSessionControl::DisconnectSession,
-                       client_session_control, ErrorCode::MAX_SESSION_LENGTH),
+                       client_session_control, ErrorCode::MAX_SESSION_LENGTH,
+                       "Maximum session duration has been reached.", FROM_HERE),
         options.maximum_session_duration());
   } else if (enable_user_interface) {
     // Create the continue window.  The implication of this window is that the

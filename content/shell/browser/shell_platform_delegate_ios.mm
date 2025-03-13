@@ -395,6 +395,7 @@ static const char kAllTracingCategories[] = "*";
     std::string search_url = "https://www.google.com/search?q=" + field_value;
     url = GURL(search_url);
   }
+  [_field resignFirstResponder];
   _shell->LoadURL(url);
   return YES;
 }

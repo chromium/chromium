@@ -150,10 +150,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const std::string& operation_name,
     const blink::CloneableMessage& serialized_data,
     int worklet_id) {
-  return SharedStorageEventParams(std::nullopt, operation_name,
-                                  MaybeTruncateSerializedData(serialized_data),
-                                  std::nullopt, std::nullopt, std::nullopt,
-                                  std::nullopt, worklet_id);
+  return SharedStorageEventParams::CreateForWorkletOperation(
+      operation_name, serialized_data, std::nullopt, worklet_id);
 }
 
 // static
@@ -162,6 +160,57 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
     int worklet_id) {
+  return SharedStorageEventParams::CreateForWorkletOperation(
+      operation_name, serialized_data, std::move(urls_with_metadata),
+      worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForSet(
+    const std::string& key,
+    const std::string& value,
+    bool ignore_if_present,
+    std::optional<int> worklet_id) {
+  return SharedStorageEventParams::CreateForModifierMethod(
+      key, value, ignore_if_present, worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForAppend(
+    const std::string& key,
+    const std::string& value,
+    std::optional<int> worklet_id) {
+  return SharedStorageEventParams::CreateForModifierMethod(
+      key, value, std::nullopt, worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForGetOrDelete(
+    const std::string& key,
+    std::optional<int> worklet_id) {
+  return SharedStorageEventParams::CreateForModifierMethod(
+      key, std::nullopt, std::nullopt, worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateWithWorkletId(
+    int worklet_id) {
+  return SharedStorageEventParams::CreateForModifierMethod(
+      std::nullopt, std::nullopt, std::nullopt, worklet_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateDefault() {
+  return SharedStorageEventParams();
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
+    const std::string& operation_name,
+    const blink::CloneableMessage& serialized_data,
+    std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+        urls_with_metadata,
+    int worklet_id) {
   return SharedStorageEventParams(std::nullopt, operation_name,
                                   MaybeTruncateSerializedData(serialized_data),
                                   std::move(urls_with_metadata), std::nullopt,
@@ -169,35 +218,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
 }
 
 // static
-SharedStorageEventParams SharedStorageEventParams::CreateForSet(
-    const std::string& key,
-    const std::string& value,
-    bool ignore_if_present) {
-  return SharedStorageEventParams(std::nullopt, std::nullopt, std::nullopt,
-                                  std::nullopt, key, value, ignore_if_present,
-                                  std::nullopt);
-}
-
-// static
-SharedStorageEventParams SharedStorageEventParams::CreateForAppend(
-    const std::string& key,
-    const std::string& value) {
-  return SharedStorageEventParams(std::nullopt, std::nullopt, std::nullopt,
-                                  std::nullopt, key, value, std::nullopt,
-                                  std::nullopt);
-}
-
-// static
-SharedStorageEventParams SharedStorageEventParams::CreateForGetOrDelete(
-    const std::string& key) {
-  return SharedStorageEventParams(std::nullopt, std::nullopt, std::nullopt,
-                                  std::nullopt, key, std::nullopt, std::nullopt,
-                                  std::nullopt);
-}
-
-// static
-SharedStorageEventParams SharedStorageEventParams::CreateDefault() {
-  return SharedStorageEventParams();
+SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
+    std::optional<std::string> key,
+    std::optional<std::string> value,
+    std::optional<bool> ignore_if_present,
+    std::optional<int> worklet_id) {
+  return SharedStorageEventParams(
+      std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::move(key),
+      std::move(value), ignore_if_present, worklet_id);
 }
 
 // Note that for `serialized_data`, we only match its presence or absence.

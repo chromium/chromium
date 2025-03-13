@@ -124,15 +124,15 @@ std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
   return generator;
 }
 
-class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
-  METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
+class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+  METADATA_HEADER(WidgetTestBubbleDialogDelegateView, BubbleDialogDelegateView)
 
  public:
-  explicit TestBubbleDialogDelegateView(View* anchor)
+  explicit WidgetTestBubbleDialogDelegateView(View* anchor)
       : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
     SetOwnedByWidget(false);
   }
-  ~TestBubbleDialogDelegateView() override = default;
+  ~WidgetTestBubbleDialogDelegateView() override = default;
 
   bool ShouldShowCloseButton() const override {
     reset_controls_called_ = true;
@@ -142,7 +142,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   mutable bool reset_controls_called_ = false;
 };
 
-BEGIN_METADATA(TestBubbleDialogDelegateView)
+BEGIN_METADATA(WidgetTestBubbleDialogDelegateView)
 END_METADATA
 
 // Convenience to make constructing a GestureEvent simpler.
@@ -2372,8 +2372,8 @@ TEST_F(WidgetObserverTest, DestroyBubble) {
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   anchor->Show();
 
-  auto bubble_delegate =
-      std::make_unique<TestBubbleDialogDelegateView>(anchor->client_view());
+  auto bubble_delegate = std::make_unique<WidgetTestBubbleDialogDelegateView>(
+      anchor->client_view());
   {
     std::unique_ptr<Widget> bubble_widget =
         base::WrapUnique(BubbleDialogDelegateView::CreateBubble(
@@ -2858,8 +2858,8 @@ TEST_F(WidgetTest, BubbleControlsResetOnInit) {
   anchor->Show();
 
   {
-    auto bubble_delegate =
-        std::make_unique<TestBubbleDialogDelegateView>(anchor->client_view());
+    auto bubble_delegate = std::make_unique<WidgetTestBubbleDialogDelegateView>(
+        anchor->client_view());
     auto* bubble_delegate_ptr = bubble_delegate.get();
     std::unique_ptr<Widget> bubble_widget =
         base::WrapUnique(BubbleDialogDelegateView::CreateBubble(
