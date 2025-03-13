@@ -92,9 +92,8 @@ void AILanguageDetectorFactory::AILanguageDetectorCreateTask::OnModelLoaded(
     // TODO (crbug.com/383022111): Pass the real download progress rather than
     // mocking one.
     if (monitor_) {
-      monitor_->OnDownloadProgressUpdate(0, model->GetModelSize());
-      monitor_->OnDownloadProgressUpdate(model->GetModelSize(),
-                                         model->GetModelSize());
+      monitor_->OnDownloadProgressUpdate(0, 0x10000);
+      monitor_->OnDownloadProgressUpdate(0x10000, 0x10000);
     }
     resolver_->Resolve(
         MakeGarbageCollected<AILanguageDetector>(model, task_runner_));
