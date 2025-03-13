@@ -1864,6 +1864,7 @@ static_library("ui") {
       "//ui/color/dynamic_color",
       "//ui/events",
       "//ui/web_dialogs",
+      "//ui/webui:buildflags",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
       "//ui/webui/resources/cr_components/history:mojo_bindings",
@@ -5696,6 +5697,13 @@ static_library("ui") {
 
   if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting" ]
+  }
+
+  if (enable_webui_generate_code_cache) {
+    deps += [
+      "//ui/webui:buildflags",
+      "//ui/webui/resources:code_cache_resources",
+    ]
   }
 }
 

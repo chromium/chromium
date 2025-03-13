@@ -290,6 +290,15 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
 }
 #endif
 
+std::optional<int>
+RendererBlinkPlatformImpl::GetWebUIBundledCodeCacheResourceId(
+    const GURL& webui_resource_url) {
+  auto it = webui_resource_to_code_cache_id_map_.find(webui_resource_url);
+  return it == webui_resource_to_code_cache_id_map_.end()
+             ? std::nullopt
+             : std::optional<int>(it->second);
+}
+
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

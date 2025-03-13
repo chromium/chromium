@@ -15,6 +15,7 @@ import "services/network/public/mojom/network_types.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
+import "url/mojom/url.mojom";
 
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
@@ -146,6 +147,11 @@ interface Renderer {
   //
   // TODO(crbug.com/40180791): We need a specification for this restriction.
   SetIsIsolatedContext(bool value);
+
+  // Sets the mapping from WebUI resource URLs to the resource ID of their
+  // corresponding bundled bytecode cache. This is called once after a
+  // renderer's process lock has been set.
+  SetWebUIResourceUrlToCodeCacheMap(map<url.mojom.Url, int32> resource_map);
 
   // Initialize renderer user agent string, user agent metadata, CORS exempt
   // header list and origin trials settings on renderer startup.
