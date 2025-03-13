@@ -4797,8 +4797,13 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerFromSmartActionsButton) {
   auto* disclaimer = session_test_api.GetDisclaimerWidget();
   ASSERT_TRUE(disclaimer);
 
-  // Press tab once. The focus should shift to the decline button in the consent
-  // disclaimer.
+  // The accept button should already be focused.
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  EXPECT_TRUE(accept_button->HasFocus());
+
+  // Press tab once. The focus should stay inside the disclaimer, and loop back
+  // around to the decline button.
   SendKey(ui::VKEY_TAB, event_generator);
   views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
       kDisclaimerViewDeclineButtonId);
@@ -4806,12 +4811,10 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerFromSmartActionsButton) {
 
   // Press tab again. The accept button should now be focused.
   SendKey(ui::VKEY_TAB, event_generator);
-  views::View* accept_button =
-      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
   EXPECT_TRUE(accept_button->HasFocus());
 
-  // Press tab one more time. The focus should stay inside the disclaimer, and
-  // loop back around to the decline button.
+  // Press tab one more time. The focus should loop back around to the decline
+  // button again.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_TRUE(decline_button->HasFocus());
 }
