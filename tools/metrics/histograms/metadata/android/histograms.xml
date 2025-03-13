@@ -5778,6 +5778,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AssetPathWorkaroundUsed.FactoryInit"
+    enum="Boolean" expires_after="2025-09-11">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    In some cases, WebView is unable to find the package ID which usually means
+    that the AssetManager for the Context passed to WebView doesn't have WebView
+    loaded in it. We have a rudimentary workaround for this which is to add
+    WebView's asset path to the Context. Since writing this workaround, we
+    believe we've addressed the underlying problem. Therefore the workaround
+    should no longer be needed. This histogram logs whether the asset path
+    workaround was needed during startup so that we can determine if it's safe
+    to remove. This is logged once during
+    WebViewChromiumFactoryProvider#initialize.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AssetPathWorkaroundUsed.StartChromiumLocked"
+    enum="Boolean" expires_after="2025-09-11">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    In some cases, WebView is unable to find its own Resources which usually
+    means that the host app is doing something unsupported with the Context
+    passed to WebView (or with the platform Resources class). We have a
+    rudimentary workaround for this which is to add WebView's asset path to the
+    Context. Since writing this workaround, we believe we've addressed the
+    underlying problem. Therefore the workaround should no longer be needed.
+    This histogram logs whether the asset path workaround was needed during
+    startup so that we can determine if it's safe to remove. This is logged once
+    during WebViewChromiumAwInit#startChromiumLocked.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AwContentsConstructorTime{IsFirst}" units="ms"
     expires_after="2025-09-07">
   <owner>cduvall@chromium.org</owner>
