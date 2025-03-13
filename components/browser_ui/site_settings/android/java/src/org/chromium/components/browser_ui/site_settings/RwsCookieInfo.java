@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.site_settings;
 import com.google.common.collect.ImmutableList;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,17 @@ public class RwsCookieInfo implements Serializable {
 
     public String getOwner() {
         return mOwnerHost;
+    }
+
+    public @Nullable Website findWebsiteForOrigin(String origin) {
+        for (Website site : mMembers) {
+            if (site.getAddress().matches(origin)) {
+                return site;
+            }
+        }
+        // Ordinarily should not be reachable. May happen if the user tries to open RWS settings
+        // before the website has saved any cookies.
+        return null;
     }
 
     public int getMembersCount() {
