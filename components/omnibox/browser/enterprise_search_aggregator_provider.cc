@@ -611,17 +611,26 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   }
 
   match.enterprise_search_aggregator_type = suggestion_type;
-
   match.description = AutocompleteMatch::SanitizeString(description);
-  match.description_class = ClassifyTermMatches(
-      FindTermMatches(adjusted_input_.text(), match.description),
-      match.description.size(), ACMatchClassification::MATCH,
-      ACMatchClassification::NONE);
   match.contents = AutocompleteMatch::SanitizeString(contents);
-  match.contents_class = ClassifyTermMatches(
-      FindTermMatches(adjusted_input_.text(), match.contents),
-      match.contents.size(), ACMatchClassification::MATCH,
-      ACMatchClassification::NONE);
+
+  // `NAVSUGGEST` is displayed "<description> - <contents>" and
+  // `SEARCH_SUGGEST` is displayed "<contents> - <description>".
+  // The below code formats `description` and `contents` accordingly.
+  auto primary_text_class = [this](auto text) {
+    return ClassifyTermMatches(FindTermMatches(adjusted_input_.text(), text),
+                               text.size(), ACMatchClassification::MATCH,
+                               ACMatchClassification::NONE);
+  };
+  ACMatchClassifications secondary_text_class =
+      (contents.empty() || description.empty())
+          ? std::vector<ACMatchClassification>{}
+          : std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
+  match.description_class = is_navigation
+                                ? primary_text_class(match.description)
+                                : secondary_text_class;
+  match.contents_class =
+      is_navigation ? secondary_text_class : primary_text_class(match.contents);
 
   match.keyword = template_url_->keyword();
   match.transition = ui::PAGE_TRANSITION_KEYWORD;
