@@ -22,156 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram base="true" name="SimpleCache.CacheSizeOnInit" units="KB"
-    expires_after="2025-06-08">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <summary>
-    The size of the cache at the time that the index has finished initializing.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.ConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2025-06-08">
-  <owner>wanderview@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Record the outcome of the simple DiskCache consistency check. The
-    consistency check is executed every time a simple DiskCache is initialized.
-    This check includes both inspecting the schema on disk and upgrading the
-    schema to the latest version if necessary.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="SimpleCache.ConsistencyResultAfterIndexFilesDeleted"
-    enum="SimpleCacheConsistencyResult" expires_after="2025-06-08">
-  <owner>wanderview@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Record the final consistency check value after index files have been deleted
-    from an empty simple DiskCache. This histogram will tell us how often the
-    index deletion code results in a functioning cache. It will also tell us
-    what kind of consistency failures cannot be recovered due to index file
-    deletion.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.CreationToIndex" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time from the creation of the simple cache backend until the index has
-    been loaded from disk.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.CreationToIndexFail" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time from the creation of the simple cache backend until the index fails
-    to load.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="SimpleCache.DidDeleteIndexFilesAfterFailedConsistency" enum="Boolean"
-    expires_after="2023-12-08">
-  <owner>wanderview@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Record if any simple DiskCache index files were deleted from an otherwise
-    empty cache after the cache failed the initialization consistency check.
-    This histogram will tell us how often the deletion code is triggering and
-    modifying the disk.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.DiskCloseLatency" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time to close (write out footers and close the file) the cache entry on
-    disk. Includes only successful operations.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.DiskCreateLatency" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time to access (open for creation and write initial headers) the cache
-    entry on disk. Includes only successful operations.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.DiskDoomLatency" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time to remove the cache entry on disk. Includes only individually
-    doomed entries, not entries bulk-erased during eviction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.DiskOpenLatency" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time to access (open and read headers from all files) the cache entry on
-    disk. Includes only successful operations.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.DiskWriteLatency" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time to write a chunk to the cache entry on disk. Includes only
-    successful operations.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.EntryCreationTime" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time, in ms, spent creating a new entry on disk. This measures time from
-    when the method got removed from SimpleEntryImpl's operation queue till when
-    the callback is about to be invoked, and includes all Open and Create
-    operations, despite what the name may suggest.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.EntryCount" units="units"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>The number of entries to be erased in an eviction.</summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.TimeToDone" units="ms"
-    expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>Time spent completing an eviction.</summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.TimeToSelectEntries"
-    units="ms" expires_after="2025-06-08">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>Time spent selecting entries for eviction.</summary>
-</histogram>
+<variants name="CacheInstance">
+  <variant name="App."
+      summary="Collected from the HTML5 Application Cache instance."/>
+  <variant name="Code."
+      summary="Collected from the V8 Bytecode Cache instance."/>
+  <variant name="Http." summary="Collected from the HTTP Cache instance."/>
+</variants>
 
 <histogram name="SimpleCache.FileDescriptorLimiterAction"
     enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2022-11-13">
@@ -184,81 +41,241 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.HeaderSize" units="bytes"
+<histogram name="SimpleCache.{CacheInstance}CacheSizeOnInit" units="KB"
+    expires_after="2025-06-08">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    The size of the cache at the time that the index has finished initializing.
+    {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}ConsistencyResult"
+    enum="SimpleCacheConsistencyResult" expires_after="2025-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record the outcome of the simple DiskCache consistency check. The
+    consistency check is executed every time a simple DiskCache is initialized.
+    This check includes both inspecting the schema on disk and upgrading the
+    schema to the latest version if necessary. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram
+    name="SimpleCache.{CacheInstance}ConsistencyResultAfterIndexFilesDeleted"
+    enum="SimpleCacheConsistencyResult" expires_after="2025-06-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record the final consistency check value after index files have been deleted
+    from an empty simple DiskCache. This histogram will tell us how often the
+    index deletion code results in a functioning cache. It will also tell us
+    what kind of consistency failures cannot be recovered due to index file
+    deletion. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}CreationToIndex" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time from the creation of the simple cache backend until the index has
+    been loaded from disk. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}CreationToIndexFail" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time from the creation of the simple cache backend until the index fails
+    to load. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram
+    name="SimpleCache.{CacheInstance}DidDeleteIndexFilesAfterFailedConsistency"
+    enum="Boolean" expires_after="2023-12-08">
+  <owner>wanderview@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Record if any simple DiskCache index files were deleted from an otherwise
+    empty cache after the cache failed the initialization consistency check.
+    This histogram will tell us how often the deletion code is triggering and
+    modifying the disk. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}DiskCloseLatency" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to close (write out footers and close the file) the cache entry on
+    disk. Includes only successful operations. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}DiskCreateLatency" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to access (open for creation and write initial headers) the cache
+    entry on disk. Includes only successful operations. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}DiskDoomLatency" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to remove the cache entry on disk. Includes only individually
+    doomed entries, not entries bulk-erased during eviction. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}DiskOpenLatency" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to access (open and read headers from all files) the cache entry on
+    disk. Includes only successful operations. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}DiskWriteLatency" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time to write a chunk to the cache entry on disk. Includes only
+    successful operations. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}EntryCreationTime" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time, in ms, spent creating a new entry on disk. This measures time from
+    when the method got removed from SimpleEntryImpl's operation queue till when
+    the callback is about to be invoked, and includes all Open and Create
+    operations, despite what the name may suggest. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}Eviction.EntryCount" units="units"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The number of entries to be erased in an eviction. {CacheInstance}
+  </summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}Eviction.TimeToDone" units="ms"
+    expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>Time spent completing an eviction. {CacheInstance}</summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}Eviction.TimeToSelectEntries"
+    units="ms" expires_after="2025-06-08">
+  <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>Time spent selecting entries for eviction. {CacheInstance}</summary>
+</histogram>
+
+<histogram name="SimpleCache.{CacheInstance}HeaderSize" units="bytes"
     expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     The size of the header stream of a Simple Cache entry, emitted every time
-    the headers are written or rewritten.
+    the headers are written or rewritten. {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.IndexCreatedEntryCount" units="units"
-    expires_after="2025-06-08">
+<histogram name="SimpleCache.{CacheInstance}IndexCreatedEntryCount"
+    units="units" expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
-  <summary>The number of entries in a newly created index file.</summary>
+  <summary>
+    The number of entries in a newly created index file. {CacheInstance}
+  </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.IndexFileStateOnLoad"
+<histogram name="SimpleCache.{CacheInstance}IndexFileStateOnLoad"
     enum="SimpleIndexState" expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     The state the index file is at when an attempt is made to load from it.
+    {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.IndexInitializeMethod"
+<histogram name="SimpleCache.{CacheInstance}IndexInitializeMethod"
     enum="SimpleCacheIndexInitializeMethod" expires_after="2025-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
-  <summary>The method used to initialize the simple cache index.</summary>
+  <summary>
+    The method used to initialize the simple cache index. {CacheInstance}
+  </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.IndexNumEntriesOnInit" units="entries"
-    expires_after="2025-06-08">
+<histogram name="SimpleCache.{CacheInstance}IndexNumEntriesOnInit"
+    units="entries" expires_after="2025-06-08">
   <owner>jkarlin@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The number of entries in the index at the time that the index has finished
-    initializing.
+    initializing. {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.IndexRestoreTime" units="ms"
+<histogram name="SimpleCache.{CacheInstance}IndexRestoreTime" units="ms"
     expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     Time (as measured on the worker pool) spent restoring the index file by
-    iterating directory entries.
+    iterating directory entries. {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.OpenEntryIndexState"
+<histogram name="SimpleCache.{CacheInstance}OpenEntryIndexState"
     enum="SimpleCacheOpenEntryIndexState" expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     At the time that an entry is opened, the state of that entry in the index.
+    {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="SimpleCache.OriginalConsistencyResultBeforeSuccessfulRetry"
+<histogram
+    name="SimpleCache.{CacheInstance}OriginalConsistencyResultBeforeSuccessfulRetry"
     enum="SimpleCacheConsistencyResult" expires_after="2025-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     Record the original consistency error produced by a simple DiskCache before
     a retry was attempted and succeeded. This histogram will tell us what kind
-    consistency errors can be recovered from in practice.
+    consistency errors can be recovered from in practice. {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.RetryConsistencyResult"
+<histogram name="SimpleCache.{CacheInstance}RetryConsistencyResult"
     enum="SimpleCacheConsistencyResult" expires_after="2025-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
@@ -269,48 +286,50 @@ chromium-metrics-reviews@google.com.
     occur if the original failed initialization left an empty directory without
     any index files. This histogram will tell us how often the retry succeeds in
     recovering caches and also which consistency checks cannot be recovered.
+    {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.StaleIndexExtraEntryCount"
+<histogram name="SimpleCache.{CacheInstance}StaleIndexExtraEntryCount"
     units="entries" expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     Count of the number of entries recorded in the index, but not actually
     present in the cache. Recorded each time a stale index is found and a
-    directory rescan is required.
+    directory rescan is required. {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.StaleIndexMissedEntryCount"
+<histogram name="SimpleCache.{CacheInstance}StaleIndexMissedEntryCount"
     units="entries" expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     Count of the number of entries present in a cache, but not recorded in the
     index. Recorded each time a stale index is found and a directory rescan is
-    required.
+    required. {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.StaleIndexQuality"
+<histogram name="SimpleCache.{CacheInstance}StaleIndexQuality"
     enum="SimpleCacheStaleIndexQuality" expires_after="2025-06-08">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     The quality of a &quot;stale&quot; index compared to a full directory
     rescan. Recorded immediately after every directory scan for stale indexes.
+    {CacheInstance}
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.SyncOpenPrefetchMode"
+<histogram name="SimpleCache.{CacheInstance}SyncOpenPrefetchMode"
     enum="SimpleCachePrefetchMode" expires_after="2023-12-10">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The kind of prefetching performed, if any, when executing
-    SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1().
+    SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(). {CacheInstance}
   </summary>
 </histogram>
 
