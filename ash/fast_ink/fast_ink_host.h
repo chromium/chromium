@@ -23,7 +23,7 @@ class Rect;
 
 namespace gpu {
 class ClientSharedImage;
-}
+}  // namespace gpu
 
 namespace ash {
 
@@ -76,6 +76,8 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     return pending_bitmaps_.size();
   }
 
+  const gpu::SyncToken& sync_token_for_test() const { return sync_token_; }
+
   // FrameSinkHost:
   void Init(aura::Window* host_window) override;
   void InitForTesting(aura::Window* host_window,
@@ -90,6 +92,7 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf) override;
   void OnFirstFrameRequested() override;
+  void OnFrameSinkLost() override;
 
  private:
   void InitBufferMetadata(aura::Window* host_window);
@@ -97,6 +100,7 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
   gfx::Rect BufferRectFromWindowRect(const gfx::Rect& rect_in_window) const;
   void Draw(SkBitmap bitmap, const gfx::Rect& damage_rect);
   void DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect);
+  void ResetGpuBuffer();
 
   gfx::Transform window_to_buffer_transform_;
 
@@ -106,7 +110,6 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     SkBitmap bitmap;
     gfx::Rect damage_rect;
   };
-
   std::vector<PendingBitmap> pending_bitmaps_;
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
