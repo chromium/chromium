@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.56"
 name = "quote"
-version = "1.0.39"
+version = "1.0.40"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false
